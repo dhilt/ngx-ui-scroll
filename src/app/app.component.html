@@ -1,0 +1,9 @@
+<h1>
+  {{title}}
+</h1>
+
+<ui-scroll [datasource]="datasource" class="viewport">
+  <template let-item="item" let-index="index">
+    <span>{{index}}</span> : <b>{{item?.text}}</b>
+  </template>
+</ui-scroll>

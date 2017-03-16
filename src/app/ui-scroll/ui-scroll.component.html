@@ -1,0 +1,7 @@
+<div data-padding-top></div>
+<div *ngFor="let item of data" id="{{tokenItem}}{{item.$index}}">
+  <template
+    [ngTemplateOutlet]="templateVariable" 
+    [ngOutletContext]="{item: item.scope, index: item.$index}"></template>
+</div>
+<div data-padding-bottom></div>

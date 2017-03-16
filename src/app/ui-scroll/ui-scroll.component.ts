@@ -35,9 +35,7 @@ export class UiScrollComponent implements OnInit {
   count = 5;
   bof = false;
   eof = false;
-
-  datasourceSubject = new Subject<any>();
-  datasourceSubscriber;
+  pending = false;
 
   constructor(private elementRef: ElementRef, private renderer: Renderer) {
   }
@@ -52,25 +50,19 @@ export class UiScrollComponent implements OnInit {
           }
         }
       }
-      if(!item.element) {
+      if(!item.element) { // todo: just remove this
         throw new Error('Can not associate item with element');
       }
     });
   }
 
-  process(result) {
-    if (result.direction === Direction.bottom) {
-      this.data = [...this.data, ...result.items];
-      //data.items.sort((a, b) => (a.$index > b.$index) ? 1 : ((a.$index > b.$index) ? -1 : 0));
-      if(result.items.length !== this.count) {
-        this.eof = true;
-        return;
+  render(items = null) {
+    setTimeout(() => {
+      if(items) {
+        this.setElements(items); 
       }
-      setTimeout(() => {
-        this.setElements(result.items);
-        this.fetch();
-      });
-    }
+      this.wantMore();
+    });
   }
 
   shouldLoadBottom() {
@@ -83,27 +75,26 @@ export class UiScrollComponent implements OnInit {
     return lastElementBottom <= viewportBottom;
   }
 
-  pending = false;
-
-  fetch() {
+  wantMore() {
     if(this.pending || !this.shouldLoadBottom()) {
       return;
     }    
     this.pending = true;
     this.datasource.get(this.start, this.count, (result) => {
       this.pending = false;
-      let data = {
-        items: result
-          .map((item, index) => ({
-            $index: this.start + index,
-            scope: item
-          })),
-        direction: Direction.bottom
-      };
+      this.eof = result.length !== this.count;
+
+      let items = result.map((item, index) => ({
+        $index: this.start + index,
+        scope: item
+      }));
+
       this.start += this.count;
-      this.datasourceSubject.next(data);
-    });
-   }
+      this.data = [...this.data, ...items];
+
+      this.render(items);
+    });    
+  }
 
   adjust() {
     let viewportTop = this.viewport.getBoundingClientRect().top;
@@ -123,28 +114,19 @@ export class UiScrollComponent implements OnInit {
       this.paddingTop.style.height = (height + cutHeight) + 'px';
 
       this.data.splice(0, topVisibleItemIndex); 
-      setTimeout(() => {
-        this.fetch();
-      });
+      this.render();
     }
     else {
-      this.fetch();
+      this.wantMore();
     }
-  }
+  }  
 
   ngOnInit() {
     this.viewport = this.elementRef.nativeElement;
     this.paddingTop = this.viewport.querySelector('[data-padding-top]');
     this.paddingBottom = this.viewport.querySelector('[data-padding-bottom]');
-
-    this.datasourceSubscriber = this.datasourceSubject.subscribe(this.process.bind(this));
     this.onScrollListener = this.renderer.listen(this.viewport, 'scroll', this.adjust.bind(this));
-
-    this.fetch();
-  }
-
-  ngOnDestroy() {
-    this.datasourceSubscriber.unsubscribe();
+    this.wantMore();
   }
 
 }

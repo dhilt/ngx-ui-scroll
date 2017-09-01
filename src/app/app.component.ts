@@ -6,10 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app works!';
+  private title = 'app works!';
 
   private datasource = {
       get: (index: number, count: number, success) => {
+        console.log('requested index = ' + index + ', count = ' + count);
         setTimeout(() => {
           let result = [];
           for (let i = index; i <= index + count - 1; i++) {
@@ -18,6 +19,7 @@ export class AppComponent {
               text: "item #" + i
             });
           }
+          console.log('resolved ' + result.length + ' items');
           success(result);
         }, 50);
       }

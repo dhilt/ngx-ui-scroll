@@ -33,6 +33,32 @@ class Clip {
   }
 
   static runBottom() {
+    let viewportParams = Elements.viewport.getBoundingClientRect();
+    let viewportBottom = viewportParams.bottom;
+    let delta = viewportParams.height * Data.padding;
+    let limit = Data.items.length - 1;
+    let i, firstElementTop, lastElementBottom;
+    for (i = limit; i >= 0; i--) {
+      let elementParams = Data.items[i].element.getBoundingClientRect();
+      if (elementParams.top > viewportBottom + delta) {
+        if (i === limit) {
+          lastElementBottom = elementParams.bottom;
+        }
+        firstElementTop = elementParams.top;
+        continue;
+      }
+      if (i === limit) {
+        break;
+      }
+      for (let j = i + 1; j <= limit; j++) {
+        Data.items[j].element.style.display = 'none';
+      }
+      let cutHeight = lastElementBottom - firstElementTop;
+      let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
+      Elements.paddingBottom.style.height = (paddingHeight + cutHeight) + 'px';
+      Data.items.splice(i + 1, limit - i);
+      return true;
+    }
     return false;
   }
 

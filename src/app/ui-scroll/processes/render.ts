@@ -48,7 +48,7 @@ class Render {
     if (self.renderPending) {
       return;
     }
-    if(Process.clip.runTop()) {
+    if(Process.clip.runTop() || Process.clip.runBottom()) {
       self.run();
     }
     else {

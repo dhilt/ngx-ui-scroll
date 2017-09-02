@@ -17,7 +17,7 @@ class Render {
       if (direction === Direction.top) {
         self.adjustPosition(items);
       }
-      self.adjust();
+      self.adjust(direction);
     });
   }
 
@@ -38,21 +38,45 @@ class Render {
   }
 
   static adjustPosition(items) {
-    let firstElementTop = items[0].element.getBoundingClientRect().top;
-    let lastElementBottom = items[items.length - 1].element.getBoundingClientRect().bottom;
-    let height = lastElementBottom - firstElementTop;
-    Elements.viewport.scrollTop += height;
+    let height = 0;
+    const _scrollTop = Elements.viewport.scrollTop;
+    items.forEach(item => {
+      let element = item.element.children[0];
+      element.style.left = '';
+      element.style.position = '';
+      let params = element.getBoundingClientRect();
+      height += params.bottom - params.top;
+      delete item.invisible;
+    });
+    // now need to make "height" pixels top
+
+    // 1) via paddingTop
+    let _paddingTopHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
+    let paddingTopHeight = Math.max(_paddingTopHeight - height, 0);
+    Elements.paddingTop.style.height = paddingTopHeight + 'px';
+    let paddingDiff = height - (_paddingTopHeight - paddingTopHeight);
+    // 2) via scrollTop
+    if(paddingDiff > 0) {
+      height = paddingDiff;
+      Elements.viewport.scrollTop += height;
+      const diff = height - Elements.viewport.scrollTop - _scrollTop;
+      if (diff > 0) {
+        let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
+        Elements.paddingBottom.style.height = (paddingHeight + diff) + 'px';
+        Elements.viewport.scrollTop += diff;
+      }
+    }
   }
 
-  static adjust() {
+  static adjust(direction = null) {
     if (self.renderPending) {
       return;
     }
-    if(Process.clip.runTop() || Process.clip.runBottom()) {
+    if (Process.clip.run(direction)) {
       self.run();
     }
     else {
-      Process.main.run();
+      Process.fetch.run(direction);
     }
   }
 

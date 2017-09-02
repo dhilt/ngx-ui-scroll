@@ -9,6 +9,7 @@ import {AsyncSubject} from 'rxjs/AsyncSubject';
 import Process from './processes/index';
 import Elements from './elements';
 import Data from './data';
+import Direction from './direction';
 
 @Component({
   selector: 'ui-scroll',
@@ -29,8 +30,12 @@ export class UiScrollComponent implements OnInit {
   ngOnInit() {
     Elements.initialize(this.elementRef);
     Data.initialize(this);
-    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', Process.render.adjust.bind(this));
-    Process.main.run();
+    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) => {
+      Process.render.adjust(Direction.bottom);
+      Process.render.adjust(Direction.top);
+    });
+    Process.fetch.run(Direction.top);
+    Process.fetch.run(Direction.bottom);
   }
 
 }

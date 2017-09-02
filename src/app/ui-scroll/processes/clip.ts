@@ -1,7 +1,17 @@
 import Data from '../data'
 import Elements from '../elements'
+import Direction from '../direction'
 
 class Clip {
+
+  static run(direction) {
+    if (direction === Direction.top) {
+      self.runTop();
+    }
+    if (direction === Direction.bottom) {
+      self.runBottom();
+    }
+  }
 
   static runTop() {
     let viewportParams = Elements.viewport.getBoundingClientRect();
@@ -64,4 +74,5 @@ class Clip {
 
 }
 
+const self = Clip;
 export default Clip

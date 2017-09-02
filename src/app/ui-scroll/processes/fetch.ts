@@ -8,6 +8,15 @@ class Fetch {
   static pendingTop = false;
   static pendingBottom = false;
 
+  static run(direction) {
+    if (direction === Direction.top) {
+      self.runTop();
+    }
+    if (direction === Direction.bottom) {
+      self.runBottom();
+    }
+  }
+
   static shouldLoadBottom() {
     if (self.pendingBottom) {
       return false;
@@ -34,7 +43,7 @@ class Fetch {
   }
 
   static runTop() {
-    /*if (self.shouldLoadTop()) {
+    if (self.shouldLoadTop()) {
       self.pendingTop = true;
       let start = (Data.items.length ? Data.items[0].$index : Data.startIndex) - Data.bufferSize;
       Data.source.get(start, Data.bufferSize, (result) => {
@@ -43,13 +52,14 @@ class Fetch {
 
         let items = result.map((item, index) => ({
           $index: start + index,
-          scope: item
+          scope: item,
+          invisible: true
         }));
         Data.items = [...items, ...Data.items];
 
-        Render.run(items, Direction.top);
+        Process.render.run(items, Direction.top);
       });
-    }*/
+    }
   }
 
   static runBottom() {

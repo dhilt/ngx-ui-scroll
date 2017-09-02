@@ -1,11 +1,13 @@
 <div data-padding-top></div>
 <div *ngFor="let item of getItems()" id="{{getItemId(item.$index)}}">
-  <template
-    [ngTemplateOutlet]="templateVariable"
-    [ngOutletContext]="{
-      item: item.scope,
-      index: item.$index
+  <div [style.position]="item.invisible ? 'fixed' : null" [style.left]="item.invisible ? '-99999px' : null" >
+    <template
+      [ngTemplateOutlet]="templateVariable"
+      [ngOutletContext]="{
+        item: item.scope,
+        index: item.$index
      }">
-  </template>
+    </template>
+  </div>
 </div>
 <div data-padding-bottom></div>

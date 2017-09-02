@@ -15,7 +15,18 @@ class Adjust {
   }
 
   static runBottom(items) {
-    const height = items[items.length - 1].element.getBoundingClientRect().bottom - items[0].element.getBoundingClientRect().top;
+    let height = 0;
+
+    // make items visible
+    items.forEach(item => {
+      let element = item.element.children[0];
+      element.style.left = '';
+      element.style.position = '';
+      let params = element.getBoundingClientRect();
+      height += params.bottom - params.top;
+      delete item.invisible;
+    });
+
     const _paddingBottomHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
     const paddingBottomHeight = Math.max(_paddingBottomHeight - height, 0);
     Elements.paddingBottom.style.height = paddingBottomHeight + 'px';

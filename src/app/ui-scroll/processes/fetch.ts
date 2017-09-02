@@ -72,7 +72,8 @@ class Fetch {
 
         let items = result.map((item, index) => ({
           $index: start + index,
-          scope: item
+          scope: item,
+          invisible: true
         }));
         Data.items = [...Data.items, ...items];
 

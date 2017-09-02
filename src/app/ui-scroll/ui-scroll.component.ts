@@ -31,11 +31,14 @@ export class UiScrollComponent implements OnInit {
     Elements.initialize(this.elementRef);
     Data.initialize(this);
     this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) => {
-      Process.render.adjust(Direction.bottom);
-      Process.render.adjust(Direction.top);
+      Process.clip.run(Direction.top);
+      Process.fetch.run(Direction.bottom);
+
+      Process.clip.run(Direction.bottom);
+      Process.fetch.run(Direction.top);
     });
-    Process.fetch.run(Direction.top);
     Process.fetch.run(Direction.bottom);
+    Process.fetch.run(Direction.top);
   }
 
 }

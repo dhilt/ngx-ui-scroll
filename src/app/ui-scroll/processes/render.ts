@@ -15,9 +15,9 @@ class Render {
         self.setElements(items);
       }
       if (direction === Direction.top) {
-        self.adjustPosition(items);
+        Process.adjust.run(Direction.top, items);
       }
-      self.adjust(direction);
+      Process.fetch.run(direction);
     });
   }
 
@@ -35,49 +35,6 @@ class Render {
         throw new Error('Can not associate item with element');
       }
     });
-  }
-
-  static adjustPosition(items) {
-    let height = 0;
-    const _scrollTop = Elements.viewport.scrollTop;
-    items.forEach(item => {
-      let element = item.element.children[0];
-      element.style.left = '';
-      element.style.position = '';
-      let params = element.getBoundingClientRect();
-      height += params.bottom - params.top;
-      delete item.invisible;
-    });
-    // now need to make "height" pixels top
-
-    // 1) via paddingTop
-    let _paddingTopHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
-    let paddingTopHeight = Math.max(_paddingTopHeight - height, 0);
-    Elements.paddingTop.style.height = paddingTopHeight + 'px';
-    let paddingDiff = height - (_paddingTopHeight - paddingTopHeight);
-    // 2) via scrollTop
-    if(paddingDiff > 0) {
-      height = paddingDiff;
-      Elements.viewport.scrollTop += height;
-      const diff = height - Elements.viewport.scrollTop - _scrollTop;
-      if (diff > 0) {
-        let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
-        Elements.paddingBottom.style.height = (paddingHeight + diff) + 'px';
-        Elements.viewport.scrollTop += diff;
-      }
-    }
-  }
-
-  static adjust(direction = null) {
-    if (self.renderPending) {
-      return;
-    }
-    if (Process.clip.run(direction)) {
-      self.run();
-    }
-    else {
-      Process.fetch.run(direction);
-    }
   }
 
 }

@@ -17,26 +17,33 @@ class Clip {
     let viewportParams = Elements.viewport.getBoundingClientRect();
     let viewportTop = viewportParams.top;
     let delta = viewportParams.height * Data.padding;
-    let i, firstElementTop, lastElementBottom;
-    for (i = 0; i < Data.items.length; i++) {
-      let elementParams = Data.items[i].element.getBoundingClientRect();
+    let i, min, firstElementTop, lastElementBottom;
+    for (i = 0, min = 0; i < Data.items.length; i++) {
+      const item = Data.items[i];
+      if (min === i) {
+        if (item.invisible) {
+          min++;
+          continue;
+        }
+      }
+      let elementParams = item.element.getBoundingClientRect();
       if (elementParams.bottom < viewportTop - delta) {
-        if (i === 0) {
+        if (i === min) {
           firstElementTop = elementParams.top;
         }
         lastElementBottom = elementParams.bottom;
         continue;
       }
-      if (i === 0) {
+      if (i === min) {
         break;
       }
-      for (let j = i - 1; j >= 0; j--) {
+      for (let j = i - 1; j >= min; j--) {
         Data.items[j].element.style.display = 'none';
       }
       let cutHeight = lastElementBottom - firstElementTop;
       let paddingHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
       Elements.paddingTop.style.height = (paddingHeight + cutHeight) + 'px';
-      Data.items.splice(0, i);
+      Data.items.splice(min, i);
       return true;
     }
     return false;

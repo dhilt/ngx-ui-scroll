@@ -10,8 +10,15 @@ class Adjust {
       self.runTop(items);
     }
     if (direction === Direction.bottom) {
-      //self.runBottom();
+      self.runBottom(items);
     }
+  }
+
+  static runBottom(items) {
+    const height = items[items.length - 1].element.getBoundingClientRect().bottom - items[0].element.getBoundingClientRect().top;
+    const _paddingBottomHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
+    const paddingBottomHeight = Math.max(_paddingBottomHeight - height, 0);
+    Elements.paddingBottom.style.height = paddingBottomHeight + 'px';
   }
 
   static runTop(items) {

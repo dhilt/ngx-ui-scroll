@@ -14,9 +14,7 @@ class Render {
       if (items) {
         self.setElements(items);
       }
-      if (direction === Direction.top) {
-        Process.adjust.run(Direction.top, items);
-      }
+      Process.adjust.run(direction, items);
       Data.position = Elements.viewport.scrollTop;
 
       Process.fetch.run(direction);

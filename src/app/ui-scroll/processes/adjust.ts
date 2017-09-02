@@ -37,12 +37,12 @@ class Adjust {
     // 2) via scrollTop
     if (paddingDiff > 0) {
       height = paddingDiff;
-      Elements.viewport.scrollTop += height;
+      Elements.viewport.increaseScrollTop(height);
       const diff = height - Elements.viewport.scrollTop - _scrollTop;
       if (diff > 0) {
         let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
         Elements.paddingBottom.style.height = (paddingHeight + diff) + 'px';
-        Elements.viewport.scrollTop += diff;
+        Elements.viewport.increaseScrollTop(diff);
       }
     }
   }

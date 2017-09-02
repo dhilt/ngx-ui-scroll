@@ -10,6 +10,7 @@ class Data {
   static items = [];
   static bof = false;
   static eof = false;
+  static position = 0;
 
   static setSource(datasource: any) {
     if (!datasource || typeof datasource !== 'object' || typeof datasource.get !== 'function') {

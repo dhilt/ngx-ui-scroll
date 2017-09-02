@@ -1,4 +1,5 @@
 import {ElementRef} from '@angular/core'
+import Data from './data'
 
 export default class Elements {
 
@@ -10,6 +11,16 @@ export default class Elements {
     Elements.viewport = elementRef.nativeElement;
     Elements.paddingTop = Elements.viewport.querySelector('[data-padding-top]');
     Elements.paddingBottom = Elements.viewport.querySelector('[data-padding-bottom]');
+
+    Elements.extendViewport();
+  }
+
+  static extendViewport() {
+    const viewport = Elements.viewport;
+    viewport.increaseScrollTop = (value) => {
+      viewport.scrollTop += value;
+      Data.position = viewport.scrollTop;
+    };
   }
 
 }

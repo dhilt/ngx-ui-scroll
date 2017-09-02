@@ -17,6 +17,8 @@ class Render {
       if (direction === Direction.top) {
         Process.adjust.run(Direction.top, items);
       }
+      Data.position = Elements.viewport.scrollTop;
+
       Process.fetch.run(direction);
     });
   }

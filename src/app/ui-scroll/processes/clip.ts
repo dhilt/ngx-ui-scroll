@@ -11,6 +11,7 @@ class Clip {
     if (direction === Direction.bottom) {
       self.runBottom();
     }
+    Data.position = Elements.viewport.scrollTop;
   }
 
   static runTop() {

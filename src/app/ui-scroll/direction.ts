@@ -1,16 +1,32 @@
-export default class Direction {
+import Elements from './elements'
+import Data from './data'
+
+class Direction {
   static top: string = 'top';
   static bottom: string = 'bottom';
 
   static opposite(direction: string) {
-    if (direction === Direction.top) {
-      return Direction.bottom;
+    if (direction === self.top) {
+      return self.bottom;
     }
-    else if (direction === Direction.bottom) {
-      return Direction.top;
+    else if (direction === self.bottom) {
+      return self.top;
     }
     else {
       return null;
     }
   }
+
+  static byScrollTop() {
+    if (Data.position < Elements.viewport.scrollTop) {
+      return self.bottom;
+    }
+    if (Data.position > Elements.viewport.scrollTop) {
+      return self.top;
+    }
+    return null;
+  }
 }
+
+const self = Direction;
+export default Direction

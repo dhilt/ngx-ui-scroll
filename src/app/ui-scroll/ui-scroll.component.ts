@@ -32,7 +32,6 @@ export class UiScrollComponent implements OnInit {
     Data.initialize(this);
     this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) => {
       const direction = Direction.byScrollTop();
-      Process.clip.run(Direction.opposite(direction));
       Process.fetch.run(direction);
     });
     Process.fetch.run(Direction.bottom);

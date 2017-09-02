@@ -17,6 +17,7 @@ class Render {
       Process.adjust.run(direction, items);
       Data.position = Elements.viewport.scrollTop;
 
+      Process.clip.run(Direction.opposite(direction));
       Process.fetch.run(direction);
     });
   }

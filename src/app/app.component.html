@@ -3,7 +3,7 @@
 </h1>
 
 <ui-scroll [datasource]="datasource" class="viewport">
-  <template let-myItem="item" let-index="index">
+  <ng-template let-myItem="item" let-index="index">
     <span>{{index}}</span> : <b>{{myItem?.text}}</b>
-  </template>
+  </ng-template>
 </ui-scroll>

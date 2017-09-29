@@ -6,7 +6,7 @@ import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
 
-import Process from './processes/index';
+import Workflow from './workflow';
 import Elements from './elements';
 import Data from './data';
 import Direction from './direction';
@@ -30,12 +30,16 @@ export class UiScrollComponent implements OnInit {
   ngOnInit() {
     Elements.initialize(this.elementRef);
     Data.initialize(this);
+
     this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) => {
       const direction = Direction.byScrollTop();
-      Process.fetch.run(direction);
+      if(direction) {
+        Workflow.run(direction);
+      }
     });
-    Process.fetch.run(Direction.bottom);
-    Process.fetch.run(Direction.top);
+
+    Workflow.run(Direction.bottom);
+    Workflow.run(Direction.top);
   }
 
 }

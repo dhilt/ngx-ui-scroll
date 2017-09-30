@@ -1,5 +1,5 @@
 import {Component, OnInit, Input} from '@angular/core';
-import {ContentChild, TemplateRef, ElementRef, Renderer} from '@angular/core';
+import {ContentChild, TemplateRef, ElementRef, Renderer2} from '@angular/core';
 import {HostListener} from '@angular/core';
 
 import {Observable} from 'rxjs/Observable';
@@ -24,20 +24,13 @@ export class UiScrollComponent implements OnInit {
 
   onScrollListener: Function;
 
-  constructor(private elementRef: ElementRef, private renderer: Renderer) {
+  constructor(private elementRef: ElementRef, private renderer: Renderer2) {
   }
 
   ngOnInit() {
     Elements.initialize(this.elementRef);
     Data.initialize(this);
-
-    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) => {
-      const direction = Direction.byScrollTop();
-      if(direction) {
-        Workflow.run(direction);
-      }
-    });
-
+    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', Workflow.run);
     Workflow.run(Direction.bottom);
     Workflow.run(Direction.top);
   }

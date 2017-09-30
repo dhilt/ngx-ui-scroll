@@ -19,7 +19,7 @@ export class AppComponent {
               text: "item #" + i
             });
           }
-          console.log('resolved ' + result.length + ' items');
+          console.log('resolved ' + result.length + ' items (index = ' + index + ', count = ' + count + ')');
           success(result);
         }, 50);
       }

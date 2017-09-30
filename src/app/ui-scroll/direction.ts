@@ -26,6 +26,10 @@ class Direction {
     }
     return null;
   }
+
+  static isValid(value) {
+    return value === self.top || value === self.bottom;
+  }
 }
 
 const self = Direction;

@@ -2,8 +2,6 @@ import Data from '../data'
 import Elements from '../elements'
 import Direction from '../direction'
 
-import { Observable } from 'rxjs/Rx'
-
 class Fetch {
 
   static pendingTop = false;
@@ -44,7 +42,7 @@ class Fetch {
   }
 
   static runTop() {
-    return Observable.create(observer => {
+    return new Promise((resolve, reject) => {
       if (self.shouldLoadTop()) {
         self.pendingTop = true;
         let start = (Data.items.length ? Data.items[0].$index : Data.startIndex) - Data.bufferSize;
@@ -59,18 +57,17 @@ class Fetch {
           }));
           Data.items = [...items, ...Data.items];
 
-          observer.next(items);
-          observer.complete();
+          resolve(items);
         });
       }
       else {
-        observer.complete();
+        reject();
       }
     });
   }
 
   static runBottom() {
-    return Observable.create(observer => {
+    return new Promise((resolve, reject) => {
       if (self.shouldLoadBottom()) {
         self.pendingBottom = true;
         let start = Data.items.length ? Data.items[Data.items.length - 1].$index + 1 : Data.startIndex;
@@ -85,12 +82,11 @@ class Fetch {
           }));
           Data.items = [...Data.items, ...items];
 
-          observer.next(items);
-          observer.complete();
+          resolve(items);
         });
       }
       else {
-        observer.complete();
+        reject();
       }
     });
   }

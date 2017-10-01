@@ -1,22 +1,20 @@
 import Elements from '../elements'
 import Data from '../data'
 
-import { Observable } from 'rxjs/Rx'
-
 class Render {
 
   static renderPending = false;
 
   static run(items = null, direction = null) {
-    return Observable.create(observer => {
+    return new Promise((resolve, reject) => {
       self.renderPending = true;
       setTimeout(() => {
         self.renderPending = false;
         if (items) {
           self.setElements(items);
+          resolve(items);
         }
-        observer.next(direction);
-        observer.complete();
+        reject();
       });
     });
   }

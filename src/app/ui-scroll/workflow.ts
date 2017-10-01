@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs/Rx'
+
 import Fetch from './workflow/fetch'
 import Render from './workflow/render'
 import Clip from './workflow/clip'
@@ -9,7 +11,23 @@ import Data from './data'
 
 const Workflow = {
 
-  sub: {},
+  cycle: (direction) =>
+    Observable.create(observer => {
+      Fetch.run(direction)
+      .then(items => Render.run(items, direction))
+      .then(items => {
+        Adjust.run(direction, items);
+        Data.position = Elements.viewport.scrollTop;
+        Clip.run(Direction.opposite(direction));
+        console.log(direction + ' cycle is done');
+        observer.next(direction);
+        observer.complete();
+      })
+      .catch(error => {
+         error && console.error(error);
+         observer.complete();
+       });
+    }),
 
   run: (param) => {
     let direction;
@@ -24,17 +42,11 @@ const Workflow = {
     if(!Direction.isValid(direction)) {
       return;
     }
-    Workflow.sub[direction] = Fetch.run(direction).subscribe(items =>
-      Render.run(items, direction).subscribe(direction => {
 
-        Adjust.run(direction, items);
-        Data.position = Elements.viewport.scrollTop;
+    const run = () =>
+      Workflow.cycle(direction).subscribe(run);
 
-        Clip.run(Direction.opposite(direction));
-
-        Workflow.run(direction)
-      })
-    );
+    run();
   }
 }
 

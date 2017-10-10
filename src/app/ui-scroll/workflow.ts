@@ -11,9 +11,19 @@ import Data from './data'
 
 const Workflow = {
 
+  runChangeDetector: (items) => null,
+
+  initialize: (context) => {
+    Workflow.runChangeDetector = (items) => {
+     context.changeDetector.markForCheck();
+     return items;
+   }
+  },
+
   cycle: (direction) =>
     Observable.create(observer => {
       Fetch.run(direction)
+      .then(items => Workflow.runChangeDetector(items))
       .then(items => Render.run(items, direction))
       .then(items => {
         Adjust.run(direction, items);
@@ -24,9 +34,10 @@ const Workflow = {
         observer.complete();
       })
       .catch(error => {
-         error && console.error(error);
-         observer.complete();
-       });
+        console.log('Done ' + direction);
+        error && console.error(error);
+        observer.complete();
+      })
     }),
 
   run: (param) => {

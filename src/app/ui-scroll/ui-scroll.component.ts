@@ -1,4 +1,4 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, OnDestroy, Input} from '@angular/core';
 import {ContentChild, TemplateRef, ElementRef, Renderer2} from '@angular/core';
 import {HostListener} from '@angular/core';
 
@@ -11,13 +11,15 @@ import Elements from './elements';
 import Data from './data';
 import Direction from './direction';
 
+import debouncedRound from './debouncedRound';
+
 @Component({
   selector: 'ui-scroll',
   templateUrl: './ui-scroll.component.html',
   styleUrls: ['./ui-scroll.component.css']
 })
 
-export class UiScrollComponent implements OnInit {
+export class UiScrollComponent implements OnInit, OnDestroy {
 
   @Input() datasource;
   @ContentChild(TemplateRef) templateVariable: TemplateRef<any>;
@@ -30,9 +32,15 @@ export class UiScrollComponent implements OnInit {
   ngOnInit() {
     Elements.initialize(this.elementRef);
     Data.initialize(this);
-    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', Workflow.run);
+    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) =>
+      debouncedRound(() => Workflow.run(event), 25)
+    );
     Workflow.run(Direction.bottom);
     Workflow.run(Direction.top);
+  }
+
+  ngOnDestroy() {
+    this.onScrollListener();
   }
 
 }

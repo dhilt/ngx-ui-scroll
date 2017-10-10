@@ -28,7 +28,12 @@ const Workflow = {
       .then(items => {
         Adjust.run(direction, items);
         Data.position = Elements.viewport.scrollTop;
-        Clip.run(Direction.opposite(direction));
+
+        if(Clip.run(Direction.opposite(direction))) {
+          Workflow.runChangeDetector(null);
+        }
+        Data.position = Elements.viewport.scrollTop;
+
         console.log(direction + ' cycle is done');
         observer.next(direction);
         observer.complete();

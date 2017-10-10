@@ -12,6 +12,8 @@ class Data {
   static eof = false;
   static position = 0;
 
+  static lastIndex = null;
+
   static setSource(datasource: any) {
     if (!datasource || typeof datasource !== 'object' || typeof datasource.get !== 'function') {
       throw new Error('Invalid datasource!');

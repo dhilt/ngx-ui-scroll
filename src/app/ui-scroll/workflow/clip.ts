@@ -6,47 +6,53 @@ class Clip {
 
   static run(direction) {
     if (direction === Direction.top) {
-      self.runTop();
+      return self.runTop();
     }
     if (direction === Direction.bottom) {
-      self.runBottom();
+      return self.runBottom();
     }
-    Data.position = Elements.viewport.scrollTop;
   }
 
   static runTop() {
     let viewportParams = Elements.viewport.getBoundingClientRect();
     let viewportTop = viewportParams.top;
     let delta = viewportParams.height * Data.padding;
-    let i, min, firstElementTop, lastElementBottom;
-    for (i = 0, min = 0; i < Data.items.length; i++) {
-      const item = Data.items[i];
-      if (min === i) {
-        if (item.invisible) {
-          min++;
-          continue;
+    let bottomLimit = viewportTop - delta;
+    let limit = Data.items.length - 1;
+    let i = 0, min = 0, lastElementBottom, cutHeight, found = -1;
+
+    // edge case: all items should be clipped
+    const lastItem = Data.items[limit];
+    lastElementBottom = lastItem.element.getBoundingClientRect().bottom;
+    if (lastElementBottom < bottomLimit) {
+      cutHeight = Math.abs(Data.items[0].element.getBoundingClientRect().top - lastElementBottom);
+      found = limit;
+    }
+    else {
+      for (i = 0; i <= limit; i++) {
+        const element = Data.items[i].element;
+        if(element.getBoundingClientRect().bottom > bottomLimit) {
+          found = i - 1;
+          break;
         }
       }
-      let elementParams = item.element.getBoundingClientRect();
-      if (elementParams.bottom < viewportTop - delta) {
-        if (i === min) {
-          firstElementTop = elementParams.top;
-        }
-        lastElementBottom = elementParams.bottom;
-        continue;
+      if(found >= 0) {
+        cutHeight = Data.items[found].element.getBoundingClientRect().bottom -
+          Data.items[0].element.getBoundingClientRect().top;
       }
-      if (i === min) {
-        break;
+    }
+
+    if(found >= 0) {
+      for (i = 0; i <= found; i++) {
+        Data.items[i].element.style.display = 'none';
       }
-      for (let j = i - 1; j >= min; j--) {
-        Data.items[j].element.style.display = 'none';
-      }
-      let cutHeight = lastElementBottom - firstElementTop;
       let paddingHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
       Elements.paddingTop.style.height = (paddingHeight + cutHeight) + 'px';
-      Data.items.splice(min, i);
+      Data.lastIndex = found === limit ? Data.items[limit].$index : null;
+      Data.items.splice(0, found + 1);
       return true;
     }
+
     return false;
   }
 
@@ -54,29 +60,42 @@ class Clip {
     let viewportParams = Elements.viewport.getBoundingClientRect();
     let viewportBottom = viewportParams.bottom;
     let delta = viewportParams.height * Data.padding;
+    let topLimit = viewportBottom + delta;
     let limit = Data.items.length - 1;
-    let i, firstElementTop, lastElementBottom;
-    for (i = limit; i >= 0; i--) {
-      let elementParams = Data.items[i].element.getBoundingClientRect();
-      if (elementParams.top > viewportBottom + delta) {
-        if (i === limit) {
-          lastElementBottom = elementParams.bottom;
+    let i, firstElementTop, lastElementBottom, cutHeight, found = -1;
+
+    // edge case: all items should be clipped
+    const firstItem = Data.items[0];
+    firstElementTop = firstItem.element.getBoundingClientRect().top;
+    if (firstElementTop > topLimit) {
+      cutHeight = Math.abs(Data.items[limit].element.getBoundingClientRect().bottom - firstElementTop);
+      found = 0;
+    }
+    else {
+      for (i = limit; i >= 0; i--) {
+        const element = Data.items[i].element;
+        if(element.getBoundingClientRect().top < topLimit) {
+          found = i + 1;
+          break;
         }
-        firstElementTop = elementParams.top;
-        continue;
       }
-      if (i === limit) {
-        break;
+      if(found >= 0) {
+        cutHeight = Data.items[limit].element.getBoundingClientRect().bottom -
+          Data.items[found].element.getBoundingClientRect().top;
       }
-      for (let j = i + 1; j <= limit; j++) {
-        Data.items[j].element.style.display = 'none';
+    }
+
+    if(found >= 0) {
+      for (i = found; i <= limit; i++) {
+        Data.items[i].element.style.display = 'none';
       }
-      let cutHeight = lastElementBottom - firstElementTop;
       let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
       Elements.paddingBottom.style.height = (paddingHeight + cutHeight) + 'px';
-      Data.items.splice(i + 1, limit - i);
+      Data.lastIndex = found === 0 ? Data.items[0].$index : null;
+      Data.items.splice(found, limit + 1 - found);
       return true;
     }
+
     return false;
   }
 

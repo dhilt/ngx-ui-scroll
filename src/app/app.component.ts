@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-root',
@@ -9,21 +10,21 @@ export class AppComponent {
   private title = 'app works!';
 
   private datasource = {
-      get: (index: number, count: number, success) => {
+      get: (index: number, count: number) => Observable.create(observer => {
         console.log('requested index = ' + index + ', count = ' + count);
         setTimeout(() => {
-          let result = [];
+          let data = [];
           for (let i = index; i <= index + count - 1; i++) {
-            result.push({
+            data.push({
               id: i,
               text: "item #" + i
             });
           }
-          console.log('resolved ' + result.length + ' items (index = ' + index + ', count = ' + count + ')');
-          success(result);
+          console.log('resolved ' + data.length + ' items (index = ' + index + ', count = ' + count + ')');
+          observer.next(data);
         }, 50);
-      }
-    };
+      })
+  };
 
   constructor() {
   }

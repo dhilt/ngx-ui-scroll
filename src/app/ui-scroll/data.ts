@@ -12,6 +12,8 @@ class Data {
   static eof = false;
   static position = 0;
 
+  static lastIndex = null;
+
   static setSource(datasource: any) {
     if (!datasource || typeof datasource !== 'object' || typeof datasource.get !== 'function') {
       throw new Error('Invalid datasource!');
@@ -26,6 +28,38 @@ class Data {
 
   static getItemId(index: number): string {
     return 'i-' + self.scrollerId + '-' + index.toString();
+  }
+
+  static getFirstVisibleItemIndex() {
+    for(let i = 0; i < self.items.length; i++) {
+      if(!self.items[i].invisible) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  static getFirstVisibleItem() {
+    const index = self.getFirstVisibleItemIndex();
+    if(index >= 0) {
+      return self.items[index];
+    }
+  }
+
+  static getLastVisibleItemIndex() {
+    for(let i = self.items.length - 1; i >= 0; i--) {
+      if(!self.items[i].invisible) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  static getLastVisibleItem() {
+    const index = self.getLastVisibleItemIndex();
+    if(index >= 0) {
+      return self.items[index];
+    }
   }
 
   static initialize(context) {

@@ -19,31 +19,33 @@ class Clip {
     let delta = viewportParams.height * Data.padding;
     let bottomLimit = viewportTop - delta;
     let limit = Data.items.length - 1;
-    let i = 0, min = 0, lastElementBottom, cutHeight, found = -1;
+    let i = 0, min = 0, cutHeight, found = -1;
+
+    const startIndex = Data.getFirstVisibleItemIndex();
+    const lastItem = Data.items[limit];
+    const lastElementBottom = lastItem.element.getBoundingClientRect().bottom;
 
     // edge case: all items should be clipped
-    const lastItem = Data.items[limit];
-    lastElementBottom = lastItem.element.getBoundingClientRect().bottom;
     if (lastElementBottom < bottomLimit) {
-      cutHeight = Math.abs(Data.items[0].element.getBoundingClientRect().top - lastElementBottom);
+      cutHeight = Math.abs(Data.items[startIndex].element.getBoundingClientRect().top - lastElementBottom);
       found = limit;
     }
     else {
-      for (i = 0; i <= limit; i++) {
-        const element = Data.items[i].element;
-        if(element.getBoundingClientRect().bottom > bottomLimit) {
+      for (i = startIndex; i <= limit; i++) {
+        const item = Data.items[i];
+        if(item.element.getBoundingClientRect().bottom > bottomLimit) {
           found = i - 1;
           break;
         }
       }
-      if(found >= 0) {
+      if(found >= startIndex) {
         cutHeight = Data.items[found].element.getBoundingClientRect().bottom -
-          Data.items[0].element.getBoundingClientRect().top;
+          Data.items[startIndex].element.getBoundingClientRect().top;
       }
     }
 
-    if(found >= 0) {
-      for (i = 0; i <= found; i++) {
+    if(found >= startIndex) {
+      for (i = startIndex; i <= found; i++) {
         Data.items[i].element.style.display = 'none';
       }
       let paddingHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
@@ -62,31 +64,33 @@ class Clip {
     let delta = viewportParams.height * Data.padding;
     let topLimit = viewportBottom + delta;
     let limit = Data.items.length - 1;
-    let i, firstElementTop, lastElementBottom, cutHeight, found = -1;
+    let i, cutHeight, found = -1;
+
+    const endIndex = Data.getLastVisibleItemIndex();
+    const firstItem = Data.items[0];
+    const firstElementTop = firstItem.element.getBoundingClientRect().top;
 
     // edge case: all items should be clipped
-    const firstItem = Data.items[0];
-    firstElementTop = firstItem.element.getBoundingClientRect().top;
     if (firstElementTop > topLimit) {
-      cutHeight = Math.abs(Data.items[limit].element.getBoundingClientRect().bottom - firstElementTop);
+      cutHeight = Math.abs(Data.items[endIndex].element.getBoundingClientRect().bottom - firstElementTop);
       found = 0;
     }
     else {
-      for (i = limit; i >= 0; i--) {
+      for (i = 0; i <= endIndex; i++) {
         const element = Data.items[i].element;
-        if(element.getBoundingClientRect().top < topLimit) {
-          found = i + 1;
+        if(element.getBoundingClientRect().top > topLimit) {
+          found = i;
           break;
         }
       }
       if(found >= 0) {
-        cutHeight = Data.items[limit].element.getBoundingClientRect().bottom -
+        cutHeight = Data.items[endIndex].element.getBoundingClientRect().bottom -
           Data.items[found].element.getBoundingClientRect().top;
       }
     }
 
     if(found >= 0) {
-      for (i = found; i <= limit; i++) {
+      for (i = found; i <= endIndex; i++) {
         Data.items[i].element.style.display = 'none';
       }
       let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;

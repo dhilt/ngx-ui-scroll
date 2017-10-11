@@ -20,12 +20,12 @@ class Fetch {
     if (self.pendingBottom) {
       return false;
     }
-    if (!Data.items.length) {
+    const lastItem = Data.getLastVisibleItem();
+    if (!lastItem) {
       return true;
     }
-    const lastElement = Data.items[Data.items.length - 1].element;
     const viewportBottom = Elements.viewport.getBoundingClientRect().bottom;
-    const lastElementBottom = lastElement.getBoundingClientRect().bottom;
+    const lastElementBottom = lastItem.element.getBoundingClientRect().bottom;
     return lastElementBottom <= viewportBottom;
   }
 
@@ -33,11 +33,12 @@ class Fetch {
     if (self.pendingTop) {
       return false;
     }
-    if (!Data.items.length) {
+    const firstItem = Data.getFirstVisibleItem();
+    if (!firstItem) {
       return true;
     }
     const viewportTop = Elements.viewport.getBoundingClientRect().top;
-    const firstElementTop = Data.items[0].element.getBoundingClientRect().top;
+    const firstElementTop = firstItem.element.getBoundingClientRect().top;
     return firstElementTop >= viewportTop;
   }
 

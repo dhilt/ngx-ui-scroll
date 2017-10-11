@@ -30,6 +30,38 @@ class Data {
     return 'i-' + self.scrollerId + '-' + index.toString();
   }
 
+  static getFirstVisibleItemIndex() {
+    for(let i = 0; i < self.items.length; i++) {
+      if(!self.items[i].invisible) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  static getFirstVisibleItem() {
+    const index = self.getFirstVisibleItemIndex();
+    if(index >= 0) {
+      return self.items[index];
+    }
+  }
+
+  static getLastVisibleItemIndex() {
+    for(let i = self.items.length - 1; i >= 0; i--) {
+      if(!self.items[i].invisible) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  static getLastVisibleItem() {
+    const index = self.getLastVisibleItemIndex();
+    if(index >= 0) {
+      return self.items[index];
+    }
+  }
+
   static initialize(context) {
     self.setSource(context.datasource);
     self.setScrollerId();

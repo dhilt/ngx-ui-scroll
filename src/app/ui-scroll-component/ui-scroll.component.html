@@ -3,7 +3,7 @@
   <div [style.position]="item.invisible ? 'fixed' : null" [style.left]="item.invisible ? '-99999px' : null" >
     <ng-template
       [ngTemplateOutlet]="templateVariable"
-      [ngOutletContext]="{
+      [ngTemplateOutletContext]="{
         item: item.scope,
         index: item.$index
      }">

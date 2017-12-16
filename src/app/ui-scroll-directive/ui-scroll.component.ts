@@ -34,17 +34,18 @@ export class UiScrollComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.datasource = this.uiScrollService.getDatasource();
-    Elements.initialize(this.elementRef);
-    Data.initialize(this);
-    Workflow.initialize(this);
-    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) =>
-      debouncedRound(() => Workflow.run(event), 25)
-    );
+    console.log(this.templateVariable) // ! undefined
+    // Elements.initialize(this.elementRef);
+    // Data.initialize(this);
+    // Workflow.initialize(this);
+    // this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) =>
+    //   debouncedRound(() => Workflow.run(event), 25)
+    // );
     // Workflow.run(Direction.bottom);
     // Workflow.run(Direction.top);
-    console.log(this);
-    console.log(this.elementRef.nativeElement.innerHTML.trim());
-    console.log(this.templateVariable);  // Here should be info from app.component.html..?
+    // console.log(this);
+    // console.log(this.elementRef.nativeElement.innerHTML.trim());
+    // console.log(this.templateVariable);  // Here should be info from app.component.html..?
   }
 
   ngOnDestroy() {

@@ -1,8 +1,14 @@
 <div data-padding-top></div>
+<div *ngFor="let item of datasource.list" id="{{item}}">
+  {{item}}
+  <ng-template
+    [ngTemplateOutlet]="templateVariable"
+    [ngTemplateOutletContext]="{
+      item: item
+   }">
+  </ng-template>
+</div>
 <!-- <div *ngFor="let item of getItems()" id="{{getItemId(item.$index)}}">
-  {{item.$index}}
-</div> -->
-<div *ngFor="let item of getItems()" id="{{getItemId(item.$index)}}">
   <div [style.position]="item.invisible ? 'fixed' : null" [style.left]="item.invisible ? '-99999px' : null" >
     <ng-template
       [ngTemplateOutlet]="templateVariable"
@@ -12,6 +18,6 @@
      }">
     </ng-template>
   </div>
-</div>
+</div> -->
 <ng-content></ng-content>
 <div data-padding-bottom></div>

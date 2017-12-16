@@ -11,21 +11,22 @@ export class AppComponent {
   private test: Boolean = true;
 
   private datasource = {
-    test: [1,2,3,4,5,6,7,8,7,6,5,4,3,2,1,0],
-    get: (index: number, count: number) => Observable.create(observer => {
-      console.log('requested index = ' + index + ', count = ' + count);
-      setTimeout(() => {
-        let data = [];
-        for (let i = index; i <= index + count - 1; i++) {
-          data.push({
-            id: i,
-            text: "item #" + i
-          });
-        }
-        console.log('resolved ' + data.length + ' items (index = ' + index + ', count = ' + count + ')');
-        observer.next(data);
-      }, 50);
-    })
+    list: [1,2,3,4,5,6,7,8,9]
+    // test: [1,2,3,4,5,6,7,8,7,6,5,4,3,2,1,0],
+    // get: (index: number, count: number) => Observable.create(observer => {
+    //   console.log('requested index = ' + index + ', count = ' + count);
+    //   setTimeout(() => {
+    //     let data = [];
+    //     for (let i = index; i <= index + count - 1; i++) {
+    //       data.push({
+    //         id: i,
+    //         text: "item #" + i
+    //       });
+    //     }
+    //     console.log('resolved ' + data.length + ' items (index = ' + index + ', count = ' + count + ')');
+    //     observer.next(data);
+    //   }, 50);
+    // })
   };
 
   constructor() {

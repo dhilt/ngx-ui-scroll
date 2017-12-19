@@ -1,10 +1,9 @@
 <div data-padding-top></div>
 <div *ngFor="let item of datasource.list" id="{{item}}">
-  {{item}}
   <ng-template
     [ngTemplateOutlet]="templateVariable"
     [ngTemplateOutletContext]="{
-      item: item
+      spec_item: item
    }">
   </ng-template>
 </div>

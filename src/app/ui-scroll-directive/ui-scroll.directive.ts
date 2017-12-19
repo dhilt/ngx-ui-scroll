@@ -8,7 +8,7 @@ export class UiScrollDirective {
   private param;
 
   constructor(
-      private uiScrollService: UiScrollService, 
+      private uiScrollService: UiScrollService,
       private templateRef: TemplateRef<any>,
       private viewContainer: ViewContainerRef,
       private resolver: ComponentFactoryResolver) {
@@ -17,6 +17,7 @@ export class UiScrollDirective {
   @Input() set uiScrollOf(data) {
     this.param = data;
     this.uiScrollService.setDatasource(data);
+    this.uiScrollService.setTemplateRef(this.templateRef);
     //this.viewContainer.createEmbeddedView(this.templateRef);
   }
 

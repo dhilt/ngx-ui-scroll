@@ -11,9 +11,7 @@ import { UiScrollDirective } from './ui-scroll-directive/ui-scroll.directive';
     UiScrollComponent,
     UiScrollDirective
   ],
-  imports: [
-    BrowserModule
-  ],
+  imports: [BrowserModule],
   entryComponents: [UiScrollComponent],
   bootstrap: [AppComponent]
 })

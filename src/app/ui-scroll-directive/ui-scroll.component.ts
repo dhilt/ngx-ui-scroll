@@ -15,7 +15,8 @@ import Data from './modules/data';
 @Component({
   selector: 'ui-scroll',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './ui-scroll.component.html'
+  templateUrl: './ui-scroll.component.html',
+  styleUrls: [`./ui-scroll.component.css`]
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 
@@ -30,17 +31,14 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Elements.initialize(this.elementRef);
-    // Data.initialize(this);
-    // Workflow.initialize(this);
-    // this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) =>
-    //   debouncedRound(() => Workflow.run(event), 25)
-    // );
-    // Workflow.run(Direction.bottom);
-    // Workflow.run(Direction.top);
-    // console.log(this);
-    // console.log(this.elementRef.nativeElement.innerHTML.trim());
-    // console.log(this.templateVariable);  // Here should be info from app.component.html..?
+    Elements.initialize(this.elementRef);
+    Data.initialize(this);
+    Workflow.initialize(this);
+    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) =>
+      debouncedRound(() => Workflow.run(event), 25)
+    );
+    Workflow.run(Direction.bottom);
+    Workflow.run(Direction.top);
   }
 
   ngOnDestroy() {

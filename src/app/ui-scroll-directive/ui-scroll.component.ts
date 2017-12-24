@@ -2,8 +2,6 @@ import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy
 import {ContentChild, TemplateRef, ElementRef, Renderer2} from '@angular/core';
 import {HostListener} from '@angular/core';
 
-import {UiScrollService} from './ui-scroll.service';
-
 import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -21,21 +19,17 @@ import Data from './modules/data';
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 
-  @ContentChild(TemplateRef) templateVariable: TemplateRef<any>;
   private onScrollListener: Function;
-  private datasource;
+  public templateVariable;
+  public datasource;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
-    private uiScrollService: UiScrollService,
     private elementRef: ElementRef,
     private renderer: Renderer2
   ) {}
 
   ngOnInit() {
-    this.datasource = this.uiScrollService.getDatasource();
-    this.templateVariable = this.uiScrollService.getTemplateRef();
-    console.log(this.templateVariable);
     // Elements.initialize(this.elementRef);
     // Data.initialize(this);
     // Workflow.initialize(this);

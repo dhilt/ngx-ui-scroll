@@ -7,21 +7,7 @@ class Data {
   static bufferSize = 5;
   static padding = 0.5; // of viewport height
 
-  // static items = [];
-  static items = [  // remove this later...
-    {$index: 1, invisible: false, scope: 'text?', element: {
-      getBoundingClientRect: () => ({top: 1, bottom: 1}),
-      style: {display: 'block'}
-    }},
-    {$index: 2, invisible: false, scope: 'text?', element: {
-      getBoundingClientRect: () => ({top: 1, bottom: 1}),
-      style: {display: 'block'}
-    }},
-    {$index: 3, invisible: false, scope: 'text?', element: {
-      getBoundingClientRect: () => ({top: 1, bottom: 1}),
-      style: {display: 'block'}
-    }}
-  ];
+  static items = [];
   static bof = false;
   static eof = false;
   static position = 0;

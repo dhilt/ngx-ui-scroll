@@ -12,7 +12,7 @@
     <ng-template
       [ngTemplateOutlet]="templateVariable"
       [ngTemplateOutletContext]="{
-        $implicit: item.$index,
+        $implicit: item.scope,
         index: item.$index
      }">
     </ng-template>

@@ -2,33 +2,33 @@ import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy
 import {ContentChild, TemplateRef, ElementRef, Renderer2} from '@angular/core';
 import {HostListener} from '@angular/core';
 
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
 
-import Workflow from './workflow';
-import Elements from './elements';
-import Data from './data';
-import Direction from './direction';
-
-import debouncedRound from './debouncedRound';
+import debouncedRound from './modules/debouncedRound';
+import Direction from './modules/direction';
+import Workflow from './modules/workflow';
+import Elements from './modules/elements';
+import Data from './modules/data';
 
 @Component({
   selector: 'ui-scroll',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ui-scroll.component.html',
-  styleUrls: ['./ui-scroll.component.css']
+  styleUrls: [`./ui-scroll.component.css`]
 })
-
 export class UiScrollComponent implements OnInit, OnDestroy {
 
-  @Input() datasource;
-  @ContentChild(TemplateRef) templateVariable: TemplateRef<any>;
+  private onScrollListener: Function;
+  public templateVariable;
+  public datasource;
 
-  onScrollListener: Function;
-
-  constructor(private changeDetector: ChangeDetectorRef, private elementRef: ElementRef, private renderer: Renderer2) {
-  }
+  constructor(
+    private changeDetector: ChangeDetectorRef,
+    private elementRef: ElementRef,
+    private renderer: Renderer2
+  ) {}
 
   ngOnInit() {
     Elements.initialize(this.elementRef);
@@ -44,5 +44,4 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.onScrollListener();
   }
-
 }

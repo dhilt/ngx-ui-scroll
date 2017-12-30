@@ -1,10 +1,5 @@
-import {Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy, Input} from '@angular/core';
-import {ContentChild, TemplateRef, ElementRef, Renderer2} from '@angular/core';
-import {HostListener} from '@angular/core';
-
-import {AsyncSubject} from 'rxjs/AsyncSubject';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, TemplateRef, ChangeDetectorRef } from '@angular/core';
+import { ElementRef, Renderer2 } from '@angular/core';
 
 import debouncedRound from './modules/debouncedRound';
 import Direction from './modules/direction';
@@ -21,7 +16,7 @@ import Data from './modules/data';
 export class UiScrollComponent implements OnInit, OnDestroy {
 
   private onScrollListener: Function;
-  public templateVariable;
+  public template: TemplateRef<any>;
   public datasource;
 
   constructor(

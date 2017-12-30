@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { UiScrollComponent } from './ui-scroll.component';
-import { UiScrollDirective } from './ui-scroll.directive';
+import { UiScrollComponent } from '../component/ui-scroll.component';
+import { UiScrollDirective } from '../directive/ui-scroll.directive';
 
 @NgModule({
   declarations: [

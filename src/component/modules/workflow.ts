@@ -52,7 +52,7 @@ const Workflow = {
     }
     else {
       // scroll event
-      console.log('FIRE!')
+      console.log('FIRE!');
       direction = Direction.byScrollTop();
     }
     if(!Direction.isValid(direction)) {
@@ -64,7 +64,7 @@ const Workflow = {
 
     run();
   }
-}
+};
 
 export default Workflow
 

@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { UiScrollModule } from './ui-scroll-directive/ui-scroll.module';
+import { UiScrollModule } from './../../src/ui-scroll.module';
 
 @NgModule({
   declarations: [AppComponent],

@@ -14,7 +14,6 @@ export class UiScrollDirective {
 
   @Input() set uiScrollOf(data) {
     this.param = data;
-    //this.viewContainer.createEmbeddedView(this.templateRef);
   }
 
   ngOnInit() {

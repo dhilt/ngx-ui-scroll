@@ -2,12 +2,6 @@
   {{title}}
 </h1>
 
-<!--ui-scroll [datasource]="datasource" class="viewport">
-  <ng-template let-myItem="item" let-index="index">
-    <span>{{index}}</span> : <b>{{myItem?.text}}</b>
-  </ng-template>
-</ui-scroll-->
-
 <div *uiScroll="let item of datasource">
   <span>{{item.id}}</span> : <b>{{item.text}}</b>
 </div>

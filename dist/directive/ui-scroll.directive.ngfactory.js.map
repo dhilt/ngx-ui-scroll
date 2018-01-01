@@ -1,1 +1,0 @@
-{"version":3,"file":"ui-scroll.directive.ngfactory.js","sourceRoot":"","sources":["../../src/directive/ui-scroll.directive.ngfactory.ts"],"names":[],"mappings":"","sourcesContent":["import * as i0 from '@angular/core';\ni0.ComponentFactory;\n"]}

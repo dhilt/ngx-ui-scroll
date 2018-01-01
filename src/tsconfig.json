@@ -14,7 +14,7 @@
       "rxjs/*": ["node_modules/rxjs/*"]
     },
     "rootDir": ".",
-    "outDir": "../dist",
+    "outDir": "../compile",
     "sourceMap": true,
     "inlineSources": true,
     "target": "es5",

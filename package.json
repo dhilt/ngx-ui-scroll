@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
     "transpile": "ngc -p src",
     "package": "rollup -c",
-    "minify": "uglifyjs dist/bundles/ngx-ui-scroll.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/ngx-ui-scroll.umd.min.js",
+    "minify": "uglifyjs dist/ngx-ui-scroll.umd.js --screw-ie8 --compress --mangle --comments --output dist/ngx-ui-scroll.umd.min.js",
     "build": "npm run transpile && npm run package && npm run minify"
   },
   "private": true,

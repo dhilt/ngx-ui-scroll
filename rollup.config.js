@@ -1,7 +1,7 @@
 export default {
-  input: 'dist/index.js',
+  input: 'compile/index.js',
   output: {
-    file: 'dist/bundles/ngx-ui-scroll.umd.js',
+    file: 'dist/ngx-ui-scroll.umd.js',
     sourcemap: false,
     format: 'umd',
     name: 'UiScroll',

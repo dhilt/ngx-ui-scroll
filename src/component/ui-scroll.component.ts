@@ -16,6 +16,7 @@ import Data from './modules/data';
 export class UiScrollComponent implements OnInit, OnDestroy {
 
   private onScrollListener: Function;
+  public getItems: Function;
   public template: TemplateRef<any>;
   public datasource;
 

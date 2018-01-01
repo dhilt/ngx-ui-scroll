@@ -5,16 +5,18 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "transpile": "ngc -p src",
+    "package": "rollup -c",
+    "minify": "uglifyjs dist/bundles/ngx-ui-scroll.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/ngx-ui-scroll.umd.min.js",
+    "build": "npm run transpile && npm run package && npm run minify"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "^5.1.2",
     "@angular/common": "^5.1.2",
-    "@angular/compiler": "^5.1.2",
     "@angular/core": "^5.1.2",
     "@angular/forms": "^5.1.2",
     "@angular/http": "^5.1.2",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@angular/cli": "^1.6.2",
+    "@angular/compiler": "^5.1.2",
     "@angular/compiler-cli": "^5.1.2",
     "@angular/language-service": "^5.1.2",
     "@types/jasmine": "~2.5.53",
@@ -42,8 +45,10 @@
     "karma-jasmine": "^1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.1.2",
+    "rollup": "^0.53.2",
     "ts-node": "~3.2.0",
     "tslint": "~5.7.0",
-    "typescript": "~2.4.2"
+    "typescript": "^2.4.2",
+    "uglify-js": "^3.3.4"
   }
 }

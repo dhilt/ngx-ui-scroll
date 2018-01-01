@@ -11,7 +11,8 @@
     "transpile": "ngc -p src",
     "package": "rollup -c",
     "minify": "uglifyjs dist/ngx-ui-scroll.umd.js --screw-ie8 --compress --mangle --comments --output dist/ngx-ui-scroll.umd.min.js",
-    "build": "npm run transpile && npm run package && npm run minify"
+    "copy": "cpx './package-dist.json' dist && renamer --find 'package-dist.json' --replace 'package.json' ./dist/*",
+    "build": "npm run transpile && npm run package && npm run minify && npm run copy"
   },
   "private": true,
   "dependencies": {
@@ -36,6 +37,7 @@
     "@types/jasminewd2": "~2.0.2",
     "@types/node": "^6.0.95",
     "codelyzer": "~3.2.0",
+    "cpx": "^1.5.0",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
@@ -45,6 +47,7 @@
     "karma-jasmine": "^1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "~5.1.2",
+    "renamer": "^0.6.1",
     "rollup": "^0.53.2",
     "ts-node": "~3.2.0",
     "tslint": "~5.7.0",

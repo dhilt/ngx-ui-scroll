@@ -5,10 +5,15 @@ export default {
     sourcemap: false,
     format: 'umd',
     name: 'UiScroll',
+    external: [
+      '@angular/core',
+      '@angular/common',
+      'rxjs/Observable'
+    ],
     globals: {  // not correct. It should be fixed
       '@angular/core': 'ng.core',
       '@angular/common': 'ng.common',
-      'rxjs/Observable': 'Rx'
+      'rxjs/Rx': 'Rx'
     }
   }
 }

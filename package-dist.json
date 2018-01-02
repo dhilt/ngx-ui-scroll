@@ -3,8 +3,6 @@
 	"version": "0.0.0",
 	"description": "",
 	"main": "ngx-ui-scroll.umd.min.js",
-	"module": "index.js",
-	"typings": "index.d.ts",
 	"keywords": [
 		"angular",
 		"angular2",

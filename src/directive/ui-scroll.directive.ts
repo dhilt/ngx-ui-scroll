@@ -1,9 +1,9 @@
-import { Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolver, OnInit } from '@angular/core';
 
 import { UiScrollComponent } from '../component/ui-scroll.component';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
-export class UiScrollDirective {
+export class UiScrollDirective implements OnInit {
   private datasource;
 
   constructor(

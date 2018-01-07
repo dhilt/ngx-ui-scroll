@@ -1,6 +1,6 @@
-import Data from '../data'
-import Elements from '../elements'
-import Direction from '../direction'
+import Data from '../data';
+import Elements from '../elements';
+import Direction from '../direction';
 
 class Clip {
 
@@ -14,12 +14,12 @@ class Clip {
   }
 
   static runTop() {
-    let viewportParams = Elements.viewport.getBoundingClientRect();
-    let viewportTop = viewportParams.top;
-    let delta = viewportParams.height * Data.padding;
-    let bottomLimit = viewportTop - delta;
-    let limit = Data.items.length - 1;
-    let i = 0, min = 0, cutHeight, found = -1;
+    const viewportParams = Elements.viewport.getBoundingClientRect();
+    const viewportTop = viewportParams.top;
+    const delta = viewportParams.height * Data.padding;
+    const bottomLimit = viewportTop - delta;
+    const limit = Data.items.length - 1;
+    let i = 0, cutHeight, found = -1;
 
     const startIndex = Data.getFirstVisibleItemIndex();
     const lastItem = Data.items[limit];
@@ -29,26 +29,25 @@ class Clip {
     if (lastElementBottom < bottomLimit) {
       cutHeight = Math.abs(Data.items[startIndex].element.getBoundingClientRect().top - lastElementBottom);
       found = limit;
-    }
-    else {
+    } else {
       for (i = startIndex; i <= limit; i++) {
         const item = Data.items[i];
-        if(item.element.getBoundingClientRect().bottom > bottomLimit) {
+        if (item.element.getBoundingClientRect().bottom > bottomLimit) {
           found = i - 1;
           break;
         }
       }
-      if(found >= startIndex) {
+      if (found >= startIndex) {
         cutHeight = Data.items[found].element.getBoundingClientRect().bottom -
           Data.items[startIndex].element.getBoundingClientRect().top;
       }
     }
 
-    if(found >= startIndex) {
+    if (found >= startIndex) {
       for (i = startIndex; i <= found; i++) {
         Data.items[i].element.style.display = 'none';
       }
-      let paddingHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
+      const paddingHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
       Elements.paddingTop.style.height = (paddingHeight + cutHeight) + 'px';
       Data.lastIndex = found === limit ? Data.items[limit].$index : null;
       Data.items.splice(0, found + 1);
@@ -59,11 +58,11 @@ class Clip {
   }
 
   static runBottom() {
-    let viewportParams = Elements.viewport.getBoundingClientRect();
-    let viewportBottom = viewportParams.bottom;
-    let delta = viewportParams.height * Data.padding;
-    let topLimit = viewportBottom + delta;
-    let limit = Data.items.length - 1;
+    const viewportParams = Elements.viewport.getBoundingClientRect();
+    const viewportBottom = viewportParams.bottom;
+    const delta = viewportParams.height * Data.padding;
+    const topLimit = viewportBottom + delta;
+    const limit = Data.items.length - 1;
     let i, cutHeight, found = -1;
 
     const endIndex = Data.getLastVisibleItemIndex();
@@ -74,26 +73,25 @@ class Clip {
     if (firstElementTop > topLimit) {
       cutHeight = Math.abs(Data.items[endIndex].element.getBoundingClientRect().bottom - firstElementTop);
       found = 0;
-    }
-    else {
+    } else {
       for (i = 0; i <= endIndex; i++) {
         const element = Data.items[i].element;
-        if(element.getBoundingClientRect().top > topLimit) {
+        if (element.getBoundingClientRect().top > topLimit) {
           found = i;
           break;
         }
       }
-      if(found >= 0) {
+      if (found >= 0) {
         cutHeight = Data.items[endIndex].element.getBoundingClientRect().bottom -
           Data.items[found].element.getBoundingClientRect().top;
       }
     }
 
-    if(found >= 0) {
+    if (found >= 0) {
       for (i = found; i <= endIndex; i++) {
         Data.items[i].element.style.display = 'none';
       }
-      let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
+      const paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
       Elements.paddingBottom.style.height = (paddingHeight + cutHeight) + 'px';
       Data.lastIndex = found === 0 ? Data.items[0].$index : null;
       Data.items.splice(found, limit + 1 - found);
@@ -106,4 +104,4 @@ class Clip {
 }
 
 const self = Clip;
-export default Clip
+export default Clip;

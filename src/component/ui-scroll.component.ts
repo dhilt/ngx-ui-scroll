@@ -8,7 +8,7 @@ import Elements from './modules/elements';
 import Data from './modules/data';
 
 @Component({
-  selector: 'ui-scroll',
+  selector: 'app-ui-scroll',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ui-scroll.component.html',
   styleUrls: [`./ui-scroll.component.css`]

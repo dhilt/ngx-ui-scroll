@@ -1,8 +1,11 @@
 {
-	"name": "ngx-ui-scroll-app",
+	"name": "ngx-ui-scroll",
 	"version": "0.0.0",
 	"description": "",
-	"main": "ngx-ui-scroll.umd.min.js",
+	"main": "./bundles/ngx-ui-scroll.umd.js",
+	"module": "./esm5/ngx-ui-scroll.js",
+	"es2015": "./esm2015/ngx-ui-scroll.js",
+	"typings": "./ngx-ui-scroll.d.ts",
 	"keywords": [
 		"angular",
 		"angular2",

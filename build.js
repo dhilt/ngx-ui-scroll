@@ -1,5 +1,6 @@
 "use strict";
 
+const fs = require('fs');
 const shell = require('shelljs');
 const chalk = require('chalk');
 
@@ -69,5 +70,10 @@ shell.rm(`-Rf`, `${NPM_DIR}/src/**/*.js`);
 shell.rm(`-Rf`, `${NPM_DIR}/src/**/*.js.map`);
 
 shell.cp(`-Rf`, [`package-dist.json`, `LICENSE`, `README.md`], `${NPM_DIR}`);
+fs.rename('./dist/package-dist.json', './dist/package.json', function(err) {
+  if (err) {
+    shell.echo(chalk.red(`Error: Renaming package-dist.json to package.json failed`));
+  }
+});
 
 shell.echo(chalk.green(`End building`));

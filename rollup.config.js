@@ -8,11 +8,11 @@ const globals = {
 };
 
 export default {
+  external: Object.keys(globals),
   output: {
     format: 'umd',
     name: 'ng.uiScroll',
     globals: globals,
-    external: Object.keys(globals),
     sourcemap: true,
     plugins: [resolve(), sourcemaps()],
     onwarn: () => { return },

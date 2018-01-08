@@ -1,33 +1,33 @@
 {
-	"name": "ngx-ui-scroll",
-	"version": "0.0.0",
-	"description": "",
-	"main": "./bundles/ngx-ui-scroll.umd.js",
-	"module": "./esm5/ngx-ui-scroll.js",
-	"es2015": "./esm2015/ngx-ui-scroll.js",
-	"typings": "./ngx-ui-scroll.d.ts",
-	"keywords": [
-		"angular",
-		"angular2",
-		"angular 2"
-	],
-	"author": {
-		"name": "",
-		"email": ""
-	},
-	"license": "",
-	"repository": {
-		"type": "git",
-		"url": ""
-	},
-	"homepage": "",
-	"bugs": {
-		"url": ""
-	},
-	"peerDependencies": {
-		"@angular/core": "^5.1.2",
+  "name": "ngx-ui-scroll",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./bundles/ngx-ui-scroll.umd.js",
+  "module": "./esm5/ngx-ui-scroll.js",
+  "es2015": "./esm2015/ngx-ui-scroll.js",
+  "typings": "./ngx-ui-scroll.d.ts",
+  "keywords": [
+    "angular",
+    "javascript",
+    "typescript"
+  ],
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "license": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "homepage": "",
+  "bugs": {
+    "url": ""
+  },
+  "peerDependencies": {
+    "@angular/core": "^5.1.2",
     "@angular/common": "^5.1.2",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.14"
-	}
+  }
 }

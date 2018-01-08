@@ -1,1 +1,1 @@
-export { UiScrollModule } from './src/module/ui-scroll.module';
+export { UiScrollModule } from './src/ngx-ui-scroll';

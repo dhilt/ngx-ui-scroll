@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "test-lib": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-0.0.0.tgz && npm run start",
     "build": "node build.js",
     "start": "ng serve --delete-output-path=false",
     "test": "ng test",
@@ -21,6 +22,7 @@
     "@angular/platform-browser-dynamic": "^5.1.2",
     "@angular/router": "^5.1.2",
     "core-js": "^2.5.3",
+    "ngx-ui-scroll": "file:ngx-ui-scroll-0.0.0.tgz",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.14"
   },

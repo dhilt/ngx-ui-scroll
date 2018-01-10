@@ -11,7 +11,7 @@ import { UiScrollDirective } from '../directive/ui-scroll.directive';
   ],
   imports: [CommonModule],
   entryComponents: [UiScrollComponent],
-  exports: [UiScrollDirective],
+  exports: [UiScrollDirective, CommonModule],
   providers: []
 })
 export class UiScrollModule { }

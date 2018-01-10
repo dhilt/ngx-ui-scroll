@@ -9,6 +9,7 @@
     },
     "outDir": "dist",
     "declaration": true,
+    "strict": true,
     "stripInternal": true,
     "experimentalDecorators": true,
     "strictNullChecks": false,

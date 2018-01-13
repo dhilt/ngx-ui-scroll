@@ -2,25 +2,24 @@ let timer = null;
 let next = null;
 
 const runTimer = (delay) => {
-    timer = setTimeout(() => {
+  timer = setTimeout(() => {
     timer = null;
-    if(next) {
+    if (next) {
       next();
       next = null;
       runTimer(delay);
     }
-  }, delay)
+  }, delay);
 };
 
 const debouncedRound = (cb, delay) => {
-  if(!timer) {
+  if (!timer) {
     cb();
-  }
-  else {
+  } else {
     next = cb;
     clearTimeout(timer);
   }
   runTimer(delay);
 };
 
-export default debouncedRound
+export default debouncedRound;

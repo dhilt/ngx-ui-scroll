@@ -31,8 +31,8 @@ class Data {
   }
 
   static getFirstVisibleItemIndex() {
-    for(let i = 0; i < self.items.length; i++) {
-      if(!self.items[i].invisible) {
+    for (let i = 0; i < self.items.length; i++) {
+      if (!self.items[i].invisible) {
         return i;
       }
     }
@@ -41,14 +41,14 @@ class Data {
 
   static getFirstVisibleItem() {
     const index = self.getFirstVisibleItemIndex();
-    if(index >= 0) {
+    if (index >= 0) {
       return self.items[index];
     }
   }
 
   static getLastVisibleItemIndex() {
-    for(let i = self.items.length - 1; i >= 0; i--) {
-      if(!self.items[i].invisible) {
+    for (let i = self.items.length - 1; i >= 0; i--) {
+      if (!self.items[i].invisible) {
         return i;
       }
     }
@@ -57,7 +57,7 @@ class Data {
 
   static getLastVisibleItem() {
     const index = self.getLastVisibleItemIndex();
-    if(index >= 0) {
+    if (index >= 0) {
       return self.items[index];
     }
   }
@@ -73,4 +73,4 @@ class Data {
 }
 
 const self = Data;
-export default Data
+export default Data;

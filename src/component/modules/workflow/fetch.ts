@@ -1,6 +1,6 @@
-import Data from '../data'
-import Elements from '../elements'
-import Direction from '../direction'
+import Data from '../data';
+import Elements from '../elements';
+import Direction from '../direction';
 
 class Fetch {
 
@@ -47,9 +47,9 @@ class Fetch {
       if (self.shouldLoadTop()) {
         self.pendingTop = true;
         const start = (Data.items.length ?
-          Data.items[0].$index :
-          (Data.lastIndex !== null ? Data.lastIndex : Data.startIndex))
-           - Data.bufferSize;
+            Data.items[0].$index :
+            (Data.lastIndex !== null ? Data.lastIndex : Data.startIndex))
+          - Data.bufferSize;
         Data.source.get(start, Data.bufferSize).subscribe((result) => {
           self.pendingTop = false;
           Data.bof = result.length !== Data.bufferSize;
@@ -63,8 +63,7 @@ class Fetch {
 
           resolve(items);
         });
-      }
-      else {
+      } else {
         reject();
       }
     });
@@ -75,7 +74,7 @@ class Fetch {
       if (self.shouldLoadBottom()) {
         self.pendingBottom = true;
         const start = Data.items.length ?
-          Data.items[Data.items.length - 1].$index + 1 :
+        Data.items[Data.items.length - 1].$index + 1 :
           (Data.lastIndex !== null ? Data.lastIndex + 1 : Data.startIndex);
 
         Data.source.get(start, Data.bufferSize).subscribe((result) => {
@@ -91,8 +90,7 @@ class Fetch {
 
           resolve(items);
         });
-      }
-      else {
+      } else {
         reject();
       }
     });
@@ -101,4 +99,4 @@ class Fetch {
 }
 
 const self = Fetch;
-export default Fetch
+export default Fetch;

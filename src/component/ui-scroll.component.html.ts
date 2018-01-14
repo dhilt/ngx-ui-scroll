@@ -1,3 +1,4 @@
+export default `
 <div data-padding-top></div>
 <div *ngFor="let item of getItems()" id="{{getItemId(item.$index)}}">
   <div [style.position]="item.invisible ? 'fixed' : null" [style.left]="item.invisible ? '-99999px' : null" >
@@ -11,3 +12,4 @@
   </div>
 </div>
 <div data-padding-bottom></div>
+`

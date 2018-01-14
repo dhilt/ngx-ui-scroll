@@ -7,11 +7,14 @@ import Workflow from './modules/workflow';
 import Elements from './modules/elements';
 import Data from './modules/data';
 
+import template from './ui-scroll.component.html'
+import style from './ui-scroll.component.css'
+
 @Component({
   selector: 'app-ui-scroll',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './ui-scroll.component.html',
-  styleUrls: [`./ui-scroll.component.css`]
+  template,
+  styles: [style + '']
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 

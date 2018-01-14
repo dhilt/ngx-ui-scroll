@@ -1,3 +1,4 @@
+export default `
 :host {
   width: 200px;
   height: 120px;
@@ -5,3 +6,4 @@
   overflow-y: auto;
   display: block;
 }
+`

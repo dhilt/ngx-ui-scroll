@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { UiScrollModule } from '../../src/ngx-ui-scroll';
-//import { UiScrollModule } from '../../dist/bundles/ngx-ui-scroll.umd.js';
 //import { UiScrollModule } from 'ngx-ui-scroll';
 
 @NgModule({

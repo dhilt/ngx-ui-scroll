@@ -1,10 +1,10 @@
-import {Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolver, OnInit} from '@angular/core';
+import { Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolver, OnInit } from '@angular/core';
 
-import { UiScrollComponent } from './ui-scroll.component';
+import { UiScrollComponent } from '../component/ui-scroll.component';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
-export class UiScrollDirective {
-  private param;
+export class UiScrollDirective implements OnInit {
+  private datasource;
 
   constructor(
     private templateRef: TemplateRef<any>,
@@ -12,16 +12,15 @@ export class UiScrollDirective {
     private resolver: ComponentFactoryResolver
   ) {}
 
-  @Input() set uiScrollOf(data) {
-    this.param = data;
-    //this.viewContainer.createEmbeddedView(this.templateRef);
+  @Input() set uiScrollOf(datasource) {
+    this.datasource = datasource;
   }
 
   ngOnInit() {
     const templateView = this.templateRef.createEmbeddedView({});
     const compFactory = this.resolver.resolveComponentFactory(UiScrollComponent);
     const componentRef = this.viewContainer.createComponent(compFactory, null, this.viewContainer.injector, [templateView.rootNodes]);
-    componentRef.instance.datasource = this.param;
-    componentRef.instance.templateVariable = this.templateRef;
+    componentRef.instance.datasource = this.datasource;
+    componentRef.instance.template = this.templateRef;
   }
 }

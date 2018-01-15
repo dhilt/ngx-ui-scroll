@@ -1,0 +1,4 @@
+/**
+ * @license ngx-ui-scroll
+ * MIT license
+ */

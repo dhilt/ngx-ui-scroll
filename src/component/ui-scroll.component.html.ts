@@ -1,16 +1,9 @@
+export default `
 <div data-padding-top></div>
-<!-- <div *ngFor="let item of datasource.list">
-  <ng-template
-    [ngTemplateOutlet]="templateVariable"
-    [ngTemplateOutletContext]="{
-      $implicit: item
-   }">
-  </ng-template>
-</div> -->
 <div *ngFor="let item of getItems()" id="{{getItemId(item.$index)}}">
   <div [style.position]="item.invisible ? 'fixed' : null" [style.left]="item.invisible ? '-99999px' : null" >
     <ng-template
-      [ngTemplateOutlet]="templateVariable"
+      [ngTemplateOutlet]="template"
       [ngTemplateOutletContext]="{
         $implicit: item.scope,
         index: item.$index
@@ -19,3 +12,4 @@
   </div>
 </div>
 <div data-padding-bottom></div>
+`

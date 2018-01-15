@@ -1,5 +1,5 @@
-import Elements from '../elements'
-import Data from '../data'
+import Elements from '../elements';
+import Data from '../data';
 
 class Render {
 
@@ -22,7 +22,7 @@ class Render {
   static setElements(items) {
     items.forEach(item => {
       for (let i = Elements.viewport.childNodes.length - 1; i >= 0; i--) {
-        let node = Elements.viewport.childNodes[i];
+        const node = Elements.viewport.childNodes[i];
         if (node.id) {
           if (node.id === Data.getItemId(item.$index)) {
             item.element = node;
@@ -38,4 +38,4 @@ class Render {
 }
 
 const self = Render;
-export default Render
+export default Render;

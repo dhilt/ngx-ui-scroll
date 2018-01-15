@@ -1,20 +1,18 @@
-import Elements from './elements'
-import Data from './data'
+import Elements from './elements';
+import Data from './data';
 
 class Direction {
-  static top: string = 'top';
-  static bottom: string = 'bottom';
+  static top = 'top';
+  static bottom = 'bottom';
 
   static opposite(direction: string) {
     if (direction === self.top) {
       return self.bottom;
     }
-    else if (direction === self.bottom) {
+    if (direction === self.bottom) {
       return self.top;
     }
-    else {
-      return null;
-    }
+    return null;
   }
 
   static byScrollTop() {
@@ -33,4 +31,4 @@ class Direction {
 }
 
 const self = Direction;
-export default Direction
+export default Direction;

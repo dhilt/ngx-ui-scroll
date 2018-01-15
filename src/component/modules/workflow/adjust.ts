@@ -1,6 +1,5 @@
-import Elements from '../elements'
-import Direction from '../direction'
-import Data from '../data'
+import Elements from '../elements';
+import Direction from '../direction';
 
 class Adjust {
 
@@ -15,7 +14,7 @@ class Adjust {
 
   static processInvisibleItems(items) {
     for (let i = items.length - 1; i >= 0; i--) {
-      let element = items[i].element.children[0];
+      const element = items[i].element.children[0];
       element.style.left = '';
       element.style.position = '';
       delete items[i].invisible;
@@ -36,17 +35,17 @@ class Adjust {
 
     // now need to make "height" pixels top
     // 1) via paddingTop
-    let _paddingTopHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
-    let paddingTopHeight = Math.max(_paddingTopHeight - height, 0);
+    const _paddingTopHeight = parseInt(Elements.paddingTop.style.height, 10) || 0;
+    const paddingTopHeight = Math.max(_paddingTopHeight - height, 0);
     Elements.paddingTop.style.height = paddingTopHeight + 'px';
-    let paddingDiff = height - (_paddingTopHeight - paddingTopHeight);
+    const paddingDiff = height - (_paddingTopHeight - paddingTopHeight);
     // 2) via scrollTop
     if (paddingDiff > 0) {
       height = paddingDiff;
       Elements.viewport.scrollTop += height;
       const diff = height - Elements.viewport.scrollTop - _scrollTop;
       if (diff > 0) {
-        let paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
+        const paddingHeight = parseInt(Elements.paddingBottom.style.height, 10) || 0;
         Elements.paddingBottom.style.height = (paddingHeight + diff) + 'px';
         Elements.viewport.scrollTop += diff;
       }
@@ -56,4 +55,4 @@ class Adjust {
 }
 
 const self = Adjust;
-export default Adjust
+export default Adjust;

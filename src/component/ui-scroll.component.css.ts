@@ -6,4 +6,4 @@ export default `
   overflow-y: auto;
   display: block;
 }
-`
+`;

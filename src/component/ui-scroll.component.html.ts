@@ -12,4 +12,4 @@ export default `
   </div>
 </div>
 <div data-padding-bottom></div>
-`
+`;

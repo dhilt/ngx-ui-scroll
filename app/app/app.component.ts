@@ -6,10 +6,9 @@ import { Observable } from 'rxjs/Observable';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  private title = 'app works!';
-  private test: Boolean = true;
+  public title = 'app works!';
 
-  private datasource = {
+  public datasource = {
     get: (index: number, count: number) => Observable.create(observer => {
       console.log('requested index = ' + index + ', count = ' + count);
       //setTimeout(() => {
@@ -27,7 +26,6 @@ export class AppComponent {
   };
 
   constructor() {
-    this.test = true;
   }
 
 }

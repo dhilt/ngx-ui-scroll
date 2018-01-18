@@ -11,7 +11,7 @@ import template from './ui-scroll.component.html';
 import style from './ui-scroll.component.css';
 
 @Component({
-  selector: 'app-ui-scroll',
+  selector: 'ui-scroll',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: template + '',
   styles: [style + '']

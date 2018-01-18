@@ -25,7 +25,7 @@
     "url": ""
   },
   "peerDependencies": {
-    "@angular/core": "^5.1.2",
-    "@angular/common": "^5.1.2"
+    "@angular/core": "^5.2.0",
+    "@angular/common": "^5.2.0"
   }
 }

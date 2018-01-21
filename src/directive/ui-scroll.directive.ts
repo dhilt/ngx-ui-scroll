@@ -1,10 +1,11 @@
 import { Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolver, OnInit } from '@angular/core';
 
 import { UiScrollComponent } from '../component/ui-scroll.component';
+import { Datasource } from '../workflow/types';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
 export class UiScrollDirective implements OnInit {
-  private datasource;
+  private datasource: Datasource;
 
   constructor(
     private templateRef: TemplateRef<any>,
@@ -12,7 +13,7 @@ export class UiScrollDirective implements OnInit {
     private resolver: ComponentFactoryResolver
   ) {}
 
-  @Input() set uiScrollOf(datasource) {
+  @Input() set uiScrollOf(datasource: Datasource) {
     this.datasource = datasource;
   }
 

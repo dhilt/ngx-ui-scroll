@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
+import { Datasource } from '../../public_api';
+//import { Datasource } from 'ngx-ui-scroll';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
@@ -8,7 +11,7 @@ import { Observable } from 'rxjs/Observable';
 export class AppComponent {
   public title = 'app works!';
 
-  public datasource = {
+  public datasource: Datasource = {
     get: (index: number, count: number) => Observable.create(observer => {
       console.log('requested index = ' + index + ', count = ' + count);
       //setTimeout(() => {

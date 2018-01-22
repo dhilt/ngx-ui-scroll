@@ -1,34 +1,40 @@
-import { Observable } from 'rxjs';
 import { Workflow } from '../workflow';
 
 export default class Fetch {
 
   static async run(workflow): Promise<any> {
-    if (!workflow.shouldLoadBackward && !workflow.shouldLoadForward) {
+    let loadCount = 0, callCount = 0;
+    loadCount += workflow.shouldLoadBackward ? 1 : 0;
+    loadCount += workflow.shouldLoadForward ? 1 : 0;
+    if (!loadCount) {
       return Promise.resolve(false);
     }
+    const isDone = () => ++callCount === loadCount;
 
-    const fetches = [];
-    if (workflow.shouldLoadBackward) {
-      fetches.push(Fetch.fetchBackward(workflow));
-    }
-    if (workflow.shouldLoadForward) {
-      fetches.push(Fetch.fetchForward(workflow));
-    }
-
-    return new Promise((resolve, reject) =>
-      Observable.forkJoin(fetches).subscribe(
-        result => {
-          if (workflow.shouldLoadBackward) {
-            workflow.newItemsBackward = result[0];
-          }
-          if (workflow.shouldLoadForward) {
-            workflow.newItemsForward = result[result.length - 1];
-          }
-          resolve(true);
-        },
-        error => reject(error))
-    );
+    return new Promise((resolve, reject) => {
+      if (workflow.shouldLoadBackward) {
+        Fetch.fetchBackward(workflow).subscribe(
+          result => {
+            workflow.newItemsBackward = result;
+            if (isDone()) {
+              resolve(true);
+            }
+          },
+          error => reject(error)
+        );
+      }
+      if (workflow.shouldLoadForward) {
+        Fetch.fetchForward(workflow).subscribe(
+          result => {
+            workflow.newItemsForward = result;
+            if (isDone()) {
+              resolve(true);
+            }
+          },
+          error =>reject(error)
+        );
+      }
+    });
   }
 
   static fetchBackward(workflow: Workflow) {

@@ -1,10 +1,5 @@
 import { Observable } from 'rxjs/Observable';
 
-import Mark from './processes/mark';
-import ShouldFetch from './processes/shouldFetch';
-import Fetch from './processes/fetch';
-import Process from './processes/process';
-
 import { Elements } from './elements';
 import { Data } from './data';
 import { FetchModel } from './types';
@@ -29,15 +24,6 @@ export class Workflow {
     this.elements = elements;
     this.data = data;
     this.reset();
-  }
-
-  static async run(workflow: Workflow) {
-
-    ShouldFetch.run(workflow);
-    await Fetch.run(workflow);
-
-    // workflow.fail(false);
-    workflow.done(true);
   }
 
   done(result: boolean) {

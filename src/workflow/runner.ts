@@ -1,12 +1,8 @@
-import { Observable } from 'rxjs/Observable';
-
 import { Workflow } from './workflow';
 
-import Mark from './processes/mark';
 import ShouldFetch from './processes/shouldFetch';
 import Fetch from './processes/fetch';
 import ProcessFetch from './processes/processFetch';
-import Process from './processes/process';
 
 export class WorkflowRunner {
 

@@ -3,19 +3,20 @@ import { Workflow } from '../workflow';
 export default class Fetch {
 
   static async run(workflow: Workflow): Promise<any> {
+    const fetch = workflow.fetch;
     let loadCount = 0, callCount = 0;
-    loadCount += workflow.shouldFetchBackward ? 1 : 0;
-    loadCount += workflow.shouldFetchForward ? 1 : 0;
+    loadCount += fetch.backward.shouldFetch ? 1 : 0;
+    loadCount += fetch.forward.shouldFetch ? 1 : 0;
     if (!loadCount) {
       return Promise.resolve(false);
     }
     const isDone = () => ++callCount === loadCount;
 
     return new Promise((resolve, reject) => {
-      if (workflow.shouldFetchBackward) {
+      if (fetch.backward.shouldFetch) {
         Fetch.fetchBackward(workflow).subscribe(
           result => {
-            workflow.newItemsBackward = result;
+            fetch.backward.newItemsData = result;
             if (isDone()) {
               resolve(true);
             }
@@ -23,10 +24,10 @@ export default class Fetch {
           error => reject(error)
         );
       }
-      if (workflow.shouldFetchForward) {
+      if (fetch.forward.shouldFetch) {
         Fetch.fetchForward(workflow).subscribe(
           result => {
-            workflow.newItemsForward = result;
+            fetch.forward.newItemsData = result;
             if (isDone()) {
               resolve(true);
             }
@@ -41,6 +42,7 @@ export default class Fetch {
     const data = workflow.data;
     const firstIndex = data.getFirstVisibleItemIndex();
     const start = (firstIndex !== -1 ? firstIndex : data.startIndex) - data.bufferSize;
+    workflow.fetch.backward.startIndex = start;
     return data.source.get(start, data.bufferSize);
   }
 
@@ -48,6 +50,7 @@ export default class Fetch {
     const data = workflow.data;
     const lastIndex = data.getLastVisibleItemIndex();
     const start = (lastIndex !== -1 ? (lastIndex + 1) : data.startIndex);
+    workflow.fetch.forward.startIndex = start;
     return data.source.get(start, data.bufferSize);
   }
 

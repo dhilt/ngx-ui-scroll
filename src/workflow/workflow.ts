@@ -7,6 +7,7 @@ import Process from './processes/process';
 
 import { Elements } from './elements';
 import { Data } from './data';
+import { FetchModel } from './types';
 
 export class Workflow {
 
@@ -16,10 +17,7 @@ export class Workflow {
 
   // single cycle data
   public shouldClip: boolean;
-  public shouldFetchForward: boolean;
-  public shouldFetchBackward: boolean;
-  public newItemsForward: Array<any>;
-  public newItemsBackward: Array<any>;
+  public fetch: FetchModel;
 
   public resolver: Observable<any>;
   private observer;
@@ -53,10 +51,7 @@ export class Workflow {
 
   reset() {
     this.shouldClip = false;
-    this.shouldFetchForward = false;
-    this.shouldFetchBackward = false;
-    this.newItemsForward = null;
-    this.newItemsBackward = null;
+    this.fetch = new FetchModel();
 
     this.resolver = Observable.create(_observer => {
       this.observer = _observer;

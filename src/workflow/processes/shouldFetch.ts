@@ -4,10 +4,10 @@ export default class ShouldFetch {
 
   static async run(workflow: Workflow): Promise<any> {
     if(ShouldFetch.shouldFetchForward(workflow)) {
-      workflow.shouldFetchForward = true;
+      workflow.fetch.forward.shouldFetch = true;
     }
     if(ShouldFetch.shouldFetchBackward(workflow)) {
-      workflow.shouldFetchBackward = true;
+      workflow.fetch.backward.shouldFetch = true;
     }
   }
 

@@ -29,10 +29,10 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    initialize.call(this);
+    initialize(this);
   }
 
   ngOnDestroy() {
-    dispose.call(this);
+    dispose(this);
   }
 }

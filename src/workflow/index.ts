@@ -1,25 +1,25 @@
 import { Workflow } from './workflow';
 import { Data } from './data';
 import { Elements } from './elements';
-import { debouncedRound } from './utils';
+import { debouncedRound } from './utils/index';
 
 let onScrollListener: Function;
 
-export function initialize() {
-  // -    Elements.initialize(this.elementRef);
-  // -    Data.initialize(this);
-  // -    Workflow.initialize(this);
-  // -    this.onScrollListener = this.renderer.listen(Elements.viewport, 'scroll', (event) =>
+export function initialize(context) {
+  // -    Elements.initialize(context.elementRef);
+  // -    Data.initialize(context);
+  // -    Workflow.initialize(context);
+  // -    context.onScrollListener = context.renderer.listen(Elements.viewport, 'scroll', (event) =>
   // -      debouncedRound(() => Workflow.run(event), 25)
   // -    );
   // -    Workflow.run(Direction.bottom);
   // -    Workflow.run(Direction.top);
 
-  const elements = new Elements(this.elementRef);
-  const data = new Data(this.datasource, this);
+  const elements = new Elements(context.elementRef);
+  const data = new Data(context.datasource, context);
   const workflow = new Workflow(elements, data);
 
-  onScrollListener = this.renderer.listen(elements.viewport, 'scroll', (event) =>
+  onScrollListener = context.renderer.listen(elements.viewport, 'scroll', (event) =>
     debouncedRound(() => Workflow.run(event), 25)
   );
 
@@ -34,6 +34,6 @@ export function initialize() {
   Workflow.run(workflow);
 }
 
-export function dispose() {
+export function dispose(context) {
   onScrollListener();
 }

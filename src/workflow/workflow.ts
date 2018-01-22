@@ -40,7 +40,7 @@ export class Workflow {
     Mark.run(workflow);
     await Fetch.run(workflow);
 
-    //workflow.fail(false);
+    // workflow.fail(false);
     workflow.done(true);
   }
 

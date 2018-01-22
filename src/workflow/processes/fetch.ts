@@ -31,7 +31,7 @@ export default class Fetch {
               resolve(true);
             }
           },
-          error =>reject(error)
+          error => reject(error)
         );
       }
     });

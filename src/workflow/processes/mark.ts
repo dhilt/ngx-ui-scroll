@@ -7,8 +7,8 @@ export default class Mark {
       Mark.shouldClipForward(workflow) ||
       Mark.shouldClipBackward(workflow);
 
-    workflow.shouldLoadForward = Mark.shouldLoadForward(workflow);
-    workflow.shouldLoadBackward = Mark.shouldLoadBackward(workflow);
+    workflow.shouldFetchForward = Mark.shouldLoadForward(workflow);
+    workflow.shouldFetchBackward = Mark.shouldLoadBackward(workflow);
   }
 
   static shouldClipBackward(workflow: Workflow): boolean {

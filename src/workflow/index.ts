@@ -2,6 +2,7 @@ import { Workflow } from './workflow';
 import { Data } from './data';
 import { Elements } from './elements';
 import { debouncedRound } from './utils/index';
+import { WorkflowRunner } from './runner';
 
 let onScrollListener: Function;
 
@@ -20,7 +21,7 @@ export function initialize(context) {
   const workflow = new Workflow(elements, data);
 
   onScrollListener = context.renderer.listen(elements.viewport, 'scroll', (event) =>
-    debouncedRound(() => Workflow.run(event), 25)
+    debouncedRound(() => WorkflowRunner.run(workflow), 25)
   );
 
   workflow.resolver.subscribe(
@@ -31,7 +32,8 @@ export function initialize(context) {
       console.log('---=== WF2-error', error);
     }
   );
-  Workflow.run(workflow);
+
+  WorkflowRunner.run(workflow);
 }
 
 export function dispose(context) {

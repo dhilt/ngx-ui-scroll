@@ -4,15 +4,15 @@ export default class Fetch {
 
   static async run(workflow: Workflow): Promise<any> {
     let loadCount = 0, callCount = 0;
-    loadCount += workflow.shouldLoadBackward ? 1 : 0;
-    loadCount += workflow.shouldLoadForward ? 1 : 0;
+    loadCount += workflow.shouldFetchBackward ? 1 : 0;
+    loadCount += workflow.shouldFetchForward ? 1 : 0;
     if (!loadCount) {
       return Promise.resolve(false);
     }
     const isDone = () => ++callCount === loadCount;
 
     return new Promise((resolve, reject) => {
-      if (workflow.shouldLoadBackward) {
+      if (workflow.shouldFetchBackward) {
         Fetch.fetchBackward(workflow).subscribe(
           result => {
             workflow.newItemsBackward = result;
@@ -23,7 +23,7 @@ export default class Fetch {
           error => reject(error)
         );
       }
-      if (workflow.shouldLoadForward) {
+      if (workflow.shouldFetchForward) {
         Fetch.fetchForward(workflow).subscribe(
           result => {
             workflow.newItemsForward = result;

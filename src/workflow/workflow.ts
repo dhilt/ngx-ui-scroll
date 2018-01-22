@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 
 import Mark from './processes/mark';
+import ShouldFetch from './processes/shouldFetch';
 import Fetch from './processes/fetch';
 import Process from './processes/process';
 
@@ -13,15 +14,15 @@ export class Workflow {
   public elements: Elements;
   public data: Data;
 
-  public resolver: Observable<any>;
-  private observer;
-
+  // single cycle data
   public shouldClip: boolean;
-
-  public shouldLoadForward: boolean;
-  public shouldLoadBackward: boolean;
+  public shouldFetchForward: boolean;
+  public shouldFetchBackward: boolean;
   public newItemsForward: Array<any>;
   public newItemsBackward: Array<any>;
+
+  public resolver: Observable<any>;
+  private observer;
 
   constructor(
     elements: Elements,
@@ -29,15 +30,12 @@ export class Workflow {
   ) {
     this.elements = elements;
     this.data = data;
-
-    this.resolver = Observable.create(_observer => {
-      this.observer = _observer;
-    });
+    this.reset();
   }
 
   static async run(workflow: Workflow) {
 
-    Mark.run(workflow);
+    ShouldFetch.run(workflow);
     await Fetch.run(workflow);
 
     // workflow.fail(false);
@@ -51,6 +49,18 @@ export class Workflow {
 
   fail(error: any) {
     this.observer.error(error);
+  }
+
+  reset() {
+    this.shouldClip = false;
+    this.shouldFetchForward = false;
+    this.shouldFetchBackward = false;
+    this.newItemsForward = null;
+    this.newItemsBackward = null;
+
+    this.resolver = Observable.create(_observer => {
+      this.observer = _observer;
+    });
   }
 
 }

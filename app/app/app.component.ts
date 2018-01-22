@@ -14,7 +14,7 @@ export class AppComponent {
   public datasource: Datasource = {
     get: (index: number, count: number) => Observable.create(observer => {
       console.log('requested index = ' + index + ', count = ' + count);
-      //setTimeout(() => {
+      setTimeout(() => {
         let data = [];
         for (let i = index; i <= index + count - 1; i++) {
           data.push({
@@ -24,7 +24,7 @@ export class AppComponent {
         }
         console.log('resolved ' + data.length + ' items (index = ' + index + ', count = ' + count + ')');
         observer.next(data);
-      //}, 50);
+      }, 75);
     })
   };
 

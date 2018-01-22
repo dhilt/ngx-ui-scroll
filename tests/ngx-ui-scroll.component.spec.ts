@@ -21,8 +21,8 @@ describe('An UiScroll directive', () => {
 
   it('should have an instance', () => {
     expect(component).toBeDefined();
-    expect(component.datasource).toBeDefined(Object);
-    expect(component.datasource.get).toBeDefined(Function);
+    expect(component.datasource).toEqual(jasmine.any(Object));
+    expect(component.datasource.get).toEqual(jasmine.any(Function));
   });
 
   it('should correctly be called html-tag with directive', () => {

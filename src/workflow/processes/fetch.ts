@@ -2,7 +2,7 @@ import { Workflow } from '../workflow';
 
 export default class Fetch {
 
-  static async run(workflow): Promise<any> {
+  static async run(workflow: Workflow): Promise<any> {
     let loadCount = 0, callCount = 0;
     loadCount += workflow.shouldLoadBackward ? 1 : 0;
     loadCount += workflow.shouldLoadForward ? 1 : 0;

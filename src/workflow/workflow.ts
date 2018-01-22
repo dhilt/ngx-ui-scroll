@@ -2,6 +2,7 @@ import { Observable } from 'rxjs/Observable';
 
 import Mark from './processes/mark';
 import Fetch from './processes/fetch';
+import Process from './processes/process';
 
 import { Elements } from './elements';
 import { Data } from './data';
@@ -40,10 +41,10 @@ export class Workflow {
     await Fetch.run(workflow);
 
     //workflow.fail(false);
-    workflow.finish(true);
+    workflow.done(true);
   }
 
-  finish(result: boolean) {
+  done(result: boolean) {
     this.observer.next(result);
     this.observer.complete();
   }

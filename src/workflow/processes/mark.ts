@@ -2,14 +2,13 @@ import { Workflow } from '../workflow';
 
 export default class Mark {
 
-  static run(workflow) {
+  static run(workflow: Workflow) {
     workflow.shouldClip =
       Mark.shouldClipForward(workflow) ||
       Mark.shouldClipBackward(workflow);
 
     workflow.shouldLoadForward = Mark.shouldLoadForward(workflow);
     workflow.shouldLoadBackward = Mark.shouldLoadBackward(workflow);
-    workflow.shouldLoad = workflow.shouldLoadForward || workflow.shouldLoadBackward;
   }
 
   static shouldClipBackward(workflow: Workflow): boolean {

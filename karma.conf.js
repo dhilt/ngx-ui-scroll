@@ -26,7 +26,7 @@ module.exports = function (config) {
     },
 
     preprocessors: {
-      'spec.bundle.js': ['webpack']
+      'spec.bundle.js': ['webpack', 'sourcemap']
     },
     webpack: {
       resolve: {
@@ -42,7 +42,8 @@ module.exports = function (config) {
         ],
         exprContextCritical: false
       },
-      performance: { hints: false }
+      performance: { hints: false },
+      devtool: 'inline-source-map'
     },
     webpackServer: {
       noInfo: true
@@ -54,6 +55,6 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: [process.platform === 'linux' ? 'Chromium' : 'Chrome'],
-    singleRun: true
+    singleRun: false
   });
 };

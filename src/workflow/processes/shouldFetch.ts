@@ -16,7 +16,7 @@ export default class ShouldFetch {
     if (!lastItem) {
       return true;
     }
-    const viewportBottom = workflow.elements.viewport.getBoundingClientRect().bottom;
+    const viewportBottom = workflow.viewport.element.getBoundingClientRect().bottom;
     const lastElementBottom = lastItem.element.getBoundingClientRect().bottom;
     return lastElementBottom <= viewportBottom;
   }
@@ -26,7 +26,7 @@ export default class ShouldFetch {
     if (!firstItem) {
       return true;
     }
-    const viewportTop = workflow.elements.viewport.getBoundingClientRect().top;
+    const viewportTop = workflow.viewport.element.getBoundingClientRect().top;
     const firstElementTop = firstItem.element.getBoundingClientRect().top;
     return firstElementTop >= viewportTop;
   }

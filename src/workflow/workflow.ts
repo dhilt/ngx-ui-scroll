@@ -1,16 +1,15 @@
 import { Observable } from 'rxjs/Observable';
 
-import { Elements } from './elements';
+import { Viewport } from './viewport';
 import { Settings } from './settings';
 import { Buffer } from './buffer';
 import { FetchModel, Datasource } from './types';
 
 export class Workflow {
 
-  // injected via constructor
-  public elements: Elements;
-  public settings: Settings;
   public datasource: Datasource;
+  public viewport: Viewport;
+  public settings: Settings;
   public buffer: Buffer;
 
   // single cycle data
@@ -21,9 +20,10 @@ export class Workflow {
   private observer;
 
   constructor(context) {
-    this.elements = new Elements(context.elementRef);
+    this.datasource = context.datasource;
+    this.viewport = new Viewport(context.elementRef);
     this.settings = new Settings();
-    this.buffer = new Buffer(context.datasource, context);
+    this.buffer = new Buffer(context);
     this.reset();
   }
 

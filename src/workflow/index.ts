@@ -8,7 +8,7 @@ export function initialize(context) {
 
   const workflow = new Workflow(context);
 
-  onScrollListener = context.renderer.listen(workflow.elements.viewport, 'scroll', (event) =>
+  onScrollListener = context.renderer.listen(workflow.viewport.element, 'scroll', (event) =>
     debouncedRound(() => WorkflowRunner.run(workflow), 25)
   );
 

@@ -13,13 +13,13 @@ export default class Mark {
 
   static shouldClipBackward(workflow: Workflow): boolean {
     const data = workflow.buffer;
-    const elements = workflow.elements;
+    const elements = workflow.viewport;
     const items = data.items;
     if (!items.length) {
       return false;
     }
 
-    const viewportParams = elements.viewport.getBoundingClientRect();
+    const viewportParams = elements.element.getBoundingClientRect();
     const viewportTop = viewportParams.top;
     const delta = viewportParams.height * workflow.settings.padding;
     const bottomLimit = viewportTop - delta;
@@ -53,13 +53,13 @@ export default class Mark {
 
   static shouldClipForward(workflow: Workflow): boolean {
     const data = workflow.buffer;
-    const elements = workflow.elements;
+    const elements = workflow.viewport;
     const items = data.items;
     if (!items.length) {
       return false;
     }
 
-    const viewportParams = elements.viewport.getBoundingClientRect();
+    const viewportParams = elements.element.getBoundingClientRect();
     const viewportBottom = viewportParams.bottom;
     const delta = viewportParams.height * workflow.settings.padding;
     const topLimit = viewportBottom + delta;
@@ -95,7 +95,7 @@ export default class Mark {
     if (!lastItem) {
       return true;
     }
-    const viewportBottom = workflow.elements.viewport.getBoundingClientRect().bottom;
+    const viewportBottom = workflow.viewport.element.getBoundingClientRect().bottom;
     const lastElementBottom = lastItem.element.getBoundingClientRect().bottom;
     return lastElementBottom <= viewportBottom;
   }
@@ -105,7 +105,7 @@ export default class Mark {
     if (!firstItem) {
       return true;
     }
-    const viewportTop = workflow.elements.viewport.getBoundingClientRect().top;
+    const viewportTop = workflow.viewport.element.getBoundingClientRect().top;
     const firstElementTop = firstItem.element.getBoundingClientRect().top;
     return firstElementTop >= viewportTop;
   }

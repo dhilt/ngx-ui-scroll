@@ -13,20 +13,12 @@ export class Buffer {
 
   lastIndex = null;
 
-  constructor(datasource: Datasource, itemsContext) {
-    this.setDatasource(datasource);
+  constructor(itemsContext) {
     this.items = [];
     this.bof = false;
     this.eof = false;
     this.position = 0;
     itemsContext.items = this.items;
-  }
-
-  setDatasource(datasource: Datasource) {
-    if (!datasource || typeof datasource !== 'object' || typeof datasource.get !== 'function') {
-      throw new Error('Invalid datasource!');
-    }
-    this.source = datasource;
   }
 
   getFirstVisibleItemIndex() {

@@ -43,7 +43,7 @@ export default class Fetch {
     const firstIndex = workflow.buffer.getFirstVisibleItemIndex();
     const start = (firstIndex !== -1 ? firstIndex : settings.startIndex) - settings.bufferSize;
     workflow.fetch.backward.startIndex = start;
-    return workflow.buffer.source.get(start, settings.bufferSize);
+    return workflow.datasource.get(start, settings.bufferSize);
   }
 
   static fetchForward(workflow: Workflow) {
@@ -51,7 +51,7 @@ export default class Fetch {
     const lastIndex = workflow.buffer.getLastVisibleItemIndex();
     const start = (lastIndex !== -1 ? (lastIndex + 1) : settings.startIndex);
     workflow.fetch.forward.startIndex = start;
-    return workflow.buffer.source.get(start, settings.bufferSize);
+    return workflow.datasource.get(start, settings.bufferSize);
   }
 
 }

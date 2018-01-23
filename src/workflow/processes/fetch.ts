@@ -39,19 +39,19 @@ export default class Fetch {
   }
 
   static fetchBackward(workflow: Workflow) {
-    const data = workflow.data;
-    const firstIndex = data.getFirstVisibleItemIndex();
-    const start = (firstIndex !== -1 ? firstIndex : data.startIndex) - data.bufferSize;
+    const settings = workflow.settings;
+    const firstIndex = workflow.buffer.getFirstVisibleItemIndex();
+    const start = (firstIndex !== -1 ? firstIndex : settings.startIndex) - settings.bufferSize;
     workflow.fetch.backward.startIndex = start;
-    return data.source.get(start, data.bufferSize);
+    return workflow.buffer.source.get(start, settings.bufferSize);
   }
 
   static fetchForward(workflow: Workflow) {
-    const data = workflow.data;
-    const lastIndex = data.getLastVisibleItemIndex();
-    const start = (lastIndex !== -1 ? (lastIndex + 1) : data.startIndex);
+    const settings = workflow.settings;
+    const lastIndex = workflow.buffer.getLastVisibleItemIndex();
+    const start = (lastIndex !== -1 ? (lastIndex + 1) : settings.startIndex);
     workflow.fetch.forward.startIndex = start;
-    return data.source.get(start, data.bufferSize);
+    return workflow.buffer.source.get(start, settings.bufferSize);
   }
 
 }

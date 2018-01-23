@@ -1,26 +1,14 @@
 import { Workflow } from './workflow';
-import { Data } from './data';
-import { Elements } from './elements';
 import { debouncedRound } from './utils/index';
 import { WorkflowRunner } from './runner';
 
 let onScrollListener: Function;
 
 export function initialize(context) {
-  // -    Elements.initialize(context.elementRef);
-  // -    Data.initialize(context);
-  // -    Workflow.initialize(context);
-  // -    context.onScrollListener = context.renderer.listen(Elements.viewport, 'scroll', (event) =>
-  // -      debouncedRound(() => Workflow.run(event), 25)
-  // -    );
-  // -    Workflow.run(Direction.bottom);
-  // -    Workflow.run(Direction.top);
 
-  const elements = new Elements(context.elementRef);
-  const data = new Data(context.datasource, context);
-  const workflow = new Workflow(elements, data);
+  const workflow = new Workflow(context);
 
-  onScrollListener = context.renderer.listen(elements.viewport, 'scroll', (event) =>
+  onScrollListener = context.renderer.listen(workflow.elements.viewport, 'scroll', (event) =>
     debouncedRound(() => WorkflowRunner.run(workflow), 25)
   );
 

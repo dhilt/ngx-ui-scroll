@@ -12,7 +12,7 @@ export default class ShouldFetch {
   }
 
   static shouldFetchForward(workflow: Workflow) {
-    const lastItem = workflow.data.getLastVisibleItem();
+    const lastItem = workflow.buffer.getLastVisibleItem();
     if (!lastItem) {
       return true;
     }
@@ -22,7 +22,7 @@ export default class ShouldFetch {
   }
 
   static shouldFetchBackward(workflow: Workflow) {
-    const firstItem = workflow.data.getFirstVisibleItem();
+    const firstItem = workflow.buffer.getFirstVisibleItem();
     if (!firstItem) {
       return true;
     }

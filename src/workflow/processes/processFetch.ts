@@ -14,7 +14,7 @@ export default class ProcessFetch {
       return;
     }
     const eof = direction === Direction.forward ? 'eof' : 'bof';
-    workflow.data[eof] = fetch.newItemsData.length !== workflow.data.bufferSize;
+    workflow.buffer[eof] = fetch.newItemsData.length !== workflow.settings.bufferSize;
 
     if (!fetch.newItemsData.length) { // empty result
       return;
@@ -27,11 +27,11 @@ export default class ProcessFetch {
       })
     );
     if (direction === Direction.forward) {
-      workflow.data.items = [...workflow.data.items, ...fetch.items];
+      workflow.buffer.items = [...workflow.buffer.items, ...fetch.items];
     }
     else {
-      workflow.data.items = [...fetch.items, ...workflow.data.items];
+      workflow.buffer.items = [...fetch.items, ...workflow.buffer.items];
     }
   }
-  
+
 }

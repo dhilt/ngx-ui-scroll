@@ -1,14 +1,17 @@
 import { Observable } from 'rxjs/Observable';
 
 import { Elements } from './elements';
-import { Data } from './data';
-import { FetchModel } from './types';
+import { Settings } from './settings';
+import { Buffer } from './buffer';
+import { FetchModel, Datasource } from './types';
 
 export class Workflow {
 
   // injected via constructor
   public elements: Elements;
-  public data: Data;
+  public settings: Settings;
+  public datasource: Datasource;
+  public buffer: Buffer;
 
   // single cycle data
   public shouldClip: boolean;
@@ -17,12 +20,10 @@ export class Workflow {
   public resolver: Observable<any>;
   private observer;
 
-  constructor(
-    elements: Elements,
-    data: Data
-  ) {
-    this.elements = elements;
-    this.data = data;
+  constructor(context) {
+    this.elements = new Elements(context.elementRef);
+    this.settings = new Settings();
+    this.buffer = new Buffer(context.datasource, context);
     this.reset();
   }
 

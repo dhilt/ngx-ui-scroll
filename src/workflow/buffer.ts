@@ -1,25 +1,24 @@
 import { Datasource, Item } from './types';
 
-export class Data {
+export class Buffer {
 
   scrollerId: number;
   source: Datasource;
 
   // items = [{$index: 90, $id: '0-1', scope: {id: 90, text: 'aaa'}}];
-  items: Array<Item> = [];
-
-  startIndex = 90;
-  bufferSize = 5;
-  padding = 0.5; // of viewport height
-
-  bof = false;
-  eof = false;
-  position = 0;
+  items: Array<Item>;
+  bof: boolean;
+  eof: boolean;
+  position: number;
 
   lastIndex = null;
 
   constructor(datasource: Datasource, itemsContext) {
     this.setDatasource(datasource);
+    this.items = [];
+    this.bof = false;
+    this.eof = false;
+    this.position = 0;
     itemsContext.items = this.items;
   }
 

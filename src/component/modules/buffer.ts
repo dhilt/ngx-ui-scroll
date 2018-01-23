@@ -1,4 +1,4 @@
-import { Datasource, Item } from '../models/types';
+import { Datasource, Item } from '../models';
 
 export class Buffer {
 

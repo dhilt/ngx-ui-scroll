@@ -1,18 +1,5 @@
-export type DatasourceGet = (index: number, count: number) => any;
-
-export interface Datasource {
-  get: DatasourceGet;
-}
-
-export interface Item {
-  $index: number;
-  $id: string;
-  scope: any;
-  element: any;
-
-  invisible: boolean;
-  toRemove: boolean;
-}
+import { Item } from './item';
+import { Direction } from './direction';
 
 export class FetchByDirection {
   shouldFetch: boolean;
@@ -36,9 +23,4 @@ export class FetchModel {
     this.forward = new FetchByDirection();
     this.backward = new FetchByDirection();
   }
-}
-
-export enum Direction {
-  forward = 'forward',
-  backward = 'backward'
 }

@@ -1,13 +1,14 @@
 import { Workflow } from '../workflow';
+import { Direction } from '../models/index';
 
 export default class ShouldFetch {
 
   static async run(workflow: Workflow): Promise<any> {
-    if(ShouldFetch.shouldFetchForward(workflow)) {
-      workflow.fetch.forward.shouldFetch = true;
+    if (ShouldFetch.shouldFetchForward(workflow)) {
+      workflow.fetch[Direction.forward].shouldFetch = true;
     }
-    if(ShouldFetch.shouldFetchBackward(workflow)) {
-      workflow.fetch.backward.shouldFetch = true;
+    if (ShouldFetch.shouldFetchBackward(workflow)) {
+      workflow.fetch[Direction.backward].shouldFetch = true;
     }
   }
 

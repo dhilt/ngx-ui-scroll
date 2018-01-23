@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import { Viewport } from './modules/viewport';
 import { Settings } from './modules/settings';
 import { Buffer } from './modules/buffer';
-import { FetchModel, Datasource } from './models/types';
+import { FetchModel, Datasource } from './models/index';
 
 export class Workflow {
 

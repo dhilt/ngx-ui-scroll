@@ -1,5 +1,5 @@
 import { Workflow } from '../workflow';
-import { Item, Direction } from '../models/types';
+import { Item, Direction } from '../models/index';
 
 export default class ProcessFetch {
 
@@ -28,8 +28,7 @@ export default class ProcessFetch {
     );
     if (direction === Direction.forward) {
       workflow.buffer.items = [...workflow.buffer.items, ...fetch.items];
-    }
-    else {
+    } else {
       workflow.buffer.items = [...fetch.items, ...workflow.buffer.items];
     }
   }

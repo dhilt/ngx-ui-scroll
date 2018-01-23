@@ -1,4 +1,5 @@
 import { Workflow } from '../workflow';
+import { Direction } from '../models/index';
 
 export default class Mark {
 
@@ -7,8 +8,8 @@ export default class Mark {
       Mark.shouldClipForward(workflow) ||
       Mark.shouldClipBackward(workflow);
 
-    workflow.fetch.forward.shouldFetch = Mark.shouldLoadForward(workflow);
-    workflow.fetch.backward.shouldFetch = Mark.shouldLoadBackward(workflow);
+    workflow.fetch[Direction.forward].shouldFetch = Mark.shouldLoadForward(workflow);
+    workflow.fetch[Direction.backward].shouldFetch = Mark.shouldLoadBackward(workflow);
   }
 
   static shouldClipBackward(workflow: Workflow): boolean {

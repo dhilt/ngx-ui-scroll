@@ -1,4 +1,8 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, TemplateRef, ChangeDetectorRef, ElementRef, Renderer2 } from '@angular/core';
+import { Component,
+  OnInit, OnDestroy,
+  TemplateRef, ElementRef, Renderer2,
+  ChangeDetectionStrategy, ChangeDetectorRef
+} from '@angular/core';
 
 import template from './ui-scroll.component.html';
 import style from './ui-scroll.component.css';

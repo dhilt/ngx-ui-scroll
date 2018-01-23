@@ -1,10 +1,9 @@
-import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, TemplateRef, ChangeDetectorRef } from '@angular/core';
-import { ElementRef, Renderer2 } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, OnDestroy, TemplateRef, ChangeDetectorRef, ElementRef, Renderer2 } from '@angular/core';
 
 import template from './ui-scroll.component.html';
 import style from './ui-scroll.component.css';
 
-import { initialize, dispose } from '../workflow/index';
+import { initialize, dispose } from './component/index';
 
 @Component({
   selector: 'ui-scroll',

@@ -1,8 +1,8 @@
 import { Workflow } from './workflow';
 
-import ShouldFetch from './processes/shouldFetch';
-import Fetch from './processes/fetch';
-import ProcessFetch from './processes/processFetch';
+import ShouldFetch from './workflow/shouldFetch';
+import Fetch from './workflow/fetch';
+import ProcessFetch from './workflow/processFetch';
 
 export class WorkflowRunner {
 

@@ -27,6 +27,9 @@ export class Workflow {
     this.reset();
   }
 
+  dispose() {
+  }
+
   done(result: boolean) {
     this.observer.next(result);
     this.observer.complete();

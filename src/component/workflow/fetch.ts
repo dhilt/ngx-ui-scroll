@@ -4,54 +4,36 @@ import { Direction } from '../models/index';
 export default class Fetch {
 
   static async run(workflow: Workflow): Promise<any> {
-    const fetch = workflow.fetch;
-    let loadCount = 0, callCount = 0;
-    loadCount += fetch[Direction.backward].shouldFetch ? 1 : 0;
-    loadCount += fetch[Direction.forward].shouldFetch ? 1 : 0;
-    if (!loadCount) {
+    if (!workflow.fetch[Direction.forward].shouldFetch && !workflow.fetch[Direction.backward].shouldFetch) {
       return Promise.resolve(false);
     }
-    const isDone = () => ++callCount === loadCount;
+    return Promise.all([
+      Fetch.wrappedFetchByDirection(Direction.backward, workflow),
+      Fetch.wrappedFetchByDirection(Direction.forward, workflow)
+    ])
+  }
 
+  static wrappedFetchByDirection(direction: Direction, workflow: Workflow) {
     return new Promise((resolve, reject) => {
-      if (fetch[Direction.backward].shouldFetch) {
-        Fetch.fetchBackward(workflow).subscribe(
+      if (workflow.fetch[direction].shouldFetch) {
+        Fetch.fetchByDirection(direction, workflow).subscribe(
           result => {
-            fetch[Direction.backward].newItemsData = result;
-            if (isDone()) {
-              resolve(true);
-            }
+            workflow.fetch[direction].newItemsData = result;
+            resolve(true);
           },
-          error => reject(error)
-        );
-      }
-      if (fetch[Direction.forward].shouldFetch) {
-        Fetch.fetchForward(workflow).subscribe(
-          result => {
-            fetch[Direction.forward].newItemsData = result;
-            if (isDone()) {
-              resolve(true);
-            }
-          },
-          error => reject(error)
+          reject
         );
       }
     });
   }
 
-  static fetchBackward(workflow: Workflow) {
+  static fetchByDirection(direction: Direction, workflow: Workflow) {
     const settings = workflow.settings;
-    const firstIndex = workflow.buffer.getFirstVisibleItemIndex();
-    const start = (firstIndex !== -1 ? firstIndex : settings.startIndex) - settings.bufferSize;
-    workflow.fetch[Direction.backward].startIndex = start;
-    return workflow.datasource.get(start, settings.bufferSize);
-  }
-
-  static fetchForward(workflow: Workflow) {
-    const settings = workflow.settings;
-    const lastIndex = workflow.buffer.getLastVisibleItemIndex();
-    const start = (lastIndex !== -1 ? (lastIndex + 1) : settings.startIndex);
-    workflow.fetch[Direction.forward].startIndex = start;
+    const edgeIndex = workflow.buffer.getEdgeVisibleItemIndex(direction);
+    const start = direction === Direction.forward ?
+      ((edgeIndex !== -1 ? (edgeIndex + 1) : settings.startIndex)) :
+      ((edgeIndex !== -1 ? edgeIndex : settings.startIndex) - settings.bufferSize);
+    workflow.fetch[direction].startIndex = start;
     return workflow.datasource.get(start, settings.bufferSize);
   }
 

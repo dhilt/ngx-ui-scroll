@@ -26,6 +26,7 @@ export default class ProcessFetch {
         invisible: true
       })
     );
+
     if (direction === Direction.forward) {
       workflow.buffer.items = [...workflow.buffer.items, ...fetch.items];
     } else {

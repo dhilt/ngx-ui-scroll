@@ -1,4 +1,5 @@
 import { Datasource, Item } from '../models';
+import { Direction } from '../models/index';
 
 export class Buffer {
 
@@ -38,6 +39,10 @@ export class Buffer {
       }
     }
     return -1;
+  }
+
+  getEdgeVisibleItemIndex(direction: Direction) {
+    return direction !== Direction.backward ? this.getLastVisibleItemIndex() : this.getFirstVisibleItemIndex();
   }
 
   getFirstVisibleItem() {

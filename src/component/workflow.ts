@@ -7,6 +7,7 @@ import { FetchModel, Datasource } from './models/index';
 
 export class Workflow {
 
+  public bindData: Function;
   public datasource: Datasource;
   public viewport: Viewport;
   public settings: Settings;
@@ -20,6 +21,7 @@ export class Workflow {
   private observer;
 
   constructor(context) {
+    this.bindData = () => context.changeDetector.markForCheck();
     this.datasource = context.datasource;
     this.viewport = new Viewport(context.elementRef);
     this.settings = new Settings();

@@ -6,10 +6,12 @@ export class Buffer {
 
   private _items: Array<Item>;
   public $items = new BehaviorSubject(null);
+
   set items(items: Array<Item>) {
     this._items = items;
     this.$items.next(items);
   }
+
   get items(): Array<Item> {
     return this._items;
   }

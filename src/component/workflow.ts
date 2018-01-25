@@ -35,10 +35,7 @@ export class Workflow {
 
   start() {
     this.pending = true;
-  }
-
-  finish() {
-    this.pending = false;
+    return Promise.resolve(this);
   }
 
   isRunning(): boolean {
@@ -46,11 +43,13 @@ export class Workflow {
   }
 
   done(result: boolean) {
+    this.pending = false;
     this.observer.next(result);
     this.observer.complete();
   }
 
   fail(error: any) {
+    this.pending = false;
     this.observer.error(error);
   }
 

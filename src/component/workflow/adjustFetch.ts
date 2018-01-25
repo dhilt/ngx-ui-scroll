@@ -4,11 +4,12 @@ import { Direction } from '../models/index';
 export default class AdjustFetch {
 
   static run(workflow: Workflow) {
-    this.adjustByDirection(Direction.forward, workflow);
-    this.adjustByDirection(Direction.backward, workflow);
+    AdjustFetch.runByDirection(Direction.forward, workflow);
+    AdjustFetch.runByDirection(Direction.backward, workflow);
+    return workflow;
   }
 
-  static adjustByDirection(direction: Direction, workflow: Workflow) {
+  static runByDirection(direction: Direction, workflow: Workflow) {
     const items = workflow.fetch[Direction.forward].items;
     if (!items) {
       return;

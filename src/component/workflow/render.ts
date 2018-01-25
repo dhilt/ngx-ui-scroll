@@ -1,32 +1,36 @@
 import { Workflow } from '../workflow';
-import { Item, Direction } from '../models/index';
 
 export default class Render {
 
-  static async run(workflow: Workflow): Promise<any> {
+  static run(workflow: Workflow): Promise<any> {
     if (!workflow.fetch.hasNewItems) {
       return Promise.resolve(false);
     }
     workflow.bindData();
-    return new Promise(resolve =>
+    return new Promise((resolve, reject) =>
       setTimeout(() => {
-        this.setElements(workflow);
-        resolve(true);
+        const error = Render.setElements(workflow);
+        if (!error) {
+          resolve(workflow);
+        } else {
+          reject(error);
+        }
       })
     );
   }
 
   static setElements(workflow: Workflow) {
-    workflow.fetch.items.forEach(item => {
-      for (let i = workflow.viewport.element.childNodes.length - 1; i >= 0; i--) {
-        const node = workflow.viewport.element.childNodes[i];
-        if (node.id === item.nodeId) {
-          item.element = node;
+    const items = workflow.fetch.items;
+    for (let j = items.length - 1; j >= 0; j--) {
+      const nodes = workflow.viewport.element.childNodes;
+      for (let i = nodes.length - 1; i >= 0; i--) {
+        if (nodes[i].id === items[j].nodeId) {
+          items[j].element = nodes[i];
         }
       }
-      if (!item.element) { // todo: do we really need this check?
-        throw new Error('Can not associate item with element');
+      if (!items[j].element) { // todo: do we really need this check?
+        return new Error('Can not associate item with element');
       }
-    });
+    }
   }
 }

@@ -6,6 +6,7 @@ export default class ProcessFetch {
   static run(workflow: Workflow) {
     ProcessFetch.runByDirection(workflow, Direction.backward);
     ProcessFetch.runByDirection(workflow, Direction.forward);
+    return workflow;
   }
 
   static runByDirection(workflow: Workflow, direction: Direction) {

@@ -15,18 +15,21 @@ export class WorkflowRunner {
     if(workflow.isRunning()) {
       return;
     }
-    workflow.start();
 
-    ShouldFetch.run(workflow);
-    await Fetch.run(workflow);
-    ProcessFetch.run(workflow);
-    await Render.run(workflow);
-    AdjustFetch.run(workflow);
+    workflow.start()
+      .then(ShouldFetch.run)
+      .then(Fetch.run)
+      .then(ProcessFetch.run)
+      .then(Render.run)
+      //.then(AdjustFetch.run)
+      .then(() => {
+        workflow.done(true);
+      })
+      .catch(error => {
+        workflow.fail(false);
+        console.log(error);
+      })
 
-    // workflow.fail(false);
-    workflow.done(true);
-
-    workflow.finish();
   }
 
 }

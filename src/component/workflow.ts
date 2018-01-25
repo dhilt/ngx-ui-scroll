@@ -19,6 +19,7 @@ export class Workflow {
 
   public resolver: Observable<any>;
   private observer;
+  private pending: boolean;
 
   constructor(context) {
     this.bindData = () => context.changeDetector.markForCheck();
@@ -30,6 +31,18 @@ export class Workflow {
   }
 
   dispose() {
+  }
+
+  start() {
+    this.pending = true;
+  }
+
+  finish() {
+    this.pending = false;
+  }
+
+  isRunning(): boolean {
+    return !!this.pending;
   }
 
   done(result: boolean) {

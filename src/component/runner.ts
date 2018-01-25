@@ -10,6 +10,13 @@ export class WorkflowRunner {
 
   static async run(workflow: Workflow) {
 
+    console.log('Workflow started');
+
+    if(workflow.isRunning()) {
+      return;
+    }
+    workflow.start();
+
     ShouldFetch.run(workflow);
     await Fetch.run(workflow);
     ProcessFetch.run(workflow);
@@ -18,6 +25,8 @@ export class WorkflowRunner {
 
     // workflow.fail(false);
     workflow.done(true);
+
+    workflow.finish();
   }
 
 }

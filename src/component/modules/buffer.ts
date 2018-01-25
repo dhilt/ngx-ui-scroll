@@ -1,25 +1,30 @@
 import { Datasource, Item } from '../models';
 import { Direction } from '../models/index';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export class Buffer {
 
-  scrollerId: number;
-  source: Datasource;
+  private _items: Array<Item>;
+  public $items = new BehaviorSubject(null);
+  set items(items: Array<Item>) {
+    this._items = items;
+    this.$items.next(items);
+  }
+  get items(): Array<Item> {
+    return this._items;
+  }
 
-  // items = [{$index: 90, $id: '0-1', scope: {id: 90, text: 'aaa'}}];
-  items: Array<Item>;
   bof: boolean;
   eof: boolean;
   position: number;
 
   lastIndex = null;
 
-  constructor(itemsContext) {
+  constructor() {
     this.items = [];
     this.bof = false;
     this.eof = false;
     this.position = 0;
-    itemsContext.items = this.items;
   }
 
   getFirstVisibleItemIndex() {

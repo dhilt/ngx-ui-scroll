@@ -25,7 +25,7 @@ export class Workflow {
     this.datasource = context.datasource;
     this.viewport = new Viewport(context.elementRef);
     this.settings = new Settings();
-    this.buffer = new Buffer(context);
+    this.buffer = new Buffer();
     this.reset();
   }
 

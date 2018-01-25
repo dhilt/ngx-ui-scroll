@@ -8,6 +8,7 @@ import template from './ui-scroll.component.html';
 import style from './ui-scroll.component.css';
 
 import { initialize, dispose } from './component/index';
+import { Datasource, Item } from './component/models/index';
 
 @Component({
   selector: 'ui-scroll',
@@ -19,10 +20,10 @@ export class UiScrollComponent implements OnInit, OnDestroy {
 
   // come from the directive
   public template: TemplateRef<any>;
-  public datasource;
+  public datasource: Datasource;
 
   // use in the template
-  public items: Array<any>;
+  public items: Array<Item>;
 
   constructor(
     private changeDetector: ChangeDetectorRef,

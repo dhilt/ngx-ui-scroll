@@ -25,6 +25,8 @@ export default class Fetch {
             },
             reject
           );
+      } else {
+        resolve(false);
       }
     };
     return new Promise(doFetchAsync);

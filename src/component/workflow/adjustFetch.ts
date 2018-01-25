@@ -23,11 +23,35 @@ export default class AdjustFetch {
   }
 
   static adjustForward(workflow: Workflow, height: number) {
-    
+    const paddingForward = workflow.viewport.paddingForward;
+    const _paddingHeight = parseInt(paddingForward.style.height, 10) || 0;
+    const paddingHeight = Math.max(_paddingHeight - height, 0);
+    paddingForward.style.height = paddingHeight + 'px';
   }
 
   static adjustBackward(workflow: Workflow, height: number) {
+    const viewport = workflow.viewport.element;
+    const _scrollTop = viewport.scrollTop;
+    const paddingBackward = workflow.viewport.paddingBackward;
+    const paddingForward = workflow.viewport.paddingForward;
 
+    // now need to make "height" pixels top
+    // 1) via paddingTop
+    const _paddingHeight = parseInt(paddingBackward.style.height, 10) || 0;
+    const paddingHeight = Math.max(_paddingHeight - height, 0);
+    paddingBackward.style.height = paddingHeight + 'px';
+    const paddingDiff = height - (_paddingHeight - paddingHeight);
+    // 2) via scrollTop
+    if (paddingDiff > 0) {
+      height = paddingDiff;
+      viewport.scrollTop += height;
+      const diff = height - viewport.scrollTop - _scrollTop;
+      if (diff > 0) {
+        const paddingHeight = parseInt(paddingForward.style.height, 10) || 0;
+        paddingForward.style.height = (paddingHeight + diff) + 'px';
+        viewport.scrollTop += diff;
+      }
+    }
   }
 
 }

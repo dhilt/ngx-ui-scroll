@@ -4,37 +4,38 @@ import { Direction } from '../models/index';
 export default class Fetch {
 
   static async run(workflow: Workflow): Promise<any> {
-    if (!workflow.fetch[Direction.forward].shouldFetch && !workflow.fetch[Direction.backward].shouldFetch) {
+    if (!workflow.fetch.shouldFetch()) {
       return Promise.resolve(false);
     }
     return Promise.all([
-      Fetch.wrappedFetchByDirection(Direction.backward, workflow),
-      Fetch.wrappedFetchByDirection(Direction.forward, workflow)
-    ])
+      Fetch.fetchByDirection(Direction.backward, workflow),
+      Fetch.fetchByDirection(Direction.forward, workflow)
+    ]);
   }
 
-  static wrappedFetchByDirection(direction: Direction, workflow: Workflow) {
-    return new Promise((resolve, reject) => {
+  static fetchByDirection(direction: Direction, workflow: Workflow): Promise<any> {
+    const doFetchAsync = (resolve, reject) => {
       if (workflow.fetch[direction].shouldFetch) {
-        Fetch.fetchByDirection(direction, workflow).subscribe(
-          result => {
-            workflow.fetch[direction].newItemsData = result;
-            resolve(true);
-          },
-          reject
-        );
+        this.setStartIndex(direction, workflow);
+        workflow.datasource.get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize)
+          .subscribe(
+            result => {
+              workflow.fetch[direction].newItemsData = result;
+              resolve(true);
+            },
+            reject
+          );
       }
-    });
+    };
+    return new Promise(doFetchAsync);
   }
 
-  static fetchByDirection(direction: Direction, workflow: Workflow) {
+  static setStartIndex(direction: Direction, workflow: Workflow) {
     const settings = workflow.settings;
     const edgeIndex = workflow.buffer.getEdgeVisibleItemIndex(direction);
-    const start = direction === Direction.forward ?
+    workflow.fetch[direction].startIndex = direction === Direction.forward ?
       ((edgeIndex !== -1 ? (edgeIndex + 1) : settings.startIndex)) :
       ((edgeIndex !== -1 ? edgeIndex : settings.startIndex) - settings.bufferSize);
-    workflow.fetch[direction].startIndex = start;
-    return workflow.datasource.get(start, settings.bufferSize);
   }
 
 }

@@ -23,4 +23,12 @@ export class FetchModel {
     this.forward = new FetchByDirection();
     this.backward = new FetchByDirection();
   }
+
+  shouldFetch(): boolean {
+    return this[Direction.forward].shouldFetch || this[Direction.backward].shouldFetch;
+  }
+
+  hasNewItems(): boolean {
+    return this[Direction.forward].newItemsData || this[Direction.backward].newItemsData;
+  }
 }

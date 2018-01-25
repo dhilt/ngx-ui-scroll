@@ -1,7 +1,7 @@
 export interface Item {
   $index: number;
-  $id: string;
-  scope: any;
+  nodeId: string;
+  data: any;
   element: any;
 
   invisible: boolean;

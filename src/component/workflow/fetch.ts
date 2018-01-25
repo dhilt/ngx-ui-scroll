@@ -4,7 +4,7 @@ import { Direction } from '../models/index';
 export default class Fetch {
 
   static async run(workflow: Workflow): Promise<any> {
-    if (!workflow.fetch.shouldFetch()) {
+    if (!workflow.fetch.shouldFetch) {
       return Promise.resolve(false);
     }
     return Promise.all([

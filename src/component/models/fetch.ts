@@ -19,16 +19,20 @@ export class FetchModel {
   forward: FetchByDirection;
   backward: FetchByDirection;
 
-  constructor() {
-    this.forward = new FetchByDirection();
-    this.backward = new FetchByDirection();
+  get items(): Array<Item> {
+    return [...this.backward.items, ...this.forward.items];
   }
 
-  shouldFetch(): boolean {
+  get shouldFetch(): boolean {
     return this[Direction.forward].shouldFetch || this[Direction.backward].shouldFetch;
   }
 
-  hasNewItems(): boolean {
+  get hasNewItems(): boolean {
     return !!(this[Direction.forward].newItemsData || this[Direction.backward].newItemsData);
+  }
+
+  constructor() {
+    this.forward = new FetchByDirection();
+    this.backward = new FetchByDirection();
   }
 }

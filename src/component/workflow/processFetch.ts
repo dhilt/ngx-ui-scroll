@@ -19,13 +19,15 @@ export default class ProcessFetch {
     if (!fetch.newItemsData.length) { // empty result
       return;
     }
-    fetch.items = fetch.newItemsData.map((item, index) =>
-      <Item>({
-        $index: fetch.startIndex + index,
-        scope: item,
-        invisible: true
+    fetch.items = fetch.newItemsData.map((item, index) => {
+      const $index = fetch.startIndex + index;
+      return <Item>({
+        $index,
+        nodeId: workflow.settings.itemIdPrefix + String($index),
+        data: item,
+        //invisible: true
       })
-    );
+    });
 
     if (direction === Direction.forward) {
       workflow.buffer.items = [...workflow.buffer.items, ...fetch.items];

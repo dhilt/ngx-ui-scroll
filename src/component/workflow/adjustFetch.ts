@@ -10,16 +10,26 @@ export default class AdjustFetch {
   }
 
   static runByDirection(direction: Direction, workflow: Workflow) {
-    const items = workflow.fetch[Direction.forward].items;
+    const items = workflow.fetch[direction].items;
     if (!items) {
       return;
     }
+    AdjustFetch.processFetchedItems(items);
     const height = Math.abs(items[0].element.getBoundingClientRect().top -
       items[items.length - 1].element.getBoundingClientRect().bottom);
     if (direction === Direction.forward) {
       return this.adjustForward(workflow, height);
     } else {
       return this.adjustBackward(workflow, height);
+    }
+  }
+
+  static processFetchedItems(items) {
+    for (let i = items.length - 1; i >= 0; i--) {
+      const element = items[i].element.children[0];
+      element.style.left = '';
+      element.style.position = '';
+      items[i].invisible = false;
     }
   }
 

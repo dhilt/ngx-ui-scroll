@@ -26,7 +26,7 @@ export default class ProcessFetch {
         $index,
         nodeId: workflow.settings.itemIdPrefix + String($index),
         data: item,
-        //invisible: true
+        invisible: true
       })
     });
 

@@ -7,6 +7,8 @@ import { FetchModel, Datasource } from './models/index';
 
 export class Workflow {
 
+  public disabledScroll: boolean;
+
   public bindData: Function;
   public datasource: Datasource;
   public viewport: Viewport;
@@ -24,7 +26,7 @@ export class Workflow {
   constructor(context) {
     this.bindData = () => context.changeDetector.markForCheck();
     this.datasource = context.datasource;
-    this.viewport = new Viewport(context.elementRef);
+    this.viewport = new Viewport(context.elementRef, () => this.disabledScroll = true);
     this.settings = new Settings();
     this.buffer = new Buffer();
     this.reset();

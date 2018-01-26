@@ -8,7 +8,7 @@ import AdjustFetch from './workflow/adjustFetch';
 
 export class WorkflowRunner {
 
-  static async run(workflow: Workflow) {
+  static run(workflow: Workflow) {
 
     console.log('Workflow started');
 
@@ -21,14 +21,14 @@ export class WorkflowRunner {
       .then(Fetch.run)
       .then(ProcessFetch.run)
       .then(Render.run)
-      //.then(AdjustFetch.run)
+      .then(AdjustFetch.run)
       .then(() => {
         workflow.done(true);
       })
       .catch(error => {
         workflow.fail(false);
         console.log(error);
-      })
+      });
 
   }
 

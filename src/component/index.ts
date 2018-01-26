@@ -9,9 +9,17 @@ export function initialize(context) {
 
   workflow = new Workflow(context);
 
-  onScrollListener = context.renderer.listen(workflow.viewport.element, 'scroll', (event) =>
-    debouncedRound(() => WorkflowRunner.run(workflow), 25)
-  );
+  const scrollHandler = (event) => {
+    if(!workflow.disabledScroll) {
+      debouncedRound(() => WorkflowRunner.run(workflow), 25);
+    } else {
+      //setTimeout(() => {
+      workflow.disabledScroll = false;
+      //});
+    }
+  };
+
+  onScrollListener = context.renderer.listen(workflow.viewport.element, 'scroll', scrollHandler);
 
   workflow.buffer.$items.subscribe(items => context.items = items);
 

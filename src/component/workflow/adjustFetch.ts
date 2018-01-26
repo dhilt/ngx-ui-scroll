@@ -45,12 +45,12 @@ export default class AdjustFetch {
     // 2) via scrollTop
     if (paddingDiff > 0) {
       height = paddingDiff;
-      viewport.scrollTop += height;
+      workflow.viewport.changeScrollPosition(height);
       const diff = height - viewport.scrollTop - _scrollTop;
       if (diff > 0) {
         const paddingHeight = parseInt(paddingForward.style.height, 10) || 0;
         paddingForward.style.height = (paddingHeight + diff) + 'px';
-        viewport.scrollTop += diff;
+        workflow.viewport.changeScrollPosition(diff);
       }
     }
   }

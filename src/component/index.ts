@@ -19,7 +19,7 @@ export function initialize(context) {
     }
   };
 
-  onScrollListener = context.renderer.listen(workflow.viewport.element, 'scroll', scrollHandler);
+  onScrollListener = context.renderer.listen(workflow.viewport.scrollable, 'scroll', scrollHandler);
 
   workflow.buffer.$items.subscribe(items => context.items = items);
 

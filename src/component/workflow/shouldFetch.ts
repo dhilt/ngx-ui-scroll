@@ -15,7 +15,7 @@ export default class ShouldFetch {
       workflow.fetch[direction].shouldFetch = true;
       return;
     }
-    const viewportParams = workflow.viewport.element.getBoundingClientRect();
+    const viewportParams = workflow.viewport.scrollable.getBoundingClientRect();
     const itemParams = item.element.getBoundingClientRect();
 
     let viewportEdge, itemEdge, shouldFetch;

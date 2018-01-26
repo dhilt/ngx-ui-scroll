@@ -4,7 +4,7 @@ export default class Render {
 
   static run(workflow: Workflow): Promise<any> {
     if (!workflow.fetch.hasNewItems) {
-      return Promise.resolve(false);
+      return Promise.resolve(workflow);
     }
     workflow.bindData();
     return new Promise((resolve, reject) =>

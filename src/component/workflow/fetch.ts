@@ -5,7 +5,7 @@ export default class Fetch {
 
   static run(workflow: Workflow): Promise<any> {
     if (!workflow.fetch.shouldFetch) {
-      return Promise.resolve(false);
+      return Promise.resolve(workflow);
     }
     return Promise.all([
       Fetch.fetchByDirection(Direction.backward, workflow),

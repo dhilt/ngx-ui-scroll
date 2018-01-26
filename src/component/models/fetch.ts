@@ -20,7 +20,10 @@ export class FetchModel {
   backward: FetchByDirection;
 
   get items(): Array<Item> {
-    return [...this.backward.items, ...this.forward.items];
+    return [
+      ...this[Direction.backward].items ? this[Direction.backward].items : [],
+      ...this[Direction.forward].items ? this[Direction.forward].items : [],
+    ];
   }
 
   get shouldFetch(): boolean {

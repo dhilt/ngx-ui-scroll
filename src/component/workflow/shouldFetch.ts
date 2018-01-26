@@ -4,33 +4,32 @@ import { Direction } from '../models/index';
 export default class ShouldFetch {
 
   static run(workflow: Workflow) {
-    if (ShouldFetch.shouldFetchForward(workflow)) {
-      workflow.fetch[Direction.forward].shouldFetch = true;
-    }
-    if (ShouldFetch.shouldFetchBackward(workflow)) {
-      workflow.fetch[Direction.backward].shouldFetch = true;
-    }
+    ShouldFetch.shouldFetchByDirection(Direction.forward, workflow);
+    ShouldFetch.shouldFetchByDirection(Direction.backward, workflow);
     return workflow;
   }
 
-  static shouldFetchForward(workflow: Workflow) {
-    const lastItem = workflow.buffer.getLastVisibleItem();
-    if (!lastItem) {
-      return true;
+  static shouldFetchByDirection(direction: Direction, workflow: Workflow) {
+    const item = workflow.buffer.getEdgeVisibleItem(direction);
+    if (!item) {
+      workflow.fetch[direction].shouldFetch = true;
+      return;
     }
-    const viewportBottom = workflow.viewport.element.getBoundingClientRect().bottom;
-    const lastElementBottom = lastItem.element.getBoundingClientRect().bottom;
-    return lastElementBottom <= viewportBottom;
-  }
+    const viewportParams = workflow.viewport.element.getBoundingClientRect();
+    const itemParams = item.element.getBoundingClientRect();
 
-  static shouldFetchBackward(workflow: Workflow) {
-    const firstItem = workflow.buffer.getFirstVisibleItem();
-    if (!firstItem) {
-      return true;
+    let viewportEdge, itemEdge, shouldFetch;
+    if (direction === Direction.forward) {
+      viewportEdge = viewportParams.bottom;
+      itemEdge = itemParams.bottom;
+      shouldFetch = itemEdge <= viewportEdge;
+    } else {
+      viewportEdge = viewportParams.top;
+      itemEdge = itemParams.top;
+      shouldFetch = itemEdge >= viewportEdge;
     }
-    const viewportTop = workflow.viewport.element.getBoundingClientRect().top;
-    const firstElementTop = firstItem.element.getBoundingClientRect().top;
-    return firstElementTop >= viewportTop;
+
+    workflow.fetch[direction].shouldFetch = shouldFetch;
   }
 
 }

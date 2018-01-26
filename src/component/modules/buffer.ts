@@ -29,7 +29,7 @@ export class Buffer {
     this.position = 0;
   }
 
-  getFirstVisibleItemIndex() {
+  getFirstVisibleItemIndex(): number {
     const length = this.items.length;
     for (let i = 0; i < length; i++) {
       if (!this.items[i].invisible) {
@@ -39,7 +39,7 @@ export class Buffer {
     return -1;
   }
 
-  getLastVisibleItemIndex() {
+  getLastVisibleItemIndex(): number {
     for (let i = this.items.length - 1; i >= 0; i--) {
       if (!this.items[i].invisible) {
         return i;
@@ -48,22 +48,26 @@ export class Buffer {
     return -1;
   }
 
-  getEdgeVisibleItemIndex(direction: Direction) {
+  getEdgeVisibleItemIndex(direction: Direction): number {
     return direction !== Direction.backward ? this.getLastVisibleItemIndex() : this.getFirstVisibleItemIndex();
   }
 
-  getFirstVisibleItem() {
+  getFirstVisibleItem(): Item {
     const index = this.getFirstVisibleItemIndex();
     if (index >= 0) {
       return this.items[index];
     }
   }
 
-  getLastVisibleItem() {
+  getLastVisibleItem(): Item {
     const index = this.getLastVisibleItemIndex();
     if (index >= 0) {
       return this.items[index];
     }
+  }
+
+  getEdgeVisibleItem(direction: Direction): Item {
+    return direction !== Direction.backward ? this.getLastVisibleItem() : this.getFirstVisibleItem();
   }
 
 }

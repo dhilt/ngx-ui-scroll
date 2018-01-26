@@ -1,0 +1,7 @@
+.viewport {
+  overflow-anchor: none;
+  width: 200px;
+  height: 120px;
+  overflow-y: auto;
+  display: block;
+}

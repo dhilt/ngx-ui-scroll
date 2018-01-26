@@ -26,18 +26,7 @@ import { Datasource, Item } from './component/models/index';
 </div>
 <div data-padding-forward></div>
 
-`,
-  styles: [`
-
-:host {
-  overflow-anchor: none;
-  width: 200px;
-  height: 120px;
-  overflow-y: auto;
-  display: block;
-}
-
-`]
+`
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 

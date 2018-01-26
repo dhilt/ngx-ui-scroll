@@ -27,7 +27,7 @@ export default class ProcessFetch {
         nodeId: workflow.settings.itemIdPrefix + String($index),
         data: item,
         invisible: true
-      })
+      });
     });
 
     if (direction === Direction.forward) {

@@ -12,7 +12,7 @@ export class WorkflowRunner {
 
     console.log('Workflow started');
 
-    if(workflow.isRunning()) {
+    if (workflow.isRunning()) {
       return;
     }
 

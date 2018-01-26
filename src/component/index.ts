@@ -10,12 +10,12 @@ export function initialize(context) {
   workflow = new Workflow(context);
 
   const scrollHandler = (event) => {
-    if(!workflow.disabledScroll) {
+    if (!workflow.disabledScroll) {
       debouncedRound(() => WorkflowRunner.run(workflow), 25);
     } else {
-      //setTimeout(() => {
+      // setTimeout(() => {
       workflow.disabledScroll = false;
-      //});
+      // });
     }
   };
 

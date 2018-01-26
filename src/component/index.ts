@@ -9,9 +9,10 @@ export function initialize(context) {
 
   workflow = new Workflow(context);
 
-  const scrollHandler = (event) => {
+  const scrollHandler = () => {
     if (!workflow.disabledScroll) {
       debouncedRound(() => WorkflowRunner.run(workflow), 25);
+      //WorkflowRunner.run(workflow);
     } else {
       // setTimeout(() => {
       workflow.disabledScroll = false;
@@ -24,12 +25,13 @@ export function initialize(context) {
   workflow.buffer.$items.subscribe(items => context.items = items);
 
   workflow.resolver.subscribe(
-    (result) => {
-      console.log('---=== WF2-result', result);
-      WorkflowRunner.run(workflow);
+    (next) => {
+      if(next) {
+        WorkflowRunner.run(workflow);
+      }
     },
     (error) => {
-      console.log('---=== WF2-error', error);
+      throw error;
     }
   );
 

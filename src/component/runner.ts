@@ -10,9 +10,7 @@ export class WorkflowRunner {
 
   static run(workflow: Workflow) {
 
-    console.log('Workflow started');
-
-    if (workflow.isRunning()) {
+    if (workflow.pending) {
       return;
     }
 
@@ -23,12 +21,10 @@ export class WorkflowRunner {
       .then(Render.run)
       .then(AdjustFetch.run)
       .then(() => {
-        workflow.done(true);
+        workflow.done();
       })
       .catch(error => {
-        workflow.fail(false);
-        // console.log(error);
-        throw error;
+        workflow.fail(error);
       });
 
   }

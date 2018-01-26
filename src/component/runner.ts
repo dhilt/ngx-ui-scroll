@@ -27,7 +27,8 @@ export class WorkflowRunner {
       })
       .catch(error => {
         workflow.fail(false);
-        console.log(error);
+        // console.log(error);
+        throw error;
       });
 
   }

@@ -26,16 +26,21 @@ export class Workflow {
   constructor(context) {
     this.bindData = () => context.changeDetector.markForCheck();
     this.datasource = context.datasource;
+
     this.viewport = new Viewport(context.elementRef, () => this.disabledScroll = true);
     this.settings = new Settings();
     this.buffer = new Buffer();
-    this.reset();
+
+    this.resolver = Observable.create(_observer => {
+      this.observer = _observer;
+    });
   }
 
   dispose() {
   }
 
   start() {
+    this.reset();
     this.pending = true;
     return Promise.resolve(this);
   }
@@ -58,10 +63,6 @@ export class Workflow {
   reset() {
     this.shouldClip = false;
     this.fetch = new FetchModel();
-
-    this.resolver = Observable.create(_observer => {
-      this.observer = _observer;
-    });
   }
 
 }

@@ -1,4 +1,4 @@
-import { Direction } from '../models/direction';
+import { Direction } from '../interfaces/direction';
 
 export class Padding {
 

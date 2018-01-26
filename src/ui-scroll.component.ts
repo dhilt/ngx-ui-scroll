@@ -5,7 +5,7 @@ import { Component,
 } from '@angular/core';
 
 import { initialize, dispose } from './component/index';
-import { Datasource, Item } from './component/models/index';
+import { Datasource, Item } from './component/interfaces/index';
 
 @Component({
   selector: 'ui-scroll',

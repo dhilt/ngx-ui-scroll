@@ -1,5 +1,5 @@
-import { Item } from './item';
-import { Direction } from './direction';
+import { Item } from '../interfaces/item';
+import { Direction } from '../interfaces/direction';
 
 export class FetchByDirection {
   shouldFetch: boolean;

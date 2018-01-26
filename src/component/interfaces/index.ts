@@ -1,6 +1,6 @@
 import { Datasource } from './datasource';
 import { Direction } from './direction';
-import { FetchModel } from './fetch';
+import { FetchModel } from '../classes/fetch';
 import { Item } from './item';
 
-export { Datasource, Direction, FetchModel, Item };
+export { Datasource, Direction, Item };

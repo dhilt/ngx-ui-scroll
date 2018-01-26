@@ -1,5 +1,4 @@
-import { Datasource, Item } from '../models';
-import { Direction } from '../models/index';
+import { Direction, Item } from '../interfaces/index';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export class Buffer {

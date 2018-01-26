@@ -1,9 +1,10 @@
 import { Observable } from 'rxjs/Observable';
 
-import { Viewport } from './modules/viewport';
-import { Settings } from './modules/settings';
-import { Buffer } from './modules/buffer';
-import { FetchModel, Datasource } from './models/index';
+import { Viewport } from './classes/viewport';
+import { Settings } from './classes/settings';
+import { Buffer } from './classes/buffer';
+import { Datasource } from './interfaces/index';
+import { FetchModel } from './classes/fetch';
 
 export class Workflow {
 

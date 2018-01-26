@@ -1,5 +1,5 @@
 import { Workflow } from '../workflow';
-import { Item, Direction } from '../models/index';
+import { Item, Direction } from '../interfaces/index';
 
 export default class ProcessFetch {
 

@@ -1,5 +1,5 @@
 import { Workflow } from '../workflow';
-import { Direction } from '../models/index';
+import { Direction } from '../interfaces/index';
 
 export default class Fetch {
 

@@ -1,8 +1,8 @@
 import { ElementRef } from '@angular/core';
 import { Padding } from './padding';
-import { Direction } from '../models/direction';
+import { Direction } from '../interfaces/direction';
 
-class ViewportPadding {
+export class ViewportPadding {
   forward: Padding;
   backward: Padding;
 

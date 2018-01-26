@@ -33,33 +33,32 @@ export default class AdjustFetch {
     }
   }
 
-  static adjustForward(workflow: Workflow, height: number) {
-    const paddingForward = workflow.viewport.paddingForward;
-    const _paddingHeight = parseInt(paddingForward.style.height, 10) || 0;
-    const paddingHeight = Math.max(_paddingHeight - height, 0);
-    paddingForward.style.height = paddingHeight + 'px';
+  static adjustForward(workflow: Workflow, size: number) {
+    const paddingForward = workflow.viewport.padding[Direction.forward];
+    const _paddingSize = paddingForward.size || 0;
+    paddingForward.size = Math.max(_paddingSize - size, 0);
   }
 
-  static adjustBackward(workflow: Workflow, height: number) {
+  static adjustBackward(workflow: Workflow, size: number) {
     const viewport = workflow.viewport;
     const _scrollPosition = viewport.scrollPosition;
-    const paddingBackward = viewport.paddingBackward;
-    const paddingForward = viewport.paddingForward;
+    const paddingBackward = viewport.padding[Direction.backward];
+    const paddingForward = viewport.padding[Direction.forward];
 
-    // now need to make "height" pixels top
+    // need to make "size" pixels in backward direction
     // 1) via paddingTop
-    const _paddingHeight = parseInt(paddingBackward.style.height, 10) || 0;
-    let paddingHeight = Math.max(_paddingHeight - height, 0);
-    paddingBackward.style.height = paddingHeight + 'px';
-    const paddingDiff = height - (_paddingHeight - paddingHeight);
+    const _paddingSize = paddingBackward.size || 0;
+    let paddingSize = Math.max(_paddingSize - size, 0);
+    paddingBackward.size = paddingSize;
+    const paddingDiff = size - (_paddingSize - paddingSize);
     // 2) via scrollTop
     if (paddingDiff > 0) {
-      height = paddingDiff;
-      viewport.scrollPosition += height;
-      const diff = height - viewport.scrollPosition - _scrollPosition;
+      size = paddingDiff;
+      viewport.scrollPosition += size;
+      const diff = size - viewport.scrollPosition - _scrollPosition;
       if (diff > 0) {
-        paddingHeight = parseInt(paddingForward.style.height, 10) || 0;
-        paddingForward.style.height = (paddingHeight + diff) + 'px';
+        paddingSize = paddingForward.size || 0;
+        paddingForward.size = paddingSize + diff;
         viewport.scrollPosition += diff;
       }
     }

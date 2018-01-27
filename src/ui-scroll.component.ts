@@ -1,17 +1,16 @@
-import { Component,
-  OnInit, OnDestroy,
+import {
+  Component, OnInit, OnDestroy,
   TemplateRef, ElementRef, Renderer2,
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
-import { initialize, dispose } from './component/index';
+import { WorkflowRunner } from './component/runner';
 import { Datasource, Item } from './component/interfaces/index';
 
 @Component({
   selector: 'ui-scroll',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-
 <div data-padding-backward></div>
 <div *ngFor="let item of items" id="{{item.nodeId}}">
   <div [style.position]="item.invisible ? 'fixed' : null" [style.left]="item.invisible ? '-99999px' : null" >
@@ -25,7 +24,6 @@ import { Datasource, Item } from './component/interfaces/index';
   </div>
 </div>
 <div data-padding-forward></div>
-
 `
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
@@ -37,6 +35,9 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   // use in the template
   public items: Array<Item>;
 
+  // Component-Workflow integration
+  private workflowRunner: WorkflowRunner;
+
   constructor(
     private changeDetector: ChangeDetectorRef,
     private elementRef: ElementRef,
@@ -45,10 +46,10 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    initialize(this);
+    this.workflowRunner = new WorkflowRunner(this);
   }
 
   ngOnDestroy() {
-    dispose(this);
+    this.workflowRunner.dispose();
   }
 }

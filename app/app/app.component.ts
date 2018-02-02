@@ -23,7 +23,6 @@ export class AppComponent {
             text: "item #" + i
           });
         }
-        console.log('resolved ' + data.length + ' items (index = ' + index + ', count = ' + count + ')');
         observer.next(data);
       }, 75);
     })

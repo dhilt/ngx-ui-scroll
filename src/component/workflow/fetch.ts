@@ -21,6 +21,7 @@ export default class Fetch {
         workflow.datasource.get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize)
           .subscribe(
             result => {
+              workflow.log('resolved ' + result.length + ' items (index = ' + workflow.fetch[direction].startIndex + ', count = ' + workflow.settings.bufferSize + ')');
               workflow.fetch[direction].newItemsData = result;
               resolve(true);
             },

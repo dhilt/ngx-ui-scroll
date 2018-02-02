@@ -11,6 +11,7 @@ export class Workflow {
   private observer;
   public resolver: Observable<any>;
 
+  private debug: boolean;
   public bindData: Function;
 
   public datasource: Datasource;
@@ -26,6 +27,7 @@ export class Workflow {
   public count = 0;
 
   constructor(context) {
+    this.debug = true;
     this.resolver = Observable.create(_observer => this.observer = _observer);
 
     this.bindData = () => context.changeDetector.markForCheck();
@@ -44,26 +46,32 @@ export class Workflow {
 
   start() {
     this.count++;
-    console.log(`---=== Workflow ${this.count} run`);
+    this.log(`---=== Workflow ${this.count} run`);
     this.reset();
     this.pending = true;
     return Promise.resolve(this);
   }
 
   done() {
-    console.log(`---=== Workflow ${this.count} done`);
+    this.log(`---=== Workflow ${this.count} done`);
     this.pending = false;
     this.observer.next(this.next);
   }
 
   fail(error: any) {
-    console.log(`---=== Workflow ${this.count} fail`);
+    this.log(`---=== Workflow ${this.count} fail`);
     this.pending = false;
     this.observer.error(error);
   }
 
   dispose() {
     this.observer.complete();
+  }
+
+  log(...args) {
+    if(this.debug) {
+      console.log.apply(this, args);
+    }
   }
 
 }

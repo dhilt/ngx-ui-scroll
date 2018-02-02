@@ -16,13 +16,11 @@ export class Viewport {
 
   element = null;
   scrollable = null;
-  disabledScrollEvent: Function;
   padding: ViewportPadding;
 
-  constructor(elementRef: ElementRef, disabledScroll: Function) {
+  constructor(elementRef: ElementRef) {
     this.element = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
-    this.disabledScrollEvent = disabledScroll;
     this.padding = new ViewportPadding(this.element);
   }
 
@@ -30,7 +28,6 @@ export class Viewport {
     return this.scrollable.scrollTop;
   }
   set scrollPosition(value: number) {
-    this.disabledScrollEvent();
     this.scrollable.scrollTop = value;
   }
 

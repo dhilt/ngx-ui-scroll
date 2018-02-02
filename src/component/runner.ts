@@ -11,22 +11,24 @@ export class WorkflowRunner {
 
   private context;
   private onScrollListener: Function;
+  private disabledScroll: boolean;
   private workflow: Workflow;
 
   constructor(context) {
     this.context = context;
+    this.disabledScroll = false;
     this.workflow = new Workflow(this.context);
     this.initialize();
   }
 
   initialize() {
     const scrollHandler = () => {
-      if (!this.workflow.disabledScroll) {
+      if (!this.disabledScroll) {
         debouncedRound(() => this.run(), 25);
         //WorkflowRunner.run(workflow);
       } else {
         // setTimeout(() => {
-        this.workflow.disabledScroll = false;
+        //this.disabledScroll = false;
         // });
       }
     };
@@ -53,6 +55,7 @@ export class WorkflowRunner {
     if (this.workflow.pending) {
       return;
     }
+    this.disabledScroll = true;
     this.workflow.start()
       .then(ShouldFetch.run)
       .then(Fetch.run)
@@ -60,9 +63,11 @@ export class WorkflowRunner {
       .then(Render.run)
       .then(AdjustFetch.run)
       .then(() => {
+        this.disabledScroll = false;
         this.workflow.done();
       })
       .catch(error => {
+        this.disabledScroll = false;
         this.workflow.fail(error);
       });
   }

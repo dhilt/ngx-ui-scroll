@@ -11,7 +11,6 @@ export class Workflow {
   private observer;
   public resolver: Observable<any>;
 
-  public disabledScroll: boolean;
   public bindData: Function;
 
   public datasource: Datasource;
@@ -32,7 +31,7 @@ export class Workflow {
     this.bindData = () => context.changeDetector.markForCheck();
     this.datasource = context.datasource;
 
-    this.viewport = new Viewport(context.elementRef, () => this.disabledScroll = true);
+    this.viewport = new Viewport(context.elementRef);
     this.settings = new Settings();
     this.buffer = new Buffer();
   }

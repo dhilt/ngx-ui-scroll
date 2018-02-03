@@ -31,4 +31,14 @@ export class Viewport {
     this.scrollable.scrollTop = value;
   }
 
+  getEdgePosition(direction: Direction): number {
+    const viewportParams = this.scrollable.getBoundingClientRect();
+    return viewportParams[direction === Direction.forward ? 'bottom' : 'top'];
+  }
+
+  static getItemEdgePosition(element, direction: Direction): number {
+    const itemParams = element.getBoundingClientRect();
+    return itemParams[direction === Direction.forward ? 'bottom' : 'top'];
+  }
+
 }

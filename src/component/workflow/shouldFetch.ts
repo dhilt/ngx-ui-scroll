@@ -1,5 +1,6 @@
 import { Workflow } from '../workflow';
 import { Direction } from '../interfaces/index';
+import { Viewport } from '../classes/viewport';
 
 export default class ShouldFetch {
 
@@ -15,21 +16,10 @@ export default class ShouldFetch {
       workflow.fetch[direction].shouldFetch = true;
       return;
     }
-    const viewportParams = workflow.viewport.scrollable.getBoundingClientRect();
-    const itemParams = item.element.getBoundingClientRect();
-
-    let viewportEdge, itemEdge, shouldFetch;
-    if (direction === Direction.forward) {
-      viewportEdge = viewportParams.bottom;
-      itemEdge = itemParams.bottom;
-      shouldFetch = itemEdge <= viewportEdge;
-    } else {
-      viewportEdge = viewportParams.top;
-      itemEdge = itemParams.top;
-      shouldFetch = itemEdge >= viewportEdge;
-    }
-
-    workflow.fetch[direction].shouldFetch = shouldFetch;
+    const viewportEdge = workflow.viewport.getEdgePosition(direction);
+    const itemEdge = Viewport.getItemEdgePosition(item.element, direction);
+    workflow.fetch[direction].shouldFetch =
+      (direction === Direction.forward) ? itemEdge <= viewportEdge : itemEdge >= viewportEdge;
   }
 
 }

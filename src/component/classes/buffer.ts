@@ -19,8 +19,6 @@ export class Buffer {
   eof: boolean;
   position: number;
 
-  lastIndex = null;
-
   constructor() {
     this.items = [];
     this.bof = false;
@@ -47,8 +45,9 @@ export class Buffer {
     return -1;
   }
 
-  getEdgeVisibleItemIndex(direction: Direction): number {
-    return direction !== Direction.backward ? this.getLastVisibleItemIndex() : this.getFirstVisibleItemIndex();
+  getEdgeVisibleItemIndex(direction: Direction, opposite?: boolean): number {
+    return direction === (!opposite ? Direction.forward : Direction.backward) ?
+      this.getLastVisibleItemIndex() : this.getFirstVisibleItemIndex();
   }
 
   getFirstVisibleItem(): Item {
@@ -65,8 +64,9 @@ export class Buffer {
     }
   }
 
-  getEdgeVisibleItem(direction: Direction): Item {
-    return direction !== Direction.backward ? this.getLastVisibleItem() : this.getFirstVisibleItem();
+  getEdgeVisibleItem(direction: Direction, opposite?: boolean): Item {
+    return direction === (!opposite ? Direction.forward : Direction.backward) ?
+      this.getLastVisibleItem() : this.getFirstVisibleItem();
   }
 
 }

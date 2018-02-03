@@ -17,7 +17,6 @@ export default class Fetch {
   static fetchByDirection(direction: Direction, workflow: Workflow): Promise<any> {
     const doFetchAsync = (resolve, reject) => {
       if (workflow.fetch[direction].shouldFetch) {
-        Fetch.setStartIndex(direction, workflow);
         workflow.datasource.get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize)
           .subscribe(
             result => {
@@ -32,15 +31,6 @@ export default class Fetch {
       }
     };
     return new Promise(doFetchAsync);
-  }
-
-  static setStartIndex(direction: Direction, workflow: Workflow) {
-    const settings = workflow.settings;
-    const edgeItem = workflow.buffer.getEdgeVisibleItem(direction);
-    const edgeIndex = edgeItem ? edgeItem.$index : -1;
-    workflow.fetch[direction].startIndex = direction === Direction.forward ?
-      ((edgeItem ? (edgeIndex + 1) : settings.startIndex)) :
-      ((edgeItem ? edgeIndex : settings.startIndex) - settings.bufferSize);
   }
 
 }

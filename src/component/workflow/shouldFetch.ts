@@ -14,12 +14,24 @@ export default class ShouldFetch {
     const item = workflow.buffer.getEdgeVisibleItem(direction);
     if (!item) {
       workflow.fetch[direction].shouldFetch = true;
-      return;
+    } else {
+      const viewportEdge = workflow.viewport.getEdgePosition(direction);
+      const itemEdge = Viewport.getItemEdgePosition(item.element, direction);
+      workflow.fetch[direction].shouldFetch =
+        (direction === Direction.forward) ? itemEdge <= viewportEdge : itemEdge >= viewportEdge;
     }
-    const viewportEdge = workflow.viewport.getEdgePosition(direction);
-    const itemEdge = Viewport.getItemEdgePosition(item.element, direction);
-    workflow.fetch[direction].shouldFetch =
-      (direction === Direction.forward) ? itemEdge <= viewportEdge : itemEdge >= viewportEdge;
+    if (workflow.fetch[direction].shouldFetch) {
+      ShouldFetch.setStartIndex(direction, workflow);
+    }
+  }
+
+  static setStartIndex(direction: Direction, workflow: Workflow) {
+    const settings = workflow.settings;
+    const edgeItem = workflow.buffer.getEdgeVisibleItem(direction);
+    const edgeIndex = edgeItem ? edgeItem.$index : -1;
+    workflow.fetch[direction].startIndex = direction === Direction.forward ?
+      ((edgeItem ? (edgeIndex + 1) : settings.startIndex)) :
+      ((edgeItem ? edgeIndex : settings.startIndex) - settings.bufferSize);
   }
 
 }

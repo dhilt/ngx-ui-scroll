@@ -18,6 +18,8 @@ export class Viewport {
   scrollable = null;
   padding: ViewportPadding;
 
+  private lastPosition: number;
+
   constructor(elementRef: ElementRef) {
     this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
@@ -34,6 +36,14 @@ export class Viewport {
 
   set scrollPosition(value: number) {
     this.scrollable.scrollTop = value;
+  }
+
+  saveScrollPosition() {
+    this.lastPosition = this.scrollPosition;
+  }
+
+  getLastPosition(): number {
+    return this.lastPosition;
   }
 
   getSize(): number {

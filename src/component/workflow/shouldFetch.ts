@@ -5,8 +5,12 @@ import { Viewport } from '../classes/viewport';
 export default class ShouldFetch {
 
   static run(workflow: Workflow) {
-    ShouldFetch.shouldFetchByDirection(Direction.forward, workflow);
-    ShouldFetch.shouldFetchByDirection(Direction.backward, workflow);
+    if(workflow.direction !== Direction.backward) {
+      ShouldFetch.shouldFetchByDirection(Direction.forward, workflow);
+    }
+    if(workflow.direction !== Direction.forward) {
+      ShouldFetch.shouldFetchByDirection(Direction.backward, workflow);
+    }
     return workflow;
   }
 

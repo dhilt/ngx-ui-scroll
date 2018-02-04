@@ -6,6 +6,7 @@ import { Settings } from './classes/settings';
 import { Buffer } from './classes/buffer';
 import { FetchModel } from './classes/fetch';
 import { ClipModel } from './classes/clip';
+import { Direction } from './interfaces/direction';
 
 export class Workflow {
 
@@ -23,6 +24,7 @@ export class Workflow {
   // single cycle data (resettable)
   public count = 0;
   public pending: boolean;
+  public direction: Direction;
   public next: boolean;
   public fetch: FetchModel;
   public clip: ClipModel;
@@ -41,28 +43,35 @@ export class Workflow {
 
   reset() {
     this.pending = false;
+    this.direction = null;
     this.next = false;
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
   }
 
-  start() {
+  start(direction?: Direction) {
     this.log(`---=== Workflow ${this.count} run`);
     this.reset();
     this.pending = true;
     this.count++;
+    this.direction = direction || null;
     return Promise.resolve(this);
+  }
+
+  end() {
+    this.pending = false;
+    this.viewport.saveScrollPosition();
   }
 
   done() {
     this.log(`---=== Workflow ${this.count} done`);
-    this.pending = false;
+    this.end();
     this.observer.next(this.next);
   }
 
   fail(error: any) {
     this.log(`---=== Workflow ${this.count} fail`);
-    this.pending = false;
+    this.end();
     this.observer.error(error);
   }
 

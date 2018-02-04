@@ -1,7 +1,7 @@
 export class Settings {
-  startIndex = 90;
+  startIndex = 1;
   bufferSize = 5;
-  padding = 0.25; // of viewport height
+  padding = 0.5; // of viewport height
 
   itemIdPrefix = 'ui-scroll-0-'; // todo : scroll instance index ?
 

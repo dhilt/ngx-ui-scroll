@@ -1,5 +1,6 @@
 import { Workflow } from './workflow';
 import { debouncedRound } from './utils/index';
+import { Direction } from './interfaces/direction';
 
 import ShouldFetch from './workflow/shouldFetch';
 import Fetch from './workflow/fetch';
@@ -26,8 +27,14 @@ export class WorkflowRunner {
       if (this.workflow.pending) {
         return;
       }
-      debouncedRound(() => this.run(), 25);
-      //this.run();
+      const lastScrollPosition = this.workflow.viewport.getLastPosition();
+      const scrollPosition = this.workflow.viewport.scrollPosition;
+      if (lastScrollPosition === scrollPosition) {
+        return;
+      }
+      debouncedRound(() =>
+        this.run(lastScrollPosition < scrollPosition ? Direction.forward : Direction.backward), 25
+      );
     };
 
     this.onScrollListener = this.context.renderer.listen(this.workflow.viewport.scrollable, 'scroll', scrollHandler);
@@ -48,11 +55,12 @@ export class WorkflowRunner {
     this.run();
   }
 
-  run() {
+  run(direction?: Direction) {
     if (this.workflow.pending) {
+      // todo : keep last call ?
       return;
     }
-    this.workflow.start()
+    this.workflow.start(direction)
       .then(ShouldFetch.run)
       .then(Fetch.run)
       .then(ProcessFetch.run)

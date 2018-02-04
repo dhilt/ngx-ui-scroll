@@ -5,8 +5,12 @@ import { Viewport } from '../classes/viewport';
 export default class ShouldClip {
 
   static run(workflow: Workflow) {
-    ShouldClip.shouldClipByDirection(Direction.forward, workflow);
-    ShouldClip.shouldClipByDirection(Direction.backward, workflow);
+    if(workflow.direction !== Direction.forward) {
+      ShouldClip.shouldClipByDirection(Direction.forward, workflow);
+    }
+    if(workflow.direction !== Direction.backward) {
+      ShouldClip.shouldClipByDirection(Direction.backward, workflow);
+    }
     return workflow;
   }
 

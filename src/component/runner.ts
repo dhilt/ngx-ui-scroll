@@ -7,6 +7,7 @@ import ProcessFetch from './workflow/processFetch';
 import Render from './workflow/render';
 import AdjustFetch from './workflow/adjustFetch';
 import ShouldClip from './workflow/shouldClip';
+import Clip from './workflow/clip';
 
 export class WorkflowRunner {
 
@@ -58,6 +59,7 @@ export class WorkflowRunner {
       .then(Render.run)
       .then(AdjustFetch.run)
       .then(ShouldClip.run)
+      .then(Clip.run)
       .then(() => {
         this.workflow.done();
       })

@@ -50,4 +50,8 @@ export class Viewport {
     return params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
   }
 
+  static hideItem(element) {
+    element.style.display = 'none';
+  }
+
 }

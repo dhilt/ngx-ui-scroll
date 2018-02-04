@@ -15,8 +15,8 @@ export default class ShouldFetch {
     if (!item) {
       workflow.fetch[direction].shouldFetch = true;
     } else {
-      const viewportEdge = workflow.viewport.getEdgePosition(direction);
-      const itemEdge = Viewport.getItemEdgePosition(item.element, direction);
+      const viewportEdge = workflow.viewport.getEdge(direction);
+      const itemEdge = Viewport.getItemEdge(item.element, direction);
       workflow.fetch[direction].shouldFetch =
         (direction === Direction.forward) ? itemEdge <= viewportEdge : itemEdge >= viewportEdge;
     }

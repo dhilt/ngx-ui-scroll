@@ -27,18 +27,23 @@ export class Viewport {
   get scrollPosition(): number {
     return this.scrollable.scrollTop;
   }
+
   set scrollPosition(value: number) {
     this.scrollable.scrollTop = value;
   }
 
-  getEdgePosition(direction: Direction): number {
-    const viewportParams = this.scrollable.getBoundingClientRect();
-    return viewportParams[direction === Direction.forward ? 'bottom' : 'top'];
+  getSize(): number {
+    return this.element.getBoundingClientRect().height;
   }
 
-  static getItemEdgePosition(element, direction: Direction): number {
-    const itemParams = element.getBoundingClientRect();
-    return itemParams[direction === Direction.forward ? 'bottom' : 'top'];
+  getEdge(direction: Direction, opposite?: boolean): number {
+    const params = this.scrollable.getBoundingClientRect();
+    return params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
+  }
+
+  static getItemEdge(element, direction: Direction, opposite?: boolean): number {
+    const params = element.getBoundingClientRect();
+    return params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
   }
 
 }

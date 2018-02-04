@@ -5,7 +5,6 @@ import { Viewport } from '../classes/viewport';
 export default class ShouldClip {
 
   static run(workflow: Workflow) {
-    workflow.shouldClip = false;
     ShouldClip.shouldClipByDirection(Direction.forward, workflow);
     ShouldClip.shouldClipByDirection(Direction.backward, workflow);
     return workflow;
@@ -57,10 +56,10 @@ export default class ShouldClip {
       }
     }
     if (start >= 0 && end >= 0) {
+      workflow.clip[direction].shouldClip = true;
       for (i = start; i <= end; i++) {
         items[i].toRemove = true;
       }
-      workflow.shouldClip = true;
     }
   }
 

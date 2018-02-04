@@ -5,6 +5,7 @@ import { Viewport } from './classes/viewport';
 import { Settings } from './classes/settings';
 import { Buffer } from './classes/buffer';
 import { FetchModel } from './classes/fetch';
+import { ClipModel } from './classes/clip';
 
 export class Workflow {
 
@@ -19,12 +20,12 @@ export class Workflow {
   public settings: Settings;
   public buffer: Buffer;
 
-  // single cycle data
-  public shouldClip: boolean;
-  public fetch: FetchModel;
-  public next: boolean;
-  public pending: boolean;
+  // single cycle data (resettable)
   public count = 0;
+  public pending: boolean;
+  public next: boolean;
+  public fetch: FetchModel;
+  public clip: ClipModel;
 
   constructor(context) {
     this.debug = true;
@@ -39,16 +40,16 @@ export class Workflow {
   }
 
   reset() {
-    this.shouldClip = false;
+    this.count++;
+    this.pending = false;
     this.next = false;
     this.fetch = new FetchModel();
+    this.clip = new ClipModel();
   }
 
   start() {
-    this.count++;
     this.log(`---=== Workflow ${this.count} run`);
     this.reset();
-    this.pending = true;
     return Promise.resolve(this);
   }
 

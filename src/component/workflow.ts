@@ -40,7 +40,6 @@ export class Workflow {
   }
 
   reset() {
-    this.count++;
     this.pending = false;
     this.next = false;
     this.fetch = new FetchModel();
@@ -50,6 +49,8 @@ export class Workflow {
   start() {
     this.log(`---=== Workflow ${this.count} run`);
     this.reset();
+    this.pending = true;
+    this.count++;
     return Promise.resolve(this);
   }
 

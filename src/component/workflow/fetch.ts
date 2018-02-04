@@ -4,14 +4,14 @@ import { Direction } from '../interfaces/index';
 export default class Fetch {
 
   static run(workflow: Workflow): Promise<any> {
-    if (!workflow.fetch.shouldFetch) {
-      return Promise.resolve(workflow);
+    const result = [];
+    if(workflow.fetch[Direction.backward].shouldFetch) {
+      result.push(Fetch.fetchByDirection(Direction.backward, workflow));
     }
-    return Promise.all([
-      Fetch.fetchByDirection(Direction.backward, workflow),
-      Fetch.fetchByDirection(Direction.forward, workflow)
-    ])
-      .then(() => workflow);
+    if(workflow.fetch[Direction.forward].shouldFetch) {
+      result.push(Fetch.fetchByDirection(Direction.forward, workflow));
+    }
+    return Promise.all(result).then(() => workflow);
   }
 
   static fetchByDirection(direction: Direction, workflow: Workflow): Promise<any> {

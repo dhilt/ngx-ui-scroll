@@ -14,14 +14,14 @@ export class ViewportPadding {
 
 export class Viewport {
 
-  element = null;
+  host = null;
   scrollable = null;
   padding: ViewportPadding;
 
   constructor(elementRef: ElementRef) {
-    this.element = elementRef.nativeElement;
+    this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
-    this.padding = new ViewportPadding(this.element);
+    this.padding = new ViewportPadding(this.host);
   }
 
   get scrollPosition(): number {
@@ -33,7 +33,7 @@ export class Viewport {
   }
 
   getSize(): number {
-    return this.element.getBoundingClientRect().height;
+    return this.scrollable.getBoundingClientRect().height;
   }
 
   getEdge(direction: Direction, opposite?: boolean): number {

@@ -56,10 +56,13 @@ export default class ShouldClip {
       }
     }
     if (start >= 0 && end >= 0) {
-      workflow.clip[direction].shouldClip = true;
       for (i = start; i <= end; i++) {
         items[i].toRemove = true;
       }
+      workflow.clip[direction].shouldClip = true;
+      workflow.clip[direction].size =
+        Viewport.getItemEdge(items[end].element, Direction.forward) -
+        Viewport.getItemEdge(items[start].element, Direction.backward);
     }
   }
 

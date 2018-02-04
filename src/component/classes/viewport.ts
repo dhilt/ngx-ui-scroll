@@ -14,7 +14,7 @@ export class ViewportPadding {
 
 export class Viewport {
 
-  host = null;
+  private host = null;
   scrollable = null;
   padding: ViewportPadding;
 
@@ -22,6 +22,10 @@ export class Viewport {
     this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
     this.padding = new ViewportPadding(this.host);
+  }
+
+  get children(): HTMLCollection {
+    return this.host.children;
   }
 
   get scrollPosition(): number {

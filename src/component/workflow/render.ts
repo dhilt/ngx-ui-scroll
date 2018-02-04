@@ -23,7 +23,7 @@ export default class Render {
   static setElements(workflow: Workflow) {
     const items = workflow.fetch.items;
     for (let j = items.length - 1; j >= 0; j--) {
-      const nodes = workflow.viewport.host.childNodes;
+      const nodes = workflow.viewport.children;
       for (let i = nodes.length - 1; i >= 0; i--) {
         if (nodes[i].id === items[j].nodeId) {
           items[j].element = nodes[i];

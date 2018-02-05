@@ -15,6 +15,7 @@ export class WorkflowRunner {
   private context;
   private onScrollListener: Function;
   private workflow: Workflow;
+  private directionQueue: Direction;
 
   constructor(context) {
     this.context = context;
@@ -44,7 +45,10 @@ export class WorkflowRunner {
     this.workflow.resolver.subscribe(
       (next) => {
         if (next) {
-          this.run();
+          this.run(this.workflow.direction);
+        } else if (this.directionQueue) {
+          this.run(this.directionQueue);
+          this.directionQueue = null;
         }
       },
       (error) => {
@@ -52,12 +56,13 @@ export class WorkflowRunner {
       }
     );
 
-    this.run();
+    this.run(Direction.forward);
+    this.run(Direction.backward);
   }
 
   run(direction?: Direction) {
     if (this.workflow.pending) {
-      // todo : keep last call ?
+      this.directionQueue = direction;
       return;
     }
     this.workflow.start(direction)

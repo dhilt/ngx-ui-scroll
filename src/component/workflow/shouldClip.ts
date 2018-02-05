@@ -5,10 +5,10 @@ import { Viewport } from '../classes/viewport';
 export default class ShouldClip {
 
   static run(workflow: Workflow) {
-    if(workflow.direction !== Direction.forward) {
+    if(workflow.direction !== Direction.backward) {
       ShouldClip.shouldClipByDirection(Direction.forward, workflow);
     }
-    if(workflow.direction !== Direction.backward) {
+    if(workflow.direction !== Direction.forward) {
       ShouldClip.shouldClipByDirection(Direction.backward, workflow);
     }
     return Promise.resolve(workflow);

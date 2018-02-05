@@ -34,7 +34,7 @@ export default class ShouldClip {
         i === lastIndex ? lastItemEdge :
           Viewport.getItemEdge(items[i].element, direction));
 
-    if ((forward && lastItemEdge < limit) || (!forward && firstItemEdge > limit)) {
+    if ((forward && lastItemEdge <= limit) || (!forward && firstItemEdge >= limit)) {
       // all items should be clipped
       start = firstIndex;
       end = lastIndex;
@@ -50,9 +50,9 @@ export default class ShouldClip {
         forward ? i++ : i--
       ) {
         itemEdge = getItemEdge(i);
-        if (forward && itemEdge < limit) {
+        if (forward && itemEdge <= limit) {
           end = i;
-        } else if (!forward && itemEdge > limit) {
+        } else if (!forward && itemEdge >= limit) {
           start = i;
         } else {
           break;

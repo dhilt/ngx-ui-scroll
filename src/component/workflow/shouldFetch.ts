@@ -11,7 +11,7 @@ export default class ShouldFetch {
     if(workflow.direction !== Direction.forward) {
       ShouldFetch.shouldFetchByDirection(Direction.backward, workflow);
     }
-    return workflow;
+    return Promise.resolve(workflow);
   }
 
   static shouldFetchByDirection(direction: Direction, workflow: Workflow) {

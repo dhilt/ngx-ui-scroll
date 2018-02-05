@@ -58,6 +58,10 @@ export class Workflow {
     return Promise.resolve(this);
   }
 
+  continue() {
+    return Promise.resolve(this);
+  }
+
   end() {
     this.pending = false;
     this.viewport.saveScrollPosition();

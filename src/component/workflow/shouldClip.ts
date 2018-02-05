@@ -11,7 +11,7 @@ export default class ShouldClip {
     if(workflow.direction !== Direction.backward) {
       ShouldClip.shouldClipByDirection(Direction.backward, workflow);
     }
-    return workflow;
+    return Promise.resolve(workflow);
   }
 
   static shouldClipByDirection(direction: Direction, workflow: Workflow) {

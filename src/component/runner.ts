@@ -61,19 +61,29 @@ export class WorkflowRunner {
       return;
     }
     this.workflow.start(direction)
+      .then(() => this.fetch())
+      .then(() => this.clip())
+      .then(() =>
+        this.workflow.done()
+      )
+      .catch(error =>
+        this.workflow.fail(error)
+      );
+  }
+
+  clip() {
+    return this.workflow.continue()
+      .then(ShouldClip.run)
+      .then(Clip.run);
+  }
+
+  fetch() {
+    return this.workflow.continue()
       .then(ShouldFetch.run)
       .then(Fetch.run)
       .then(ProcessFetch.run)
       .then(Render.run)
-      .then(AdjustFetch.run)
-      .then(ShouldClip.run)
-      .then(Clip.run)
-      .then(() => {
-        this.workflow.done();
-      })
-      .catch(error => {
-        this.workflow.fail(error);
-      });
+      .then(AdjustFetch.run);
   }
 
   dispose() {

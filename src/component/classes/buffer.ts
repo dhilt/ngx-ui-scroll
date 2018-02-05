@@ -17,13 +17,13 @@ export class Buffer {
 
   bof: boolean;
   eof: boolean;
-  position: number;
+  startIndex: number;
 
   constructor() {
     this.items = [];
     this.bof = false;
     this.eof = false;
-    this.position = 0;
+    this.startIndex = null;
   }
 
   getFirstVisibleItemIndex(): number {

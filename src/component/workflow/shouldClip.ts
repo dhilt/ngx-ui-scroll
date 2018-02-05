@@ -20,8 +20,9 @@ export default class ShouldClip {
       return false;
     }
     const forward = direction === Direction.forward;
-    const viewportEdge = workflow.viewport.getEdge(direction, true); // viewport.top / viewport.bottom
-    const delta = workflow.viewport.getSize() * workflow.settings.padding;
+    const viewport = workflow.viewport;
+    const viewportEdge = viewport.getEdge(direction, true); // viewport.top / viewport.bottom
+    const delta = viewport.getSize() * workflow.settings.padding;
     const limit = viewportEdge + (forward ? -1 : 1) * delta; // viewport.top - delta / viewport.bottom + delta
     const firstIndex = workflow.buffer.getFirstVisibleItemIndex();
     const lastIndex = workflow.buffer.getLastVisibleItemIndex();
@@ -38,6 +39,7 @@ export default class ShouldClip {
       // all items should be clipped
       start = firstIndex;
       end = lastIndex;
+      workflow.buffer.startIndex = forward ? items[lastIndex].$index + 1 : items[firstIndex].$index - 1;
     } else {
       if (forward) {
         start = firstIndex;

@@ -50,10 +50,10 @@ export class Workflow {
   }
 
   start(direction?: Direction) {
+    this.count++;
     this.log(`---=== Workflow ${this.count} run`);
     this.reset();
     this.pending = true;
-    this.count++;
     this.direction = direction || null;
     return Promise.resolve(this);
   }

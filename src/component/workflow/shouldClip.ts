@@ -21,13 +21,11 @@ export default class ShouldClip {
     }
     const forward = direction === Direction.forward;
     const viewport = workflow.viewport;
-    const viewportEdge = viewport.getEdge(direction, true); // viewport.top / viewport.bottom
-    const delta = viewport.getSize() * workflow.settings.padding;
-    const limit = viewportEdge + (forward ? -1 : 1) * delta; // viewport.top - delta / viewport.bottom + delta
+    const limit = viewport.getLimit(direction);
     const firstIndex = workflow.buffer.getFirstVisibleItemIndex();
     const lastIndex = workflow.buffer.getLastVisibleItemIndex();
-    const firstItemEdge = Viewport.getItemEdge(items[firstIndex].element, direction); // items[0].bottom / items[0].top
-    const lastItemEdge = Viewport.getItemEdge(items[lastIndex].element, direction); // items[X].bottom / items[X].top
+    const firstItemEdge = Viewport.getItemEdge(items[firstIndex].element, direction);
+    const lastItemEdge = Viewport.getItemEdge(items[lastIndex].element, direction);
 
     let i, itemEdge, start = -1, end = -1;
     const getItemEdge = (i) =>

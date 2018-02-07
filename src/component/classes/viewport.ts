@@ -1,6 +1,7 @@
 import { ElementRef } from '@angular/core';
 import { Padding } from './padding';
 import { Direction } from '../interfaces/direction';
+import { Settings } from './settings';
 
 export class ViewportPadding {
   forward: Padding;
@@ -14,13 +15,15 @@ export class ViewportPadding {
 
 export class Viewport {
 
+  private settings: Settings;
   private host = null;
   scrollable = null;
   padding: ViewportPadding;
 
   private lastPosition: number;
 
-  constructor(elementRef: ElementRef) {
+  constructor(elementRef: ElementRef, settings: Settings) {
+    this.settings = settings;
     this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
     this.padding = new ViewportPadding(this.host);
@@ -50,9 +53,17 @@ export class Viewport {
     return this.scrollable.getBoundingClientRect().height;
   }
 
+  getBufferPadding(): number {
+    return this.getSize() * this.settings.padding;
+  }
+
   getEdge(direction: Direction, opposite?: boolean): number {
     const params = this.scrollable.getBoundingClientRect();
     return params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
+  }
+
+  getLimit(direction: Direction): number {
+    return this.getEdge(direction, true) + (direction === Direction.forward ? -1 : 1) * this.getBufferPadding();
   }
 
   static getItemEdge(element, direction: Direction, opposite?: boolean): number {

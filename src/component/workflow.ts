@@ -17,8 +17,8 @@ export class Workflow {
   public bindData: Function;
 
   public datasource: Datasource;
-  public viewport: Viewport;
   public settings: Settings;
+  public viewport: Viewport;
   public buffer: Buffer;
 
   // single cycle data (resettable)
@@ -36,8 +36,8 @@ export class Workflow {
     this.bindData = () => context.changeDetector.markForCheck();
     this.datasource = context.datasource;
 
-    this.viewport = new Viewport(context.elementRef);
     this.settings = new Settings();
+    this.viewport = new Viewport(context.elementRef, this.settings);
     this.buffer = new Buffer();
   }
 

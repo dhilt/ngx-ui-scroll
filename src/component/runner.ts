@@ -25,17 +25,15 @@ export class WorkflowRunner {
 
   initialize() {
     const scrollHandler = () => {
+      const direction = this.workflow.viewport.getScrollDirection();
+      if (!direction) { // no scroll
+        return;
+      }
       if (this.workflow.pending) {
+        this.directionQueue = direction;
         return;
       }
-      const lastScrollPosition = this.workflow.viewport.getLastPosition();
-      const scrollPosition = this.workflow.viewport.scrollPosition;
-      if (lastScrollPosition === scrollPosition) {
-        return;
-      }
-      debouncedRound(() =>
-        this.run(lastScrollPosition < scrollPosition ? Direction.forward : Direction.backward), 25
-      );
+      debouncedRound(() => this.run(direction), 25);
     };
 
     this.onScrollListener = this.context.renderer.listen(this.workflow.viewport.scrollable, 'scroll', scrollHandler);

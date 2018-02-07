@@ -49,6 +49,17 @@ export class Viewport {
     return this.lastPosition;
   }
 
+  getScrollDirection(): Direction {
+    const lastScrollPosition = this.getLastPosition();
+    const scrollPosition = this.scrollPosition;
+    if (lastScrollPosition < scrollPosition) {
+      return Direction.forward;
+    } else if (lastScrollPosition > scrollPosition) {
+      return Direction.backward;
+    }
+    return;
+  }
+
   getSize(): number {
     return this.scrollable.getBoundingClientRect().height;
   }

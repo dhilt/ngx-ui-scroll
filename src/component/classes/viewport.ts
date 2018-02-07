@@ -62,8 +62,9 @@ export class Viewport {
     return params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
   }
 
-  getLimit(direction: Direction): number {
-    return this.getEdge(direction, true) + (direction === Direction.forward ? -1 : 1) * this.getBufferPadding();
+  getLimit(direction: Direction, opposite?: boolean): number {
+    return this.getEdge(direction, opposite) +
+      (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();
   }
 
   static getItemEdge(element, direction: Direction, opposite?: boolean): number {

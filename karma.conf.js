@@ -15,7 +15,7 @@ module.exports = function (config) {
       require('karma-coverage-istanbul-reporter')
     ],
     files: [
-      { pattern: 'spec.bundle.js', watched: false }
+      { pattern: './tests/helpers/entry-files.js', watched: false }
     ],
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
@@ -26,7 +26,7 @@ module.exports = function (config) {
     },
 
     preprocessors: {
-      'spec.bundle.js': ['webpack', 'sourcemap']
+      './tests/helpers/entry-files.js': ['webpack', 'sourcemap']
     },
     webpack: {
       resolve: {

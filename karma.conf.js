@@ -56,7 +56,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: [process.platform === 'linux' ? 'Chromium' : 'Chrome', 'IE', 'Firefox'],
+    browsers: [process.platform === 'linux' ? 'Chromium' : 'Chrome'],
     singleRun: false
   });
 };

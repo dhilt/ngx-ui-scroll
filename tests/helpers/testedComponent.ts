@@ -6,13 +6,22 @@ import { Observable } from 'rxjs/Observable';
     <div *uiScroll="let item of datasource">
       <span>{{item.id}}</span> : <b>{{item.text}}</b>
     </div>
-  `
+  `,
+  styles: [`
+    :host {
+      width: 200px;
+      height: 120px;
+      overflow-anchor: none;
+      overflow-y: auto;
+      display: block;
+    }
+  `]
 })
 export class TestedComponent {
   public datasource: any = {
     get: (index: number, count: number) => Observable.create(observer => {
-      console.log('requested index = ' + index + ', count = ' + count);
-      setTimeout(() => {
+      // console.log('requested index = ' + index + ', count = ' + count);
+      // setTimeout(() => {
         let data = [];
         for (let i = index; i <= index + count - 1; i++) {
           data.push({
@@ -21,7 +30,7 @@ export class TestedComponent {
           });
         }
         observer.next(data);
-      }, 100);
+      // }, 100);
     })
   };
 }

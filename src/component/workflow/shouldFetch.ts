@@ -1,7 +1,5 @@
 import { Workflow } from '../workflow';
 import { Direction } from '../interfaces/index';
-import { Viewport } from '../classes/viewport';
-import { Item } from '../interfaces/item';
 
 export default class ShouldFetch {
 
@@ -26,16 +24,20 @@ export default class ShouldFetch {
         (direction === Direction.forward) ? itemEdge < viewportLimit : itemEdge > viewportLimit;
     }
     if (workflow.fetch[direction].shouldFetch) {
-      ShouldFetch.setStartIndex(direction, workflow, item);
+      ShouldFetch.setStartIndex(direction, workflow);
     }
   }
 
-  static setStartIndex(direction: Direction, workflow: Workflow, item: Item) {
-    const itemIndex = item ? item.$index : -1;
-    const startIndex = workflow.buffer.startIndex !== null ? workflow.buffer.startIndex : workflow.settings.startIndex;
-    workflow.fetch[direction].startIndex = direction === Direction.forward ?
-      ((item ? (itemIndex + 1) : startIndex)) :
-      ((item ? itemIndex : startIndex) - workflow.settings.bufferSize);
+  static setStartIndex(direction: Direction, workflow: Workflow) {
+    const forward = direction === Direction.forward;
+    const back = -workflow.settings.bufferSize;
+    let start;
+    if (workflow.buffer.lastIndex[direction] === null) {
+      start = workflow.settings.startIndex + (forward ? 0 : back);
+    } else {
+      start = workflow.buffer.lastIndex[direction] + (forward ? 1 : back);
+    }
+    workflow.fetch[direction].startIndex = start;
   }
 
 }

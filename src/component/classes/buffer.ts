@@ -1,13 +1,32 @@
 import { Direction, Item } from '../interfaces/index';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
+class Index {
+  forward: number = null;
+  backward: number = null;
+}
+
 export class Buffer {
 
   private _items: Array<Item>;
   public $items = new BehaviorSubject(null);
 
+  bof: boolean;
+  eof: boolean;
+  lastIndex: Index;
+
+  constructor() {
+    this.items = [];
+    this.bof = false;
+    this.eof = false;
+    this.lastIndex = new Index();
+  }
+
   set items(items: Array<Item>) {
     this._items = items;
+    if(items.length) {
+      this.setLastIndices();
+    }
     this.$items.next(items);
   }
 
@@ -15,15 +34,9 @@ export class Buffer {
     return this._items;
   }
 
-  bof: boolean;
-  eof: boolean;
-  startIndex: number;
-
-  constructor() {
-    this.items = [];
-    this.bof = false;
-    this.eof = false;
-    this.startIndex = null;
+  setLastIndices() {
+    this.lastIndex[Direction.backward] = this.items[0].$index;
+    this.lastIndex[Direction.forward] = this.items[this.items.length - 1].$index;
   }
 
   getFirstVisibleItemIndex(): number {

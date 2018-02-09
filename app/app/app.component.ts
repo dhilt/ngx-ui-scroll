@@ -25,7 +25,11 @@ export class AppComponent {
         }
         observer.next(data);
       }, 100);
-    })
+    }),
+
+    settings: {
+      bufferSize: 5
+    }
   };
 
   constructor() {

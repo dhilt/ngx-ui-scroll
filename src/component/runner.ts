@@ -75,9 +75,11 @@ export class WorkflowRunner {
   }
 
   clip() {
-    return this.workflow.continue()
-      .then(ShouldClip.run)
-      .then(Clip.run);
+    return this.workflow.settings.infinite ?
+      null :
+      this.workflow.continue()
+        .then(ShouldClip.run)
+        .then(Clip.run);
   }
 
   fetch() {

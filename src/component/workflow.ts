@@ -39,9 +39,10 @@ export class Workflow {
     };
     this.datasource = context.datasource;
 
-    this.settings = new Settings();
+    this.settings = new Settings(context.datasource.settings);
     this.viewport = new Viewport(context.elementRef, this.settings);
     this.buffer = new Buffer();
+    this.log(this.settings.bufferSize);
   }
 
   reset() {

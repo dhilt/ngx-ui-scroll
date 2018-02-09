@@ -1,5 +1,4 @@
 import { Workflow } from '../workflow';
-import { Viewport } from '../classes/viewport';
 import { Direction } from '../interfaces/direction';
 
 export default class Clip {

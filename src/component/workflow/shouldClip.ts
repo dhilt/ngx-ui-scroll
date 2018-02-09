@@ -39,7 +39,6 @@ export default class ShouldClip {
       // all items should be clipped
       start = firstIndex;
       end = lastIndex;
-      workflow.buffer.startIndex = forward ? items[lastIndex].$index + 1 : items[firstIndex].$index - 1;
     } else {
       if (forward) {
         start = firstIndex;

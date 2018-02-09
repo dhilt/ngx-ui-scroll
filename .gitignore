@@ -5,6 +5,7 @@
 /out-tsc
 /dist
 ngx-ui-scroll-*.tgz
+debug.log
 
 # dependencies
 /node_modules
@@ -41,3 +42,5 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+temp

@@ -4,7 +4,8 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
-  'rxjs/Observable': 'Rx'
+  'rxjs/Observable': 'Rx',
+  'rxjs/BehaviorSubject': 'Rx'
 };
 
 export default {

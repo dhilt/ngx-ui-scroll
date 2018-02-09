@@ -4,7 +4,7 @@ import { Direction } from '../interfaces/index';
 export default class ShouldClip {
 
   static run(workflow: Workflow) {
-    if (!workflow.fetch.shouldFetch) {
+    if (workflow.settings.clipAfterFetch && !workflow.fetch.shouldFetch) {
       return workflow;
     }
     if (workflow.direction !== Direction.backward) {

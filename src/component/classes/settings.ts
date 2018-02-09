@@ -7,6 +7,7 @@ export class Settings {
 
   // internal settings
   itemIdPrefix = 'ui-scroll-0-'; // todo : scroll instance index ?
+  clipAfterFetch = true; // true for AngularJS compatibility
 
   constructor(settings?: SettingsInterface) {
     if (settings) {

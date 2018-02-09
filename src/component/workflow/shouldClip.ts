@@ -4,13 +4,16 @@ import { Direction } from '../interfaces/index';
 export default class ShouldClip {
 
   static run(workflow: Workflow) {
+    if (!workflow.fetch.shouldFetch) {
+      return workflow;
+    }
     if (workflow.direction !== Direction.backward) {
       ShouldClip.shouldClipByDirection(Direction.forward, workflow);
     }
     if (workflow.direction !== Direction.forward) {
       ShouldClip.shouldClipByDirection(Direction.backward, workflow);
     }
-    return Promise.resolve(workflow);
+    return workflow;
   }
 
   static shouldClipByDirection(direction: Direction, workflow: Workflow) {
@@ -32,7 +35,7 @@ export default class ShouldClip {
         index === lastIndex ? lastItemEdge :
           viewport.getItemEdge(items[index].element, direction));
 
-    if ((forward && lastItemEdge < viewportLimit) || (!forward && firstItemEdge > viewportLimit)) {
+    if ((forward && lastItemEdge <= viewportLimit) || (!forward && firstItemEdge >= viewportLimit)) {
       // all items should be clipped
       start = firstIndex;
       end = lastIndex;
@@ -49,9 +52,9 @@ export default class ShouldClip {
         forward ? i++ : i--
       ) {
         itemEdge = getItemEdge(i);
-        if (forward && itemEdge < viewportLimit) {
+        if (forward && itemEdge <= viewportLimit) {
           end = i;
-        } else if (!forward && itemEdge > viewportLimit) {
+        } else if (!forward && itemEdge >= viewportLimit) {
           start = i;
         } else {
           break;

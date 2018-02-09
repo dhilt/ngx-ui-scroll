@@ -84,7 +84,7 @@ export class Workflow {
   }
 
   log(...args) {
-    if(this.debug) {
+    if (this.debug) {
       console.log.apply(this, args);
     }
   }

@@ -5,10 +5,10 @@ export default class Fetch {
 
   static run(workflow: Workflow): Promise<any> {
     const result = [];
-    if(workflow.fetch[Direction.backward].shouldFetch) {
+    if (workflow.fetch[Direction.backward].shouldFetch) {
       result.push(Fetch.fetchByDirection(Direction.backward, workflow));
     }
-    if(workflow.fetch[Direction.forward].shouldFetch) {
+    if (workflow.fetch[Direction.forward].shouldFetch) {
       result.push(Fetch.fetchByDirection(Direction.forward, workflow));
     }
     return Promise.all(result).then(() => workflow);
@@ -20,7 +20,8 @@ export default class Fetch {
         workflow.datasource.get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize)
           .subscribe(
             result => {
-              workflow.log('resolved ' + result.length + ' items (index = ' + workflow.fetch[direction].startIndex + ', count = ' + workflow.settings.bufferSize + ')');
+              workflow.log(`resolved ${result.length} items ` +
+                `(index = ${workflow.fetch[direction].startIndex}, count = ${workflow.settings.bufferSize})`);
               workflow.fetch[direction].newItemsData = result;
               resolve(true);
             },

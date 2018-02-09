@@ -13,14 +13,17 @@ export default class Clip {
 
     workflow.buffer.items = workflow.buffer.items.filter(item => {
       if (item.toRemove) {
-        Viewport.hideItem(item.element);
+        workflow.viewport.hideItem(item.element);
         return false;
       }
       return true;
     });
     workflow.bindData();
-
-    return workflow;
+    return new Promise((resolve, reject) =>
+      setTimeout(() => {
+        resolve(workflow);
+      })
+    );
   }
 
   static runByDirection(direction: Direction, workflow: Workflow) {

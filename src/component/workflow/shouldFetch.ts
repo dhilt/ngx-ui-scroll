@@ -6,10 +6,10 @@ import { Item } from '../interfaces/item';
 export default class ShouldFetch {
 
   static run(workflow: Workflow) {
-    if(workflow.direction !== Direction.backward) {
+    if (workflow.direction !== Direction.backward) {
       ShouldFetch.shouldFetchByDirection(Direction.forward, workflow);
     }
-    if(workflow.direction !== Direction.forward) {
+    if (workflow.direction !== Direction.forward) {
       ShouldFetch.shouldFetchByDirection(Direction.backward, workflow);
     }
     return Promise.resolve(workflow);
@@ -20,7 +20,7 @@ export default class ShouldFetch {
     if (!item) {
       workflow.fetch[direction].shouldFetch = true;
     } else {
-      const itemEdge = Viewport.getItemEdge(item.element, direction);
+      const itemEdge = workflow.viewport.getItemEdge(item.element, direction);
       const viewportLimit = workflow.viewport.getLimit(direction);
       workflow.fetch[direction].shouldFetch =
         (direction === Direction.forward) ? itemEdge < viewportLimit : itemEdge > viewportLimit;

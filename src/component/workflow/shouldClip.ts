@@ -5,10 +5,10 @@ import { Viewport } from '../classes/viewport';
 export default class ShouldClip {
 
   static run(workflow: Workflow) {
-    if(workflow.direction !== Direction.backward) {
+    if (workflow.direction !== Direction.backward) {
       ShouldClip.shouldClipByDirection(Direction.forward, workflow);
     }
-    if(workflow.direction !== Direction.forward) {
+    if (workflow.direction !== Direction.forward) {
       ShouldClip.shouldClipByDirection(Direction.backward, workflow);
     }
     return Promise.resolve(workflow);
@@ -24,16 +24,16 @@ export default class ShouldClip {
     const viewportLimit = viewport.getLimit(direction, true);
     const firstIndex = workflow.buffer.getFirstVisibleItemIndex();
     const lastIndex = workflow.buffer.getLastVisibleItemIndex();
-    const firstItemEdge = Viewport.getItemEdge(items[firstIndex].element, direction);
-    const lastItemEdge = Viewport.getItemEdge(items[lastIndex].element, direction);
+    const firstItemEdge = viewport.getItemEdge(items[firstIndex].element, direction);
+    const lastItemEdge = viewport.getItemEdge(items[lastIndex].element, direction);
 
     let i, itemEdge, start = -1, end = -1;
-    const getItemEdge = (i) =>
-      i === firstIndex ? firstItemEdge : (
-        i === lastIndex ? lastItemEdge :
-          Viewport.getItemEdge(items[i].element, direction));
+    const getItemEdge = (index) =>
+      index === firstIndex ? firstItemEdge : (
+        index === lastIndex ? lastItemEdge :
+          viewport.getItemEdge(items[index].element, direction));
 
-    if ((forward && lastItemEdge <= viewportLimit) || (!forward && firstItemEdge >= viewportLimit)) {
+    if ((forward && lastItemEdge < viewportLimit) || (!forward && firstItemEdge > viewportLimit)) {
       // all items should be clipped
       start = firstIndex;
       end = lastIndex;
@@ -50,9 +50,9 @@ export default class ShouldClip {
         forward ? i++ : i--
       ) {
         itemEdge = getItemEdge(i);
-        if (forward && itemEdge <= viewportLimit) {
+        if (forward && itemEdge < viewportLimit) {
           end = i;
-        } else if (!forward && itemEdge >= viewportLimit) {
+        } else if (!forward && itemEdge > viewportLimit) {
           start = i;
         } else {
           break;
@@ -65,8 +65,8 @@ export default class ShouldClip {
       }
       workflow.clip[direction].shouldClip = true;
       workflow.clip[direction].size =
-        Viewport.getItemEdge(items[end].element, Direction.forward) -
-        Viewport.getItemEdge(items[start].element, Direction.backward);
+        viewport.getItemEdge(items[end].element, Direction.forward) -
+        viewport.getItemEdge(items[start].element, Direction.backward);
     }
   }
 

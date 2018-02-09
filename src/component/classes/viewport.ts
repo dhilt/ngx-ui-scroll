@@ -70,7 +70,10 @@ export class Viewport {
 
   getEdge(direction: Direction, opposite?: boolean): number {
     const params = this.scrollable.getBoundingClientRect();
-    return params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
+    const result = params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
+    // const result = this.scrollable.offsetTop +
+    //   (direction === (!opposite ? Direction.forward : Direction.backward) ? this.getSize() : 0);
+    return result;
   }
 
   getLimit(direction: Direction, opposite?: boolean): number {
@@ -78,12 +81,19 @@ export class Viewport {
       (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();
   }
 
-  static getItemEdge(element, direction: Direction, opposite?: boolean): number {
-    const params = element.getBoundingClientRect();
-    return params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
+  getItemSize(element): number {
+    return element.getBoundingClientRect().height;
   }
 
-  static hideItem(element) {
+  getItemEdge(element, direction: Direction, opposite?: boolean): number {
+    const params = element.getBoundingClientRect();
+    const result = params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
+    // const result = element.offsetTop - this.scrollable.scrollTop +
+    //   (direction === (!opposite ? Direction.forward : Direction.backward) ? this.getItemSize(element) : 0);
+    return result;
+  }
+
+  hideItem(element) {
     element.style.display = 'none';
   }
 

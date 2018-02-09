@@ -2,9 +2,9 @@ import { Workflow } from '../workflow';
 
 export default class Render {
 
-  static run(workflow: Workflow): Promise<any> {
+  static run(workflow: Workflow) {
     if (!workflow.fetch.hasNewItems) {
-      return Promise.resolve(workflow);
+      return workflow;
     }
     workflow.next = true;
     workflow.bindData();

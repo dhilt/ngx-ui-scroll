@@ -9,16 +9,19 @@ import { Observable } from 'rxjs/Observable';
   `
 })
 export class TestedComponent {
-  public datasource = {
+  public datasource: any = {
     get: (index: number, count: number) => Observable.create(observer => {
-      let data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({
-          id: i,
-          text: "item #" + i
-        });
-      }
-      observer.next(data);
+      console.log('requested index = ' + index + ', count = ' + count);
+      setTimeout(() => {
+        let data = [];
+        for (let i = index; i <= index + count - 1; i++) {
+          data.push({
+            id: i,
+            text: "item #" + i
+          });
+        }
+        observer.next(data);
+      }, 100);
     })
   };
 }

@@ -2,7 +2,7 @@ import { TestBed, ComponentFixture, ComponentFixtureAutoDetect, async, tick, fak
 // import { ChangeDetectorRef, ElementRef, ViewContainerRef, DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
-import { UiScrollModule } from '../src/module/ui-scroll.module';
+import { UiScrollModule } from '../src/ui-scroll.module';
 import { TestedComponent } from './helpers/testedComponent';
 
 describe('Common tests', () => {
@@ -14,7 +14,7 @@ describe('Common tests', () => {
       imports: [UiScrollModule],
       declarations: [TestedComponent],
       providers: [
-        { provide: ComponentFixtureAutoDetect, useValue: true }
+        // { provide: ComponentFixtureAutoDetect, useValue: true }
       ]
     });
     fixture = TestBed.createComponent(TestedComponent);
@@ -30,7 +30,7 @@ describe('Common tests', () => {
   const getElemByAttr = (attr) => fixture.debugElement.query(By.css(attr));
 
   it('should correctly be called html-tag with directive', () => {
-    expect(getElemByAttr('app-ui-scroll')).toBeDefined();  // should be renamed into ui-scroll
+    expect(getElemByAttr('ui-scroll')).toBeDefined();
   });
 
   it('should create tags: data-padding-top and data-padding-bottom', () => {

@@ -9,7 +9,9 @@ module.exports = function (config) {
       require('karma-jasmine'),
       require('karma-webpack'),
       require('karma-spec-reporter'),
+      require('karma-ie-launcher'),
       require('karma-chrome-launcher'),
+      require('karma-firefox-launcher'),
       require('karma-sourcemap-loader'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter')
@@ -54,7 +56,7 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: [process.platform === 'linux' ? 'Chromium' : 'Chrome'],
+    browsers: [process.platform === 'linux' ? 'Chromium' : 'Chrome', 'IE', 'Firefox'],
     singleRun: false
   });
 };

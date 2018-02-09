@@ -1,5 +1,5 @@
 export interface Settings {
-  startIndex: number;
-  bufferSize: number;
-  padding: number;
+  startIndex?: number;
+  bufferSize?: number;
+  padding?: number;
 }

@@ -1,6 +1,5 @@
 import { Workflow } from '../workflow';
 import { Direction } from '../interfaces/index';
-import { Viewport } from '../classes/viewport';
 
 export default class ShouldClip {
 

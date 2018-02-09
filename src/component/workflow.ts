@@ -33,7 +33,10 @@ export class Workflow {
     this.debug = true;
     this.resolver = Observable.create(_observer => this.observer = _observer);
 
-    this.bindData = () => context.changeDetector.markForCheck();
+    this.bindData = () => {
+      this.next = true;
+      context.changeDetector.markForCheck();
+    };
     this.datasource = context.datasource;
 
     this.settings = new Settings();

@@ -16,7 +16,7 @@ export const configureTestBed = (datasource, template) => {
         useValue: true
       }, {
         provide: DatasourceService,
-        useClass: <Datasource>datasource
+        useValue: <Datasource>datasource
       }]
     })
     .overrideComponent(TestComponent, { set: { template } })

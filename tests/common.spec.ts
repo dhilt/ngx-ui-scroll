@@ -2,7 +2,7 @@ import { async } from '@angular/core/testing';
 
 import { configureTestBed } from './scaffolding/testBed';
 import { defaultTemplate } from './scaffolding/templates';
-import { InitialDatasource } from './scaffolding/datasources/initial';
+import { datasourceStore } from './scaffolding/datasources';
 import { Direction } from '../src/component/interfaces/direction';
 import { Misc } from './miscellaneous/misc';
 
@@ -10,7 +10,7 @@ describe('Common spec', () => {
   let misc: Misc;
 
   beforeEach(async(() => {
-    const fixture = configureTestBed(InitialDatasource, defaultTemplate);
+    const fixture = configureTestBed(datasourceStore['initial'], defaultTemplate);
     misc = new Misc(fixture);
   }));
 

@@ -1,4 +1,4 @@
-interface TemplateSettings {
+export interface TemplateSettings {
   viewportHeight: number;
 }
 
@@ -11,7 +11,7 @@ export const generateTemplate = (templateSettings?: TemplateSettings) => {
   return {
     settings,
     template: `
-      <div class="viewport" style="height: ${settings.viewportHeight}; ">
+      <div class="viewport" style="height: ${settings.viewportHeight}px; ">
         <div *uiScroll="let item of datasource">
           <span>{{item.id}}</span> : <b>{{item.text}}</b>
         </div>

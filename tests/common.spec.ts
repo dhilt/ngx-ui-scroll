@@ -7,6 +7,7 @@ import { Direction } from '../src/component/interfaces/direction';
 import { DatasourceService } from './helpers/datasource.service';
 
 import { InitialDatasource } from './helpers/datasources/initial';
+import { templates } from './helpers/templates';
 
 describe('Common tests', () => {
   let misc: Misc;
@@ -24,6 +25,11 @@ describe('Common tests', () => {
           useClass: InitialDatasource
         }]
       })
+      // .overrideComponent(TestComponent, {
+      //   set: {
+      //     template: templates['add']
+      //   }
+      // })
       .createComponent(TestComponent);
     misc = new Misc(testBedResult);
   }));
@@ -54,8 +60,8 @@ describe('Common tests', () => {
       // expect(elem.childNodes[1].styles.left).toBeNull();
     }
 
-    expect(misc.elementByAttr(`[id="i-0-${firstId - 1}"]`)).toBeFalsy();
-    expect(misc.elementByAttr(`[id="i-0-${lastId + 1}"]`)).toBeFalsy();
+    expect(misc.elementByAttr(`[id="ui-scroll-0-${firstId - 1}"]`)).toBeFalsy();
+    expect(misc.elementByAttr(`[id="ui-scroll-0-${lastId + 1}"]`)).toBeFalsy();
   }));
 
 /*  it('should simulate scroll to top, and contain items with id from ??? up to ???', fakeAsync(() => {

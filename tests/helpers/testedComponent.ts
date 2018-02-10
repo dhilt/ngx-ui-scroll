@@ -1,14 +1,21 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { Datasource } from '../../src/component/interfaces/datasource';
+
+export interface TestComponent {
+  datasource: Datasource;
+}
 
 @Component({
   template: `
-    <div *uiScroll="let item of datasource">
-      <span>{{item.id}}</span> : <b>{{item.text}}</b>
+    <div class="viewport">
+      <div *uiScroll="let item of datasource">
+        <span>{{item.id}}</span> : <b>{{item.text}}</b>
+      </div>
     </div>
   `,
   styles: [`
-    :host {
+    .viewport {
       width: 200px;
       height: 120px;
       overflow-anchor: none;
@@ -17,11 +24,11 @@ import { Observable } from 'rxjs/Observable';
     }
   `]
 })
-export class TestedComponent {
-  public datasource: any = {
+export class TestedComponent implements TestComponent {
+  datasource: Datasource = {
     get: (index: number, count: number) => Observable.create(observer => {
       // console.log('requested index = ' + index + ', count = ' + count);
-      // setTimeout(() => {
+      setTimeout(() => {
         let data = [];
         for (let i = index; i <= index + count - 1; i++) {
           data.push({
@@ -30,7 +37,7 @@ export class TestedComponent {
           });
         }
         observer.next(data);
-      // }, 100);
+      }, 15);
     })
   };
 }

@@ -18,6 +18,10 @@ export class Padding {
     this.element = fixture.debugElement.query(By.css(`[data-padding-${direction}]`));
     this.style = this.element.nativeElement.style;
   }
+
+  getSize():number {
+    return parseInt(this.style.height, 10);
+  }
 }
 
 export class Misc {

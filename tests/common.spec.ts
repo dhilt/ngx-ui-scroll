@@ -51,8 +51,8 @@ describe('Common tests', () => {
 
   it('should create tags: data-padding-backward and data-padding-forward', () => {
     templateSettings.viewportHeight;
-    expect(misc.padding[Direction.backward].style.height).toEqual('0px');
-    expect(misc.padding[Direction.forward].style.height).toEqual('0px');
+    expect(misc.padding[Direction.backward].getSize()).toEqual(0);
+    expect(misc.padding[Direction.forward].getSize()).toEqual(0);
   });
 
   it('should contain only items with id from -4 up to 10', async(() => {

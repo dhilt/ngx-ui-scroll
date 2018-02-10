@@ -53,15 +53,15 @@ describe('Common tests', () => {
     const firstId = -4;
     const lastId = 10;
     for (let id = firstId; id <= lastId; id++) {
-      const elem = misc.elementByAttr(`[id="ui-scroll-0-${id}"]`);
+      const elem = misc.getItemElement(id);
       expect(elem.name).toEqual('div');
       expect(elem.nativeElement.textContent).toMatch(`${id} : item #${id}`);
       // expect(elem.childNodes[1].styles.position).toBeNull();
       // expect(elem.childNodes[1].styles.left).toBeNull();
     }
 
-    expect(misc.elementByAttr(`[id="ui-scroll-0-${firstId - 1}"]`)).toBeFalsy();
-    expect(misc.elementByAttr(`[id="ui-scroll-0-${lastId + 1}"]`)).toBeFalsy();
+    expect(misc.getItemElement(firstId - 1)).toBeFalsy();
+    expect(misc.getItemElement(lastId + 1)).toBeFalsy();
   }));
 
 /*  it('should simulate scroll to top, and contain items with id from ??? up to ???', fakeAsync(() => {

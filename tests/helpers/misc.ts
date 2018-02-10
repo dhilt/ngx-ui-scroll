@@ -41,7 +41,11 @@ export class Misc {
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward);
   }
 
-  elementByAttr(attr) {
+  private elementByAttr(attr) {
     return this.fixture.debugElement.query(By.css(attr));
+  }
+
+  getItemElement(itemId: number) {
+    return this.elementByAttr(`[id="${this.workflow.settings.itemIdPrefix}${itemId}"]`);
   }
 }

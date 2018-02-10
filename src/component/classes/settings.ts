@@ -9,6 +9,7 @@ export class Settings {
   infinite = false;
 
   // internal settings
+  debug = true; // logging; need to turn off in release
   itemIdPrefix = 'ui-scroll-0-'; // todo : scroll instance index ?
   clipAfterFetchOnly = false; // true for AngularJS lib compatibility
 

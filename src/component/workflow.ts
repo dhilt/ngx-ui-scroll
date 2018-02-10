@@ -13,9 +13,7 @@ export class Workflow {
   private observer;
   public resolver: Observable<any>;
 
-  private debug: boolean;
   public bindData: Function;
-
   public datasource: Datasource;
   public settings: Settings;
   public viewport: Viewport;
@@ -30,7 +28,6 @@ export class Workflow {
   public clip: ClipModel;
 
   constructor(context) {
-    this.debug = true;
     this.resolver = Observable.create(_observer => this.observer = _observer);
 
     this.bindData = () => {
@@ -42,7 +39,6 @@ export class Workflow {
     this.settings = new Settings(context.datasource.settings);
     this.viewport = new Viewport(context.elementRef, this.settings);
     this.buffer = new Buffer();
-    this.log(this.settings.bufferSize);
   }
 
   reset() {
@@ -88,7 +84,7 @@ export class Workflow {
   }
 
   log(...args) {
-    if (this.debug) {
+    if (this.settings.debug) {
       console.log.apply(this, args);
     }
   }

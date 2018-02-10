@@ -19,8 +19,10 @@ export class Workflow {
   public viewport: Viewport;
   public buffer: Buffer;
 
-  // single cycle data (resettable)
   public count = 0;
+  public fetchCount = 0;
+
+  // single cycle data (resettable)
   public pending: boolean;
   public direction: Direction;
   public next: boolean;

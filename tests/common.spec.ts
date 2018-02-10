@@ -14,7 +14,6 @@ describe('Common tests', () => {
   const templateData = generateTemplate({
     viewportHeight: 120
   });
-  const templateSettings = templateData.settings;
 
   beforeEach(async(() => {
     const testBedResult = TestBed
@@ -49,26 +48,22 @@ describe('Common tests', () => {
     expect(misc.padding[Direction.forward].element).toBeTruthy();
   });
 
-  it('should create tags: data-padding-backward and data-padding-forward', () => {
-    templateSettings.viewportHeight;
+  it('should fetch 3 packs with no clip', () => {
+    expect(misc.workflow.fetchCount).toEqual(3);
     expect(misc.padding[Direction.backward].getSize()).toEqual(0);
     expect(misc.padding[Direction.forward].getSize()).toEqual(0);
-  });
 
-  it('should contain only items with id from -4 up to 10', async(() => {
-    const firstId = -4;
-    const lastId = 10;
-    for (let id = firstId; id <= lastId; id++) {
-      const elem = misc.getItemElement(id);
+    const flowSettings = misc.workflow.settings;
+    const first = flowSettings.startIndex - flowSettings.bufferSize;
+    const last = flowSettings.startIndex + flowSettings.bufferSize * 2 - 1;
+    for (let index = first; index <= last; index++) {
+      const elem = misc.getItemElement(index);
       expect(elem.name).toEqual('div');
-      expect(elem.nativeElement.textContent).toMatch(`${id} : item #${id}`);
-      // expect(elem.childNodes[1].styles.position).toBeNull();
-      // expect(elem.childNodes[1].styles.left).toBeNull();
+      expect(elem.nativeElement.innerText.trim()).toEqual(`${index} : item #${index}`);
     }
-
-    expect(misc.getItemElement(firstId - 1)).toBeFalsy();
-    expect(misc.getItemElement(lastId + 1)).toBeFalsy();
-  }));
+    expect(misc.getItemElement(first - 1)).toBeFalsy();
+    expect(misc.getItemElement(last + 1)).toBeFalsy();
+  });
 
   /*  it('should simulate scroll to top, and contain items with id from ??? up to ???', fakeAsync(() => {
    const uiScroll = misc.elementByAttr('ui-scroll').parent;

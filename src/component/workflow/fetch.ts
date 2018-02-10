@@ -23,6 +23,7 @@ export default class Fetch {
               workflow.log(`resolved ${result.length} items ` +
                 `(index = ${workflow.fetch[direction].startIndex}, count = ${workflow.settings.bufferSize})`);
               workflow.fetch[direction].newItemsData = result;
+              workflow.fetchCount++;
               resolve(true);
             },
             reject

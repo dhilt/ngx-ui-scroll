@@ -14,7 +14,7 @@ export class WorkflowRunner {
 
   private context;
   private onScrollListener: Function;
-  private workflow: Workflow;
+  public workflow: Workflow;
   private directionQueue: Direction;
 
   constructor(context) {

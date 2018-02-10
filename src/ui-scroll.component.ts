@@ -36,7 +36,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public items: Array<Item>;
 
   // Component-Workflow integration
-  private workflowRunner: WorkflowRunner;
+  public workflowRunner: WorkflowRunner;
 
   constructor(
     private changeDetector: ChangeDetectorRef,

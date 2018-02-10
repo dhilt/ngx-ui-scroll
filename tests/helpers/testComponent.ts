@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Datasource } from '../../src/component/interfaces/datasource';
 
-export interface TestComponent {
+export interface TestComponentInterface {
   datasource: Datasource;
 }
 
@@ -24,7 +24,7 @@ export interface TestComponent {
     }
   `]
 })
-export class TestedComponent implements TestComponent {
+export class TestComponent implements TestComponentInterface {
   datasource: Datasource = {
     get: (index: number, count: number) => Observable.create(observer => {
       // console.log('requested index = ' + index + ', count = ' + count);

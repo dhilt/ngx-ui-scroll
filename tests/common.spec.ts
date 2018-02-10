@@ -1,7 +1,7 @@
 import { TestBed, ComponentFixtureAutoDetect, async, tick, fakeAsync } from '@angular/core/testing';
 
 import { UiScrollModule } from '../src/ui-scroll.module';
-import { TestedComponent } from './helpers/testedComponent';
+import { TestComponent } from './helpers/testComponent';
 import { Misc } from './helpers/misc';
 import { Direction } from '../src/component/interfaces/direction';
 
@@ -11,22 +11,23 @@ describe('Common tests', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [UiScrollModule],
-      declarations: [TestedComponent],
+      declarations: [TestComponent],
       providers: [{
         provide: ComponentFixtureAutoDetect,
         useValue: true
       }]
     });
-    misc = new Misc(TestBed.createComponent(TestedComponent));
+    misc = new Misc(TestBed.createComponent(TestComponent));
   }));
 
   it('should initialize', () => {
-    expect(misc.component).not.toBeNull();
+    expect(misc.testComponent).toBeTruthy();
     expect(misc.datasource).toEqual(jasmine.any(Object));
     expect(misc.datasource.get).toEqual(jasmine.any(Function));
-    expect(misc.hostElement).not.toBeFalsy();
-    expect(misc.padding[Direction.backward].element).not.toBeFalsy();
-    expect(misc.padding[Direction.forward].element).not.toBeFalsy();
+    expect(misc.uiScrollElement).toBeTruthy();
+    expect(misc.uiScrollComponent).toBeTruthy();
+    expect(misc.padding[Direction.backward].element).toBeTruthy();
+    expect(misc.padding[Direction.forward].element).toBeTruthy();
   });
 
   it('should create tags: data-padding-backward and data-padding-forward', () => {
@@ -39,7 +40,6 @@ describe('Common tests', () => {
     const lastId = 10;
     for (let id = firstId; id <= lastId; id++) {
       const elem = misc.elementByAttr(`[id="ui-scroll-0-${id}"]`);
-      const a = 0;
       expect(elem.name).toEqual('div');
       expect(elem.nativeElement.textContent).toMatch(`${id} : item #${id}`);
       // expect(elem.childNodes[1].styles.position).toBeNull();

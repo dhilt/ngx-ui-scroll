@@ -1,13 +1,16 @@
-import { By } from '@angular/platform-browser';
 import { ComponentFixture } from '@angular/core/testing';
-import { TestComponent } from './testedComponent';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
+
+import { TestComponentInterface } from './testComponent';
 import { Direction } from '../../src/component/interfaces/direction';
 import { Datasource } from '../../src/component/interfaces/datasource';
+import { UiScrollComponent } from '../../src/ui-scroll.component';
 
 export class Padding {
   direction: Direction;
-  element;
-  style;
+  element: DebugElement;
+  style: CSSStyleDeclaration;
 
   constructor(fixture: ComponentFixture <any>, direction: Direction) {
     this.direction = direction;
@@ -18,17 +21,19 @@ export class Padding {
 
 export class Misc {
 
-  fixture: ComponentFixture <TestComponent>;
-  component: TestComponent;
+  fixture: ComponentFixture <TestComponentInterface>;
+  testComponent: TestComponentInterface;
   datasource: Datasource;
-  hostElement;
+  uiScrollElement: DebugElement;
+  uiScrollComponent: UiScrollComponent;
   padding = {};
 
   constructor(fixture: ComponentFixture <any>) {
     this.fixture = fixture;
-    this.component = fixture.componentInstance;
-    this.datasource = this.component.datasource;
-    this.hostElement = this.elementByAttr('ui-scroll');
+    this.testComponent = fixture.componentInstance;
+    this.datasource = this.testComponent.datasource;
+    this.uiScrollElement = this.elementByAttr('ui-scroll');
+    this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.padding[Direction.forward] = new Padding(fixture, Direction.forward);
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward);
   }

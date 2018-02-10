@@ -2,7 +2,7 @@ import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { TestComponentInterface } from './testComponent';
+import { TestComponentInterface } from '../scaffolding/testComponent';
 import { Direction } from '../../src/component/interfaces/direction';
 import { Datasource } from '../../src/component/interfaces/datasource';
 import { UiScrollComponent } from '../../src/ui-scroll.component';

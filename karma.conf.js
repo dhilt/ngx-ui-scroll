@@ -1,6 +1,3 @@
-// Karma configuration file, see link for more information
-// https://karma-runner.github.io/1.0/config/configuration-file.html
-
 module.exports = function (config) {
   config.set({
     basePath: '',
@@ -17,8 +14,8 @@ module.exports = function (config) {
       require('karma-coverage-istanbul-reporter')
     ],
     files: [
-      './tests/helpers/styles.css',
-      { pattern: './tests/helpers/entry-files.js', watched: false }
+      'tests/miscellaneous/styles.css',
+      { pattern: './tests/miscellaneous/entry-files.js', watched: false }
     ],
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
@@ -29,7 +26,7 @@ module.exports = function (config) {
     },
 
     preprocessors: {
-      './tests/helpers/entry-files.js': ['webpack', 'sourcemap']
+      './tests/miscellaneous/entry-files.js': ['webpack', 'sourcemap']
     },
     webpack: {
       resolve: {

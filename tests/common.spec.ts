@@ -6,6 +6,8 @@ import { Misc } from './helpers/misc';
 import { Direction } from '../src/component/interfaces/direction';
 import { DatasourceService } from './helpers/datasource.service';
 
+import { InitialDatasource } from './helpers/datasources/initial';
+
 describe('Common tests', () => {
   let misc: Misc;
 
@@ -19,16 +21,9 @@ describe('Common tests', () => {
           useValue: true
         }, {
           provide: DatasourceService,
-          useValue: new DatasourceService()
+          useClass: InitialDatasource
         }]
       })
-      // .overrideComponent(TestComponent, {
-      //   set: {
-      //     providers: [{
-      //       provide: DatasourceService, DatasourceServices[0]
-      //     }]
-      //   }
-      // })
       .createComponent(TestComponent);
     misc = new Misc(testBedResult);
   }));

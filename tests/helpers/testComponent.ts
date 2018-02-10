@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 
 import { Datasource } from '../../src/component/interfaces/datasource';
 import { DatasourceService } from './datasource.service';
-import { templates } from './templates';
+import { defaultTemplate } from './templates';
 
 export interface TestComponentInterface {
   datasource: Datasource;
 }
 
 @Component({
-  template: templates['initial'],
+  template: defaultTemplate,
   providers: [DatasourceService]
 })
 export class TestComponent implements TestComponentInterface {

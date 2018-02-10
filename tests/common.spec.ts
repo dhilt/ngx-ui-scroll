@@ -7,10 +7,14 @@ import { Direction } from '../src/component/interfaces/direction';
 import { DatasourceService } from './helpers/datasource.service';
 
 import { InitialDatasource } from './helpers/datasources/initial';
-import { templates } from './helpers/templates';
+import { generateTemplate } from './helpers/templates';
 
 describe('Common tests', () => {
   let misc: Misc;
+  const templateData = generateTemplate({
+    viewportHeight: 120
+  });
+  const templateSettings = templateData.settings;
 
   beforeEach(async(() => {
     const testBedResult = TestBed
@@ -25,12 +29,13 @@ describe('Common tests', () => {
           useClass: InitialDatasource
         }]
       })
-      // .overrideComponent(TestComponent, {
-      //   set: {
-      //     template: templates['add']
-      //   }
-      // })
+      .overrideComponent(TestComponent, {
+        set: {
+          template: templateData.template
+        }
+      })
       .createComponent(TestComponent);
+
     misc = new Misc(testBedResult);
   }));
 
@@ -45,6 +50,7 @@ describe('Common tests', () => {
   });
 
   it('should create tags: data-padding-backward and data-padding-forward', () => {
+    templateSettings.viewportHeight;
     expect(misc.padding[Direction.backward].style.height).toEqual('0px');
     expect(misc.padding[Direction.forward].style.height).toEqual('0px');
   });
@@ -64,58 +70,58 @@ describe('Common tests', () => {
     expect(misc.getItemElement(lastId + 1)).toBeFalsy();
   }));
 
-/*  it('should simulate scroll to top, and contain items with id from ??? up to ???', fakeAsync(() => {
-    const uiScroll = misc.elementByAttr('ui-scroll').parent;
-    const eventListener = uiScroll.listeners.find(e => e.name === 'scroll');
-    uiScroll.nativeElement.scrollTop = 0;
-    eventListener.callback('top');
+  /*  it('should simulate scroll to top, and contain items with id from ??? up to ???', fakeAsync(() => {
+   const uiScroll = misc.elementByAttr('ui-scroll').parent;
+   const eventListener = uiScroll.listeners.find(e => e.name === 'scroll');
+   uiScroll.nativeElement.scrollTop = 0;
+   eventListener.callback('top');
 
-    // fixture.whenStable().then(() => {
-    //   fixture.detectChanges();
-    //   tick(25);
-    //   fixture.detectChanges();
-    //
-    //   const firstId = 81;
-    //   const lastId = 95;
-    //   for (let id = firstId; id <= lastId; id++) {
-    //     const elem = elementByAttr(`[id="i-0-${id}"]`);
-    //     expect(elem.name).toEqual('div');
-    //     expect(elem.nativeElement.textContent).toMatch(`${id} : item #${id}`);
-    //     expect(elem.childNodes[1].styles.position).toBeNull();
-    //     expect(elem.childNodes[1].styles.left).toBeNull();
-    //   }
-    //
-    //   expect(elementByAttr('[data-padding-backward]').nativeElement.style.height).toEqual('0px');
-    //   expect(elementByAttr('[data-padding-forward]').nativeElement.style.height).toEqual('72px');
-    //   expect(elementByAttr(`[id="i-0-${firstId - 1}"]`)).toBeNull();
-    //   expect(elementByAttr(`[id="i-0-${lastId + 1}"]`)).toBeNull();
-    // });
-  }));
+   // fixture.whenStable().then(() => {
+   //   fixture.detectChanges();
+   //   tick(25);
+   //   fixture.detectChanges();
+   //
+   //   const firstId = 81;
+   //   const lastId = 95;
+   //   for (let id = firstId; id <= lastId; id++) {
+   //     const elem = elementByAttr(`[id="i-0-${id}"]`);
+   //     expect(elem.name).toEqual('div');
+   //     expect(elem.nativeElement.textContent).toMatch(`${id} : item #${id}`);
+   //     expect(elem.childNodes[1].styles.position).toBeNull();
+   //     expect(elem.childNodes[1].styles.left).toBeNull();
+   //   }
+   //
+   //   expect(elementByAttr('[data-padding-backward]').nativeElement.style.height).toEqual('0px');
+   //   expect(elementByAttr('[data-padding-forward]').nativeElement.style.height).toEqual('72px');
+   //   expect(elementByAttr(`[id="i-0-${firstId - 1}"]`)).toBeNull();
+   //   expect(elementByAttr(`[id="i-0-${lastId + 1}"]`)).toBeNull();
+   // });
+   }));
 
-  it('should simulate scroll to bottom, and contain items with id from ??? up to ???', fakeAsync(() => {
-    const uiScroll = misc.elementByAttr('ui-scroll').parent;
-    const eventListener = uiScroll.listeners.find(e => e.name === 'scroll');
-    uiScroll.nativeElement.scrollTop = uiScroll.nativeElement.scrollHeight - uiScroll.nativeElement.clientHeight;
-    eventListener.callback('bottom');
+   it('should simulate scroll to bottom, and contain items with id from ??? up to ???', fakeAsync(() => {
+   const uiScroll = misc.elementByAttr('ui-scroll').parent;
+   const eventListener = uiScroll.listeners.find(e => e.name === 'scroll');
+   uiScroll.nativeElement.scrollTop = uiScroll.nativeElement.scrollHeight - uiScroll.nativeElement.clientHeight;
+   eventListener.callback('bottom');
 
-    // fixture.whenStable().then(() => {
-    //   fixture.detectChanges();
-    //   tick();
-    //   fixture.detectChanges();
-    //
-    //   const firstId = 90;
-    //   const lastId = 104;
-    //   for (let id = firstId; id <= lastId; id++) {
-    //     const elem = elementByAttr(`[id="i-0-${id}"]`);
-    //     expect(elem.name).toEqual('div');
-    //     expect(elem.nativeElement.textContent).toMatch(`${id} : item #${id}`);
-    //     expect(elem.childNodes[1].styles.position).toBeNull();
-    //     expect(elem.childNodes[1].styles.left).toBeNull();
-    //   }
-    //   expect(elementByAttr('[data-padding-backward]').nativeElement.style.height).toEqual('90px');
-    //   expect(elementByAttr('[data-padding-forward]').nativeElement.style.height).toEqual('0px');
-    //   expect(elementByAttr(`[id="i-0-${firstId - 1}"]`)).toBeNull();
-    //   expect(elementByAttr(`[id="i-0-${lastId + 1}"]`)).toBeNull();
-    // });
-  }));*/
+   // fixture.whenStable().then(() => {
+   //   fixture.detectChanges();
+   //   tick();
+   //   fixture.detectChanges();
+   //
+   //   const firstId = 90;
+   //   const lastId = 104;
+   //   for (let id = firstId; id <= lastId; id++) {
+   //     const elem = elementByAttr(`[id="i-0-${id}"]`);
+   //     expect(elem.name).toEqual('div');
+   //     expect(elem.nativeElement.textContent).toMatch(`${id} : item #${id}`);
+   //     expect(elem.childNodes[1].styles.position).toBeNull();
+   //     expect(elem.childNodes[1].styles.left).toBeNull();
+   //   }
+   //   expect(elementByAttr('[data-padding-backward]').nativeElement.style.height).toEqual('90px');
+   //   expect(elementByAttr('[data-padding-forward]').nativeElement.style.height).toEqual('0px');
+   //   expect(elementByAttr(`[id="i-0-${firstId - 1}"]`)).toBeNull();
+   //   expect(elementByAttr(`[id="i-0-${lastId + 1}"]`)).toBeNull();
+   // });
+   }));*/
 });

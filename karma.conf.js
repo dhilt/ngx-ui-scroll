@@ -17,6 +17,7 @@ module.exports = function (config) {
       require('karma-coverage-istanbul-reporter')
     ],
     files: [
+      './tests/helpers/styles.css',
       { pattern: './tests/helpers/entry-files.js', watched: false }
     ],
     client: {

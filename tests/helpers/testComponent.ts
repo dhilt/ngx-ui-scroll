@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+
 import { Datasource } from '../../src/component/interfaces/datasource';
+import { DatasourceService } from './datasource.service';
 
 export interface TestComponentInterface {
   datasource: Datasource;
@@ -22,22 +23,15 @@ export interface TestComponentInterface {
       overflow-y: auto;
       display: block;
     }
-  `]
+  `],
+  providers: [DatasourceService]
 })
 export class TestComponent implements TestComponentInterface {
-  datasource: Datasource = {
-    get: (index: number, count: number) => Observable.create(observer => {
-      // console.log('requested index = ' + index + ', count = ' + count);
-      setTimeout(() => {
-        let data = [];
-        for (let i = index; i <= index + count - 1; i++) {
-          data.push({
-            id: i,
-            text: "item #" + i
-          });
-        }
-        observer.next(data);
-      }, 15);
-    })
-  };
+  datasource: Datasource;
+
+  constructor(
+    datasourceService: DatasourceService
+  ) {
+    this.datasource = <Datasource>datasourceService;
+  }
 }

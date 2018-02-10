@@ -4,20 +4,33 @@ import { UiScrollModule } from '../src/ui-scroll.module';
 import { TestComponent } from './helpers/testComponent';
 import { Misc } from './helpers/misc';
 import { Direction } from '../src/component/interfaces/direction';
+import { DatasourceService } from './helpers/datasource.service';
 
 describe('Common tests', () => {
   let misc: Misc;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [UiScrollModule],
-      declarations: [TestComponent],
-      providers: [{
-        provide: ComponentFixtureAutoDetect,
-        useValue: true
-      }]
-    });
-    misc = new Misc(TestBed.createComponent(TestComponent));
+    const testBedResult = TestBed
+      .configureTestingModule({
+        imports: [UiScrollModule],
+        declarations: [TestComponent],
+        providers: [{
+          provide: ComponentFixtureAutoDetect,
+          useValue: true
+        }, {
+          provide: DatasourceService,
+          useValue: new DatasourceService()
+        }]
+      })
+      // .overrideComponent(TestComponent, {
+      //   set: {
+      //     providers: [{
+      //       provide: DatasourceService, DatasourceServices[0]
+      //     }]
+      //   }
+      // })
+      .createComponent(TestComponent);
+    misc = new Misc(testBedResult);
   }));
 
   it('should initialize', () => {

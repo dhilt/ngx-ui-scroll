@@ -3,7 +3,7 @@ import { async } from '@angular/core/testing';
 import { Direction } from '../src/component/interfaces/direction';
 
 import { configureTestBed } from './scaffolding/testBed';
-import { defaultDatasourceClass } from './scaffolding/datasources';
+import { DatasourceService, defaultDatasource } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 
@@ -11,7 +11,7 @@ describe('Common spec', () => {
   let misc: Misc;
 
   beforeEach(async(() => {
-    const fixture = configureTestBed(defaultDatasourceClass, defaultTemplate);
+    const fixture = configureTestBed(defaultDatasource, defaultTemplate);
     misc = new Misc(fixture);
   }));
 

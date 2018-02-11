@@ -2,6 +2,11 @@ import { Observable } from 'rxjs';
 import { Datasource } from '../../src/component/interfaces/datasource';
 import { Settings } from '../../src/component/interfaces/settings';
 
+export class DatasourceService implements Datasource {
+  get() {
+  }
+}
+
 export const generateDatasourceClass = (_name: string, _settings?: Settings) => {
   return class {
     settings: Settings;
@@ -16,9 +21,9 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings) => 
   }
 };
 
-export const defaultDatasourceClass = generateDatasourceClass('initial');
+export const defaultDatasource = generateDatasourceClass('initial');
 
-export const datasourceStore = {
+const datasourceStore = {
 
   'initial': <Datasource>{
     get: (index: number, count: number) =>

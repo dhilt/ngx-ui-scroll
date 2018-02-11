@@ -45,7 +45,12 @@ export class Misc {
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward);
   }
 
-  getItemElement(index: number) {
+  getElement(index: number) {
     return this.fixture.nativeElement.querySelector(`#${this.workflow.settings.itemIdPrefix}${index}`);
+  }
+
+  getElementText(index: number): string {
+    const element = this.getElement(index);
+    return element ? element.innerText.trim() : null;
   }
 }

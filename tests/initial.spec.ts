@@ -25,14 +25,18 @@ describe('Initial spec', () => {
     const datasourceClass = generateDatasourceClass(settings.datasourceName, settings.datasourceSettings);
     const templateData = generateTemplate(settings.templateSettings);
 
+    const startIndex = settings.datasourceSettings.startIndex;
     const bufferSize = settings.datasourceSettings.bufferSize;
-    const viewportHeight = settings.templateSettings.viewportHeight;
     const padding = settings.datasourceSettings.padding;
+    const viewportHeight = settings.templateSettings.viewportHeight;
+
     const backwardLimit = viewportHeight * padding;
     const forwardLimit = viewportHeight + backwardLimit;
     const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / bufferSize);
     const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / bufferSize);
     const fetchCount = backwardFetchCount + forwardFetchCount;
+    const first = startIndex - backwardFetchCount * bufferSize;
+    const last = startIndex + forwardFetchCount * bufferSize - 1;
 
     describe(`Viewport height = ${viewportHeight}, buffer size = ${bufferSize}, padding = ${padding}`, () => {
 
@@ -43,21 +47,13 @@ describe('Initial spec', () => {
 
       it(`should fetch ${bufferSize * fetchCount} item(s) in ${fetchCount} pack(s) with no clip`, () => {
         expect(misc.workflow.fetchCount).toEqual(fetchCount);
+        expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
         expect(misc.padding[Direction.backward].getSize()).toEqual(0);
         expect(misc.padding[Direction.forward].getSize()).toEqual(0);
-
-        const flowSettings = misc.workflow.settings;
-        const first = flowSettings.startIndex - backwardFetchCount * flowSettings.bufferSize;
-        const last = flowSettings.startIndex + forwardFetchCount * flowSettings.bufferSize - 1;
-        for (let index = first; index <= last; index++) {
-          const element = misc.getItemElement(index);
-          expect(element).toBeTruthy();
-          if(element) {
-            expect(element.innerText.trim()).toEqual(`${index} : item #${index}`);
-          }
-        }
-        expect(misc.getItemElement(first - 1)).toBeFalsy();
-        expect(misc.getItemElement(last + 1)).toBeFalsy();
+        expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
+        expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
+        expect(misc.getElement(first - 1)).toBeFalsy();
+        expect(misc.getElement(last + 1)).toBeFalsy();
       });
 
     });
@@ -65,19 +61,19 @@ describe('Initial spec', () => {
 
   makeTest({
     datasourceName: 'initial',
-    datasourceSettings: { bufferSize: 1, padding: 2 },
+    datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 2 },
     templateSettings: { viewportHeight: 20 }
   });
 
   makeTest({
     datasourceName: 'initial',
-    datasourceSettings: { bufferSize: 3, padding: 0.5 },
+    datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 0.5 },
     templateSettings: { viewportHeight: 120 }
   });
 
   makeTest({
     datasourceName: 'initial',
-    datasourceSettings: { bufferSize: 5, padding: 0.5 },
+    datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
     templateSettings: { viewportHeight: 200 }
   });
 

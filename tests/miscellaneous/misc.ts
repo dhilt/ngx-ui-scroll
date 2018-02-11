@@ -38,18 +38,14 @@ export class Misc {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
     this.datasource = this.testComponent.datasource;
-    this.uiScrollElement = this.elementByAttr('ui-scroll');
+    this.uiScrollElement = this.fixture.debugElement.query(By.css('ui-scroll'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.workflow = this.uiScrollComponent.workflowRunner.workflow;
     this.padding[Direction.forward] = new Padding(fixture, Direction.forward);
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward);
   }
 
-  private elementByAttr(attr) {
-    return this.fixture.debugElement.query(By.css(attr));
-  }
-
   getItemElement(index: number) {
-    return this.elementByAttr(`[id="${this.workflow.settings.itemIdPrefix}${index}"]`);
+    return this.fixture.nativeElement.querySelector(`#${this.workflow.settings.itemIdPrefix}${index}`);
   }
 }

@@ -3,24 +3,38 @@ import { async } from '@angular/core/testing';
 import { Direction } from '../src/component/interfaces/direction';
 
 import { configureTestBed } from './scaffolding/testBed';
-import { DatasourceService, defaultDatasource } from './scaffolding/datasources';
+import { defaultDatasource } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 
 describe('Common spec', () => {
   let misc: Misc;
+  let reconfigure = true;
 
   beforeEach(async(() => {
+    if (!reconfigure) {
+      return;
+    }
+    reconfigure = false;
     const fixture = configureTestBed(defaultDatasource, defaultTemplate);
     misc = new Misc(fixture);
   }));
 
-  it('should initialize', () => {
+  it('should init test component', () => {
     expect(misc.testComponent).toBeTruthy();
+  });
+
+  it('should provide datasource', () => {
     expect(misc.datasource).toEqual(jasmine.any(Object));
     expect(misc.datasource.get).toEqual(jasmine.any(Function));
+  });
+
+  it('should init ui-scroll', () => {
     expect(misc.uiScrollElement).toBeTruthy();
     expect(misc.uiScrollComponent).toBeTruthy();
+  });
+
+  it('should init padding elements', () => {
     expect(misc.padding[Direction.backward].element).toBeTruthy();
     expect(misc.padding[Direction.forward].element).toBeTruthy();
   });

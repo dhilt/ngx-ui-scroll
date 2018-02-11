@@ -7,7 +7,7 @@ export const defaultSettings: SettingsInterface = {
   infinite: false
 };
 
-export class Settings implements SettingsInterface{
+export class Settings implements SettingsInterface {
 
   // external settings, have defaults
   startIndex;

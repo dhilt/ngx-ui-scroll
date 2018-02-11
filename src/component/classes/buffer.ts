@@ -1,7 +1,7 @@
 import { Direction, Item } from '../interfaces/index';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-class Index {
+export class Index {
   forward: number = null;
   backward: number = null;
 }
@@ -24,7 +24,7 @@ export class Buffer {
 
   set items(items: Array<Item>) {
     this._items = items;
-    if(items.length) {
+    if (items.length) {
       this.setLastIndices();
     }
     this.$items.next(items);

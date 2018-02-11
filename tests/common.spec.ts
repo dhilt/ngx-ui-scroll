@@ -1,16 +1,17 @@
 import { async } from '@angular/core/testing';
 
-import { configureTestBed } from './scaffolding/testBed';
-import { defaultTemplate } from './scaffolding/templates';
-import { datasourceStore } from './scaffolding/datasources';
 import { Direction } from '../src/component/interfaces/direction';
+
+import { configureTestBed } from './scaffolding/testBed';
+import { defaultDatasourceClass } from './scaffolding/datasources';
+import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 
 describe('Common spec', () => {
   let misc: Misc;
 
   beforeEach(async(() => {
-    const fixture = configureTestBed(datasourceStore['initial'], defaultTemplate);
+    const fixture = configureTestBed(defaultDatasourceClass, defaultTemplate);
     misc = new Misc(fixture);
   }));
 

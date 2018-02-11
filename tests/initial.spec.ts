@@ -1,32 +1,39 @@
 import { async } from '@angular/core/testing';
 
-import { configureTestBed } from './scaffolding/testBed';
-import { generateTemplate, TemplateSettings } from './scaffolding/templates';
 import { Direction } from '../src/component/interfaces/direction';
+import { Settings } from '../src/component/interfaces/settings';
+
+import { configureTestBed } from './scaffolding/testBed';
+import { generateDatasourceClass } from './scaffolding/datasources';
+import { generateTemplate, TemplateSettings } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
-import { Datasource } from '../src/component/interfaces/datasource';
-import { datasourceStore } from './scaffolding/datasources';
 
 const itemHeight = 20;
 
+interface MakeTestSettings {
+  datasourceName: string;
+  datasourceSettings: Settings,
+  templateSettings: TemplateSettings
+}
+
 describe('Initial spec', () => {
-  let datasource: Datasource;
+  let datasourceClass;
   let templateData;
   let misc: Misc;
 
   beforeEach(async(() => {
-    const fixture = configureTestBed(datasource, templateData.template);
+    const fixture = configureTestBed(datasourceClass, templateData.template);
     misc = new Misc(fixture);
   }));
 
-  const makeTest = (datasourceName: string, templateSettings: TemplateSettings) => {
-    datasource = datasourceStore[datasourceName];
-    templateData = generateTemplate(templateSettings);
+  const makeTest = (settings: MakeTestSettings) => {
+    datasourceClass = generateDatasourceClass(settings.datasourceName, settings.datasourceSettings);
+    templateData = generateTemplate(settings.templateSettings);
 
-    const backwardLimit = templateSettings.viewportHeight * datasource.settings.padding;
-    const forwardLimit = templateSettings.viewportHeight + backwardLimit;
-    const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / datasource.settings.bufferSize);
-    const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / datasource.settings.bufferSize);
+    const backwardLimit = settings.templateSettings.viewportHeight * settings.datasourceSettings.padding;
+    const forwardLimit = settings.templateSettings.viewportHeight + backwardLimit;
+    const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / settings.datasourceSettings.bufferSize);
+    const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / settings.datasourceSettings.bufferSize);
     const fetchCount = backwardFetchCount + forwardFetchCount;
 
     it(`should fetch ${fetchCount} packs with no clip`, () => {
@@ -47,6 +54,16 @@ describe('Initial spec', () => {
     });
   };
 
-  makeTest('initial', { viewportHeight: 200 });
+  makeTest({
+    datasourceName: 'initial',
+    datasourceSettings: { bufferSize: 5, padding: 0.5 },
+    templateSettings: { viewportHeight: 200 }
+  });
+
+  makeTest({
+    datasourceName: 'initial',
+    datasourceSettings: { bufferSize: 3, padding: 0.5 },
+    templateSettings: { viewportHeight: 120 }
+  });
 
 });

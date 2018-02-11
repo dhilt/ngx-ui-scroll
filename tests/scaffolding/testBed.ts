@@ -16,9 +16,10 @@ export const configureTestBed = (datasource, template) => {
         useValue: true
       }, {
         provide: DatasourceService,
-        useValue: <Datasource>datasource
+        useClass: DatasourceService
       }]
     })
+    .overrideProvider(DatasourceService, { useValue: new datasource() })
     .overrideComponent(TestComponent, { set: { template } })
     .createComponent(TestComponent);
 };

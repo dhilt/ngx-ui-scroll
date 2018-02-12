@@ -1,30 +1,28 @@
 import { async } from '@angular/core/testing';
 
 import { Direction } from '../src/component/interfaces/direction';
+import { defaultSettings } from '../src/component/classes/settings';
 
 import { configureTestBed } from './scaffolding/testBed';
 import { defaultDatasourceClass, generateDatasourceClass } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
-import { defaultSettings } from '../src/component/classes/settings';
 
 describe('Common spec', () => {
   let misc: Misc;
-  let reconfigure = true;
-  let datasourceClass = defaultDatasourceClass;
-  let template = defaultTemplate;
-
-  beforeEach(async(() => {
-    if (!reconfigure) {
-      return;
-    }
-    reconfigure = false;
-    const fixture = configureTestBed(datasourceClass, template);
-    misc = new Misc(fixture);
-  }));
-
 
   describe('Initialization', () => {
+
+    let reconfigure = true;
+
+    beforeEach(async(() => {
+      if (!reconfigure) {
+        return;
+      }
+      reconfigure = false;
+      const fixture = configureTestBed(defaultDatasourceClass, defaultTemplate);
+      misc = new Misc(fixture);
+    }));
 
     it('should init test component', () => {
       expect(misc.testComponent).toBeTruthy();
@@ -49,9 +47,16 @@ describe('Common spec', () => {
 
   describe('Settings', () => {
 
+    let datasourceClass = defaultDatasourceClass;
+    let template = defaultTemplate;
     const _startIndex = 90;
     const _bufferSize = 15;
     let _settings;
+
+    beforeEach(async(() => {
+      const fixture = configureTestBed(datasourceClass, template);
+      misc = new Misc(fixture);
+    }));
 
     const checkSettings = (title) =>
       it(title, () => {
@@ -62,21 +67,18 @@ describe('Common spec', () => {
       });
 
     it('...reconfiguring', () => {
-      reconfigure = true;
       _settings = { startIndex: _startIndex };
       datasourceClass = generateDatasourceClass('initial-without-settings', _settings);
     });
     checkSettings('should override startIndex');
 
     it('...reconfiguring', () => {
-      reconfigure = true;
       _settings = { bufferSize: _bufferSize };
       datasourceClass = generateDatasourceClass('initial-without-settings', _settings);
     });
     checkSettings('should override bufferSize');
 
     it('...reconfiguring', () => {
-      reconfigure = true;
       _settings = { startIndex: _startIndex, bufferSize: _bufferSize };
       datasourceClass = generateDatasourceClass('initial-without-settings', _settings);
     });

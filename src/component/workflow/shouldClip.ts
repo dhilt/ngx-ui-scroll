@@ -7,12 +7,10 @@ export default class ShouldClip {
     if (workflow.settings.clipAfterFetchOnly && !workflow.fetch.shouldFetch) {
       return workflow;
     }
-    if (workflow.direction !== Direction.backward) {
-      ShouldClip.shouldClipByDirection(Direction.forward, workflow);
-    }
-    if (workflow.direction !== Direction.forward) {
-      ShouldClip.shouldClipByDirection(Direction.backward, workflow);
-    }
+    // todo think about optimization for case of scrolling
+    ShouldClip.shouldClipByDirection(Direction.forward, workflow);
+    ShouldClip.shouldClipByDirection(Direction.backward, workflow);
+
     return workflow;
   }
 

@@ -1,30 +1,16 @@
-import { async } from '@angular/core/testing';
-
 import { Direction } from '../src/component/interfaces/direction';
-import { Settings } from '../src/component/interfaces/settings';
-
-import { configureTestBed } from './scaffolding/testBed';
-import { generateDatasourceClass } from './scaffolding/datasources';
-import { generateTemplate, TemplateSettings } from './scaffolding/templates';
-import { Misc } from './miscellaneous/misc';
+import { makeTest } from './scaffolding/runner';
 
 const itemHeight = 20;
 
-interface MakeTestSettings {
-  datasourceName: string;
-  datasourceSettings: Settings,
-  templateSettings: TemplateSettings
-}
+describe('Initial load spec', () => {
 
-describe('Initial spec', () => {
+  const generateMetaTitle = (settings): string =>
+  `Viewport height = ${settings.templateSettings.viewportHeight}, ` +
+  `buffer size = ${settings.datasourceSettings.bufferSize}, ` +
+  `padding = ${settings.datasourceSettings.padding}`;
 
-  let misc: Misc;
-
-  const makeTest = (settings: MakeTestSettings) => {
-
-    const datasourceClass = generateDatasourceClass(settings.datasourceName, settings.datasourceSettings);
-    const templateData = generateTemplate(settings.templateSettings);
-
+  const testViewport = (misc, settings) => (done) => {
     const startIndex = settings.datasourceSettings.startIndex;
     const bufferSize = settings.datasourceSettings.bufferSize;
     const padding = settings.datasourceSettings.padding;
@@ -38,43 +24,36 @@ describe('Initial spec', () => {
     const first = startIndex - backwardFetchCount * bufferSize;
     const last = startIndex + forwardFetchCount * bufferSize - 1;
 
-    describe(`Viewport height = ${viewportHeight}, buffer size = ${bufferSize}, padding = ${padding}`, () => {
+    expect(misc.workflow.fetchCount).toEqual(fetchCount);
+    expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
+    expect(misc.padding[Direction.backward].getSize()).toEqual(0);
+    expect(misc.padding[Direction.forward].getSize()).toEqual(0);
+    expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
+    expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
+    expect(misc.getElement(first - 1)).toBeFalsy();
+    expect(misc.getElement(last + 1)).toBeFalsy();
 
-      beforeEach(async(() => {
-        const fixture = configureTestBed(datasourceClass, templateData.template);
-        misc = new Misc(fixture);
-      }));
-
-      it(`should fetch ${bufferSize * fetchCount} item(s) in ${fetchCount} pack(s) with no clip`, () => {
-        expect(misc.workflow.fetchCount).toEqual(fetchCount);
-        expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
-        expect(misc.padding[Direction.backward].getSize()).toEqual(0);
-        expect(misc.padding[Direction.forward].getSize()).toEqual(0);
-        expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
-        expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
-        expect(misc.getElement(first - 1)).toBeFalsy();
-        expect(misc.getElement(last + 1)).toBeFalsy();
-      });
-
-    });
+    done();
   };
 
-  makeTest({
-    datasourceName: 'initial',
+  const configList = [{
     datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 2 },
     templateSettings: { viewportHeight: 20 }
-  });
-
-  makeTest({
-    datasourceName: 'initial',
+  }, {
     datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 0.5 },
     templateSettings: { viewportHeight: 120 }
-  });
-
-  makeTest({
-    datasourceName: 'initial',
+  }, {
     datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
     templateSettings: { viewportHeight: 200 }
-  });
+  }];
+
+  configList.forEach(config =>
+    makeTest({
+      metatitle: generateMetaTitle(config),
+      title: 'should fetch some items with no clip',
+      config: config,
+      it: (misc) => testViewport(misc, config)
+    })
+  );
 
 });

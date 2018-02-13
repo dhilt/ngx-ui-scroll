@@ -3,14 +3,14 @@ import { makeTest } from './scaffolding/runner';
 
 const itemHeight = 20;
 
-describe('Initial load spec', () => {
+describe('Initial Load Spec', () => {
 
   const generateMetaTitle = (settings): string =>
   `Viewport height = ${settings.templateSettings.viewportHeight}, ` +
   `buffer size = ${settings.datasourceSettings.bufferSize}, ` +
   `padding = ${settings.datasourceSettings.padding}`;
 
-  const testViewport = (misc, settings) => (done) => {
+  const testViewport = (settings) => (misc) => (done) => {
     const startIndex = settings.datasourceSettings.startIndex;
     const bufferSize = settings.datasourceSettings.bufferSize;
     const padding = settings.datasourceSettings.padding;
@@ -52,7 +52,7 @@ describe('Initial load spec', () => {
       metatitle: generateMetaTitle(config),
       title: 'should fetch some items with no clip',
       config: config,
-      it: (misc) => testViewport(misc, config)
+      it: testViewport(config)
     })
   );
 

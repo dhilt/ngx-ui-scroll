@@ -11,7 +11,7 @@ import { Settings } from '../src/component/interfaces/settings';
 import { makeTest } from './scaffolding/runner';
 
 
-describe('Common spec', () => {
+describe('Common Spec', () => {
   let misc: Misc;
 
   describe('Initialization', () => {

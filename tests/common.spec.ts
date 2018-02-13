@@ -4,9 +4,12 @@ import { Direction } from '../src/component/interfaces/direction';
 import { defaultSettings } from '../src/component/classes/settings';
 
 import { configureTestBed } from './scaffolding/testBed';
-import { defaultDatasourceClass, generateDatasourceClass } from './scaffolding/datasources';
+import { defaultDatasourceClass } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
+import { Settings } from '../src/component/interfaces/settings';
+import { makeTest } from './scaffolding/runner';
+
 
 describe('Common spec', () => {
   let misc: Misc;
@@ -42,48 +45,38 @@ describe('Common spec', () => {
       expect(misc.padding[Direction.backward].element).toBeTruthy();
       expect(misc.padding[Direction.forward].element).toBeTruthy();
     });
-
   });
 
   describe('Settings', () => {
+    const _settings1 = { startIndex: 90 };
+    const _settings2 = { bufferSize: 15 };
+    const _settings3 = { startIndex: 99, bufferSize: 11 };
 
-    let datasourceClass = defaultDatasourceClass;
-    let template = defaultTemplate;
-    const _startIndex = 90;
-    const _bufferSize = 15;
-    let _settings;
-
-    beforeEach(async(() => {
-      const fixture = configureTestBed(datasourceClass, template);
-      misc = new Misc(fixture);
-    }));
-
-    const checkSettings = (title) =>
-      it(title, () => {
-        const mergedSettings = { ...defaultSettings, ..._settings };
-        Object.keys(defaultSettings).forEach(key => {
-          expect(misc.workflow.settings[key]).toEqual(mergedSettings[key]);
-        })
+    const checkSettings = (_settings) => (misc) => (done) => {
+      const mergedSettings = { ...defaultSettings, ..._settings };
+      Object.keys(defaultSettings).forEach(key => {
+        expect(misc.workflow.settings[key]).toEqual(mergedSettings[key]);
       });
+      done();
+    };
 
-    it('...reconfiguring', () => {
-      _settings = { startIndex: _startIndex };
-      datasourceClass = generateDatasourceClass('initial-without-settings', _settings);
+    makeTest({
+      title: 'should override startIndex',
+      config: { datasourceSettings: _settings1 },
+      it: checkSettings(_settings1)
     });
-    checkSettings('should override startIndex');
 
-    it('...reconfiguring', () => {
-      _settings = { bufferSize: _bufferSize };
-      datasourceClass = generateDatasourceClass('initial-without-settings', _settings);
+    makeTest({
+      title: 'should override bufferSize',
+      config: { datasourceSettings: _settings2 },
+      it: checkSettings(_settings2)
     });
-    checkSettings('should override bufferSize');
 
-    it('...reconfiguring', () => {
-      _settings = { startIndex: _startIndex, bufferSize: _bufferSize };
-      datasourceClass = generateDatasourceClass('initial-without-settings', _settings);
+    makeTest({
+      title: 'should override startIndex and bufferSize',
+      config: { datasourceSettings: _settings3 },
+      it: checkSettings(_settings3)
     });
-    checkSettings('should override startIndex and bufferSize');
-
   });
 
 

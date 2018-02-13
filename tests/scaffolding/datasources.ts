@@ -42,6 +42,10 @@ const infiniteDatasourceGet = (delay?: number) =>
 
 const datasourceStore = {
 
+  'default': <Datasource>{
+    get: infiniteDatasourceGet()
+  },
+
   'initial': <Datasource>{
     get: infiniteDatasourceGet(),
     settings: {

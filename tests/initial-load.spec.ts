@@ -34,36 +34,79 @@ const configListWithClip = [{
   templateSettings: { viewportHeight: 400 }
 }];
 
-const configListInfinite = [ ...configList, ...configListWithClip ]
-  .map(i => ({ ...i, datasourceSettings: { ...i.datasourceSettings, infinite: true }}));
+const configListInfinite = [configListWithClip[1], configListWithClip[3]]
+  .map(config => ({
+    ...config,
+    datasourceSettings: {
+      ...config.datasourceSettings,
+      infinite: true
+    }
+  }));
+
+const testViewport = (settings) => (misc) => (done) => {
+  const startIndex = settings.datasourceSettings.startIndex;
+  const bufferSize = settings.datasourceSettings.bufferSize;
+  const padding = settings.datasourceSettings.padding;
+  const viewportHeight = settings.templateSettings.viewportHeight;
+
+  const backwardLimit = viewportHeight * padding;
+  const forwardLimit = viewportHeight + backwardLimit;
+  const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / bufferSize);
+  const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / bufferSize);
+  const fetchCount = backwardFetchCount + forwardFetchCount;
+  const first = startIndex - backwardFetchCount * bufferSize;
+  const last = startIndex + forwardFetchCount * bufferSize - 1;
+
+  expect(misc.workflow.fetchCount).toEqual(fetchCount);
+  expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
+  expect(misc.padding[Direction.backward].getSize()).toEqual(0);
+  expect(misc.padding[Direction.forward].getSize()).toEqual(0);
+  expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
+  expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
+  expect(misc.getElement(first - 1)).toBeFalsy();
+  expect(misc.getElement(last + 1)).toBeFalsy();
+
+  done();
+};
+
+const testViewportWithClip = (settings) => (misc) => (done) => {
+  const startIndex = settings.datasourceSettings.startIndex;
+  const bufferSize = settings.datasourceSettings.bufferSize;
+  const padding = settings.datasourceSettings.padding;
+  const viewportHeight = settings.templateSettings.viewportHeight;
+
+  const backwardLimit = viewportHeight * padding;
+  const forwardLimit = viewportHeight + backwardLimit;
+
+  const backwardCount = Math.ceil(backwardLimit / itemHeight);
+  const forwardCount = Math.ceil(forwardLimit / itemHeight);
+  const realItemsCount = backwardCount + forwardCount;
+
+  const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / bufferSize);
+  const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / bufferSize);
+  const fetchCount = backwardFetchCount + forwardFetchCount;
+  const fetchedItemsCount = fetchCount * bufferSize;
+
+  const first = startIndex - backwardCount;
+  const last = startIndex - 1 + forwardCount;
+
+  const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * itemHeight;
+  const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemHeight;
+
+  expect(realItemsCount).not.toEqual(fetchedItemsCount);
+  expect(misc.workflow.fetchCount).toEqual(fetchCount);
+  expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
+  expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);
+  expect(misc.padding[Direction.forward].getSize()).toEqual(forwardClipLimit);
+  expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
+  expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
+  expect(misc.getElement(first - 1)).toBeFalsy();
+  expect(misc.getElement(last + 1)).toBeFalsy();
+
+  done();
+};
 
 describe('Initial Load Spec', () => {
-
-  const testViewport = (settings) => (misc) => (done) => {
-    const startIndex = settings.datasourceSettings.startIndex;
-    const bufferSize = settings.datasourceSettings.bufferSize;
-    const padding = settings.datasourceSettings.padding;
-    const viewportHeight = settings.templateSettings.viewportHeight;
-
-    const backwardLimit = viewportHeight * padding;
-    const forwardLimit = viewportHeight + backwardLimit;
-    const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / bufferSize);
-    const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / bufferSize);
-    const fetchCount = backwardFetchCount + forwardFetchCount;
-    const first = startIndex - backwardFetchCount * bufferSize;
-    const last = startIndex + forwardFetchCount * bufferSize - 1;
-
-    expect(misc.workflow.fetchCount).toEqual(fetchCount);
-    expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
-    expect(misc.padding[Direction.backward].getSize()).toEqual(0);
-    expect(misc.padding[Direction.forward].getSize()).toEqual(0);
-    expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
-    expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
-    expect(misc.getElement(first - 1)).toBeFalsy();
-    expect(misc.getElement(last + 1)).toBeFalsy();
-
-    done();
-  };
 
   describe('No Clip', () => {
     configList.forEach(config =>
@@ -76,6 +119,17 @@ describe('Initial Load Spec', () => {
     );
   });
 
+  describe('Clip', () => {
+    configListWithClip.forEach(config =>
+      makeTest({
+        metatitle: generateMetaTitle(config),
+        title: 'should fetch some items with clip',
+        config,
+        it: testViewportWithClip(config)
+      })
+    );
+  });
+
   describe('No Clip (infinite)', () => {
     configListInfinite.forEach(config =>
       makeTest({
@@ -83,56 +137,6 @@ describe('Initial Load Spec', () => {
         title: 'should fetch some items with no clip',
         config: config,
         it: testViewport(config)
-      })
-    );
-  });
-
-
-  describe('Clip', () => {
-
-    const testViewportWithClip = (settings) => (misc) => (done) => {
-      const startIndex = settings.datasourceSettings.startIndex;
-      const bufferSize = settings.datasourceSettings.bufferSize;
-      const padding = settings.datasourceSettings.padding;
-      const viewportHeight = settings.templateSettings.viewportHeight;
-
-      const backwardLimit = viewportHeight * padding;
-      const forwardLimit = viewportHeight + backwardLimit;
-
-      const backwardCount = Math.ceil(backwardLimit / itemHeight);
-      const forwardCount = Math.ceil(forwardLimit / itemHeight);
-      const realItemsCount = backwardCount + forwardCount;
-
-      const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / bufferSize);
-      const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / bufferSize);
-      const fetchCount = backwardFetchCount + forwardFetchCount;
-      const fetchedItemsCount = fetchCount * bufferSize;
-
-      const first = startIndex - backwardCount;
-      const last = startIndex - 1 + forwardCount;
-
-      const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * itemHeight;
-      const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemHeight;
-
-      expect(realItemsCount).not.toEqual(fetchedItemsCount);
-      expect(misc.workflow.fetchCount).toEqual(fetchCount);
-      expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
-      expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);
-      expect(misc.padding[Direction.forward].getSize()).toEqual(forwardClipLimit);
-      expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
-      expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
-      expect(misc.getElement(first - 1)).toBeFalsy();
-      expect(misc.getElement(last + 1)).toBeFalsy();
-
-      done();
-    };
-
-    configListWithClip.forEach(config =>
-      makeTest({
-        metatitle: generateMetaTitle(config),
-        title: 'should fetch some items with clip',
-        config,
-        it: testViewportWithClip(config)
       })
     );
   });

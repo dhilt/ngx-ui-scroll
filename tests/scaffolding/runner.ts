@@ -18,6 +18,7 @@ interface MakeTestConfig {
   metatitle?: string;
   config?: TestBedConfig;
   it?: any;
+  async?: boolean;
 }
 
 export const makeTest = (data: MakeTestConfig) => {
@@ -31,7 +32,8 @@ export const makeTest = (data: MakeTestConfig) => {
         const fixture = configureTestBed(datasourceClass, templateData.template);
         misc = new Misc(fixture);
       }));
-      it(data.title, (done) => data.it(misc)(done));
+      const _it = (done) => data.it(misc)(done);
+      it(data.title, data.async ? async(_it) : _it);
     } else {
       it(data.title, data.it);
     }

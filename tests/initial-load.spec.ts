@@ -43,7 +43,7 @@ const configListInfinite = [configListWithClip[1], configListWithClip[3]]
     }
   }));
 
-const testViewport = (settings) => (misc) => (done) => {
+const shouldNotClip = (settings) => (misc) => (done) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
@@ -58,6 +58,7 @@ const testViewport = (settings) => (misc) => (done) => {
   const last = startIndex + forwardFetchCount * bufferSize - 1;
 
   expect(misc.workflow.fetchCount).toEqual(fetchCount);
+  expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(0);
   expect(misc.padding[Direction.forward].getSize()).toEqual(0);
@@ -69,7 +70,7 @@ const testViewport = (settings) => (misc) => (done) => {
   done();
 };
 
-const testViewportWithClip = (settings) => (misc) => (done) => {
+const shouldClip = (settings) => (misc) => (done) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
@@ -95,6 +96,7 @@ const testViewportWithClip = (settings) => (misc) => (done) => {
 
   expect(realItemsCount).not.toEqual(fetchedItemsCount);
   expect(misc.workflow.fetchCount).toEqual(fetchCount);
+  expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);
   expect(misc.padding[Direction.forward].getSize()).toEqual(forwardClipLimit);
@@ -114,7 +116,7 @@ describe('Initial Load Spec', () => {
         metatitle: generateMetaTitle(config),
         title: 'should fetch some items with no clip',
         config: config,
-        it: testViewport(config)
+        it: shouldNotClip(config)
       })
     );
   });
@@ -125,7 +127,7 @@ describe('Initial Load Spec', () => {
         metatitle: generateMetaTitle(config),
         title: 'should fetch some items with clip',
         config,
-        it: testViewportWithClip(config)
+        it: shouldClip(config)
       })
     );
   });
@@ -136,7 +138,7 @@ describe('Initial Load Spec', () => {
         metatitle: generateMetaTitle(config),
         title: 'should fetch some items with no clip',
         config: config,
-        it: testViewport(config)
+        it: shouldNotClip(config)
       })
     );
   });

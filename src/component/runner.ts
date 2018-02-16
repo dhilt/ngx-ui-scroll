@@ -27,11 +27,14 @@ export class WorkflowRunner {
     const flow = this.workflow;
 
     const scrollHandler = () => {
-        const direction = flow.viewport.getScrollDirection();
+      const direction = flow.viewport.getScrollDirection();
       if (!direction) { // no scroll
         return;
       }
-      if (flow.pending && !flow.viewport.syntheticScroll) {
+      if (flow.viewport.syntheticScroll) { // internal scroll position adjustments
+        return;
+      }
+      if (flow.pending) {
         this.directionQueue = direction;
         return;
       }

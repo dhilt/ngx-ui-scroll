@@ -24,26 +24,28 @@ export class WorkflowRunner {
   }
 
   initialize() {
+    const flow = this.workflow;
+
     const scrollHandler = () => {
-      const direction = this.workflow.viewport.getScrollDirection();
+        const direction = flow.viewport.getScrollDirection();
       if (!direction) { // no scroll
         return;
       }
-      if (this.workflow.pending) {
+      if (flow.pending && !flow.viewport.syntheticScroll) {
         this.directionQueue = direction;
         return;
       }
       debouncedRound(() => this.run(direction), 25);
     };
 
-    this.onScrollListener = this.context.renderer.listen(this.workflow.viewport.scrollable, 'scroll', scrollHandler);
+    this.onScrollListener = this.context.renderer.listen(flow.viewport.scrollable, 'scroll', scrollHandler);
 
-    this.workflow.buffer.$items.subscribe(items => this.context.items = items);
+    flow.buffer.$items.subscribe(items => this.context.items = items);
 
-    this.workflow.resolver.subscribe(
+    flow.resolver.subscribe(
       (next) => {
         if (next) {
-          this.run(this.workflow.direction);
+          this.run(flow.direction);
         } else if (this.directionQueue) {
           this.run(this.directionQueue);
           this.directionQueue = null;

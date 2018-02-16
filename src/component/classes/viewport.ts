@@ -19,6 +19,7 @@ export class Viewport {
   private host = null;
   scrollable = null;
   padding: ViewportPadding;
+  syntheticScroll: boolean;
 
   private lastPosition: number;
 
@@ -38,6 +39,7 @@ export class Viewport {
   }
 
   set scrollPosition(value: number) {
+    this.syntheticScroll = true;
     this.scrollable.scrollTop = value;
   }
 

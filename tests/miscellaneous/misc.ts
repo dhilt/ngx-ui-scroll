@@ -30,6 +30,7 @@ export class Misc {
   testComponent: TestComponentInterface;
   datasource: Datasource;
   uiScrollElement: DebugElement;
+  viewportElement: DebugElement;
   uiScrollComponent: UiScrollComponent;
   workflow: Workflow;
   padding = {};
@@ -40,6 +41,7 @@ export class Misc {
     this.datasource = this.testComponent.datasource;
     this.uiScrollElement = this.fixture.debugElement.query(By.css('ui-scroll'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
+    this.viewportElement = this.uiScrollElement.parent;
     this.workflow = this.uiScrollComponent.workflowRunner.workflow;
     this.padding[Direction.forward] = new Padding(fixture, Direction.forward);
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward);

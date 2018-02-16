@@ -19,7 +19,7 @@ export class Padding {
     this.style = this.element.nativeElement.style;
   }
 
-  getSize():number {
+  getSize(): number {
     return parseInt(this.style.height, 10);
   }
 }
@@ -54,5 +54,13 @@ export class Misc {
   getElementText(index: number): string {
     const element = this.getElement(index);
     return element ? element.innerText.trim() : null;
+  }
+
+  scrollMin() {
+    this.viewportElement.nativeElement.scrollTop = 0;
+  }
+
+  scrollMax() {
+    this.viewportElement.nativeElement.scrollTop = 999999;
   }
 }

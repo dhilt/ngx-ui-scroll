@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { UiScrollModule } from '../../public_api';
-//import { UiScrollModule } from 'ngx-ui-scroll';
+// import { UiScrollModule } from 'ngx-ui-scroll';
 
 @NgModule({
   declarations: [AppComponent],

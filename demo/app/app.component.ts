@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { Datasource } from '../../public_api';
-//import { Datasource } from 'ngx-ui-scroll';
+// import { Datasource } from 'ngx-ui-scroll';
 
 const datasourceGet = {
   'callback': (index: number, count: number, success) => {
@@ -55,7 +55,7 @@ export class AppComponent {
   public title = 'app works!';
 
   public datasource: Datasource = {
-    get: datasourceGet['callback'],
+    get: datasourceGet['observable'],
     settings: {
       bufferSize: 5
     }

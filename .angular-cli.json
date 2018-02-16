@@ -5,7 +5,7 @@
   },
   "apps": [
     {
-      "root": "app",
+      "root": "demo",
       "outDir": "dist",
       "assets": [
         "assets",
@@ -29,22 +29,9 @@
       }
     }
   ],
-  "e2e": {
-    "protractor": {
-      "config": "./protractor.conf.js"
-    }
-  },
   "lint": [
     {
-      "project": "app/tsconfig.app.json",
-      "exclude": "**/node_modules/**"
-    },
-    {
-      "project": "app/tsconfig.spec.json",
-      "exclude": "**/node_modules/**"
-    },
-    {
-      "project": "e2e/tsconfig.e2e.json",
+      "project": "demo/tsconfig.app.json",
       "exclude": "**/node_modules/**"
     }
   ],

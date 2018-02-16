@@ -22,25 +22,18 @@ export default class Fetch {
   }
 
   static fetchByDirection(direction: Direction, workflow: Workflow): Promise<any> {
-    const _get = <Function>workflow.datasource.get;
-    let _getResult;
-    if (_get.length === 2) { // not DatasourceGetCallback
-      _getResult = _get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize);
-      if (_getResult && typeof _getResult.then === 'function') { // DatasourceGetPromise
-        return _getResult.then(result => Fetch.success(result, direction, workflow));
-      }
-    }
     return new Promise((resolve, reject) => {
       const success = (result) => {
         Fetch.success(result, direction, workflow);
         resolve(true);
       };
-      if (_get.length > 2) { // DatasourceGetCallback
-        _get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize, success, reject);
-      } else if (_get.length === 2 && _getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
+      const _get = <Function>workflow.datasource.get;
+      const _getResult = _get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize, success, reject);
+      if (_getResult && typeof _getResult.then === 'function') { // DatasourceGetPromise
+        _getResult.then(success, reject);
+      }
+      else if (_getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
         _getResult.subscribe(success, reject);
-      } else {
-        throw new Error('Datasource.get implementation error');
       }
     });
   }

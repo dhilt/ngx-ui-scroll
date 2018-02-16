@@ -35,15 +35,12 @@ export default class Fetch {
         Fetch.success(result, direction, workflow);
         resolve(true);
       };
-      const _get = <Function>workflow.datasource.get;
       if (_get.length > 2) { // DatasourceGetCallback
         _get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize, success, reject);
+      } else if (_get.length === 2 && _getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
+        _getResult.subscribe(success, reject);
       } else {
-        if (_getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
-          _getResult.subscribe(success, reject);
-        } else {
-          throw new Error('Datasource.get implementation error');
-        }
+        throw new Error('Datasource.get implementation error');
       }
     });
   }

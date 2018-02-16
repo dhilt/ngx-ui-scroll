@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import { Settings } from './settings';
 
 export type DatasourceGetCallback = (index: number, count: number, success: Function, fail: Function) => void;

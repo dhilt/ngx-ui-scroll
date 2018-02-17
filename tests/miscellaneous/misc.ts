@@ -36,6 +36,7 @@ export class Misc {
   workflowRunner: WorkflowRunner;
   workflow: Workflow;
   padding = {};
+  itemHeight = 20;
 
   constructor(fixture: ComponentFixture <any>) {
     this.fixture = fixture;

@@ -1,8 +1,6 @@
 import { Direction } from '../src/component/interfaces/direction';
 import { makeTest } from './scaffolding/runner';
 
-const itemHeight = 20;
-
 const configList = [{
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 2 },
   templateSettings: { viewportHeight: 20 }
@@ -45,8 +43,8 @@ const shouldNotClip = (settings) => (misc) => (done) => {
 
   const backwardLimit = viewportHeight * padding;
   const forwardLimit = viewportHeight + backwardLimit;
-  const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / bufferSize);
-  const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / bufferSize);
+  const backwardFetchCount = Math.ceil((backwardLimit / misc.itemHeight) / bufferSize);
+  const forwardFetchCount = Math.ceil((forwardLimit / misc.itemHeight) / bufferSize);
   const fetchCount = backwardFetchCount + forwardFetchCount;
   const first = startIndex - backwardFetchCount * bufferSize;
   const last = startIndex + forwardFetchCount * bufferSize - 1;
@@ -74,20 +72,20 @@ const shouldClip = (settings) => (misc) => (done) => {
   const backwardLimit = viewportHeight * padding;
   const forwardLimit = viewportHeight + backwardLimit;
 
-  const backwardCount = Math.ceil(backwardLimit / itemHeight);
-  const forwardCount = Math.ceil(forwardLimit / itemHeight);
+  const backwardCount = Math.ceil(backwardLimit / misc.itemHeight);
+  const forwardCount = Math.ceil(forwardLimit / misc.itemHeight);
   const realItemsCount = backwardCount + forwardCount;
 
-  const backwardFetchCount = Math.ceil((backwardLimit / itemHeight) / bufferSize);
-  const forwardFetchCount = Math.ceil((forwardLimit / itemHeight) / bufferSize);
+  const backwardFetchCount = Math.ceil((backwardLimit / misc.itemHeight) / bufferSize);
+  const forwardFetchCount = Math.ceil((forwardLimit / misc.itemHeight) / bufferSize);
   const fetchCount = backwardFetchCount + forwardFetchCount;
   const fetchedItemsCount = fetchCount * bufferSize;
 
   const first = startIndex - backwardCount;
   const last = startIndex - 1 + forwardCount;
 
-  const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * itemHeight;
-  const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemHeight;
+  const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * misc.itemHeight;
+  const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * misc.itemHeight;
 
   expect(misc.workflowRunner.count).toEqual(1);
   expect(realItemsCount).not.toEqual(fetchedItemsCount);

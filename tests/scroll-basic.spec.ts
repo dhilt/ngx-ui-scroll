@@ -1,8 +1,6 @@
 import { Direction } from '../src/component/interfaces/direction';
 import { makeTest } from './scaffolding/runner';
 
-const itemHeight = 20;
-
 const singleForwardMaxScrollConfigList = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22 },
   templateSettings: { viewportHeight: 71 },
@@ -38,11 +36,11 @@ const shouldScrollOneTime = (config) => (misc) => (done) => {
   const _edgeItemIndex = misc.workflow.buffer.getEdgeVisibleItem(direction).$index;
 
   const sizeToFill = _paddingSize + padding * viewportSize;
-  const itemsToFill = Math.ceil(sizeToFill / itemHeight);
+  const itemsToFill = Math.ceil(sizeToFill / misc.itemHeight);
   const fetchCount = Math.ceil(itemsToFill / bufferSize);
   const fetchedItemsCount = fetchCount * bufferSize;
   const itemsToClip = fetchedItemsCount - itemsToFill;
-  const sizeToClip = itemsToClip * itemHeight;
+  const sizeToClip = itemsToClip * misc.itemHeight;
   const edgeItemIndex = _edgeItemIndex + (_forward ? 1 : -1) * (fetchedItemsCount - itemsToClip);
 
   spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {

@@ -57,7 +57,7 @@ const shouldNotClip = (settings) => (misc) => (done) => {
   const first = startIndex - backwardFetchCount * bufferSize;
   const last = startIndex + forwardFetchCount * bufferSize - 1;
 
-  expect(misc.workflow.fetchCount).toEqual(fetchCount);
+  expect(misc.workflow.fetch.count).toEqual(fetchCount);
   expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(0);
@@ -95,7 +95,7 @@ const shouldClip = (settings) => (misc) => (done) => {
   const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemHeight;
 
   expect(realItemsCount).not.toEqual(fetchedItemsCount);
-  expect(misc.workflow.fetchCount).toEqual(fetchCount);
+  expect(misc.workflow.fetch.count).toEqual(fetchCount);
   expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);

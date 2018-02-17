@@ -20,9 +20,6 @@ export class Workflow {
   public buffer: Buffer;
 
   public count = 0;
-  public fetchCount = 0;
-
-  // single cycle data (resettable)
   public pending: boolean;
   public direction: Direction;
   public next: boolean;
@@ -41,6 +38,9 @@ export class Workflow {
     this.settings = new Settings(context.datasource.settings);
     this.viewport = new Viewport(context.elementRef, this.settings);
     this.buffer = new Buffer();
+
+    this.fetch = new FetchModel();
+    this.clip = new ClipModel();
   }
 
   reset() {
@@ -48,7 +48,7 @@ export class Workflow {
     this.viewport.syntheticScroll = false;
     this.direction = null;
     this.next = false;
-    this.fetch = new FetchModel();
+    this.fetch.reset();
     this.clip = new ClipModel();
   }
 

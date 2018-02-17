@@ -21,8 +21,27 @@ interface MakeTestConfig {
   it?: any;
 }
 
+const generateMetaTitle = (config): string => {
+  const result = [];
+  if(config.templateSettings && config.templateSettings.viewportHeight) {
+    result.push(`viewport height = ${config.templateSettings.viewportHeight}`);
+  }
+  if(config.datasourceSettings && config.datasourceSettings.startIndex){
+    result.push(`start index = ${config.datasourceSettings.startIndex}`);
+  }
+  if(config.datasourceSettings && config.datasourceSettings.bufferSize){
+    result.push(`start index = ${config.datasourceSettings.bufferSize}`);
+  }
+  if(config.datasourceSettings && config.datasourceSettings.padding){
+    result.push(`start index = ${config.datasourceSettings.padding}`);
+  }
+  let title = result.join(', ');
+  title = title ? '⤷ ' + title : '';
+  return title;
+};
+
 export const makeTest = (data: MakeTestConfig) => {
-  describe(data.metatitle ? '⤷ ' + data.metatitle : '', () => {
+  describe(generateMetaTitle(data.config), () => {
     if (data.config) {
       let misc: Misc;
       beforeEach(async(() => {

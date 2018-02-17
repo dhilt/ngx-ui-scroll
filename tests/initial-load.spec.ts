@@ -3,12 +3,6 @@ import { makeTest } from './scaffolding/runner';
 
 const itemHeight = 20;
 
-const generateMetaTitle = (settings): string =>
-`Viewport height = ${settings.templateSettings.viewportHeight}, ` +
-`start index = ${settings.datasourceSettings.startIndex}, ` +
-`buffer size = ${settings.datasourceSettings.bufferSize}, ` +
-`padding = ${settings.datasourceSettings.padding}`;
-
 const configList = [{
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 2 },
   templateSettings: { viewportHeight: 20 }
@@ -115,9 +109,8 @@ describe('Initial Load Spec', () => {
   describe('No Clip', () => {
     configList.forEach(config =>
       makeTest({
-        metatitle: generateMetaTitle(config),
+        config,
         title: 'should fetch some items with no clip',
-        config: config,
         it: shouldNotClip(config)
       })
     );
@@ -126,9 +119,8 @@ describe('Initial Load Spec', () => {
   describe('Clip', () => {
     configListWithClip.forEach(config =>
       makeTest({
-        metatitle: generateMetaTitle(config),
-        title: 'should fetch some items with clip',
         config,
+        title: 'should fetch some items with clip',
         it: shouldClip(config)
       })
     );
@@ -137,9 +129,8 @@ describe('Initial Load Spec', () => {
   describe('No Clip (infinite)', () => {
     configListInfinite.forEach(config =>
       makeTest({
-        metatitle: generateMetaTitle(config),
+        config,
         title: 'should fetch some items with no clip',
-        config: config,
         it: shouldNotClip(config)
       })
     );

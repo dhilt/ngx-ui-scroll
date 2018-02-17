@@ -1,13 +1,7 @@
-import { makeTest } from './scaffolding/runner';
 import { Direction } from '../src/component/interfaces/direction';
+import { makeTest } from './scaffolding/runner';
 
 const itemHeight = 20;
-
-const generateMetaTitle = (settings): string =>
-`Viewport height = ${settings.templateSettings.viewportHeight}, ` +
-`start index = ${settings.datasourceSettings.startIndex}, ` +
-`buffer size = ${settings.datasourceSettings.bufferSize}, ` +
-`padding = ${settings.datasourceSettings.padding}`;
 
 const singleForwardMaxScrollConfigList = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22 },
@@ -32,7 +26,7 @@ const singleBackwardMaxScrollConfigList =
     }
   }));
 
-const _it = (config) => (misc) => (done) => {
+const shouldScrollOneTime = (config) => (misc) => (done) => {
   const bufferSize = config.datasourceSettings.bufferSize;
   const padding = config.datasourceSettings.padding;
   const viewportSize = config.templateSettings.viewportHeight;
@@ -72,10 +66,9 @@ describe('Basic Scroll Spec', () => {
   describe('Single max fwd scroll event', () =>
     singleForwardMaxScrollConfigList.forEach(config =>
       makeTest({
-        metatitle: generateMetaTitle(config),
-        title: 'should process 1 forward max scroll',
         config,
-        it: _it(config)
+        title: 'should process 1 forward max scroll',
+        it: shouldScrollOneTime(config)
       })
     )
   );
@@ -83,10 +76,9 @@ describe('Basic Scroll Spec', () => {
   describe('Single max bwd scroll event', () =>
     singleBackwardMaxScrollConfigList.forEach(config =>
       makeTest({
-        metatitle: generateMetaTitle(config),
-        title: 'should process 1 backward max scroll',
         config,
-        it: _it(config)
+        title: 'should process 1 backward max scroll',
+        it: shouldScrollOneTime(config)
       })
     )
   );

@@ -2,6 +2,11 @@ html {
   line-height: 20px;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+}
+
 .viewport {
   width: 200px;
   height: 200px;

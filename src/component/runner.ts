@@ -15,6 +15,7 @@ export class WorkflowRunner {
   private context;
   private onScrollListener: Function;
   public workflow: Workflow;
+  public count = 0;
   private directionQueue: Direction;
 
   constructor(context) {
@@ -52,6 +53,9 @@ export class WorkflowRunner {
         } else if (this.directionQueue) {
           this.run(this.directionQueue);
           this.directionQueue = null;
+        } else {
+          this.count++;
+          this.finalize();
         }
       },
       (error) => {
@@ -94,6 +98,9 @@ export class WorkflowRunner {
       .then(ProcessFetch.run)
       .then(Render.run)
       .then(AdjustFetch.run);
+  }
+
+  finalize() { // stop queue
   }
 
   dispose() {

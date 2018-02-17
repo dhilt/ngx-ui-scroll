@@ -20,6 +20,7 @@ export class Workflow {
   public buffer: Buffer;
 
   public count = 0;
+  public countDone = 0;
   public pending: boolean;
   public direction: Direction;
   public next: boolean;
@@ -65,9 +66,14 @@ export class Workflow {
     return Promise.resolve(this);
   }
 
+  finalize() { // stop 1 cycle
+  }
+
   end() {
     this.pending = false;
+    this.countDone++;
     this.viewport.saveScrollPosition();
+    this.finalize();
   }
 
   done() {

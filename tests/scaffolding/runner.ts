@@ -10,7 +10,8 @@ import { generateDatasourceClass } from './datasources';
 interface TestBedConfig {
   datasourceName?: string;
   datasourceSettings?: Settings,
-  templateSettings?: TemplateSettings
+  templateSettings?: TemplateSettings,
+  custom?: any
 }
 
 interface MakeTestConfig {

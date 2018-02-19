@@ -1,4 +1,4 @@
-import { Direction } from '../src/component/interfaces/direction';
+import { Direction } from '../src/component/interfaces';
 import { makeTest } from './scaffolding/runner';
 
 const singleForwardMaxScrollConfigList = [{

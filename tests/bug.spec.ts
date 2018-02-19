@@ -1,7 +1,5 @@
 import { makeTest } from './scaffolding/runner';
 
-const itemHeight = 20;
-
 describe('Bug Spec', () => {
 
   describe('Fast scroll with full cleanup', () => {
@@ -21,7 +19,7 @@ describe('Bug Spec', () => {
           done();
         });
       }
-    })
+    });
   });
 
 });

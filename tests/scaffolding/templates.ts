@@ -16,7 +16,7 @@ export const generateTemplate = (templateSettings?: TemplateSettings) => {
           <span>{{item.id}}</span> : <b>{{item.text}}</b>
         </div>
       </div>`
-  }
+  };
 };
 
 export const defaultTemplate = generateTemplate().template;

@@ -1,6 +1,6 @@
 import { async } from '@angular/core/testing';
 
-import { Settings } from '../../src/component/interfaces/settings';
+import { Settings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';
@@ -9,29 +9,30 @@ import { generateDatasourceClass } from './datasources';
 
 interface TestBedConfig {
   datasourceName?: string;
-  datasourceSettings?: Settings,
-  templateSettings?: TemplateSettings,
-  custom?: any
+  datasourceSettings?: Settings;
+  templateSettings?: TemplateSettings;
+  custom?: any;
 }
 
 interface MakeTestConfig {
   title: string;
   config?: TestBedConfig;
   it?: any;
+  async?: boolean;
 }
 
 const generateMetaTitle = (config): string => {
   const result = [];
-  if(config.templateSettings && config.templateSettings.viewportHeight) {
+  if (config.templateSettings && config.templateSettings.viewportHeight) {
     result.push(`viewport height = ${config.templateSettings.viewportHeight}`);
   }
-  if(config.datasourceSettings && config.datasourceSettings.startIndex){
+  if (config.datasourceSettings && config.datasourceSettings.startIndex){
     result.push(`start index = ${config.datasourceSettings.startIndex}`);
   }
-  if(config.datasourceSettings && config.datasourceSettings.bufferSize){
+  if (config.datasourceSettings && config.datasourceSettings.bufferSize){
     result.push(`start index = ${config.datasourceSettings.bufferSize}`);
   }
-  if(config.datasourceSettings && config.datasourceSettings.padding){
+  if (config.datasourceSettings && config.datasourceSettings.padding){
     result.push(`start index = ${config.datasourceSettings.padding}`);
   }
   let title = result.join(', ');

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Datasource } from '../../src/component/interfaces/datasource';
+import { Datasource } from '../../src/component/interfaces';
 
 import { DatasourceService } from './datasources';
 import { defaultTemplate } from './templates';

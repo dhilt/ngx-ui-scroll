@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs';
-import { Datasource } from '../../src/component/interfaces/datasource';
-import { Settings } from '../../src/component/interfaces/settings';
+import { Datasource, Settings } from '../../src/component/interfaces';
 
 export class DatasourceService implements Datasource {
   get() {
@@ -18,7 +17,7 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings) => 
     get(...args) {
       return datasourceStore[_name].get.apply(this, args);
     }
-  }
+  };
 };
 
 export const defaultDatasourceClass = generateDatasourceClass('initial');
@@ -27,13 +26,13 @@ const infiniteDatasourceGet = (delay?: number) =>
   (index: number, count: number) =>
     Observable.create(observer => {
       const run = () => {
-        let data = [];
+        const data = [];
         for (let i = index; i <= index + count - 1; i++) {
-          data.push({ id: i, text: "item #" + i });
+          data.push({ id: i, text: 'item #' + i });
         }
         observer.next(data);
       };
-      if(delay) {
+      if (delay) {
         setTimeout(() => run(), delay);
       } else {
         run();

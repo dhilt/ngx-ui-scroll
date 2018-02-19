@@ -1,8 +1,7 @@
 import { async } from '@angular/core/testing';
 
-import { Settings } from '../src/component/interfaces/settings';
+import { Settings, Direction } from '../src/component/interfaces';
 import { defaultSettings } from '../src/component/classes/settings';
-import { Direction } from '../src/component/interfaces/direction';
 
 import { configureTestBed } from './scaffolding/testBed';
 import { defaultDatasourceClass } from './scaffolding/datasources';

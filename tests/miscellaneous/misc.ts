@@ -3,8 +3,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
-import { Direction } from '../../src/component/interfaces/direction';
-import { Datasource } from '../../src/component/interfaces/datasource';
+import { Direction, Datasource } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { Workflow } from '../../src/component/workflow';
 import { WorkflowRunner } from '../../src/component/runner';

@@ -16,7 +16,6 @@ interface TestBedConfig {
 
 interface MakeTestConfig {
   title: string;
-  metatitle?: string;
   config?: TestBedConfig;
   it?: any;
 }

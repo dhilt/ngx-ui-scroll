@@ -1,3 +1,5 @@
+import { Subscription } from 'rxjs/Subscription';
+
 import { Workflow } from './workflow';
 import { debouncedRound } from './utils/index';
 import { Direction } from './interfaces/direction';
@@ -14,6 +16,8 @@ export class WorkflowRunner {
 
   private context;
   private onScrollListener: Function;
+  private itemsSubscription: Subscription;
+  private flowResolverSubscription: Subscription;
   public workflow: Workflow;
   public count = 0;
   private directionQueue: Direction;
@@ -44,13 +48,14 @@ export class WorkflowRunner {
 
     this.onScrollListener = this.context.renderer.listen(flow.viewport.scrollable, 'scroll', scrollHandler);
 
-    flow.buffer.$items.subscribe(items => this.context.items = items);
+    this.itemsSubscription = flow.buffer.$items.subscribe(items => this.context.items = items);
 
-    flow.resolver.subscribe(
+    this.flowResolverSubscription = flow.resolver.subscribe(
       (next) => {
         if (next) {
           this.run(flow.direction);
-        } else if (this.directionQueue) {
+        }
+        else if(this.directionQueue) {
           this.run(this.directionQueue);
           this.directionQueue = null;
         } else {
@@ -105,6 +110,8 @@ export class WorkflowRunner {
 
   dispose() {
     this.onScrollListener();
+    this.itemsSubscription.unsubscribe();
+    this.flowResolverSubscription.unsubscribe();
     this.workflow.dispose();
   }
 

@@ -1,12 +1,13 @@
 import { Observable } from 'rxjs/Observable';
 
-import { Datasource } from './interfaces/index';
+import { Datasource, Direction } from './interfaces';
 import { Viewport } from './classes/viewport';
 import { Settings } from './classes/settings';
 import { Buffer } from './classes/buffer';
 import { FetchModel } from './classes/fetch';
 import { ClipModel } from './classes/clip';
-import { Direction } from './interfaces/direction';
+
+import { checkDatasource } from './utils';
 
 export class Workflow {
 
@@ -34,7 +35,7 @@ export class Workflow {
       this.next = true;
       context.changeDetector.markForCheck();
     };
-    this.datasource = context.datasource;
+    this.datasource = checkDatasource(context.datasource);
 
     this.settings = new Settings(context.datasource.settings);
     this.viewport = new Viewport(context.elementRef, this.settings);

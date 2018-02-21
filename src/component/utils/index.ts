@@ -1,3 +1,4 @@
 import { debouncedRound } from './debouncedRound';
+import { checkDatasource } from './checkDatasource';
 
-export { debouncedRound };
+export { debouncedRound, checkDatasource };

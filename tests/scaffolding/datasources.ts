@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import { Datasource, Settings } from '../../src/component/interfaces';
+import { checkDatasource } from '../../src/component/utils';
 
 export class DatasourceService implements Datasource {
   get() {
@@ -11,11 +12,11 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings) => 
     settings: Settings;
 
     constructor() {
-      this.settings = { ...datasourceStore[_name].settings, ...(_settings || {}) };
+      this.settings = { ...checkDatasource(datasourceStore[_name]).settings, ...(_settings || {}) };
     }
 
     get(...args) {
-      return datasourceStore[_name].get.apply(this, args);
+      return checkDatasource(datasourceStore[_name]).get.apply(this, args);
     }
   };
 };
@@ -55,6 +56,6 @@ const datasourceStore = {
 
   'initial-without-settings': <Datasource>{
     get: infiniteDatasourceGet()
-  }
+  },
 
 };

@@ -1,4 +1,4 @@
-import { Direction, Item } from '../interfaces/index';
+import { Direction, Item } from '../interfaces';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export class Index {

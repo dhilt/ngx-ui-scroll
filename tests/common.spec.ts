@@ -80,4 +80,47 @@ describe('Common Spec', () => {
 
   });
 
+  describe('Bad datasource', () => {
+
+    makeTest({
+      config: {
+        datasourceClass: class {
+          settings: Settings;
+          constructor() {
+            this.settings = { };
+          }
+          get2(...args) {
+            return null;
+          }
+        },
+        throw: true
+      },
+      title: 'should throw exception (no get)',
+      it: (error) => (done) => {
+        expect(error).toBe('Datasource get method should be implemented');
+        done();
+      }
+    });
+
+    makeTest({
+      config: {
+        datasourceClass: class {
+          settings: Settings;
+          get: boolean;
+          constructor() {
+            this.settings = { };
+            this.get = true;
+          }
+        },
+        throw: true
+      },
+      title: 'should throw exception (get is not a function)',
+      it: (error) => (done) => {
+        expect(error).toBe('Datasource get should be a function');
+        done();
+      }
+    });
+
+  });
+
 });

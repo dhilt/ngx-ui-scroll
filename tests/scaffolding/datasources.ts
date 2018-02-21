@@ -12,11 +12,11 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings) => 
     settings: Settings;
 
     constructor() {
-      this.settings = { ...checkDatasource(datasourceStore[_name]).settings, ...(_settings || {}) };
+      this.settings = { ...datasourceStore[_name].settings, ...(_settings || {}) };
     }
 
     get(...args) {
-      return checkDatasource(datasourceStore[_name]).get.apply(this, args);
+      return datasourceStore[_name].get.apply(this, args);
     }
   };
 };

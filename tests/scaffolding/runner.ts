@@ -8,10 +8,12 @@ import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources';
 
 interface TestBedConfig {
+  datasourceClass?: any;
   datasourceName?: string;
   datasourceSettings?: Settings;
   templateSettings?: TemplateSettings;
   custom?: any;
+  throw?: boolean;
 }
 
 interface MakeTestConfig {
@@ -44,14 +46,24 @@ export const makeTest = (data: MakeTestConfig) => {
   describe(generateMetaTitle(data.config), () => {
     if (data.config) {
       let misc: Misc;
+      let error;
       beforeEach(async(() => {
-        const datasourceClass =
+        const datasourceClass = data.config.datasourceClass ? data.config.datasourceClass :
           generateDatasourceClass(data.config.datasourceName || 'default', data.config.datasourceSettings);
         const templateData = generateTemplate(data.config.templateSettings);
-        const fixture = configureTestBed(datasourceClass, templateData.template);
-        misc = new Misc(fixture);
+        if(data.config.throw) {
+          try {
+            const fixture = configureTestBed(datasourceClass, templateData.template);
+            misc = new Misc(fixture);
+          } catch (_error) {
+            error = _error && _error.message;
+          }
+        } else {
+          const fixture = configureTestBed(datasourceClass, templateData.template);
+          misc = new Misc(fixture);
+        }
       }));
-      it(data.title, (done) => data.it(misc)(done));
+      it(data.title, (done) => data.it(data.config.throw ? error : misc)(done));
     } else {
       it(data.title, data.it);
     }

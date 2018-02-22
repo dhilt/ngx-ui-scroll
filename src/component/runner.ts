@@ -21,10 +21,13 @@ export class WorkflowRunner {
   public workflow: Workflow;
   public count = 0;
   private directionQueue: Direction;
+  private initialDirection = Direction.forward;
+  private initialOppositeDirection: Direction;
 
   constructor(context) {
     this.context = context;
     this.workflow = new Workflow(this.context);
+    this.initialOppositeDirection = this.initialDirection === Direction.forward ? Direction.backward : Direction.forward;
     this.initialize();
   }
 
@@ -39,11 +42,8 @@ export class WorkflowRunner {
       if (flow.viewport.syntheticScroll) { // internal scroll position adjustments
         return;
       }
-      if (flow.pending) {
-        this.directionQueue = direction;
-        return;
-      }
-      debouncedRound(() => this.run(direction), 25);
+      //debouncedRound(() => this.run(direction), 25);
+      this.run(direction);
     };
 
     this.onScrollListener = this.context.renderer.listen(flow.viewport.scrollable, 'scroll', scrollHandler);
@@ -52,12 +52,14 @@ export class WorkflowRunner {
 
     this.flowResolverSubscription = flow.resolver.subscribe(
       (next) => {
-        if (next) {
-          this.run(flow.direction);
-        }
-        else if(this.directionQueue) {
+        if (this.directionQueue) {
           this.run(this.directionQueue);
           this.directionQueue = null;
+        } else if (next) {
+          this.run(flow.direction);
+        } else if (this.initialOppositeDirection) {
+          this.run(this.initialOppositeDirection);
+          this.initialOppositeDirection = null;
         } else {
           this.count++;
           this.finalize();
@@ -68,8 +70,7 @@ export class WorkflowRunner {
       }
     );
 
-    this.run(Direction.forward);
-    this.run(Direction.backward);
+    this.run(this.initialDirection);
   }
 
   run(direction?: Direction) {

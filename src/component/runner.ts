@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 
 import { Workflow } from './workflow';
-import { debouncedRound } from './utils/index';
+import { debouncedRound, calculateFlowDirection } from './utils/index';
 import { Direction } from './interfaces/direction';
 
 import ShouldFetch from './workflow/shouldFetch';
@@ -33,44 +33,41 @@ export class WorkflowRunner {
 
   initialize() {
     const flow = this.workflow;
+    const onScroll = ($event) => this.scroll($event);
 
-    const scrollHandler = () => {
-      const direction = flow.viewport.getScrollDirection();
-      if (!direction) { // no scroll
-        return;
-      }
-      if (flow.viewport.syntheticScroll) { // internal scroll position adjustments
-        return;
-      }
-      //debouncedRound(() => this.run(direction), 25);
-      this.run(direction);
-    };
-
-    this.onScrollListener = this.context.renderer.listen(flow.viewport.scrollable, 'scroll', scrollHandler);
-
+    this.onScrollListener = this.context.renderer.listen(flow.viewport.scrollable, 'scroll', onScroll);
     this.itemsSubscription = flow.buffer.$items.subscribe(items => this.context.items = items);
-
-    this.flowResolverSubscription = flow.resolver.subscribe(
-      (next) => {
-        if (this.directionQueue) {
-          this.run(this.directionQueue);
-          this.directionQueue = null;
-        } else if (next) {
-          this.run(flow.direction);
-        } else if (this.initialOppositeDirection) {
-          this.run(this.initialOppositeDirection);
-          this.initialOppositeDirection = null;
-        } else {
-          this.count++;
-          this.finalize();
-        }
-      },
-      (error) => {
-        throw error;
-      }
-    );
+    this.flowResolverSubscription = flow.resolver.subscribe(this.resolve.bind(this));
 
     this.run(this.initialDirection);
+  }
+
+  scroll($event) {
+    if (this.workflow.viewport.syntheticScrollPosition !== null) {
+      if(this.workflow.viewport.scrollPosition === this.workflow.viewport.syntheticScrollPosition) {
+        this.workflow.viewport.syntheticScrollPosition = null;
+        return;
+      }
+      this.workflow.viewport.syntheticScrollPosition = null;
+    }
+    const direction = calculateFlowDirection(this.workflow.viewport, this.workflow.buffer);
+    //debouncedRound(() => this.run(direction), 25);
+    this.run(direction);
+  }
+
+  resolve(next: boolean) {
+    if (this.directionQueue) {
+      this.run(this.directionQueue);
+      this.directionQueue = null;
+    } else if (next) {
+      this.run(this.workflow.direction);
+    } else if (this.initialOppositeDirection) {
+      this.run(this.initialOppositeDirection);
+      this.initialOppositeDirection = null;
+    } else {
+      this.count++;
+      this.finalize();
+    }
   }
 
   run(direction?: Direction) {
@@ -89,14 +86,6 @@ export class WorkflowRunner {
       );
   }
 
-  clip() {
-    return this.workflow.settings.infinite ?
-      null :
-      this.workflow.continue()
-        .then(ShouldClip.run)
-        .then(Clip.run);
-  }
-
   fetch() {
     return this.workflow.continue()
       .then(ShouldFetch.run)
@@ -106,7 +95,12 @@ export class WorkflowRunner {
       .then(AdjustFetch.run);
   }
 
-  finalize() { // stop queue
+  clip() {
+    return this.workflow.settings.infinite ?
+      null :
+      this.workflow.continue()
+        .then(ShouldClip.run)
+        .then(Clip.run);
   }
 
   dispose() {
@@ -114,6 +108,9 @@ export class WorkflowRunner {
     this.itemsSubscription.unsubscribe();
     this.flowResolverSubscription.unsubscribe();
     this.workflow.dispose();
+  }
+
+  finalize() { // stop queue
   }
 
 }

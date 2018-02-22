@@ -32,10 +32,10 @@ const generateMetaTitle = (config): string => {
     result.push(`start index = ${config.datasourceSettings.startIndex}`);
   }
   if (config.datasourceSettings && config.datasourceSettings.bufferSize){
-    result.push(`start index = ${config.datasourceSettings.bufferSize}`);
+    result.push(`buffer size = ${config.datasourceSettings.bufferSize}`);
   }
   if (config.datasourceSettings && config.datasourceSettings.padding){
-    result.push(`start index = ${config.datasourceSettings.padding}`);
+    result.push(`padding = ${config.datasourceSettings.padding}`);
   }
   let title = result.join(', ');
   title = title ? '⤷ ' + title : '';

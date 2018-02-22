@@ -47,7 +47,6 @@ export class Workflow {
 
   reset() {
     this.pending = false;
-    this.viewport.syntheticScroll = false;
     this.direction = null;
     this.next = false;
     this.fetch.reset();

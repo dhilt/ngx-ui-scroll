@@ -17,10 +17,10 @@ export class ViewportPadding {
 export class Viewport {
 
   private settings: Settings;
-  private host = null;
-  scrollable = null;
+  private host;
+  scrollable;
   padding: ViewportPadding;
-  syntheticScroll: boolean;
+  syntheticScrollPosition: number;
 
   private lastPosition: number;
 
@@ -29,6 +29,7 @@ export class Viewport {
     this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
     this.padding = new ViewportPadding(this.host);
+    this.syntheticScrollPosition = null;
   }
 
   get children(): HTMLCollection {
@@ -40,7 +41,7 @@ export class Viewport {
   }
 
   set scrollPosition(value: number) {
-    this.syntheticScroll = true;
+    this.syntheticScrollPosition = value;
     Routines.setScrollPosition(this.scrollable, value);
   }
 
@@ -50,20 +51,6 @@ export class Viewport {
 
   getLastPosition(): number {
     return this.lastPosition;
-  }
-
-  getScrollDirection(): Direction {
-    const lastScrollPosition = this.getLastPosition();
-    const scrollPosition = this.scrollPosition;
-    if (scrollPosition < this.padding[Direction.backward].size) {
-      return Direction.backward;
-    }
-    if (lastScrollPosition < scrollPosition) {
-      return Direction.forward;
-    } else if (lastScrollPosition > scrollPosition) {
-      return Direction.backward;
-    }
-    return;
   }
 
   getSize(): number {

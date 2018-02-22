@@ -16,7 +16,7 @@ const configListWithClip = [{
   datasourceSettings: { startIndex: 1, bufferSize: 2, padding: 1 },
   templateSettings: { viewportHeight: 20 }
 }, {
-  datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 33 },
+  datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 9.1 },
   templateSettings: { viewportHeight: 70 }
 }, {
   datasourceSettings: { startIndex: 33, bufferSize: 4, padding: 2 },

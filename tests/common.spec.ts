@@ -123,6 +123,7 @@ describe('Common Spec', () => {
 
     makeTest({
       config: {
+        datasourceClass: 'invalid',
         throw: true
       },
       title: 'should throw exception (datasource is not a constructor)',

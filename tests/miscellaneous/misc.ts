@@ -59,11 +59,15 @@ export class Misc {
     return element ? element.innerText.trim() : null;
   }
 
+  scrollTo(value: number) {
+    this.viewportElement.nativeElement.scrollTop = value;
+  }
+
   scrollMin() {
-    this.viewportElement.nativeElement.scrollTop = 0;
+    this.scrollTo(0);
   }
 
   scrollMax() {
-    this.viewportElement.nativeElement.scrollTop = 999999;
+    this.scrollTo(999999);
   }
 }

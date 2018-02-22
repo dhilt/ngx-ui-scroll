@@ -121,6 +121,17 @@ describe('Common Spec', () => {
       }
     });
 
+    makeTest({
+      config: {
+        throw: true
+      },
+      title: 'should throw exception (datasource is not a constructor)',
+      it: (error) => (done) => {
+        expect(error).toBe('datasource is not a constructor');
+        done();
+      }
+    });
+
   });
 
 });

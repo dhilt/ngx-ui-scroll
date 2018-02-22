@@ -28,7 +28,7 @@ const generateMetaTitle = (config): string => {
   if (config.templateSettings && config.templateSettings.viewportHeight) {
     result.push(`viewport height = ${config.templateSettings.viewportHeight}`);
   }
-  if (config.datasourceSettings && config.datasourceSettings.startIndex){
+  if (config.datasourceSettings && config.datasourceSettings.startIndex) {
     result.push(`start index = ${config.datasourceSettings.startIndex}`);
   }
   if (config.datasourceSettings && config.datasourceSettings.bufferSize){
@@ -51,9 +51,9 @@ export const makeTest = (data: MakeTestConfig) => {
         const datasourceClass = data.config.datasourceClass ? data.config.datasourceClass :
           generateDatasourceClass(data.config.datasourceName || 'default', data.config.datasourceSettings);
         const templateData = generateTemplate(data.config.templateSettings);
-        if(data.config.throw) {
+        if (data.config.throw) {
           try {
-            const fixture = configureTestBed(datasourceClass, templateData.template);
+            const fixture = configureTestBed(data.config.datasourceClass, templateData.template);
             misc = new Misc(fixture);
           } catch (_error) {
             error = _error && _error.message;

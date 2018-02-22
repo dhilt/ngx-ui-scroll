@@ -1,5 +1,6 @@
 import { Workflow } from '../workflow';
-import { Item, Direction } from '../interfaces/index';
+import { Direction } from '../interfaces/index';
+import { Item } from '../classes/item';
 
 export default class ProcessFetch {
 
@@ -22,12 +23,8 @@ export default class ProcessFetch {
     }
     fetch.items = fetch.newItemsData.map((item, index) => {
       const $index = fetch.startIndex + index;
-      return <Item>({
-        $index,
-        nodeId: workflow.settings.itemIdPrefix + String($index),
-        data: item,
-        invisible: true
-      });
+      const nodeId = workflow.settings.itemIdPrefix + String($index);
+      return new Item($index, item, nodeId);
     });
 
     if (direction === Direction.forward) {

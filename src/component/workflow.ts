@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs/Observable';
 
 import { Datasource, Direction } from './interfaces';
-import { Viewport } from './classes/viewport';
 import { Settings } from './classes/settings';
+import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { FetchModel } from './classes/fetch';
 import { ClipModel } from './classes/clip';

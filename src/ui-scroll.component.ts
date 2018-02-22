@@ -5,7 +5,8 @@ import {
 } from '@angular/core';
 
 import { WorkflowRunner } from './component/runner';
-import { Datasource, Item } from './component/interfaces/index';
+import { Datasource } from './component/interfaces/index';
+import { Item } from './component/classes/item';
 
 @Component({
   selector: 'ui-scroll',

@@ -18,7 +18,7 @@ export default class ShouldFetch {
     if (!item) {
       workflow.fetch[direction].shouldFetch = true;
     } else {
-      const itemEdge = workflow.viewport.getItemEdge(item.element, direction);
+      const itemEdge = item.getEdge(direction);
       const viewportLimit = workflow.viewport.getLimit(direction);
       workflow.fetch[direction].shouldFetch =
         (direction === Direction.forward) ? itemEdge < viewportLimit : itemEdge > viewportLimit;

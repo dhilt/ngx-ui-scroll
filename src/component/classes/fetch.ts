@@ -1,4 +1,4 @@
-import { Item } from '../interfaces/item';
+import { Item } from './item';
 import { Direction } from '../interfaces/direction';
 
 export class FetchByDirection {

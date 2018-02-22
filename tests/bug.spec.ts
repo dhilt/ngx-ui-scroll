@@ -41,6 +41,7 @@ describe('Bug Spec', () => {
 
   describe('4 END + 1 HOME + 150px down', () => {
     const config = {
+      datasourceName: 'default-delay-25',
       datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
       templateSettings: { viewportHeight: 100 }
     };
@@ -59,8 +60,11 @@ describe('Bug Spec', () => {
           } else if (misc.workflowRunner.count === fwdCount) {
             wfCount = misc.workflow.count;
             misc.scrollMin();
-          } else if (misc.workflowRunner.count > fwdCount + 1) {
-            done();
+          } else if (misc.workflowRunner.count > fwdCount) {
+            // freeze
+            if (misc.workflowRunner.count > fwdCount + 1) {
+              done();
+            }
           }
         });
 

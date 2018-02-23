@@ -59,6 +59,14 @@ export class Misc {
     return element ? element.innerText.trim() : null;
   }
 
+  getScrollableSize(): number {
+    return this.viewportElement.nativeElement.scrollHeight;
+  }
+
+  getScrollPosition(): number {
+    return this.viewportElement.nativeElement.scrollTop;
+  }
+
   scrollTo(value: number) {
     this.viewportElement.nativeElement.scrollTop = value;
   }

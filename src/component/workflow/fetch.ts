@@ -15,7 +15,7 @@ export default class Fetch {
   }
 
   static success(result: any, direction: Direction, workflow: Workflow) {
-    workflow.log(`resolved ${result.length} items ` +
+    workflow.log(`resolved ${result.length} ${direction} items ` +
       `(index = ${workflow.fetch[direction].startIndex}, count = ${workflow.settings.bufferSize})`);
     workflow.fetch[direction].newItemsData = result;
   }

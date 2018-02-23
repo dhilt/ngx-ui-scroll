@@ -12,6 +12,7 @@ export default class Clip {
 
     workflow.buffer.items = workflow.buffer.items.filter(item => {
       if (item.toRemove) {
+        workflow.buffer.cache.add(item);
         item.hide();
         return false;
       }

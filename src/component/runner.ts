@@ -20,14 +20,13 @@ export class WorkflowRunner {
   private flowResolverSubscription: Subscription;
   public workflow: Workflow;
   public count = 0;
+  private newDirection: Direction;
   private directionQueue: Direction;
-  private initialDirection = Direction.forward;
-  private initialOppositeDirection: Direction;
+  private defaultDirection = Direction.forward;
 
   constructor(context) {
     this.context = context;
     this.workflow = new Workflow(this.context);
-    this.initialOppositeDirection = this.initialDirection === Direction.forward ? Direction.backward : Direction.forward;
     this.initialize();
   }
 
@@ -39,7 +38,7 @@ export class WorkflowRunner {
     this.itemsSubscription = flow.buffer.$items.subscribe(items => this.context.items = items);
     this.flowResolverSubscription = flow.resolver.subscribe(this.resolve.bind(this));
 
-    this.run(this.initialDirection);
+    this.run();
   }
 
   scroll($event) {
@@ -50,20 +49,19 @@ export class WorkflowRunner {
       }
       this.workflow.viewport.syntheticScrollPosition = null;
     }
-    const direction = calculateFlowDirection(this.workflow.viewport, this.workflow.buffer);
     //debouncedRound(() => this.run(direction), 25);
-    this.run(direction);
+    this.run();
   }
 
   resolve(next: boolean) {
-    if (this.directionQueue) {
-      this.run(this.directionQueue);
-      this.directionQueue = null;
+    if (this.newDirection) {
+      this.run(this.newDirection);
+      this.newDirection = null;
     } else if (next) {
       this.run(this.workflow.direction);
-    } else if (this.initialOppositeDirection) {
-      this.run(this.initialOppositeDirection);
-      this.initialOppositeDirection = null;
+    } else if (this.directionQueue) {
+      this.run(this.directionQueue);
+      this.directionQueue = null;
     } else {
       this.count++;
       this.finalize();
@@ -71,8 +69,13 @@ export class WorkflowRunner {
   }
 
   run(direction?: Direction) {
+    if(!direction) {
+      direction = this.defaultDirection;
+      this.directionQueue =
+        direction === Direction.forward ? Direction.backward : Direction.forward;
+    }
     if (this.workflow.pending) {
-      this.directionQueue = direction;
+      this.newDirection = direction;
       return;
     }
     this.workflow.start(direction)

@@ -14,15 +14,30 @@ export default class ShouldFetch {
   }
 
   static shouldFetchByDirection(direction: Direction, workflow: Workflow) {
+    let itemEdge = null;
+
     const item = workflow.buffer.getEdgeVisibleItem(direction);
     if (!item) {
-      workflow.fetch[direction].shouldFetch = true;
+      const lastIndex = workflow.buffer.lastIndex[direction];
+      if (lastIndex) {
+        const cachedItem = workflow.buffer.cache.get(lastIndex);
+        if (cachedItem) {
+          itemEdge = cachedItem.getEdge(direction);
+        }
+      }
+      if (itemEdge === null) {
+        workflow.fetch[direction].shouldFetch = true;
+      }
     } else {
-      const itemEdge = item.getEdge(direction);
+      itemEdge = item.getEdge(direction);
+    }
+
+    if (itemEdge !== null) {
       const viewportLimit = workflow.viewport.getLimit(direction);
       workflow.fetch[direction].shouldFetch =
         (direction === Direction.forward) ? itemEdge < viewportLimit : itemEdge > viewportLimit;
     }
+
     if (workflow.fetch[direction].shouldFetch) {
       ShouldFetch.setStartIndex(direction, workflow);
     }

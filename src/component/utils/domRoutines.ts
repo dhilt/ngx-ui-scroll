@@ -10,14 +10,22 @@ export class Routines {
     element.scrollTop = value;
   }
 
+  static getParams(element): DOMRect {
+    return element.getBoundingClientRect();
+  }
+
   static getSize(element): number {
-    return element.getBoundingClientRect().height;
+    return Routines.getParams(element)['height'];
+  }
+
+  static getRectEdge(params: DOMRect, direction: Direction, opposite?: boolean): number {
+    const forward = !opposite ? Direction.forward : Direction.backward;
+    return params[direction === forward ? 'bottom' : 'top'];
   }
 
   static getEdge(element, direction: Direction, opposite?: boolean): number {
-    const params = element.getBoundingClientRect();
-    const result = params[direction === (!opposite ? Direction.forward : Direction.backward) ? 'bottom' : 'top'];
-    return result;
+    const params = Routines.getParams(element);
+    return Routines.getRectEdge(params, direction, opposite);
   }
 
   getEdge2(element, direction: Direction, relativeElement?, opposite?: boolean): number {

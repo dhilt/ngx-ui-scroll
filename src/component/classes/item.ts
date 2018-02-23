@@ -17,6 +17,10 @@ export class Item {
     this.invisible = true;
   }
 
+  getParams() {
+    return Routines.getParams(this.element);
+  }
+
   getEdge(direction: Direction, opposite?: boolean): number {
     return Routines.getEdge(this.element, direction, opposite);
   }

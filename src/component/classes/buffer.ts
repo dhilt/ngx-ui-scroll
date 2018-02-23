@@ -1,4 +1,5 @@
 import { Direction } from '../interfaces';
+import { Cache } from './cache';
 import { Item } from './item';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -15,12 +16,14 @@ export class Buffer {
   bof: boolean;
   eof: boolean;
   lastIndex: Index;
+  cache: Cache;
 
   constructor() {
     this.items = [];
     this.bof = false;
     this.eof = false;
     this.lastIndex = new Index();
+    this.cache = new Cache();
   }
 
   set items(items: Array<Item>) {

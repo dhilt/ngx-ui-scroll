@@ -4,45 +4,27 @@ import { Observable } from 'rxjs/Observable';
 import { Datasource } from '../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
 
+const getData = (index: number, count: number)  => {
+  console.log('requested index = ' + index + ', count = ' + count);
+  let data = [];
+  for (let i = index; i <= index + count - 1; i++) {
+    data.push({
+      id: i,
+      text: "item #" + i
+    });
+  }
+  return data;
+};
+
 const datasourceGet = {
   'callback': (index: number, count: number, success) => {
-    console.log('requested index = ' + index + ', count = ' + count);
-    setTimeout(() => {
-      let data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({
-          id: i,
-          text: "item #" + i
-        });
-      }
-      success(data);
-    }, 100);
+    setTimeout(() => success(getData(index, count)), 100);
   },
   'observable': (index: number, count: number) => Observable.create(observer => {
-    console.log('requested index = ' + index + ', count = ' + count);
-    setTimeout(() => {
-      let data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({
-          id: i,
-          text: "item #" + i
-        });
-      }
-      observer.next(data);
-    }, 100);
+    setTimeout(() => observer.next(getData(index, count)), 100);
   }),
   'promise': (index: number, count: number) => new Promise((resolve, reject) => {
-    console.log('requested index = ' + index + ', count = ' + count);
-    setTimeout(() => {
-      let data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({
-          id: i,
-          text: "item #" + i
-        });
-      }
-      resolve(data);
-    }, 100);
+    setTimeout(() => resolve(getData(index, count)), 100);
   })
 };
 
@@ -52,12 +34,12 @@ const datasourceGet = {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  public title = 'app works!';
 
   public datasource: Datasource = {
     get: datasourceGet['observable'],
     settings: {
-      bufferSize: 5
+      bufferSize: 5,
+      padding: 0.5
     }
   };
 

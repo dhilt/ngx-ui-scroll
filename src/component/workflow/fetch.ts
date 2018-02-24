@@ -14,16 +14,16 @@ export default class Fetch {
     return Promise.all(result).then(() => workflow);
   }
 
-  static success(result: any, direction: Direction, workflow: Workflow) {
-    workflow.log(`resolved ${result.length} ${direction} items ` +
+  static success(data: any, direction: Direction, workflow: Workflow) {
+    workflow.log(`resolved ${data.length} ${direction} items ` +
       `(index = ${workflow.fetch[direction].startIndex}, count = ${workflow.settings.bufferSize})`);
-    workflow.fetch[direction].newItemsData = result;
+    workflow.fetch[direction].newItemsData = data;
   }
 
   static fetchByDirection(direction: Direction, workflow: Workflow): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const success = (result) => {
-        Fetch.success(result, direction, workflow);
+    const result = new Promise((resolve, reject) => {
+      const success = (data) => {
+        Fetch.success(data, direction, workflow);
         resolve(true);
       };
       const _get = <Function>workflow.datasource.get;
@@ -34,6 +34,7 @@ export default class Fetch {
         _getResult.subscribe(success, reject);
       }
     });
+    return result;
   }
 
 }

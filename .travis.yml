@@ -11,9 +11,6 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 - sleep 3
 
-before_script:
-- npm install
-
 script:
 - npm run build
 - npm test

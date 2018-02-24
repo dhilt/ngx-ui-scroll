@@ -3,11 +3,11 @@ import { Direction } from '../interfaces/direction';
 export class Routines {
 
   static getScrollPosition(element): number {
-    return element.scrollTop;
+    return element['scrollTop'];
   }
 
   static setScrollPosition(element, value: number) {
-    element.scrollTop = value;
+    element['scrollTop'] = value;
   }
 
   static getParams(element): DOMRect {
@@ -16,6 +16,10 @@ export class Routines {
 
   static getSize(element): number {
     return Routines.getParams(element)['height'];
+  }
+
+  static getScrollableSize(element): number {
+    return element['scrollHeight'];
   }
 
   static getRectEdge(params: DOMRect, direction: Direction, opposite?: boolean): number {

@@ -81,7 +81,7 @@ describe('Common Spec', () => {
 
     makeTest({
       config: { datasourceName: 'default-bad-settings' },
-      title: 'invalid settings should fallback to default',
+      title: 'should fallback to default',
       it: checkSettings({})
     });
 
@@ -126,7 +126,7 @@ describe('Bad datasource', () => {
         settings: Settings;
         get: boolean;
         constructor() {
-          this.settings = { };
+          this.settings = {};
           this.get = true;
         }
       },
@@ -144,9 +144,9 @@ describe('Bad datasource', () => {
       datasourceClass: class {
         settings: Settings;
         constructor() {
-          this.settings = { };
+          this.settings = {};
         }
-        get(offset) { };
+        get(offset) {};
       },
       throw: true
     },

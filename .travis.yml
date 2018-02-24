@@ -1,0 +1,19 @@
+language: node_js
+
+node_js:
+- '8.9.4'
+
+addons:
+  firefox: stable
+
+before_install:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
+
+before_script:
+- npm install
+
+script:
+- npm run build
+- npm test

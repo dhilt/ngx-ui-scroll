@@ -80,59 +80,60 @@ describe('Common Spec', () => {
 
   });
 
-  describe('Bad datasource', () => {
+});
+describe('Bad datasource', () => {
 
-    makeTest({
-      config: {
-        datasourceClass: class {
-          settings: Settings;
-          constructor() {
-            this.settings = { };
-          }
-          get2(...args) {
-            return null;
-          }
-        },
-        throw: true
+  makeTest({
+    config: {
+      datasourceClass: class {
+        settings: Settings;
+        constructor() {
+          this.settings = { };
+        }
+        get2(...args) {
+          return null;
+        }
       },
-      title: 'should throw exception (no get)',
-      it: (error) => (done) => {
-        expect(error).toBe('Datasource get method should be implemented');
-        done();
-      }
-    });
+      throw: true
+    },
+    title: 'should throw exception (no get)',
+    it: (error) => (done) => {
+      expect(error).toBe('Datasource get method should be implemented');
+      done();
+    }
+  });
 
-    makeTest({
-      config: {
-        datasourceClass: class {
-          settings: Settings;
-          get: boolean;
-          constructor() {
-            this.settings = { };
-            this.get = true;
-          }
-        },
-        throw: true
+  makeTest({
+    config: {
+      datasourceClass: class {
+        settings: any;
+        get: Function;
+        constructor() {
+          this.settings = 'invalid';
+          this.get = () => {};
+        }
       },
-      title: 'should throw exception (get is not a function)',
-      it: (error) => (done) => {
-        expect(error).toBe('Datasource get should be a function');
-        done();
-      }
-    });
+    },
+    title: 'invalid settings should fallback to default',
+    it: (misc) => (done) => {
+      expect(misc.workflow.settings).toEqual(jasmine.any(Object));
+      Object.keys(defaultSettings).forEach(key => {
+        expect(misc.workflow.settings[key]).toEqual(defaultSettings[key]);
+      });
+      done();
+    }
+  });
 
-    makeTest({
-      config: {
-        datasourceClass: 'invalid',
-        throw: true
-      },
-      title: 'should throw exception (datasource is not a constructor)',
-      it: (error) => (done) => {
-        expect(error).toBe('datasource is not a constructor');
-        done();
-      }
-    });
-
+  makeTest({
+    config: {
+      datasourceClass: 'invalid',
+      throw: true
+    },
+    title: 'should throw exception (datasource is not a constructor)',
+    it: (error) => (done) => {
+      expect(error).toBe('datasource is not a constructor');
+      done();
+    }
   });
 
 });

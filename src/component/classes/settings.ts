@@ -22,7 +22,7 @@ export class Settings implements SettingsInterface {
 
   constructor(settings?: SettingsInterface) {
     Object.assign(this, defaultSettings);
-    if (settings) {
+    if (settings && typeof settings === 'object') {
       Object.assign(this, settings);
     }
   }

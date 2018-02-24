@@ -32,7 +32,7 @@ export class Routines {
     return Routines.getRectEdge(params, direction, opposite);
   }
 
-  getEdge2(element, direction: Direction, relativeElement?, opposite?: boolean): number {
+  static getEdge2(element, direction: Direction, relativeElement?, opposite?: boolean): number {
     const result = element.offsetTop - (relativeElement ? relativeElement.scrollTop : 0) +
       (direction === (!opposite ? Direction.forward : Direction.backward) ? Routines.getSize(element) : 0);
     return result;

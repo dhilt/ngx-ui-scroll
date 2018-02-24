@@ -35,7 +35,7 @@ export class Cache {
       found.params = item.getParams();
     } else {
       // todo: do we need the list to be sorted? maybe an object?
-      this.items.push(new ItemCache(item)); 
+      this.items.push(new ItemCache(item));
     }
   }
 

@@ -30,8 +30,7 @@ export default class Fetch {
       const _getResult = _get(workflow.fetch[direction].startIndex, workflow.settings.bufferSize, success, reject);
       if (_getResult && typeof _getResult.then === 'function') { // DatasourceGetPromise
         _getResult.then(success, reject);
-      }
-      else if (_getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
+      } else if (_getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
         _getResult.subscribe(success, reject);
       }
     });

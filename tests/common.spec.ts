@@ -53,6 +53,7 @@ describe('Common Spec', () => {
     const _settings3 = { startIndex: 99, bufferSize: 11 };
 
     const checkSettings = (_settings) => (misc) => (done) => {
+      expect(misc.workflow.settings).toEqual(jasmine.any(Object));
       const mergedSettings = { ...defaultSettings, ..._settings };
       Object.keys(defaultSettings).forEach(key => {
         expect(misc.workflow.settings[key]).toEqual(mergedSettings[key]);
@@ -78,51 +79,17 @@ describe('Common Spec', () => {
       it: checkSettings(_settings3)
     });
 
+    makeTest({
+      config: { datasourceName: 'default-bad-settings' },
+      title: 'invalid settings should fallback to default',
+      it: checkSettings({})
+    });
+
   });
 
 });
+
 describe('Bad datasource', () => {
-
-  makeTest({
-    config: {
-      datasourceClass: class {
-        settings: Settings;
-        constructor() {
-          this.settings = { };
-        }
-        get2(...args) {
-          return null;
-        }
-      },
-      throw: true
-    },
-    title: 'should throw exception (no get)',
-    it: (error) => (done) => {
-      expect(error).toBe('Datasource get method should be implemented');
-      done();
-    }
-  });
-
-  makeTest({
-    config: {
-      datasourceClass: class {
-        settings: any;
-        get: Function;
-        constructor() {
-          this.settings = 'invalid';
-          this.get = () => {};
-        }
-      },
-    },
-    title: 'invalid settings should fallback to default',
-    it: (misc) => (done) => {
-      expect(misc.workflow.settings).toEqual(jasmine.any(Object));
-      Object.keys(defaultSettings).forEach(key => {
-        expect(misc.workflow.settings[key]).toEqual(defaultSettings[key]);
-      });
-      done();
-    }
-  });
 
   makeTest({
     config: {
@@ -135,5 +102,59 @@ describe('Bad datasource', () => {
       done();
     }
   });
+
+  makeTest({
+    config: {
+      datasourceClass: class {
+        settings: Settings;
+        constructor() {
+          this.settings = { };
+        }
+      },
+      throw: true
+    },
+    title: 'should throw exception (no get)',
+    it: (error) => (done) => {
+      expect(error).toBe('Datasource get method is not implemented');
+      done();
+    }
+  });
+
+  makeTest({
+    config: {
+      datasourceClass: class {
+        settings: Settings;
+        get: boolean;
+        constructor() {
+          this.settings = { };
+          this.get = true;
+        }
+      },
+      throw: true
+    },
+    title: 'should throw exception (get is not a function)',
+    it: (error) => (done) => {
+      expect(error).toBe('Datasource get is not a function');
+      done();
+    }
+  });
+
+  // makeTest({
+  //   config: {
+  //     datasourceClass: class {
+  //       settings: Settings;
+  //       constructor() {
+  //         this.settings = { };
+  //       }
+  //       get(offset) { };
+  //     },
+  //     throw: true
+  //   },
+  //   title: 'should throw exception (get has less than 2 arguments)',
+  //   it: (error) => (done) => {
+  //     expect(error).toBe('Datasource get method invalid signature');
+  //     done();
+  //   }
+  // });
 
 });

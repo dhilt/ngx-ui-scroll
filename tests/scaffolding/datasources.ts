@@ -50,6 +50,11 @@ const datasourceStore = {
     get: infiniteDatasourceGet(25)
   },
 
+  'default-bad-settings': <Datasource>{
+    get: infiniteDatasourceGet(),
+    settings: 'invalid'
+  },
+
   'initial': <Datasource>{
     get: infiniteDatasourceGet(),
     settings: {

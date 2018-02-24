@@ -10,13 +10,11 @@ export class DatasourceService implements Datasource {
 export const generateDatasourceClass = (_name: string, _settings?: Settings) => {
   return class {
     settings: Settings;
+    get: Function;
 
     constructor() {
       this.settings = { ...datasourceStore[_name].settings, ...(_settings || {}) };
-    }
-
-    get(...args) {
-      return datasourceStore[_name].get.apply(this, args);
+      this.get = datasourceStore[_name].get.bind(this);
     }
   };
 };

@@ -139,22 +139,22 @@ describe('Bad datasource', () => {
     }
   });
 
-  // makeTest({
-  //   config: {
-  //     datasourceClass: class {
-  //       settings: Settings;
-  //       constructor() {
-  //         this.settings = { };
-  //       }
-  //       get(offset) { };
-  //     },
-  //     throw: true
-  //   },
-  //   title: 'should throw exception (get has less than 2 arguments)',
-  //   it: (error) => (done) => {
-  //     expect(error).toBe('Datasource get method invalid signature');
-  //     done();
-  //   }
-  // });
+  makeTest({
+    config: {
+      datasourceClass: class {
+        settings: Settings;
+        constructor() {
+          this.settings = { };
+        }
+        get(offset) { };
+      },
+      throw: true
+    },
+    title: 'should throw exception (get has less than 2 arguments)',
+    it: (error) => (done) => {
+      expect(error).toBe('Datasource get method invalid signature');
+      done();
+    }
+  });
 
 });

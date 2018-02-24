@@ -4,7 +4,7 @@ node_js:
 - '8.9.4'
 
 addons:
-  firefox: stable
+  firefox: latest
 
 before_install:
 - export DISPLAY=:99.0

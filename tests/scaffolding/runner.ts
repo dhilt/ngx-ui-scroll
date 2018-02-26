@@ -25,18 +25,31 @@ interface MakeTestConfig {
 
 const generateMetaTitle = (config): string => {
   const result = [];
+
   if (config.templateSettings && config.templateSettings.viewportHeight) {
     result.push(`viewport height = ${config.templateSettings.viewportHeight}`);
   }
-  if (config.datasourceSettings && config.datasourceSettings.startIndex) {
-    result.push(`start index = ${config.datasourceSettings.startIndex}`);
+
+  if (config.datasourceSettings) {
+    const { startIndex, bufferSize, padding } = config.datasourceSettings;
+    if (startIndex) {
+      result.push(`start index = ${startIndex}`);
+    }
+    if (bufferSize) {
+      result.push(`buffer size = ${bufferSize}`);
+    }
+    if (padding) {
+      result.push(`padding = ${padding}`);
+    }
   }
-  if (config.datasourceSettings && config.datasourceSettings.bufferSize){
-    result.push(`buffer size = ${config.datasourceSettings.bufferSize}`);
+
+  if (config.custom) {
+    const { count } = config.custom;
+    if (count) {
+      result.push(`count = ${count}`);
+    }
   }
-  if (config.datasourceSettings && config.datasourceSettings.padding){
-    result.push(`padding = ${config.datasourceSettings.padding}`);
-  }
+
   let title = result.join(', ');
   title = title ? '⤷ ' + title : '';
   return title;

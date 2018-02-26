@@ -47,6 +47,16 @@ const massBackwardScrollsConfigList =
     }
   }));
 
+const massRotationScrollsConfigList =
+  massForwardScrollsConfigList.map(config => ({
+    ...config,
+    custom: {
+      ...config.custom,
+      withRotation: true,
+      count: config.custom.count * 2
+    }
+  }));
+
 const doScrollMax = (config, misc) => {
   if (config.custom.direction === Direction.forward) {
     misc.scrollMax();
@@ -105,6 +115,11 @@ const shouldScrollSomeTimes = (config) => (misc) => (done) => {
   spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
     if (misc.workflowRunner.count < count + scrollCount) {
       result = calculateIt(config, misc);
+      if (config.custom.withRotation) {
+        config.custom.direction =
+          config.custom.direction === Direction.forward ?
+            Direction.forward : Direction.backward;
+      }
       doScrollMax(config, misc);
     } else {
       const direction = config.custom.direction;
@@ -154,6 +169,16 @@ describe('Basic Scroll Spec', () => {
       makeTest({
         config,
         title: 'should process some backward scrolls',
+        it: shouldScrollSomeTimes(config)
+      })
+    )
+  );
+
+  describe('Mass max two-direction scroll events', () =>
+    massRotationScrollsConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some two-direction scrolls',
         it: shouldScrollSomeTimes(config)
       })
     )

@@ -24,22 +24,19 @@ const singleBackwardMaxScrollConfigList =
     }
   }));
 
-const massForwardScrollsConfigList = [{
-  datasourceSettings: { startIndex: 1, bufferSize: 4, padding: 0.25 },
-  templateSettings: { viewportHeight: 100 },
-  custom: { direction: Direction.forward, count: 3 }
-}, {
-  datasourceSettings: { startIndex: 45, bufferSize: 14, padding: 1.25 },
-  templateSettings: { viewportHeight: 120 },
-  custom: { direction: Direction.forward, count: 4 }
-}, {
-  datasourceSettings: { startIndex: -24, bufferSize: 6, padding: 0.52 },
-  templateSettings: { viewportHeight: 185 },
-  custom: { direction: Direction.forward, count: 5 }
-}];
+const massCountStartIndex = 3; // should be 3-5 scroll iterations for each config case
+const massForwardScrollsConfigList =
+  singleForwardMaxScrollConfigList.map((config, index) => ({
+    ...config,
+    custom: {
+      ...config.custom,
+      direction: Direction.backward,
+      count: massCountStartIndex + index
+    }
+  }));
 
 const massBackwardScrollsConfigList =
-  singleForwardMaxScrollConfigList.map(config => ({
+  massForwardScrollsConfigList.map(config => ({
     ...config,
     custom: {
       ...config.custom,
@@ -47,13 +44,13 @@ const massBackwardScrollsConfigList =
     }
   }));
 
-const massRotationScrollsConfigList =
-  massForwardScrollsConfigList.map(config => ({
+const massTwoDirectionalScrollsConfigList =
+  [ ...massForwardScrollsConfigList, ...massBackwardScrollsConfigList ].map(config => ({
     ...config,
     custom: {
       ...config.custom,
-      withRotation: true,
-      count: config.custom.count * 2
+      isTwoDirectional: true,
+      count: config.custom.count * 2 // should be double count iterations for each case: 3-5 fwd + 3-5 bwd
     }
   }));
 
@@ -89,33 +86,15 @@ const calculateIt = (config, misc) => {
   };
 };
 
-const shouldScrollOneTime = (config) => (misc) => (done) => {
-  const scrollCount = config.custom.count;
-  const count = misc.workflowRunner.count;
-  const result = calculateIt(config, misc);
-
-  spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-    if (misc.workflowRunner.count === count + 1) {
-      const direction = config.custom.direction;
-      const edgeItem = misc.workflow.buffer.getEdgeVisibleItem(direction);
-      expect(misc.padding[direction].getSize()).toEqual(result.sizeToClip);
-      expect(edgeItem.$index).toEqual(result.edgeItemIndex);
-      done();
-    }
-  });
-
-  doScrollMax(config, misc);
-};
-
-const shouldScrollSomeTimes = (config) => (misc) => (done) => {
-  const scrollCount = config.custom.count;
+const shouldScroll = (config) => (misc) => (done) => {
+  const scrollCount = config.custom.count || 1;
   const count = misc.workflowRunner.count;
   let result = calculateIt(config, misc);
 
   spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
     if (misc.workflowRunner.count < count + scrollCount) {
       result = calculateIt(config, misc);
-      if (config.custom.withRotation) {
+      if (config.custom.isTwoDirectional) {
         config.custom.direction =
           config.custom.direction === Direction.forward ?
             Direction.forward : Direction.backward;
@@ -139,7 +118,7 @@ describe('Basic Scroll Spec', () => {
       makeTest({
         config,
         title: 'should process 1 forward max scroll',
-        it: shouldScrollOneTime(config)
+        it: shouldScroll(config)
       })
     )
   );
@@ -149,7 +128,7 @@ describe('Basic Scroll Spec', () => {
       makeTest({
         config,
         title: 'should process 1 backward max scroll',
-        it: shouldScrollOneTime(config)
+        it: shouldScroll(config)
       })
     )
   );
@@ -159,7 +138,7 @@ describe('Basic Scroll Spec', () => {
       makeTest({
         config,
         title: 'should process some forward scrolls',
-        it: shouldScrollSomeTimes(config)
+        it: shouldScroll(config)
       })
     )
   );
@@ -169,17 +148,17 @@ describe('Basic Scroll Spec', () => {
       makeTest({
         config,
         title: 'should process some backward scrolls',
-        it: shouldScrollSomeTimes(config)
+        it: shouldScroll(config)
       })
     )
   );
 
   describe('Mass max two-direction scroll events', () =>
-    massRotationScrollsConfigList.forEach(config =>
+    massTwoDirectionalScrollsConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should process some two-direction scrolls',
-        it: shouldScrollSomeTimes(config)
+        it: shouldScroll(config)
       })
     )
   );

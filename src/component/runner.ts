@@ -43,13 +43,13 @@ export class WorkflowRunner {
 
   scroll($event) {
     if (this.workflow.viewport.syntheticScrollPosition !== null) {
-      if(this.workflow.viewport.scrollPosition === this.workflow.viewport.syntheticScrollPosition) {
+      if (this.workflow.viewport.scrollPosition === this.workflow.viewport.syntheticScrollPosition) {
         this.workflow.viewport.syntheticScrollPosition = null;
         return;
       }
       this.workflow.viewport.syntheticScrollPosition = null;
     }
-    //debouncedRound(() => this.run(direction), 25);
+    // debouncedRound(() => this.run(direction), 25);
     this.run();
   }
 
@@ -69,7 +69,7 @@ export class WorkflowRunner {
   }
 
   run(direction?: Direction) {
-    if(!direction) {
+    if (!direction) {
       direction = this.defaultDirection;
       this.directionQueue =
         direction === Direction.forward ? Direction.backward : Direction.forward;

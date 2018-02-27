@@ -2,7 +2,7 @@ import { Workflow } from '../workflow';
 
 export default class Render {
 
-  static run(workflow: Workflow) {
+  static run(workflow: Workflow): Workflow | Promise<any> {
     if (!workflow.fetch.hasNewItems) {
       return workflow;
     }

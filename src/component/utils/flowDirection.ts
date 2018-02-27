@@ -18,4 +18,4 @@ export const calculateFlowDirection = (viewport: Viewport, buffer: Buffer): Dire
     }
   }
   return Direction.forward;
-}
+};

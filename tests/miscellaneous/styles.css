@@ -1,14 +1,6 @@
-* {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
-}
-
 html {
   line-height: 20px;
+  font: inherit;
 }
 
 .viewport {

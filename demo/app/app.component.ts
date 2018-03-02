@@ -16,6 +16,24 @@ const getData = (index: number, count: number)  => {
   return data;
 };
 
+const min = 1, max = 1000;
+
+const getDataLimited = (index: number, count: number)  => {
+  console.log('requested index = ' + index + ', count = ' + count);
+  let data = [];
+  const start = Math.max(min, index);
+  const end = Math.min(index + count - 1, max);
+  if (start <= end) {
+    for (let i = start; i <= end; i++) {
+      data.push({
+        id: i,
+        text: "item #" + i
+      });
+    }
+  }
+  return data;
+};
+
 const datasourceGet = {
   'callback': (index: number, count: number, success) => {
     setTimeout(() => success(getData(index, count)), 100);
@@ -25,6 +43,9 @@ const datasourceGet = {
   }),
   'promise': (index: number, count: number) => new Promise((resolve, reject) => {
     setTimeout(() => resolve(getData(index, count)), 100);
+  }),
+  'promiseLimited': (index: number, count: number) => new Promise((resolve, reject) => {
+    setTimeout(() => resolve(getDataLimited(index, count)), 100);
   })
 };
 
@@ -36,7 +57,7 @@ const datasourceGet = {
 export class AppComponent {
 
   public datasource: Datasource = {
-    get: datasourceGet['observable'],
+    get: datasourceGet['promiseLimited'],
     settings: {
       bufferSize: 5,
       padding: 0.5

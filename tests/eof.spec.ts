@@ -20,7 +20,21 @@ describe('EOF/BOF Spec', () => {
         const elements = misc.getElements();
         expect(elements.length).toBeGreaterThan(config.datasourceSettings.bufferSize); // more than 1 pack
         expect(misc.padding[Direction.backward].getSize()).toEqual(0);
-        expect(misc.checkElementId(elements[0], 1)).toEqual(true);
+        expect(misc.padding[Direction.forward].getSize()).toBeGreaterThan(0);
+        expect(misc.checkElementId(elements[0], min)).toEqual(true);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { ...config, datasourceSettings: { ...config.datasourceSettings, startIndex: 91 } },
+      title: 'should stop when eof',
+      it: (misc) => (done) => {
+        const elements = misc.getElements();
+        expect(elements.length).toBeGreaterThan(config.datasourceSettings.bufferSize); // more than 1 pack
+        expect(misc.padding[Direction.backward].getSize()).toBeGreaterThan(0);
+        expect(misc.padding[Direction.forward].getSize()).toEqual(0);
+        expect(misc.checkElementId(elements[elements.length - 1], max)).toEqual(true);
         done();
       }
     });

@@ -16,8 +16,13 @@ export default class ShouldFetch {
   static shouldFetchByDirection(direction: Direction, workflow: Workflow) {
     const paddingEdge = workflow.viewport.padding[direction].getEdge();
     const limit = workflow.viewport.getLimit(direction);
-    workflow.fetch[direction].shouldFetch =
-      (direction === Direction.forward) ? paddingEdge < limit : paddingEdge > limit;
+    if ((direction === Direction.forward && workflow.buffer.eof) ||
+      (direction === Direction.backward && workflow.buffer.bof)) {
+      workflow.fetch[direction].shouldFetch = false;
+    } else {
+      workflow.fetch[direction].shouldFetch =
+        (direction === Direction.forward) ? paddingEdge < limit : paddingEdge > limit;
+    }
     if (workflow.fetch[direction].shouldFetch) {
       ShouldFetch.setStartIndex(direction, workflow);
     }

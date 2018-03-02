@@ -20,7 +20,7 @@ export class Padding {
   }
 
   getSize(): number {
-    return parseInt(this.style.height, 10);
+    return parseInt(this.style.height, 10) || 0;
   }
 }
 
@@ -50,6 +50,10 @@ export class Misc {
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward);
   }
 
+  getElements() {
+    return this.fixture.nativeElement.querySelectorAll(`[id^=${this.workflow.settings.itemIdPrefix}]`);
+  }
+
   getElement(index: number) {
     return this.fixture.nativeElement.querySelector(`#${this.workflow.settings.itemIdPrefix}${index}`);
   }
@@ -57,6 +61,10 @@ export class Misc {
   getElementText(index: number): string {
     const element = this.getElement(index);
     return element ? element.innerText.trim() : null;
+  }
+
+  checkElementId(element, index: number) {
+    return element.id === `${this.workflow.settings.itemIdPrefix}${index}`;
   }
 
   getScrollableSize(): number {

@@ -90,6 +90,11 @@ const doScrollMax = (config, misc) => {
   }
 };
 
+const invertDirection = (config) => {
+  const _forward = config.custom.direction === Direction.forward;
+  config.custom.direction = _forward ? Direction.backward : Direction.forward;
+};
+
 const calculateIt = (config, misc) => {
   const bufferSize = config.datasourceSettings.bufferSize;
   const padding = config.datasourceSettings.padding;
@@ -123,10 +128,10 @@ const shouldScroll = (config) => (misc) => (done) => {
     if (misc.workflowRunner.count < count + scrollCount) {
       const _forward = config.custom.direction === Direction.forward;
       if (config.custom.bouncing) {
-        config.custom.direction = _forward ? Direction.backward : Direction.forward;
+        invertDirection(config);
       } else if (config.custom.mass) {
         if (misc.workflowRunner.count - count === (scrollCount / 2)) {
-          config.custom.direction = _forward ? Direction.backward : Direction.forward;
+          invertDirection(config);
         }
       }
       if (misc.workflowRunner.count === count + scrollCount - 1) {

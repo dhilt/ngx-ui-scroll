@@ -10,7 +10,7 @@ export class Routines {
     element['scrollTop'] = value;
   }
 
-  static getParams(element): DOMRect {
+  static getParams(element): ClientRect {
     return element.getBoundingClientRect();
   }
 
@@ -22,7 +22,7 @@ export class Routines {
     return element['scrollHeight'];
   }
 
-  static getRectEdge(params: DOMRect, direction: Direction, opposite?: boolean): number {
+  static getRectEdge(params: ClientRect, direction: Direction, opposite?: boolean): number {
     const forward = !opposite ? Direction.forward : Direction.backward;
     return params[direction === forward ? 'bottom' : 'top'];
   }
@@ -32,7 +32,7 @@ export class Routines {
     return Routines.getRectEdge(params, direction, opposite);
   }
 
-  getEdge2(element, direction: Direction, relativeElement?, opposite?: boolean): number {
+  static getEdge2(element, direction: Direction, relativeElement?, opposite?: boolean): number {
     const result = element.offsetTop - (relativeElement ? relativeElement.scrollTop : 0) +
       (direction === (!opposite ? Direction.forward : Direction.backward) ? Routines.getSize(element) : 0);
     return result;

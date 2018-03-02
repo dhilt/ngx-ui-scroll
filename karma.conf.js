@@ -53,8 +53,10 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_ERROR,
-    autoWatch: true,
-    browsers: [process.platform === 'linux' ? 'Chromium' : 'Chrome'],
-    singleRun: false
+    autoWatch: process.env.TRAVIS ? false : true,
+    browsers: process.env.TRAVIS ?
+      ['Firefox'] :
+      [process.platform === 'linux' ? 'Chromium' : 'Chrome'],
+    singleRun: process.env.TRAVIS ? true : false
   });
 };

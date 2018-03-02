@@ -41,8 +41,8 @@ export class Viewport {
   }
 
   set scrollPosition(value: number) {
-    this.syntheticScrollPosition = value;
     Routines.setScrollPosition(this.scrollable, value);
+    this.syntheticScrollPosition = this.scrollPosition;
   }
 
   saveScrollPosition() {

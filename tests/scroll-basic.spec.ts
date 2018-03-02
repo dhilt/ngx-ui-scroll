@@ -4,15 +4,15 @@ import { makeTest } from './scaffolding/runner';
 const singleForwardMaxScrollConfigList = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22 },
   templateSettings: { viewportHeight: 71 },
-  custom: { direction: Direction.forward }
+  custom: { direction: Direction.forward, count: 1 }
 }, {
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2 },
   templateSettings: { viewportHeight: 100 },
-  custom: { direction: Direction.forward }
+  custom: { direction: Direction.forward, count: 1 }
 }, {
   datasourceSettings: { startIndex: -15, bufferSize: 12, padding: 0.98 },
   templateSettings: { viewportHeight: 66 },
-  custom: { direction: Direction.forward }
+  custom: { direction: Direction.forward, count: 1 }
 }];
 
 const singleBackwardMaxScrollConfigList =
@@ -24,33 +24,33 @@ const singleBackwardMaxScrollConfigList =
     }
   }));
 
-const massCountStartIndex = 3; // should be 3-5 scroll iterations for each config case
 const massForwardScrollsConfigList =
   singleForwardMaxScrollConfigList.map((config, index) => ({
     ...config,
     custom: {
       ...config.custom,
       direction: Direction.backward,
-      count: massCountStartIndex + index
+      count: 3 + index // 3-5 bwd scroll events per config
     }
   }));
 
 const massBackwardScrollsConfigList =
-  massForwardScrollsConfigList.map(config => ({
+  massForwardScrollsConfigList.map((config, index) => ({
     ...config,
     custom: {
       ...config.custom,
-      direction: Direction.backward
+      direction: Direction.backward,
+      count: 3 + index // 3-5 fwd scroll events per config
     }
   }));
 
 const massTwoDirectionalScrollsConfigList =
-  [ ...massForwardScrollsConfigList, ...massBackwardScrollsConfigList ].map(config => ({
+  massForwardScrollsConfigList.map((config, index) => ({
     ...config,
     custom: {
       ...config.custom,
       isTwoDirectional: true,
-      count: config.custom.count * 2 // should be double count iterations for each case: 3-5 fwd + 3-5 bwd
+      count: (3 + index) * 2 // 3-5 fwd + 3-5 bwd scroll events per config
     }
   }));
 
@@ -87,17 +87,18 @@ const calculateIt = (config, misc) => {
 };
 
 const shouldScroll = (config) => (misc) => (done) => {
-  const scrollCount = config.custom.count || 1;
+  const scrollCount = config.custom.count;
   const count = misc.workflowRunner.count;
   let result = calculateIt(config, misc);
 
   spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
     if (misc.workflowRunner.count < count + scrollCount) {
-      result = calculateIt(config, misc);
       if (config.custom.isTwoDirectional) {
-        config.custom.direction =
-          config.custom.direction === Direction.forward ?
-            Direction.forward : Direction.backward;
+        const _forward = config.custom.direction === Direction.forward;
+        config.custom.direction = _forward ? Direction.backward : Direction.forward;
+      }
+      if (misc.workflowRunner.count === count + scrollCount - 1) {
+        result = calculateIt(config, misc);
       }
       doScrollMax(config, misc);
     } else {
@@ -153,11 +154,11 @@ describe('Basic Scroll Spec', () => {
     )
   );
 
-  describe('Mass max two-direction scroll events', () =>
+  describe('Mass max two-directional scroll events', () =>
     massTwoDirectionalScrollsConfigList.forEach(config =>
       makeTest({
         config,
-        title: 'should process some two-direction scrolls',
+        title: 'should process some two-directional scrolls',
         it: shouldScroll(config)
       })
     )

@@ -1,6 +1,9 @@
+* {
+  font: inherit;
+}
+
 html {
   line-height: 20px;
-  font: inherit;
 }
 
 .viewport {

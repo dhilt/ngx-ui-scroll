@@ -38,6 +38,27 @@ const infiniteDatasourceGet = (delay?: number) =>
       }
     });
 
+const limitedDatasourceGet = (min: number, max: number, delay?: number) =>
+  (index: number, count: number) =>
+    Observable.create(observer => {
+      const run = () => {
+        const data = [];
+        const start = Math.max(min, index);
+        const end = Math.min(index + count - 1, max);
+        if (start <= end) {
+          for (let i = start; i <= end; i++) {
+            data.push({ id: i, text: "item #" + i });
+          }
+        }
+        observer.next(data);
+      };
+      if (delay) {
+        setTimeout(() => run(), delay);
+      } else {
+        run();
+      }
+    });
+
 const datasourceStore = {
 
   'default': <Datasource>{
@@ -46,6 +67,10 @@ const datasourceStore = {
 
   'default-delay-25': <Datasource>{
     get: infiniteDatasourceGet(25)
+  },
+
+  'limited': <Datasource>{
+    get: limitedDatasourceGet(1, 100, 25)
   },
 
   'default-bad-settings': <Datasource>{

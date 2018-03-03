@@ -21,6 +21,7 @@ export default class Clip {
     workflow.bindData();
     return new Promise((resolve, reject) =>
       setTimeout(() => {
+        Clip.processClip(workflow);
         resolve(workflow);
       })
     );
@@ -32,6 +33,15 @@ export default class Clip {
     }
     const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
     workflow.viewport.padding[opposite].size += workflow.clip[direction].size;
+  }
+
+  static processClip(workflow: Workflow) {
+    if (!workflow.clip[Direction.backward].shouldClip) {
+      workflow.buffer.bof = false;
+    }
+    if (!workflow.clip[Direction.forward].shouldClip) {
+      workflow.buffer.eof = false;
+    }
   }
 
 }

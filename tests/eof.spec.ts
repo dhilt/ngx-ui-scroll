@@ -11,18 +11,23 @@ describe('EOF/BOF Spec', () => {
     templateSettings: { viewportHeight: 200 }
   };
 
+  const expectLimit = (misc, direction: Direction) => {
+    const _forward = direction === Direction.forward;
+    const elements = misc.getElements();
+    expect(elements.length).toBeGreaterThan(config.datasourceSettings.bufferSize); // more than 1 pack
+    expect(misc.padding[_forward ? Direction.forward : Direction.backward].getSize()).toEqual(0);
+    expect(misc.padding[_forward ? Direction.backward : Direction.forward].getSize()).toBeGreaterThan(0);
+    expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
+    expect(misc.workflow.buffer.bof).toEqual(!_forward);
+    expect(misc.workflow.buffer.eof).toEqual(_forward);
+  };
+
   describe('Begin of file', () => {
     makeTest({
       config: { ...config, datasourceSettings: { ...config.datasourceSettings, startIndex: 1 } },
-      title: 'should stop when bof',
+      title: 'should get bof on init',
       it: (misc) => (done) => {
-        const elements = misc.getElements();
-        expect(elements.length).toBeGreaterThan(config.datasourceSettings.bufferSize); // more than 1 pack
-        expect(misc.padding[Direction.backward].getSize()).toEqual(0);
-        expect(misc.padding[Direction.forward].getSize()).toBeGreaterThan(0);
-        expect(misc.checkElementId(elements[0], min)).toEqual(true);
-        expect(misc.workflow.buffer.bof).toEqual(true);
-        expect(misc.workflow.buffer.eof).toEqual(false);
+        expectLimit(misc, Direction.backward);
         done();
       }
     });
@@ -40,20 +45,31 @@ describe('EOF/BOF Spec', () => {
         misc.scrollMax();
       }
     });
+
+    makeTest({
+      config: { ...config, datasourceSettings: { ...config.datasourceSettings, startIndex: 1 } },
+      title: 'should stop when bof is reached again',
+      it: (misc) => (done) => {
+        const count = misc.workflowRunner.count;
+        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
+          if (misc.workflowRunner.count === count + 1) {
+            misc.scrollMin();
+          } else {
+            expectLimit(misc, Direction.backward);
+            done();
+          }
+        });
+        misc.scrollMax();
+      }
+    });
   });
 
   describe('End of file', () => {
     makeTest({
       config: { ...config, datasourceSettings: { ...config.datasourceSettings, startIndex: 91 } },
-      title: 'should stop when eof',
+      title: 'should get eof on init',
       it: (misc) => (done) => {
-        const elements = misc.getElements();
-        expect(elements.length).toBeGreaterThan(config.datasourceSettings.bufferSize); // more than 1 pack
-        expect(misc.padding[Direction.backward].getSize()).toBeGreaterThan(0);
-        expect(misc.padding[Direction.forward].getSize()).toEqual(0);
-        expect(misc.checkElementId(elements[elements.length - 1], max)).toEqual(true);
-        expect(misc.workflow.buffer.bof).toEqual(false);
-        expect(misc.workflow.buffer.eof).toEqual(true);
+        expectLimit(misc, Direction.forward);
         done();
       }
     });
@@ -67,6 +83,23 @@ describe('EOF/BOF Spec', () => {
           expect(misc.workflow.buffer.bof).toEqual(false);
           expect(misc.workflow.buffer.eof).toEqual(false);
           done();
+        });
+        misc.scrollMin();
+      }
+    });
+
+    makeTest({
+      config: { ...config, datasourceSettings: { ...config.datasourceSettings, startIndex: 91 } },
+      title: 'should stop when eof is reached again',
+      it: (misc) => (done) => {
+        const count = misc.workflowRunner.count;
+        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
+          if (misc.workflowRunner.count === count + 1) {
+            misc.scrollMax();
+          } else {
+            expectLimit(misc, Direction.forward);
+            done();
+          }
         });
         misc.scrollMin();
       }

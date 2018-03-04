@@ -15,8 +15,12 @@ export default class ProcessFetch {
     if (!fetch.newItemsData) { // no fetch
       return;
     }
+
     const eof = direction === Direction.forward ? 'eof' : 'bof';
     workflow.buffer[eof] = fetch.newItemsData.length !== workflow.settings.bufferSize;
+    if (direction === Direction.backward && workflow.buffer.bof) {
+      fetch.startIndex += workflow.settings.bufferSize - fetch.newItemsData.length;
+    }
 
     if (!fetch.newItemsData.length) { // empty result
       return;

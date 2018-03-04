@@ -16,9 +16,10 @@ export class Settings implements SettingsInterface {
   infinite;
 
   // internal settings
-  debug = false; // logging; need to turn off in release
+  debug = true; // logging; need to turn off in release
   itemIdPrefix = 'ui-scroll-0-'; // todo : scroll instance index ?
-  clipAfterFetchOnly = false; // true for AngularJS lib compatibility
+  clipAfterFetchOnly = true; // true for AngularJS lib compatibility
+  clipAfterScrollOnly = true;
 
   constructor(settings?: SettingsInterface) {
     Object.assign(this, defaultSettings);

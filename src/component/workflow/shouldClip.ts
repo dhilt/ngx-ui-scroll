@@ -4,21 +4,25 @@ import { Direction } from '../interfaces/index';
 export default class ShouldClip {
 
   static run(workflow: Workflow) {
-    if (workflow.settings.clipAfterFetchOnly && !workflow.fetch.shouldFetch) {
+    const fetchOnly = workflow.settings.clipAfterFetchOnly;
+    const scrollOnly = workflow.settings.clipAfterScrollOnly;
+    if (!workflow.buffer.items.length) {
       return workflow;
     }
-    // todo think about optimization for case of scrolling
-    ShouldClip.shouldClipByDirection(Direction.forward, workflow);
-    ShouldClip.shouldClipByDirection(Direction.backward, workflow);
-
+    if (scrollOnly && !workflow.scroll) {
+      return workflow;
+    }
+    if (!fetchOnly || workflow.fetch[Direction.backward].shouldFetch) {
+      ShouldClip.shouldClipByDirection(Direction.backward, workflow);
+    }
+    if (!fetchOnly || workflow.fetch[Direction.forward].shouldFetch) {
+      ShouldClip.shouldClipByDirection(Direction.forward, workflow);
+    }
     return workflow;
   }
 
   static shouldClipByDirection(direction: Direction, workflow: Workflow) {
     const items = workflow.buffer.items;
-    if (!items.length) {
-      return false;
-    }
     const forward = direction === Direction.forward;
     const viewport = workflow.viewport;
     const viewportLimit = viewport.getLimit(direction, true);

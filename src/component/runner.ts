@@ -1,8 +1,8 @@
 import { Subscription } from 'rxjs/Subscription';
 
 import { Workflow } from './workflow';
-import { debouncedRound, calculateFlowDirection } from './utils/index';
-import { Direction } from './interfaces/direction';
+import { throttle, debouncedRound, calculateFlowDirection } from './utils/index';
+import { Direction, Run } from './interfaces/index';
 
 import ShouldFetch from './workflow/shouldFetch';
 import Fetch from './workflow/fetch';
@@ -19,14 +19,17 @@ export class WorkflowRunner {
   private itemsSubscription: Subscription;
   private flowResolverSubscription: Subscription;
   public workflow: Workflow;
-  public count = 0;
-  private newDirection: Direction;
-  private directionQueue: Direction;
+  public count: number;
+  private runNew: Run;
+  private runQueue: Run;
   private defaultDirection = Direction.forward;
 
   constructor(context) {
     this.context = context;
     this.workflow = new Workflow(this.context);
+    this.count = 0;
+    this.runQueue = null;
+    this.runNew = null;
     this.initialize();
   }
 
@@ -34,7 +37,8 @@ export class WorkflowRunner {
     const flow = this.workflow;
     const onScroll = ($event) => this.scroll($event);
 
-    this.onScrollListener = this.context.renderer.listen(flow.viewport.scrollable, 'scroll', onScroll);
+    this.onScrollListener =
+      this.context.renderer.listen(flow.viewport.scrollable, 'scroll', throttle(onScroll, 100));
     this.itemsSubscription = flow.buffer.$items.subscribe(items => this.context.items = items);
     this.flowResolverSubscription = flow.resolver.subscribe(this.resolve.bind(this));
 
@@ -49,36 +53,37 @@ export class WorkflowRunner {
       }
       this.workflow.viewport.syntheticScrollPosition = null;
     }
-    // debouncedRound(() => this.run(direction), 25);
-    this.run();
+    this.run({ scroll: true });
   }
 
   resolve(next: boolean) {
-    if (this.newDirection) {
-      this.run(this.newDirection);
-      this.newDirection = null;
+    if (this.runNew) {
+      this.run(this.runNew);
+      this.runNew = null;
     } else if (next) {
-      this.run(this.workflow.direction);
-    } else if (this.directionQueue) {
-      this.run(this.directionQueue);
-      this.directionQueue = null;
+      this.run({ direction: this.workflow.direction });
+    } else if (this.runQueue) {
+      this.run(this.runQueue);
+      this.runQueue = null;
     } else {
       this.count++;
       this.finalize();
     }
   }
 
-  run(direction?: Direction) {
-    if (!direction) {
-      direction = this.defaultDirection;
-      this.directionQueue =
-        direction === Direction.forward ? Direction.backward : Direction.forward;
+  run(options: Run = {}) {
+    if (!options.direction) {
+      options.direction = this.defaultDirection;
+      this.runQueue = {
+        ...options,
+        direction: options.direction === Direction.forward ? Direction.backward : Direction.forward
+      }
     }
     if (this.workflow.pending) {
-      this.newDirection = direction;
+      this.runNew = { ...options };
       return;
     }
-    this.workflow.start(direction)
+    this.workflow.start(options)
       .then(() => this.fetch())
       .then(() => this.clip())
       .then(() =>

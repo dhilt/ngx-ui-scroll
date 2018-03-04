@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 
-import { Datasource, Direction } from './interfaces/index';
+import { Datasource, Direction, Run } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
@@ -24,6 +24,7 @@ export class Workflow {
   public countDone = 0;
   public pending: boolean;
   public direction: Direction;
+  public scroll: boolean;
   public next: boolean;
   public fetch: FetchModel;
   public clip: ClipModel;
@@ -48,17 +49,19 @@ export class Workflow {
   reset() {
     this.pending = false;
     this.direction = null;
+    this.scroll = false;
     this.next = false;
     this.fetch.reset();
     this.clip = new ClipModel();
   }
 
-  start(direction?: Direction) {
+  start(options: Run = {}) {
     this.count++;
     this.log(`---=== Workflow ${this.count} run`);
     this.reset();
     this.pending = true;
-    this.direction = direction || null;
+    this.direction = options.direction || null;
+    this.scroll = options.scroll || false;
     return Promise.resolve(this);
   }
 

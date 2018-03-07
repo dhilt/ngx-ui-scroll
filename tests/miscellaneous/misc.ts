@@ -67,6 +67,11 @@ export class Misc {
     return element.id === `${this.workflow.settings.itemIdPrefix}${index}`;
   }
 
+  getElementIndex(element) {
+    const index = element.id.replace(this.workflow.settings.itemIdPrefix, '');
+    return parseInt(index, 10) || null;
+  }
+
   getScrollableSize(): number {
     return this.viewportElement.nativeElement.scrollHeight;
   }

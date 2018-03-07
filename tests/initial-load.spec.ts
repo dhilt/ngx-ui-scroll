@@ -12,17 +12,19 @@ const configList = [{
   templateSettings: { viewportHeight: 200 }
 }];
 
+const clipAlways = { clipAfterFetchOnly: false, clipAfterScrollOnly: false };
+
 const configListWithClip = [{
-  datasourceSettings: { startIndex: 1, bufferSize: 2, padding: 1 },
+  datasourceSettings: { startIndex: 1, bufferSize: 2, padding: 1, ...clipAlways },
   templateSettings: { viewportHeight: 20 }
 }, {
-  datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 9.1 },
+  datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 9.1, ...clipAlways },
   templateSettings: { viewportHeight: 70 }
 }, {
-  datasourceSettings: { startIndex: 33, bufferSize: 4, padding: 2 },
+  datasourceSettings: { startIndex: 33, bufferSize: 4, padding: 2, ...clipAlways },
   templateSettings: { viewportHeight: 99 }
 }, {
-  datasourceSettings: { startIndex: -50, bufferSize: 10, padding: 0.3 },
+  datasourceSettings: { startIndex: -50, bufferSize: 10, padding: 0.3, ...clipAlways },
   templateSettings: { viewportHeight: 400 }
 }];
 

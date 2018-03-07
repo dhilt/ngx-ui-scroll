@@ -77,7 +77,7 @@ export class WorkflowRunner {
       this.runQueue = {
         ...options,
         direction: options.direction === Direction.forward ? Direction.backward : Direction.forward
-      }
+      };
     }
     if (this.workflow.pending) {
       this.runNew = { ...options };

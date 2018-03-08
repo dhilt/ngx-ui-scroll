@@ -103,14 +103,9 @@ const calculateIt = (config, misc) => {
   const delta = viewportSize * padding;
 
   const _forward = direction === Direction.forward;
-  const _opposite = _forward ? Direction.backward : Direction.forward;
   const _elements = misc.getElements();
   const _edgeElement = _forward ? _elements[_elements.length - 1] : _elements[0];
-  const _oppositeEdgeElement = !_forward ? _elements[_elements.length - 1] : _elements[0];
   const _edgeItemIndex = misc.getElementIndex(_edgeElement);
-  const _oppositeEdgeItemIndex = misc.getElementIndex(_oppositeEdgeElement);
-  const _paddingSize = misc.padding[direction].getSize();
-  const _oppositePaddingSize = misc.padding[_opposite].getSize();
 
   const newScrollPosition = _forward ? misc.getScrollableSize() : 0;
   const edgePosition = misc.padding[Direction.backward].getSize() + (_forward ? _elements.length * misc.itemHeight : 0);
@@ -118,7 +113,7 @@ const calculateIt = (config, misc) => {
   const diffItems = Math.ceil(diffEdgeSize / misc.itemHeight);
   const diffItemsFetches = Math.ceil(diffItems / bufferSize);
   const itemsToFetch = diffItemsFetches * bufferSize;
-  let edgeItemIndex = _edgeItemIndex + (_forward ? 1 : -1) * itemsToFetch;
+  let addItems = 0;
 
   const sizeToFill = itemsToFetch * misc.itemHeight;
   const diff = Math.abs(sizeToFill - diffEdgeSize);
@@ -126,17 +121,27 @@ const calculateIt = (config, misc) => {
   if (addSize > 0) {
     const itemsToFillAddSize = Math.ceil(addSize / misc.itemHeight);
     const addFetches = Math.ceil(itemsToFillAddSize / bufferSize);
-    const addItems = addFetches * bufferSize;
-    edgeItemIndex = edgeItemIndex + (_forward ? 1 : -1) * addItems;
+    addItems = addFetches * bufferSize;
   }
-
+  const itemsToAdd = (_forward ? 1 : -1) * (itemsToFetch + addItems);
+  const edgeItemIndex = _edgeItemIndex + itemsToAdd;
   const paddingSize = 0;
+
+  const newEdgePosition = edgePosition + itemsToAdd * misc.itemHeight;
+  const _sizeToFill = (Math.abs(newScrollPosition - newEdgePosition) + viewportSize + delta);
+  const _itemsToFill = Math.ceil(_sizeToFill / misc.itemHeight);
+  const _fetchCount = Math.ceil(_itemsToFill / bufferSize);
+  const _itemsToFetch = _fetchCount * bufferSize;
+  const _fetchedItemsSize = _itemsToFetch * misc.itemHeight;
+  const _outlet = Math.abs(_fetchedItemsSize - _sizeToFill);
+  const itemsToClip = Math.floor(_outlet / misc.itemHeight);
+  const edgeItemIndexOpposite = edgeItemIndex + (_forward ? -1 : 1) * _itemsToFetch + (_forward ? 1 : -1) * (itemsToClip + 1);
 
   return {
     paddingSize,
     //oppositePaddingSize,
     edgeItemIndex,
-    //oppositeEdgeItemIndex
+    edgeItemIndexOpposite
   };
 };
 
@@ -147,7 +152,6 @@ const shouldScroll = (config) => (misc) => (done) => {
 
   spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
     if (misc.workflowRunner.count < count + scrollCount) {
-      const _forward = config.custom.direction === Direction.forward;
       if (config.custom.bouncing) {
         invertDirection(config);
       } else if (config.custom.mass) {
@@ -168,7 +172,7 @@ const shouldScroll = (config) => (misc) => (done) => {
       expect(misc.padding[direction].getSize()).toEqual(result.paddingSize);
       //expect(misc.padding[opposite].getSize()).toEqual(result.oppositePaddingSize);
       expect(edgeItem.$index).toEqual(result.edgeItemIndex);
-      //expect(oppositeEdgeItem.$index).toEqual(result.oppositeEdgeItemIndex);
+      expect(oppositeEdgeItem.$index).toEqual(result.edgeItemIndexOpposite);
       done();
     }
   });

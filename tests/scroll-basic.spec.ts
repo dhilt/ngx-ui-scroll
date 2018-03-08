@@ -100,6 +100,7 @@ const calculateIt = (config, misc) => {
   const padding = config.datasourceSettings.padding;
   const viewportSize = config.templateSettings.viewportHeight;
   const direction = config.custom.direction;
+  const delta = viewportSize * padding;
 
   const _forward = direction === Direction.forward;
   const _opposite = _forward ? Direction.backward : Direction.forward;
@@ -111,24 +112,31 @@ const calculateIt = (config, misc) => {
   const _paddingSize = misc.padding[direction].getSize();
   const _oppositePaddingSize = misc.padding[_opposite].getSize();
 
-  const preSizeToClip = misc.getScrollableSize() - viewportSize - padding * viewportSize - _oppositePaddingSize;
-  const itemsToClip = Math.floor(preSizeToClip / misc.itemHeight);
-  const oppositePaddingSize = itemsToClip * misc.itemHeight + _oppositePaddingSize;
+  const newScrollPosition = _forward ? misc.getScrollableSize() : 0;
+  const edgePosition = misc.padding[Direction.backward].getSize() + (_forward ? _elements.length * misc.itemHeight : 0);
+  const diffEdgeSize = Math.abs(newScrollPosition - edgePosition);
+  const diffItems = Math.ceil(diffEdgeSize / misc.itemHeight);
+  const diffItemsFetches = Math.ceil(diffItems / bufferSize);
+  const itemsToFetch = diffItemsFetches * bufferSize;
+  let edgeItemIndex = _edgeItemIndex + (_forward ? 1 : -1) * itemsToFetch;
+
+  const sizeToFill = itemsToFetch * misc.itemHeight;
+  const diff = Math.abs(sizeToFill - diffEdgeSize);
+  const addSize = delta - diff;
+  if (addSize > 0) {
+    const itemsToFillAddSize = Math.ceil(addSize / misc.itemHeight);
+    const addFetches = Math.ceil(itemsToFillAddSize / bufferSize);
+    const addItems = addFetches * bufferSize;
+    edgeItemIndex = edgeItemIndex + (_forward ? 1 : -1) * addItems;
+  }
+
   const paddingSize = 0;
-
-  const sizeToFill = _paddingSize + padding * viewportSize;
-  const itemsToFill = Math.ceil(sizeToFill / misc.itemHeight);
-  const fetchCount = Math.ceil(itemsToFill / bufferSize);
-  const itemsToFetch = fetchCount * bufferSize;
-
-  const edgeItemIndex = _edgeItemIndex + (_forward ? 1 : -1) * itemsToFetch;
-  const oppositeEdgeItemIndex = _oppositeEdgeItemIndex + (_forward ? 1 : -1) * itemsToClip;
 
   return {
     paddingSize,
-    oppositePaddingSize,
+    //oppositePaddingSize,
     edgeItemIndex,
-    oppositeEdgeItemIndex
+    //oppositeEdgeItemIndex
   };
 };
 
@@ -158,9 +166,9 @@ const shouldScroll = (config) => (misc) => (done) => {
       const edgeItem = misc.workflow.buffer.getEdgeVisibleItem(direction);
       const oppositeEdgeItem = misc.workflow.buffer.getEdgeVisibleItem(opposite);
       expect(misc.padding[direction].getSize()).toEqual(result.paddingSize);
-      expect(misc.padding[opposite].getSize()).toEqual(result.oppositePaddingSize);
+      //expect(misc.padding[opposite].getSize()).toEqual(result.oppositePaddingSize);
       expect(edgeItem.$index).toEqual(result.edgeItemIndex);
-      expect(oppositeEdgeItem.$index).toEqual(result.oppositeEdgeItemIndex);
+      //expect(oppositeEdgeItem.$index).toEqual(result.oppositeEdgeItemIndex);
       done();
     }
   });
@@ -209,44 +217,44 @@ describe('Basic Scroll Spec', () => {
     )
   );
 
-  // describe('Bouncing max two-directional scroll events (fwd started)', () =>
-  //   massBouncingScrollsConfigList_fwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some bouncing scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
+  describe('Bouncing max two-directional scroll events (fwd started)', () =>
+    massBouncingScrollsConfigList_fwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some bouncing scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
 
-  // describe('Bouncing max two-directional scroll events (bwd started)', () =>
-  //   massBouncingScrollsConfigList_bwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some bouncing scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
+  describe('Bouncing max two-directional scroll events (bwd started)', () =>
+    massBouncingScrollsConfigList_bwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some bouncing scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
 
-  // describe('Mass max two-directional scroll events (fwd started)', () =>
-  //   massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some two-directional scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
+  describe('Mass max two-directional scroll events (fwd started)', () =>
+    massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some two-directional scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
 
-  // describe('Mass max two-directional scroll events (bwd started)', () =>
-  //   massTwoDirectionalScrollsConfigList_bwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some two-directional scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
+  describe('Mass max two-directional scroll events (bwd started)', () =>
+    massTwoDirectionalScrollsConfigList_bwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some two-directional scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
 
 });

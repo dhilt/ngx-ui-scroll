@@ -61,7 +61,10 @@ export class WorkflowRunner {
       this.run(this.runNew);
       this.runNew = null;
     } else if (next) {
-      this.run({ direction: this.workflow.direction });
+      this.run({
+        direction: this.workflow.direction,
+        scroll: this.workflow.scroll
+      });
     } else if (this.runQueue) {
       this.run(this.runQueue);
       this.runQueue = null;

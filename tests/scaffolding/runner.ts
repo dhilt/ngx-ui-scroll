@@ -12,8 +12,8 @@ interface TestBedConfig {
   datasourceName?: string;
   datasourceSettings?: Settings;
   templateSettings?: TemplateSettings;
+  toThrow?: boolean;
   custom?: any;
-  throw?: boolean;
 }
 
 interface MakeTestConfig {
@@ -25,11 +25,9 @@ interface MakeTestConfig {
 
 const generateMetaTitle = (config): string => {
   const result = [];
-
   if (config.templateSettings && config.templateSettings.viewportHeight) {
     result.push(`viewport height = ${config.templateSettings.viewportHeight}`);
   }
-
   if (config.datasourceSettings) {
     const { startIndex, bufferSize, padding } = config.datasourceSettings;
     if (startIndex) {
@@ -42,14 +40,12 @@ const generateMetaTitle = (config): string => {
       result.push(`padding = ${padding}`);
     }
   }
-
   if (config.custom) {
     const { count } = config.custom;
     if (count) {
       result.push(`count = ${count}`);
     }
   }
-
   let title = result.join(', ');
   title = title ? '⤷ ' + title : '';
   return title;
@@ -64,19 +60,14 @@ export const makeTest = (data: MakeTestConfig) => {
         const datasourceClass = data.config.datasourceClass ? data.config.datasourceClass :
           generateDatasourceClass(data.config.datasourceName || 'default', data.config.datasourceSettings);
         const templateData = generateTemplate(data.config.templateSettings);
-        if (data.config.throw) {
-          try {
-            const fixture = configureTestBed(datasourceClass, templateData.template);
-            misc = new Misc(fixture);
-          } catch (_error) {
-            error = _error && _error.message;
-          }
-        } else {
+        try {
           const fixture = configureTestBed(datasourceClass, templateData.template);
           misc = new Misc(fixture);
+        } catch (_error) {
+          error = _error && _error.message;
         }
       }));
-      it(data.title, (done) => data.it(data.config.throw ? error : misc)(done));
+      it(data.title, (done) => data.it(data.config.toThrow ? error : misc)(done));
     } else {
       it(data.title, data.it);
     }

@@ -94,7 +94,7 @@ describe('Bad datasource', () => {
   makeTest({
     config: {
       datasourceClass: 'invalid',
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (datasource is not a constructor)',
     it: (error) => (done) => {
@@ -111,7 +111,7 @@ describe('Bad datasource', () => {
           this.settings = { };
         }
       },
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (no get)',
     it: (error) => (done) => {
@@ -130,7 +130,7 @@ describe('Bad datasource', () => {
           this.get = true;
         }
       },
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (get is not a function)',
     it: (error) => (done) => {
@@ -148,7 +148,7 @@ describe('Bad datasource', () => {
         }
         get(offset) {};
       },
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (get has less than 2 arguments)',
     it: (error) => (done) => {

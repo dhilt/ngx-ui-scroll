@@ -16,7 +16,7 @@ export class Settings implements SettingsInterface {
   infinite;
 
   // internal settings
-  debug = true; // logging; need to turn off in release
+  debug = false; // logging; need to turn off in release
   itemIdPrefix = 'ui-scroll-0-'; // todo : scroll instance index ?
   clipAfterFetchOnly = true; // true for AngularJS lib compatibility
   clipAfterScrollOnly = true;

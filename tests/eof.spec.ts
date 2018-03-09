@@ -1,7 +1,7 @@
 import { Direction } from '../src/component/interfaces';
 import { makeTest } from './scaffolding/runner';
 
-const min = 1, max = 100, scrollCount = 12;
+const min = 1, max = 100, scrollCount = 10;
 
 describe('EOF/BOF Spec', () => {
 
@@ -18,12 +18,14 @@ describe('EOF/BOF Spec', () => {
     }
   };
 
-  const expectLimit = (misc, direction: Direction) => {
+  const expectLimit = (misc, direction: Direction, noscroll = false) => {
     const _forward = direction === Direction.forward;
     const elements = misc.getElements();
     expect(elements.length).toBeGreaterThan(config[_forward ? 'eof' : 'bof'].datasourceSettings.bufferSize);
     expect(misc.padding[_forward ? Direction.forward : Direction.backward].getSize()).toEqual(0);
-    expect(misc.padding[_forward ? Direction.backward : Direction.forward].getSize()).toBeGreaterThan(0);
+    if (!noscroll) {
+      expect(misc.padding[_forward ? Direction.backward : Direction.forward].getSize()).toBeGreaterThan(0);
+    }
     expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
     expect(misc.workflow.buffer.bof).toEqual(!_forward);
     expect(misc.workflow.buffer.eof).toEqual(_forward);
@@ -34,7 +36,7 @@ describe('EOF/BOF Spec', () => {
       config: config.bof,
       title: 'should get bof on init',
       it: (misc) => (done) => {
-        expectLimit(misc, Direction.backward);
+        expectLimit(misc, Direction.backward, true);
         done();
       }
     });
@@ -76,7 +78,7 @@ describe('EOF/BOF Spec', () => {
       it: (misc) => (done) => {
         const count = misc.workflowRunner.count;
         spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          if (misc.workflowRunner.count < count + scrollCount) {
+          if (misc.workflowRunner.count < scrollCount) {
             misc.scrollMax();
           } else {
             expectLimit(misc, Direction.forward);
@@ -93,7 +95,7 @@ describe('EOF/BOF Spec', () => {
       config: config.eof,
       title: 'should get eof on init',
       it: (misc) => (done) => {
-        expectLimit(misc, Direction.forward);
+        expectLimit(misc, Direction.forward, true);
         done();
       }
     });
@@ -135,7 +137,7 @@ describe('EOF/BOF Spec', () => {
       it: (misc) => (done) => {
         const count = misc.workflowRunner.count;
         spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          if (misc.workflowRunner.count < count + scrollCount) {
+          if (misc.workflowRunner.count < scrollCount) {
             misc.scrollMin();
           } else {
             expectLimit(misc, Direction.backward);

@@ -9,7 +9,7 @@ const checkViewport = (misc, viewportHeight) => {
   expect(position).toBeGreaterThan(bwdPadding);
   expect(position).toBeLessThan(size - fwdPadding);
   expect(bwdPadding + fwdPadding).toBeLessThan(size - viewportHeight);
-}
+};
 
 describe('Bug Spec', () => {
 
@@ -26,7 +26,7 @@ describe('Bug Spec', () => {
       it: (misc) => (done) => {
 
         const fwdCount = 4;
-        let wfCount = null, fetchCount;
+        let wfCount = null;
 
         spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
           if (misc.workflowRunner.count < fwdCount) {

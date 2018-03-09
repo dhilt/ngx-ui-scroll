@@ -57,11 +57,11 @@ const datasourceGet = {
 export class AppComponent {
 
   public datasource: Datasource = {
-    get: datasourceGet['callback'],
+    get: datasourceGet['promiseLimited'],
     settings: {
-      bufferSize: 10,
-      padding: 0.5,
-      //startIndex: 51
+      bufferSize: 5,
+      padding: 0.1,
+      startIndex: 51
     }
   };
 

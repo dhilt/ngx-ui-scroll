@@ -31,122 +31,77 @@ describe('EOF/BOF Spec', () => {
     expect(misc.workflow.buffer.eof).toEqual(_forward);
   };
 
-  describe('Begin of file', () => {
-    makeTest({
-      config: config.bof,
-      title: 'should get bof on init',
-      it: (misc) => (done) => {
-        expectLimit(misc, Direction.backward, true);
-        done();
-      }
-    });
+  const runLimitSuite = (eof = 'bof') => {
 
-    makeTest({
-      config: config.bof,
-      title: 'should reset bof after fwd scroll',
-      it: (misc) => (done) => {
-        expect(misc.workflow.buffer.bof).toEqual(true);
-        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          expect(misc.workflow.buffer.bof).toEqual(false);
-          expect(misc.workflow.buffer.eof).toEqual(false);
+    const isEOF = eof === 'eof';
+
+    describe((isEOF ? 'End' : 'Begin') + ' of file', () => {
+
+      const _eof = isEOF ? 'bof' : 'eof';
+      const direction = isEOF ? Direction.forward : Direction.backward;
+      const directionOpposite = isEOF ? Direction.backward : Direction.forward;
+      const doScroll = (misc) => isEOF ? misc.scrollMin() : misc.scrollMax();
+      const doScrollOpposite = (misc) => isEOF ? misc.scrollMax() : misc.scrollMin();
+
+      makeTest({
+        config: config[eof],
+        title: `should get ${eof} on init`,
+        it: (misc) => (done) => {
+          expectLimit(misc, direction, true);
           done();
-        });
-        misc.scrollMax();
-      }
-    });
+        }
+      });
 
-    makeTest({
-      config: config.bof,
-      title: 'should stop when bof is reached again',
-      it: (misc) => (done) => {
-        const count = misc.workflowRunner.count;
-        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          if (misc.workflowRunner.count === count + 1) {
-            misc.scrollMin();
-          } else {
-            expectLimit(misc, Direction.backward);
+      makeTest({
+        config: config[eof],
+        title: `should reset ${eof} after fwd scroll`,
+        it: (misc) => (done) => {
+          expect(misc.workflow.buffer[eof]).toEqual(true);
+          spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
+            expect(misc.workflow.buffer[eof]).toEqual(false);
+            expect(misc.workflow.buffer[_eof]).toEqual(false);
             done();
-          }
-        });
-        misc.scrollMax();
-      }
-    });
+          });
+          doScroll(misc);
+        }
+      });
 
-    makeTest({
-      config: config.bof,
-      title: 'should reach eof after some scrolls',
-      it: (misc) => (done) => {
-        const count = misc.workflowRunner.count;
-        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          if (misc.workflowRunner.count < scrollCount) {
-            misc.scrollMax();
-          } else {
-            expectLimit(misc, Direction.forward);
-            done();
-          }
-        });
-        misc.scrollMax();
-      }
-    });
-  });
+      makeTest({
+        config: config[eof],
+        title: `should stop when ${eof} is reached again`,
+        it: (misc) => (done) => {
+          const count = misc.workflowRunner.count;
+          spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
+            if (misc.workflowRunner.count === count + 1) {
+              doScrollOpposite(misc);
+            } else {
+              expectLimit(misc, direction);
+              done();
+            }
+          });
+          doScroll(misc);
+        }
+      });
 
-  describe('End of file', () => {
-    makeTest({
-      config: config.eof,
-      title: 'should get eof on init',
-      it: (misc) => (done) => {
-        expectLimit(misc, Direction.forward, true);
-        done();
-      }
+      makeTest({
+        config: config[eof],
+        title: `should reach ${_eof} after some scrolls`,
+        it: (misc) => (done) => {
+          spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
+            if (misc.workflowRunner.count < scrollCount) {
+              doScroll(misc);
+            } else {
+              expectLimit(misc, directionOpposite);
+              done();
+            }
+          });
+          doScroll(misc);
+        }
+      });
     });
+  };
 
-    makeTest({
-      config: config.eof,
-      title: 'should reset bof after bwd scroll',
-      it: (misc) => (done) => {
-        expect(misc.workflow.buffer.eof).toEqual(true);
-        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          expect(misc.workflow.buffer.bof).toEqual(false);
-          expect(misc.workflow.buffer.eof).toEqual(false);
-          done();
-        });
-        misc.scrollMin();
-      }
-    });
-
-    makeTest({
-      config: config.eof,
-      title: 'should stop when eof is reached again',
-      it: (misc) => (done) => {
-        const count = misc.workflowRunner.count;
-        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          if (misc.workflowRunner.count === count + 1) {
-            misc.scrollMax();
-          } else {
-            expectLimit(misc, Direction.forward);
-            done();
-          }
-        });
-        misc.scrollMin();
-      }
-    });
-
-    makeTest({
-      config: config.eof,
-      title: 'should reach bof after some scrolls',
-      it: (misc) => (done) => {
-        const count = misc.workflowRunner.count;
-        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          if (misc.workflowRunner.count < scrollCount) {
-            misc.scrollMin();
-          } else {
-            expectLimit(misc, Direction.backward);
-            done();
-          }
-        });
-        misc.scrollMin();
-      }
-    });
-  });
+  runLimitSuite('bof');
+  runLimitSuite('eof');
 
 });

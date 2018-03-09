@@ -70,7 +70,7 @@ const datasourceStore = {
   },
 
   'limited': <Datasource>{
-    get: limitedDatasourceGet(1, 100, 25)
+    get: limitedDatasourceGet(1, 100, 1)
   },
 
   'default-bad-settings': <Datasource>{

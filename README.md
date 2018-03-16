@@ -19,11 +19,11 @@ The \*uiScroll directive dynamically destroys elements as they become invisible 
 
 ### Getting
 
-The UiScrollModule is available via npm –
+The \*uiScroll directive is a part of UiScrollModule which is available via npm –
 
 `npm install ngx-ui-scroll`
 
-It should be imported in the App/feature module where it is going to be used.
+The UiScrollModule has to be imported in the App/feature module where it is going to be used.
 
 ```javascript
 import { NgModule } from '@angular/core';
@@ -45,7 +45,7 @@ export class AppModule { }
 
 ### Usage
 
-Basic template may look like
+Basic usage template may look like
 
 ```html
 <div class="viewport">

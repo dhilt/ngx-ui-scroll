@@ -1,5 +1,38 @@
-<div class="viewport">
-  <div *uiScroll="let item of datasource">
-    <span>{{item.id}}</span> : <b>{{item.text}}</b>
+<h1>Angular UI Scroll</h1>
+
+<p>
+  For all the cases considering below the following template is being used:
+</p>
+
+<pre>
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;b&gt;<span ngNonBindable>{{item.text}}</span>&lt;/b&gt;
+  &lt;/div&gt;
+</pre>
+
+<h3> Unlimited bidirectional scrolling</h3>
+
+<div>
+  <div class="viewport">
+    <div *uiScroll="let item of datasource">
+      <b>{{item.text}}</b>
+    </div>
   </div>
 </div>
+
+<p>
+  Here is the simplest callback-based Datasource.get method implementation:
+</p>
+
+<pre ngNonBindable>
+datasource: Datasource = &#123;
+  get: (index, count, success) => &#123;
+    const data = [];
+    for (let i = index; i <= index + count - 1; i++) &#123;
+      data.push(&#123; id: i, text: 'item #' + i &#125;);
+    &#125;
+    success(data);
+  &#125;
+&#125;
+</pre>
+

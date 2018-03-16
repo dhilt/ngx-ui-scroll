@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { Datasource } from '../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
 
-const getData = (index: number, count: number)  => {
+const getData = (index: number, count: number) => {
   console.log('requested index = ' + index + ', count = ' + count);
   let data = [];
   for (let i = index; i <= index + count - 1; i++) {
@@ -18,7 +18,7 @@ const getData = (index: number, count: number)  => {
 
 const min = 1, max = 100;
 
-const getDataLimited = (index: number, count: number)  => {
+const getDataLimited = (index: number, count: number) => {
   console.log('requested index = ' + index + ', count = ' + count);
   let data = [];
   const start = Math.max(min, index);
@@ -57,11 +57,24 @@ const datasourceGet = {
 export class AppComponent {
 
   public datasource: Datasource = {
+    get: (index, count, success) => {
+      const data = [];
+      for (let i = index; i <= index + count - 1; i++) {
+        data.push({ id: i, text: 'item #' + i });
+      }
+      success(data);
+    },
+    settings: {
+      bufferSize: 5
+    }
+  };
+
+  public datasourceLimited: Datasource = {
     get: datasourceGet['promiseLimited'],
     settings: {
       bufferSize: 5,
       padding: 0.1,
-      startIndex: 51
+      startIndex: 1
     }
   };
 

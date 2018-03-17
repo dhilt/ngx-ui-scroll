@@ -10,18 +10,29 @@
   &lt;/div&gt;
 </pre>
 
-<h3> Unlimited bidirectional scrolling</h3>
+<p>
+  The height of the visible part of the viewport is 100px, the height of the item is 20px.
+</p>
 
-<div>
+<h3>Unlimited bidirectional scrolling</h3>
+
+<div style="float: left">
   <div class="viewport">
-    <div *uiScroll="let item of datasource">
+    <div *uiScroll="let item of datasourceBasic">
       <b>{{item.text}}</b>
     </div>
   </div>
 </div>
+<div class="log">
+  datasource.get log
+  <pre>
+{{logBasic}}
+  </pre>
+</div>
+<div style="clear: both;"></div>
 
 <p>
-  Here is the simplest callback-based Datasource.get method implementation:
+  Here is the simplest callback-based <em>Datasource.get</em> method implementation:
 </p>
 
 <pre ngNonBindable>
@@ -35,4 +46,103 @@ datasource: Datasource = &#123;
   &#125;
 &#125;
 </pre>
+
+<p>
+  <em>Datasource.get</em> log shows us that there are 3 requests of 5 items on the initial load (before scrolling).
+  Why do we get 5 items per each <em>datasource.get</em> call? It is so because of default. We may change it via
+  settings object and <em>bufferSize</em> property.
+</p>
+
+<h3>bufferSize setting</h3>
+
+<div style="float: left">
+  <div class="viewport">
+    <div *uiScroll="let item of datasourceBuffer">
+      <b>{{item.text}}</b>
+    </div>
+  </div>
+</div>
+<div class="log">
+  datasource.get log
+  <pre>
+{{logBuffer}}
+  </pre>
+</div>
+<div style="clear: both;"></div>
+
+<p>
+  In addition to <em>get</em> method, <em>settings</em> object can be declared on the Datasource:
+</p>
+
+<pre ngNonBindable>
+datasource: Datasource = &#123;
+  get: /*...*/,
+  settings: &#123;
+    bufferSize: 15
+  &#125;
+&#125;
+</pre>
+
+<p>
+  Here we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
+  request. Now the initial load consist of just 2 requests (from 1 to 15 and from -14 to 0). The bigger the
+  <em>bufferSize</em> is, the less requests are needed to fill out the viewport. The default value of
+  <em>bufferSize</em> property is 5. Another setting which has an impact on the viewport's filling procedure is
+  <em>padding</em>.
+</p>
+
+<h3>padding setting</h3>
+
+<div style="float: left">
+  <div class="viewport">
+    <div *uiScroll="let item of datasourcePadding">
+      <b>{{item.text}}</b>
+    </div>
+  </div>
+</div>
+<div class="log">
+  datasource.get log
+  <pre>
+{{logPadding}}
+  </pre>
+</div>
+<div style="clear: both;"></div>
+
+<p>
+  <em>Datasource.get</em> is not changed, but the settings object is completed with <em>padding</em> property:
+</p>
+
+<pre ngNonBindable>
+datasource: Datasource = &#123;
+  get: /*...*/,
+  settings: &#123;
+    bufferSize: 5,
+    padding: 1.4
+  &#125;
+&#125;
+</pre>
+
+<p>
+  <em>Padding</em> is an extra space added to the visible part of the viewport for the purpose of determining when the
+  items should be created/destroyed. The value is relative to the visible size of the viewport. <em>1.4</em> means that
+  the <em>*uiScroll</em> directive would request new items until 140% of the viewport size (out of the visible part of
+  the viewport) is filled with rendered items. That's why we have 5 requests on the initial load in this case.
+  There are 3 downward requests:
+</p>
+<ul>
+  <li>1) 100px + 1.4 * 100px = 240px (downward space which have to be filled)</li>
+  <li>2) 240px / 20px = 12 (items that are needed to feel 240px of the downward space)</li>
+  <li>3) ceil(12 / 5) = 3 (datasource.get calls to request 12 items)</li>
+</ul>
+<p>
+  And 2 upward requests:
+</p>
+<ul>
+  <li>1) 1.4 * 100px = 140px (upward space which have to be filled)</li>
+  <li>2) 140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
+  <li>3) ceil(7 / 5) = 2 (datasource.get calls to request 7 items)</li>
+</ul>
+<p>
+  The default value of <em>padding</em> property is 0.5.
+</p>
 

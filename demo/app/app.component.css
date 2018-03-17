@@ -1,6 +1,23 @@
+h1, h3 {
+  margin: 15px 0;
+}
+
+p {
+  margin: 10px 0;
+}
+
 .viewport {
   width: 200px;
   height: 100px;
   overflow-anchor: none;
   overflow-y: auto;
+}
+
+.log {
+  padding-left: 20px;
+  height: 100px;
+  width: 200px;
+  overflow-y: hidden;
+  font-size: smaller;
+  line-height: 14px;
 }

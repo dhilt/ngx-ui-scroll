@@ -56,8 +56,26 @@ const datasourceGet = {
 })
 export class AppComponent {
 
-  public datasource: Datasource = {
+  countBasic: number = 0;
+  logBasic: string = '';
+
+  datasourceBasic: Datasource = {
     get: (index, count, success) => {
+      this.logBasic = `${++this.countBasic}) get 5 items [${index}, ${index + count - 1}]\n` + this.logBasic;
+      const data = [];
+      for (let i = index; i <= index + count - 1; i++) {
+        data.push({ id: i, text: 'item #' + i });
+      }
+      success(data);
+    }
+  };
+
+  countBuffer: number = 0;
+  logBuffer: string = '';
+
+  datasourceBuffer: Datasource = {
+    get: (index, count, success) => {
+      this.logBuffer = `${++this.countBuffer}) get 15 items [${index}, ${index + count - 1}]\n` + this.logBuffer;
       const data = [];
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });
@@ -65,7 +83,25 @@ export class AppComponent {
       success(data);
     },
     settings: {
-      bufferSize: 5
+      bufferSize: 15
+    }
+  };
+
+  countPadding: number = 0;
+  logPadding: string = '';
+
+  datasourcePadding: Datasource = {
+    get: (index, count, success) => {
+      this.logPadding = `${++this.countPadding}) get 5 items [${index}, ${index + count - 1}]\n` + this.logPadding;
+      const data = [];
+      for (let i = index; i <= index + count - 1; i++) {
+        data.push({ id: i, text: 'item #' + i });
+      }
+      success(data);
+    },
+    settings: {
+      bufferSize: 5,
+      padding: 1.5
     }
   };
 

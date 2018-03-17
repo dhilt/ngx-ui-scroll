@@ -56,6 +56,15 @@ const datasourceGet = {
 })
 export class AppComponent {
 
+  elements(token: string): string {
+    const element = document.getElementById(token);
+    if(!element) {
+      return '';
+    }
+    const count = element.children[0].childElementCount || 0;
+    return (count - 2).toString(10);
+  }
+
   countBasic: number = 0;
   logBasic: string = '';
 

@@ -17,14 +17,20 @@
 <h3>Unlimited bidirectional scrolling</h3>
 
 <div style="float: left">
-  <div class="viewport">
+  <div class="viewport" id="basic">
     <div *uiScroll="let item of datasourceBasic">
       <b>{{item.text}}</b>
     </div>
   </div>
 </div>
-<div class="log">
-  datasource.get log
+<div class="log elements">
+  DOM elements
+  <pre>
+{{elements('basic')}}
+  </pre>
+</div>
+<div class="log datasource">
+  Datasource.get log
   <pre>
 {{logBasic}}
   </pre>
@@ -56,14 +62,20 @@ datasource: Datasource = &#123;
 <h3>bufferSize setting</h3>
 
 <div style="float: left">
-  <div class="viewport">
+  <div class="viewport" id="buffer">
     <div *uiScroll="let item of datasourceBuffer">
       <b>{{item.text}}</b>
     </div>
   </div>
 </div>
-<div class="log">
-  datasource.get log
+<div class="log elements">
+  DOM elements
+  <pre>
+{{elements('buffer')}}
+  </pre>
+</div>
+<div class="log datasource">
+  Datasource.get log
   <pre>
 {{logBuffer}}
   </pre>
@@ -85,7 +97,7 @@ datasource: Datasource = &#123;
 
 <p>
   Here we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
-  request. Now the initial load consist of just 2 requests (from 1 to 15 and from -14 to 0). The bigger the
+  request. Now the initial load consist of 2 requests (from 1 to 15 and from -14 to 0). The bigger the
   <em>bufferSize</em> is, the less requests are needed to fill out the viewport. The default value of
   <em>bufferSize</em> property is 5. Another setting which has an impact on the viewport's filling procedure is
   <em>padding</em>.
@@ -94,14 +106,20 @@ datasource: Datasource = &#123;
 <h3>padding setting</h3>
 
 <div style="float: left">
-  <div class="viewport">
+  <div class="viewport" id="padding">
     <div *uiScroll="let item of datasourcePadding">
       <b>{{item.text}}</b>
     </div>
   </div>
 </div>
-<div class="log">
-  datasource.get log
+<div class="log elements">
+  DOM elements
+  <pre>
+{{elements('padding')}}
+  </pre>
+</div>
+<div class="log datasource">
+  Datasource.get log
   <pre>
 {{logPadding}}
   </pre>
@@ -109,7 +127,8 @@ datasource: Datasource = &#123;
 <div style="clear: both;"></div>
 
 <p>
-  <em>Datasource.get</em> is not changed, but the settings object is completed with <em>padding</em> property:
+  Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
+  <em>padding</em> property:
 </p>
 
 <pre ngNonBindable>
@@ -130,9 +149,9 @@ datasource: Datasource = &#123;
   There are 3 downward requests:
 </p>
 <ul>
-  <li>1) 100px + 1.4 * 100px = 240px (downward space which have to be filled)</li>
-  <li>2) 240px / 20px = 12 (items that are needed to feel 240px of the downward space)</li>
-  <li>3) ceil(12 / 5) = 3 (datasource.get calls to request 12 items)</li>
+  <li>1) 100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
+  <li>2) 240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )</li>
+  <li>3) ceil(12 / 5) = 3 (datasource.get calls to request 12 items, when bufferSize = 5)</li>
 </ul>
 <p>
   And 2 upward requests:

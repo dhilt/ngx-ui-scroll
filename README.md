@@ -2,7 +2,7 @@
 
 # NgxUiScroll
 
-Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/ "Angular") framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013).
+Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/ "Angular") framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/).
 
 - [Motivation](#motivation)
 - [Getting](#getting)
@@ -93,7 +93,7 @@ _Datasource.get_ must provide an array of _count_ data-items started from _index
   };
 ```
 
-More details could be found at API section and on DEMO page.
+More details could be found at the API section (in progress) and on the [DEMO page](https://dhilt.github.io/ngx-ui-scroll/).
 
 ### Developing
 

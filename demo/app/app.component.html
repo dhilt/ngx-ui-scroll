@@ -14,34 +14,35 @@
   The height of the visible part of the viewport is 100px, the height of the item is 20px.
 </p>
 
-<h3>Unlimited bidirectional scrolling</h3>
+<div class="demo">
+  <h3>Unlimited bidirectional scrolling</h3>
 
-<div style="float: left">
-  <div class="viewport" id="basic">
-    <div *uiScroll="let item of datasourceBasic">
-      <b>{{item.text}}</b>
+  <div style="float: left">
+    <div class="viewport" id="basic">
+      <div *uiScroll="let item of datasourceBasic">
+        <b>{{item.text}}</b>
+      </div>
     </div>
   </div>
-</div>
-<div class="log elements">
-  DOM elements
-  <pre>
+  <div class="log elements">
+    DOM elements
+    <pre>
 {{elements('basic')}}
   </pre>
-</div>
-<div class="log datasource">
-  Datasource.get log
-  <pre>
+  </div>
+  <div class="log datasource">
+    Datasource.get log
+    <pre>
 {{logBasic}}
   </pre>
-</div>
-<div style="clear: both;"></div>
+  </div>
+  <div style="clear: both;"></div>
 
-<p>
-  Here is the simplest callback-based <em>Datasource.get</em> method implementation:
-</p>
+  <p>
+    Here is the simplest callback-based <em>Datasource.get</em> method implementation:
+  </p>
 
-<pre ngNonBindable>
+  <pre ngNonBindable>
 datasource: Datasource = &#123;
   get: (index, count, success) => &#123;
     const data = [];
@@ -51,87 +52,92 @@ datasource: Datasource = &#123;
     success(data);
   &#125;
 &#125;
-</pre>
+  </pre>
 
-<p>
-  <em>Datasource.get</em> log shows us that there are 3 requests of 5 items on the initial load (before scrolling).
-  Why do we get 5 items per each <em>datasource.get</em> call? It is so because of default. We may change it via
-  settings object and <em>bufferSize</em> property.
-</p>
+  <p>
+    <em>Datasource.get</em> log shows us that there are 3 requests of 5 items on the initial load (before scrolling).
+    So we have 15 DOM elements (3 * 5) initially. The number of elements is not constant, but it fluctuates around the
+    initial value. Why do we get 5 items per each <em>datasource.get</em> call? It is so because of default. We may
+    change it via settings object and <em>bufferSize</em> property.
+  </p>
+</div>
 
-<h3>bufferSize setting</h3>
+<div class="demo">
+  <h3>bufferSize setting</h3>
 
-<div style="float: left">
-  <div class="viewport" id="buffer">
-    <div *uiScroll="let item of datasourceBuffer">
-      <b>{{item.text}}</b>
+  <div style="float: left">
+    <div class="viewport" id="buffer">
+      <div *uiScroll="let item of datasourceBuffer">
+        <b>{{item.text}}</b>
+      </div>
     </div>
   </div>
-</div>
-<div class="log elements">
-  DOM elements
-  <pre>
+  <div class="log elements">
+    DOM elements
+    <pre>
 {{elements('buffer')}}
-  </pre>
-</div>
-<div class="log datasource">
-  Datasource.get log
-  <pre>
+    </pre>
+  </div>
+  <div class="log datasource">
+    Datasource.get log
+    <pre>
 {{logBuffer}}
-  </pre>
-</div>
-<div style="clear: both;"></div>
+    </pre>
+  </div>
+  <div style="clear: both;"></div>
 
-<p>
-  In addition to <em>get</em> method, <em>settings</em> object can be declared on the Datasource:
-</p>
+  <p>
+    In addition to <em>get</em> method, <em>settings</em> object can be declared on the Datasource:
+  </p>
 
-<pre ngNonBindable>
+  <pre ngNonBindable>
 datasource: Datasource = &#123;
   get: /*...*/,
   settings: &#123;
     bufferSize: 15
   &#125;
 &#125;
-</pre>
+  </pre>
 
-<p>
-  Here we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
-  request. Now the initial load consist of 2 requests (from 1 to 15 and from -14 to 0). The bigger the
-  <em>bufferSize</em> is, the less requests are needed to fill out the viewport. The default value of
-  <em>bufferSize</em> property is 5. Another setting which has an impact on the viewport's filling procedure is
-  <em>padding</em>.
-</p>
+  <p>
+    Here we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
+    request. Now the initial load consist of 2 requests (from 1 to 15 and from -14 to 0). The bigger the
+    <em>bufferSize</em> is, the less requests are needed to fill out the viewport. The default value of
+    <em>bufferSize</em> property is 5. Another setting which has an impact on the viewport's filling procedure is
+    <em>padding</em>.
+  </p>
+</div>
 
-<h3>padding setting</h3>
+<div class="demo">
+  <h3>padding setting</h3>
 
-<div style="float: left">
-  <div class="viewport" id="padding">
-    <div *uiScroll="let item of datasourcePadding">
-      <b>{{item.text}}</b>
+  <div style="float: left">
+    <div class="viewport" id="padding">
+      <div *uiScroll="let item of datasourcePadding">
+        <b>{{item.text}}</b>
+      </div>
     </div>
   </div>
-</div>
-<div class="log elements">
-  DOM elements
-  <pre>
+  <div class="log elements">
+    DOM elements
+    <pre>
 {{elements('padding')}}
-  </pre>
-</div>
-<div class="log datasource">
-  Datasource.get log
-  <pre>
+    </pre>
+  </div>
+  <div class="log datasource">
+    Datasource.get log
+    <pre>
 {{logPadding}}
-  </pre>
-</div>
-<div style="clear: both;"></div>
+    </pre>
+  </div>
+  <div style="clear: both;"></div>
 
-<p>
-  Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
-  <em>padding</em> property:
-</p>
+  <p>
+    Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
+    <em>padding</em> property:
+  </p>
 
-<pre ngNonBindable>
+  <pre ngNonBindable>
 datasource: Datasource = &#123;
   get: /*...*/,
   settings: &#123;
@@ -139,29 +145,74 @@ datasource: Datasource = &#123;
     padding: 1.4
   &#125;
 &#125;
-</pre>
+  </pre>
 
-<p>
-  <em>Padding</em> is an extra space added to the visible part of the viewport for the purpose of determining when the
-  items should be created/destroyed. The value is relative to the visible size of the viewport. <em>1.4</em> means that
-  the <em>*uiScroll</em> directive would request new items until 140% of the viewport size (out of the visible part of
-  the viewport) is filled with rendered items. That's why we have 5 requests on the initial load in this case.
-  There are 3 downward requests:
-</p>
-<ul>
-  <li>1) 100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
-  <li>2) 240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )</li>
-  <li>3) ceil(12 / 5) = 3 (datasource.get calls to request 12 items, when bufferSize = 5)</li>
-</ul>
-<p>
-  And 2 upward requests:
-</p>
-<ul>
-  <li>1) 1.4 * 100px = 140px (upward space which have to be filled)</li>
-  <li>2) 140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
-  <li>3) ceil(7 / 5) = 2 (datasource.get calls to request 7 items)</li>
-</ul>
-<p>
-  The default value of <em>padding</em> property is 0.5.
-</p>
+  <p>
+    <em>Padding</em> is an extra space added to the visible part of the viewport for the purpose of determining when the
+    items should be created/destroyed. The value is relative to the visible size of the viewport. <em>1.4</em> means
+    that the <em>*uiScroll</em> directive would request new items until 140% of the viewport size (out of the visible
+    part of the viewport) is filled with rendered items. That's why we have 5 requests on the initial load in this case.
+    There are 3 downward requests:
+  </p>
+  <ul>
+    <li>1) 100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
+    <li>2) 240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )
+    </li>
+    <li>3) ceil(12 / 5) = 3 (datasource.get calls to request 12 items, when bufferSize = 5)</li>
+  </ul>
+  <p>
+    And 2 upward requests:
+  </p>
+  <ul>
+    <li>1) 1.4 * 100px = 140px (upward space which have to be filled)</li>
+    <li>2) 140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
+    <li>3) ceil(7 / 5) = 2 (datasource.get calls to request 7 items)</li>
+  </ul>
+  <p>
+    The default value of <em>padding</em> property is 0.5.
+  </p>
+</div>
 
+<div class="demo">
+  <h3>infinite setting</h3>
+
+  <div style="float: left">
+    <div class="viewport" id="infinite">
+      <div *uiScroll="let item of datasourceInfinite">
+        <b>{{item.text}}</b>
+      </div>
+    </div>
+  </div>
+  <div class="log elements">
+    DOM elements
+    <pre>
+{{elements('infinite')}}
+    </pre>
+  </div>
+  <div class="log datasource">
+    Datasource.get log
+    <pre>
+{{logInfinite}}
+    </pre>
+  </div>
+  <div style="clear: both;"></div>
+
+  <p>
+    The <em>*uiScroll</em> directive might work in the "infinite" mode, when items are never removed. This mode can be
+    turned on via <em>infinite</em> property of the <em>settings</em> object:
+  </p>
+
+  <pre ngNonBindable>
+datasource: Datasource = &#123;
+  get: /*...*/,
+  settings: &#123;
+    infinite: true
+  &#125;
+&#125;
+  </pre>
+
+  <p>
+    Setting <em>infinite</em> to true, we ask the scroller not to remove items that are getting out of the
+    viewport. That's why the DOM elements counter value is being increased per each edge-scroll event.
+  </p>
+</div>

@@ -65,6 +65,8 @@ export class AppComponent {
     return (count - 2).toString(10);
   }
 
+  // basic demo
+
   countBasic: number = 0;
   logBasic: string = '';
 
@@ -78,6 +80,8 @@ export class AppComponent {
       success(data);
     }
   };
+
+  // bufferSize setting demo
 
   countBuffer: number = 0;
   logBuffer: string = '';
@@ -95,6 +99,8 @@ export class AppComponent {
       bufferSize: 15
     }
   };
+
+  // padding setting demo
 
   countPadding: number = 0;
   logPadding: string = '';
@@ -114,12 +120,22 @@ export class AppComponent {
     }
   };
 
-  public datasourceLimited: Datasource = {
-    get: datasourceGet['promiseLimited'],
+  // infinite setting demo
+
+  countInfinite: number = 0;
+  logInfinite: string = '';
+
+  datasourceInfinite: Datasource = {
+    get: (index, count, success) => {
+      this.logInfinite = `${++this.countInfinite}) get 5 items [${index}, ${index + count - 1}]\n` + this.logInfinite;
+      const data = [];
+      for (let i = index; i <= index + count - 1; i++) {
+        data.push({ id: i, text: 'item #' + i });
+      }
+      success(data);
+    },
     settings: {
-      bufferSize: 5,
-      padding: 0.1,
-      startIndex: 1
+      infinite: true
     }
   };
 

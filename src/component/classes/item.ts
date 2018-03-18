@@ -3,17 +3,19 @@ import { Routines } from '../utils/domRoutines';
 
 export class Item {
   $index: number;
-  nodeId: string;
   data: any;
-  element: any;
+  nodeId: string;
+  horizontal: boolean;
 
+  element: any;
   invisible: boolean;
   toRemove: boolean;
 
-  constructor($index, data, nodeId) {
+  constructor($index, data, nodeId, horizontal) {
     this.$index = $index;
     this.data = data;
     this.nodeId = nodeId;
+    this.horizontal = horizontal;
     this.invisible = true;
   }
 
@@ -22,7 +24,7 @@ export class Item {
   }
 
   getEdge(direction: Direction, opposite?: boolean): number {
-    return Routines.getEdge(this.element, direction, opposite);
+    return Routines.getEdge(this.element, direction, opposite, this.horizontal);
   }
 
   hide() {

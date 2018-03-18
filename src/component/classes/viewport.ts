@@ -8,9 +8,9 @@ export class ViewportPadding {
   forward: Padding;
   backward: Padding;
 
-  constructor(element) {
-    this.forward = new Padding(element, Direction.forward);
-    this.backward = new Padding(element, Direction.backward);
+  constructor(element, horizontal: boolean) {
+    this.forward = new Padding(element, Direction.forward, horizontal);
+    this.backward = new Padding(element, Direction.backward, horizontal);
   }
 }
 
@@ -28,7 +28,7 @@ export class Viewport {
     this.settings = settings;
     this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
-    this.padding = new ViewportPadding(this.host);
+    this.padding = new ViewportPadding(this.host, settings.horizontal);
     this.syntheticScrollPosition = null;
   }
 
@@ -37,11 +37,11 @@ export class Viewport {
   }
 
   get scrollPosition(): number {
-    return Routines.getScrollPosition(this.scrollable);
+    return Routines.getScrollPosition(this.scrollable, this.settings.horizontal);
   }
 
   set scrollPosition(value: number) {
-    Routines.setScrollPosition(this.scrollable, value);
+    Routines.setScrollPosition(this.scrollable, value, this.settings.horizontal);
     this.syntheticScrollPosition = this.scrollPosition;
   }
 
@@ -54,11 +54,11 @@ export class Viewport {
   }
 
   getSize(): number {
-    return Routines.getSize(this.scrollable);
+    return Routines.getSize(this.scrollable, this.settings.horizontal);
   }
 
   getScrollableSize(): number {
-    return Routines.getScrollableSize(this.scrollable);
+    return Routines.getScrollableSize(this.scrollable, this.settings.horizontal);
   }
 
   getBufferPadding(): number {
@@ -66,7 +66,7 @@ export class Viewport {
   }
 
   getEdge(direction: Direction, opposite?: boolean): number {
-    return Routines.getEdge(this.scrollable, direction, opposite);
+    return Routines.getEdge(this.scrollable, direction, opposite, this.settings.horizontal);
   }
 
   getLimit(direction: Direction, opposite?: boolean): number {

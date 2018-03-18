@@ -2,40 +2,40 @@ import { Direction } from '../interfaces/direction';
 
 export class Routines {
 
-  static getScrollPosition(element): number {
-    return element['scrollTop'];
+  static getScrollPosition(element, horizontal: boolean): number {
+    return element[!horizontal ? 'scrollTop' : 'scrollLeft'];
   }
 
-  static setScrollPosition(element, value: number) {
-    element['scrollTop'] = value;
+  static setScrollPosition(element, value: number, horizontal: boolean) {
+    element[!horizontal ? 'scrollTop' : 'scrollLeft'] = value;
   }
 
   static getParams(element): ClientRect {
     return element.getBoundingClientRect();
   }
 
-  static getSize(element): number {
-    return Routines.getParams(element)['height'];
+  static getSize(element, horizontal: boolean): number {
+    return Routines.getParams(element)[!horizontal ? 'height' : 'width'];
   }
 
-  static getScrollableSize(element): number {
-    return element['scrollHeight'];
+  static getScrollableSize(element, horizontal: boolean): number {
+    return element[!horizontal ? 'scrollHeight' : 'scrollWidth'];
   }
 
-  static getRectEdge(params: ClientRect, direction: Direction, opposite?: boolean): number {
+  static getRectEdge(params: ClientRect, direction: Direction, opposite: boolean, horizontal: boolean): number {
     const forward = !opposite ? Direction.forward : Direction.backward;
-    return params[direction === forward ? 'bottom' : 'top'];
+    return params[direction === forward ? (!horizontal ? 'bottom' : 'right') : (!horizontal ? 'top' : 'left')];
   }
 
-  static getEdge(element, direction: Direction, opposite?: boolean): number {
+  static getEdge(element, direction: Direction, opposite: boolean, horizontal: boolean): number {
     const params = Routines.getParams(element);
-    return Routines.getRectEdge(params, direction, opposite);
+    return Routines.getRectEdge(params, direction, opposite, horizontal);
   }
 
-  static getEdge2(element, direction: Direction, relativeElement?, opposite?: boolean): number {
-    const result = element.offsetTop - (relativeElement ? relativeElement.scrollTop : 0) +
-      (direction === (!opposite ? Direction.forward : Direction.backward) ? Routines.getSize(element) : 0);
-    return result;
+  static getEdge2(element, direction: Direction, relativeElement, opposite: boolean, horizontal: boolean): number {
+    // vertical only ?
+    return element.offsetTop - (relativeElement ? relativeElement.scrollTop : 0) +
+      (direction === (!opposite ? Direction.forward : Direction.backward) ? Routines.getSize(element, horizontal) : 0);
   }
 
   static hideElement(element) {

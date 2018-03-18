@@ -15,10 +15,6 @@ export class ItemCache {
     this.data = item.data;
     this.params = item.getParams();
   }
-
-  getEdge(direction: Direction, opposite?: boolean): number {
-    return Routines.getRectEdge(this.params, direction, opposite);
-  }
 }
 
 export class Cache {

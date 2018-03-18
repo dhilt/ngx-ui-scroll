@@ -5,10 +5,12 @@ export class Padding {
 
   element = null;
   direction: Direction;
+  horizontal: boolean;
 
-  constructor(element, direction: Direction) {
+  constructor(element, direction: Direction, horizontal: boolean) {
     this.element = element.querySelector(`[data-padding-${direction}]`);
     this.direction = direction;
+    this.horizontal = horizontal;
   }
 
   get size(): number {
@@ -20,7 +22,7 @@ export class Padding {
   }
 
   getEdge(): number {
-    return Routines.getEdge(this.element, this.direction, true);
+    return Routines.getEdge(this.element, this.direction, true, this.horizontal);
   }
 
 }

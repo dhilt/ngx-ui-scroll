@@ -151,7 +151,7 @@ export class AppComponent {
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });
       }
-      setTimeout(() => success(data), 500);
+      success(data);
     },
     settings: {
       horizontal: true

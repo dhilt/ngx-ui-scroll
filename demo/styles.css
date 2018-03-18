@@ -34,7 +34,13 @@ p {
 
 .viewport-horizontal div {
   display: inline-block;
-  color: red;
+}
+
+.item-horizontal {
+  border: 1px solid #aaa;
+  height: 100px;
+  padding: 0 5px;
+  font-weight: bolder;
 }
 
 .log {

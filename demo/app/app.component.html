@@ -216,3 +216,41 @@ datasource: Datasource = &#123;
     viewport. That's why the DOM elements counter value is being increased per each edge-scroll event.
   </p>
 </div>
+
+<div class="demo">
+  <h3>horizontal setting</h3>
+
+  <div style="float: left">
+    <div class="viewport" id="horizontal">
+      <div *uiScroll="let item of datasourceHorizontal">
+        <b>{{item.text}}</b>
+      </div>
+    </div>
+  </div>
+  <div class="log elements">
+    DOM elements
+    <pre>
+{{elements('horizontal')}}
+    </pre>
+  </div>
+  <div class="log datasource">
+    Datasource.get log
+    <pre>
+{{logHorizontal}}
+    </pre>
+  </div>
+  <div style="clear: both;"></div>
+
+  <p>
+    Horizontal scrolling could be enabled via <em>horizontal</em> setting::
+  </p>
+
+  <pre ngNonBindable>
+datasource: Datasource = &#123;
+  get: /*...*/,
+  settings: &#123;
+    horizontal: true
+  &#125;
+&#125;
+  </pre>
+</div>

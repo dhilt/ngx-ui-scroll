@@ -14,11 +14,11 @@ export class Padding {
   }
 
   get size(): number {
-    return parseInt(this.element.style.height, 10) || 0;
+    return parseInt(this.element.style[!this.horizontal ? 'height' : 'width'], 10) || 0;
   }
 
   set size(value: number) {
-    this.element.style.height = `${value}px`;
+    this.element.style[!this.horizontal ? 'height' : 'width'] = `${value}px`;
   }
 
   getEdge(): number {

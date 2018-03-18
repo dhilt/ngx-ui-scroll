@@ -19,8 +19,8 @@ export class Padding {
     this.style = this.element.nativeElement.style;
   }
 
-  getSize(): number {
-    return parseInt(this.style.height, 10) || 0;
+  getSize(horizontal?: boolean): number {
+    return parseInt(this.style[horizontal ? 'width' : 'height'], 10) || 0;
   }
 }
 
@@ -36,6 +36,7 @@ export class Misc {
   workflow: Workflow;
   padding = {};
   itemHeight = 20;
+  itemWidth = 90;
 
   constructor(fixture: ComponentFixture <any>) {
     this.fixture = fixture;

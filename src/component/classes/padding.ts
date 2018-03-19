@@ -1,28 +1,28 @@
 import { Direction } from '../interfaces/direction';
-import { Routines } from '../utils/domRoutines';
+import { Routines } from './domRoutines';
 
 export class Padding {
 
   element = null;
   direction: Direction;
-  horizontal: boolean;
+  routines: Routines;
 
-  constructor(element, direction: Direction, horizontal: boolean) {
+  constructor(element, direction: Direction, routines: Routines) {
     this.element = element.querySelector(`[data-padding-${direction}]`);
     this.direction = direction;
-    this.horizontal = horizontal;
+    this.routines = routines;
   }
 
   get size(): number {
-    return parseInt(this.element.style[!this.horizontal ? 'height' : 'width'], 10) || 0;
+    return this.routines.getSizeStyle(this.element);
   }
 
   set size(value: number) {
-    this.element.style[!this.horizontal ? 'height' : 'width'] = `${value}px`;
+    this.routines.setSizeStyle(this.element, value);
   }
 
   getEdge(): number {
-    return Routines.getEdge(this.element, this.direction, true, this.horizontal);
+    return this.routines.getEdge(this.element, this.direction, true);
   }
 
 }

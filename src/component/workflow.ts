@@ -2,6 +2,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { Datasource, Direction, Run } from './interfaces/index';
 import { Settings } from './classes/settings';
+import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { FetchModel } from './classes/fetch';
@@ -17,6 +18,7 @@ export class Workflow {
   public bindData: Function;
   public datasource: Datasource;
   public settings: Settings;
+  public routines: Routines;
   public viewport: Viewport;
   public buffer: Buffer;
 
@@ -39,7 +41,8 @@ export class Workflow {
     this.datasource = checkDatasource(context.datasource);
 
     this.settings = new Settings(context.datasource.settings);
-    this.viewport = new Viewport(context.elementRef, this.settings);
+    this.routines = new Routines(this.settings);
+    this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
 
     this.fetch = new FetchModel();

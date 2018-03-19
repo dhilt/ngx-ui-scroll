@@ -1,5 +1,3 @@
-import { Direction } from '../interfaces/direction';
-import { Routines } from '../utils/domRoutines';
 import { Item } from './item';
 
 export class ItemCache {

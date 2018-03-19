@@ -28,7 +28,7 @@ export default class ProcessFetch {
     fetch.items = fetch.newItemsData.map((item, index) => {
       const $index = fetch.startIndex + index;
       const nodeId = workflow.settings.itemIdPrefix + String($index);
-      return new Item($index, item, nodeId, workflow.settings.horizontal);
+      return new Item($index, item, nodeId, workflow.routines);
     });
 
     if (direction === Direction.forward) {

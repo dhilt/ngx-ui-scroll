@@ -7,7 +7,7 @@ import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources';
 
-interface TestBedConfig {
+export interface TestBedConfig {
   datasourceClass?: any;
   datasourceName?: string;
   datasourceSettings?: Settings;

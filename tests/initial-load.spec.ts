@@ -53,12 +53,11 @@ const makeHorizontalConfig = (config => ({
 }));
 
 const shouldNotClip = (settings) => (misc) => (done) => {
-  const horizontal = settings.datasourceSettings.horizontal;
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
-  const viewportSize = settings.templateSettings[horizontal ? 'viewportWidth' : 'viewportHeight'];
-  const itemSize = horizontal ? misc.itemWidth : misc.itemHeight;
+  const viewportSize = misc.getViewportSize(settings);
+  const itemSize = misc.getItemSize();
 
   const backwardLimit = viewportSize * padding;
   const forwardLimit = viewportSize + backwardLimit;
@@ -72,8 +71,8 @@ const shouldNotClip = (settings) => (misc) => (done) => {
   expect(misc.workflow.fetch.count).toEqual(fetchCount);
   expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
-  expect(misc.padding[Direction.backward].getSize(horizontal)).toEqual(0);
-  expect(misc.padding[Direction.forward].getSize(horizontal)).toEqual(0);
+  expect(misc.padding[Direction.backward].getSize()).toEqual(0);
+  expect(misc.padding[Direction.forward].getSize()).toEqual(0);
   expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
   expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
   expect(misc.getElement(first - 1)).toBeFalsy();
@@ -83,12 +82,11 @@ const shouldNotClip = (settings) => (misc) => (done) => {
 };
 
 const shouldClip = (settings) => (misc) => (done) => {
-  const horizontal = settings.datasourceSettings.horizontal;
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
-  const viewportSize = settings.templateSettings[horizontal ? 'viewportWidth' : 'viewportHeight'];
-  const itemSize = horizontal ? misc.itemWidth : misc.itemHeight;
+  const viewportSize = misc.getViewportSize(settings);
+  const itemSize = misc.getItemSize();
 
   const backwardLimit = viewportSize * padding;
   const forwardLimit = viewportSize + backwardLimit;
@@ -113,8 +111,8 @@ const shouldClip = (settings) => (misc) => (done) => {
   expect(misc.workflow.fetch.count).toEqual(fetchCount);
   expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
-  expect(misc.padding[Direction.backward].getSize(horizontal)).toEqual(backwardClipLimit);
-  expect(misc.padding[Direction.forward].getSize(horizontal)).toEqual(forwardClipLimit);
+  expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);
+  expect(misc.padding[Direction.forward].getSize()).toEqual(forwardClipLimit);
   expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
   expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
   expect(misc.getElement(first - 1)).toBeFalsy();

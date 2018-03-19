@@ -3,6 +3,8 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
+import { TestBedConfig } from '../scaffolding/runner';
+
 import { Direction, Datasource } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { Workflow } from '../../src/component/workflow';
@@ -10,17 +12,19 @@ import { WorkflowRunner } from '../../src/component/runner';
 
 export class Padding {
   direction: Direction;
+  horizontal: boolean;
   element: DebugElement;
   style: CSSStyleDeclaration;
 
-  constructor(fixture: ComponentFixture <any>, direction: Direction) {
+  constructor(fixture: ComponentFixture <any>, direction: Direction, horizontal: boolean) {
     this.direction = direction;
+    this.horizontal = horizontal;
     this.element = fixture.debugElement.query(By.css(`[data-padding-${direction}]`));
     this.style = this.element.nativeElement.style;
   }
 
-  getSize(horizontal?: boolean): number {
-    return parseInt(this.style[horizontal ? 'width' : 'height'], 10) || 0;
+  getSize(): number {
+    return parseInt(this.style[this.horizontal ? 'width' : 'height'], 10) || 0;
   }
 }
 
@@ -35,6 +39,8 @@ export class Misc {
   workflowRunner: WorkflowRunner;
   workflow: Workflow;
   padding = {};
+  horizontal: boolean;
+
   itemHeight = 20;
   itemWidth = 90;
 
@@ -47,8 +53,17 @@ export class Misc {
     this.viewportElement = this.uiScrollElement.parent;
     this.workflowRunner = this.uiScrollComponent.workflowRunner;
     this.workflow = this.uiScrollComponent.workflowRunner.workflow;
-    this.padding[Direction.forward] = new Padding(fixture, Direction.forward);
-    this.padding[Direction.backward] = new Padding(fixture, Direction.backward);
+    this.horizontal = this.workflow.settings.horizontal;
+    this.padding[Direction.forward] = new Padding(fixture, Direction.forward, this.horizontal);
+    this.padding[Direction.backward] = new Padding(fixture, Direction.backward, this.horizontal);
+  }
+
+  getViewportSize(settings: TestBedConfig) {
+    return settings.templateSettings[this.horizontal ? 'viewportWidth' : 'viewportHeight'];
+  }
+
+  getItemSize(): number {
+    return this.horizontal ? this.itemWidth : this.itemHeight;
   }
 
   getElements() {
@@ -74,15 +89,15 @@ export class Misc {
   }
 
   getScrollableSize(): number {
-    return this.viewportElement.nativeElement.scrollHeight;
+    return this.viewportElement.nativeElement[this.horizontal ? 'scrollWidth' : 'scrollHeight'];
   }
 
   getScrollPosition(): number {
-    return this.viewportElement.nativeElement.scrollTop;
+    return this.viewportElement.nativeElement[this.horizontal ? 'scrollLeft' : 'scrollTop'];
   }
 
   scrollTo(value: number) {
-    this.viewportElement.nativeElement.scrollTop = value;
+    this.viewportElement.nativeElement[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
   scrollMin() {

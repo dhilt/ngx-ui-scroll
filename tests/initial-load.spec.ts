@@ -10,6 +10,9 @@ const configList = [{
 }, {
   datasourceSettings: { startIndex: -99, bufferSize: 5, padding: 0.5 },
   templateSettings: { viewportHeight: 200 }
+}, {
+  datasourceSettings: { startIndex: -77, bufferSize: 4, padding: 0.62, horizontal: true },
+  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
 }];
 
 const clipAlways = { clipAfterFetchOnly: false, clipAfterScrollOnly: false };
@@ -26,9 +29,12 @@ const configListWithClip = [{
 }, {
   datasourceSettings: { startIndex: -50, bufferSize: 10, padding: 0.3, ...clipAlways },
   templateSettings: { viewportHeight: 400 }
+}, {
+  datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, horizontal: true, ...clipAlways },
+  templateSettings: { viewportWidth: 509, itemWidth: 90, horizontal: true }
 }];
 
-const configListInfinite = [configListWithClip[1], configListWithClip[3]]
+const configListInfinite = [configListWithClip[1], configListWithClip[3], configListWithClip[4]]
   .map(config => ({
     ...config,
     datasourceSettings: {
@@ -36,21 +42,6 @@ const configListInfinite = [configListWithClip[1], configListWithClip[3]]
       infinite: true
     }
   }));
-
-const makeHorizontalConfig = (config => ({
-  ...config,
-  datasourceSettings: {
-    ...config.datasourceSettings,
-    horizontal: true
-  },
-  templateSettings: {
-    ...config.templateSettings,
-    viewportWidth: config.templateSettings.viewportHeight + 200,
-    viewportHeight: 40,
-    itemWidth: 90,
-    horizontal: true
-  }
-}));
 
 const shouldNotClip = (settings) => (misc) => (done) => {
   const startIndex = settings.datasourceSettings.startIndex;
@@ -93,12 +84,10 @@ const shouldClip = (settings) => (misc) => (done) => {
 
   const backwardCount = Math.ceil(backwardLimit / itemSize);
   const forwardCount = Math.ceil(forwardLimit / itemSize);
-  const realItemsCount = backwardCount + forwardCount;
 
   const backwardFetchCount = Math.ceil((backwardLimit / itemSize) / bufferSize);
   const forwardFetchCount = Math.ceil((forwardLimit / itemSize) / bufferSize);
   const fetchCount = backwardFetchCount + forwardFetchCount;
-  const fetchedItemsCount = fetchCount * bufferSize;
 
   const first = startIndex - backwardCount;
   const last = startIndex - 1 + forwardCount;
@@ -107,7 +96,6 @@ const shouldClip = (settings) => (misc) => (done) => {
   const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemSize;
 
   expect(misc.workflowRunner.count).toEqual(1);
-  expect(realItemsCount).not.toEqual(fetchedItemsCount);
   expect(misc.workflow.fetch.count).toEqual(fetchCount);
   expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
@@ -145,36 +133,6 @@ describe('Initial Load Spec', () => {
 
   describe('No Clip (infinite)', () => {
     configListInfinite.forEach(config =>
-      makeTest({
-        config,
-        title: 'should fetch some items with no clip',
-        it: shouldNotClip(config)
-      })
-    );
-  });
-
-  describe('No Clip (horizontal)', () => {
-    configList.map(makeHorizontalConfig).forEach(config =>
-      makeTest({
-        config,
-        title: 'should fetch some items with no clip',
-        it: shouldNotClip(config)
-      })
-    );
-  });
-
-  describe('Clip (horizontal)', () => {
-    configListWithClip.map(makeHorizontalConfig).forEach(config =>
-      makeTest({
-        config,
-        title: 'should fetch some items with clip',
-        it: shouldClip(config)
-      })
-    );
-  });
-
-  describe('No Clip (infinite + horizontal)', () => {
-    configListInfinite.map(makeHorizontalConfig).forEach(config =>
       makeTest({
         config,
         title: 'should fetch some items with no clip',

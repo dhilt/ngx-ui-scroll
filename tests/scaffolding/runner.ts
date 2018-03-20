@@ -23,21 +23,27 @@ interface MakeTestConfig {
   async?: boolean;
 }
 
-const generateMetaTitle = (config): string => {
+const generateMetaTitle = (config: TestBedConfig): string => {
   const result = [];
   if (config.templateSettings && config.templateSettings.viewportHeight) {
-    result.push(`viewport height = ${config.templateSettings.viewportHeight}`);
+    result.push(`vp height = ${config.templateSettings.viewportHeight}`);
+  }
+  if (config.templateSettings && config.templateSettings.viewportWidth) {
+    result.push(`vp width = ${config.templateSettings.viewportWidth}`);
   }
   if (config.datasourceSettings) {
-    const { startIndex, bufferSize, padding } = config.datasourceSettings;
+    const { startIndex, bufferSize, padding, horizontal } = config.datasourceSettings;
     if (startIndex) {
-      result.push(`start index = ${startIndex}`);
+      result.push(`start = ${startIndex}`);
     }
     if (bufferSize) {
-      result.push(`buffer size = ${bufferSize}`);
+      result.push(`buffer = ${bufferSize}`);
     }
     if (padding) {
       result.push(`padding = ${padding}`);
+    }
+    if (horizontal) {
+      result.push(`HORIZONTAL`);
     }
   }
   if (config.custom) {

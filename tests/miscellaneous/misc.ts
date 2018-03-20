@@ -89,7 +89,9 @@ export class Misc {
   }
 
   getScrollableSize(): number {
-    return this.viewportElement.nativeElement[this.horizontal ? 'scrollWidth' : 'scrollHeight'];
+    // return this.viewportElement.nativeElement[this.horizontal ? 'scrollWidth' : 'scrollHeight'];
+    const params = this.uiScrollElement.nativeElement.getBoundingClientRect();
+    return params[this.horizontal ? 'width' : 'height'];
   }
 
   getScrollPosition(): number {

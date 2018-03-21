@@ -23,7 +23,7 @@ export const generateTemplate = (templateSettings?: TemplateSettings) => {
   style="${settings.viewportHeight ? 'height:' + settings.viewportHeight + 'px;' : ''} ${settings.viewportWidth ? 'width:' + settings.viewportWidth + 'px;' : ''}"
 ><div
   *uiScroll="let item of datasource"
-  style="${settings.itemHeight ? 'height:' + settings.itemHeight + 'px;' : ''} ${settings.itemWidth ? 'width:' + settings.itemWidth + 'px;' : ''}"
+  style="${settings.itemHeight ? 'height:' + settings.itemHeight + 'px; overflow-y: hidden;' : ''} ${settings.itemWidth ? 'width:' + settings.itemWidth + 'px; overflow-x: hidden;' : ''}"
 ><span>{{item.id}}</span> : <b>{{item.text}}</b></div></div>`
   };
 };

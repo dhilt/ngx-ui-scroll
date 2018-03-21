@@ -122,6 +122,7 @@ export class WorkflowRunner {
   }
 
   finalize() { // stop queue
+    this.workflow.log(`~~~~~~ WF Cycle ${this.count} DONE ~~~~~~`);
   }
 
 }

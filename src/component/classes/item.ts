@@ -1,32 +1,34 @@
 import { Direction } from '../interfaces/direction';
-import { Routines } from '../utils/domRoutines';
+import { Routines } from './domRoutines';
 
 export class Item {
   $index: number;
-  nodeId: string;
   data: any;
-  element: any;
+  nodeId: string;
+  routines: Routines;
 
+  element: any;
   invisible: boolean;
   toRemove: boolean;
 
-  constructor($index, data, nodeId) {
+  constructor($index, data, nodeId, routines) {
     this.$index = $index;
     this.data = data;
     this.nodeId = nodeId;
+    this.routines = routines;
     this.invisible = true;
   }
 
   getParams() {
-    return Routines.getParams(this.element);
+    return this.routines.getParams(this.element);
   }
 
-  getEdge(direction: Direction, opposite?: boolean): number {
-    return Routines.getEdge(this.element, direction, opposite);
+  getEdge(direction: Direction): number {
+    return this.routines.getEdge(this.element, direction, false);
   }
 
   hide() {
-    Routines.hideElement(this.element);
+    this.routines.hideElement(this.element);
   }
 
 }

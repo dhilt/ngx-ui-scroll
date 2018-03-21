@@ -13,6 +13,14 @@ const singleForwardMaxScrollConfigList = [{
   datasourceSettings: { startIndex: -15, bufferSize: 12, padding: 0.98 },
   templateSettings: { viewportHeight: 66 },
   custom: { direction: Direction.forward, count: 1 }
+}, {
+  datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 1, horizontal: true },
+  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true },
+  custom: { direction: Direction.forward, count: 1 }
+}, {
+  datasourceSettings: { startIndex: -74, bufferSize: 4, padding: 0.72, horizontal: true },
+  templateSettings: { viewportWidth: 300, itemWidth: 90, horizontal: true },
+  custom: { direction: Direction.forward, count: 1 }
 }];
 
 const singleBackwardMaxScrollConfigList =
@@ -99,29 +107,29 @@ const calculateIt = (config, misc) => {
   // settings
   const bufferSize = config.datasourceSettings.bufferSize;
   const padding = config.datasourceSettings.padding;
-  const viewportSize = config.templateSettings.viewportHeight;
+  const viewportSize = misc.getViewportSize(config);
   const direction = config.custom.direction;
+  const itemSize = misc.getItemSize();
 
   // current state calculations
   const delta = viewportSize * padding;
-  const itemHeight = misc.itemHeight;
   const forward = direction === Direction.forward;
   const elements = misc.getElements();
   const _edgeElement = forward ? elements[elements.length - 1] : elements[0];
   const _edgeItemIndex = misc.getElementIndex(_edgeElement);
-  const _edgePosition = misc.padding[Direction.backward].getSize() + (forward ? elements.length * itemHeight : 0);
+  const _edgePosition = misc.padding[Direction.backward].getSize() + (forward ? elements.length * itemSize : 0);
 
   // future state calculations (direct)
   const newScrollPosition = forward ? misc.getScrollableSize() : 0;
   const _edgeSize = Math.abs(newScrollPosition - _edgePosition);
-  const _itemsToFill = Math.ceil(_edgeSize / itemHeight);
+  const _itemsToFill = Math.ceil(_edgeSize / itemSize);
   const _itemsFetches = Math.ceil(_itemsToFill / bufferSize);
   const _itemsToFetch = _itemsFetches * bufferSize;
 
   let _itemsToAdd = 0;
-  const addSize = delta - Math.abs(_itemsToFetch * itemHeight - _edgeSize);
+  const addSize = delta - Math.abs(_itemsToFetch * itemSize - _edgeSize);
   if (addSize > 0) {
-    const itemsToFillAddSize = Math.ceil(addSize / itemHeight);
+    const itemsToFillAddSize = Math.ceil(addSize / itemSize);
     const fetchesToFillAddSize = Math.ceil(itemsToFillAddSize / bufferSize);
     _itemsToAdd = fetchesToFillAddSize * bufferSize;
   }
@@ -131,18 +139,18 @@ const calculateIt = (config, misc) => {
   const paddingSize = 0;
 
   // future state calculations (opposite)
-  const newEdgePosition = _edgePosition + itemsToAdd * itemHeight;
+  const newEdgePosition = _edgePosition + itemsToAdd * itemSize;
   const sizeToFill = (Math.abs(newScrollPosition - newEdgePosition) + viewportSize + delta);
-  const itemsToFill = Math.ceil(sizeToFill / itemHeight);
+  const itemsToFill = Math.ceil(sizeToFill / itemSize);
   const fetchCount = Math.ceil(itemsToFill / bufferSize);
   const itemsToFetch = fetchCount * bufferSize;
-  const fetchedItemsSize = itemsToFetch * itemHeight;
+  const fetchedItemsSize = itemsToFetch * itemSize;
   const outlet = Math.abs(fetchedItemsSize - sizeToFill);
-  const itemsToClip = Math.floor(outlet / itemHeight);
+  const itemsToClip = Math.floor(outlet / itemSize);
   const edgeItemIndexOpposite =
     edgeItemIndex + (forward ? -1 : 1) * itemsToFetch + (forward ? 1 : -1) * (itemsToClip + 1);
 
-  const allItemsSize = (Math.abs(edgeItemIndex - edgeItemIndexOpposite) + 1) * itemHeight;
+  const allItemsSize = (Math.abs(edgeItemIndex - edgeItemIndexOpposite) + 1) * itemSize;
   const itemsSizeOutOfNewScrollPosition = allItemsSize - Math.abs(newScrollPosition - newEdgePosition);
   const paddingSizeOpposite = Math.abs(misc.getScrollableSize() - itemsSizeOutOfNewScrollPosition);
 

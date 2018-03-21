@@ -7,3 +7,57 @@ html {
   line-height: 20px;
   margin: 0 10px;
 }
+
+h1, h3 {
+  margin: 15px 0;
+}
+
+p {
+  margin: 10px 0;
+}
+
+.viewport {
+  width: 175px;
+  height: 100px;
+  overflow-anchor: none;
+  overflow-y: auto;
+}
+
+.viewport-horizontal {
+  width: 175px;
+  height: 100px;
+  overflow-anchor: none;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.viewport-horizontal div {
+  display: inline-block;
+}
+
+.item-horizontal {
+  border: 1px solid #aaa;
+  height: 100px;
+  padding: 0 5px;
+  font-weight: bolder;
+}
+
+.log {
+  height: 100px;
+  width: 175px;
+  overflow-y: hidden;
+  font-size: smaller;
+  line-height: 14px;
+  float: left;
+}
+
+.elements {
+  padding-left: 20px;
+  width: 85px;
+}
+
+.datasource {
+  padding-left: 10px;
+  width: 175px;
+}

@@ -139,6 +139,25 @@ export class AppComponent {
     }
   };
 
+  // horizontal setting demo
+
+  countHorizontal: number = 0;
+  logHorizontal: string = '';
+
+  datasourceHorizontal: Datasource = {
+    get: (index, count, success) => {
+      this.logHorizontal = `${++this.countHorizontal}) get 5 items [${index}, ${index + count - 1}]\n` + this.logHorizontal;
+      const data = [];
+      for (let i = index; i <= index + count - 1; i++) {
+        data.push({ id: i, text: 'item #' + i });
+      }
+      success(data);
+    },
+    settings: {
+      horizontal: true
+    }
+  };
+
   constructor() {
   }
 

@@ -4,7 +4,8 @@ export const defaultSettings: SettingsInterface = {
   startIndex: 1,
   bufferSize: 5,
   padding: 0.5,
-  infinite: false
+  infinite: false,
+  horizontal: false
 };
 
 export class Settings implements SettingsInterface {
@@ -14,6 +15,7 @@ export class Settings implements SettingsInterface {
   bufferSize;
   padding;
   infinite;
+  horizontal;
 
   // internal settings
   debug = false; // logging; need to turn off in release

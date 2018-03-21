@@ -1,5 +1,3 @@
-import { Direction } from '../interfaces/direction';
-import { Routines } from '../utils/domRoutines';
 import { Item } from './item';
 
 export class ItemCache {
@@ -14,10 +12,6 @@ export class ItemCache {
     this.nodeId = item.nodeId;
     this.data = item.data;
     this.params = item.getParams();
-  }
-
-  getEdge(direction: Direction, opposite?: boolean): number {
-    return Routines.getRectEdge(this.params, direction, opposite);
   }
 }
 

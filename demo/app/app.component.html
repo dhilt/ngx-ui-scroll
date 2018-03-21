@@ -4,15 +4,25 @@
   For all the cases considering below the following template is being used:
 </p>
 
-<pre>
+<pre ngNonBindable>
+&lt;div class="viewport"&gt;
   &lt;div *uiScroll="let item of datasource"&gt;
-    &lt;b&gt;<span ngNonBindable>{{item.text}}</span>&lt;/b&gt;
+    &lt;b&gt;{{item.text}}&lt;/b&gt;
   &lt;/div&gt;
+&lt;/div&gt;
 </pre>
 
 <p>
-  The height of the visible part of the viewport is 100px, the height of the item is 20px.
+  Where the height of the item is 20px and the viewport has following styles:
 </p>
+
+<pre>
+.viewport &#123;
+  width: 175px;
+  height: 100px;
+  overflow-y: auto;
+&#125;
+</pre>
 
 <div class="demo">
   <h3>Unlimited bidirectional scrolling</h3>
@@ -158,7 +168,7 @@ datasource: Datasource = &#123;
     <li>1) 100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
     <li>2) 240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )
     </li>
-    <li>3) ceil(12 / 5) = 3 (datasource.get calls to request 12 items, when bufferSize = 5)</li>
+    <li>3) ceil(12 / 5) = 3 (datasource.get calls that are needed to request 12 items, when bufferSize = 5)</li>
   </ul>
   <p>
     And 2 upward requests:
@@ -166,7 +176,7 @@ datasource: Datasource = &#123;
   <ul>
     <li>1) 1.4 * 100px = 140px (upward space which have to be filled)</li>
     <li>2) 140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
-    <li>3) ceil(7 / 5) = 2 (datasource.get calls to request 7 items)</li>
+    <li>3) ceil(7 / 5) = 2 (datasource.get calls that are needed to request 7 items)</li>
   </ul>
   <p>
     The default value of <em>padding</em> property is 0.5.
@@ -215,4 +225,76 @@ datasource: Datasource = &#123;
     Setting <em>infinite</em> to true, we ask the scroller not to remove items that are getting out of the
     viewport. That's why the DOM elements counter value is being increased per each edge-scroll event.
   </p>
+</div>
+
+<div class="demo">
+  <h3>horizontal setting</h3>
+
+  <div style="float: left">
+    <div class="viewport-horizontal" id="horizontal">
+      <div *uiScroll="let item of datasourceHorizontal">
+        <div class="item-horizontal">{{item.text}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="log elements">
+    DOM elements
+    <pre>
+{{elements('horizontal')}}
+    </pre>
+  </div>
+  <div class="log datasource">
+    Datasource.get log
+    <pre>
+{{logHorizontal}}
+    </pre>
+  </div>
+  <div style="clear: both;"></div>
+
+  <p>
+    Horizontal scrolling could be enabled via <em>horizontal</em> setting:
+  </p>
+
+  <pre ngNonBindable>
+datasource: Datasource = &#123;
+  get: /*...*/,
+  settings: &#123;
+    horizontal: true
+  &#125;
+&#125;
+  </pre>
+
+  <p>
+    To make this demo work the additional styles were applied to the template:
+  </p>
+
+  <pre>
+.viewport-horizontal &#123;
+  width: 175px;
+  height: 100px;
+  overflow-anchor: none;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+&#125;
+
+.viewport-horizontal div &#123;
+  display: inline-block;
+&#125;
+
+.item-horizontal &#123;
+  border: 1px solid #aaa;
+  height: 100px;
+  padding: 0 5px;
+  font-weight: bolder;
+&#125;
+  </pre>
+
+  <pre ngNonBindable>
+&lt;div class="viewport-horizontal"&gt;
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;div class="item-horizontal"&gt;{{item.text}}&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+  </pre>
 </div>

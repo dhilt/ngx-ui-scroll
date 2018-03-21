@@ -10,6 +10,9 @@ const configList = [{
 }, {
   datasourceSettings: { startIndex: -99, bufferSize: 5, padding: 0.5 },
   templateSettings: { viewportHeight: 200 }
+}, {
+  datasourceSettings: { startIndex: -77, bufferSize: 4, padding: 0.62, horizontal: true },
+  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
 }];
 
 const clipAlways = { clipAfterFetchOnly: false, clipAfterScrollOnly: false };
@@ -26,9 +29,12 @@ const configListWithClip = [{
 }, {
   datasourceSettings: { startIndex: -50, bufferSize: 10, padding: 0.3, ...clipAlways },
   templateSettings: { viewportHeight: 400 }
+}, {
+  datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, horizontal: true, ...clipAlways },
+  templateSettings: { viewportWidth: 509, itemWidth: 90, horizontal: true }
 }];
 
-const configListInfinite = [configListWithClip[1], configListWithClip[3]]
+const configListInfinite = [configListWithClip[1], configListWithClip[3], configListWithClip[4]]
   .map(config => ({
     ...config,
     datasourceSettings: {
@@ -41,12 +47,13 @@ const shouldNotClip = (settings) => (misc) => (done) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
-  const viewportHeight = settings.templateSettings.viewportHeight;
+  const viewportSize = misc.getViewportSize(settings);
+  const itemSize = misc.getItemSize();
 
-  const backwardLimit = viewportHeight * padding;
-  const forwardLimit = viewportHeight + backwardLimit;
-  const backwardFetchCount = Math.ceil((backwardLimit / misc.itemHeight) / bufferSize);
-  const forwardFetchCount = Math.ceil((forwardLimit / misc.itemHeight) / bufferSize);
+  const backwardLimit = viewportSize * padding;
+  const forwardLimit = viewportSize + backwardLimit;
+  const backwardFetchCount = Math.ceil((backwardLimit / itemSize) / bufferSize);
+  const forwardFetchCount = Math.ceil((forwardLimit / itemSize) / bufferSize);
   const fetchCount = backwardFetchCount + forwardFetchCount;
   const first = startIndex - backwardFetchCount * bufferSize;
   const last = startIndex + forwardFetchCount * bufferSize - 1;
@@ -69,28 +76,26 @@ const shouldClip = (settings) => (misc) => (done) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
-  const viewportHeight = settings.templateSettings.viewportHeight;
+  const viewportSize = misc.getViewportSize(settings);
+  const itemSize = misc.getItemSize();
 
-  const backwardLimit = viewportHeight * padding;
-  const forwardLimit = viewportHeight + backwardLimit;
+  const backwardLimit = viewportSize * padding;
+  const forwardLimit = viewportSize + backwardLimit;
 
-  const backwardCount = Math.ceil(backwardLimit / misc.itemHeight);
-  const forwardCount = Math.ceil(forwardLimit / misc.itemHeight);
-  const realItemsCount = backwardCount + forwardCount;
+  const backwardCount = Math.ceil(backwardLimit / itemSize);
+  const forwardCount = Math.ceil(forwardLimit / itemSize);
 
-  const backwardFetchCount = Math.ceil((backwardLimit / misc.itemHeight) / bufferSize);
-  const forwardFetchCount = Math.ceil((forwardLimit / misc.itemHeight) / bufferSize);
+  const backwardFetchCount = Math.ceil((backwardLimit / itemSize) / bufferSize);
+  const forwardFetchCount = Math.ceil((forwardLimit / itemSize) / bufferSize);
   const fetchCount = backwardFetchCount + forwardFetchCount;
-  const fetchedItemsCount = fetchCount * bufferSize;
 
   const first = startIndex - backwardCount;
   const last = startIndex - 1 + forwardCount;
 
-  const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * misc.itemHeight;
-  const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * misc.itemHeight;
+  const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * itemSize;
+  const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemSize;
 
   expect(misc.workflowRunner.count).toEqual(1);
-  expect(realItemsCount).not.toEqual(fetchedItemsCount);
   expect(misc.workflow.fetch.count).toEqual(fetchCount);
   expect(misc.workflow.count).toEqual(fetchCount + 2);
   expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);

@@ -1,22 +1,23 @@
 import { ElementRef } from '@angular/core';
 import { Padding } from './padding';
 import { Direction } from '../interfaces/direction';
-import { Routines } from '../utils/domRoutines';
+import { Routines } from './domRoutines';
 import { Settings } from './settings';
 
 export class ViewportPadding {
   forward: Padding;
   backward: Padding;
 
-  constructor(element) {
-    this.forward = new Padding(element, Direction.forward);
-    this.backward = new Padding(element, Direction.backward);
+  constructor(element, routines: Routines) {
+    this.forward = new Padding(element, Direction.forward, routines);
+    this.backward = new Padding(element, Direction.backward, routines);
   }
 }
 
 export class Viewport {
 
   private settings: Settings;
+  private routines: Routines;
   private host;
   scrollable;
   padding: ViewportPadding;
@@ -24,11 +25,12 @@ export class Viewport {
 
   private lastPosition: number;
 
-  constructor(elementRef: ElementRef, settings: Settings) {
+  constructor(elementRef: ElementRef, settings: Settings, routines: Routines) {
     this.settings = settings;
+    this.routines = routines;
     this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
-    this.padding = new ViewportPadding(this.host);
+    this.padding = new ViewportPadding(this.host, this.routines);
     this.syntheticScrollPosition = null;
   }
 
@@ -37,11 +39,11 @@ export class Viewport {
   }
 
   get scrollPosition(): number {
-    return Routines.getScrollPosition(this.scrollable);
+    return this.routines.getScrollPosition(this.scrollable);
   }
 
   set scrollPosition(value: number) {
-    Routines.setScrollPosition(this.scrollable, value);
+    this.routines.setScrollPosition(this.scrollable, value);
     this.syntheticScrollPosition = this.scrollPosition;
   }
 
@@ -54,11 +56,11 @@ export class Viewport {
   }
 
   getSize(): number {
-    return Routines.getSize(this.scrollable);
+    return this.routines.getSize(this.scrollable);
   }
 
   getScrollableSize(): number {
-    return Routines.getScrollableSize(this.scrollable);
+    return this.routines.getScrollableSize(this.scrollable);
   }
 
   getBufferPadding(): number {
@@ -66,7 +68,7 @@ export class Viewport {
   }
 
   getEdge(direction: Direction, opposite?: boolean): number {
-    return Routines.getEdge(this.scrollable, direction, opposite);
+    return this.routines.getEdge(this.scrollable, direction, opposite);
   }
 
   getLimit(direction: Direction, opposite?: boolean): number {

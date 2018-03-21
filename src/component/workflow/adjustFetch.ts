@@ -15,8 +15,8 @@ export default class AdjustFetch {
       return;
     }
     AdjustFetch.processFetchedItems(items);
-    const height = Math.abs(items[0].element.getBoundingClientRect().top -
-      items[items.length - 1].element.getBoundingClientRect().bottom);
+    const height = Math.abs(items[0].getEdge(Direction.backward) -
+      items[items.length - 1].getEdge(Direction.forward));
     if (direction === Direction.forward) {
       return this.adjustForward(workflow, height);
     } else {

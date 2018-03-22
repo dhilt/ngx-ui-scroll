@@ -23,7 +23,7 @@ const assignNumeric = (target, source, token, integer = false) => {
     console.warn(token + ' setting parse error, set it to ' + defaultSettings[token] + ' (default)');
     return;
   }
-  if (integer && parseInt(param, 10) !== param) {
+  if (integer && parseInt(param.toString(), 10) !== param) {
     console.warn(token + ' setting parse error, set it to ' + defaultSettings[token] + ' (default)');
     return;
   }
@@ -56,4 +56,8 @@ export const assignSettings = (targetObject, settings: Settings) => {
   assignMinimalNumeric(targetObject, settings, 'padding');
   assignBoolean(targetObject, settings, 'infinite');
   assignBoolean(targetObject, settings, 'horizontal');
+
+  // undocumented settings, for tests only
+  assignBoolean(targetObject, settings, 'clipAfterFetchOnly');
+  assignBoolean(targetObject, settings, 'clipAfterScrollOnly');
 };

@@ -8,7 +8,7 @@
   </div>
 </nav>
 
-<div class="container">
+<div class="container mb-5">
 
 <h1>Angular UI Scroll</h1>
 
@@ -16,25 +16,23 @@
   For all the cases considering below the following template is being used:
 </p>
 
-<pre ngNonBindable>
-&lt;div class="viewport"&gt;
-  &lt;div *uiScroll="let item of datasource"&gt;
-    &lt;b&gt;{{item.text}}&lt;/b&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-</pre>
+<div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #c4a000">class=</span><span style="color: #4e9a06">"viewport"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
+  <span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #a40000; ">*</span><span style="color: #c4a000">uiScroll=</span><span style="color: #4e9a06">"let item of datasource"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
+    <span style="color: #204a87; font-weight: bold">&lt;b&gt;</span>&#123;&#123;item.text&#125;&#125;<span style="color: #204a87; font-weight: bold">&lt;/b&gt;</span>
+  <span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
+<span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
+</pre></div>
 
 <p>
   Where the height of the item is 20px and the viewport has following styles:
 </p>
 
-<pre>
-.viewport &#123;
-  width: 175px;
-  height: 100px;
-  overflow-y: auto;
-&#125;
-</pre>
+  <div class="mb-3" style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">.viewport</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #204a87; font-weight: bold">width</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">175px</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">height</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">100px</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">overflow-y</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">auto</span><span style="color: #000000; font-weight: bold">;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
+</pre></div>
 
 <div class="demo">
   <h3 id="unlimited-bidirectional-scrolling">
@@ -67,17 +65,16 @@
     Here is the simplest callback-based <em>Datasource.get</em> method implementation:
   </p>
 
-  <pre ngNonBindable>
-datasource: Datasource = &#123;
-  get: (index, count, success) => &#123;
-    const data = [];
-    for (let i = index; i <= index + count - 1; i++) &#123;
-      data.push(&#123; id: i, text: 'item #' + i &#125;);
-    &#125;
-    success(data);
-  &#125;
-&#125;
-  </pre>
+  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">index</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">count</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">success</span><span style="color: #000000; font-weight: bold">)</span> <span style="color: #ce5c00; font-weight: bold">=&gt;</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+    <span style="color: #204a87; font-weight: bold">const</span> <span style="color: #000000">data</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">[];</span>
+    <span style="color: #204a87; font-weight: bold">for</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #204a87; font-weight: bold">let</span> <span style="color: #000000">i</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000">index</span><span style="color: #000000; font-weight: bold">;</span> <span style="color: #000000">i</span> <span style="color: #ce5c00; font-weight: bold">&lt;=</span> <span style="color: #000000">index</span> <span style="color: #ce5c00; font-weight: bold">+</span> <span style="color: #000000">count</span> <span style="color: #ce5c00; font-weight: bold">-</span> <span style="color: #0000cf; font-weight: bold">1</span><span style="color: #000000; font-weight: bold">;</span> <span style="color: #000000">i</span><span style="color: #ce5c00; font-weight: bold">++</span><span style="color: #000000; font-weight: bold">)</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+      <span style="color: #000000">data</span><span style="color: #000000; font-weight: bold">.</span><span style="color: #000000">push</span><span style="color: #000000; font-weight: bold">(&#123;</span> <span style="color: #000000">id</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">i</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">text</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #4e9a06">'item #'</span> <span style="color: #ce5c00; font-weight: bold">+</span> <span style="color: #000000">i</span> <span style="color: #000000; font-weight: bold">&#125;);</span>
+    <span style="color: #000000; font-weight: bold">&#125;</span>
+    <span style="color: #000000">success</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">data</span><span style="color: #000000; font-weight: bold">);</span>
+  <span style="color: #000000; font-weight: bold">&#125;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
+</pre></div>
 
   <p>
     <em>Datasource.get</em> log shows us that there are 3 requests of 5 items on the initial load (before scrolling).
@@ -118,14 +115,14 @@ datasource: Datasource = &#123;
     In addition to <em>get</em> method, <em>settings</em> object can be declared on the Datasource:
   </p>
 
-  <pre ngNonBindable>
-datasource: Datasource = &#123;
-  get: /*...*/,
-  settings: &#123;
-    bufferSize: 15
-  &#125;
-&#125;
-  </pre>
+  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
+  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+    <span style="color: #000000">bufferSize</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">5</span><span style="color: #000000; font-weight: bold">,</span>
+    <span style="color: #000000">padding</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">1.4</span>
+  <span style="color: #000000; font-weight: bold">&#125;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
+</pre></div>
 
   <p>
     Here we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
@@ -168,15 +165,14 @@ datasource: Datasource = &#123;
     <em>padding</em> property:
   </p>
 
-  <pre ngNonBindable>
-datasource: Datasource = &#123;
-  get: /*...*/,
-  settings: &#123;
-    bufferSize: 5,
-    padding: 1.4
-  &#125;
-&#125;
-  </pre>
+  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
+  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+    <span style="color: #000000">bufferSize</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">5</span><span style="color: #000000; font-weight: bold">,</span>
+    <span style="color: #000000">padding</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">1.4</span>
+  <span style="color: #000000; font-weight: bold">&#125;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
+</pre></div>
 
   <p>
     <em>Padding</em> is an extra space added to the visible part of the viewport for the purpose of determining when the
@@ -236,14 +232,13 @@ datasource: Datasource = &#123;
     turned on via <em>infinite</em> property of the <em>settings</em> object:
   </p>
 
-  <pre ngNonBindable>
-datasource: Datasource = &#123;
-  get: /*...*/,
-  settings: &#123;
-    infinite: true
-  &#125;
-&#125;
-  </pre>
+  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
+  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+    <span style="color: #000000">infinite</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">true</span>
+  <span style="color: #000000; font-weight: bold">&#125;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
+</pre></div>
 
   <p>
     Setting <em>infinite</em> to true, we ask the scroller not to remove items that are getting out of the
@@ -282,47 +277,55 @@ datasource: Datasource = &#123;
     Horizontal scrolling could be enabled via <em>horizontal</em> setting:
   </p>
 
-  <pre ngNonBindable>
-datasource: Datasource = &#123;
-  get: /*...*/,
-  settings: &#123;
-    horizontal: true
-  &#125;
-&#125;
-  </pre>
+  <div>
+    <tabset>
+      <tab heading="JS">
 
-  <p>
-    To make this demo work the additional styles were applied to the template:
-  </p>
+<div ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
+  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+    <span style="color: #000000">horizontal</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">true</span>
+  <span style="color: #000000; font-weight: bold">&#125;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
+</pre></div>
 
-  <pre>
-.viewport-horizontal &#123;
-  width: 175px;
-  height: 100px;
-  overflow-anchor: none;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  white-space: nowrap;
-&#125;
+      </tab>
+      <tab heading="CSS">
 
-.viewport-horizontal div &#123;
-  display: inline-block;
-&#125;
+        <div ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">.viewport-horizontal</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #204a87; font-weight: bold">width</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">175px</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">height</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">100px</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">overflow</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #000000">anchor</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">none</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">overflow-x</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">scroll</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">overflow-y</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">hidden</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">white-space</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">nowrap</span><span style="color: #000000; font-weight: bold">;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
 
-.item-horizontal &#123;
-  border: 1px solid #aaa;
-  height: 100px;
-  padding: 0 5px;
-  font-weight: bolder;
-&#125;
-  </pre>
+<span style="color: #000000">.viewport-horizontal</span> <span style="color: #204a87; font-weight: bold">div</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #204a87; font-weight: bold">display</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">inline</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #204a87; font-weight: bold">block</span><span style="color: #000000; font-weight: bold">;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
 
-  <pre ngNonBindable>
-&lt;div class="viewport-horizontal"&gt;
-  &lt;div *uiScroll="let item of datasource"&gt;
-    &lt;div class="item-horizontal"&gt;{{item.text}}&lt;/div&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-  </pre>
+<span style="color: #000000">.item-horizontal</span> <span style="color: #000000; font-weight: bold">&#123;</span>
+  <span style="color: #204a87; font-weight: bold">border</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">1px</span> <span style="color: #204a87; font-weight: bold">solid</span> <span style="color: #0000cf; font-weight: bold">#aaa</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">height</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">100px</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">padding</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">0</span> <span style="color: #0000cf; font-weight: bold">5px</span><span style="color: #000000; font-weight: bold">;</span>
+  <span style="color: #204a87; font-weight: bold">font-weight</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">bolder</span><span style="color: #000000; font-weight: bold">;</span>
+<span style="color: #000000; font-weight: bold">&#125;</span>
+</pre></div>
+
+      </tab>
+      <tab heading="HTML">
+
+<div ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #c4a000">class=</span><span style="color: #4e9a06">"viewport-horizontal"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
+  <span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #a40000; ">*</span><span style="color: #c4a000">uiScroll=</span><span style="color: #4e9a06">"let item of datasource"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
+    <span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #c4a000">class=</span><span style="color: #4e9a06">"item-horizontal"</span><span style="color: #204a87; font-weight: bold">&gt;</span>&#123;&#123;item.text&#125;&#125;<span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
+  <span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
+<span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
+</pre></div>
+
+      </tab>
+    </tabset>
+  </div>
+
 </div>
 </div>

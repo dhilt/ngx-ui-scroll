@@ -61,7 +61,7 @@
 {{logBasic}}
   </pre>
   </div>
-  <div style="clear: both;"></div>
+  <div class="clearfix mb-3"></div>
 
   <p>
     Here is the simplest callback-based <em>Datasource.get</em> method implementation:
@@ -112,7 +112,7 @@ datasource: Datasource = &#123;
 {{logBuffer}}
     </pre>
   </div>
-  <div style="clear: both;"></div>
+  <div class="clearfix mb-3"></div>
 
   <p>
     In addition to <em>get</em> method, <em>settings</em> object can be declared on the Datasource:
@@ -161,7 +161,7 @@ datasource: Datasource = &#123;
 {{logPadding}}
     </pre>
   </div>
-  <div style="clear: both;"></div>
+  <div class="clearfix mb-3"></div>
 
   <p>
     Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
@@ -185,20 +185,20 @@ datasource: Datasource = &#123;
     part of the viewport) is filled with rendered items. That's why we have 5 requests on the initial load in this case.
     There are 3 downward requests:
   </p>
-  <ul>
-    <li>1) 100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
-    <li>2) 240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )
+  <ol>
+    <li>100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
+    <li>240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )
     </li>
-    <li>3) ceil(12 / 5) = 3 (datasource.get calls that are needed to request 12 items, when bufferSize = 5)</li>
-  </ul>
+    <li>ceil(12 / 5) = 3 (datasource.get calls that are needed to request 12 items, when bufferSize = 5)</li>
+  </ol>
   <p>
     And 2 upward requests:
   </p>
-  <ul>
-    <li>1) 1.4 * 100px = 140px (upward space which have to be filled)</li>
-    <li>2) 140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
-    <li>3) ceil(7 / 5) = 2 (datasource.get calls that are needed to request 7 items)</li>
-  </ul>
+  <ol>
+    <li>1.4 * 100px = 140px (upward space which have to be filled)</li>
+    <li>140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
+    <li>ceil(7 / 5) = 2 (datasource.get calls that are needed to request 7 items)</li>
+  </ol>
   <p>
     The default value of <em>padding</em> property is 0.5.
   </p>
@@ -229,7 +229,7 @@ datasource: Datasource = &#123;
 {{logInfinite}}
     </pre>
   </div>
-  <div style="clear: both;"></div>
+  <div class="clearfix mb-3"></div>
 
   <p>
     The <em>*uiScroll</em> directive might work in the "infinite" mode, when items are never removed. This mode can be
@@ -276,7 +276,7 @@ datasource: Datasource = &#123;
 {{logHorizontal}}
     </pre>
   </div>
-  <div style="clear: both;"></div>
+  <div class="clearfix mb-3"></div>
 
   <p>
     Horizontal scrolling could be enabled via <em>horizontal</em> setting:

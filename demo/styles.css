@@ -2,6 +2,10 @@ html {
   line-height: 20px;
 }
 
+h1 {
+  margin: 3rem 0;
+}
+
 h3 {
   cursor: pointer;
   border-bottom: 1px solid #efefef;

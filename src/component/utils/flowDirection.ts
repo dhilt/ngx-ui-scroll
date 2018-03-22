@@ -1,8 +1,7 @@
 import { Direction } from '../interfaces/direction';
 import { Viewport } from '../classes/viewport';
-import { Buffer } from '../classes/buffer';
 
-export const calculateFlowDirection = (viewport: Viewport, buffer: Buffer): Direction => {
+export const calculateFlowDirection = (viewport: Viewport): Direction => {
   const scrollPosition = viewport.scrollPosition;
   const viewportSize = viewport.scrollable.scrollHeight;
   const backwardPadding = viewport.padding[Direction.backward].size;

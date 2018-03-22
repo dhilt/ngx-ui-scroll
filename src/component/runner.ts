@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 
 import { Workflow } from './workflow';
-import { throttle, debouncedRound, calculateFlowDirection } from './utils/index';
+import { throttle } from './utils/index';
 import { Direction, Run } from './interfaces/index';
 
 import ShouldFetch from './workflow/shouldFetch';

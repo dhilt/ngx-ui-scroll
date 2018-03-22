@@ -1,4 +1,5 @@
 import { Settings as SettingsInterface } from '../interfaces/settings';
+import { assignSettings } from '../utils/index';
 
 export const defaultSettings: SettingsInterface = {
   startIndex: 1,
@@ -6,6 +7,11 @@ export const defaultSettings: SettingsInterface = {
   padding: 0.5,
   infinite: false,
   horizontal: false
+};
+
+export const minSettings: SettingsInterface = {
+  bufferSize: 1,
+  padding: 0.1
 };
 
 export class Settings implements SettingsInterface {
@@ -25,9 +31,6 @@ export class Settings implements SettingsInterface {
 
   constructor(settings?: SettingsInterface) {
     Object.assign(this, defaultSettings);
-    if (settings && typeof settings === 'object') {
-      // todo : validation needed
-      Object.assign(this, settings);
-    }
+    assignSettings(this, settings);
   }
 }

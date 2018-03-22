@@ -2,6 +2,13 @@ html {
   line-height: 20px;
 }
 
+h3 {
+  cursor: pointer;
+  border-bottom: 1px solid #efefef;
+  padding-top: 4rem;
+  margin-bottom: 2rem;
+}
+
 .viewport {
   width: 175px;
   height: 100px;

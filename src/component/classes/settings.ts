@@ -1,5 +1,5 @@
 import { Settings as SettingsInterface } from '../interfaces/settings';
-import { assignSettings } from '../utils/index';
+import { assignSettings } from '../utils/assignSettings';
 
 export const defaultSettings: SettingsInterface = {
   startIndex: 1,
@@ -30,7 +30,6 @@ export class Settings implements SettingsInterface {
   clipAfterScrollOnly = true;
 
   constructor(settings?: SettingsInterface) {
-    Object.assign(this, defaultSettings);
-    assignSettings(this, settings);
+    assignSettings(this, settings, defaultSettings, minSettings);
   }
 }

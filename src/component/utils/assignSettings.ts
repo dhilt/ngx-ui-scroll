@@ -1,7 +1,6 @@
 import { Settings } from '../interfaces/settings';
-import { defaultSettings, minSettings } from '../classes/settings';
 
-const assignBoolean = (target, source, token) => {
+const assignBoolean = (target, source, token, defaultSettings) => {
   let param = source[token];
   if (typeof param === 'undefined') {
     return;
@@ -14,7 +13,7 @@ const assignBoolean = (target, source, token) => {
   return true;
 };
 
-const assignNumeric = (target, source, token, integer = false) => {
+const assignNumeric = (target, source, token, defaultSettings, integer = false) => {
   let param = source[token];
   if (typeof param === 'undefined') {
     return;
@@ -31,7 +30,7 @@ const assignNumeric = (target, source, token, integer = false) => {
   return true;
 };
 
-const assignMinimalNumeric = (target, source, token, integer = false) => {
+const assignMinimalNumeric = (target, source, token, defaultSettings, minSettings, integer = false) => {
   if (assignNumeric(target, source, token, integer) !== true) {
     return;
   }
@@ -43,7 +42,9 @@ const assignMinimalNumeric = (target, source, token, integer = false) => {
   return true;
 };
 
-export const assignSettings = (targetObject, settings: Settings) => {
+export const assignSettings = (targetObject, settings: Settings, defaultSettings, minSettings) => {
+  Object.assign(this, defaultSettings);
+
   if (typeof settings === 'undefined') {
     return;
   }
@@ -51,13 +52,14 @@ export const assignSettings = (targetObject, settings: Settings) => {
     console.warn('settings is not an object, fallback to the defaults');
     return;
   }
-  assignNumeric(targetObject, settings, 'startIndex');
-  assignMinimalNumeric(targetObject, settings, 'bufferSize', true);
-  assignMinimalNumeric(targetObject, settings, 'padding');
-  assignBoolean(targetObject, settings, 'infinite');
-  assignBoolean(targetObject, settings, 'horizontal');
+
+  assignNumeric(targetObject, settings, 'startIndex', defaultSettings);
+  assignMinimalNumeric(targetObject, settings, 'bufferSize', defaultSettings, minSettings, true);
+  assignMinimalNumeric(targetObject, settings, 'padding', defaultSettings, minSettings);
+  assignBoolean(targetObject, settings, 'infinite', defaultSettings);
+  assignBoolean(targetObject, settings, 'horizontal', defaultSettings);
 
   // undocumented settings, for tests only
-  assignBoolean(targetObject, settings, 'clipAfterFetchOnly');
-  assignBoolean(targetObject, settings, 'clipAfterScrollOnly');
+  assignBoolean(targetObject, settings, 'clipAfterFetchOnly', defaultSettings);
+  assignBoolean(targetObject, settings, 'clipAfterScrollOnly', defaultSettings);
 };

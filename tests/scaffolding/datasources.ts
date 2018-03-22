@@ -13,7 +13,7 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings) => 
     get: Function;
 
     constructor() {
-      this.settings = { ...datasourceStore[_name].settings, ...(_settings || {}) };
+      this.settings = datasourceStore[_name].settings || _settings || {};
       this.get = datasourceStore[_name].get.bind(this);
     }
   };

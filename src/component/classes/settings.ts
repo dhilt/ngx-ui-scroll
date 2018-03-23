@@ -25,7 +25,7 @@ export class Settings implements SettingsInterface {
 
   // internal settings
   debug = false; // logging; need to turn off in release
-  itemIdPrefix = 'ui-scroll-0-'; // todo : scroll instance index ?
+  itemIdPrefix = ''; // todo : scroll instance index ?
   clipAfterFetchOnly = true;
   clipAfterScrollOnly = true;
 

@@ -24,7 +24,7 @@ export default class Render {
     for (let j = items.length - 1; j >= 0; j--) {
       const nodes = workflow.viewport.children;
       for (let i = nodes.length - 1; i >= 0; i--) {
-        if (nodes[i].id === items[j].nodeId) {
+        if (nodes[i].getAttribute('data-sid') === items[j].nodeId) {
           items[j].element = nodes[i];
         }
       }

@@ -13,7 +13,7 @@ import { Item } from './component/classes/item';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template:
 `<div data-padding-backward></div><div
-  *ngFor="let item of items" id="{{item.nodeId}}"
+  *ngFor="let item of items" [attr.data-sid]="item.nodeId"
 ><div
   [style.position]="item.invisible ? 'fixed' : null"
   [style.left]="item.invisible ? '-99999px' : null"

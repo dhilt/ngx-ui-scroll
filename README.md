@@ -14,8 +14,9 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 The common way to present a list of data elements of undefined length is to start with a small portion - just enough to fill the space on the page. Additional blocks are added to the list as the user scrolls to the edge of the list. The problem with this approach is that even though blocks at the edge of the list become invisible as they scroll out of the view, they are still a part of the page and still consume resources.
 
 The \*uiScroll directive dynamically destroys elements as they become invisible and recreating them if they become visible again. This is structural directive that works like \*ngFor and instantiates a template once per item from a collection. The \*uiScroll directive is asking the datasource for data to build and render elements until it has enough elements to fill out the viewport. It will start retrieving new data for new elements again if the user scrolls to the edge of visible element list.
-
-![](https://raw.githubusercontent.com/angular-ui/ui-scroll/master/demo/ui-scroll-demo.gif)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
+</p>
 
 ### Getting
 

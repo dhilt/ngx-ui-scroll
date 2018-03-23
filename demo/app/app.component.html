@@ -1,331 +1,431 @@
 <nav class="navbar navbar-expand-lg  navbar-dark bg-dark sticky-top">
   <div class="container">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <a href="https://github.com/dhilt/ngx-ui-scroll"><img alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" style="position: absolute; top: 0; right: 0; border: 0;"></a>
-    <a class="navbar-brand mr-auto ml-2 ml-lg-0" href="#">NGX Scroll Demo</a>
+    <a href="https://github.com/dhilt/ngx-ui-scroll"><img alt="Fork me on GitHub"
+                                                          data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
+                                                          src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67"
+                                                          style="position: absolute; top: 0; right: 0; border: 0;"></a>
+    <a class="navbar-brand mr-auto ml-2 ml-lg-0" href="#">NGX UI Scroll Demo</a>
   </div>
 </nav>
 
 <div class="container mb-5">
 
-<h1>Angular UI Scroll</h1>
+  <h1>Angular UI Scroll</h1>
 
-<p>
-  For all the cases considering below the following template is being used:
-</p>
+  <div class="demo">
 
-<div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #c4a000">class=</span><span style="color: #4e9a06">"viewport"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
-  <span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #a40000; ">*</span><span style="color: #c4a000">uiScroll=</span><span style="color: #4e9a06">"let item of datasource"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
-    <span style="color: #204a87; font-weight: bold">&lt;b&gt;</span>&#123;&#123;item.text&#125;&#125;<span style="color: #204a87; font-weight: bold">&lt;/b&gt;</span>
-  <span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
-<span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
-</pre></div>
+    <h3 id="unlimited-bidirectional-scrolling">
+      Unlimited bidirectional scrolling
+      <a href="#unlimited-bidirectional-scrolling">#</a>
+    </h3>
 
-<p>
-  Where the height of the item is 20px and the viewport has following styles:
-</p>
-
-  <div class="mb-3" style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">.viewport</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #204a87; font-weight: bold">width</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">175px</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">height</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">100px</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">overflow-y</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">auto</span><span style="color: #000000; font-weight: bold">;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-</pre></div>
-
-<div class="demo">
-  <h3 id="unlimited-bidirectional-scrolling">
-    Unlimited bidirectional scrolling
-    <a href="#unlimited-bidirectional-scrolling">#</a>
-  </h3>
-
-  <div style="float: left">
-    <div class="viewport" id="basic">
-      <div *uiScroll="let item of datasourceBasic">
-        <b>{{item.text}}</b>
+    <div class="work">
+      <div style="float: left">
+        <div class="viewport" id="basic">
+          <div *uiScroll="let item of datasourceBasic">
+            <b>{{item.text}}</b>
+          </div>
+        </div>
       </div>
+      <div class="log elements">
+        DOM elements
+        <pre>{{elements('basic')}}</pre>
+      </div>
+      <div class="log datasource">
+        Datasource.get log
+        <pre>{{logBasic}}</pre>
+      </div>
+      <div class="clearfix mb-3"></div>
+    </div>
+
+    <div class="sources">
+      <tabset>
+        <tab heading="Component">
+<pre class="prettyprint" ngNonBindable>
+datasource: Datasource = &#123;
+  get: (index, count, success) => &#123;
+    const data = [];
+    for (let i = index; i <= index + count - 1; i++) &#123;
+      data.push(&#123; id: i, text: 'item #' + i &#125;);
+    &#125;
+    success(data);
+  &#125;
+&#125;
+</pre>
+        </tab>
+        <tab heading="Template">
+<pre class="prettyprint lang-html" ngNonBindable>
+&lt;div class="viewport"&gt;
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;b&gt;{{item.text}}&lt;/b&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+        </tab>
+        <tab heading="CSS">
+<pre class="prettyprint" ngNonBindable>
+.viewport &#123;
+  width: 175px;
+  height: 100px;
+  overflow-y: auto;
+  overflow-anchor: none;
+&#125;
+</pre>
+        </tab>
+      </tabset>
+    </div>
+
+    <div class="description">
+      <p>
+        As it follows from the documentation, a special <em>Datasource</em> object needs to be passed to the
+        <em>*uiScroll</em> directive. The basic ngx-ui-scroll example includes primitive callback-based
+        <em>Datasource.get</em> method implementation with no additional settings. The use on the <em>*uiScroll</em>
+        directive at the template layer is very similar to the use of <em>*ngFor</em> directive in the simplest case. In
+        addition to <em>Datasource</em>, a special viewport container is specified at the template. It defines the
+        scrollable area via <em>height</em> and <em>overflow</em> css properties.
+      </p>
+      <p>
+        <em>Datasource.get</em> log shows us that there are 3 requests of 5 items on the initial load (before
+        scrolling). So we have 15 DOM elements (3 * 5) initially. The number of DOM elements is not constant during
+        user scrolling, but it fluctuates around the initial value. Why do we get 5 items per each
+        <em>datasource.get</em> call? It is so because of default. We may change it via settings object and
+        <em>bufferSize</em> property.
+      </p>
     </div>
   </div>
-  <div class="log elements">
-    DOM elements
-    <pre>
-{{elements('basic')}}
-  </pre>
-  </div>
-  <div class="log datasource">
-    Datasource.get log
-    <pre>
-{{logBasic}}
-  </pre>
-  </div>
-  <div class="clearfix mb-3"></div>
 
-  <p>
-    Here is the simplest callback-based <em>Datasource.get</em> method implementation:
-  </p>
+  <div class="demo">
+    <h3 id="bufferSize-setting">
+      bufferSize setting
+      <a href="#bufferSize-setting">#</a>
+    </h3>
 
-  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">index</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">count</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">success</span><span style="color: #000000; font-weight: bold">)</span> <span style="color: #ce5c00; font-weight: bold">=&gt;</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-    <span style="color: #204a87; font-weight: bold">const</span> <span style="color: #000000">data</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">[];</span>
-    <span style="color: #204a87; font-weight: bold">for</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #204a87; font-weight: bold">let</span> <span style="color: #000000">i</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000">index</span><span style="color: #000000; font-weight: bold">;</span> <span style="color: #000000">i</span> <span style="color: #ce5c00; font-weight: bold">&lt;=</span> <span style="color: #000000">index</span> <span style="color: #ce5c00; font-weight: bold">+</span> <span style="color: #000000">count</span> <span style="color: #ce5c00; font-weight: bold">-</span> <span style="color: #0000cf; font-weight: bold">1</span><span style="color: #000000; font-weight: bold">;</span> <span style="color: #000000">i</span><span style="color: #ce5c00; font-weight: bold">++</span><span style="color: #000000; font-weight: bold">)</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-      <span style="color: #000000">data</span><span style="color: #000000; font-weight: bold">.</span><span style="color: #000000">push</span><span style="color: #000000; font-weight: bold">(&#123;</span> <span style="color: #000000">id</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">i</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">text</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #4e9a06">'item #'</span> <span style="color: #ce5c00; font-weight: bold">+</span> <span style="color: #000000">i</span> <span style="color: #000000; font-weight: bold">&#125;);</span>
-    <span style="color: #000000; font-weight: bold">&#125;</span>
-    <span style="color: #000000">success</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">data</span><span style="color: #000000; font-weight: bold">);</span>
-  <span style="color: #000000; font-weight: bold">&#125;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-</pre></div>
-
-  <p>
-    <em>Datasource.get</em> log shows us that there are 3 requests of 5 items on the initial load (before scrolling).
-    So we have 15 DOM elements (3 * 5) initially. The number of elements is not constant, but it fluctuates around the
-    initial value. Why do we get 5 items per each <em>datasource.get</em> call? It is so because of default. We may
-    change it via settings object and <em>bufferSize</em> property.
-  </p>
-</div>
-
-<div class="demo">
-  <h3 id="bufferSize-setting">
-    bufferSize setting
-    <a href="#bufferSize-setting">#</a>
-  </h3>
-
-  <div style="float: left">
-    <div class="viewport" id="buffer">
-      <div *uiScroll="let item of datasourceBuffer">
-        <b>{{item.text}}</b>
+    <div class="work">
+      <div style="float: left">
+        <div class="viewport" id="buffer">
+          <div *uiScroll="let item of datasourceBuffer">
+            <b>{{item.text}}</b>
+          </div>
+        </div>
       </div>
+      <div class="log elements">
+        DOM elements
+        <pre>{{elements('buffer')}}</pre>
+      </div>
+      <div class="log datasource">
+        Datasource.get log
+        <pre>{{logBuffer}}</pre>
+      </div>
+      <div class="clearfix mb-3"></div>
+    </div>
+
+    <div class="sources">
+      <tabset>
+        <tab heading="Component">
+<pre class="prettyprint" ngNonBindable>
+datasource: Datasource = &#123;
+  get: (index, count, success) => &#123;
+    const data = [];
+    for (let i = index; i <= index + count - 1; i++) &#123;
+      data.push(&#123; id: i, text: 'item #' + i &#125;);
+    &#125;
+    success(data);
+  &#125;,
+  settings: &#123;
+    bufferSize: 15
+  &#125;
+&#125;
+</pre>
+        </tab>
+        <tab heading="Template">
+<pre class="prettyprint lang-html" ngNonBindable>
+&lt;div class="viewport"&gt;
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;b&gt;{{item.text}}&lt;/b&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+        </tab>
+        <tab heading="CSS">
+<pre class="prettyprint" ngNonBindable>
+.viewport &#123;
+  width: 175px;
+  height: 100px;
+  overflow-y: auto;
+  overflow-anchor: none;
+&#125;
+</pre>
+        </tab>
+      </tabset>
+    </div>
+
+    <div>
+      <p>
+        In addition to <em>get</em> method, <em>settings</em> object can be declared on the <em>Datasource</em>. Here
+        we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
+        request. Now the initial load consist of 2 requests (from 1 to 15 and from -14 to 0). The bigger the
+        <em>bufferSize</em> is, the less requests are needed to fill out the viewport. The default value of
+        <em>bufferSize</em> property is 5. Another setting which has an impact on the viewport's filling procedure is
+        <em>padding</em>.
+      </p>
     </div>
   </div>
-  <div class="log elements">
-    DOM elements
-    <pre>
-{{elements('buffer')}}
-    </pre>
-  </div>
-  <div class="log datasource">
-    Datasource.get log
-    <pre>
-{{logBuffer}}
-    </pre>
-  </div>
-  <div class="clearfix mb-3"></div>
 
-  <p>
-    In addition to <em>get</em> method, <em>settings</em> object can be declared on the Datasource:
-  </p>
+  <div class="demo">
+    <h3 id="padding-mode">
+      padding setting
+      <a href="#padding-mode">#</a>
+    </h3>
 
-  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
-  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-    <span style="color: #000000">bufferSize</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">5</span><span style="color: #000000; font-weight: bold">,</span>
-    <span style="color: #000000">padding</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">1.4</span>
-  <span style="color: #000000; font-weight: bold">&#125;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-</pre></div>
-
-  <p>
-    Here we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
-    request. Now the initial load consist of 2 requests (from 1 to 15 and from -14 to 0). The bigger the
-    <em>bufferSize</em> is, the less requests are needed to fill out the viewport. The default value of
-    <em>bufferSize</em> property is 5. Another setting which has an impact on the viewport's filling procedure is
-    <em>padding</em>.
-  </p>
-</div>
-
-<div class="demo">
-  <h3 id="padding-setting">
-    padding setting
-    <a href="#padding-setting">#</a>
-  </h3>
-
-  <div style="float: left">
-    <div class="viewport" id="padding">
-      <div *uiScroll="let item of datasourcePadding">
-        <b>{{item.text}}</b>
+    <div class="work">
+      <div style="float: left">
+        <div class="viewport" id="padding">
+          <div *uiScroll="let item of datasourcePadding">
+            <b>{{item.text}}</b>
+          </div>
+        </div>
       </div>
+      <div class="log elements">
+        DOM elements
+        <pre>{{elements('padding')}}</pre>
+      </div>
+      <div class="log datasource">
+        Datasource.get log
+        <pre>{{logPadding}}</pre>
+      </div>
+      <div class="clearfix mb-3"></div>
+    </div>
+
+    <div class="sources">
+      <tabset>
+        <tab heading="Component">
+<pre class="prettyprint" ngNonBindable>
+datasource: Datasource = &#123;
+  get: (index, count, success) => &#123;
+    const data = [];
+    for (let i = index; i <= index + count - 1; i++) &#123;
+      data.push(&#123; id: i, text: 'item #' + i &#125;);
+    &#125;
+    success(data);
+  &#125;,
+  settings: &#123;
+    bufferSize: 5,
+    padding: 1.4
+  &#125;
+&#125;
+</pre>
+        </tab>
+        <tab heading="Template">
+<pre class="prettyprint lang-html" ngNonBindable>
+&lt;div class="viewport"&gt;
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;b&gt;{{item.text}}&lt;/b&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+        </tab>
+        <tab heading="CSS">
+<pre class="prettyprint" ngNonBindable>
+.viewport &#123;
+  width: 175px;
+  height: 100px;
+  overflow-y: auto;
+  overflow-anchor: none;
+&#125;
+</pre>
+        </tab>
+      </tabset>
+    </div>
+
+    <div class="description">
+      <p>
+        Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
+        <em>padding</em> property. <em>Padding</em> is an extra space added to the visible part of the viewport for
+        the purpose of determining when the items should be created/destroyed. The value is relative to the visible
+        size of the viewport. <em>1.4</em> means that the <em>*uiScroll</em> directive would request new items until
+        140% of the viewport size (out of the visible part of the viewport) is filled with rendered items. That's why
+        we have 5 requests on the initial load in this case. There are 3 downward requests:
+      </p>
+      <ol>
+        <li>100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
+        <li>240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )
+        </li>
+        <li>ceil(12 / 5) = 3 (datasource.get calls that are needed to request 12 items, when bufferSize = 5)</li>
+      </ol>
+      <p>
+        And 2 upward requests:
+      </p>
+      <ol>
+        <li>1.4 * 100px = 140px (upward space which have to be filled)</li>
+        <li>140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
+        <li>ceil(7 / 5) = 2 (datasource.get calls that are needed to request 7 items)</li>
+      </ol>
+      <p>
+        The default value of <em>padding</em> property is 0.5.
+      </p>
     </div>
   </div>
-  <div class="log elements">
-    DOM elements
-    <pre>
-{{elements('padding')}}
-    </pre>
-  </div>
-  <div class="log datasource">
-    Datasource.get log
-    <pre>
-{{logPadding}}
-    </pre>
-  </div>
-  <div class="clearfix mb-3"></div>
 
-  <p>
-    Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
-    <em>padding</em> property:
-  </p>
+  <div class="demo">
+    <h3 id="infinite-setting">
+      Infinite mode
+      <a href="#infinite-setting">#</a>
+    </h3>
 
-  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
-  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-    <span style="color: #000000">bufferSize</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">5</span><span style="color: #000000; font-weight: bold">,</span>
-    <span style="color: #000000">padding</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">1.4</span>
-  <span style="color: #000000; font-weight: bold">&#125;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-</pre></div>
-
-  <p>
-    <em>Padding</em> is an extra space added to the visible part of the viewport for the purpose of determining when the
-    items should be created/destroyed. The value is relative to the visible size of the viewport. <em>1.4</em> means
-    that the <em>*uiScroll</em> directive would request new items until 140% of the viewport size (out of the visible
-    part of the viewport) is filled with rendered items. That's why we have 5 requests on the initial load in this case.
-    There are 3 downward requests:
-  </p>
-  <ol>
-    <li>100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
-    <li>240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )
-    </li>
-    <li>ceil(12 / 5) = 3 (datasource.get calls that are needed to request 12 items, when bufferSize = 5)</li>
-  </ol>
-  <p>
-    And 2 upward requests:
-  </p>
-  <ol>
-    <li>1.4 * 100px = 140px (upward space which have to be filled)</li>
-    <li>140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
-    <li>ceil(7 / 5) = 2 (datasource.get calls that are needed to request 7 items)</li>
-  </ol>
-  <p>
-    The default value of <em>padding</em> property is 0.5.
-  </p>
-</div>
-
-<div class="demo">
-  <h3 id="infinite-setting">
-    infinite setting
-    <a href="#infinite-setting">#</a>
-  </h3>
-
-  <div style="float: left">
-    <div class="viewport" id="infinite">
-      <div *uiScroll="let item of datasourceInfinite">
-        <b>{{item.text}}</b>
+    <div class="work">
+      <div style="float: left">
+        <div class="viewport" id="infinite">
+          <div *uiScroll="let item of datasourceInfinite">
+            <b>{{item.text}}</b>
+          </div>
+        </div>
       </div>
+      <div class="log elements">
+        DOM elements
+        <pre>{{elements('infinite')}}</pre>
+      </div>
+      <div class="log datasource">
+        Datasource.get log
+        <pre>{{logInfinite}}</pre>
+      </div>
+      <div class="clearfix mb-3"></div>
+    </div>
+
+    <div class="sources">
+      <tabset>
+        <tab heading="Component">
+<pre class="prettyprint" ngNonBindable>
+datasource: Datasource = &#123;
+  get: (index, count, success) => &#123;
+    const data = [];
+    for (let i = index; i <= index + count - 1; i++) &#123;
+      data.push(&#123; id: i, text: 'item #' + i &#125;);
+    &#125;
+    success(data);
+  &#125;,
+  settings: &#123;
+    infinite: true
+  &#125;
+&#125;
+</pre>
+        </tab>
+        <tab heading="Template">
+<pre class="prettyprint lang-html" ngNonBindable>
+&lt;div class="viewport"&gt;
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;b&gt;{{item.text}}&lt;/b&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+        </tab>
+        <tab heading="CSS">
+<pre class="prettyprint" ngNonBindable>
+.viewport &#123;
+  width: 175px;
+  height: 100px;
+  overflow-y: auto;
+  overflow-anchor: none;
+&#125;
+</pre>
+        </tab>
+      </tabset>
+    </div>
+
+    <div class="description">
+      <p>
+        The <em>*uiScroll</em> directive might work in the "infinite" mode, when items are never removed. This mode can
+        be turned on via <em>infinite</em> property of the <em>settings</em> object. Setting <em>infinite</em> to true,
+        we ask the scroller not to remove items that are getting out of the viewport. That's why the DOM elements
+        counter value is being increased per each edge-scroll event.
+      </p>
     </div>
   </div>
-  <div class="log elements">
-    DOM elements
-    <pre>
-{{elements('infinite')}}
-    </pre>
-  </div>
-  <div class="log datasource">
-    Datasource.get log
-    <pre>
-{{logInfinite}}
-    </pre>
-  </div>
-  <div class="clearfix mb-3"></div>
 
-  <p>
-    The <em>*uiScroll</em> directive might work in the "infinite" mode, when items are never removed. This mode can be
-    turned on via <em>infinite</em> property of the <em>settings</em> object:
-  </p>
+  <div class="demo">
+    <h3 id="horizontal-mode">
+      Horizontal mode
+      <a href="#horizontal-mode">#</a>
+    </h3>
 
-  <div class="mb-3" ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
-  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-    <span style="color: #000000">infinite</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">true</span>
-  <span style="color: #000000; font-weight: bold">&#125;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-</pre></div>
-
-  <p>
-    Setting <em>infinite</em> to true, we ask the scroller not to remove items that are getting out of the
-    viewport. That's why the DOM elements counter value is being increased per each edge-scroll event.
-  </p>
-</div>
-
-<div class="demo">
-  <h3 id="horizontal-setting">
-    horizontal setting
-    <a href="#horizontal-setting">#</a>
-  </h3>
-
-  <div style="float: left">
-    <div class="viewport-horizontal" id="horizontal">
-      <div *uiScroll="let item of datasourceHorizontal">
-        <div class="item-horizontal">{{item.text}}</div>
+    <div class="work">
+      <div style="float: left">
+        <div class="viewport-horizontal" id="horizontal">
+          <div *uiScroll="let item of datasourceHorizontal">
+            <div class="item-horizontal">{{item.text}}</div>
+          </div>
+        </div>
       </div>
+      <div class="log elements">
+        DOM elements
+        <pre>{{elements('horizontal')}}</pre>
+      </div>
+      <div class="log datasource">
+        Datasource.get log
+        <pre>{{logHorizontal}}</pre>
+      </div>
+      <div class="clearfix mb-3"></div>
     </div>
+
+    <div class="sources">
+      <tabset>
+        <tab heading="Component">
+<pre class="prettyprint" ngNonBindable>
+datasource: Datasource = &#123;
+  get: (index, count, success) => &#123;
+    const data = [];
+    for (let i = index; i <= index + count - 1; i++) &#123;
+      data.push(&#123; id: i, text: 'item #' + i &#125;);
+    &#125;
+    success(data);
+  &#125;,
+  settings: &#123;
+    horizontal: true
+  &#125;
+&#125;
+</pre>
+        </tab>
+        <tab heading="Template">
+<pre class="prettyprint lang-html" ngNonBindable>
+&lt;div class="viewport-horizontal"&gt;
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;div class="item-horizontal"&gt;{{item.text}}&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+        </tab>
+        <tab heading="CSS">
+<pre class="prettyprint" ngNonBindable>
+.viewport-horizontal &#123;
+  width: 175px;
+  height: 100px;
+  overflow-anchor: none;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+&#125;
+.viewport-horizontal div &#123;
+  display: inline-block;
+&#125;
+.item-horizontal &#123;
+  border: 1px solid #aaa;
+  height: 100px;
+  padding: 0 5px;
+  font-weight: bolder;
+&#125;
+</pre>
+        </tab>
+      </tabset>
+    </div>
+
+    <p>
+      Horizontal scrolling could be enabled via <em>horizontal</em> setting. The styles also need to be fixed in
+      accordance with horizontal scrolling. Currently we have some limitations at the template layer but
+      <em>display: inline-block;</em> rule applied to all nested containers makes the horizontal mode work.
+    </p>
+
   </div>
-  <div class="log elements">
-    DOM elements
-    <pre>
-{{elements('horizontal')}}
-    </pre>
-  </div>
-  <div class="log datasource">
-    Datasource.get log
-    <pre>
-{{logHorizontal}}
-    </pre>
-  </div>
-  <div class="clearfix mb-3"></div>
-
-  <p>
-    Horizontal scrolling could be enabled via <em>horizontal</em> setting:
-  </p>
-
-  <div>
-    <tabset>
-      <tab heading="JS">
-
-<div ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">datasource</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000">Datasource</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #000000">get</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #8f5902; font-style: italic">/*...*/</span><span style="color: #000000; font-weight: bold">,</span>
-  <span style="color: #000000">settings</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-    <span style="color: #000000">horizontal</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">true</span>
-  <span style="color: #000000; font-weight: bold">&#125;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-</pre></div>
-
-      </tab>
-      <tab heading="CSS">
-
-        <div ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #000000">.viewport-horizontal</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #204a87; font-weight: bold">width</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">175px</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">height</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">100px</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">overflow</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #000000">anchor</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">none</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">overflow-x</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">scroll</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">overflow-y</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">hidden</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">white-space</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">nowrap</span><span style="color: #000000; font-weight: bold">;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-
-<span style="color: #000000">.viewport-horizontal</span> <span style="color: #204a87; font-weight: bold">div</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #204a87; font-weight: bold">display</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">inline</span><span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #204a87; font-weight: bold">block</span><span style="color: #000000; font-weight: bold">;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-
-<span style="color: #000000">.item-horizontal</span> <span style="color: #000000; font-weight: bold">&#123;</span>
-  <span style="color: #204a87; font-weight: bold">border</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">1px</span> <span style="color: #204a87; font-weight: bold">solid</span> <span style="color: #0000cf; font-weight: bold">#aaa</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">height</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">100px</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">padding</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #0000cf; font-weight: bold">0</span> <span style="color: #0000cf; font-weight: bold">5px</span><span style="color: #000000; font-weight: bold">;</span>
-  <span style="color: #204a87; font-weight: bold">font-weight</span><span style="color: #ce5c00; font-weight: bold">:</span> <span style="color: #204a87; font-weight: bold">bolder</span><span style="color: #000000; font-weight: bold">;</span>
-<span style="color: #000000; font-weight: bold">&#125;</span>
-</pre></div>
-
-      </tab>
-      <tab heading="HTML">
-
-<div ngNonBindable style="background: #f8f8f8; overflow:auto;width:auto;background: #f5f6f7; padding: 16px 32px;"><pre style="margin: 0; line-height: 125%"><span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #c4a000">class=</span><span style="color: #4e9a06">"viewport-horizontal"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
-  <span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #a40000; ">*</span><span style="color: #c4a000">uiScroll=</span><span style="color: #4e9a06">"let item of datasource"</span><span style="color: #204a87; font-weight: bold">&gt;</span>
-    <span style="color: #204a87; font-weight: bold">&lt;div</span> <span style="color: #c4a000">class=</span><span style="color: #4e9a06">"item-horizontal"</span><span style="color: #204a87; font-weight: bold">&gt;</span>&#123;&#123;item.text&#125;&#125;<span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
-  <span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
-<span style="color: #204a87; font-weight: bold">&lt;/div&gt;</span>
-</pre></div>
-
-      </tab>
-    </tabset>
-  </div>
-
-</div>
 </div>

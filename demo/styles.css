@@ -3,24 +3,28 @@ html {
 }
 
 h1 {
-  margin: 3rem 0;
+  margin: 3rem 0 0 0;
 }
 
 h3 {
   cursor: pointer;
   border-bottom: 1px solid #efefef;
-  padding-top: 4rem;
+  padding-top: 3rem;
   margin-bottom: 2rem;
 }
 
-.viewport {
+.demo .work {
+  margin-left: 20px;
+}
+
+.demo .work .viewport {
   width: 175px;
   height: 100px;
   overflow-anchor: none;
   overflow-y: auto;
 }
 
-.viewport-horizontal {
+.demo .work .viewport-horizontal {
   width: 175px;
   height: 100px;
   overflow-anchor: none;
@@ -29,18 +33,18 @@ h3 {
   white-space: nowrap;
 }
 
-.viewport-horizontal div {
+.demo .work .viewport-horizontal div {
   display: inline-block;
 }
 
-.item-horizontal {
+.demo .work .item-horizontal {
   border: 1px solid #aaa;
   height: 100px;
   padding: 0 5px;
   font-weight: bolder;
 }
 
-.log {
+.demo .work .log {
   height: 100px;
   width: 175px;
   overflow-y: hidden;
@@ -49,12 +53,31 @@ h3 {
   float: left;
 }
 
-.elements {
+.demo .work .log.elements {
   padding-left: 20px;
-  width: 85px;
+  width: 115px;
 }
 
-.datasource {
+.demo .work .log.datasource {
   padding-left: 10px;
-  width: 175px;
+  width: 190px;
+}
+
+/* code styles */
+
+pre.prettyprint {
+  font-size: 87.5%;
+  line-height: 125%;
+  border: 0;
+}
+pre .kwd { font-weight: bold; color: #204a87; }
+pre .tag { font-weight: bold; color: #204a87; }
+pre .atn { font-weight: bold }
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+li.L1,li.L3,li.L5,li.L7,li.L9 { }
+@media print {
+  pre .kwd, code .kwd { font-weight: bold; color: #204a87; }
+  pre .com, code .com { font-style: italic }
+  pre .typ, code .typ { font-weight: bold }
+  pre .tag, code .tag { font-weight: bold; color: #204a87; }
 }

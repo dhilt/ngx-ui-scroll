@@ -67,11 +67,11 @@ export class Misc {
   }
 
   getElements() {
-    return this.fixture.nativeElement.querySelectorAll(`[id^=${this.workflow.settings.itemIdPrefix}]`);
+    return this.fixture.nativeElement.querySelectorAll(`[data-sid]`);
   }
 
   getElement(index: number) {
-    return this.fixture.nativeElement.querySelector(`#${this.workflow.settings.itemIdPrefix}${index}`);
+    return this.fixture.nativeElement.querySelector(`[data-sid="${this.workflow.settings.itemIdPrefix}${index}"]`);
   }
 
   getElementText(index: number): string {
@@ -80,11 +80,15 @@ export class Misc {
   }
 
   checkElementId(element, index: number) {
-    return element.id === `${this.workflow.settings.itemIdPrefix}${index}`;
+    return element.getAttribute('data-sid') === `${this.workflow.settings.itemIdPrefix}${index}`;
   }
 
   getElementIndex(element) {
-    const index = element.id.replace(this.workflow.settings.itemIdPrefix, '');
+    const id = element.getAttribute('data-sid');
+    if (!id) {
+      return null;
+    }
+    const index = id.replace(this.workflow.settings.itemIdPrefix, '');
     return parseInt(index, 10) || null;
   }
 

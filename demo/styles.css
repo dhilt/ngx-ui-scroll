@@ -13,6 +13,35 @@ h3 {
   margin-bottom: 2rem;
 }
 
+.navbar-brand {
+  font-size: 2rem;
+}
+
+.navbar .container {
+  height: 4rem;
+  color: #fff;
+}
+
+.navbar .container a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar .container .copyrights {
+  color: #aaa;
+  font-size: small;
+  position: fixed;
+  right: 0.5rem;
+}
+
+.navbar .container .copyrights a {
+  color: #aaa;
+}
+
+.navbar .container .copyrights a:hover {
+  color: #fff;
+}
+
 .demo .work {
   margin-left: 20px;
 }

@@ -1,5 +1,5 @@
 const assignBoolean = (target, source, token, defaults) => {
-  let param = source[token];
+  const param = source[token];
   if (typeof param === 'undefined') {
     return;
   }
@@ -12,7 +12,7 @@ const assignBoolean = (target, source, token, defaults) => {
 };
 
 const assignNumeric = (target, source, token, defaults, integer = false) => {
-  let param = source[token];
+  const param = source[token];
   if (typeof param === 'undefined') {
     return;
   }

@@ -1,5 +1,5 @@
-html {
-  line-height: 20px;
+body {
+  line-height: 25px;
 }
 
 h1 {
@@ -19,13 +19,13 @@ h3 {
 
 .demo .work .viewport {
   width: 175px;
-  height: 165px;
+  height: 175px;
   overflow-anchor: none;
   overflow-y: auto;
 }
 
 .demo .work .viewport-horizontal {
-  width: 175px;
+  width: 250px;
   height: 100px;
   overflow-anchor: none;
   overflow-x: scroll;
@@ -37,6 +37,10 @@ h3 {
   display: inline-block;
 }
 
+.demo .work .viewport ui-scroll>div:nth-child(odd) {
+  background-color: #e6e6e6;
+}
+
 .demo .work .item-horizontal {
   border: 1px solid #aaa;
   height: 100px;
@@ -45,12 +49,16 @@ h3 {
 }
 
 .demo .work .log {
-  height: 100px;
+  height: 175px;
   width: 175px;
   overflow-y: hidden;
   font-size: smaller;
   line-height: 14px;
   float: left;
+}
+
+.demo .work .log.horizontal {
+  height: 100px;
 }
 
 .demo .work .log.elements {

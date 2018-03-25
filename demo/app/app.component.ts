@@ -115,7 +115,7 @@ export class AppComponent {
       success(data);
     },
     settings: {
-      bufferSize: 5,
+      bufferSize: 7,
       padding: 1.5
     }
   };

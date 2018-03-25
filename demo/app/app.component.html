@@ -68,9 +68,12 @@ datasource: Datasource = &#123;
         </tab>
         <tab heading="CSS">
 <pre class="prettyprint" ngNonBindable>
+body &#123;
+  line-height: 25px;
+&#125;
 .viewport &#123;
   width: 175px;
-  height: 100px;
+  height: 175px;
   overflow-y: auto;
   overflow-anchor: none;
 &#125;
@@ -152,9 +155,12 @@ datasource: Datasource = &#123;
         </tab>
         <tab heading="CSS">
 <pre class="prettyprint" ngNonBindable>
+ body &#123;
+  line-height: 25px;
+&#125;
 .viewport &#123;
   width: 175px;
-  height: 100px;
+  height: 175px;
   overflow-y: auto;
   overflow-anchor: none;
 &#125;
@@ -213,7 +219,7 @@ datasource: Datasource = &#123;
     success(data);
   &#125;,
   settings: &#123;
-    bufferSize: 5,
+    bufferSize: 7,
     padding: 1.4
   &#125;
 &#125;
@@ -230,9 +236,12 @@ datasource: Datasource = &#123;
         </tab>
         <tab heading="CSS">
 <pre class="prettyprint" ngNonBindable>
+ body &#123;
+  line-height: 25px;
+&#125;
 .viewport &#123;
   width: 175px;
-  height: 100px;
+  height: 175px;
   overflow-y: auto;
   overflow-anchor: none;
 &#125;
@@ -251,18 +260,18 @@ datasource: Datasource = &#123;
         we have 5 requests on the initial load in this case. There are 3 downward requests:
       </p>
       <ol>
-        <li>100px + 1.4 * 100px = 240px (downward space which has to be filled, when viewport's height = 100px )</li>
-        <li>240px / 20px = 12 (items that are needed to feel 240px of the downward space, when item's height = 20px )
+        <li>175px + 1.4 * 175px = 420px (downward space which has to be filled, when viewport's height = 175px )</li>
+        <li>ceil(420px / 25px) = 17 (items that are needed to feel 420px of the downward space, when item's height = 25px )
         </li>
-        <li>ceil(12 / 5) = 3 (datasource.get calls that are needed to request 12 items, when bufferSize = 5)</li>
+        <li>ceil(17 / 7) = 3 (datasource.get calls that are needed to request 17 items, when bufferSize = 7)</li>
       </ol>
       <p>
         And 2 upward requests:
       </p>
       <ol>
-        <li>1.4 * 100px = 140px (upward space which have to be filled)</li>
-        <li>140px / 20px = 7 (items that are needed to feel 140px of the upward space)</li>
-        <li>ceil(7 / 5) = 2 (datasource.get calls that are needed to request 7 items)</li>
+        <li>1.4 * 175px = 245px (upward space which have to be filled)</li>
+        <li>ceil(245px / 25px) = 10 (items that are needed to feel 245px of the upward space)</li>
+        <li>ceil(10 / 7) = 2 (datasource.get calls that are needed to request 10 items)</li>
       </ol>
       <p>
         The default value of <em>padding</em> property is 0.5.
@@ -324,9 +333,12 @@ datasource: Datasource = &#123;
         </tab>
         <tab heading="CSS">
 <pre class="prettyprint" ngNonBindable>
+ body &#123;
+  line-height: 25px;
+&#125;
 .viewport &#123;
   width: 175px;
-  height: 100px;
+  height: 175px;
   overflow-y: auto;
   overflow-anchor: none;
 &#125;
@@ -359,11 +371,11 @@ datasource: Datasource = &#123;
           </div>
         </div>
       </div>
-      <div class="log elements">
+      <div class="log elements horizontal">
         DOM elements
         <pre>{{elements('horizontal')}}</pre>
       </div>
-      <div class="log datasource">
+      <div class="log datasource horizontal">
         Datasource.get log
         <pre>{{logHorizontal}}</pre>
       </div>

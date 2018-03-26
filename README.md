@@ -3,9 +3,10 @@
 
 # NgxUiScroll
 
-Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/ "Angular") framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/).
+Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework (version 5). Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/).
 
 - [Motivation](#motivation)
+- [Features](#features)
 - [Getting](#getting)
 - [Usage](#usage)
 - [Developing](#developing)
@@ -18,6 +19,14 @@ The \*uiScroll directive dynamically destroys elements as they become invisible 
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
+
+### Features
+
+ - unlimited virtual scroll
+ - virtualization settings (you can specify when and how many items need to be requested/rendered by the uiScroll)
+ - infinite mode (items rendered once are never removed), [demo](https://dhilt.github.io/ngx-ui-scroll/#infinite-setting)
+ - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#horizontal-mode)
+ - AoT compilation
 
 ### Getting
 
@@ -99,8 +108,6 @@ More details could be found at the API section (in progress) and on the [DEMO pa
 
 ### Developing
 
-The work has just begun. We have great plans and any participation is welcome! So, feel free to submit new issues and open PRs.
-
 There are some npm scripts available from package.json:
 
 - `npm start` to run demo App on port 4200
@@ -108,3 +115,8 @@ There are some npm scripts available from package.json:
 - `npm run build` to build the ngx-ui-scroll module into the ./dist folder
 - `npm run install-package` to build tar-gzipped version of package and install it locally into ./node_modules
 
+The work has just begun. We have great plans and any participation is welcome! So, feel free to submit new issues and open PRs.
+
+__________
+
+2018 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)

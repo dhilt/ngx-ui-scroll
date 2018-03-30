@@ -8,9 +8,9 @@ export class ViewportPadding {
   forward: Padding;
   backward: Padding;
 
-  constructor(element, routines: Routines) {
-    this.forward = new Padding(element, Direction.forward, routines);
-    this.backward = new Padding(element, Direction.backward, routines);
+  constructor(element, routines: Routines, settings: Settings) {
+    this.forward = new Padding(element, Direction.forward, routines, settings.paddingForwardSize);
+    this.backward = new Padding(element, Direction.backward, routines, settings.paddingBackwardSize);
   }
 }
 
@@ -30,7 +30,7 @@ export class Viewport {
     this.routines = routines;
     this.host = elementRef.nativeElement;
     this.scrollable = elementRef.nativeElement.parentElement;
-    this.padding = new ViewportPadding(this.host, this.routines);
+    this.padding = new ViewportPadding(this.host, this.routines, settings);
     this.syntheticScrollPosition = null;
   }
 

@@ -11,4 +11,6 @@ export interface DevSettings {
   itemIdPrefix?: string;
   clipAfterFetchOnly?: boolean;
   clipAfterScrollOnly?: boolean;
+  paddingForwardSize?: number;
+  paddingBackwardSize?: number;
 }

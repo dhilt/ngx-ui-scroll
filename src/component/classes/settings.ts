@@ -18,7 +18,9 @@ export const defaultDevSettings: DevSettingsInterface = {
   debug: true, // logging; need to turn off in release
   itemIdPrefix: '', // todo : scroll instance index ?
   clipAfterFetchOnly: true,
-  clipAfterScrollOnly: true
+  clipAfterScrollOnly: true,
+  paddingForwardSize: 0,
+  paddingBackwardSize: 0
 };
 
 export class Settings implements SettingsInterface {
@@ -35,6 +37,8 @@ export class Settings implements SettingsInterface {
   itemIdPrefix;
   clipAfterFetchOnly;
   clipAfterScrollOnly;
+  paddingForwardSize;
+  paddingBackwardSize;
 
   constructor(settings?: SettingsInterface, devSettings?: DevSettingsInterface) {
     assignSettings(this, settings, defaultSettings, minSettings);

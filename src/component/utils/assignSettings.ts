@@ -56,8 +56,4 @@ export const assignSettings = (target, settings, defaults, minSettings) => {
   assignMinimalNumeric(target, settings, 'padding', defaults, minSettings);
   assignBoolean(target, settings, 'infinite', defaults);
   assignBoolean(target, settings, 'horizontal', defaults);
-
-  // undocumented settings, for tests only
-  assignBoolean(target, settings, 'clipAfterFetchOnly', defaults);
-  assignBoolean(target, settings, 'clipAfterScrollOnly', defaults);
 };

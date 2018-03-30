@@ -5,3 +5,10 @@ export interface Settings {
   infinite?: boolean;
   horizontal?: boolean;
 }
+
+export interface DevSettings {
+  debug?: boolean;
+  itemIdPrefix?: string;
+  clipAfterFetchOnly?: boolean;
+  clipAfterScrollOnly?: boolean;
+}

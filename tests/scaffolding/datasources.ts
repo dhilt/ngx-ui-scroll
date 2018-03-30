@@ -1,20 +1,21 @@
 import { Observable } from 'rxjs';
-import { Datasource, Settings } from '../../src/component/interfaces';
-import { checkDatasource } from '../../src/component/utils';
+import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
 
 export class DatasourceService implements Datasource {
   get() {
   }
 }
 
-export const generateDatasourceClass = (_name: string, _settings?: Settings) => {
+export const generateDatasourceClass = (_name: string, _settings?: Settings, _devSettings?: DevSettings) => {
   return class {
-    settings: Settings;
     get: Function;
+    settings: Settings;
+    devSettings: DevSettings;
 
     constructor() {
-      this.settings = datasourceStore[_name].settings || _settings || {};
       this.get = datasourceStore[_name].get.bind(this);
+      this.settings = datasourceStore[_name].settings || _settings || {};
+      this.devSettings = datasourceStore[_name].devSettings || _devSettings || {};
     }
   };
 };
@@ -71,6 +72,10 @@ const datasourceStore = {
 
   'limited': <Datasource>{
     get: limitedDatasourceGet(1, 100, 1)
+  },
+
+  'limited-no-delay': <Datasource>{
+    get: limitedDatasourceGet(1, 100)
   },
 
   'default-bad-settings': <Datasource>{

@@ -1,6 +1,6 @@
 import { async } from '@angular/core/testing';
 
-import { Settings } from '../../src/component/interfaces';
+import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';
@@ -10,7 +10,8 @@ import { generateDatasourceClass } from './datasources';
 export interface TestBedConfig {
   datasourceClass?: any;
   datasourceName?: string;
-  datasourceSettings?: Settings | any;
+  datasourceSettings?: Settings;
+  datasourceDevSettings?: DevSettings;
   templateSettings?: TemplateSettings;
   toThrow?: boolean;
   custom?: any;
@@ -63,8 +64,13 @@ export const makeTest = (data: MakeTestConfig) => {
       let misc: Misc;
       let error;
       beforeEach(async(() => {
-        const datasourceClass = data.config.datasourceClass ? data.config.datasourceClass :
-          generateDatasourceClass(data.config.datasourceName || 'default', data.config.datasourceSettings);
+        const datasourceClass = data.config.datasourceClass ?
+          data.config.datasourceClass :
+          generateDatasourceClass(
+            data.config.datasourceName || 'default',
+            data.config.datasourceSettings,
+            data.config.datasourceDevSettings
+          );
         const templateData = generateTemplate(data.config.templateSettings);
         try {
           const fixture = configureTestBed(datasourceClass, templateData.template);

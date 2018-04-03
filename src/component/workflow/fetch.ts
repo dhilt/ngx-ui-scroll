@@ -21,7 +21,7 @@ export default class Fetch {
   }
 
   static fetchByDirection(direction: Direction, workflow: Workflow): Promise<any> {
-    const result = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const success = (data) => {
         Fetch.success(data, direction, workflow);
         resolve(true);
@@ -34,7 +34,6 @@ export default class Fetch {
         _getResult.subscribe(success, reject);
       }
     });
-    return result;
   }
 
 }

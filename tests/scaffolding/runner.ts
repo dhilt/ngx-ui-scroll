@@ -10,7 +10,7 @@ import { generateDatasourceClass } from './datasources';
 export interface TestBedConfig {
   datasourceClass?: any;
   datasourceName?: string;
-  datasourceSettings?: Settings;
+  datasourceSettings?: Settings | any;
   datasourceDevSettings?: DevSettings;
   templateSettings?: TemplateSettings;
   toThrow?: boolean;

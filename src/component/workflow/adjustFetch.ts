@@ -4,24 +4,21 @@ import { Direction } from '../interfaces/index';
 export default class AdjustFetch {
 
   static run(workflow: Workflow) {
-    AdjustFetch.runByDirection(Direction.forward, workflow);
-    AdjustFetch.runByDirection(Direction.backward, workflow);
-    return workflow;
-  }
-
-  static runByDirection(direction: Direction, workflow: Workflow) {
+    const direction = workflow.direction;
     const items = workflow.fetch[direction].items;
     if (!items) {
       return;
     }
     AdjustFetch.processFetchedItems(items);
-    const height = Math.abs(items[0].getEdge(Direction.backward) -
-      items[items.length - 1].getEdge(Direction.forward));
+    const height = Math.round(
+      Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
+    );
     if (direction === Direction.forward) {
-      return this.adjustForward(workflow, height);
+      AdjustFetch.runForward(workflow, height);
     } else {
-      return this.adjustBackward(workflow, height);
+      AdjustFetch.runBackward(workflow, height);
     }
+    return workflow;
   }
 
   static processFetchedItems(items) {
@@ -33,13 +30,13 @@ export default class AdjustFetch {
     }
   }
 
-  static adjustForward(workflow: Workflow, size: number) {
+  static runForward(workflow: Workflow, size: number) {
     const paddingForward = workflow.viewport.padding[Direction.forward];
     const _paddingSize = paddingForward.size || 0;
     paddingForward.size = Math.max(_paddingSize - size, 0);
   }
 
-  static adjustBackward(workflow: Workflow, size: number) {
+  static runBackward(workflow: Workflow, size: number) {
     const viewport = workflow.viewport;
     const _scrollPosition = viewport.scrollPosition;
     const paddingBackward = viewport.padding[Direction.backward];

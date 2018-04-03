@@ -5,8 +5,7 @@ import { Item } from '../classes/item';
 export default class ProcessFetch {
 
   static run(workflow: Workflow) {
-    ProcessFetch.runByDirection(workflow, Direction.backward);
-    ProcessFetch.runByDirection(workflow, Direction.forward);
+    ProcessFetch.runByDirection(workflow, workflow.direction);
     return workflow;
   }
 

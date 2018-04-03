@@ -2,10 +2,10 @@ import { Workflow } from '../workflow';
 
 export default class Fetch {
 
-  static run(workflow: Workflow) {
+  static run(workflow: Workflow): Promise<any> {
     const direction = workflow.direction;
     if (!workflow.fetch[direction].shouldFetch) {
-      return workflow;
+      return Promise.resolve(workflow);
     }
     const result = new Promise((resolve, reject) => {
       const success = (data) => {

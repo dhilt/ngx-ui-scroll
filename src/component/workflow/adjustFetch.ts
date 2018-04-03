@@ -23,7 +23,7 @@ export default class AdjustFetch {
 
   static processFetchedItems(items) {
     for (let i = items.length - 1; i >= 0; i--) {
-      const element = items[i].element.children[0];
+      const element = items[i].element;
       element.style.left = '';
       element.style.position = '';
       items[i].invisible = false;

@@ -11,10 +11,9 @@ import { Item } from './component/classes/item';
 @Component({
   selector: 'ui-scroll',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template:
-`<div data-padding-backward></div><div
-  *ngFor="let item of items" [attr.data-sid]="item.nodeId"
-><div
+  template: `<div data-padding-backward></div><div
+  *ngFor="let item of items"
+  [attr.data-sid]="item.nodeId"
   [style.position]="item.invisible ? 'fixed' : null"
   [style.left]="item.invisible ? '-99999px' : null"
 ><ng-template
@@ -23,7 +22,7 @@ import { Item } from './component/classes/item';
     $implicit: item.data,
     index: item.$index
  }"
-></ng-template></div></div><div data-padding-forward></div>`
+></ng-template></div><div data-padding-forward></div>`
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 

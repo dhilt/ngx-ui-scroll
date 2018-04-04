@@ -13,6 +13,7 @@ export default class ShouldFetch {
 
     if (workflow.fetch[direction].shouldFetch) {
       ShouldFetch.setStartIndex(workflow);
+      ShouldFetch.adjustPaddings(workflow);
     }
     return workflow;
   }
@@ -33,6 +34,17 @@ export default class ShouldFetch {
       start = workflow.buffer.lastIndex[direction] + (forward ? 1 : back);
     }
     workflow.fetch[direction].startIndex = start;
+  }
+
+  static adjustPaddings(workflow: Workflow) {
+    const direction = workflow.direction;
+    const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
+    const prev = workflow.previous;
+    const clipSize = prev && prev[`${opposite}ClipSize`];
+    if (!workflow.buffer.size && clipSize && prev.direction !== workflow.direction) {
+      workflow.viewport.padding[direction].size -= clipSize;
+      workflow.viewport.padding[opposite].size += clipSize;
+    }
   }
 
 }

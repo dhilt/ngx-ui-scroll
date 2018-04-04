@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 
-import { Datasource, Direction, Run } from './interfaces/index';
+import { Datasource, Direction, Run, Previous } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
@@ -30,6 +30,7 @@ export class Workflow {
   public next: boolean;
   public fetch: FetchModel;
   public clip: ClipModel;
+  public previous: Previous;
 
   constructor(context) {
     this.resolver = Observable.create(_observer => this.observer = _observer);
@@ -49,22 +50,15 @@ export class Workflow {
     this.clip = new ClipModel();
   }
 
-  reset() {
-    this.pending = false;
-    this.direction = null;
-    this.scroll = false;
-    this.next = false;
-    this.fetch.reset();
-    this.clip = new ClipModel();
-  }
-
   start(options: Run = {}) {
     this.count++;
     this.log(`---=== Workflow ${this.count} run`);
-    this.reset();
+    this.next = false;
     this.pending = true;
-    this.direction = options.direction || null;
+    this.direction = options.direction;
     this.scroll = options.scroll || false;
+    this.fetch.reset();
+    this.clip.reset();
     return Promise.resolve(this);
   }
 
@@ -79,6 +73,13 @@ export class Workflow {
     this.pending = false;
     this.countDone++;
     this.viewport.saveScrollPosition();
+    if (this.clip.shouldClip) {
+      this.previous = {
+        backwardClipSize: this.clip[Direction.backward].size,
+        forwardClipSize: this.clip[Direction.forward].size,
+        direction: this.direction
+      };
+    }
     this.finalize();
   }
 

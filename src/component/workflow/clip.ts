@@ -1,6 +1,5 @@
 import { Workflow } from '../workflow';
 import { Direction } from '../interfaces/direction';
-
 export default class Clip {
 
   static run(workflow: Workflow) {

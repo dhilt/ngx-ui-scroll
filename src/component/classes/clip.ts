@@ -5,6 +5,10 @@ export class ClipByDirection {
   size: number;
 
   constructor() {
+    this.reset();
+  }
+
+  reset() {
     this.shouldClip = false;
     this.size = null;
   }
@@ -21,5 +25,10 @@ export class ClipModel {
 
   get shouldClip(): boolean {
     return this[Direction.forward].shouldClip || this[Direction.backward].shouldClip;
+  }
+
+  reset() {
+    this.backward.reset();
+    this.forward.reset();
   }
 }

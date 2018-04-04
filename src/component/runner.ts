@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 
 import { Workflow } from './workflow';
-import { throttle } from './utils/index';
+import { throttle, calculateFlowDirection } from './utils/index';
 import { Direction, Run } from './interfaces/index';
 
 import ShouldFetch from './workflow/shouldFetch';
@@ -38,7 +38,7 @@ export class WorkflowRunner {
     const onScroll = ($event) => this.scroll($event);
 
     this.onScrollListener =
-      this.context.renderer.listen(flow.viewport.scrollable, 'scroll', throttle(onScroll, 100));
+      this.context.renderer.listen(flow.viewport.scrollable, 'scroll', onScroll);
     this.itemsSubscription = flow.buffer.$items.subscribe(items => this.context.items = items);
     this.flowResolverSubscription = flow.resolver.subscribe(this.resolve.bind(this));
 
@@ -53,7 +53,10 @@ export class WorkflowRunner {
       }
       this.workflow.viewport.syntheticScrollPosition = null;
     }
-    this.run({ scroll: true });
+    this.run({
+      scroll: true,
+      direction: calculateFlowDirection(this.workflow.viewport)
+    });
   }
 
   resolve(next: boolean) {

@@ -15,7 +15,7 @@ export const minSettings: SettingsInterface = {
 };
 
 export const defaultDevSettings: DevSettingsInterface = {
-  debug: true, // logging; need to turn off in release
+  debug: false, // logging; need to turn off in release
   itemIdPrefix: '', // todo : scroll instance index ?
   clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,

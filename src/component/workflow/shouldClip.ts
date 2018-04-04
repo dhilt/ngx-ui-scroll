@@ -6,7 +6,7 @@ export default class ShouldClip {
   static run(workflow: Workflow) {
     const fetchOnly = workflow.settings.clipAfterFetchOnly;
     const scrollOnly = workflow.settings.clipAfterScrollOnly;
-    if (!workflow.buffer.items.length) {
+    if (!workflow.buffer.size) {
       return workflow;
     }
     if (scrollOnly && !workflow.scroll) {

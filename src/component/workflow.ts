@@ -32,6 +32,8 @@ export class Workflow {
   public clip: ClipModel;
   public previous: Previous;
 
+  private logs: Array<any> = [];
+
   constructor(context) {
     this.resolver = Observable.create(_observer => this.observer = _observer);
 
@@ -101,7 +103,23 @@ export class Workflow {
 
   log(...args) {
     if (this.settings.debug) {
-      console.log.apply(this, args);
+      if (this.settings.immediateLog) {
+        console.log.apply(this, args);
+      } else {
+        this.logs.push(args);
+      }
+    }
+  }
+
+  logForce(...args) {
+    if (this.settings.debug) {
+      if (!this.settings.immediateLog && this.logs.length) {
+        this.logs.forEach(logArgs => console.log.apply(this, logArgs));
+        this.logs = [];
+      }
+      if (args.length) {
+        console.log.apply(this, args);
+      }
     }
   }
 

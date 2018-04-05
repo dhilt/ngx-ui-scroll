@@ -73,7 +73,6 @@ export class WorkflowRunner {
       this.runQueue = null;
     } else {
       this.count++;
-      this.workflow.logForce(`~~~~~~ WF Cycle ${this.count} DONE ~~~~~~`);
       this.finalize();
     }
   }
@@ -125,7 +124,17 @@ export class WorkflowRunner {
     this.workflow.dispose();
   }
 
-  finalize() { // stop queue
+  finalize() {
+    this.workflow.logForce(`~~~~~~ WF Cycle ${this.count} FINALIZED ~~~~~~`);
+    const count = this.count;
+    setTimeout(() => {
+      if (count === this.count && !this.workflow.pending) {
+        this.stop();
+      }
+    });
+  }
+
+  stop() {
   }
 
 }

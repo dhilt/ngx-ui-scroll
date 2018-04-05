@@ -30,8 +30,7 @@ h3 {
 .navbar .container .copyrights {
   color: #aaa;
   font-size: small;
-  position: fixed;
-  right: 0.5rem;
+  margin-top: 2rem;
 }
 
 .navbar .container .copyrights a {
@@ -60,6 +59,10 @@ h3 {
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
+}
+
+.demo .work .viewport div[data-sid] {
+  height: 25px;
 }
 
 .demo .work .viewport-horizontal div {

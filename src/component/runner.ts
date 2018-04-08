@@ -34,28 +34,29 @@ export class WorkflowRunner {
   }
 
   initialize() {
-    const flow = this.workflow;
-    const onScroll = ($event) => this.scroll($event);
-
     this.onScrollListener =
-      this.context.renderer.listen(flow.viewport.scrollable, 'scroll', onScroll);
-    this.itemsSubscription = flow.buffer.$items.subscribe(items => this.context.items = items);
-    this.flowResolverSubscription = flow.resolver.subscribe(this.resolve.bind(this));
+      this.context.renderer.listen(this.workflow.viewport.scrollable, 'scroll', this.scroll.bind(this));
+    this.itemsSubscription = this.workflow.buffer.$items.subscribe(items => this.context.items = items);
+    this.flowResolverSubscription = this.workflow.resolver.subscribe(this.resolve.bind(this));
 
     this.run();
   }
 
   scroll($event) {
-    if (this.workflow.viewport.syntheticScrollPosition !== null) {
-      if (this.workflow.viewport.scrollPosition === this.workflow.viewport.syntheticScrollPosition) {
-        this.workflow.viewport.syntheticScrollPosition = null;
-        return;
-      }
-      this.workflow.viewport.syntheticScrollPosition = null;
+    const viewport = this.workflow.viewport;
+    console.log('scrollPosition: ', viewport.scrollPosition, ', synthetic: ', viewport.syntheticScrollPosition);
+    if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
+      const ssp = viewport.scrollPosition;
+      setTimeout(() => {
+        if (ssp === viewport.scrollPosition) {
+          viewport.syntheticScrollPosition = null;
+        }
+      });
+      return;
     }
     this.run({
       scroll: true,
-      direction: calculateFlowDirection(this.workflow.viewport)
+      direction: calculateFlowDirection(viewport)
     });
   }
 

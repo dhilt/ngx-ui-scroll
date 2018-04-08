@@ -5,7 +5,7 @@ export const calculateFlowDirection = (viewport: Viewport): Direction => {
   const scrollPosition = viewport.scrollPosition;
   const viewportSize = viewport.scrollable.scrollHeight;
   const backwardPadding = viewport.padding[Direction.backward].size;
-  if (scrollPosition < backwardPadding) {
+  if (scrollPosition < backwardPadding || scrollPosition === 0) {
     return Direction.backward;
   }
   if (scrollPosition <= viewportSize - backwardPadding) {

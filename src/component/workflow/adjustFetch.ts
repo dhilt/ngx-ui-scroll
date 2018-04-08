@@ -58,6 +58,7 @@ export default class AdjustFetch {
         paddingForward.size = paddingSize + diff;
         viewport.scrollPosition += diff;
       }
+      viewport.syntheticScrollPosition = viewport.scrollPosition;
     }
   }
 

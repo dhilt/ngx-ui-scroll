@@ -43,6 +43,7 @@ export class Misc {
 
   itemHeight = 20;
   itemWidth = 90;
+  shared = {};
 
   constructor(fixture: ComponentFixture <any>) {
     this.fixture = fixture;

@@ -74,12 +74,12 @@ const datasourceStore = {
     get: limitedDatasourceGet(1, 100, 1)
   },
 
-  'limited-100-no-delay': <Datasource>{
+  'limited-1-100-no-delay': <Datasource>{
     get: limitedDatasourceGet(1, 100)
   },
 
-  'limited-50-200-no-delay': <Datasource>{
-    get: limitedDatasourceGet(50, 200)
+  'limited-51-200-no-delay': <Datasource>{
+    get: limitedDatasourceGet(51, 200)
   },
 
   'default-bad-settings': <Datasource>{

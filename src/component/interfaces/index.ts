@@ -1,6 +1,6 @@
 import { Datasource } from './datasource';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
-import { Run, Previous } from './run';
+import { Run } from './run';
 
-export { Datasource, Direction, Settings, DevSettings, Run, Previous };
+export { Datasource, Direction, Settings, DevSettings, Run };

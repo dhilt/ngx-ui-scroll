@@ -37,14 +37,19 @@ export default class ShouldFetch {
   }
 
   static adjustPaddings(workflow: Workflow) {
+    const previousClip = workflow.clip.previous;
+    if (!previousClip.isSet()) {
+      return;
+    }
     const direction = workflow.direction;
     const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
-    const prev = workflow.previous;
-    const clipSize = prev && prev[`${opposite}ClipSize`];
-    if (!workflow.buffer.size && clipSize && prev.direction !== workflow.direction) {
+    const clipSize = previousClip[`${opposite}Size`];
+    const clipDirection = previousClip.direction;
+    if (!workflow.buffer.size && clipSize && clipDirection !== workflow.direction) {
       workflow.viewport.padding[direction].size -= clipSize;
       workflow.viewport.padding[opposite].size += clipSize;
     }
+    previousClip.reset();
   }
 
 }

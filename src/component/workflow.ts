@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
 
-import { Datasource, Direction, Run, Previous } from './interfaces/index';
+import { Datasource, Direction, Run } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
@@ -27,18 +27,16 @@ export class Workflow {
   public pending: boolean;
   public direction: Direction;
   public scroll: boolean;
-  public next: boolean;
   public fetch: FetchModel;
   public clip: ClipModel;
-  public previous: Previous;
 
+  private next: Run;
   private logs: Array<any> = [];
 
   constructor(context) {
     this.resolver = Observable.create(_observer => this.observer = _observer);
 
     this.bindData = () => {
-      this.next = true;
       context.changeDetector.markForCheck();
     };
     this.datasource = checkDatasource(context.datasource);
@@ -54,8 +52,7 @@ export class Workflow {
 
   start(options: Run = {}) {
     this.count++;
-    this.log(`---=== Workflow ${this.count} run`);
-    this.next = false;
+    this.log(`---=== Workflow ${this.count} run`, options);
     this.pending = true;
     this.direction = options.direction;
     this.scroll = options.scroll || false;
@@ -75,19 +72,26 @@ export class Workflow {
     this.pending = false;
     this.countDone++;
     this.viewport.saveScrollPosition();
-    if (this.clip.shouldClip) {
-      this.previous = {
-        backwardClipSize: this.clip[Direction.backward].size,
-        forwardClipSize: this.clip[Direction.forward].size,
-        direction: this.direction
+    this.finalize();
+  }
+
+  analyse() {
+    this.next = null;
+    if (this.fetch.shouldFetch || this.clip.shouldClip) {
+      this.next = { direction: this.direction, scroll: this.scroll };
+    }
+    if (this.fetch.shouldFetch && !this.fetch.hasNewItems) {
+      this.next = {
+        direction: this.direction === Direction.forward ? Direction.backward : Direction.forward,
+        scroll: false
       };
     }
-    this.finalize();
   }
 
   done() {
     this.log(`---=== Workflow ${this.count} done`);
     this.end();
+    this.analyse();
     this.observer.next(this.next);
   }
 
@@ -99,6 +103,17 @@ export class Workflow {
 
   dispose() {
     this.observer.complete();
+  }
+
+  stat(str?) {
+    if (this.settings.debug) {
+      this.log(str ? str + ' —' : '',
+        'scroll:', this.viewport.scrollPosition,
+        'bwd_p:', this.viewport.padding.backward.size,
+        'fwd_p:', this.viewport.padding.forward.size,
+        'items:', this.buffer.size
+      );
+    }
   }
 
   log(...args) {

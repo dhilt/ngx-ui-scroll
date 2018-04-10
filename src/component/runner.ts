@@ -42,9 +42,8 @@ export class WorkflowRunner {
     this.run();
   }
 
-  scroll($event) {
+  scroll() {
     const viewport = this.workflow.viewport;
-    console.log('scrollPosition: ', viewport.scrollPosition, ', synthetic: ', viewport.syntheticScrollPosition);
     if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
       const ssp = viewport.scrollPosition;
       setTimeout(() => {
@@ -60,15 +59,12 @@ export class WorkflowRunner {
     });
   }
 
-  resolve(next: boolean) {
+  resolve(next: Run = null) {
     if (this.runNew) {
       this.run(this.runNew);
       this.runNew = null;
     } else if (next) {
-      this.run({
-        direction: this.workflow.direction,
-        scroll: this.workflow.scroll
-      });
+      this.run(next);
     } else if (this.runQueue) {
       this.run(this.runQueue);
       this.runQueue = null;
@@ -126,7 +122,7 @@ export class WorkflowRunner {
   }
 
   finalize() {
-    this.workflow.logForce(`~~~~~~ WF Cycle ${this.count} FINALIZED ~~~~~~`);
+    this.workflow.log(`~~~~~~ WF Cycle ${this.count} FINALIZED ~~~~~~`);
     const count = this.count;
     setTimeout(() => {
       if (count === this.count && !this.workflow.pending) {

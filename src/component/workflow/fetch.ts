@@ -7,6 +7,7 @@ export default class Fetch {
     if (!workflow.fetch[direction].shouldFetch) {
       return Promise.resolve(workflow);
     }
+    // workflow.stat('start fetch');
     const result = new Promise((resolve, reject) => {
       const success = (data) => {
         Fetch.success(data, workflow);

@@ -77,10 +77,10 @@ export class Workflow {
 
   analyse() {
     this.next = null;
-    if (this.fetch.shouldFetch || this.clip.shouldClip) {
+    if (this.fetch.hasNewItems || this.clip.shouldClip) {
       this.next = { direction: this.direction, scroll: this.scroll };
     }
-    if (this.fetch.shouldFetch && !this.fetch.hasNewItems) {
+    if (!this.buffer.size && this.fetch.shouldFetch && !this.fetch.hasNewItems) {
       this.next = {
         direction: this.direction === Direction.forward ? Direction.backward : Direction.forward,
         scroll: false

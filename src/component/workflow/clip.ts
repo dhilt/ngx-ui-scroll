@@ -7,12 +7,14 @@ export default class Clip {
     if (!workflow.clip.shouldClip) {
       return workflow;
     }
+    // workflow.stat('start clip');
     Clip.runByDirection(Direction.forward, workflow);
     Clip.runByDirection(Direction.backward, workflow);
     Clip.processBuffer(workflow);
     workflow.bindData();
     return new Promise((resolve, reject) =>
       setTimeout(() => {
+        // workflow.stat('end clip');
         Clip.processClip(workflow);
         resolve(workflow);
       })

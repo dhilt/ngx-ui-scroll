@@ -11,9 +11,11 @@ export default class ShouldFetch {
     workflow.fetch[direction].shouldFetch = ShouldFetch.checkEOF(workflow) ? false :
       (direction === Direction.forward) ? paddingEdge < limit : paddingEdge > limit;
 
+    // workflow.stat('should fetch');
+
     if (workflow.fetch[direction].shouldFetch) {
       ShouldFetch.setStartIndex(workflow);
-      ShouldFetch.adjustPaddings(workflow);
+      ShouldFetch.processPreviousClip(workflow);
     }
     return workflow;
   }
@@ -36,18 +38,24 @@ export default class ShouldFetch {
     workflow.fetch[direction].startIndex = start;
   }
 
-  static adjustPaddings(workflow: Workflow) {
+  static processPreviousClip(workflow: Workflow) {
     const previousClip = workflow.clip.previous;
     if (!previousClip.isSet()) {
       return;
     }
     const direction = workflow.direction;
-    const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
+    const forward = direction === Direction.forward;
+    const opposite = forward ? Direction.backward : Direction.forward;
     const clipSize = previousClip[`${opposite}Size`];
-    const clipDirection = previousClip.direction;
-    if (!workflow.buffer.size && clipSize && clipDirection !== workflow.direction) {
+    if (clipSize && previousClip.direction !== workflow.direction) {
       workflow.viewport.padding[direction].size -= clipSize;
       workflow.viewport.padding[opposite].size += clipSize;
+      if (!forward) {
+        workflow.buffer.lastIndex[opposite] = workflow.buffer.lastIndex[direction] - 1;
+      } else {
+        workflow.buffer.lastIndex[direction] = workflow.buffer.lastIndex[opposite];
+      }
+      // workflow.stat('should fetch – [[adjust]]');
     }
     previousClip.reset();
   }

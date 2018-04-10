@@ -6,6 +6,7 @@ export default class Render {
     if (!workflow.fetch.hasNewItems) {
       return workflow;
     }
+    // workflow.stat('start render');
     workflow.bindData();
     return new Promise((resolve, reject) =>
       setTimeout(() => {

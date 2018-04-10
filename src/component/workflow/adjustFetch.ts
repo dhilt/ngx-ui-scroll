@@ -9,6 +9,7 @@ export default class AdjustFetch {
     if (!items) {
       return;
     }
+    // workflow.stat('start adjust');
     AdjustFetch.processFetchedItems(items);
     const height = Math.round(
       Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
@@ -18,6 +19,7 @@ export default class AdjustFetch {
     } else {
       AdjustFetch.runBackward(workflow, height);
     }
+    // workflow.stat('end adjust');
     return workflow;
   }
 

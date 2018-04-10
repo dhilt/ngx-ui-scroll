@@ -62,6 +62,9 @@ export class FetchModel {
   }
 
   get hasNewItems(): boolean {
-    return !!(this[Direction.forward].newItemsData || this[Direction.backward].newItemsData);
+    return !!(
+      (this[Direction.forward].newItemsData && this[Direction.forward].newItemsData.length) ||
+      (this[Direction.backward].newItemsData && this[Direction.backward].newItemsData.length)
+    );
   }
 }

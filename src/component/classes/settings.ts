@@ -16,7 +16,7 @@ export const minSettings: SettingsInterface = {
 
 export const defaultDevSettings: DevSettingsInterface = {
   debug: false, // logging is enabled if true; need to turn off in release
-  immediateLog: false, // logging is not immediate if false, it could be forced via Workflow.logForce call
+  immediateLog: true, // logging is not immediate if false, it could be forced via Workflow.logForce call
   itemIdPrefix: '', // todo : scroll instance index ?
   clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,

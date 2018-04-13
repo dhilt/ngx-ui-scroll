@@ -1,5 +1,3 @@
-import { async } from '@angular/core/testing';
-
 import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
@@ -15,6 +13,7 @@ export interface TestBedConfig {
   templateSettings?: TemplateSettings;
   toThrow?: boolean;
   custom?: any;
+  timeout?: number;
 }
 
 interface MakeTestConfig {
@@ -60,10 +59,11 @@ const generateMetaTitle = (config: TestBedConfig): string => {
 
 export const makeTest = (data: MakeTestConfig) => {
   describe(generateMetaTitle(data.config), () => {
+    let _it, timeout = 2000;
     if (data.config) {
       let misc: Misc;
       let error;
-      beforeEach(async(() => {
+      beforeEach(() => {
         const datasourceClass = data.config.datasourceClass ?
           data.config.datasourceClass :
           generateDatasourceClass(
@@ -78,10 +78,12 @@ export const makeTest = (data: MakeTestConfig) => {
         } catch (_error) {
           error = _error && _error.message;
         }
-      }));
-      it(data.title, (done) => data.it(data.config.toThrow ? error : misc)(done));
+      });
+      _it = (done) => data.it(data.config.toThrow ? error : misc)(done);
+      timeout = data.config.timeout || timeout;
     } else {
-      it(data.title, data.it);
+      _it = data.it;
     }
+    it(data.title, _it, timeout);
   });
 };

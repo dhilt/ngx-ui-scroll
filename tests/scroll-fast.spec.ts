@@ -113,5 +113,4 @@ describe('Fast Scroll Spec', () => {
     )
   );
 
-
 });

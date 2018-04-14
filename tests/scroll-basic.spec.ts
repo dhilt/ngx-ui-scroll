@@ -57,7 +57,8 @@ const massBouncingScrollsConfigList_fwd =
       direction: Direction.forward,
       count: (3 + index) * 2, // 3-5 (fwd + bwd) scroll events per config
       bouncing: true
-    }
+    },
+    timeout: 3500
   }));
 
 const massBouncingScrollsConfigList_bwd =
@@ -67,7 +68,8 @@ const massBouncingScrollsConfigList_bwd =
       direction: Direction.backward,
       count: (3 + index) * 2, // 3-5 (fwd + bwd) scroll events per config
       bouncing: true
-    }
+    },
+    timeout: 3500
   }));
 
 const massTwoDirectionalScrollsConfigList_fwd =
@@ -77,7 +79,8 @@ const massTwoDirectionalScrollsConfigList_fwd =
       direction: Direction.forward,
       count: (3 + index) * 2, // 3-5 fwd + 3-5 bwd scroll events per config
       mass: true
-    }
+    },
+    timeout: 3000
   }));
 
 const massTwoDirectionalScrollsConfigList_bwd =
@@ -87,7 +90,8 @@ const massTwoDirectionalScrollsConfigList_bwd =
       direction: Direction.backward,
       count: (3 + index) * 2, // 3-5 fwd + 3-5 bwd scroll events per config
       mass: true
-    }
+    },
+    timeout: 3000
   }));
 
 const doScrollMax = (config, misc) => {

@@ -107,11 +107,11 @@ export class Workflow {
 
   stat(str?) {
     if (this.settings.debug) {
-      this.log(str ? str + ' —' : '',
-        'scroll:', this.viewport.scrollPosition,
-        'bwd_p:', this.viewport.padding.backward.size,
-        'fwd_p:', this.viewport.padding.forward.size,
-        'items:', this.buffer.size
+      this.log((str ? str + ' — ' : '') +
+        'scroll: ' + this.viewport.scrollPosition + ', ' +
+        'bwd_p: ' + this.viewport.padding.backward.size + ', ' +
+        'fwd_p: ' + this.viewport.padding.forward.size + ', ' +
+        'items: ' + this.buffer.size
       );
     }
   }

@@ -4,6 +4,7 @@ import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources';
+import { async } from '@angular/core/testing';
 
 export interface TestBedConfig {
   datasourceClass?: any;
@@ -63,7 +64,7 @@ export const makeTest = (data: MakeTestConfig) => {
     if (data.config) {
       let misc: Misc;
       let error;
-      beforeEach(() => {
+      beforeEach(async(() => {
         const datasourceClass = data.config.datasourceClass ?
           data.config.datasourceClass :
           generateDatasourceClass(
@@ -78,7 +79,7 @@ export const makeTest = (data: MakeTestConfig) => {
         } catch (_error) {
           error = _error && _error.message;
         }
-      });
+      }));
       _it = (done) => data.it(data.config.toThrow ? error : misc)(done);
       timeout = data.config.timeout || timeout;
     } else {

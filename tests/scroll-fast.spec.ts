@@ -7,19 +7,22 @@ describe('Fast Scroll Spec', () => {
     datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
     datasourceDevSettings: { paddingForwardSize: 2000 },
     templateSettings: { viewportHeight: 100 },
-    custom: { items: 100, bounce: 7, start: 'top' }
+    custom: { items: 100, bounce: 5, start: 'top' },
+    timeout: 5000
   }, {
     datasourceName: 'limited-1-100-no-delay',
     datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 0.3 },
     datasourceDevSettings: { paddingForwardSize: 2000 },
     templateSettings: { viewportHeight: 110 },
-    custom: { items: 100, bounce: 10, start: 'top' }
+    custom: { items: 100, bounce: 10, start: 'top' },
+    timeout: 5000
   }, {
     datasourceName: 'limited-51-200-no-delay',
     datasourceSettings: { startIndex: 51, bufferSize: 7, padding: 1.1 },
     datasourceDevSettings: { paddingForwardSize: 3000 },
     templateSettings: { viewportHeight: 69 },
-    custom: { items: 150, bounce: 12, start: 'top' }
+    custom: { items: 150, bounce: 6, start: 'top' },
+    timeout: 5000
   }];
 
   const configBofList = configList.map(config => ({
@@ -31,58 +34,60 @@ describe('Fast Scroll Spec', () => {
   }));
 
   const runFastScroll = (misc, customConfig) => {
-    misc.shared.wfCountFin = -1;
+    misc.shared.fin = false;
 
-    const isTop = customConfig.start === 'top';
-    let bounce = 0;
-    const scr = () => new Promise(success => {
+    const scr = (iteration) => new Promise(success => {
       setTimeout(() => {
         misc.scrollMax();
         setTimeout(() => {
-          if (bounce++ !== customConfig.bounce || customConfig.start === 'top') {
+          if (iteration < customConfig.bounce || customConfig.start !== 'top') {
             misc.scrollMin();
           }
           success();
         }, 25);
       }, 25);
     });
-    let result = scr();
-    for (let i = 0; i < customConfig.bounce; i++) {
-      result = result.then(scr);
+    let result = scr(0);
+    for (let i = 1; i <= customConfig.bounce; i++) {
+      result = result.then(() => scr(i));
     }
-    result.then(() =>
-      setTimeout(() =>
-        misc.shared.wfCountFin = misc.workflowRunner.count + 1
-      )
-    );
+    result.then(() => misc.shared.fin = true);
   };
 
-  const itFastScroll = (config) => (misc) => (done) => {
-    spyOn(misc.workflowRunner, 'stop').and.callFake(() => {
-      if (misc.workflowRunner.count === misc.shared.wfCountFin) {
-        const size = misc.getScrollableSize();
-        const itemsCount = misc.workflow.buffer.size;
-        const bufferHeight = itemsCount * misc.itemHeight;
-        const _size = misc.padding.backward.getSize() + misc.padding.forward.getSize() + bufferHeight;
-        const totalItemsHeight = config.custom.items * misc.itemHeight;
+  const expectations = (config, misc, done) => {
+    const size = misc.getScrollableSize();
+    const itemsCount = misc.workflow.buffer.size;
+    const bufferHeight = itemsCount * misc.itemHeight;
+    const _size = misc.padding.backward.getSize() + misc.padding.forward.getSize() + bufferHeight;
+    const totalItemsHeight = config.custom.items * misc.itemHeight;
+    expect(size).toBe(_size);
+    expect(size).toBe(totalItemsHeight);
+    expect(itemsCount).toBeGreaterThan(0);
+    if (itemsCount) {
+      if (misc.getScrollPosition() === 0) {
+        const topElement = misc.workflow.buffer.items[0].element;
+        const topElementIndex = misc.getElementIndex(topElement);
+        expect(topElementIndex).toBe(config.datasourceSettings.startIndex);
+      } else {
+        const bottomElement = misc.workflow.buffer.items[misc.workflow.buffer.size - 1].element;
+        const bottomElementIndex = misc.getElementIndex(bottomElement);
+        expect(bottomElementIndex).toBe(config.datasourceSettings.startIndex + config.custom.items - 1);
+      }
+    }
+    done();
+  };
 
-        misc.workflow.logForce();
-
-        expect(size).toBe(_size);
-        expect(size).toBe(totalItemsHeight);
-        expect(itemsCount).toBeGreaterThan(0);
-        if (itemsCount) {
-          if (config.custom.start === 'top') {
-            const topElement = misc.workflow.buffer.items[0].element;
-            const topElementIndex = misc.getElementIndex(topElement);
-            expect(topElementIndex).toBe(config.datasourceSettings.startIndex);
-          } else {
-            const bottomElement = misc.workflow.buffer.items[misc.workflow.buffer.size - 1].element;
-            const bottomElementIndex = misc.getElementIndex(bottomElement);
-            expect(bottomElementIndex).toBe(config.datasourceSettings.startIndex + config.custom.items - 1);
-          }
+  const checkFastScroll = (config) => (misc) => (done) => {
+    let fin = false, timeout;
+    spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
+      if (misc.shared.fin) {
+        if (!fin) {
+          timeout = setTimeout(() => expectations(config, misc, done), 150);
+          fin = true;
+        } else {
+          clearTimeout(timeout);
+          setTimeout(() => expectations(config, misc, done), 150);
         }
-        done();
       }
     });
     runFastScroll(misc, config.custom);
@@ -93,7 +98,7 @@ describe('Fast Scroll Spec', () => {
       makeTest({
         title: 'should reach BOF without gaps',
         config,
-        it: itFastScroll(config)
+        it: checkFastScroll(config)
       })
     )
   );
@@ -103,9 +108,10 @@ describe('Fast Scroll Spec', () => {
       makeTest({
         title: 'should reach EOF without gaps',
         config,
-        it: itFastScroll(config)
+        it: checkFastScroll(config)
       })
     )
   );
+
 
 });

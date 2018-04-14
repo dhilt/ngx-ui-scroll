@@ -123,15 +123,6 @@ export class WorkflowRunner {
 
   finalize() {
     this.workflow.log(`~~~~~~ WF Cycle ${this.count} FINALIZED ~~~~~~`);
-    const count = this.count;
-    setTimeout(() => {
-      if (count === this.count && !this.workflow.pending) {
-        this.stop();
-      }
-    });
-  }
-
-  stop() {
   }
 
 }

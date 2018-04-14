@@ -438,4 +438,86 @@ datasource: Datasource = &#123;
     </p>
 
   </div>
+
+  <div class="demo">
+    <h3 id="different-item-heights">
+      Different item heights
+      <a href="#different-item-heights">#</a>
+    </h3>
+
+    <div class="work">
+      <div style="float: left">
+        <div class="viewport different" id="different-heights">
+          <div *uiScroll="let item of datasourceDifferentHeights">
+            <div [style.height]="item.height + 'px'">
+              <b>{{item.text}}</b>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="log elements">
+        DOM elements
+        <pre>{{elements('different-heights')}}</pre>
+      </div>
+      <div class="log datasource">
+        Datasource.get log
+        <pre>{{logDifferentHeights}}</pre>
+      </div>
+      <div class="clearfix mb-3"></div>
+    </div>
+
+    <div class="sources">
+      <tabset>
+        <tab heading="Component">
+<pre class="prettyprint" ngNonBindable>
+datasource: Datasource = &#123;
+  get: (index, count, success) => &#123;
+    const MIN = 1, MAX = 75;
+    const data = [];
+    const start = Math.max(MIN, index);
+    const end = Math.min(index + count - 1, MAX);
+    if (start <= end) &#123;
+      for (let i = index; i <= index + count - 1; i++) &#123;
+        data.push(&#123; id: i, text: 'item #' + i, height: 20 + i &#125;);
+      &#125;
+    &#125;
+    success(data);
+  &#125;
+&#125;
+</pre>
+        </tab>
+        <tab heading="Template">
+<pre class="prettyprint lang-html" ngNonBindable>
+&lt;div class="viewport"&gt;
+  &lt;div *uiScroll="let item of datasource"&gt;
+    &lt;div [style.height]="item.height + 'px'"&gt;
+      &lt;div class="item-horizontal"&gt;{{item.text}}&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+        </tab>
+        <tab heading="CSS">
+<pre class="prettyprint" ngNonBindable>
+ body &#123;
+  line-height: 25px;
+&#125;
+.viewport &#123;
+  width: 175px;
+  height: 175px;
+  overflow-y: auto;
+  overflow-anchor: none;
+&#125;
+</pre>
+        </tab>
+      </tabset>
+    </div>
+
+    <p>
+      Scroller works fine with different item heights. To make this sample more strict and to demonstrate the
+      scrollbar parameters' consistency the limited datasource is being used.
+    </p>
+
+  </div>
+
 </div>

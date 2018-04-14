@@ -58,7 +58,7 @@ export class AppComponent {
 
   elements(token: string): string {
     const element = document.getElementById(token);
-    if(!element) {
+    if (!element) {
       return '';
     }
     const count = element.children[0].childElementCount || 0;
@@ -155,6 +155,27 @@ export class AppComponent {
     },
     settings: {
       horizontal: true
+    }
+  };
+
+  // different items heights demo
+
+  countDifferentHeights: number = 0;
+  logDifferentHeights: string = '';
+
+  datasourceDifferentHeights: Datasource = {
+    get: (index, count, success) => {
+      this.logDifferentHeights = `${++this.countDifferentHeights}) get 5 items [${index}, ${index + count - 1}]\n` + this.logDifferentHeights;
+      const MIN = 1, MAX = 75;
+      const data = [];
+      const start = Math.max(MIN, index);
+      const end = Math.min(index + count - 1, MAX);
+      if (start <= end) {
+        for (let i = start; i <= end; i++) {
+          data.push({ id: i, text: 'item #' + i, height: 20 + i });
+        }
+      }
+      success(data);
     }
   };
 

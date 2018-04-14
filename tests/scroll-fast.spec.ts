@@ -1,4 +1,5 @@
 import { makeTest } from './scaffolding/runner';
+import { debounce } from '../src/component/utils/throttle';
 
 describe('Fast Scroll Spec', () => {
 
@@ -40,7 +41,7 @@ describe('Fast Scroll Spec', () => {
       setTimeout(() => {
         misc.scrollMax();
         setTimeout(() => {
-          if (iteration < customConfig.bounce || customConfig.start !== 'top') {
+          if (iteration < customConfig.bounce || customConfig.start === 'top') {
             misc.scrollMin();
           }
           success();
@@ -77,19 +78,23 @@ describe('Fast Scroll Spec', () => {
     done();
   };
 
+  const _expectations = (config, misc, done) => {
+    const position = misc.getScrollPosition();
+    const edgeElement = misc.workflow.buffer.items[position === 0 ? 0 : misc.workflow.buffer.size - 1].element;
+    const edgeElementIndex = misc.getElementIndex(edgeElement);
+    const edgeIndex = config.datasourceSettings.startIndex + (position === 0 ? 0 : config.custom.items - 1);
+    if (edgeIndex === edgeElementIndex) {
+      expectations(config, misc, done);
+    } else {
+      misc[position === 0 ? 'scrollMax' : 'scrollMin']();
+    }
+  };
+
   const checkFastScroll = (config) => (misc) => (done) => {
-    let fin = false, timeout;
-    spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-      if (misc.shared.fin) {
-        if (!fin) {
-          timeout = setTimeout(() => expectations(config, misc, done), 150);
-          fin = true;
-        } else {
-          clearTimeout(timeout);
-          setTimeout(() => expectations(config, misc, done), 150);
-        }
-      }
-    });
+    const _done = debounce(() => _expectations(config, misc, done), 150);
+    spyOn(misc.workflowRunner, 'finalize').and.callFake(() =>
+      misc.shared.fin && _done()
+    );
     runFastScroll(misc, config.custom);
   };
 

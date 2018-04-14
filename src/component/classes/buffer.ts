@@ -38,6 +38,10 @@ export class Buffer {
     return this._items;
   }
 
+  get size(): number {
+    return this._items.length;
+  }
+
   setLastIndices() {
     this.lastIndex[Direction.backward] = this.items[0].$index;
     this.lastIndex[Direction.forward] = this.items[this.items.length - 1].$index;

@@ -1,19 +1,20 @@
-import { async } from '@angular/core/testing';
-
-import { Settings } from '../../src/component/interfaces';
+import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources';
+import { async } from '@angular/core/testing';
 
 export interface TestBedConfig {
   datasourceClass?: any;
   datasourceName?: string;
   datasourceSettings?: Settings | any;
+  datasourceDevSettings?: DevSettings;
   templateSettings?: TemplateSettings;
   toThrow?: boolean;
   custom?: any;
+  timeout?: number;
 }
 
 interface MakeTestConfig {
@@ -59,12 +60,18 @@ const generateMetaTitle = (config: TestBedConfig): string => {
 
 export const makeTest = (data: MakeTestConfig) => {
   describe(generateMetaTitle(data.config), () => {
+    let _it, timeout = 2000;
     if (data.config) {
       let misc: Misc;
       let error;
       beforeEach(async(() => {
-        const datasourceClass = data.config.datasourceClass ? data.config.datasourceClass :
-          generateDatasourceClass(data.config.datasourceName || 'default', data.config.datasourceSettings);
+        const datasourceClass = data.config.datasourceClass ?
+          data.config.datasourceClass :
+          generateDatasourceClass(
+            data.config.datasourceName || 'default',
+            data.config.datasourceSettings,
+            data.config.datasourceDevSettings
+          );
         const templateData = generateTemplate(data.config.templateSettings);
         try {
           const fixture = configureTestBed(datasourceClass, templateData.template);
@@ -73,9 +80,11 @@ export const makeTest = (data: MakeTestConfig) => {
           error = _error && _error.message;
         }
       }));
-      it(data.title, (done) => data.it(data.config.toThrow ? error : misc)(done));
+      _it = (done) => data.it(data.config.toThrow ? error : misc)(done);
+      timeout = data.config.timeout || timeout;
     } else {
-      it(data.title, data.it);
+      _it = data.it;
     }
+    it(data.title, _it, timeout);
   });
 };

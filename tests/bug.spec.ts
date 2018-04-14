@@ -17,7 +17,8 @@ describe('Bug Spec', () => {
     const config = {
       datasourceName: 'default-delay-25',
       datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
-      templateSettings: { viewportHeight: 100 }
+      templateSettings: { viewportHeight: 100 },
+      timeout: 4000
     };
 
     makeTest({

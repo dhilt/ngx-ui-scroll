@@ -15,22 +15,27 @@ const configList = [{
   templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
 }];
 
-const clipAlways = { clipAfterFetchOnly: false, clipAfterScrollOnly: false };
+const datasourceDevSettings = { clipAfterFetchOnly: false, clipAfterScrollOnly: false };
 
 const configListWithClip = [{
-  datasourceSettings: { startIndex: 1, bufferSize: 2, padding: 1, ...clipAlways },
+  datasourceSettings: { startIndex: 1, bufferSize: 2, padding: 1 },
+  datasourceDevSettings,
   templateSettings: { viewportHeight: 20 }
 }, {
-  datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 9.1, ...clipAlways },
+  datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 9.1 },
+  datasourceDevSettings,
   templateSettings: { viewportHeight: 70 }
 }, {
-  datasourceSettings: { startIndex: 33, bufferSize: 4, padding: 2, ...clipAlways },
+  datasourceSettings: { startIndex: 33, bufferSize: 4, padding: 2 },
+  datasourceDevSettings,
   templateSettings: { viewportHeight: 99 }
 }, {
-  datasourceSettings: { startIndex: -50, bufferSize: 10, padding: 0.3, ...clipAlways },
+  datasourceSettings: { startIndex: -50, bufferSize: 10, padding: 0.3 },
+  datasourceDevSettings,
   templateSettings: { viewportHeight: 400 }
 }, {
-  datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, horizontal: true, ...clipAlways },
+  datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, horizontal: true },
+  datasourceDevSettings,
   templateSettings: { viewportWidth: 509, itemWidth: 90, horizontal: true }
 }];
 

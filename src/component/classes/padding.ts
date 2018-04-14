@@ -7,10 +7,13 @@ export class Padding {
   direction: Direction;
   routines: Routines;
 
-  constructor(element, direction: Direction, routines: Routines) {
+  constructor(element, direction: Direction, routines: Routines, initialSize?: number) {
     this.element = element.querySelector(`[data-padding-${direction}]`);
     this.direction = direction;
     this.routines = routines;
+    if (initialSize) {
+      this.routines.setSizeStyle(this.element, initialSize);
+    }
   }
 
   get size(): number {
@@ -18,7 +21,7 @@ export class Padding {
   }
 
   set size(value: number) {
-    this.routines.setSizeStyle(this.element, value);
+    this.routines.setSizeStyle(this.element, Math.round(value));
   }
 
   getEdge(): number {

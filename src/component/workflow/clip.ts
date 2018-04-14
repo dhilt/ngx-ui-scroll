@@ -7,20 +7,14 @@ export default class Clip {
     if (!workflow.clip.shouldClip) {
       return workflow;
     }
+    // workflow.stat('start clip');
     Clip.runByDirection(Direction.forward, workflow);
     Clip.runByDirection(Direction.backward, workflow);
-
-    workflow.buffer.items = workflow.buffer.items.filter(item => {
-      if (item.toRemove) {
-        workflow.buffer.cache.add(item);
-        item.hide();
-        return false;
-      }
-      return true;
-    });
+    Clip.processBuffer(workflow);
     workflow.bindData();
     return new Promise((resolve, reject) =>
       setTimeout(() => {
+        // workflow.stat('end clip');
         Clip.processClip(workflow);
         resolve(workflow);
       })
@@ -33,6 +27,20 @@ export default class Clip {
     }
     const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
     workflow.viewport.padding[opposite].size += workflow.clip[direction].size;
+  }
+
+  static processBuffer(workflow: Workflow) {
+    workflow.buffer.items = workflow.buffer.items.filter(item => {
+      if (item.toRemove) {
+        workflow.buffer.cache.add(item);
+        item.hide();
+        return false;
+      }
+      return true;
+    });
+    if (!workflow.buffer.size) {
+      workflow.clip.previous.set(workflow.direction);
+    }
   }
 
   static processClip(workflow: Workflow) {

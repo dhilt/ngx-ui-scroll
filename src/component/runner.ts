@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 
 import { Workflow } from './workflow';
-import { throttle } from './utils/index';
+import { throttle, calculateFlowDirection } from './utils/index';
 import { Direction, Run } from './interfaces/index';
 
 import ShouldFetch from './workflow/shouldFetch';
@@ -34,37 +34,37 @@ export class WorkflowRunner {
   }
 
   initialize() {
-    const flow = this.workflow;
-    const onScroll = ($event) => this.scroll($event);
-
     this.onScrollListener =
-      this.context.renderer.listen(flow.viewport.scrollable, 'scroll', throttle(onScroll, 100));
-    this.itemsSubscription = flow.buffer.$items.subscribe(items => this.context.items = items);
-    this.flowResolverSubscription = flow.resolver.subscribe(this.resolve.bind(this));
+      this.context.renderer.listen(this.workflow.viewport.scrollable, 'scroll', this.scroll.bind(this));
+    this.itemsSubscription = this.workflow.buffer.$items.subscribe(items => this.context.items = items);
+    this.flowResolverSubscription = this.workflow.resolver.subscribe(this.resolve.bind(this));
 
     this.run();
   }
 
-  scroll($event) {
-    if (this.workflow.viewport.syntheticScrollPosition !== null) {
-      if (this.workflow.viewport.scrollPosition === this.workflow.viewport.syntheticScrollPosition) {
-        this.workflow.viewport.syntheticScrollPosition = null;
-        return;
-      }
-      this.workflow.viewport.syntheticScrollPosition = null;
+  scroll() {
+    const viewport = this.workflow.viewport;
+    if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
+      const ssp = viewport.scrollPosition;
+      setTimeout(() => {
+        if (ssp === viewport.scrollPosition) {
+          viewport.syntheticScrollPosition = null;
+        }
+      });
+      return;
     }
-    this.run({ scroll: true });
+    this.run({
+      scroll: true,
+      direction: calculateFlowDirection(viewport)
+    });
   }
 
-  resolve(next: boolean) {
+  resolve(next: Run = null) {
     if (this.runNew) {
       this.run(this.runNew);
       this.runNew = null;
     } else if (next) {
-      this.run({
-        direction: this.workflow.direction,
-        scroll: this.workflow.scroll
-      });
+      this.run(next);
     } else if (this.runQueue) {
       this.run(this.runQueue);
       this.runQueue = null;
@@ -121,8 +121,8 @@ export class WorkflowRunner {
     this.workflow.dispose();
   }
 
-  finalize() { // stop queue
-    this.workflow.log(`~~~~~~ WF Cycle ${this.count} DONE ~~~~~~`);
+  finalize() {
+    this.workflow.log(`~~~~~~ WF Cycle ${this.count} FINALIZED ~~~~~~`);
   }
 
 }

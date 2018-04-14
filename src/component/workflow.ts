@@ -27,20 +27,21 @@ export class Workflow {
   public pending: boolean;
   public direction: Direction;
   public scroll: boolean;
-  public next: boolean;
   public fetch: FetchModel;
   public clip: ClipModel;
+
+  private next: Run;
+  private logs: Array<any> = [];
 
   constructor(context) {
     this.resolver = Observable.create(_observer => this.observer = _observer);
 
     this.bindData = () => {
-      this.next = true;
       context.changeDetector.markForCheck();
     };
     this.datasource = checkDatasource(context.datasource);
 
-    this.settings = new Settings(context.datasource.settings);
+    this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
@@ -49,22 +50,14 @@ export class Workflow {
     this.clip = new ClipModel();
   }
 
-  reset() {
-    this.pending = false;
-    this.direction = null;
-    this.scroll = false;
-    this.next = false;
-    this.fetch.reset();
-    this.clip = new ClipModel();
-  }
-
   start(options: Run = {}) {
     this.count++;
-    this.log(`---=== Workflow ${this.count} run`);
-    this.reset();
+    this.log(`---=== Workflow ${this.count} run`, options);
     this.pending = true;
-    this.direction = options.direction || null;
+    this.direction = options.direction;
     this.scroll = options.scroll || false;
+    this.fetch.reset();
+    this.clip.reset();
     return Promise.resolve(this);
   }
 
@@ -82,9 +75,23 @@ export class Workflow {
     this.finalize();
   }
 
+  analyse() {
+    this.next = null;
+    if (this.fetch.hasNewItems || this.clip.shouldClip) {
+      this.next = { direction: this.direction, scroll: this.scroll };
+    }
+    if (!this.buffer.size && this.fetch.shouldFetch && !this.fetch.hasNewItems) {
+      this.next = {
+        direction: this.direction === Direction.forward ? Direction.backward : Direction.forward,
+        scroll: false
+      };
+    }
+  }
+
   done() {
     this.log(`---=== Workflow ${this.count} done`);
     this.end();
+    this.analyse();
     this.observer.next(this.next);
   }
 
@@ -98,9 +105,36 @@ export class Workflow {
     this.observer.complete();
   }
 
+  stat(str?) {
+    if (this.settings.debug) {
+      this.log((str ? str + ' — ' : '') +
+        'scroll: ' + this.viewport.scrollPosition + ', ' +
+        'bwd_p: ' + this.viewport.padding.backward.size + ', ' +
+        'fwd_p: ' + this.viewport.padding.forward.size + ', ' +
+        'items: ' + this.buffer.size
+      );
+    }
+  }
+
   log(...args) {
     if (this.settings.debug) {
-      console.log.apply(this, args);
+      if (this.settings.immediateLog) {
+        console.log.apply(this, args);
+      } else {
+        this.logs.push(args);
+      }
+    }
+  }
+
+  logForce(...args) {
+    if (this.settings.debug) {
+      if (!this.settings.immediateLog && this.logs.length) {
+        this.logs.forEach(logArgs => console.log.apply(this, logArgs));
+        this.logs = [];
+      }
+      if (args.length) {
+        console.log.apply(this, args);
+      }
     }
   }
 

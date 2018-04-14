@@ -6,7 +6,7 @@ export default class ShouldClip {
   static run(workflow: Workflow) {
     const fetchOnly = workflow.settings.clipAfterFetchOnly;
     const scrollOnly = workflow.settings.clipAfterScrollOnly;
-    if (!workflow.buffer.items.length) {
+    if (!workflow.buffer.size) {
       return workflow;
     }
     if (scrollOnly && !workflow.scroll) {
@@ -62,13 +62,16 @@ export default class ShouldClip {
         }
       }
     }
+
     if (start >= 0 && end >= 0) {
+      let itemsToRemove = 0;
       for (i = start; i <= end; i++) {
         items[i].toRemove = true;
+        itemsToRemove++;
       }
       workflow.clip[direction].shouldClip = true;
-      workflow.clip[direction].size =
-        items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
+      workflow.clip[direction].size = items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
+      workflow.clip[direction].items = itemsToRemove;
     }
   }
 

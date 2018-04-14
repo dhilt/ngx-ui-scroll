@@ -1,4 +1,4 @@
-import { Settings as SettingsInterface } from '../interfaces/settings';
+import { Settings as SettingsInterface, DevSettings as DevSettingsInterface } from '../interfaces/settings';
 import { assignSettings } from '../utils/assignSettings';
 
 export const defaultSettings: SettingsInterface = {
@@ -14,22 +14,36 @@ export const minSettings: SettingsInterface = {
   padding: 0.1
 };
 
+export const defaultDevSettings: DevSettingsInterface = {
+  debug: false, // logging is enabled if true; need to turn off in release
+  immediateLog: true, // logging is not immediate if false, it could be forced via Workflow.logForce call
+  itemIdPrefix: '', // todo : scroll instance index ?
+  clipAfterFetchOnly: true,
+  clipAfterScrollOnly: true,
+  paddingForwardSize: 0,
+  paddingBackwardSize: 0
+};
+
 export class Settings implements SettingsInterface {
 
-  // external settings, have defaults
+  // external settings
   startIndex;
   bufferSize;
   padding;
   infinite;
   horizontal;
 
-  // internal settings
-  debug = false; // logging; need to turn off in release
-  itemIdPrefix = ''; // todo : scroll instance index ?
-  clipAfterFetchOnly = true;
-  clipAfterScrollOnly = true;
+  // internal dev settings
+  debug;
+  immediateLog;
+  itemIdPrefix;
+  clipAfterFetchOnly;
+  clipAfterScrollOnly;
+  paddingForwardSize;
+  paddingBackwardSize;
 
-  constructor(settings?: SettingsInterface) {
+  constructor(settings?: SettingsInterface, devSettings?: DevSettingsInterface) {
     assignSettings(this, settings, defaultSettings, minSettings);
+    Object.assign(this, defaultDevSettings, devSettings);
   }
 }

@@ -1,5 +1,5 @@
-import { makeTest } from './scaffolding/runner';
 import { debounce } from '../src/component/utils/throttle';
+import { makeTest } from './scaffolding/runner';
 
 describe('Fast Scroll Spec', () => {
 
@@ -36,7 +36,6 @@ describe('Fast Scroll Spec', () => {
 
   const runFastScroll = (misc, customConfig) => {
     misc.shared.fin = false;
-
     const scr = (iteration) => new Promise(success => {
       setTimeout(() => {
         misc.scrollMax();
@@ -56,13 +55,11 @@ describe('Fast Scroll Spec', () => {
   };
 
   const expectations = (config, misc, done) => {
-    const size = misc.getScrollableSize();
     const itemsCount = misc.workflow.buffer.size;
     const bufferHeight = itemsCount * misc.itemHeight;
     const _size = misc.padding.backward.getSize() + misc.padding.forward.getSize() + bufferHeight;
     const totalItemsHeight = config.custom.items * misc.itemHeight;
-    expect(size).toBe(_size);
-    expect(size).toBe(totalItemsHeight);
+    expect(_size).toBe(totalItemsHeight);
     expect(itemsCount).toBeGreaterThan(0);
     if (itemsCount) {
       if (misc.getScrollPosition() === 0) {
@@ -78,20 +75,31 @@ describe('Fast Scroll Spec', () => {
     done();
   };
 
-  const _expectations = (config, misc, done) => {
+  let expectationsTimer;
+  const preExpectations = (config, misc, done) => {
     const position = misc.getScrollPosition();
-    const edgeElement = misc.workflow.buffer.items[position === 0 ? 0 : misc.workflow.buffer.size - 1].element;
-    const edgeElementIndex = misc.getElementIndex(edgeElement);
-    const edgeIndex = config.datasourceSettings.startIndex + (position === 0 ? 0 : config.custom.items - 1);
-    if (edgeIndex === edgeElementIndex) {
-      expectations(config, misc, done);
+    const buffer = misc.workflow.buffer;
+    const index = position === 0 ? 0 : buffer.size - 1;
+    const runExpectations = () => {
+      const edgeElement = misc.workflow.buffer.items[index].element;
+      const edgeElementIndex = misc.getElementIndex(edgeElement);
+      const edgeIndex = config.datasourceSettings.startIndex + (position === 0 ? 0 : config.custom.items - 1);
+      if (edgeIndex === edgeElementIndex) {
+        expectations(config, misc, done);
+      } else {
+        misc[position === 0 ? 'scrollMax' : 'scrollMin']();
+      }
+    };
+    if (!misc.workflow.pending && buffer.size && buffer.items[index] && buffer.items[index].element) {
+      runExpectations();
     } else {
-      misc[position === 0 ? 'scrollMax' : 'scrollMin']();
+      expectationsTimer = setTimeout(() => preExpectations(config, misc, done), 25);
     }
   };
 
   const checkFastScroll = (config) => (misc) => (done) => {
-    const _done = debounce(() => _expectations(config, misc, done), 150);
+    clearTimeout(expectationsTimer);
+    const _done = debounce(() => preExpectations(config, misc, done), 25);
     spyOn(misc.workflowRunner, 'finalize').and.callFake(() =>
       misc.shared.fin && _done()
     );

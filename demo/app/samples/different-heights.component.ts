@@ -16,9 +16,14 @@ export class DemoDifferentHeightsComponent {
   datasource: Datasource = {
     get: (index, count, success) => {
       this.log = `${++this.count}) get 5 items [${index}, ${index + count - 1}]\n` + this.log;
+      const MIN = 1, MAX = 75;
       const data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({ id: i, text: 'item #' + i });
+      const start = Math.max(MIN, index);
+      const end = Math.min(index + count - 1, MAX);
+      if (start <= end) {
+        for (let i = start; i <= end; i++) {
+          data.push({ id: i, text: 'item #' + i, height: 20 + i });
+        }
       }
       success(data);
     }
@@ -52,14 +57,15 @@ export class DemoDifferentHeightsComponent {
     </div>
   </div>
 </div>`,
-    styles:`body {
-  line-height: 25px;
-}
-.viewport {
+    styles:`.viewport {
   width: 175px;
   height: 175px;
   overflow-y: auto;
   overflow-anchor: none;
+}
+.item {
+  font-weight: bold;
+  height: 25px;
 }`
   };
 

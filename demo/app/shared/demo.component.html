@@ -9,7 +9,10 @@
     <div style="float: left">
       <div class="viewport {{data.addClass || ''}}" id="{{data.id}}">
         <div *uiScroll="let item of datasource">
-          <div class="item {{data.addClass || ''}}">{{item.text}}</div>
+          <div
+            class="item {{data.addClass || ''}}"
+            [style.height]="item.height !== undefined ? item.height + 'px' : null"
+          >{{item.text}}</div>
         </div>
       </div>
     </div>

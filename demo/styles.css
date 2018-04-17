@@ -57,14 +57,6 @@ h3 {
   white-space: nowrap;
 }
 
-.demo .work .viewport div[data-sid] {
-  height: 25px;
-}
-
-.demo .work .viewport.different div[data-sid] {
-  height: auto;
-}
-
 .demo .work .viewport.horizontal div {
   display: inline-block;
 }

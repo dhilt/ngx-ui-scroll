@@ -45,7 +45,7 @@ export class DemoBasicComponent {
     <div class="item">{{item.text}}</div>
   </div>
 </div>`,
-    styles:`.viewport {
+    styles: `.viewport {
   width: 175px;
   height: 175px;
   overflow-y: auto;

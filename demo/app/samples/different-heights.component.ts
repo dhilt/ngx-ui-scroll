@@ -12,6 +12,7 @@ export class DemoDifferentHeightsComponent {
 
   count: number = 0;
   log: string = '';
+  hi = true;
 
   datasource: Datasource = {
     get: (index, count, success) => {
@@ -43,7 +44,7 @@ export class DemoDifferentHeightsComponent {
     const start = Math.max(MIN, index);
     const end = Math.min(index + count - 1, MAX);
     if (start <= end) {
-      for (let i = index; i <= index + count - 1; i++) {
+      for (let i = start; i <= end; i++) {
         data.push({ id: i, text: 'item #' + i, height: 20 + i });
       }
     }
@@ -52,12 +53,12 @@ export class DemoDifferentHeightsComponent {
 }`,
     template: `<div class="viewport">
   <div *uiScroll="let item of datasource">
-    <div [style.height]="item.height + 'px'">
-      <div class="item">{{item.text}}</div>
-    </div>
+     <div class="item" [style.height]="item.height + 'px'">
+      {{item.text}}
+     </div>
   </div>
 </div>`,
-    styles:`.viewport {
+    styles: `.viewport {
   width: 175px;
   height: 175px;
   overflow-y: auto;

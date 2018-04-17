@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { TabsModule } from 'ngx-bootstrap';
 
 import { AppComponent } from './app.component';
+import { NavComponent } from './shared/nav.component';
 import { DemoComponent } from './shared/demo.component';
 import { DemoBasicComponent } from './samples/basic.component';
 import { DemoBufferSizeComponent } from './samples/buffer-size.component'
@@ -17,6 +18,7 @@ import { UiScrollModule } from '../../public_api';
 @NgModule({
   declarations: [
     AppComponent,
+    NavComponent,
     DemoComponent,
     DemoBasicComponent,
     DemoBufferSizeComponent,
@@ -32,5 +34,5 @@ import { UiScrollModule } from '../../public_api';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
-
+export class AppModule {
+}

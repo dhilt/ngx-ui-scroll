@@ -52,7 +52,7 @@ export class DemoHorizontalComponent {
     <div class="item horizontal">{{item.text}}</div>
   </div>
 </div>`,
-    styles:`.viewport.horizontal {
+    styles: `.viewport.horizontal {
   width: 175px;
   height: 100px;
   overflow-anchor: none;

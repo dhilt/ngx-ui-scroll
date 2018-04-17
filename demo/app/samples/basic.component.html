@@ -1,0 +1,22 @@
+<app-demo
+  [datasource]="datasource"
+  [data]="data"
+  [log]="log"
+  [sources]="sources"
+>
+  <p>
+    As it follows from the documentation, a special <em>Datasource</em> object needs to be passed to the
+    <em>*uiScroll</em> directive. The basic ngx-ui-scroll example includes primitive callback-based
+    <em>Datasource.get</em> method implementation with no additional settings. The use on the <em>*uiScroll</em>
+    directive at the template layer is very similar to the use of <em>*ngFor</em> directive in the simplest case. In
+    addition to <em>Datasource</em>, a special viewport container is specified at the template. It defines the
+    scrollable area via <em>height</em> and <em>overflow</em> css properties.
+  </p>
+  <p>
+    <em>Datasource.get</em> log shows us that there are 4 requests of 5 items on the initial load (before
+    scrolling). So we have 20 DOM elements (4 * 5) initially. The number of DOM elements is not constant during
+    user scrolling, but it fluctuates around the initial value. Why do we get 5 items per each
+    <em>datasource.get</em> call? It is so because of default. We may change it via settings object and
+    <em>bufferSize</em> property.
+  </p>
+</app-demo>

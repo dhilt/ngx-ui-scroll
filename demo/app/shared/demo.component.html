@@ -1,0 +1,45 @@
+<div class="demo">
+
+  <h3 id="{{data.titleId}}">
+    {{data.title}}
+    <a href="#{{data.titleId}}">#</a>
+  </h3>
+
+  <div class="work">
+    <div style="float: left">
+      <div class="viewport {{data.addClass || ''}}" id="{{data.id}}">
+        <div *uiScroll="let item of datasource">
+          <div class="item {{data.addClass || ''}}">{{item.text}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="log elements {{data.addClass || ''}}">
+      DOM elements
+      <pre>{{elements(data.id)}}</pre>
+    </div>
+    <div class="log datasource {{data.addClass || ''}}">
+      Datasource.get log
+      <pre>{{log}}</pre>
+    </div>
+    <div class="clearfix mb-3"></div>
+  </div>
+
+  <div class="sources">
+    <tabset>
+      <tab heading="Component">
+        <pre class="prettyprint">{{sources.datasource}}</pre>
+      </tab>
+      <tab heading="Template">
+        <pre class="prettyprint lang-html">{{sources.template}}</pre>
+      </tab>
+      <tab heading="CSS">
+        <pre class="prettyprint">{{sources.styles}}</pre>
+      </tab>
+    </tabset>
+  </div>
+
+  <div class="description">
+    <ng-content></ng-content>
+  </div>
+
+</div>

@@ -1,26 +1,26 @@
-import { Workflow } from '../workflow';
+import { Scroller } from '../scroller';
 import { Direction } from '../interfaces/index';
 
 export default class AdjustFetch {
 
-  static run(workflow: Workflow) {
-    const direction = workflow.direction;
-    const items = workflow.fetch[direction].items;
+  static run(scroller: Scroller) {
+    const direction = scroller.direction;
+    const items = scroller.fetch[direction].items;
     if (!items) {
       return;
     }
-    // workflow.stat('start adjust');
+    // scroller.stat('start adjust');
     AdjustFetch.processFetchedItems(items);
     const height = Math.round(
       Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
     );
     if (direction === Direction.forward) {
-      AdjustFetch.runForward(workflow, height);
+      AdjustFetch.runForward(scroller, height);
     } else {
-      AdjustFetch.runBackward(workflow, height);
+      AdjustFetch.runBackward(scroller, height);
     }
-    // workflow.stat('end adjust');
-    return workflow;
+    // scroller.stat('end adjust');
+    return scroller;
   }
 
   static processFetchedItems(items) {
@@ -32,14 +32,14 @@ export default class AdjustFetch {
     }
   }
 
-  static runForward(workflow: Workflow, size: number) {
-    const paddingForward = workflow.viewport.padding[Direction.forward];
+  static runForward(scroller: Scroller, size: number) {
+    const paddingForward = scroller.viewport.padding[Direction.forward];
     const _paddingSize = paddingForward.size || 0;
     paddingForward.size = Math.max(_paddingSize - size, 0);
   }
 
-  static runBackward(workflow: Workflow, size: number) {
-    const viewport = workflow.viewport;
+  static runBackward(scroller: Scroller, size: number) {
+    const viewport = scroller.viewport;
     const _scrollPosition = viewport.scrollPosition;
     const paddingBackward = viewport.padding[Direction.backward];
     const paddingForward = viewport.padding[Direction.forward];

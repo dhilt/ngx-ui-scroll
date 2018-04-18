@@ -167,20 +167,20 @@ const calculateIt = (config, misc) => {
 };
 
 const shouldScroll = (config) => (misc) => (done) => {
-  const scrollCount = config.custom.count;
-  const count = misc.workflowRunner.count;
+  const wfCount = config.custom.count;
+  const count = misc.scroller.countStart;
   let result = calculateIt(config, misc);
 
-  spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-    if (misc.workflowRunner.count < count + scrollCount) {
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    if (misc.workflow.cyclesDone < count + wfCount) {
       if (config.custom.bouncing) {
         invertDirection(config);
       } else if (config.custom.mass) {
-        if (misc.workflowRunner.count - count === (scrollCount / 2)) {
+        if (misc.workflow.cyclesDone - count === (wfCount / 2)) {
           invertDirection(config);
         }
       }
-      if (misc.workflowRunner.count === count + scrollCount - 1) {
+      if (misc.workflow.cyclesDone === count + wfCount - 1) {
         result = calculateIt(config, misc);
       }
       doScrollMax(config, misc);
@@ -188,8 +188,8 @@ const shouldScroll = (config) => (misc) => (done) => {
       // expectations
       const direction = config.custom.direction;
       const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
-      const edgeItem = misc.workflow.buffer.getEdgeVisibleItem(direction);
-      const oppositeEdgeItem = misc.workflow.buffer.getEdgeVisibleItem(opposite);
+      const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(direction);
+      const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(opposite);
       expect(misc.padding[direction].getSize()).toEqual(result.paddingSize);
       expect(misc.padding[opposite].getSize()).toEqual(result.paddingSizeOpposite);
       expect(edgeItem.$index).toEqual(result.edgeItemIndex);

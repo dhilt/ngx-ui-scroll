@@ -1,54 +1,54 @@
-import { Workflow } from '../workflow';
+import { Scroller } from '../scroller';
 import { Direction } from '../interfaces/direction';
 
 export default class Clip {
 
-  static run(workflow: Workflow) {
-    if (!workflow.clip.shouldClip) {
-      return workflow;
+  static run(scroller: Scroller) {
+    if (!scroller.clip.shouldClip) {
+      return scroller;
     }
-    // workflow.stat('start clip');
-    Clip.runByDirection(Direction.forward, workflow);
-    Clip.runByDirection(Direction.backward, workflow);
-    Clip.processBuffer(workflow);
-    workflow.bindData();
+    // scroller.stat('start clip');
+    Clip.runByDirection(Direction.forward, scroller);
+    Clip.runByDirection(Direction.backward, scroller);
+    Clip.processBuffer(scroller);
+    scroller.bindData();
     return new Promise((resolve, reject) =>
       setTimeout(() => {
-        // workflow.stat('end clip');
-        Clip.processClip(workflow);
-        resolve(workflow);
+        // scroller.stat('end clip');
+        Clip.processClip(scroller);
+        resolve(scroller);
       })
     );
   }
 
-  static runByDirection(direction: Direction, workflow: Workflow) {
-    if (!workflow.clip[direction].shouldClip) {
+  static runByDirection(direction: Direction, scroller: Scroller) {
+    if (!scroller.clip[direction].shouldClip) {
       return;
     }
     const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
-    workflow.viewport.padding[opposite].size += workflow.clip[direction].size;
+    scroller.viewport.padding[opposite].size += scroller.clip[direction].size;
   }
 
-  static processBuffer(workflow: Workflow) {
-    workflow.buffer.items = workflow.buffer.items.filter(item => {
+  static processBuffer(scroller: Scroller) {
+    scroller.buffer.items = scroller.buffer.items.filter(item => {
       if (item.toRemove) {
-        workflow.buffer.cache.add(item);
+        scroller.buffer.cache.add(item);
         item.hide();
         return false;
       }
       return true;
     });
-    if (!workflow.buffer.size) {
-      workflow.clip.previous.set(workflow.direction);
+    if (!scroller.buffer.size) {
+      scroller.clip.previous.set(scroller.direction);
     }
   }
 
-  static processClip(workflow: Workflow) {
-    if (!workflow.clip[Direction.backward].shouldClip) {
-      workflow.buffer.bof = false;
+  static processClip(scroller: Scroller) {
+    if (!scroller.clip[Direction.backward].shouldClip) {
+      scroller.buffer.bof = false;
     }
-    if (!workflow.clip[Direction.forward].shouldClip) {
-      workflow.buffer.eof = false;
+    if (!scroller.clip[Direction.forward].shouldClip) {
+      scroller.buffer.eof = false;
     }
   }
 

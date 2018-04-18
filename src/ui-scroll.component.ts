@@ -4,7 +4,7 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
-import { WorkflowRunner } from './component/runner';
+import { Workflow } from './component/workflow';
 import { Datasource } from './component/interfaces/index';
 import { Item } from './component/classes/item';
 
@@ -34,7 +34,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public items: Array<Item>;
 
   // Component-Workflow integration
-  public workflowRunner: WorkflowRunner;
+  public workflow: Workflow;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
@@ -44,10 +44,10 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.workflowRunner = new WorkflowRunner(this);
+    this.workflow = new Workflow(this);
   }
 
   ngOnDestroy() {
-    this.workflowRunner.dispose();
+    this.workflow.dispose();
   }
 }

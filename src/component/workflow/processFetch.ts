@@ -1,24 +1,24 @@
-import { Workflow } from '../workflow';
+import { Scroller } from '../scroller';
 import { Direction } from '../interfaces/index';
 import { Item } from '../classes/item';
 
 export default class ProcessFetch {
 
-  static run(workflow: Workflow) {
-    ProcessFetch.runByDirection(workflow, workflow.direction);
-    return workflow;
+  static run(scroller: Scroller) {
+    ProcessFetch.runByDirection(scroller, scroller.direction);
+    return scroller;
   }
 
-  static runByDirection(workflow: Workflow, direction: Direction) {
-    const fetch = workflow.fetch[direction];
+  static runByDirection(scroller: Scroller, direction: Direction) {
+    const fetch = scroller.fetch[direction];
     if (!fetch.newItemsData) { // no fetch
       return;
     }
 
     const eof = direction === Direction.forward ? 'eof' : 'bof';
-    workflow.buffer[eof] = fetch.newItemsData.length !== workflow.settings.bufferSize;
-    if (direction === Direction.backward && workflow.buffer.bof) {
-      fetch.startIndex += workflow.settings.bufferSize - fetch.newItemsData.length;
+    scroller.buffer[eof] = fetch.newItemsData.length !== scroller.settings.bufferSize;
+    if (direction === Direction.backward && scroller.buffer.bof) {
+      fetch.startIndex += scroller.settings.bufferSize - fetch.newItemsData.length;
     }
 
     if (!fetch.newItemsData.length) { // empty result
@@ -26,14 +26,14 @@ export default class ProcessFetch {
     }
     fetch.items = fetch.newItemsData.map((item, index) => {
       const $index = fetch.startIndex + index;
-      const nodeId = workflow.settings.itemIdPrefix + String($index);
-      return new Item($index, item, nodeId, workflow.routines);
+      const nodeId = scroller.settings.itemIdPrefix + String($index);
+      return new Item($index, item, nodeId, scroller.routines);
     });
 
     if (direction === Direction.forward) {
-      workflow.buffer.items = [...workflow.buffer.items, ...fetch.items];
+      scroller.buffer.items = [...scroller.buffer.items, ...fetch.items];
     } else {
-      workflow.buffer.items = [...fetch.items, ...workflow.buffer.items];
+      scroller.buffer.items = [...fetch.items, ...scroller.buffer.items];
     }
   }
 

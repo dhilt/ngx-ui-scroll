@@ -1,33 +1,33 @@
-import { Workflow } from '../workflow';
+import { Scroller } from '../scroller';
 import { Direction } from '../interfaces/index';
 
 export default class ShouldClip {
 
-  static run(workflow: Workflow) {
-    const fetchOnly = workflow.settings.clipAfterFetchOnly;
-    const scrollOnly = workflow.settings.clipAfterScrollOnly;
-    if (!workflow.buffer.size) {
-      return workflow;
+  static run(scroller: Scroller) {
+    const fetchOnly = scroller.settings.clipAfterFetchOnly;
+    const scrollOnly = scroller.settings.clipAfterScrollOnly;
+    if (!scroller.buffer.size) {
+      return scroller;
     }
-    if (scrollOnly && !workflow.scroll) {
-      return workflow;
+    if (scrollOnly && !scroller.scroll) {
+      return scroller;
     }
-    if (!fetchOnly || workflow.fetch[Direction.backward].shouldFetch) {
-      ShouldClip.shouldClipByDirection(Direction.backward, workflow);
+    if (!fetchOnly || scroller.fetch[Direction.backward].shouldFetch) {
+      ShouldClip.shouldClipByDirection(Direction.backward, scroller);
     }
-    if (!fetchOnly || workflow.fetch[Direction.forward].shouldFetch) {
-      ShouldClip.shouldClipByDirection(Direction.forward, workflow);
+    if (!fetchOnly || scroller.fetch[Direction.forward].shouldFetch) {
+      ShouldClip.shouldClipByDirection(Direction.forward, scroller);
     }
-    return workflow;
+    return scroller;
   }
 
-  static shouldClipByDirection(direction: Direction, workflow: Workflow) {
-    const items = workflow.buffer.items;
+  static shouldClipByDirection(direction: Direction, scroller: Scroller) {
+    const items = scroller.buffer.items;
     const forward = direction === Direction.forward;
-    const viewport = workflow.viewport;
+    const viewport = scroller.viewport;
     const viewportLimit = viewport.getLimit(direction, true);
-    const firstIndex = workflow.buffer.getFirstVisibleItemIndex();
-    const lastIndex = workflow.buffer.getLastVisibleItemIndex();
+    const firstIndex = scroller.buffer.getFirstVisibleItemIndex();
+    const lastIndex = scroller.buffer.getLastVisibleItemIndex();
     const firstItemEdge = items[firstIndex].getEdge(direction);
     const lastItemEdge = items[lastIndex].getEdge(direction);
 
@@ -69,9 +69,9 @@ export default class ShouldClip {
         items[i].toRemove = true;
         itemsToRemove++;
       }
-      workflow.clip[direction].shouldClip = true;
-      workflow.clip[direction].size = items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
-      workflow.clip[direction].items = itemsToRemove;
+      scroller.clip[direction].shouldClip = true;
+      scroller.clip[direction].size = items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
+      scroller.clip[direction].items = itemsToRemove;
     }
   }
 

@@ -55,7 +55,7 @@ describe('Fast Scroll Spec', () => {
   };
 
   const expectations = (config, misc, done) => {
-    const itemsCount = misc.workflow.buffer.size;
+    const itemsCount = misc.scroller.buffer.size;
     const bufferHeight = itemsCount * misc.itemHeight;
     const _size = misc.padding.backward.getSize() + misc.padding.forward.getSize() + bufferHeight;
     const totalItemsHeight = config.custom.items * misc.itemHeight;
@@ -63,11 +63,11 @@ describe('Fast Scroll Spec', () => {
     expect(itemsCount).toBeGreaterThan(0);
     if (itemsCount) {
       if (misc.getScrollPosition() === 0) {
-        const topElement = misc.workflow.buffer.items[0].element;
+        const topElement = misc.scroller.buffer.items[0].element;
         const topElementIndex = misc.getElementIndex(topElement);
         expect(topElementIndex).toBe(config.datasourceSettings.startIndex);
       } else {
-        const bottomElement = misc.workflow.buffer.items[misc.workflow.buffer.size - 1].element;
+        const bottomElement = misc.scroller.buffer.items[misc.scroller.buffer.size - 1].element;
         const bottomElementIndex = misc.getElementIndex(bottomElement);
         expect(bottomElementIndex).toBe(config.datasourceSettings.startIndex + config.custom.items - 1);
       }
@@ -78,10 +78,10 @@ describe('Fast Scroll Spec', () => {
   let expectationsTimer;
   const preExpectations = (config, misc, done) => {
     const position = misc.getScrollPosition();
-    const buffer = misc.workflow.buffer;
+    const buffer = misc.scroller.buffer;
     const index = position === 0 ? 0 : buffer.size - 1;
     const runExpectations = () => {
-      const edgeElement = misc.workflow.buffer.items[index].element;
+      const edgeElement = misc.scroller.buffer.items[index].element;
       const edgeElementIndex = misc.getElementIndex(edgeElement);
       const edgeIndex = config.datasourceSettings.startIndex + (position === 0 ? 0 : config.custom.items - 1);
       if (edgeIndex === edgeElementIndex) {
@@ -90,7 +90,7 @@ describe('Fast Scroll Spec', () => {
         misc[position === 0 ? 'scrollMax' : 'scrollMin']();
       }
     };
-    if (!misc.workflow.pending && buffer.size && buffer.items[index] && buffer.items[index].element) {
+    if (!misc.scroller.pending && buffer.size && buffer.items[index] && buffer.items[index].element) {
       runExpectations();
     } else {
       expectationsTimer = setTimeout(() => preExpectations(config, misc, done), 25);
@@ -100,7 +100,7 @@ describe('Fast Scroll Spec', () => {
   const checkFastScroll = (config) => (misc) => (done) => {
     clearTimeout(expectationsTimer);
     const _done = debounce(() => preExpectations(config, misc, done), 25);
-    spyOn(misc.workflowRunner, 'finalize').and.callFake(() =>
+    spyOn(misc.workflow, 'finalize').and.callFake(() =>
       misc.shared.fin && _done()
     );
     runFastScroll(misc, config.custom);

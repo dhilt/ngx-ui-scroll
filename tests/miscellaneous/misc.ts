@@ -7,8 +7,8 @@ import { TestBedConfig } from '../scaffolding/runner';
 
 import { Direction, Datasource } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
+import { Scroller } from '../../src/component/scroller';
 import { Workflow } from '../../src/component/workflow';
-import { WorkflowRunner } from '../../src/component/runner';
 
 export class Padding {
   direction: Direction;
@@ -36,8 +36,8 @@ export class Misc {
   uiScrollElement: DebugElement;
   viewportElement: DebugElement;
   uiScrollComponent: UiScrollComponent;
-  workflowRunner: WorkflowRunner;
   workflow: Workflow;
+  scroller: Scroller;
   padding = {};
   horizontal: boolean;
 
@@ -52,9 +52,9 @@ export class Misc {
     this.uiScrollElement = this.fixture.debugElement.query(By.css('ui-scroll'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent;
-    this.workflowRunner = this.uiScrollComponent.workflowRunner;
-    this.workflow = this.uiScrollComponent.workflowRunner.workflow;
-    this.horizontal = this.workflow.settings.horizontal;
+    this.workflow = this.uiScrollComponent.workflow;
+    this.scroller = this.uiScrollComponent.workflow.scroller;
+    this.horizontal = this.scroller.settings.horizontal;
     this.padding[Direction.forward] = new Padding(fixture, Direction.forward, this.horizontal);
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward, this.horizontal);
   }
@@ -72,7 +72,7 @@ export class Misc {
   }
 
   getElement(index: number) {
-    return this.fixture.nativeElement.querySelector(`[data-sid="${this.workflow.settings.itemIdPrefix}${index}"]`);
+    return this.fixture.nativeElement.querySelector(`[data-sid="${this.scroller.settings.itemIdPrefix}${index}"]`);
   }
 
   getElementText(index: number): string {
@@ -81,7 +81,7 @@ export class Misc {
   }
 
   checkElementId(element, index: number) {
-    return element.getAttribute('data-sid') === `${this.workflow.settings.itemIdPrefix}${index}`;
+    return element.getAttribute('data-sid') === `${this.scroller.settings.itemIdPrefix}${index}`;
   }
 
   getElementIndex(element) {
@@ -89,7 +89,7 @@ export class Misc {
     if (!id) {
       return null;
     }
-    const index = id.replace(this.workflow.settings.itemIdPrefix, '');
+    const index = id.replace(this.scroller.settings.itemIdPrefix, '');
     return parseInt(index, 10) || null;
   }
 

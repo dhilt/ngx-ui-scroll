@@ -1,61 +1,61 @@
-import { Workflow } from '../workflow';
+import { Scroller } from '../scroller';
 import { Direction } from '../interfaces/index';
 
 export default class ShouldFetch {
 
-  static run(workflow: Workflow) {
-    const direction = workflow.direction;
-    const paddingEdge = workflow.viewport.padding[direction].getEdge();
-    const limit = workflow.viewport.getLimit(direction);
+  static run(scroller: Scroller) {
+    const direction = scroller.direction;
+    const paddingEdge = scroller.viewport.padding[direction].getEdge();
+    const limit = scroller.viewport.getLimit(direction);
 
-    workflow.fetch[direction].shouldFetch = ShouldFetch.checkEOF(workflow) ? false :
+    scroller.fetch[direction].shouldFetch = ShouldFetch.checkEOF(scroller) ? false :
       (direction === Direction.forward) ? paddingEdge < limit : paddingEdge > limit;
 
-    // workflow.stat('should fetch');
+    // scroller.stat('should fetch');
 
-    if (workflow.fetch[direction].shouldFetch) {
-      ShouldFetch.setStartIndex(workflow);
-      ShouldFetch.processPreviousClip(workflow);
+    if (scroller.fetch[direction].shouldFetch) {
+      ShouldFetch.setStartIndex(scroller);
+      ShouldFetch.processPreviousClip(scroller);
     }
-    return workflow;
+    return scroller;
   }
 
-  static checkEOF(workflow: Workflow) {
+  static checkEOF(workflow: Scroller) {
     return (workflow.direction === Direction.forward && workflow.buffer.eof) ||
       (workflow.direction === Direction.backward && workflow.buffer.bof);
   }
 
-  static setStartIndex(workflow: Workflow) {
-    const direction = workflow.direction;
+  static setStartIndex(scroller: Scroller) {
+    const direction = scroller.direction;
     const forward = direction === Direction.forward;
-    const back = -workflow.settings.bufferSize;
+    const back = -scroller.settings.bufferSize;
     let start;
-    if (workflow.buffer.lastIndex[direction] === null) {
-      start = workflow.settings.startIndex + (forward ? 0 : back);
+    if (scroller.buffer.lastIndex[direction] === null) {
+      start = scroller.settings.startIndex + (forward ? 0 : back);
     } else {
-      start = workflow.buffer.lastIndex[direction] + (forward ? 1 : back);
+      start = scroller.buffer.lastIndex[direction] + (forward ? 1 : back);
     }
-    workflow.fetch[direction].startIndex = start;
+    scroller.fetch[direction].startIndex = start;
   }
 
-  static processPreviousClip(workflow: Workflow) {
-    const previousClip = workflow.clip.previous;
+  static processPreviousClip(scroller: Scroller) {
+    const previousClip = scroller.clip.previous;
     if (!previousClip.isSet()) {
       return;
     }
-    const direction = workflow.direction;
+    const direction = scroller.direction;
     const forward = direction === Direction.forward;
     const opposite = forward ? Direction.backward : Direction.forward;
     const clipSize = previousClip[`${opposite}Size`];
-    if (clipSize && previousClip.direction !== workflow.direction) {
-      workflow.viewport.padding[direction].size -= clipSize;
-      workflow.viewport.padding[opposite].size += clipSize;
+    if (clipSize && previousClip.direction !== scroller.direction) {
+      scroller.viewport.padding[direction].size -= clipSize;
+      scroller.viewport.padding[opposite].size += clipSize;
       if (!forward) {
-        workflow.buffer.lastIndex[opposite] = workflow.buffer.lastIndex[direction] - 1;
+        scroller.buffer.lastIndex[opposite] = scroller.buffer.lastIndex[direction] - 1;
       } else {
-        workflow.buffer.lastIndex[direction] = workflow.buffer.lastIndex[opposite];
+        scroller.buffer.lastIndex[direction] = scroller.buffer.lastIndex[opposite];
       }
-      // workflow.stat('should fetch – [[adjust]]');
+      // scroller.stat('should fetch – [[adjust]]');
     }
     previousClip.reset();
   }

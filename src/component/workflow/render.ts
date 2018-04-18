@@ -1,18 +1,18 @@
-import { Workflow } from '../workflow';
+import { Scroller } from '../scroller';
 
 export default class Render {
 
-  static run(workflow: Workflow): Workflow | Promise<any> {
-    if (!workflow.fetch.hasNewItems) {
-      return workflow;
+  static run(scroller: Scroller): Scroller | Promise<any> {
+    if (!scroller.fetch.hasNewItems) {
+      return scroller;
     }
-    // workflow.stat('start render');
-    workflow.bindData();
+    // scroller.stat('start render');
+    scroller.bindData();
     return new Promise((resolve, reject) =>
       setTimeout(() => {
-        const error = Render.setElements(workflow);
+        const error = Render.setElements(scroller);
         if (!error) {
-          resolve(workflow);
+          resolve(scroller);
         } else {
           reject(error);
         }
@@ -20,10 +20,10 @@ export default class Render {
     );
   }
 
-  static setElements(workflow: Workflow) {
-    const items = workflow.fetch.items;
+  static setElements(scroller: Scroller) {
+    const items = scroller.fetch.items;
     for (let j = items.length - 1; j >= 0; j--) {
-      const nodes = workflow.viewport.children;
+      const nodes = scroller.viewport.children;
       for (let i = nodes.length - 1; i >= 0; i--) {
         if (nodes[i].getAttribute('data-sid') === items[j].nodeId) {
           items[j].element = nodes[i];

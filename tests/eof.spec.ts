@@ -27,8 +27,8 @@ describe('EOF/BOF Spec', () => {
       expect(misc.padding[_forward ? Direction.backward : Direction.forward].getSize()).toBeGreaterThan(0);
     }
     expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
-    expect(misc.workflow.buffer.bof).toEqual(!_forward);
-    expect(misc.workflow.buffer.eof).toEqual(_forward);
+    expect(misc.scroller.buffer.bof).toEqual(!_forward);
+    expect(misc.scroller.buffer.eof).toEqual(_forward);
   };
 
   const runLimitSuite = (eof = 'bof') => {
@@ -56,10 +56,10 @@ describe('EOF/BOF Spec', () => {
         config: config[eof],
         title: `should reset ${eof} after fwd scroll`,
         it: (misc) => (done) => {
-          expect(misc.workflow.buffer[eof]).toEqual(true);
-          spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-            expect(misc.workflow.buffer[eof]).toEqual(false);
-            expect(misc.workflow.buffer[_eof]).toEqual(false);
+          expect(misc.scroller.buffer[eof]).toEqual(true);
+          spyOn(misc.workflow, 'finalize').and.callFake(() => {
+            expect(misc.scroller.buffer[eof]).toEqual(false);
+            expect(misc.scroller.buffer[_eof]).toEqual(false);
             done();
           });
           doScroll(misc);
@@ -70,9 +70,9 @@ describe('EOF/BOF Spec', () => {
         config: config[eof],
         title: `should stop when ${eof} is reached again`,
         it: (misc) => (done) => {
-          const count = misc.workflowRunner.count;
-          spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-            if (misc.workflowRunner.count === count + 1) {
+          const count = misc.workflow.cyclesDone;
+          spyOn(misc.workflow, 'finalize').and.callFake(() => {
+            if (misc.workflow.cyclesDone === count + 1) {
               doScrollOpposite(misc);
             } else {
               expectLimit(misc, direction);
@@ -87,8 +87,8 @@ describe('EOF/BOF Spec', () => {
         config: config[eof],
         title: `should reach ${_eof} after some scrolls`,
         it: (misc) => (done) => {
-          spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-            if (misc.workflowRunner.count < scrollCount) {
+          spyOn(misc.workflow, 'finalize').and.callFake(() => {
+            if (misc.workflow.cyclesDone < scrollCount) {
               doScroll(misc);
             } else {
               expectLimit(misc, directionOpposite);

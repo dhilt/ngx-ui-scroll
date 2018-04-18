@@ -63,10 +63,10 @@ const shouldNotClip = (settings) => (misc) => (done) => {
   const first = startIndex - backwardFetchCount * bufferSize;
   const last = startIndex + forwardFetchCount * bufferSize - 1;
 
-  expect(misc.workflowRunner.count).toEqual(1);
-  expect(misc.workflow.fetch.count).toEqual(fetchCount);
-  expect(misc.workflow.count).toEqual(fetchCount + 2);
-  expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
+  expect(misc.workflow.cyclesDone).toEqual(1);
+  expect(misc.scroller.fetch.count).toEqual(fetchCount);
+  expect(misc.scroller.countStart).toEqual(fetchCount + 2);
+  expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(0);
   expect(misc.padding[Direction.forward].getSize()).toEqual(0);
   expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
@@ -100,10 +100,10 @@ const shouldClip = (settings) => (misc) => (done) => {
   const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * itemSize;
   const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemSize;
 
-  expect(misc.workflowRunner.count).toEqual(1);
-  expect(misc.workflow.fetch.count).toEqual(fetchCount);
-  expect(misc.workflow.count).toEqual(fetchCount + 2);
-  expect(misc.workflow.buffer.items.length).toEqual(last - first + 1);
+  expect(misc.workflow.cyclesDone).toEqual(1);
+  expect(misc.scroller.fetch.count).toEqual(fetchCount);
+  expect(misc.scroller.countStart).toEqual(fetchCount + 2);
+  expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);
   expect(misc.padding[Direction.forward].getSize()).toEqual(forwardClipLimit);
   expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);

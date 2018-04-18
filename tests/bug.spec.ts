@@ -29,21 +29,21 @@ describe('Bug Spec', () => {
         const fwdCount = 4;
         let wfCount = null;
 
-        spyOn(misc.workflowRunner, 'finalize').and.callFake(() => {
-          if (misc.workflowRunner.count < fwdCount) {
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          if (misc.workflow.cyclesDone < fwdCount) {
             misc.scrollMax();
-          } else if (misc.workflowRunner.count === fwdCount) {
-            wfCount = misc.workflow.count;
+          } else if (misc.workflow.cyclesDone === fwdCount) {
+            wfCount = misc.workflow.cyclesDone;
             misc.scrollMin();
             // 150 immediate jump will be here
-          } else if (misc.workflowRunner.count > fwdCount) {
+          } else if (misc.workflow.cyclesDone > fwdCount) {
             checkViewport(misc, config.templateSettings.viewportHeight);
             done();
           }
         });
 
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          if (misc.workflow.count === wfCount + 1) {
+        spyOn(misc.scroller, 'finalize').and.callFake(() => {
+          if (misc.scroller.countStart === wfCount + 1) {
             misc.scrollTo(150);
           }
         });

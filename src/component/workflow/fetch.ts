@@ -1,34 +1,34 @@
-import { Workflow } from '../workflow';
+import { Scroller } from '../scroller';
 
 export default class Fetch {
 
-  static run(workflow: Workflow): Promise<any> {
-    const direction = workflow.direction;
-    if (!workflow.fetch[direction].shouldFetch) {
-      return Promise.resolve(workflow);
+  static run(scroller: Scroller): Promise<any> {
+    const direction = scroller.direction;
+    if (!scroller.fetch[direction].shouldFetch) {
+      return Promise.resolve(scroller);
     }
-    // workflow.stat('start fetch');
+    // scroller.stat('start fetch');
     const result = new Promise((resolve, reject) => {
       const success = (data) => {
-        Fetch.success(data, workflow);
-        resolve(workflow);
+        Fetch.success(data, scroller);
+        resolve(scroller);
       };
-      Fetch.get(workflow, success, reject);
+      Fetch.get(scroller, success, reject);
     });
     return result;
   }
 
-  static success(data: any, workflow: Workflow) {
-    const direction = workflow.direction;
-    workflow.log(`resolved ${data.length} ${direction} items ` +
-      `(index = ${workflow.fetch[direction].startIndex}, count = ${workflow.settings.bufferSize})`);
-    workflow.fetch[direction].newItemsData = data;
+  static success(data: any, scroller: Scroller) {
+    const direction = scroller.direction;
+    scroller.log(`resolved ${data.length} ${direction} items ` +
+      `(index = ${scroller.fetch[direction].startIndex}, count = ${scroller.settings.bufferSize})`);
+    scroller.fetch[direction].newItemsData = data;
   }
 
-  static get(workflow: Workflow, success: Function, reject: Function) {
-    const _get = <Function>workflow.datasource.get;
+  static get(scroller: Scroller, success: Function, reject: Function) {
+    const _get = <Function>scroller.datasource.get;
     const _getResult =
-      _get(workflow.fetch[workflow.direction].startIndex, workflow.settings.bufferSize, success, reject);
+      _get(scroller.fetch[scroller.direction].startIndex, scroller.settings.bufferSize, success, reject);
     if (_getResult && typeof _getResult.then === 'function') { // DatasourceGetPromise
       _getResult.then(success, reject);
     } else if (_getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable

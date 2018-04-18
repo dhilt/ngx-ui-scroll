@@ -5,8 +5,7 @@ import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
-import { FetchModel } from './classes/fetch';
-import { ClipModel } from './classes/clip';
+import { State } from './classes/state';
 
 import { checkDatasource } from './utils/index';
 
@@ -21,14 +20,8 @@ export class Scroller {
   public routines: Routines;
   public viewport: Viewport;
   public buffer: Buffer;
-
-  public countStart = 0;
-  public countDone = 0;
-  public pending: boolean;
-  public direction: Direction;
-  public scroll: boolean;
-  public fetch: FetchModel;
-  public clip: ClipModel;
+  public state: State;
+  public statePrev: State;
 
   private next: Run;
   private logs: Array<any> = [];
@@ -45,19 +38,18 @@ export class Scroller {
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
-
-    this.fetch = new FetchModel();
-    this.clip = new ClipModel();
+    this.state = new State();
+    this.statePrev = new State();
   }
 
   start(options: Run = {}) {
-    this.countStart++;
-    this.log(`---=== Workflow ${this.countStart} run`, options);
-    this.pending = true;
-    this.direction = options.direction;
-    this.scroll = options.scroll || false;
-    this.fetch.reset();
-    this.clip.reset();
+    this.state.countStart++;
+    this.log(`---=== Workflow ${this.state.countStart} run`, options);
+    this.state.pending = true;
+    this.state.direction = options.direction;
+    this.state.scroll = options.scroll || false;
+    this.state.fetch.reset();
+    this.state.clip.reset();
     return Promise.resolve(this);
   }
 
@@ -69,34 +61,34 @@ export class Scroller {
   }
 
   end() {
-    this.pending = false;
-    this.countDone++;
+    this.state.pending = false;
+    this.state.countDone++;
     this.viewport.saveScrollPosition();
     this.finalize();
   }
 
   analyse() {
     this.next = null;
-    if (this.fetch.hasNewItems || this.clip.shouldClip) {
-      this.next = { direction: this.direction, scroll: this.scroll };
+    if (this.state.fetch.hasNewItems || this.state.clip.shouldClip) {
+      this.next = { direction: this.state.direction, scroll: this.state.scroll };
     }
-    if (!this.buffer.size && this.fetch.shouldFetch && !this.fetch.hasNewItems) {
+    if (!this.buffer.size && this.state.fetch.shouldFetch && !this.state.fetch.hasNewItems) {
       this.next = {
-        direction: this.direction === Direction.forward ? Direction.backward : Direction.forward,
+        direction: this.state.direction === Direction.forward ? Direction.backward : Direction.forward,
         scroll: false
       };
     }
   }
 
   done() {
-    this.log(`---=== Workflow ${this.countStart} done`);
+    this.log(`---=== Workflow ${this.state.countStart} done`);
     this.end();
     this.analyse();
     this.observer.next(this.next);
   }
 
   fail(error: any) {
-    this.log(`---=== Workflow ${this.countStart} fail`);
+    this.log(`---=== Workflow ${this.state.countStart} fail`);
     this.end();
     this.observer.error(error);
   }

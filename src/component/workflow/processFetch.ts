@@ -5,12 +5,12 @@ import { Item } from '../classes/item';
 export default class ProcessFetch {
 
   static run(scroller: Scroller) {
-    ProcessFetch.runByDirection(scroller, scroller.direction);
+    ProcessFetch.runByDirection(scroller, scroller.state.direction);
     return scroller;
   }
 
   static runByDirection(scroller: Scroller, direction: Direction) {
-    const fetch = scroller.fetch[direction];
+    const fetch = scroller.state.fetch[direction];
     if (!fetch.newItemsData) { // no fetch
       return;
     }

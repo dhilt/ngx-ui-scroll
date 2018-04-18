@@ -9,13 +9,13 @@ export default class ShouldClip {
     if (!scroller.buffer.size) {
       return scroller;
     }
-    if (scrollOnly && !scroller.scroll) {
+    if (scrollOnly && !scroller.state.scroll) {
       return scroller;
     }
-    if (!fetchOnly || scroller.fetch[Direction.backward].shouldFetch) {
+    if (!fetchOnly || scroller.state.fetch[Direction.backward].shouldFetch) {
       ShouldClip.shouldClipByDirection(Direction.backward, scroller);
     }
-    if (!fetchOnly || scroller.fetch[Direction.forward].shouldFetch) {
+    if (!fetchOnly || scroller.state.fetch[Direction.forward].shouldFetch) {
       ShouldClip.shouldClipByDirection(Direction.forward, scroller);
     }
     return scroller;
@@ -69,9 +69,9 @@ export default class ShouldClip {
         items[i].toRemove = true;
         itemsToRemove++;
       }
-      scroller.clip[direction].shouldClip = true;
-      scroller.clip[direction].size = items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
-      scroller.clip[direction].items = itemsToRemove;
+      scroller.state.clip[direction].shouldClip = true;
+      scroller.state.clip[direction].size = items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
+      scroller.state.clip[direction].items = itemsToRemove;
     }
   }
 

@@ -84,7 +84,7 @@ export class Workflow {
         direction: options.direction === Direction.forward ? Direction.backward : Direction.forward
       };
     }
-    if (this.scroller.pending) {
+    if (this.scroller.state.pending) {
       this.runNew = { ...options };
       return;
     }

@@ -4,8 +4,8 @@ import { Direction } from '../interfaces/index';
 export default class AdjustFetch {
 
   static run(scroller: Scroller) {
-    const direction = scroller.direction;
-    const items = scroller.fetch[direction].items;
+    const direction = scroller.state.direction;
+    const items = scroller.state.fetch[direction].items;
     if (!items) {
       return;
     }

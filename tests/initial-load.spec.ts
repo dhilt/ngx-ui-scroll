@@ -64,8 +64,8 @@ const shouldNotClip = (settings) => (misc) => (done) => {
   const last = startIndex + forwardFetchCount * bufferSize - 1;
 
   expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(misc.scroller.fetch.count).toEqual(fetchCount);
-  expect(misc.scroller.countStart).toEqual(fetchCount + 2);
+  expect(misc.scroller.state.fetch.count).toEqual(fetchCount);
+  expect(misc.scroller.state.countStart).toEqual(fetchCount + 2);
   expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(0);
   expect(misc.padding[Direction.forward].getSize()).toEqual(0);
@@ -101,8 +101,8 @@ const shouldClip = (settings) => (misc) => (done) => {
   const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemSize;
 
   expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(misc.scroller.fetch.count).toEqual(fetchCount);
-  expect(misc.scroller.countStart).toEqual(fetchCount + 2);
+  expect(misc.scroller.state.fetch.count).toEqual(fetchCount);
+  expect(misc.scroller.state.countStart).toEqual(fetchCount + 2);
   expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);
   expect(misc.padding[Direction.forward].getSize()).toEqual(forwardClipLimit);

@@ -4,16 +4,16 @@ import { Direction } from '../interfaces/index';
 export default class ShouldFetch {
 
   static run(scroller: Scroller) {
-    const direction = scroller.direction;
+    const direction = scroller.state.direction;
     const paddingEdge = scroller.viewport.padding[direction].getEdge();
     const limit = scroller.viewport.getLimit(direction);
 
-    scroller.fetch[direction].shouldFetch = ShouldFetch.checkEOF(scroller) ? false :
+    scroller.state.fetch[direction].shouldFetch = ShouldFetch.checkEOF(scroller) ? false :
       (direction === Direction.forward) ? paddingEdge < limit : paddingEdge > limit;
 
     // scroller.stat('should fetch');
 
-    if (scroller.fetch[direction].shouldFetch) {
+    if (scroller.state.fetch[direction].shouldFetch) {
       ShouldFetch.setStartIndex(scroller);
       ShouldFetch.processPreviousClip(scroller);
     }
@@ -21,12 +21,12 @@ export default class ShouldFetch {
   }
 
   static checkEOF(workflow: Scroller) {
-    return (workflow.direction === Direction.forward && workflow.buffer.eof) ||
-      (workflow.direction === Direction.backward && workflow.buffer.bof);
+    return (workflow.state.direction === Direction.forward && workflow.buffer.eof) ||
+      (workflow.state.direction === Direction.backward && workflow.buffer.bof);
   }
 
   static setStartIndex(scroller: Scroller) {
-    const direction = scroller.direction;
+    const direction = scroller.state.direction;
     const forward = direction === Direction.forward;
     const back = -scroller.settings.bufferSize;
     let start;
@@ -35,19 +35,19 @@ export default class ShouldFetch {
     } else {
       start = scroller.buffer.lastIndex[direction] + (forward ? 1 : back);
     }
-    scroller.fetch[direction].startIndex = start;
+    scroller.state.fetch[direction].startIndex = start;
   }
 
   static processPreviousClip(scroller: Scroller) {
-    const previousClip = scroller.clip.previous;
+    const previousClip = scroller.state.clip.previous;
     if (!previousClip.isSet()) {
       return;
     }
-    const direction = scroller.direction;
+    const direction = scroller.state.direction;
     const forward = direction === Direction.forward;
     const opposite = forward ? Direction.backward : Direction.forward;
     const clipSize = previousClip[`${opposite}Size`];
-    if (clipSize && previousClip.direction !== scroller.direction) {
+    if (clipSize && previousClip.direction !== scroller.state.direction) {
       scroller.viewport.padding[direction].size -= clipSize;
       scroller.viewport.padding[opposite].size += clipSize;
       if (!forward) {

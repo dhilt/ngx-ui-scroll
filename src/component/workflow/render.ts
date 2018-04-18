@@ -3,7 +3,7 @@ import { Scroller } from '../scroller';
 export default class Render {
 
   static run(scroller: Scroller): Scroller | Promise<any> {
-    if (!scroller.fetch.hasNewItems) {
+    if (!scroller.state.fetch.hasNewItems) {
       return scroller;
     }
     // scroller.stat('start render');
@@ -21,7 +21,7 @@ export default class Render {
   }
 
   static setElements(scroller: Scroller) {
-    const items = scroller.fetch.items;
+    const items = scroller.state.fetch.items;
     for (let j = items.length - 1; j >= 0; j--) {
       const nodes = scroller.viewport.children;
       for (let i = nodes.length - 1; i >= 0; i--) {

@@ -21,7 +21,6 @@ export class Scroller {
   public viewport: Viewport;
   public buffer: Buffer;
   public state: State;
-  public statePrev: State;
 
   private next: Run;
   private logs: Array<any> = [];
@@ -39,7 +38,6 @@ export class Scroller {
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
     this.state = new State();
-    this.statePrev = new State();
   }
 
   start(options: Run = {}) {
@@ -67,7 +65,7 @@ export class Scroller {
     this.finalize();
   }
 
-  analyse() {
+  setNext() {
     this.next = null;
     if (this.state.fetch.hasNewItems || this.state.clip.shouldClip) {
       this.next = { direction: this.state.direction, scroll: this.state.scroll };
@@ -83,7 +81,7 @@ export class Scroller {
   done() {
     this.log(`---=== Workflow ${this.state.countStart} done`);
     this.end();
-    this.analyse();
+    this.setNext();
     this.observer.next(this.next);
   }
 

@@ -39,7 +39,7 @@ export default class Clip {
       return true;
     });
     if (!scroller.buffer.size) {
-      scroller.state.clip.previous.set(scroller.state.direction);
+      scroller.state.setPreviousClip();
     }
   }
 

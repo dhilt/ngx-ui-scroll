@@ -39,8 +39,8 @@ export default class ShouldFetch {
   }
 
   static processPreviousClip(scroller: Scroller) {
-    const previousClip = scroller.state.clip.previous;
-    if (!previousClip.isSet()) {
+    const previousClip = scroller.state.previousClip;
+    if (!previousClip.isSet) {
       return;
     }
     const direction = scroller.state.direction;
@@ -57,7 +57,7 @@ export default class ShouldFetch {
       }
       // scroller.stat('should fetch – [[adjust]]');
     }
-    previousClip.reset();
+    scroller.state.setPreviousClip(true);
   }
 
 }

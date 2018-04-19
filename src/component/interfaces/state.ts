@@ -1,13 +1,21 @@
 import { Direction } from './direction';
-import { FetchModel } from '../classes/fetch';
-import { ClipModel } from '../classes/clip';
+
+export interface PreviousClip {
+  isSet: boolean;
+  backwardSize: number;
+  forwardSize: number;
+  backwardItems: number;
+  forwardItems: number;
+  direction: Direction;
+}
 
 export interface State {
   countStart: number;
-  countDone : number;
+  countDone: number;
   pending: boolean;
   direction: Direction;
   scroll: boolean;
-  fetch: FetchModel;
-  clip: ClipModel;
+  fetch: any;
+  clip: any;
+  previousClip: PreviousClip;
 }

@@ -1,16 +1,6 @@
-import { State as IState } from '../interfaces/state';
-import { Direction } from '../interfaces/direction';
+import { Direction, State as IState, PreviousClip } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
-
-interface PreviousClip {
-  isSet: boolean;
-  backwardSize: number;
-  forwardSize: number;
-  backwardItems: number;
-  forwardItems: number;
-  direction: Direction;
-}
 
 export class State implements IState {
   countStart: number;
@@ -42,7 +32,7 @@ export class State implements IState {
       backwardItems: this.clip.backward.items,
       forwardItems: this.clip.forward.items,
       direction: this.direction
-    }
+    };
   }
 
 }

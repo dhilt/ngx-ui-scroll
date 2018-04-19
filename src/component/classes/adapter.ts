@@ -12,7 +12,8 @@ export class Adapter implements IAdapter {
 
   reload(startIndex?: number) {
     this.observer.next(<AdapterAction>{
-      action: ActionType.reload
+      action: ActionType.reload,
+      payload: startIndex
     });
   }
 

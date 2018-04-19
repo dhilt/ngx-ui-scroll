@@ -28,4 +28,8 @@ export class Padding {
     return this.routines.getEdge(this.element, this.direction, true);
   }
 
+  reset() {
+    this.size = 0;
+  }
+
 }

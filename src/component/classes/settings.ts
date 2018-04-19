@@ -42,8 +42,12 @@ export class Settings implements SettingsInterface {
   paddingForwardSize;
   paddingBackwardSize;
 
+  // internal current settings (could be changed during scroller's life)
+  currentStartIndex;
+
   constructor(settings?: SettingsInterface, devSettings?: DevSettingsInterface) {
     assignSettings(this, settings, defaultSettings, minSettings);
     Object.assign(this, defaultDevSettings, devSettings);
+    this.currentStartIndex = this.startIndex;
   }
 }

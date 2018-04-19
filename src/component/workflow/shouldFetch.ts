@@ -31,7 +31,7 @@ export default class ShouldFetch {
     const back = -scroller.settings.bufferSize;
     let start;
     if (scroller.buffer.lastIndex[direction] === null) {
-      start = scroller.settings.startIndex + (forward ? 0 : back);
+      start = scroller.settings.currentStartIndex + (forward ? 0 : back);
     } else {
       start = scroller.buffer.lastIndex[direction] + (forward ? 1 : back);
     }

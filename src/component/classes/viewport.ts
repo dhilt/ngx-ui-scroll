@@ -12,6 +12,11 @@ export class ViewportPadding {
     this.forward = new Padding(element, Direction.forward, routines, settings.paddingForwardSize);
     this.backward = new Padding(element, Direction.backward, routines, settings.paddingBackwardSize);
   }
+
+  reset() {
+    this.forward.reset();
+    this.backward.reset();
+  }
 }
 
 export class Viewport {

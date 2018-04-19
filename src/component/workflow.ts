@@ -2,7 +2,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
-import { Direction, Run } from './interfaces/index';
+import { Direction, Run, AdapterAction, ActionType } from './interfaces/index';
 
 import ShouldFetch from './workflow/shouldFetch';
 import Fetch from './workflow/fetch';
@@ -17,21 +17,19 @@ export class Workflow {
   private context;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
-  private flowResolverSubscription: Subscription;
+  private scrollerResolverSubscription: Subscription;
+  private adapterResolverSubscription: Subscription;
 
   public scroller: Scroller;
   public cyclesDone: number;
 
-  private runNew: Run;
-  private runQueue: Run;
-  private defaultDirection = Direction.forward;
+  private runNew: Run = null;
+  private runQueue: Run = null;
 
   constructor(context) {
     this.context = context;
     this.scroller = new Scroller(this.context);
     this.cyclesDone = 0;
-    this.runQueue = null;
-    this.runNew = null;
     this.initialize();
   }
 
@@ -39,7 +37,8 @@ export class Workflow {
     this.onScrollUnsubscribe =
       this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
-    this.flowResolverSubscription = this.scroller.resolver.subscribe(this.resolve.bind(this));
+    this.scrollerResolverSubscription = this.scroller.resolver$.subscribe(this.resolveScroller.bind(this));
+    this.adapterResolverSubscription = this.scroller.adapter.resolver$.subscribe(this.resolveAdapter.bind(this));
 
     this.run();
   }
@@ -61,7 +60,7 @@ export class Workflow {
     });
   }
 
-  resolve(next: Run = null) {
+  resolveScroller(next: Run = null) {
     if (this.runNew) {
       this.run(this.runNew);
       this.runNew = null;
@@ -76,9 +75,17 @@ export class Workflow {
     }
   }
 
+  resolveAdapter(data: AdapterAction) {
+    this.scroller.log(`"${data.action}" action is triggered via Adapter`);
+    switch (data.action) {
+      case ActionType.reload:
+        return this.scroller.continue()
+    }
+  }
+
   run(options: Run = {}) {
     if (!options.direction) {
-      options.direction = this.defaultDirection;
+      options.direction = Direction.forward; // default direction
       this.runQueue = {
         ...options,
         direction: options.direction === Direction.forward ? Direction.backward : Direction.forward
@@ -123,7 +130,7 @@ export class Workflow {
   dispose() {
     this.onScrollUnsubscribe();
     this.itemsSubscription.unsubscribe();
-    this.flowResolverSubscription.unsubscribe();
+    this.scrollerResolverSubscription.unsubscribe();
     this.scroller.dispose();
   }
 

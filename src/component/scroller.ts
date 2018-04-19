@@ -6,13 +6,14 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
+import { Adapter } from './classes/adapter';
 
 import { checkDatasource } from './utils/index';
 
 export class Scroller {
 
   private observer;
-  public resolver: Observable<any>;
+  public resolver$: Observable<any>;
 
   public bindData: Function;
   public datasource: Datasource;
@@ -21,16 +22,15 @@ export class Scroller {
   public viewport: Viewport;
   public buffer: Buffer;
   public state: State;
+  public adapter: Adapter;
 
   private next: Run;
   private logs: Array<any> = [];
 
   constructor(context) {
-    this.resolver = Observable.create(_observer => this.observer = _observer);
+    this.resolver$ = Observable.create(observer => this.observer = observer);
 
-    this.bindData = () => {
-      context.changeDetector.markForCheck();
-    };
+    this.bindData = () => context.changeDetector.markForCheck();
     this.datasource = checkDatasource(context.datasource);
 
     this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);
@@ -38,6 +38,9 @@ export class Scroller {
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
     this.state = new State();
+    this.adapter = new Adapter();
+
+    this.datasource.adapter = this.adapter;
   }
 
   start(options: Run = {}) {

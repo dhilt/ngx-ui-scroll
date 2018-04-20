@@ -30,7 +30,13 @@ export class Buffer {
     this.reset();
   }
 
-  reset() {
+  reset(reload?: boolean) {
+    if (reload) {
+      this.items.forEach(item => {
+        this.cache.add(item);
+        item.hide();
+      });
+    }
     this.items = [];
     this.bof = false;
     this.eof = false;

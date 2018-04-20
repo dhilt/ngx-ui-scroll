@@ -23,14 +23,20 @@ export class Workflow {
   public scroller: Scroller;
   public cyclesDone: number;
 
-  private runNew: Run = null;
-  private runQueue: Run = null;
+  private runNew: Run;
+  private runQueue: Run;
 
   constructor(context) {
     this.context = context;
     this.scroller = new Scroller(this.context);
     this.cyclesDone = 0;
+    this.reset();
     this.initialize();
+  }
+
+  reset() {
+    this.runNew = null;
+    this.runQueue = null;
   }
 
   initialize() {
@@ -79,7 +85,14 @@ export class Workflow {
     this.scroller.log(`"${data.action}" action is triggered via Adapter`);
     switch (data.action) {
       case ActionType.reload:
-        return this.scroller.continue()
+        const scrollPosition = this.scroller.viewport.scrollPosition;
+        this.scroller.settings.setCurrentStartIndex(data.payload);
+        this.scroller.buffer.reset(true);
+        this.scroller.viewport.reset();
+        this.scroller.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
+        this.reset();
+        this.run();
+        return;
     }
   }
 
@@ -131,6 +144,7 @@ export class Workflow {
     this.onScrollUnsubscribe();
     this.itemsSubscription.unsubscribe();
     this.scrollerResolverSubscription.unsubscribe();
+    this.adapterResolverSubscription.unsubscribe();
     this.scroller.dispose();
   }
 

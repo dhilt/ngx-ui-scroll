@@ -50,4 +50,8 @@ export class Settings implements SettingsInterface {
     Object.assign(this, defaultDevSettings, devSettings);
     this.currentStartIndex = this.startIndex;
   }
+
+  setCurrentStartIndex(startIndex: number) {
+    this.currentStartIndex = typeof startIndex === 'number' ? startIndex : this.startIndex;
+  }
 }

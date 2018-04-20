@@ -16,6 +16,10 @@ export class Padding {
     }
   }
 
+  reset() {
+    this.size = 0;
+  }
+
   get size(): number {
     return this.routines.getSizeStyle(this.element);
   }
@@ -26,10 +30,6 @@ export class Padding {
 
   getEdge(): number {
     return this.routines.getEdge(this.element, this.direction, true);
-  }
-
-  reset() {
-    this.size = 0;
   }
 
 }

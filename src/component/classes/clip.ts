@@ -21,14 +21,15 @@ export class ClipModel {
   constructor() {
     this.forward = new ClipByDirection();
     this.backward = new ClipByDirection();
-  }
-
-  get shouldClip(): boolean {
-    return this.forward.shouldClip || this.backward.shouldClip;
+    this.reset();
   }
 
   reset() {
     this.backward.reset();
     this.forward.reset();
+  }
+
+  get shouldClip(): boolean {
+    return this.forward.shouldClip || this.backward.shouldClip;
   }
 }

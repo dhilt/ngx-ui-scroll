@@ -39,6 +39,13 @@ export class Viewport {
     this.syntheticScrollPosition = null;
   }
 
+  reset() {
+    this.scrollPosition = 0;
+    this.lastPosition = 0;
+    this.syntheticScrollPosition = null;
+    this.padding.reset();
+  }
+
   get children(): HTMLCollection {
     return this.host.children;
   }

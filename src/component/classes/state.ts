@@ -1,9 +1,9 @@
-import { Direction, State as IState, PreviousClip } from '../interfaces/index';
+import { Direction, State as IState, PreviousClip, Run } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
 export class State implements IState {
-  countStart: number;
+  cycleCount: number;
   countDone: number;
   pending: boolean;
   direction: Direction;
@@ -11,17 +11,30 @@ export class State implements IState {
   fetch: FetchModel;
   clip: ClipModel;
   previousClip: PreviousClip;
+  reload: boolean;
 
   constructor() {
-    this.countStart = 0;
+    this.cycleCount = 0;
     this.countDone = 0;
-    this.pending = false;
-    this.direction = null;
-    this.scroll = false;
-
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.setPreviousClip(true);
+  }
+
+  startCycle(options: Run = {}) {
+    this.pending = true;
+    this.cycleCount++;
+
+    this.direction = options.direction;
+    this.scroll = options.scroll || false;
+    this.fetch.reset();
+    this.clip.reset();
+    this.reload = false;
+  }
+
+  endCycle() {
+    this.pending = false;
+    this.countDone++;
   }
 
   setPreviousClip(reset?: boolean) {

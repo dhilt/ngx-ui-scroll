@@ -10,7 +10,7 @@ export interface PreviousClip {
 }
 
 export interface State {
-  countStart: number;
+  cycleCount: number;
   countDone: number;
   pending: boolean;
   direction: Direction;
@@ -18,4 +18,5 @@ export interface State {
   fetch: any;
   clip: any;
   previousClip: PreviousClip;
+  reload: boolean;
 }

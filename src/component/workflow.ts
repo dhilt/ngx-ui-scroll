@@ -49,6 +49,14 @@ export class Workflow {
     this.run();
   }
 
+  dispose() {
+    this.onScrollUnsubscribe();
+    this.itemsSubscription.unsubscribe();
+    this.scrollerResolverSubscription.unsubscribe();
+    this.adapterResolverSubscription.unsubscribe();
+    this.scroller.dispose();
+  }
+
   scroll() {
     const viewport = this.scroller.viewport;
     if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
@@ -85,11 +93,7 @@ export class Workflow {
     this.scroller.log(`"${data.action}" action is triggered via Adapter`);
     switch (data.action) {
       case ActionType.reload:
-        const scrollPosition = this.scroller.viewport.scrollPosition;
-        this.scroller.settings.setCurrentStartIndex(data.payload);
-        this.scroller.buffer.reset(true);
-        this.scroller.viewport.reset();
-        this.scroller.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
+        this.scroller.reload(data.payload);
         this.reset();
         this.run();
         return;
@@ -99,13 +103,13 @@ export class Workflow {
   run(options: Run = {}) {
     if (!options.direction) {
       options.direction = Direction.forward; // default direction
-      this.runQueue = {
+      this.runQueue = { // queue opposite direction
         ...options,
         direction: options.direction === Direction.forward ? Direction.backward : Direction.forward
       };
     }
-    if (this.scroller.state.pending) {
-      this.runNew = { ...options };
+    if (this.scroller.state.pending) { // postpone run if pending
+      this.runNew = { ...options }; // only 1 (last) run should be postponed
       return;
     }
     this.start(options);
@@ -138,14 +142,6 @@ export class Workflow {
       this.scroller.continue()
         .then(ShouldClip.run)
         .then(Clip.run);
-  }
-
-  dispose() {
-    this.onScrollUnsubscribe();
-    this.itemsSubscription.unsubscribe();
-    this.scrollerResolverSubscription.unsubscribe();
-    this.adapterResolverSubscription.unsubscribe();
-    this.scroller.dispose();
   }
 
   finalize() {

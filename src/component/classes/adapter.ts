@@ -10,6 +10,10 @@ export class Adapter implements IAdapter {
     this.resolver$ = Observable.create(observer => this.observer = observer);
   }
 
+  dispose() {
+    this.observer.complete();
+  }
+
   reload(startIndex?: number) {
     this.observer.next(<AdapterAction>{
       action: ActionType.reload,

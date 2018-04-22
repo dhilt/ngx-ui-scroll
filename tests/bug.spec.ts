@@ -43,7 +43,7 @@ describe('Bug Spec', () => {
         });
 
         spyOn(misc.scroller, 'finalize').and.callFake(() => {
-          if (misc.scroller.state.countStart === wfCount + 1) {
+          if (misc.scroller.state.cycleCount === wfCount + 1) {
             misc.scrollTo(150);
           }
         });

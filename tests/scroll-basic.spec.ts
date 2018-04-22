@@ -168,7 +168,7 @@ const calculateIt = (config, misc) => {
 
 const shouldScroll = (config) => (misc) => (done) => {
   const wfCount = config.custom.count;
-  const count = misc.scroller.state.countStart;
+  const count = misc.scroller.state.cycleCount;
   let result = calculateIt(config, misc);
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {

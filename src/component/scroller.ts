@@ -43,29 +43,28 @@ export class Scroller {
     this.datasource.adapter = this.adapter;
   }
 
+  dispose() {
+    this.observer.complete();
+    this.adapter.dispose();
+  }
+
   start(options: Run = {}) {
-    this.state.countStart++;
-    this.log(`---=== Workflow ${this.state.countStart} run`, options);
-    this.state.pending = true;
-    this.state.direction = options.direction;
-    this.state.scroll = options.scroll || false;
-    this.state.fetch.reset();
-    this.state.clip.reset();
+    this.state.startCycle(options);
+    this.log(`---=== Workflow ${this.state.cycleCount} start`, options);
     return Promise.resolve(this);
+  }
+
+  end() {
+    this.state.endCycle();
+    this.viewport.saveScrollPosition();
+    this.finalize();
+  }
+
+  finalize() {
   }
 
   continue() {
     return Promise.resolve(this);
-  }
-
-  finalize() { // stop 1 cycle
-  }
-
-  end() {
-    this.state.pending = false;
-    this.state.countDone++;
-    this.viewport.saveScrollPosition();
-    this.finalize();
   }
 
   setNext() {
@@ -82,20 +81,24 @@ export class Scroller {
   }
 
   done() {
-    this.log(`---=== Workflow ${this.state.countStart} done`);
+    this.log(`---=== Workflow ${this.state.cycleCount} done`);
     this.end();
     this.setNext();
     this.observer.next(this.next);
   }
 
   fail(error: any) {
-    this.log(`---=== Workflow ${this.state.countStart} fail`);
+    this.log(`---=== Workflow ${this.state.cycleCount} fail`);
     this.end();
     this.observer.error(error);
   }
 
-  dispose() {
-    this.observer.complete();
+  reload(startIndex: number) {
+    const scrollPosition = this.viewport.scrollPosition;
+    this.settings.setCurrentStartIndex(startIndex);
+    this.buffer.reset(true);
+    this.viewport.reset();
+    this.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
   }
 
   stat(str?) {

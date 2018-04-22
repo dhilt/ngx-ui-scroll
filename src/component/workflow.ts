@@ -44,7 +44,7 @@ export class Workflow {
       this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.scrollerResolverSubscription = this.scroller.resolver$.subscribe(this.resolveScroller.bind(this));
-    this.adapterResolverSubscription = this.scroller.adapter.resolver$.subscribe(this.resolveAdapter.bind(this));
+    this.adapterResolverSubscription = this.scroller.adapter.subject.subscribe(this.resolveAdapter.bind(this));
 
     this.run();
   }
@@ -122,8 +122,8 @@ export class Workflow {
       .then(() =>
         this.scroller.done()
       )
-      .catch(error =>
-        this.scroller.fail(error)
+      .catch(caught =>
+        this.scroller.done(caught)
       );
   }
 

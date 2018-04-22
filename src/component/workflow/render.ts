@@ -7,16 +7,8 @@ export default class Render {
       return scroller;
     }
     // scroller.stat('start render');
-    scroller.bindData();
-    return new Promise((resolve, reject) =>
-      setTimeout(() => {
-        const error = Render.setElements(scroller);
-        if (!error) {
-          resolve(scroller);
-        } else {
-          reject(error);
-        }
-      })
+    return scroller.bindData().then(() =>
+      Render.setElements(scroller)
     );
   }
 
@@ -30,8 +22,9 @@ export default class Render {
         }
       }
       if (!items[j].element) { // todo: do we really need this check?
-        return new Error('Can not associate item with element');
+        throw new Error('Can not associate item with element');
       }
     }
+    return scroller;
   }
 }

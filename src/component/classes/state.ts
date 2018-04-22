@@ -48,4 +48,8 @@ export class State implements IState {
     };
   }
 
+  getStartIndex(): number {
+    return this.fetch[this.direction].startIndex;
+  }
+
 }

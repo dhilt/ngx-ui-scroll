@@ -11,13 +11,8 @@ export default class Clip {
     Clip.runByDirection(Direction.forward, scroller);
     Clip.runByDirection(Direction.backward, scroller);
     Clip.processBuffer(scroller);
-    scroller.bindData();
-    return new Promise((resolve, reject) =>
-      setTimeout(() => {
-        // scroller.stat('end clip');
-        Clip.processClip(scroller);
-        resolve(scroller);
-      })
+    return scroller.bindData().then(() =>
+      Clip.processClip(scroller)
     );
   }
 
@@ -50,6 +45,7 @@ export default class Clip {
     if (!scroller.state.clip[Direction.forward].shouldClip) {
       scroller.buffer.eof = false;
     }
+    return scroller;
   }
 
 }

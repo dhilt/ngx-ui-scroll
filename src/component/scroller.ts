@@ -9,13 +9,15 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 
 import { checkDatasource } from './utils/index';
+import { ActionType } from './interfaces/adapter';
 
 export class Scroller {
 
-  private observer;
   public resolver$: Observable<any>;
+  private observer;
+  private _bindData: Function;
+  private logs: Array<any> = [];
 
-  public bindData: Function;
   public datasource: Datasource;
   public settings: Settings;
   public routines: Routines;
@@ -24,13 +26,9 @@ export class Scroller {
   public state: State;
   public adapter: Adapter;
 
-  private next: Run;
-  private logs: Array<any> = [];
-
   constructor(context) {
+    this._bindData = () => context.changeDetector.markForCheck();
     this.resolver$ = Observable.create(observer => this.observer = observer);
-
-    this.bindData = () => context.changeDetector.markForCheck();
     this.datasource = checkDatasource(context.datasource);
 
     this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);
@@ -41,6 +39,18 @@ export class Scroller {
     this.adapter = new Adapter();
 
     this.datasource.adapter = this.adapter;
+  }
+
+  bindData(): Promise<any> {
+    this._bindData();
+    return new Promise((resolve, reject) =>
+      setTimeout(() => {
+        if (this.state.reload) {
+          return reject(ActionType.reload);
+        }
+        resolve(this);
+      })
+    );
   }
 
   dispose() {
@@ -67,38 +77,47 @@ export class Scroller {
     return Promise.resolve(this);
   }
 
-  setNext() {
-    this.next = null;
+  getNextRun(): Run {
+    let next = null;
     if (this.state.fetch.hasNewItems || this.state.clip.shouldClip) {
-      this.next = { direction: this.state.direction, scroll: this.state.scroll };
+      next = { direction: this.state.direction, scroll: this.state.scroll };
     }
     if (!this.buffer.size && this.state.fetch.shouldFetch && !this.state.fetch.hasNewItems) {
-      this.next = {
+      next = {
         direction: this.state.direction === Direction.forward ? Direction.backward : Direction.forward,
         scroll: false
       };
     }
+    return next;
   }
 
-  done() {
-    this.log(`---=== Workflow ${this.state.cycleCount} done`);
+  done(caught?) {
     this.end();
-    this.setNext();
-    this.observer.next(this.next);
-  }
-
-  fail(error: any) {
-    this.log(`---=== Workflow ${this.state.cycleCount} fail`);
-    this.end();
-    this.observer.error(error);
+    if (!caught) {
+      this.log(`---=== Workflow ${this.state.cycleCount} done`);
+      this.observer.next(this.getNextRun());
+      return;
+    }
+    if (caught instanceof Error) {
+      this.log(`---=== Workflow ${this.state.cycleCount} fail`);
+      console.error(caught);
+      this.observer.next();
+      return;
+    }
+    if (caught === ActionType.reload) {
+      this.log(`---=== Workflow ${this.state.cycleCount} break`);
+      return;
+    }
   }
 
   reload(startIndex: number) {
     const scrollPosition = this.viewport.scrollPosition;
-    this.settings.setCurrentStartIndex(startIndex);
     this.buffer.reset(true);
     this.viewport.reset();
     this.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
+
+    this.settings.setCurrentStartIndex(startIndex);
+    this.state.reload = true;
   }
 
   stat(str?) {

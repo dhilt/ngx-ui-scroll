@@ -1,21 +1,20 @@
-import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
 import { Adapter as IAdapter, AdapterAction, ActionType } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
-  private observer;
-  public resolver$: Observable<any>;
+  public subject: Subject;
 
   constructor() {
-    this.resolver$ = Observable.create(observer => this.observer = observer);
+    this.subject = new Subject();
   }
 
   dispose() {
-    this.observer.complete();
+    this.subject.complete();
   }
 
   reload(startIndex?: number) {
-    this.observer.next(<AdapterAction>{
+    this.subject.next(<AdapterAction>{
       action: ActionType.reload,
       payload: startIndex
     });

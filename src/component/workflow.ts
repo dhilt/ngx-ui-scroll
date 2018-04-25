@@ -2,15 +2,16 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
-import { Direction, Run, AdapterAction, ActionType } from './interfaces/index';
+import { Direction, Run, AdapterAction, ActionType, Process } from './interfaces/index';
 
-import ShouldFetch from './workflow/shouldFetch';
+import PreFetch from './workflow/preFetch';
 import Fetch from './workflow/fetch';
-import ProcessFetch from './workflow/processFetch';
+import PostFetch from './workflow/postFetch';
 import Render from './workflow/render';
-import AdjustFetch from './workflow/adjustFetch';
-import ShouldClip from './workflow/shouldClip';
+import PostRender from './workflow/postRender';
+import PreClip from './workflow/preClip';
 import Clip from './workflow/clip';
+import { ProcessSubject } from './interfaces';
 
 export class Workflow {
 
@@ -45,8 +46,7 @@ export class Workflow {
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.scrollerResolverSubscription = this.scroller.resolver$.subscribe(this.resolveScroller.bind(this));
     this.adapterResolverSubscription = this.scroller.adapter.subject.subscribe(this.resolveAdapter.bind(this));
-
-    this.run();
+    setTimeout(() => this.run());
   }
 
   dispose() {
@@ -75,14 +75,17 @@ export class Workflow {
   }
 
   resolveScroller(next: Run = null) {
+    let options = {};
     if (this.runNew) {
-      this.run(this.runNew);
+      options = { ...this.runNew };
       this.runNew = null;
+      this.run(options);
     } else if (next) {
       this.run(next);
     } else if (this.runQueue) {
-      this.run(this.runQueue);
+      options = { ...this.runQueue };
       this.runQueue = null;
+      this.run(options);
     } else {
       this.cyclesDone++;
       this.finalize();
@@ -116,31 +119,43 @@ export class Workflow {
   }
 
   start(options: Run) {
-    this.scroller.start(options)
-      .then(() => this.fetch())
-      .then(() => this.clip())
-      .then(() =>
-        this.scroller.done()
-      )
-      .catch(caught =>
-        this.scroller.done(caught)
-      );
-  }
+    this.scroller.start(options);
+    this.scroller.process$.subscribe((data: ProcessSubject) => {
+      if (data.stop && !data.error) {
+        this.scroller.log(`-- wf ${this.scroller.state.cycleCount} ${data.process} process stop`);
+        this.scroller.done();
+        return;
+      }
+      if (data.stop && data.error) {
+        this.scroller.log(`-- wf ${this.scroller.state.cycleCount} ${data.process} process fail`);
+        this.scroller.fail();
+        return;
+      }
+      this.scroller.log(`-- wf ${this.scroller.state.cycleCount} ${data.process} process done`);
 
-  fetch() {
-    return this.scroller.continue()
-      .then(ShouldFetch.run)
-      .then(Fetch.run)
-      .then(ProcessFetch.run)
-      .then(Render.run)
-      .then(AdjustFetch.run);
+      if (data.process === Process.start) {
+        PreFetch.run(this.scroller);
+      } else if (data.process === Process.preFetch) {
+        Fetch.run(this.scroller);
+      } else if (data.process === Process.fetch) {
+        PostFetch.run(this.scroller);
+      } else if (data.process === Process.postFetch) {
+        Render.run(this.scroller);
+      } else if (data.process === Process.render) {
+        PostRender.run(this.scroller);
+      } else if (data.process === Process.postRender) {
+        this.scroller.done();
+      }
+    }, () => null, function () {
+      this.unsubscribe();
+    });
   }
 
   clip() {
     return this.scroller.settings.infinite ?
       null :
       this.scroller.continue()
-        .then(ShouldClip.run)
+        .then(PreClip.run)
         .then(Clip.run);
   }
 

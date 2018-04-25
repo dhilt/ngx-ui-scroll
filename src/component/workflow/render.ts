@@ -1,15 +1,23 @@
 import { Scroller } from '../scroller';
+import { Process, ProcessSubject } from '../interfaces/index';
 
 export default class Render {
 
-  static run(scroller: Scroller): Scroller | Promise<any> {
-    if (!scroller.state.fetch.hasNewItems) {
-      return scroller;
-    }
-    // scroller.stat('start render');
-    return scroller.bindData().then(() =>
-      Render.setElements(scroller)
-    );
+  static run(scroller: Scroller) {
+    scroller.bindData().then(() => {
+      if (Render.setElements(scroller)) {
+        scroller.process$.next(<ProcessSubject>{
+          process: Process.render
+        });
+      } else {
+        scroller.process$.next(<ProcessSubject>{
+          process: Process.render,
+          stop: true,
+          error: true,
+          payload: 'Can not associate item with element'
+        });
+      }
+    });
   }
 
   static setElements(scroller: Scroller) {
@@ -21,10 +29,10 @@ export default class Render {
           items[j].element = nodes[i];
         }
       }
-      if (!items[j].element) { // todo: do we really need this check?
-        throw new Error('Can not associate item with element');
+      if (!items[j].element) { // todo: is this situation possible?
+        return false;
       }
     }
-    return scroller;
+    return true;
   }
 }

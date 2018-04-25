@@ -1,8 +1,9 @@
-import { Direction, State as IState, PreviousClip, Run } from '../interfaces/index';
+import { Direction, State as IState, Process, PreviousClip, Run } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
 export class State implements IState {
+  currentProcess: Process;
   cycleCount: number;
   countDone: number;
   pending: boolean;

@@ -1,7 +1,7 @@
 import { Scroller } from '../scroller';
 import { Direction } from '../interfaces/index';
 
-export default class ShouldClip {
+export default class PreClip {
 
   static run(scroller: Scroller) {
     const fetchOnly = scroller.settings.clipAfterFetchOnly;
@@ -13,10 +13,10 @@ export default class ShouldClip {
       return scroller;
     }
     if (!fetchOnly || scroller.state.fetch[Direction.backward].shouldFetch) {
-      ShouldClip.shouldClipByDirection(Direction.backward, scroller);
+      PreClip.shouldClipByDirection(Direction.backward, scroller);
     }
     if (!fetchOnly || scroller.state.fetch[Direction.forward].shouldFetch) {
-      ShouldClip.shouldClipByDirection(Direction.forward, scroller);
+      PreClip.shouldClipByDirection(Direction.forward, scroller);
     }
     return scroller;
   }

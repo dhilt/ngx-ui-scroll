@@ -1,25 +1,23 @@
 import { Scroller } from '../scroller';
-import { ActionType } from '../interfaces/adapter';
+import { Process, ProcessSubject } from '../interfaces';
 
 export default class Fetch {
 
-  static run(scroller: Scroller): Scroller | Promise<any> {
-    const direction = scroller.state.direction;
-    if (!scroller.state.fetch[direction].shouldFetch) {
-      return scroller;
-    }
-    // scroller.stat('start fetch');
-    const result = new Promise((resolve, reject) => {
-      const success = (data) => {
-        if (scroller.state.reload) {
-          return reject(ActionType.reload);
-        }
+  static run(scroller: Scroller) {
+    Fetch.get(scroller, (data) => {
         Fetch.success(data, scroller);
-        resolve(scroller);
-      };
-      Fetch.get(scroller, success, reject);
-    });
-    return result;
+        scroller.process$.next(<ProcessSubject>{
+          process: Process.fetch,
+          stop: !scroller.state.fetch.hasNewItems
+        });
+      }, (error) =>
+        scroller.process$.next(<ProcessSubject>{
+          process: Process.fetch,
+          stop: true,
+          error: true,
+          payload: error
+        })
+    );
   }
 
   static success(data: any, scroller: Scroller) {
@@ -38,10 +36,6 @@ export default class Fetch {
     } else if (_getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
       _getResult.subscribe(success, reject);
     }
-  }
-
-  static fetch() {
-
   }
 
 }

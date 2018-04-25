@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { Datasource, Direction, Run } from './interfaces/index';
+import { Datasource, Direction, Process, Run, ActionType, ProcessSubject } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
@@ -9,9 +10,10 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 
 import { checkDatasource } from './utils/index';
-import { ActionType } from './interfaces/adapter';
 
 export class Scroller {
+
+  public process$: BehaviorSubject<ProcessSubject>;
 
   public resolver$: Observable<any>;
   private observer;
@@ -61,12 +63,13 @@ export class Scroller {
   start(options: Run = {}) {
     this.state.startCycle(options);
     this.log(`---=== Workflow ${this.state.cycleCount} start`, options);
-    return Promise.resolve(this);
+    this.process$ = new BehaviorSubject(<ProcessSubject>{ process: Process.start });
   }
 
   end() {
     this.state.endCycle();
     this.viewport.saveScrollPosition();
+    this.process$.complete();
     this.finalize();
   }
 
@@ -91,23 +94,15 @@ export class Scroller {
     return next;
   }
 
-  done(caught?) {
+  done() {
+    this.log(`---=== Workflow ${this.state.cycleCount} done`);
     this.end();
-    if (!caught) {
-      this.log(`---=== Workflow ${this.state.cycleCount} done`);
-      this.observer.next(this.getNextRun());
-      return;
-    }
-    if (caught instanceof Error) {
-      this.log(`---=== Workflow ${this.state.cycleCount} fail`);
-      console.error(caught);
-      this.observer.next();
-      return;
-    }
-    if (caught === ActionType.reload) {
-      this.log(`---=== Workflow ${this.state.cycleCount} break`);
-      return;
-    }
+    this.observer.next(this.getNextRun());
+  }
+
+  fail() {
+    this.log(`---=== Workflow ${this.state.cycleCount} fail`);
+    this.end();
   }
 
   reload(startIndex: number) {

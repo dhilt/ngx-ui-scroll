@@ -1,23 +1,26 @@
 import { Scroller } from '../scroller';
-import { Direction } from '../interfaces/index';
+import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
-export default class ShouldFetch {
+export default class PreFetch {
 
   static run(scroller: Scroller) {
     const direction = scroller.state.direction;
     const paddingEdge = scroller.viewport.padding[direction].getEdge();
     const limit = scroller.viewport.getLimit(direction);
 
-    scroller.state.fetch[direction].shouldFetch = ShouldFetch.checkEOF(scroller) ? false :
+    scroller.state.fetch[direction].shouldFetch = PreFetch.checkEOF(scroller) ? false :
       (direction === Direction.forward) ? paddingEdge < limit : paddingEdge > limit;
 
-    // scroller.stat('should fetch');
-
-    if (scroller.state.fetch[direction].shouldFetch) {
-      ShouldFetch.setStartIndex(scroller);
-      ShouldFetch.processPreviousClip(scroller);
+    const shouldFetch = scroller.state.fetch[direction].shouldFetch;
+    if (shouldFetch) {
+      PreFetch.setStartIndex(scroller);
+      PreFetch.processPreviousClip(scroller);
     }
-    return scroller;
+
+    scroller.process$.next(<ProcessSubject>{
+      process: Process.preFetch,
+      stop: !shouldFetch
+    });
   }
 
   static checkEOF(workflow: Scroller) {

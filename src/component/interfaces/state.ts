@@ -1,4 +1,5 @@
 import { Direction } from './direction';
+import { Process } from './process';
 
 export interface PreviousClip {
   isSet: boolean;
@@ -10,6 +11,7 @@ export interface PreviousClip {
 }
 
 export interface State {
+  currentProcess: Process;
   cycleCount: number;
   countDone: number;
   pending: boolean;

@@ -3,7 +3,7 @@ import { Subject } from 'rxjs/Subject';
 import { Adapter as IAdapter, AdapterAction, ActionType } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
-  public subject: Subject;
+  public subject: Subject<any>;
 
   constructor() {
     this.subject = new Subject();

@@ -9,11 +9,12 @@ export default class PreClip {
       !scroller.buffer.size ||
       (scroller.settings.clipAfterScrollOnly && !scroller.state.scroll);
 
-    if (!shouldNotClip && scroller.settings.clipAfterFetchOnly) {
-      if (scroller.state.fetch[Direction.backward].shouldFetch) {
+    if (!shouldNotClip) {
+      const afterFetch = scroller.settings.clipAfterFetchOnly;
+      if (!afterFetch || scroller.state.fetch[Direction.backward].shouldFetch) {
         PreClip.shouldClipByDirection(Direction.backward, scroller);
       }
-      if (scroller.state.fetch[Direction.forward].shouldFetch) {
+      if (!afterFetch || scroller.state.fetch[Direction.forward].shouldFetch) {
         PreClip.shouldClipByDirection(Direction.forward, scroller);
       }
       shouldNotClip = !scroller.state.clip.shouldClip;

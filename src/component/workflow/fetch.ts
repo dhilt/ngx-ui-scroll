@@ -7,8 +7,7 @@ export default class Fetch {
     Fetch.get(scroller, (data) => {
         Fetch.success(data, scroller);
         scroller.process$.next(<ProcessSubject>{
-          process: Process.fetch,
-          stop: !scroller.state.fetch.hasNewItems
+          process: Process.fetch
         });
       }, (error) =>
         scroller.process$.next(<ProcessSubject>{

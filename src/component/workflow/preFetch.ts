@@ -23,9 +23,9 @@ export default class PreFetch {
     });
   }
 
-  static checkEOF(workflow: Scroller) {
-    return (workflow.state.direction === Direction.forward && workflow.buffer.eof) ||
-      (workflow.state.direction === Direction.backward && workflow.buffer.bof);
+  static checkEOF(scroller: Scroller) {
+    return (scroller.state.direction === Direction.forward && scroller.buffer.eof) ||
+      (scroller.state.direction === Direction.backward && scroller.buffer.bof);
   }
 
   static setStartIndex(scroller: Scroller) {

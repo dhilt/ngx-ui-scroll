@@ -6,20 +6,22 @@ export default class Render {
   static run(scroller: Scroller) {
     scroller.state.process = Process.render;
 
-    scroller.bindData().then(() => {
-      if (Render.setElements(scroller)) {
-        scroller.process$.next(<ProcessSubject>{
-          process: Process.render
-        });
-      } else {
-        scroller.process$.next(<ProcessSubject>{
-          process: Process.render,
-          stop: true,
-          error: true,
-          payload: 'Can not associate item with element'
-        });
-      }
-    });
+    scroller.cycleSubscriptions.push(
+      scroller.bindData().subscribe(() => {
+        if (Render.setElements(scroller)) {
+          scroller.process$.next(<ProcessSubject>{
+            process: Process.render
+          });
+        } else {
+          scroller.process$.next(<ProcessSubject>{
+            process: Process.render,
+            stop: true,
+            error: true,
+            payload: 'Can not associate item with element'
+          });
+        }
+      })
+    );
   }
 
   static setElements(scroller: Scroller) {

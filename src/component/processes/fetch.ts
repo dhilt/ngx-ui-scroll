@@ -9,7 +9,7 @@ export default class Fetch {
   static run(scroller: Scroller) {
     scroller.state.process = Process.fetch;
 
-    scroller.state.fetch.subscription =
+    scroller.cycleSubscriptions.push(
       Fetch.get(scroller).subscribe((data) => {
         Fetch.success(data, scroller);
         scroller.process$.next(<ProcessSubject>{
@@ -21,7 +21,8 @@ export default class Fetch {
           stop: true,
           error: true,
           payload: error
-        }));
+        }))
+    );
   }
 
   static success(data: any, scroller: Scroller) {
@@ -31,12 +32,15 @@ export default class Fetch {
     scroller.state.fetch[direction].newItemsData = data;
   }
 
-  static get(scroller: Scroller) {
+  static get(scroller: Scroller): Observable<any> {
     const _get = <Function>scroller.datasource.get;
 
     let observer: Observer<any>;
-    const success = data => observer.next(data);
     const reject = err => observer.error(err);
+    const success = data => {
+      observer.next(data);
+      observer.complete();
+    };
 
     const result = _get(scroller.state.getStartIndex(), scroller.settings.bufferSize, success, reject);
     if (result && typeof result.then === 'function') { // DatasourceGetPromise

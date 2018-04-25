@@ -1,7 +1,8 @@
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { Datasource, Direction, Process, Run, ActionType, ProcessSubject } from './interfaces/index';
+import { Datasource, Direction, Process, Run, ProcessSubject } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
@@ -12,8 +13,6 @@ import { Adapter } from './classes/adapter';
 import { checkDatasource } from './utils/index';
 
 export class Scroller {
-
-  public process$: BehaviorSubject<ProcessSubject>;
 
   public resolver$: Observable<any>;
   private observer;
@@ -28,9 +27,12 @@ export class Scroller {
   public state: State;
   public adapter: Adapter;
 
+  public process$: BehaviorSubject<ProcessSubject>;
+  public cycleSubscriptions: Array<Subscription>;
+
   constructor(context) {
-    this._bindData = () => context.changeDetector.markForCheck();
     this.resolver$ = Observable.create(observer => this.observer = observer);
+    this._bindData = () => context.changeDetector.markForCheck();
     this.datasource = checkDatasource(context.datasource);
 
     this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);
@@ -41,23 +43,30 @@ export class Scroller {
     this.adapter = new Adapter();
 
     this.datasource.adapter = this.adapter;
+    this.cycleSubscriptions = [];
   }
 
-  bindData(): Promise<any> {
+  bindData(): Observable<any> {
     this._bindData();
-    return new Promise((resolve, reject) =>
+    return Observable.create(observer => {
       setTimeout(() => {
-        if (this.state.reload) {
-          return reject(ActionType.reload);
-        }
-        resolve(this);
-      })
+          observer.next();
+          observer.complete();
+        });
+      }
     );
+  }
+
+  purgeCycleSubscriptions() {
+    this.cycleSubscriptions.forEach((item: Subscription) => item.unsubscribe());
+    this.cycleSubscriptions = [];
   }
 
   dispose() {
     this.observer.complete();
+    this.process$.complete();
     this.adapter.dispose();
+    this.purgeCycleSubscriptions();
   }
 
   start(options: Run = {}) {
@@ -70,6 +79,7 @@ export class Scroller {
     this.state.endCycle();
     this.viewport.saveScrollPosition();
     this.process$.complete();
+    this.purgeCycleSubscriptions();
     this.finalize();
   }
 
@@ -97,7 +107,9 @@ export class Scroller {
   done(noNext?: boolean) {
     this.log(`---=== Workflow ${this.state.cycleCount} done`);
     this.end();
-    !noNext && this.observer.next(this.getNextRun());
+    if (!noNext) {
+      this.observer.next(this.getNextRun());
+    }
   }
 
   fail() {
@@ -110,7 +122,7 @@ export class Scroller {
     this.buffer.reset(true);
     this.viewport.reset();
     this.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
-    this.state.fetch.subscription.unsubscribe();
+    this.purgeCycleSubscriptions();
 
     this.settings.setCurrentStartIndex(startIndex);
     this.process$.next(<ProcessSubject>{

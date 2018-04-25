@@ -10,12 +10,14 @@ export default class Clip {
     Clip.runByDirection(Direction.backward, scroller);
     Clip.processBuffer(scroller);
 
-    scroller.bindData().then(() => {
-      Clip.processClip(scroller);
-      scroller.process$.next(<ProcessSubject>{
-        process: Process.clip
-      });
-    });
+    scroller.cycleSubscriptions.push(
+      scroller.bindData().subscribe(() => {
+        Clip.processClip(scroller);
+        scroller.process$.next(<ProcessSubject>{
+          process: Process.clip
+        });
+      })
+    );
   }
 
   static runByDirection(direction: Direction, scroller: Scroller) {

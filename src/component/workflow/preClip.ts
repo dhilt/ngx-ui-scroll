@@ -1,24 +1,28 @@
 import { Scroller } from '../scroller';
-import { Direction } from '../interfaces/index';
+import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
 export default class PreClip {
 
   static run(scroller: Scroller) {
-    const fetchOnly = scroller.settings.clipAfterFetchOnly;
-    const scrollOnly = scroller.settings.clipAfterScrollOnly;
-    if (!scroller.buffer.size) {
-      return scroller;
+    let shouldNotClip =
+      scroller.settings.infinite ||
+      !scroller.buffer.size ||
+      (scroller.settings.clipAfterScrollOnly && !scroller.state.scroll);
+
+    if (!shouldNotClip && scroller.settings.clipAfterFetchOnly) {
+      if (scroller.state.fetch[Direction.backward].shouldFetch) {
+        PreClip.shouldClipByDirection(Direction.backward, scroller);
+      }
+      if (scroller.state.fetch[Direction.forward].shouldFetch) {
+        PreClip.shouldClipByDirection(Direction.forward, scroller);
+      }
+      shouldNotClip = !scroller.state.clip.shouldClip;
     }
-    if (scrollOnly && !scroller.state.scroll) {
-      return scroller;
-    }
-    if (!fetchOnly || scroller.state.fetch[Direction.backward].shouldFetch) {
-      PreClip.shouldClipByDirection(Direction.backward, scroller);
-    }
-    if (!fetchOnly || scroller.state.fetch[Direction.forward].shouldFetch) {
-      PreClip.shouldClipByDirection(Direction.forward, scroller);
-    }
-    return scroller;
+
+    scroller.process$.next(<ProcessSubject>{
+      process: Process.preClip,
+      stop: shouldNotClip
+    });
   }
 
   static shouldClipByDirection(direction: Direction, scroller: Scroller) {

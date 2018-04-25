@@ -144,19 +144,15 @@ export class Workflow {
       } else if (data.process === Process.render) {
         PostRender.run(this.scroller);
       } else if (data.process === Process.postRender) {
+        PreClip.run(this.scroller);
+      } else if (data.process === Process.preClip) {
+        Clip.run(this.scroller);
+      } else if (data.process === Process.clip) {
         this.scroller.done();
       }
     }, () => null, function () {
       this.unsubscribe();
     });
-  }
-
-  clip() {
-    return this.scroller.settings.infinite ?
-      null :
-      this.scroller.continue()
-        .then(PreClip.run)
-        .then(Clip.run);
   }
 
   finalize() {

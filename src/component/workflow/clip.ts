@@ -1,19 +1,19 @@
 import { Scroller } from '../scroller';
-import { Direction } from '../interfaces/direction';
+import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
 export default class Clip {
 
   static run(scroller: Scroller) {
-    if (!scroller.state.clip.shouldClip) {
-      return scroller;
-    }
-    // scroller.stat('start clip');
     Clip.runByDirection(Direction.forward, scroller);
     Clip.runByDirection(Direction.backward, scroller);
     Clip.processBuffer(scroller);
-    return scroller.bindData().then(() =>
-      Clip.processClip(scroller)
-    );
+
+    return scroller.bindData().then(() => {
+      Clip.processClip(scroller);
+      scroller.process$.next(<ProcessSubject>{
+        process: Process.clip
+      });
+    });
   }
 
   static runByDirection(direction: Direction, scroller: Scroller) {

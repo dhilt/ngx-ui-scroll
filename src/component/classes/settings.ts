@@ -1,5 +1,5 @@
-import { Settings as ISettings, DevSettings as IDevSettings } from '../interfaces/settings';
-import { assignSettings } from '../utils/assignSettings';
+import { Settings as ISettings, DevSettings as IDevSettings } from '../interfaces/index';
+import { assignSettings } from '../utils/index';
 
 export const defaultSettings: ISettings = {
   startIndex: 1,

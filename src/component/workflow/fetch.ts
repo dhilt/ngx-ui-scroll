@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject } from '../interfaces';
+import { Process, ProcessSubject } from '../interfaces/index';
 
 export default class Fetch {
 

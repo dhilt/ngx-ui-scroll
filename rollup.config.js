@@ -5,7 +5,8 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
   'rxjs/Observable': 'Rx',
-  'rxjs/BehaviorSubject': 'Rx'
+  'rxjs/BehaviorSubject': 'Rx',
+  'rxjs/Subject': 'Rx',
 };
 
 export default {

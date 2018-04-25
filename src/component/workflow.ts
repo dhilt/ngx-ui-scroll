@@ -160,7 +160,7 @@ export class Workflow {
           this.scroller.done();
           break;
       }
-    }, () => null, function () {
+    }, () => null, function (this: any) {
       this.unsubscribe();
     });
   }

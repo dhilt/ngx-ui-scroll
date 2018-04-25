@@ -4,11 +4,13 @@ import { Direction, Process, ProcessSubject } from '../interfaces/index';
 export default class Clip {
 
   static run(scroller: Scroller) {
+    scroller.state.process = Process.clip;
+
     Clip.runByDirection(Direction.forward, scroller);
     Clip.runByDirection(Direction.backward, scroller);
     Clip.processBuffer(scroller);
 
-    return scroller.bindData().then(() => {
+    scroller.bindData().then(() => {
       Clip.processClip(scroller);
       scroller.process$.next(<ProcessSubject>{
         process: Process.clip
@@ -45,7 +47,6 @@ export default class Clip {
     if (!scroller.state.clip[Direction.forward].shouldClip) {
       scroller.buffer.eof = false;
     }
-    return scroller;
   }
 
 }

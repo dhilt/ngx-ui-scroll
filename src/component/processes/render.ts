@@ -4,6 +4,8 @@ import { Process, ProcessSubject } from '../interfaces/index';
 export default class Render {
 
   static run(scroller: Scroller) {
+    scroller.state.process = Process.render;
+
     scroller.bindData().then(() => {
       if (Render.setElements(scroller)) {
         scroller.process$.next(<ProcessSubject>{

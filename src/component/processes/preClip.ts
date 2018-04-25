@@ -4,6 +4,8 @@ import { Direction, Process, ProcessSubject } from '../interfaces/index';
 export default class PreClip {
 
   static run(scroller: Scroller) {
+    scroller.state.process = Process.preClip;
+
     let shouldNotClip =
       scroller.settings.infinite ||
       !scroller.buffer.size ||

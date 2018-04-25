@@ -4,6 +4,8 @@ import { Direction, Process, ProcessSubject } from '../interfaces/index';
 export default class PostRender {
 
   static run(scroller: Scroller) {
+    scroller.state.process = Process.postRender;
+
     const direction = scroller.state.direction;
     const items = scroller.state.fetch[direction].items;
 

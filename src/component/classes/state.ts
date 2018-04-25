@@ -3,7 +3,7 @@ import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
 export class State implements IState {
-  currentProcess: Process;
+  process: Process;
   cycleCount: number;
   countDone: number;
   pending: boolean;

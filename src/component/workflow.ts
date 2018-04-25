@@ -2,20 +2,12 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
-import { Direction, Run, AdapterAction, ActionType, Process } from './interfaces/index';
-
-import PreFetch from './workflow/preFetch';
-import Fetch from './workflow/fetch';
-import PostFetch from './workflow/postFetch';
-import Render from './workflow/render';
-import PostRender from './workflow/postRender';
-import PreClip from './workflow/preClip';
-import Clip from './workflow/clip';
-import { ProcessSubject } from './interfaces';
+import { Direction, Run, AdapterAction, ActionType, Process, ProcessSubject } from './interfaces/index';
+import { PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip } from './processes/index';
 
 export class Workflow {
 
-  private context;
+  readonly context;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
   private scrollerResolverSubscription: Subscription;
@@ -119,45 +111,48 @@ export class Workflow {
   }
 
   start(options: Run) {
-    this.scroller.start(options);
-    this.scroller.process$.subscribe((data: ProcessSubject) => {
+    const scroller = this.scroller;
+    const state = scroller.state;
+    scroller.start(options);
+
+    scroller.process$.subscribe((data: ProcessSubject) => {
       if (data.stop && !data.error) {
-        this.scroller.log(`-- wf ${this.scroller.state.cycleCount} ${data.process} process stop`);
-        this.scroller.done();
+        scroller.log(`-- wf ${state.cycleCount} ${state.process} process stop`);
+        scroller.done();
         return;
       }
       if (data.stop && data.error) {
-        this.scroller.log(`-- wf ${this.scroller.state.cycleCount} ${data.process} process fail`);
-        this.scroller.fail();
+        scroller.log(`-- wf ${state.cycleCount} ${state.process} process fail`);
+        scroller.fail();
         return;
       }
-      this.scroller.log(`-- wf ${this.scroller.state.cycleCount} ${data.process} process done`);
+      scroller.log(`-- wf ${state.cycleCount} ${state.process} process done`);
 
-      // workflow state machine
+      // processes state machine
       switch (data.process) {
         case Process.start:
-          PreFetch.run(this.scroller);
+          PreFetch.run(scroller);
           break;
         case Process.preFetch:
-          Fetch.run(this.scroller);
+          Fetch.run(scroller);
           break;
         case Process.fetch:
-          PostFetch.run(this.scroller);
+          PostFetch.run(scroller);
           break;
         case Process.postFetch:
-          Render.run(this.scroller);
+          Render.run(scroller);
           break;
         case Process.render:
-          PostRender.run(this.scroller);
+          PostRender.run(scroller);
           break;
         case Process.postRender:
-          PreClip.run(this.scroller);
+          PreClip.run(scroller);
           break;
         case Process.preClip:
-          Clip.run(this.scroller);
+          Clip.run(scroller);
           break;
         case Process.clip:
-          this.scroller.done();
+          scroller.done();
           break;
       }
     }, () => null, function (this: any) {

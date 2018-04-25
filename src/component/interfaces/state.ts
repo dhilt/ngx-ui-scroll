@@ -11,7 +11,7 @@ export interface PreviousClip {
 }
 
 export interface State {
-  currentProcess: Process;
+  process: Process;
   cycleCount: number;
   countDone: number;
   pending: boolean;

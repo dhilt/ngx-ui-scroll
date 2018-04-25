@@ -5,6 +5,8 @@ import { Item } from '../classes/item';
 export default class PostFetch {
 
   static run(scroller: Scroller) {
+    scroller.state.process = Process.postFetch;
+
     PostFetch.setEOF(scroller);
     const hasItems = PostFetch.setItems(scroller);
     scroller.process$.next(<ProcessSubject>{

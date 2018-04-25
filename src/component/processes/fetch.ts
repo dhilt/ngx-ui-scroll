@@ -4,6 +4,8 @@ import { Process, ProcessSubject } from '../interfaces/index';
 export default class Fetch {
 
   static run(scroller: Scroller) {
+    scroller.state.process = Process.fetch;
+
     Fetch.get(scroller, (data) => {
         Fetch.success(data, scroller);
         scroller.process$.next(<ProcessSubject>{

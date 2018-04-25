@@ -4,6 +4,8 @@ import { Direction, Process, ProcessSubject } from '../interfaces/index';
 export default class PreFetch {
 
   static run(scroller: Scroller) {
+    scroller.state.process = Process.preFetch;
+
     const direction = scroller.state.direction;
     const paddingEdge = scroller.viewport.padding[direction].getEdge();
     const limit = scroller.viewport.getLimit(direction);

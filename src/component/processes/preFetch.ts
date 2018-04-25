@@ -60,7 +60,6 @@ export default class PreFetch {
       } else {
         scroller.buffer.lastIndex[direction] = scroller.buffer.lastIndex[opposite];
       }
-      // scroller.stat('should fetch – [[adjust]]');
     }
     scroller.state.setPreviousClip(true);
   }

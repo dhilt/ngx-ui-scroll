@@ -13,5 +13,6 @@ export interface ProcessSubject {
   process: Process;
   stop?: boolean;
   error?: boolean;
+  break?: boolean;
   payload?: any;
 }

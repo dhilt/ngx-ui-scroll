@@ -94,10 +94,10 @@ export class Scroller {
     return next;
   }
 
-  done() {
+  done(noNext?: boolean) {
     this.log(`---=== Workflow ${this.state.cycleCount} done`);
     this.end();
-    this.observer.next(this.getNextRun());
+    !noNext && this.observer.next(this.getNextRun());
   }
 
   fail() {
@@ -110,9 +110,13 @@ export class Scroller {
     this.buffer.reset(true);
     this.viewport.reset();
     this.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
+    this.state.fetch.subscription.unsubscribe();
 
     this.settings.setCurrentStartIndex(startIndex);
-    this.state.reload = true;
+    this.process$.next(<ProcessSubject>{
+      stop: true,
+      break: true
+    });
   }
 
   stat(str?) {

@@ -26,6 +26,7 @@ export class State implements IState {
     this.pending = true;
     this.cycleCount++;
 
+    this.process = Process.start;
     this.direction = options.direction;
     this.scroll = options.scroll || false;
     this.fetch.reset();

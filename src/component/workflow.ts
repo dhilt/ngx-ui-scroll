@@ -24,7 +24,8 @@ export class Workflow {
     this.scroller = new Scroller(this.context);
     this.cyclesDone = 0;
     this.reset();
-    this.initialize();
+    this.subscribe();
+    setTimeout(() => this.run());
   }
 
   reset() {
@@ -32,13 +33,12 @@ export class Workflow {
     this.runQueue = null;
   }
 
-  initialize() {
+  subscribe() {
     this.onScrollUnsubscribe =
       this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.scrollerResolverSubscription = this.scroller.resolver$.subscribe(this.resolveScroller.bind(this));
     this.adapterResolverSubscription = this.scroller.adapter.subject.subscribe(this.resolveAdapter.bind(this));
-    setTimeout(() => this.run());
   }
 
   dispose() {
@@ -117,8 +117,8 @@ export class Workflow {
 
     scroller.process$.subscribe((data: ProcessSubject) => {
       if (data.stop && !data.error) {
-        scroller.log(`-- wf ${state.cycleCount} ${state.process} process stop`);
-        scroller.done();
+        scroller.log(`-- wf ${state.cycleCount} ${state.process} process ${data.break ? 'break' : 'stop'}`);
+        scroller.done(data.break);
         return;
       }
       if (data.stop && data.error) {

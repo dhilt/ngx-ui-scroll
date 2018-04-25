@@ -1,4 +1,5 @@
 import { Item } from './item';
+import { Subscription } from 'rxjs/Subscription';
 
 export class FetchByDirection {
   shouldFetch: boolean;
@@ -34,6 +35,7 @@ export class FetchByDirection {
 export class FetchModel {
   forward: FetchByDirection;
   backward: FetchByDirection;
+  subscription: Subscription;
 
   constructor() {
     this.forward = new FetchByDirection();

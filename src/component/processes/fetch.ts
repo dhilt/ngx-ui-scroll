@@ -1,3 +1,6 @@
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
+
 import { Scroller } from '../scroller';
 import { Process, ProcessSubject } from '../interfaces/index';
 
@@ -6,7 +9,8 @@ export default class Fetch {
   static run(scroller: Scroller) {
     scroller.state.process = Process.fetch;
 
-    Fetch.get(scroller, (data) => {
+    scroller.state.fetch.subscription =
+      Fetch.get(scroller).subscribe((data) => {
         Fetch.success(data, scroller);
         scroller.process$.next(<ProcessSubject>{
           process: Process.fetch
@@ -17,8 +21,7 @@ export default class Fetch {
           stop: true,
           error: true,
           payload: error
-        })
-    );
+        }));
   }
 
   static success(data: any, scroller: Scroller) {
@@ -28,15 +31,23 @@ export default class Fetch {
     scroller.state.fetch[direction].newItemsData = data;
   }
 
-  static get(scroller: Scroller, success: Function, reject: Function) {
+  static get(scroller: Scroller) {
     const _get = <Function>scroller.datasource.get;
-    const _getResult =
-      _get(scroller.state.getStartIndex(), scroller.settings.bufferSize, success, reject);
-    if (_getResult && typeof _getResult.then === 'function') { // DatasourceGetPromise
-      _getResult.then(success, reject);
-    } else if (_getResult && typeof _getResult.subscribe === 'function') { // DatasourceGetObservable
-      _getResult.subscribe(success, reject);
+
+    let observer: Observer<any>;
+    const success = data => observer.next(data);
+    const reject = err => observer.error(err);
+
+    const result = _get(scroller.state.getStartIndex(), scroller.settings.bufferSize, success, reject);
+    if (result && typeof result.then === 'function') { // DatasourceGetPromise
+      result.then(success, reject);
+    } else if (result && typeof result.subscribe === 'function') { // DatasourceGetObservable
+      return result;
     }
+
+    return Observable.create(_observer => {
+      observer = _observer;
+    });
   }
 
 }

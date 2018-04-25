@@ -133,22 +133,32 @@ export class Workflow {
       }
       this.scroller.log(`-- wf ${this.scroller.state.cycleCount} ${data.process} process done`);
 
-      if (data.process === Process.start) {
-        PreFetch.run(this.scroller);
-      } else if (data.process === Process.preFetch) {
-        Fetch.run(this.scroller);
-      } else if (data.process === Process.fetch) {
-        PostFetch.run(this.scroller);
-      } else if (data.process === Process.postFetch) {
-        Render.run(this.scroller);
-      } else if (data.process === Process.render) {
-        PostRender.run(this.scroller);
-      } else if (data.process === Process.postRender) {
-        PreClip.run(this.scroller);
-      } else if (data.process === Process.preClip) {
-        Clip.run(this.scroller);
-      } else if (data.process === Process.clip) {
-        this.scroller.done();
+      // workflow state machine
+      switch (data.process) {
+        case Process.start:
+          PreFetch.run(this.scroller);
+          break;
+        case Process.preFetch:
+          Fetch.run(this.scroller);
+          break;
+        case Process.fetch:
+          PostFetch.run(this.scroller);
+          break;
+        case Process.postFetch:
+          Render.run(this.scroller);
+          break;
+        case Process.render:
+          PostRender.run(this.scroller);
+          break;
+        case Process.postRender:
+          PreClip.run(this.scroller);
+          break;
+        case Process.preClip:
+          Clip.run(this.scroller);
+          break;
+        case Process.clip:
+          this.scroller.done();
+          break;
       }
     }, () => null, function () {
       this.unsubscribe();

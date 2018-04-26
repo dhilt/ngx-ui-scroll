@@ -4,6 +4,7 @@ describe('Datasource Get', () => {
 
   const shouldWork = (misc) => (done) => {
     expect(misc.workflow.cyclesDone).toBe(1);
+    expect(misc.scroller.state.fetch.count).toBeGreaterThan(0);
     done();
   };
 
@@ -19,11 +20,11 @@ describe('Datasource Get', () => {
     it: shouldWork
   });
 
-  // makeTest({
-  //   config: { datasourceName: 'infinite-callback-no-delay' },
-  //   title: 'should run the workflow with immediate infinite callback-based datasource',
-  //   it: shouldWork
-  // });
+  makeTest({
+    config: { datasourceName: 'infinite-callback-no-delay' },
+    title: 'should run the workflow with immediate infinite callback-based datasource',
+    it: shouldWork
+  });
 
   makeTest({
     config: { datasourceName: 'limited-observable-no-delay' },
@@ -37,11 +38,11 @@ describe('Datasource Get', () => {
     it: shouldWork
   });
 
-  // makeTest({
-  //   config: { datasourceName: 'limited-callback-no-delay' },
-  //   title: 'should run the workflow with immediate limited callback-based datasource',
-  //   it: shouldWork
-  // });
+  makeTest({
+    config: { datasourceName: 'limited-callback-no-delay' },
+    title: 'should run the workflow with immediate limited callback-based datasource',
+    it: shouldWork
+  });
 
   makeTest({
     config: { datasourceName: 'infinite-observable-delay-1' },

@@ -11,18 +11,17 @@ export default class Fetch {
 
     const result = Fetch.get(scroller);
     if (typeof result.subscribe !== 'function') {
-      Fetch.success(result.data, scroller);
+      if (!result.isError) {
+        Fetch.success(result.data, scroller);
+      } else {
+        Fetch.fail(result.error, scroller);
+      }
     } else {
       scroller.cycleSubscriptions.push(
         result.subscribe(
           (data) => Fetch.success(data, scroller),
-          (error) =>
-            scroller.process$.next(<ProcessSubject>{
-              process: Process.fetch,
-              stop: true,
-              error: true,
-              payload: error
-            }))
+          (error) => Fetch.success(error, scroller)
+        )
       );
     }
   }
@@ -38,12 +37,20 @@ export default class Fetch {
     });
   }
 
+  static fail(error: any, scroller: Scroller) {
+    scroller.process$.next(<ProcessSubject>{
+      process: Process.fetch,
+      stop: true,
+      error: true,
+      payload: error
+    });
+  }
+
   static get(scroller: Scroller) {
     const _get = <Function>scroller.datasource.get;
 
-    let immediateData;
+    let immediateData, immediateError;
     let observer: Observer<any>;
-    const reject = err => observer.error(err);
     const success = data => {
       if (!observer) {
         immediateData = data || null;
@@ -52,17 +59,26 @@ export default class Fetch {
       observer.next(data);
       observer.complete();
     };
+    const reject = error => {
+      if (!observer) {
+        immediateError = error || null;
+        return;
+      }
+      observer.error(error);
+    };
 
     const result = _get(scroller.state.getStartIndex(), scroller.settings.bufferSize, success, reject);
     if (result && typeof result.then === 'function') { // DatasourceGetPromise
       result.then(success, reject);
     } else if (result && typeof result.subscribe === 'function') { // DatasourceGetObservable
-      return result;
+      return result; // do not wrap observable
     }
 
-    if (immediateData !== undefined) {
+    if (immediateData !== undefined || immediateError !== undefined) {
       return {
-        data: immediateData
+        data: immediateData,
+        error: immediateError,
+        isError: immediateError !== undefined
       };
     }
 

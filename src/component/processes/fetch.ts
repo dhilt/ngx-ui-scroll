@@ -38,6 +38,9 @@ export default class Fetch {
     let observer: Observer<any>;
     const reject = err => observer.error(err);
     const success = data => {
+      if (!observer) {
+        // todo immediate data resolve case, critical
+      }
       observer.next(data);
       observer.complete();
     };

@@ -1,0 +1,14 @@
+<app-demo
+  [datasource]="datasource"
+  [data]="data"
+  [log]="log"
+  [sources]="sources"
+>
+  <p>
+    Reload
+  </p>
+  <div actions>
+    <input [ngModel]="startIndex" (input)="onInputChanged($event.target)">
+    <button (click)="reload()">Reload</button>
+  </div>
+</app-demo>

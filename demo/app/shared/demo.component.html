@@ -5,6 +5,10 @@
     <a href="#{{data.titleId}}">#</a>
   </h3>
 
+  <div class="actions">
+    <ng-content select="[actions]"></ng-content>
+  </div>
+
   <div class="work">
     <div style="float: left">
       <div class="viewport {{data.addClass || ''}}" id="{{data.id}}">

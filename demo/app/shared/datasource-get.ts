@@ -33,20 +33,20 @@ export const datasourceGetLimited =
     return data;
   };
 
-export const datasourceGetObservableInfinite = (index, count) =>
-  Observable.create(observer =>
-    observer.next(this.datasourceGetInfinite(index, count))
+export const datasourceGetObservableInfinite = (demoContext: DemoContext) =>
+  (index, count) => Observable.create(observer =>
+    observer.next(datasourceGetInfinite(demoContext, index, count))
   );
 
-export const datasourceGetPromiseInfinite = (index, count) =>
-  new Promise(success =>
-    success(this.datasourceGetInfinite(index, count))
+export const datasourceGetPromiseInfinite = (demoContext: DemoContext) =>
+  (index, count) => new Promise(success =>
+    success(datasourceGetInfinite(demoContext, index, count))
   );
 
 export const datasourceGetCallbackInfinite = (demoContext: DemoContext) =>
   (index: number, count: number, success: Function) =>
-    success(this.datasourceGetInfinite(demoContext, index, count));
+    success(datasourceGetInfinite(demoContext, index, count));
 
 export const datasourceGetCallbackLimited = (demoContext: DemoContext, min: number, max: number) =>
   (index: number, count: number, success: Function) =>
-    success(this.datasourceGetLimited(demoContext, min, max, index, count));
+    success(datasourceGetLimited(demoContext, min, max, index, count));

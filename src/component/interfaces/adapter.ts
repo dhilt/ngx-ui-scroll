@@ -1,5 +1,6 @@
 export interface Adapter {
-  reload: Function;
+  isLoading?: boolean;
+  reload?: Function;
 }
 
 export enum ActionType {

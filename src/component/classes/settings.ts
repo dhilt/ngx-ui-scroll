@@ -51,7 +51,8 @@ export class Settings implements ISettings {
     this.currentStartIndex = this.startIndex;
   }
 
-  setCurrentStartIndex(startIndex: number) {
-    this.currentStartIndex = typeof startIndex === 'number' ? startIndex : this.startIndex;
+  setCurrentStartIndex(startIndex: number | string) {
+    startIndex = Number(startIndex);
+    this.currentStartIndex = !isNaN(startIndex) ? startIndex : this.startIndex;
   }
 }

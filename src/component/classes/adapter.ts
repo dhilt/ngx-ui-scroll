@@ -13,10 +13,10 @@ export class Adapter implements IAdapter {
     this.subject.complete();
   }
 
-  reload(startIndex?: number) {
+  reload(reloadIndex?: number | string) {
     this.subject.next(<AdapterAction>{
       action: ActionType.reload,
-      payload: startIndex
+      payload: reloadIndex
     });
   }
 

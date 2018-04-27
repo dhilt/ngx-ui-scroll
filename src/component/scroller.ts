@@ -117,14 +117,14 @@ export class Scroller {
     this.end();
   }
 
-  reload(startIndex: number) {
+  reload(reloadIndex: number | string) {
     const scrollPosition = this.viewport.scrollPosition;
     this.buffer.reset(true);
     this.viewport.reset();
     this.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
     this.purgeCycleSubscriptions();
 
-    this.settings.setCurrentStartIndex(startIndex);
+    this.settings.setCurrentStartIndex(reloadIndex);
     this.process$.next(<ProcessSubject>{
       stop: true,
       break: true

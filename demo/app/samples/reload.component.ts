@@ -24,7 +24,7 @@ export class DemoReloadComponent {
     get: datasourceGetCallbackInfinite(this.demoContext)
   };
 
-  startIndex: number = 1;
+  reloadIndex: number = 1;
 
   onInputChanged(target) {
     let value = parseInt(target.value, 10);
@@ -32,7 +32,13 @@ export class DemoReloadComponent {
       value = 1;
     }
     target.value = value;
-    this.startIndex = value;
+    this.reloadIndex = value;
+  }
+
+  doReload() {
+    this.demoContext.count = 0;
+    this.demoContext.log = '';
+    this.datasource.adapter.reload(this.reloadIndex);
   }
 
   sources: DemoSources = {
@@ -43,9 +49,18 @@ export class DemoReloadComponent {
       data.push({ id: i, text: 'item #' + i });
     }
     success(data);
-  }
+  } 
+};
+
+reloadIndex: number = 1;
+
+doReload() {
+  this.datasource.adapter.reload(this.reloadIndex);
 }`,
-    template: `<div class="viewport">
+    template: `<input [(ngModel)]="reloadIndex">
+<button (click)="doReload()">Reload</button>
+
+<div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>

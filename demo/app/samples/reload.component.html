@@ -1,7 +1,6 @@
 <app-demo
   [datasource]="datasource"
-  [data]="data"
-  [log]="log"
+  [context]="demoContext"
   [sources]="sources"
 >
   <p>
@@ -9,6 +8,6 @@
   </p>
   <div actions>
     <input [ngModel]="startIndex" (input)="onInputChanged($event.target)">
-    <button (click)="reload()">Reload</button>
+    <button (click)="datasource.adapter.reload(startIndex)">Reload</button>
   </div>
 </app-demo>

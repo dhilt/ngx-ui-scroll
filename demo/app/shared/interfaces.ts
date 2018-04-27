@@ -4,9 +4,14 @@ export interface DemoSources {
   styles: string;
 }
 
-export interface DemoData {
+export interface DemoContext {
+  // static data
   title: string;
   titleId: string;
   id: string;
   addClass?: string;
+
+  // dynamic data
+  count: number;
+  log: string;
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { DemoData, DemoSources } from '../shared/interfaces';
+
+import { DemoContext, DemoSources } from '../shared/interfaces';
+import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
 
 import { Datasource } from '../../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
@@ -11,54 +12,28 @@ import { Datasource } from '../../../public_api';
 })
 export class DemoReloadComponent {
 
-  count: number = 0;
-  log: string = '';
-  startIndex: number = 1;
-
-  datasourceGet = (index, count) => {
-      this.log = `${++this.count}) get 5 items [${index}, ${index + count - 1}]\n` + this.log;
-      const data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({ id: i, text: 'item #' + i });
-      }
-      return data;
+  demoContext: DemoContext = <DemoContext> {
+    title: `Reload`,
+    titleId: `reload`,
+    id: `reload-viewport`,
+    count: 0,
+    log: ''
   };
-
-  datasourceGetObservable = (index, count) =>
-    Observable.create(observer =>
-      observer.next(this.datasourceGet(index, count))
-    );
-
-  datasourceGetPromise = (index, count) =>
-    new Promise(success =>
-      success(this.datasourceGet(index, count))
-    );
-
-  datasourceGetCallback = (index, count, success) =>
-    success(this.datasourceGet(index, count));
 
   datasource: Datasource = {
-    get: this.datasourceGetObservable
+    get: datasourceGetCallbackInfinite(this.demoContext)
   };
 
-  reload () {
-    this.datasource.adapter.reload(this.startIndex);
-  }
+  startIndex: number = 1;
 
-  onInputChanged (target) {
+  onInputChanged(target) {
     let value = parseInt(target.value, 10);
-    if(isNaN(value)) {
+    if (isNaN(value)) {
       value = 1;
     }
     target.value = value;
     this.startIndex = value;
   }
-
-  data: DemoData = {
-    title: `Reload`,
-    titleId: `reload`,
-    id: `reload-viewport`
-  };
 
   sources: DemoSources = {
     datasource: `datasource: Datasource = {

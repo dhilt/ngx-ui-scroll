@@ -1,8 +1,8 @@
 <div class="demo">
 
-  <h3 id="{{data.titleId}}">
-    {{data.title}}
-    <a href="#{{data.titleId}}">#</a>
+  <h3 id="{{context.titleId}}">
+    {{context.title}}
+    <a href="#{{context.titleId}}">#</a>
   </h3>
 
   <div class="actions">
@@ -11,23 +11,23 @@
 
   <div class="work">
     <div style="float: left">
-      <div class="viewport {{data.addClass || ''}}" id="{{data.id}}">
+      <div class="viewport {{context.addClass || ''}}" id="{{context.id}}">
         <div *uiScroll="let item of datasource">
           <div
-            class="item {{data.addClass || ''}}"
+            class="item {{context.addClass || ''}}"
             [style.height]="item.height !== undefined ? item.height + 'px' : null"
           >{{item.text}}
           </div>
         </div>
       </div>
     </div>
-    <div class="log elements {{data.addClass || ''}}">
+    <div class="log elements {{context.addClass || ''}}">
       DOM elements
-      <pre>{{elements(data.id)}}</pre>
+      <pre>{{elements(context.id)}}</pre>
     </div>
-    <div class="log datasource {{data.addClass || ''}}">
+    <div class="log datasource {{context.addClass || ''}}">
       Datasource.get log
-      <pre>{{log}}</pre>
+      <pre>{{context.log}}</pre>
     </div>
     <div class="clearfix mb-3"></div>
   </div>

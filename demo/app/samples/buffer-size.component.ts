@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { DemoData, DemoSources } from '../shared/interfaces';
+
+import { DemoContext, DemoSources } from '../shared/interfaces';
+import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
 
 import { Datasource } from '../../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
@@ -10,27 +12,19 @@ import { Datasource } from '../../../public_api';
 })
 export class DemoBufferSizeComponent {
 
-  count: number = 0;
-  log: string = '';
+  demoContext: DemoContext = <DemoContext> {
+    title: `bufferSize setting`,
+    titleId: `bufferSize-setting`,
+    id: `buffer`,
+    count: 0,
+    log: ''
+  };
 
   datasource: Datasource = {
-    get: (index, count, success) => {
-      this.log = `${++this.count}) get 15 items [${index}, ${index + count - 1}]\n` + this.log;
-      const data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({ id: i, text: 'item #' + i });
-      }
-      success(data);
-    },
+    get: datasourceGetCallbackInfinite(this.demoContext),
     settings: {
       bufferSize: 15
     }
-  };
-
-  data: DemoData = {
-    title: `bufferSize setting`,
-    titleId: `bufferSize-setting`,
-    id: `buffer`
   };
 
   sources: DemoSources = {

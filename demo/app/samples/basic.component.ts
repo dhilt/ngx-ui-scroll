@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { DemoData, DemoSources } from '../shared/interfaces';
+
+import { DemoContext, DemoSources } from '../shared/interfaces';
+import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
 
 import { Datasource } from '../../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
@@ -10,24 +12,16 @@ import { Datasource } from '../../../public_api';
 })
 export class DemoBasicComponent {
 
-  count: number = 0;
-  log: string = '';
-
-  datasource: Datasource = {
-    get: (index, count, success) => {
-      this.log = `${++this.count}) get 5 items [${index}, ${index + count - 1}]\n` + this.log;
-      const data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({ id: i, text: 'item #' + i });
-      }
-      success(data);
-    }
-  };
-
-  data: DemoData = {
+  demoContext: DemoContext = <DemoContext> {
     title: `Unlimited bidirectional scrolling`,
     titleId: `unlimited-bidirectional-scrolling`,
-    id: `basic`
+    id: `basic`,
+    count: 0,
+    log: ''
+  };
+
+  datasource: Datasource = {
+    get: datasourceGetCallbackInfinite(this.demoContext)
   };
 
   sources: DemoSources = {

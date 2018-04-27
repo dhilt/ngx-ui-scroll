@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
 import { DemoContext, DemoSources } from '../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
 
-import { Datasource } from '../../../public_api';
-// import { Datasource } from 'ngx-ui-scroll';
+import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-basic',
@@ -20,12 +19,12 @@ export class DemoBasicComponent {
     log: ''
   };
 
-  datasource: Datasource = {
+  datasource: IDatasource = {
     get: datasourceGetCallbackInfinite(this.demoContext)
   };
 
   sources: DemoSources = {
-    datasource: `datasource: Datasource = {
+    datasource: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {

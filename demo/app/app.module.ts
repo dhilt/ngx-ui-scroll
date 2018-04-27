@@ -14,8 +14,7 @@ import { DemoHorizontalComponent } from './samples/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/different-heights.component';
 import { DemoReloadComponent } from './samples/reload.component';
 
-import { UiScrollModule } from '../../public_api';
-// import { UiScrollModule } from 'ngx-ui-scroll';
+import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
 
 @NgModule({
   declarations: [

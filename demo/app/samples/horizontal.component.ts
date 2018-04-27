@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
 import { DemoContext, DemoSources } from '../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
 
-import { Datasource } from '../../../public_api';
-// import { Datasource } from 'ngx-ui-scroll';
+import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-horizontal',
@@ -21,7 +20,7 @@ export class DemoHorizontalComponent {
     log: ''
   };
 
-  datasource: Datasource = {
+  datasource: IDatasource = {
     get: datasourceGetCallbackInfinite(this.demoContext),
     settings: {
       horizontal: true
@@ -29,7 +28,7 @@ export class DemoHorizontalComponent {
   };
 
   sources: DemoSources = {
-    datasource: `datasource: Datasource = {
+    datasource: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {

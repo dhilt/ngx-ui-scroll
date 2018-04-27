@@ -14,10 +14,10 @@ import { checkDatasource } from './utils/index';
 
 export class Scroller {
 
-  public resolver$: Observable<any>;
-  private observer;
-  private _bindData: Function;
+  readonly _bindData: Function;
   private logs: Array<any> = [];
+  private observer;
+  public resolver$: Observable<any>;
 
   public datasource: Datasource;
   public settings: Settings;

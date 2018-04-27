@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
 import { DemoContext, DemoSources } from '../shared/interfaces';
 import { datasourceGetCallbackLimited } from '../shared/datasource-get';
 
-import { Datasource } from '../../../public_api';
-// import { Datasource } from 'ngx-ui-scroll';
+import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-different-heights',
@@ -20,12 +19,12 @@ export class DemoDifferentHeightsComponent {
     log: ''
   };
 
-  datasource: Datasource = {
+  datasource: IDatasource = {
     get: datasourceGetCallbackLimited(this.demoContext, 1, 75)
   };
 
   sources: DemoSources = {
-    datasource: `datasource: Datasource = {
+    datasource: `datasource: IDatasource = {
   get: (index, count, success) => {
     const MIN = 1, MAX = 75;
     const data = [];

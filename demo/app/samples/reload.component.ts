@@ -3,8 +3,7 @@ import { Component } from '@angular/core';
 import { DemoContext, DemoSources } from '../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
 
-import { Datasource } from '../../../public_api';
-// import { Datasource } from 'ngx-ui-scroll';
+import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-reload',
@@ -20,9 +19,9 @@ export class DemoReloadComponent {
     log: ''
   };
 
-  datasource: Datasource = {
+  datasource = new Datasource ({
     get: datasourceGetCallbackInfinite(this.demoContext)
-  };
+  });
 
   reloadIndex: number = 1;
 
@@ -42,7 +41,7 @@ export class DemoReloadComponent {
   }
 
   sources: DemoSources = {
-    datasource: `datasource: Datasource = {
+    datasource: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -50,7 +49,7 @@ export class DemoReloadComponent {
     }
     success(data);
   } 
-};
+});
 
 reloadIndex: number = 1;
 

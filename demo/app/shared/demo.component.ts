@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { DemoData, DemoSources } from './interfaces';
+import { DemoContext, DemoSources } from './interfaces';
 
 import { Datasource } from '../../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
@@ -11,8 +11,7 @@ import { Datasource } from '../../../public_api';
 export class DemoComponent {
 
   @Input() datasource: Datasource;
-  @Input() data: DemoData;
-  @Input() log: string;
+  @Input() context: DemoContext;
   @Input() sources: DemoSources;
 
   elements(token: string): string {

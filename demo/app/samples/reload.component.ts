@@ -7,15 +7,15 @@ import { Datasource } from '../../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
-  selector: 'app-demo-basic',
-  templateUrl: './basic.component.html'
+  selector: 'app-demo-reload',
+  templateUrl: './reload.component.html'
 })
-export class DemoBasicComponent {
+export class DemoReloadComponent {
 
   demoContext: DemoContext = <DemoContext> {
-    title: `Unlimited bidirectional scrolling`,
-    titleId: `unlimited-bidirectional-scrolling`,
-    id: `basic`,
+    title: `Reload`,
+    titleId: `reload`,
+    id: `reload-viewport`,
     count: 0,
     log: ''
   };
@@ -23,6 +23,23 @@ export class DemoBasicComponent {
   datasource: Datasource = {
     get: datasourceGetCallbackInfinite(this.demoContext)
   };
+
+  reloadIndex: number = 1;
+
+  onInputChanged(target) {
+    let value = parseInt(target.value, 10);
+    if (isNaN(value)) {
+      value = 1;
+    }
+    target.value = value;
+    this.reloadIndex = value;
+  }
+
+  doReload() {
+    this.demoContext.count = 0;
+    this.demoContext.log = '';
+    this.datasource.adapter.reload(this.reloadIndex);
+  }
 
   sources: DemoSources = {
     datasource: `datasource: Datasource = {
@@ -32,9 +49,18 @@ export class DemoBasicComponent {
       data.push({ id: i, text: 'item #' + i });
     }
     success(data);
-  }
+  } 
+};
+
+reloadIndex: number = 1;
+
+doReload() {
+  this.datasource.adapter.reload(this.reloadIndex);
 }`,
-    template: `<div class="viewport">
+    template: `<input [(ngModel)]="reloadIndex">
+<button (click)="doReload()">Reload</button>
+
+<div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>

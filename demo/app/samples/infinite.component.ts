@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { DemoData, DemoSources } from '../shared/interfaces';
+
+import { DemoContext, DemoSources } from '../shared/interfaces';
+import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
 
 import { Datasource } from '../../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
@@ -10,27 +12,19 @@ import { Datasource } from '../../../public_api';
 })
 export class DemoInfiniteComponent {
 
-  count: number = 0;
-  log: string = '';
+  demoContext: DemoContext = <DemoContext> {
+    title: `Infinite mode`,
+    titleId: `infinite-mode`,
+    id: `infinite`,
+    count: 0,
+    log: ''
+  };
 
   datasource: Datasource = {
-    get: (index, count, success) => {
-      this.log = `${++this.count}) get 5 items [${index}, ${index + count - 1}]\n` + this.log;
-      const data = [];
-      for (let i = index; i <= index + count - 1; i++) {
-        data.push({ id: i, text: 'item #' + i });
-      }
-      success(data);
-    },
+    get: datasourceGetCallbackInfinite(this.demoContext),
     settings: {
       infinite: true
     }
-  };
-
-  data: DemoData = {
-    title: `Infinite mode`,
-    titleId: `infinite-mode`,
-    id: `infinite`
   };
 
   sources: DemoSources = {

@@ -1,26 +1,26 @@
 import { Scroller } from '../scroller';
-import { Direction } from '../interfaces/index';
+import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
-export default class AdjustFetch {
+export default class PostRender {
 
   static run(scroller: Scroller) {
-    const direction = scroller.direction;
-    const items = scroller.fetch[direction].items;
-    if (!items) {
-      return;
-    }
-    // scroller.stat('start adjust');
-    AdjustFetch.processFetchedItems(items);
+    scroller.state.process = Process.postRender;
+
+    const direction = scroller.state.direction;
+    const items = scroller.state.fetch[direction].items;
+
+    PostRender.processFetchedItems(items);
+
     const height = Math.round(
       Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
     );
     if (direction === Direction.forward) {
-      AdjustFetch.runForward(scroller, height);
+      PostRender.runForward(scroller, height);
     } else {
-      AdjustFetch.runBackward(scroller, height);
+      PostRender.runBackward(scroller, height);
     }
-    // scroller.stat('end adjust');
-    return scroller;
+
+    scroller.process$.next(<ProcessSubject>{ process: Process.postRender });
   }
 
   static processFetchedItems(items) {

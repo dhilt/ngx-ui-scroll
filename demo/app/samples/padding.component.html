@@ -1,14 +1,13 @@
 <app-demo
   [datasource]="datasource"
-  [data]="data"
-  [log]="log"
+  [context]="demoContext"
   [sources]="sources"
 >
   <p>
     Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
     <em>padding</em> property. <em>Padding</em> is an extra space added to the visible part of the viewport for
     the purpose of determining when the items should be created/destroyed. The value is relative to the visible
-    size of the viewport. <em>1.4</em> means that the <em>*uiScroll</em> directive would request new items until
+    size of the viewport. <em>1.4</em> means that the <em>uiScroll</em> would request new items until
     140% of the viewport size (out of the visible part of the viewport) is filled with rendered items. That's why
     we have 5 requests on the initial load in this case. There are 3 downward requests:
   </p>

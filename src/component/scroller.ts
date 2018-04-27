@@ -1,108 +1,134 @@
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { Datasource, Direction, Run } from './interfaces/index';
+import { Datasource, Direction, Process, Run, ProcessSubject } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
-import { FetchModel } from './classes/fetch';
-import { ClipModel } from './classes/clip';
+import { State } from './classes/state';
+import { Adapter } from './classes/adapter';
 
 import { checkDatasource } from './utils/index';
 
 export class Scroller {
 
+  public resolver$: Observable<any>;
   private observer;
-  public resolver: Observable<any>;
+  private _bindData: Function;
+  private logs: Array<any> = [];
 
-  public bindData: Function;
   public datasource: Datasource;
   public settings: Settings;
   public routines: Routines;
   public viewport: Viewport;
   public buffer: Buffer;
+  public state: State;
+  public adapter: Adapter;
 
-  public countStart = 0;
-  public countDone = 0;
-  public pending: boolean;
-  public direction: Direction;
-  public scroll: boolean;
-  public fetch: FetchModel;
-  public clip: ClipModel;
-
-  private next: Run;
-  private logs: Array<any> = [];
+  public process$: BehaviorSubject<ProcessSubject>;
+  public cycleSubscriptions: Array<Subscription>;
 
   constructor(context) {
-    this.resolver = Observable.create(_observer => this.observer = _observer);
-
-    this.bindData = () => {
-      context.changeDetector.markForCheck();
-    };
+    this.resolver$ = Observable.create(observer => this.observer = observer);
+    this._bindData = () => context.changeDetector.markForCheck();
     this.datasource = checkDatasource(context.datasource);
 
     this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
+    this.state = new State();
+    this.adapter = new Adapter();
 
-    this.fetch = new FetchModel();
-    this.clip = new ClipModel();
+    this.datasource.adapter = this.adapter;
+    this.cycleSubscriptions = [];
+  }
+
+  bindData(): Observable<any> {
+    this._bindData();
+    return Observable.create(observer => {
+      setTimeout(() => {
+          observer.next();
+          observer.complete();
+        });
+      }
+    );
+  }
+
+  purgeCycleSubscriptions() {
+    this.cycleSubscriptions.forEach((item: Subscription) => item.unsubscribe());
+    this.cycleSubscriptions = [];
+  }
+
+  dispose() {
+    this.observer.complete();
+    this.process$.complete();
+    this.adapter.dispose();
+    this.purgeCycleSubscriptions();
   }
 
   start(options: Run = {}) {
-    this.countStart++;
-    this.log(`---=== Workflow ${this.countStart} run`, options);
-    this.pending = true;
-    this.direction = options.direction;
-    this.scroll = options.scroll || false;
-    this.fetch.reset();
-    this.clip.reset();
-    return Promise.resolve(this);
+    this.state.startCycle(options);
+    this.log(`---=== Workflow ${this.state.cycleCount} start`, options);
+    this.process$ = new BehaviorSubject(<ProcessSubject>{ process: Process.start });
+  }
+
+  end() {
+    this.state.endCycle();
+    this.viewport.saveScrollPosition();
+    this.process$.complete();
+    this.purgeCycleSubscriptions();
+    this.finalize();
+  }
+
+  finalize() {
   }
 
   continue() {
     return Promise.resolve(this);
   }
 
-  finalize() { // stop 1 cycle
-  }
-
-  end() {
-    this.pending = false;
-    this.countDone++;
-    this.viewport.saveScrollPosition();
-    this.finalize();
-  }
-
-  analyse() {
-    this.next = null;
-    if (this.fetch.hasNewItems || this.clip.shouldClip) {
-      this.next = { direction: this.direction, scroll: this.scroll };
+  getNextRun(): Run {
+    let next = null;
+    if (this.state.fetch.hasNewItems || this.state.clip.shouldClip) {
+      next = { direction: this.state.direction, scroll: this.state.scroll };
     }
-    if (!this.buffer.size && this.fetch.shouldFetch && !this.fetch.hasNewItems) {
-      this.next = {
-        direction: this.direction === Direction.forward ? Direction.backward : Direction.forward,
+    if (!this.buffer.size && this.state.fetch.shouldFetch && !this.state.fetch.hasNewItems) {
+      next = {
+        direction: this.state.direction === Direction.forward ? Direction.backward : Direction.forward,
         scroll: false
       };
     }
+    return next;
   }
 
-  done() {
-    this.log(`---=== Workflow ${this.countStart} done`);
+  done(noNext?: boolean) {
+    this.log(`---=== Workflow ${this.state.cycleCount} done`);
     this.end();
-    this.analyse();
-    this.observer.next(this.next);
+    if (!noNext) {
+      this.observer.next(this.getNextRun());
+    }
   }
 
-  fail(error: any) {
-    this.log(`---=== Workflow ${this.countStart} fail`);
+  fail() {
+    this.log(`---=== Workflow ${this.state.cycleCount} fail`);
     this.end();
-    this.observer.error(error);
   }
 
-  dispose() {
-    this.observer.complete();
+  reload(reloadIndex: number | string) {
+    const scrollPosition = this.viewport.scrollPosition;
+    this.buffer.reset(true);
+    this.viewport.reset();
+    this.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
+    this.purgeCycleSubscriptions();
+
+    this.settings.setCurrentStartIndex(reloadIndex);
+    this.process$.next(<ProcessSubject>{
+      stop: true,
+      break: true
+    });
   }
 
   stat(str?) {

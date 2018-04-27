@@ -1,32 +1,31 @@
 import { Scroller } from '../scroller';
-import { Direction } from '../interfaces/direction';
+import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
 export default class Clip {
 
   static run(scroller: Scroller) {
-    if (!scroller.clip.shouldClip) {
-      return scroller;
-    }
-    // scroller.stat('start clip');
+    scroller.state.process = Process.clip;
+
     Clip.runByDirection(Direction.forward, scroller);
     Clip.runByDirection(Direction.backward, scroller);
     Clip.processBuffer(scroller);
-    scroller.bindData();
-    return new Promise((resolve, reject) =>
-      setTimeout(() => {
-        // scroller.stat('end clip');
+
+    scroller.cycleSubscriptions.push(
+      scroller.bindData().subscribe(() => {
         Clip.processClip(scroller);
-        resolve(scroller);
+        scroller.process$.next(<ProcessSubject>{
+          process: Process.clip
+        });
       })
     );
   }
 
   static runByDirection(direction: Direction, scroller: Scroller) {
-    if (!scroller.clip[direction].shouldClip) {
+    if (!scroller.state.clip[direction].shouldClip) {
       return;
     }
     const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
-    scroller.viewport.padding[opposite].size += scroller.clip[direction].size;
+    scroller.viewport.padding[opposite].size += scroller.state.clip[direction].size;
   }
 
   static processBuffer(scroller: Scroller) {
@@ -39,15 +38,15 @@ export default class Clip {
       return true;
     });
     if (!scroller.buffer.size) {
-      scroller.clip.previous.set(scroller.direction);
+      scroller.state.setPreviousClip();
     }
   }
 
   static processClip(scroller: Scroller) {
-    if (!scroller.clip[Direction.backward].shouldClip) {
+    if (!scroller.state.clip[Direction.backward].shouldClip) {
       scroller.buffer.bof = false;
     }
-    if (!scroller.clip[Direction.forward].shouldClip) {
+    if (!scroller.state.clip[Direction.forward].shouldClip) {
       scroller.buffer.eof = false;
     }
   }

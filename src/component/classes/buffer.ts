@@ -1,11 +1,17 @@
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export class Index {
   forward: number = null;
   backward: number = null;
+
+  reset() {
+    this.backward = null;
+    this.forward = null;
+  }
 }
 
 export class Buffer {
@@ -19,11 +25,22 @@ export class Buffer {
   cache: Cache;
 
   constructor() {
+    this.lastIndex = new Index();
+    this.cache = new Cache();
+    this.reset();
+  }
+
+  reset(reload?: boolean) {
+    if (reload) {
+      this.items.forEach(item => {
+        this.cache.add(item);
+        item.hide();
+      });
+    }
     this.items = [];
     this.bof = false;
     this.eof = false;
-    this.lastIndex = new Index();
-    this.cache = new Cache();
+    this.lastIndex.reset();
   }
 
   set items(items: Array<Item>) {

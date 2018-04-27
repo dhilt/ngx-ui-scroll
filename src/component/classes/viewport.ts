@@ -12,6 +12,11 @@ export class ViewportPadding {
     this.forward = new Padding(element, Direction.forward, routines, settings.paddingForwardSize);
     this.backward = new Padding(element, Direction.backward, routines, settings.paddingBackwardSize);
   }
+
+  reset() {
+    this.forward.reset();
+    this.backward.reset();
+  }
 }
 
 export class Viewport {
@@ -32,6 +37,13 @@ export class Viewport {
     this.scrollable = elementRef.nativeElement.parentElement;
     this.padding = new ViewportPadding(this.host, this.routines, settings);
     this.syntheticScrollPosition = null;
+  }
+
+  reset() {
+    this.scrollPosition = 0;
+    this.lastPosition = 0;
+    this.syntheticScrollPosition = null;
+    this.padding.reset();
   }
 
   get children(): HTMLCollection {

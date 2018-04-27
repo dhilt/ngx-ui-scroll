@@ -90,7 +90,7 @@ describe('Fast Scroll Spec', () => {
         misc[position === 0 ? 'scrollMax' : 'scrollMin']();
       }
     };
-    if (!misc.scroller.pending && buffer.size && buffer.items[index] && buffer.items[index].element) {
+    if (!misc.scroller.state.pending && buffer.size && buffer.items[index] && buffer.items[index].element) {
       runExpectations();
     } else {
       expectationsTimer = setTimeout(() => preExpectations(config, misc, done), 25);

@@ -2,46 +2,51 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
-import { Direction, Run } from './interfaces/index';
-
-import ShouldFetch from './workflow/shouldFetch';
-import Fetch from './workflow/fetch';
-import ProcessFetch from './workflow/processFetch';
-import Render from './workflow/render';
-import AdjustFetch from './workflow/adjustFetch';
-import ShouldClip from './workflow/shouldClip';
-import Clip from './workflow/clip';
+import { Direction, Run, AdapterAction, ActionType, Process, ProcessSubject } from './interfaces/index';
+import { PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip } from './processes/index';
 
 export class Workflow {
 
-  private context;
+  readonly context;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
-  private flowResolverSubscription: Subscription;
+  private scrollerResolverSubscription: Subscription;
+  private adapterResolverSubscription: Subscription;
 
   public scroller: Scroller;
   public cyclesDone: number;
 
   private runNew: Run;
   private runQueue: Run;
-  private defaultDirection = Direction.forward;
 
   constructor(context) {
     this.context = context;
     this.scroller = new Scroller(this.context);
     this.cyclesDone = 0;
-    this.runQueue = null;
-    this.runNew = null;
-    this.initialize();
+    this.reset();
+    this.subscribe();
+    setTimeout(() => this.run());
   }
 
-  initialize() {
+  reset() {
+    this.runNew = null;
+    this.runQueue = null;
+  }
+
+  subscribe() {
     this.onScrollUnsubscribe =
       this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
-    this.flowResolverSubscription = this.scroller.resolver.subscribe(this.resolve.bind(this));
+    this.scrollerResolverSubscription = this.scroller.resolver$.subscribe(this.resolveScroller.bind(this));
+    this.adapterResolverSubscription = this.scroller.adapter.subject.subscribe(this.resolveAdapter.bind(this));
+  }
 
-    this.run();
+  dispose() {
+    this.onScrollUnsubscribe();
+    this.itemsSubscription.unsubscribe();
+    this.scrollerResolverSubscription.unsubscribe();
+    this.adapterResolverSubscription.unsubscribe();
+    this.scroller.dispose();
   }
 
   scroll() {
@@ -61,70 +66,98 @@ export class Workflow {
     });
   }
 
-  resolve(next: Run = null) {
+  resolveScroller(next: Run = null) {
+    let options = {};
     if (this.runNew) {
-      this.run(this.runNew);
+      options = { ...this.runNew };
       this.runNew = null;
+      this.run(options);
     } else if (next) {
       this.run(next);
     } else if (this.runQueue) {
-      this.run(this.runQueue);
+      options = { ...this.runQueue };
       this.runQueue = null;
+      this.run(options);
     } else {
       this.cyclesDone++;
       this.finalize();
     }
   }
 
+  resolveAdapter(data: AdapterAction) {
+    this.scroller.log(`"${data.action}" action is triggered via Adapter`);
+    switch (data.action) {
+      case ActionType.reload:
+        this.scroller.reload(data.payload);
+        this.reset();
+        this.run();
+        return;
+    }
+  }
+
   run(options: Run = {}) {
     if (!options.direction) {
-      options.direction = this.defaultDirection;
-      this.runQueue = {
+      options.direction = Direction.forward; // default direction
+      this.runQueue = { // queue opposite direction
         ...options,
         direction: options.direction === Direction.forward ? Direction.backward : Direction.forward
       };
     }
-    if (this.scroller.pending) {
-      this.runNew = { ...options };
+    if (this.scroller.state.pending) { // postpone run if pending
+      this.runNew = { ...options }; // only 1 (last) run should be postponed
       return;
     }
     this.start(options);
   }
 
   start(options: Run) {
-    this.scroller.start(options)
-      .then(() => this.fetch())
-      .then(() => this.clip())
-      .then(() =>
-        this.scroller.done()
-      )
-      .catch(error =>
-        this.scroller.fail(error)
-      );
-  }
+    const scroller = this.scroller;
+    const state = scroller.state;
+    scroller.start(options);
 
-  fetch() {
-    return this.scroller.continue()
-      .then(ShouldFetch.run)
-      .then(Fetch.run)
-      .then(ProcessFetch.run)
-      .then(Render.run)
-      .then(AdjustFetch.run);
-  }
+    scroller.process$.subscribe((data: ProcessSubject) => {
+      if (data.stop && !data.error) {
+        scroller.log(`-- wf ${state.cycleCount} ${state.process} process ${data.break ? 'break' : 'stop'}`);
+        scroller.done(data.break);
+        return;
+      }
+      if (data.stop && data.error) {
+        scroller.log(`-- wf ${state.cycleCount} ${state.process} process fail`);
+        scroller.fail();
+        return;
+      }
+      scroller.log(`-- wf ${state.cycleCount} ${state.process} process done`);
 
-  clip() {
-    return this.scroller.settings.infinite ?
-      null :
-      this.scroller.continue()
-        .then(ShouldClip.run)
-        .then(Clip.run);
-  }
-
-  dispose() {
-    this.onScrollUnsubscribe();
-    this.itemsSubscription.unsubscribe();
-    this.flowResolverSubscription.unsubscribe();
-    this.scroller.dispose();
+      // processes state machine
+      switch (data.process) {
+        case Process.start:
+          PreFetch.run(scroller);
+          break;
+        case Process.preFetch:
+          Fetch.run(scroller);
+          break;
+        case Process.fetch:
+          PostFetch.run(scroller);
+          break;
+        case Process.postFetch:
+          Render.run(scroller);
+          break;
+        case Process.render:
+          PostRender.run(scroller);
+          break;
+        case Process.postRender:
+          PreClip.run(scroller);
+          break;
+        case Process.preClip:
+          Clip.run(scroller);
+          break;
+        case Process.clip:
+          scroller.done();
+          break;
+      }
+    }, () => null, function (this: any) {
+      this.unsubscribe();
+    });
   }
 
   finalize() {

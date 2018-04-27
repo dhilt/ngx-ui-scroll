@@ -1,24 +1,31 @@
 import { Scroller } from '../scroller';
-import { Direction } from '../interfaces/index';
+import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
-export default class ShouldClip {
+export default class PreClip {
 
   static run(scroller: Scroller) {
-    const fetchOnly = scroller.settings.clipAfterFetchOnly;
-    const scrollOnly = scroller.settings.clipAfterScrollOnly;
-    if (!scroller.buffer.size) {
-      return scroller;
+    scroller.state.process = Process.preClip;
+
+    let shouldNotClip =
+      scroller.settings.infinite ||
+      !scroller.buffer.size ||
+      (scroller.settings.clipAfterScrollOnly && !scroller.state.scroll);
+
+    if (!shouldNotClip) {
+      const afterFetch = scroller.settings.clipAfterFetchOnly;
+      if (!afterFetch || scroller.state.fetch[Direction.backward].shouldFetch) {
+        PreClip.shouldClipByDirection(Direction.backward, scroller);
+      }
+      if (!afterFetch || scroller.state.fetch[Direction.forward].shouldFetch) {
+        PreClip.shouldClipByDirection(Direction.forward, scroller);
+      }
+      shouldNotClip = !scroller.state.clip.shouldClip;
     }
-    if (scrollOnly && !scroller.scroll) {
-      return scroller;
-    }
-    if (!fetchOnly || scroller.fetch[Direction.backward].shouldFetch) {
-      ShouldClip.shouldClipByDirection(Direction.backward, scroller);
-    }
-    if (!fetchOnly || scroller.fetch[Direction.forward].shouldFetch) {
-      ShouldClip.shouldClipByDirection(Direction.forward, scroller);
-    }
-    return scroller;
+
+    scroller.process$.next(<ProcessSubject>{
+      process: Process.preClip,
+      stop: shouldNotClip
+    });
   }
 
   static shouldClipByDirection(direction: Direction, scroller: Scroller) {
@@ -69,9 +76,9 @@ export default class ShouldClip {
         items[i].toRemove = true;
         itemsToRemove++;
       }
-      scroller.clip[direction].shouldClip = true;
-      scroller.clip[direction].size = items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
-      scroller.clip[direction].items = itemsToRemove;
+      scroller.state.clip[direction].shouldClip = true;
+      scroller.state.clip[direction].size = items[end].getEdge(Direction.forward) - items[start].getEdge(Direction.backward);
+      scroller.state.clip[direction].items = itemsToRemove;
     }
   }
 

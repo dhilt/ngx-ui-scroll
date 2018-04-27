@@ -16,6 +16,10 @@ export class Padding {
     }
   }
 
+  reset() {
+    this.size = 0;
+  }
+
   get size(): number {
     return this.routines.getSizeStyle(this.element);
   }

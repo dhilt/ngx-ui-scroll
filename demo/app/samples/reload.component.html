@@ -1,0 +1,24 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    <button (click)="doReload()">Reload</button>
+    &nbsp; by index &nbsp;
+    <input [ngModel]="reloadIndex" (change)="onInputChanged($event.target)" size="2">
+  </div>
+  <p>
+    The <em>uiScroll</em> augments the <em>Datasource</em> object passed from the outside during instantiating
+    to provide an API to manipulate and assess the scroller. This API is accessible via special <em>Adapter</em>
+    object. Currently it has only one method that allows you to reload the scroller:
+    <em>datasource.adapter.reload(index)</em>. This resets the items buffer, resets the viewport params and starts
+    fetching items
+  </p>
+  <ul>
+    <li> from <em>index</em> position (if <em>reload</em> is called with parameter)</li>
+    <li> from <em>settings.startIndex</em> position (if <em>startIndex</em> setting is set)</li>
+    <li> from the default position which is 1</li>
+  </ul>
+
+</app-demo>

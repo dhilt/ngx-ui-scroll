@@ -1,5 +1,5 @@
 import { Item } from './item';
-import { Direction } from '../interfaces/direction';
+import { Subscription } from 'rxjs/Subscription';
 
 export class FetchByDirection {
   shouldFetch: boolean;
@@ -35,6 +35,7 @@ export class FetchByDirection {
 export class FetchModel {
   forward: FetchByDirection;
   backward: FetchByDirection;
+  subscription: Subscription;
 
   constructor() {
     this.forward = new FetchByDirection();
@@ -42,29 +43,29 @@ export class FetchModel {
   }
 
   reset() {
-    this[Direction.forward].reset();
-    this[Direction.backward].reset();
+    this.forward.reset();
+    this.backward.reset();
   }
 
   get count(): number {
-    return this[Direction.backward].count + this[Direction.forward].count;
+    return this.backward.count + this.forward.count;
   }
 
   get items(): Array<Item> {
     return [
-      ...this[Direction.backward].items ? this[Direction.backward].items : [],
-      ...this[Direction.forward].items ? this[Direction.forward].items : [],
+      ...this.backward.items ? this.backward.items : [],
+      ...this.forward.items ? this.forward.items : [],
     ];
   }
 
   get shouldFetch(): boolean {
-    return this[Direction.forward].shouldFetch || this[Direction.backward].shouldFetch;
+    return this.forward.shouldFetch || this.backward.shouldFetch;
   }
 
   get hasNewItems(): boolean {
     return !!(
-      (this[Direction.forward].newItemsData && this[Direction.forward].newItemsData.length) ||
-      (this[Direction.backward].newItemsData && this[Direction.backward].newItemsData.length)
+      (this.forward.newItemsData && this.forward.newItemsData.length) ||
+      (this.backward.newItemsData && this.backward.newItemsData.length)
     );
   }
 }

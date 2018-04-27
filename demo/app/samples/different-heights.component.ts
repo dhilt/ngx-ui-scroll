@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { DemoData, DemoSources } from '../shared/interfaces';
+
+import { DemoContext, DemoSources } from '../shared/interfaces';
+import { datasourceGetCallbackLimited } from '../shared/datasource-get';
 
 import { Datasource } from '../../../public_api';
 // import { Datasource } from 'ngx-ui-scroll';
@@ -10,30 +12,16 @@ import { Datasource } from '../../../public_api';
 })
 export class DemoDifferentHeightsComponent {
 
-  count: number = 0;
-  log: string = '';
-  hi = true;
-
-  datasource: Datasource = {
-    get: (index, count, success) => {
-      this.log = `${++this.count}) get 5 items [${index}, ${index + count - 1}]\n` + this.log;
-      const MIN = 1, MAX = 75;
-      const data = [];
-      const start = Math.max(MIN, index);
-      const end = Math.min(index + count - 1, MAX);
-      if (start <= end) {
-        for (let i = start; i <= end; i++) {
-          data.push({ id: i, text: 'item #' + i, height: 20 + i });
-        }
-      }
-      success(data);
-    }
-  };
-
-  data: DemoData = {
+  demoContext: DemoContext = <DemoContext> {
     title: `Different item heights`,
     titleId: `different-item-heights`,
-    id: `different-heights`
+    id: `different-heights`,
+    count: 0,
+    log: ''
+  };
+
+  datasource: Datasource = {
+    get: datasourceGetCallbackLimited(this.demoContext, 1, 75)
   };
 
   sources: DemoSources = {

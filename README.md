@@ -27,6 +27,7 @@ The \*uiScroll directive dynamically destroys elements as they become invisible 
  - infinite mode (items rendered once are never removed), [demo](https://dhilt.github.io/ngx-ui-scroll/#infinite-mode)
  - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#horizontal-mode)
  - different item heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#different-item-heights)
+ - special Adapter API object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/adapter)
  - AoT compilation
 
 ### Getting
@@ -77,14 +78,14 @@ where the viewport is a scrollable area of finite height.
 }
 ```
 
-\*uiScroll acts like \*ngFor, but the datasource is an object of special type Datasource that can be imported to the host component from UiScrollModule. It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
+\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource) that can be imported to the host component from UiScrollModule. It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
 
 ```javascript
-import { Datasource } from 'ngx-ui-scroll';
+import { IDatasource } from 'ngx-ui-scroll';
 
 export class AppComponent {
 
-  public datasource: Datasource = {
+  public datasource: IDatasource = {
     get: (index, count, success) => {
       const data = [];
       for (let i = index; i <= index + count - 1; i++) {
@@ -99,13 +100,13 @@ export class AppComponent {
 _Datasource.get_ must provide an array of _count_ data-items started from _index_ position. _Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if you want some remote API to be a source of your data, basically it may look like
 
 ```javascript
-  public datasource: Datasource = {
+  public datasource: IDatasource = {
     get: (index, count) =>
       this.http.get(`${myApiUrl}?index=${index}&count=${count}`)
   };
 ```
 
-More details could be found at the API section (in progress) and on the [DEMO page](https://dhilt.github.io/ngx-ui-scroll/).
+More details could be found on the [DEMO page](https://dhilt.github.io/ngx-ui-scroll/).
 
 ### Developing
 

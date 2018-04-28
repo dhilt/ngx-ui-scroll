@@ -23,12 +23,11 @@ The \*uiScroll directive dynamically destroys elements as they become invisible 
 ### Features
 
  - unlimited virtual scroll
- - virtualization settings (you can specify when and how many items need to be requested/rendered by the uiScroll)
- - infinite mode (items rendered once are never removed), [demo](https://dhilt.github.io/ngx-ui-scroll/#infinite-mode)
- - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#horizontal-mode)
- - different item heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#different-item-heights)
- - special Adapter API object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/adapter)
- - AoT compilation
+ - virtualization settings (you can specify when and how many items need to be requested/rendered by the uiScroll), [demos](https://dhilt.github.io/ngx-ui-scroll/#/#buffer-size-setting)
+ - infinite mode (items rendered once are never removed), [demo](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)
+ - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)
+ - different item heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#different-item-heights)
+ - special Adapter API object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/#/adapter), just pre-released and available via `npm install ngx-ui-scroll@next`
 
 ### Getting
 

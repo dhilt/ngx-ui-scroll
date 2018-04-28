@@ -10,7 +10,8 @@
     The <em>uiScroll Adapter</em> has some read-only properties which could be used to get knowledge of the
     <em>uiScroll</em> state. The first property is <em>Adapter.isLoading</em>. It is a boolean value
     indicating whether there are any pending load requests. So, <em>datasource.adapter.isLoading = true</em>
-    means that the <em>uiScroll</em> is working right now and the viewport will be updated soon.
+    means that the <em>uiScroll</em> is working right now and the viewport will be updated soon. 125ms delay
+    was added to this sample <em>Datasource.get</em> implementation.
   </p>
   <p>
     In these demos the <em>Datasource</em> is being instantiated via operator <em>new</em>. The main purpose is

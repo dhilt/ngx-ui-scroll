@@ -12,6 +12,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoIsLoadingComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'adapter',
     title: `Is loading?`,
     titleId: `is-loading`,
     id: `is-loading-viewport`,
@@ -20,7 +21,7 @@ export class DemoIsLoadingComponent {
   };
 
   datasource = new Datasource ({
-    get: datasourceGetCallbackInfinite(this.demoContext)
+    get: datasourceGetCallbackInfinite(this.demoContext, 125)
   });
 
   reloadIndex: number = 1;
@@ -47,7 +48,7 @@ export class DemoIsLoadingComponent {
     for (let i = index; i <= index + count - 1; i++) {
       data.push({ id: i, text: 'item #' + i });
     }
-    success(data);
+    setTimeout(() => success(data), 125);
   } 
 });`,
     template: `The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.

@@ -6,6 +6,7 @@ export interface DemoSources {
 
 export interface DemoContext {
   // static data
+  scope?: string;
   title: string;
   titleId: string;
   id: string;

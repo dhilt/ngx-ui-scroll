@@ -2,6 +2,14 @@ import { Observable } from 'rxjs/Observable';
 
 import { DemoContext } from './interfaces';
 
+const delayedCall = (result: any, callback: Function, delay?: number) => {
+  if (isNaN(Number(delay))) {
+    callback(result);
+  } else {
+    setTimeout(() => callback(result), Number(delay));
+  }
+};
+
 const doLog = (demoContext: DemoContext, index: number, count: number, resolved: number) =>
   demoContext.log =
     `${++demoContext.count}) got ${resolved} items [${index}, ${index + count - 1}]\n`
@@ -43,10 +51,10 @@ export const datasourceGetPromiseInfinite = (demoContext: DemoContext) =>
     success(datasourceGetInfinite(demoContext, index, count))
   );
 
-export const datasourceGetCallbackInfinite = (demoContext: DemoContext) =>
+export const datasourceGetCallbackInfinite = (demoContext: DemoContext, delay?: number) =>
   (index: number, count: number, success: Function) =>
-    success(datasourceGetInfinite(demoContext, index, count));
+    delayedCall(datasourceGetInfinite(demoContext, index, count), success, Number(delay));
 
-export const datasourceGetCallbackLimited = (demoContext: DemoContext, min: number, max: number) =>
+export const datasourceGetCallbackLimited = (demoContext: DemoContext, min: number, max: number, delay?: number) =>
   (index: number, count: number, success: Function) =>
-    success(datasourceGetLimited(demoContext, min, max, index, count));
+    delayedCall(datasourceGetLimited(demoContext, min, max, index, count), success, Number(delay));

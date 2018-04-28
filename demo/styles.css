@@ -13,6 +13,10 @@ h3 {
   font-size: 2rem;
 }
 
+.navbar-link {
+  margin-right: 0.5rem;
+}
+
 .navbar .container {
   height: 4rem;
   color: #fff;

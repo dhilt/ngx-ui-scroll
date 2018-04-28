@@ -1,26 +1,29 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../shared/interfaces';
-import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
+import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
-import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
-  selector: 'app-demo-basic',
-  templateUrl: './basic.component.html'
+  selector: 'app-demo-infinite',
+  templateUrl: './infinite.component.html'
 })
-export class DemoBasicComponent {
+export class DemoInfiniteComponent {
 
   demoContext: DemoContext = <DemoContext> {
-    title: `Unlimited bidirectional scrolling`,
-    titleId: `unlimited-bidirectional-scrolling`,
-    id: `basic`,
+    title: `Infinite mode`,
+    titleId: `infinite-mode`,
+    id: `infinite`,
     count: 0,
     log: ''
   };
 
   datasource: IDatasource = {
-    get: datasourceGetCallbackInfinite(this.demoContext)
+    get: datasourceGetCallbackInfinite(this.demoContext),
+    settings: {
+      infinite: true
+    }
   };
 
   sources: DemoSources = {
@@ -31,6 +34,9 @@ export class DemoBasicComponent {
       data.push({ id: i, text: 'item #' + i });
     }
     success(data);
+  },
+  settings: {
+    infinite: true
   }
 }`,
     template: `<div class="viewport">

@@ -1,0 +1,32 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <p>
+    Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
+    <em>padding</em> property. <em>Padding</em> is an extra space added to the visible part of the viewport for
+    the purpose of determining when the items should be created/destroyed. The value is relative to the visible
+    size of the viewport. <em>1.4</em> means that the <em>uiScroll</em> would request new items until
+    140% of the viewport size (out of the visible part of the viewport) is filled with rendered items. That's why
+    we have 5 requests on the initial load in this case. There are 3 downward requests:
+  </p>
+  <ol>
+    <li>175px + 1.4 * 175px = 420px (downward space which has to be filled, when viewport's height = 175px )</li>
+    <li>ceil(420px / 25px) = 17 (items that are needed to feel 420px of the downward space, when item's height =
+      25px )
+    </li>
+    <li>ceil(17 / 7) = 3 (datasource.get calls that are needed to request 17 items, when bufferSize = 7)</li>
+  </ol>
+  <p>
+    And 2 upward requests:
+  </p>
+  <ol>
+    <li>1.4 * 175px = 245px (upward space which have to be filled)</li>
+    <li>ceil(245px / 25px) = 10 (items that are needed to feel 245px of the upward space)</li>
+    <li>ceil(10 / 7) = 2 (datasource.get calls that are needed to request 10 items)</li>
+  </ol>
+  <p>
+    The default value of <em>padding</em> property is 0.5. The minimum value is 0.1.
+  </p>
+</app-demo>

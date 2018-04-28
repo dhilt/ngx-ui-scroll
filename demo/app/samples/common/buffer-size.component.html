@@ -1,0 +1,14 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <p>
+    In addition to <em>get</em> method, <em>settings</em> object can be declared on the <em>Datasource</em>. Here
+    we set <em>bufferSize</em> property which defines number of items requested from the datasource in a single
+    request. Now the initial load consist of 2 requests (from 1 to 15 and from -14 to 0). The bigger the
+    <em>bufferSize</em> is, the less requests are needed to fill out the viewport. The default value of
+    <em>bufferSize</em> property is 5. The minimum value is 1. Another setting which has an impact on the
+    viewport's filling procedure is <em>padding</em>.
+  </p>
+</app-demo>

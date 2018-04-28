@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../shared/interfaces';
-import { datasourceGetCallbackInfinite } from '../shared/datasource-get';
+import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-reload',

@@ -3,24 +3,32 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TabsModule } from 'ngx-bootstrap';
 
+import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
+
 import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav.component';
 import { DemoComponent } from './shared/demo.component';
-import { DemoBasicComponent } from './samples/basic.component';
-import { DemoBufferSizeComponent } from './samples/buffer-size.component';
-import { DemoPaddingComponent } from './samples/padding.component';
-import { DemoInfiniteComponent } from './samples/infinite.component';
-import { DemoHorizontalComponent } from './samples/horizontal.component';
-import { DemoDifferentHeightsComponent } from './samples/different-heights.component';
-import { DemoReloadComponent } from './samples/reload.component';
+ 
+import { CommonComponent }   from './samples/common.component';
+import { AdapterComponent }   from './samples/adapter.component';
 
-import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
+import { DemoBasicComponent } from './samples/common/basic.component';
+import { DemoBufferSizeComponent } from './samples/common/buffer-size.component';
+import { DemoPaddingComponent } from './samples/common/padding.component';
+import { DemoInfiniteComponent } from './samples/common/infinite.component';
+import { DemoHorizontalComponent } from './samples/common/horizontal.component';
+import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
+import { DemoReloadComponent } from './samples/adapter/reload.component';
+
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavComponent,
     DemoComponent,
+    CommonComponent,
+    AdapterComponent,
     DemoBasicComponent,
     DemoBufferSizeComponent,
     DemoPaddingComponent,
@@ -30,10 +38,11 @@ import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
     DemoReloadComponent
   ],
   imports: [
-    TabsModule.forRoot(),
     BrowserModule,
     FormsModule,
-    UiScrollModule
+    TabsModule.forRoot(),
+    UiScrollModule,
+    AppRoutingModule
   ],
   bootstrap: [AppComponent]
 })

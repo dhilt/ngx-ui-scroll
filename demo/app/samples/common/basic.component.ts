@@ -14,7 +14,7 @@ export class DemoBasicComponent {
   demoContext: DemoContext = <DemoContext> {
     title: `Unlimited bidirectional scrolling`,
     titleId: `unlimited-bidirectional-scrolling`,
-    id: `basic`,
+    viewportId: `basic-viewport`,
     count: 0,
     log: ''
   };

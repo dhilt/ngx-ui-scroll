@@ -14,7 +14,7 @@ export class DemoInfiniteComponent {
   demoContext: DemoContext = <DemoContext> {
     title: `Infinite mode`,
     titleId: `infinite-mode`,
-    id: `infinite`,
+    viewportId: `infinite-viewport`,
     count: 0,
     log: ''
   };

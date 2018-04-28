@@ -9,7 +9,7 @@ export interface DemoContext {
   scope?: string;
   title: string;
   titleId: string;
-  id: string;
+  viewportId: string;
   addClass?: string;
 
   // dynamic data

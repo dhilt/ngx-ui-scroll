@@ -11,7 +11,7 @@
 
   <div class="work">
     <div style="float: left">
-      <div class="viewport {{context.addClass || ''}}" id="{{context.id}}">
+      <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId}}">
         <div *uiScroll="let item of datasource">
           <div
             class="item {{context.addClass || ''}}"
@@ -23,7 +23,7 @@
     </div>
     <div class="log elements {{context.addClass || ''}}">
       DOM elements
-      <pre>{{elements(context.id)}}</pre>
+      <pre>{{elements(context.viewportId)}}</pre>
     </div>
     <div class="log datasource {{context.addClass || ''}}">
       Datasource.get log
@@ -47,7 +47,7 @@
   </div>
 
   <div class="description">
-    <ng-content></ng-content>
+    <ng-content select="[description]"></ng-content>
   </div>
 
 </div>

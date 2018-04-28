@@ -15,7 +15,7 @@ export class DemoIsLoadingComponent {
     scope: 'adapter',
     title: `Is loading?`,
     titleId: `is-loading`,
-    id: `is-loading-viewport`,
+    viewportId: `is-loading-viewport`,
     count: 0,
     log: ''
   };

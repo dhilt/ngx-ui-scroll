@@ -14,7 +14,7 @@ export class DemoHorizontalComponent {
   demoContext: DemoContext = <DemoContext> {
     title: `Horizontal mode`,
     titleId: `horizontal-mode`,
-    id: `horizontal`,
+    viewportId: `horizontal-viewport`,
     addClass: `horizontal`,
     count: 0,
     log: ''

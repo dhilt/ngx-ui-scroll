@@ -14,7 +14,7 @@ export class DemoPaddingComponent {
   demoContext: DemoContext = <DemoContext> {
     title: `padding setting`,
     titleId: `padding-setting`,
-    id: `padding`,
+    viewportId: `padding-viewport`,
     count: 0,
     log: ''
   };

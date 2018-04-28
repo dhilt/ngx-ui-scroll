@@ -4,39 +4,40 @@
   [sources]="sources"
 >
   <div actions>
-    The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}. 
+    The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
   </div>
-  <p>
-    The <em>uiScroll Adapter</em> has some read-only properties which could be used to get knowledge of the
-    <em>uiScroll</em> state. The first property is <em>Adapter.isLoading</em>. It is a boolean value
-    indicating whether there are any pending load requests. So, <em>datasource.adapter.isLoading = true</em>
-    means that the <em>uiScroll</em> is working right now and the viewport will be updated soon. 125ms delay
-    was added to this sample <em>Datasource.get</em> implementation.
-  </p>
-  <p>
-    In these demos the <em>Datasource</em> is being instantiated via operator <em>new</em>. The main purpose is
-    to protect <em>Adapter</em> methods/properties from too early calls. The augmentation of the
-    <em>Datasource</em> object occurs during the <em>uiScroll</em> instantiating, so providing the object
-    initializer into the <em>*uiScroll</em> directive (<em>datasource: IDatasource =  &#123; get: ... &#125;</em>)
-    may lead to problems. For example
-  </p>
-  <ul>
-    <li>
-      <em>TypeError: Cannot read property 'reload' of undefined</em> if you would try to call
-      <em>datasource.adapter.reload()</em> method on the App component's constructor;
-    </li>
-    <li>  
-      <em>ERROR TypeError: Cannot read property 'isLoading' of undefined</em> if you would try to use
-      <em>&#123;<!---->&#123;datasource.adapter.isLoading&#125;<!---->&#125;</em> in the App component's
-      template.
-    </li>
-  </ul>
-  <p>
-    Of course the problem could be avoided by writing something like <em>datasource.adapter &&
-    datasource.adapter.isLoading</em>, but instantiating the <em>Datasource</em> object via operator <em>new</em>
-    solves the issue by immediately setting up the <em>Adapter mock object</em> on the <em>Datasource's</em>
-    constructor. It defines the adapter property and null-returning stub methods on it. The <em>uiScroll</em>
-    will override this adapter property after it is integrated to the App component.
-  </p>
-
+  <div description>
+    <p>
+      The <em>uiScroll Adapter</em> has some read-only properties which could be used to get knowledge of the
+      <em>uiScroll</em> state. The first property is <em>Adapter.isLoading</em>. It is a boolean value
+      indicating whether there are any pending load requests. So, <em>datasource.adapter.isLoading = true</em>
+      means that the <em>uiScroll</em> is working right now and the viewport will be updated soon. 125ms delay
+      was added to the <em>Datasource.get</em> implementation in this sample.
+    </p>
+    <p>
+      In these demos the <em>Datasource</em> is being instantiated via operator <em>new</em>. The main purpose is
+      to protect <em>Adapter</em> methods/properties from too early calls. The augmentation of the
+      <em>Datasource</em> object occurs during the <em>uiScroll</em> instantiating, so providing the object
+      initializer into the <em>*uiScroll</em> directive (<em>datasource: IDatasource = &#123; get: ... &#125;</em>)
+      may lead to problems. For example
+    </p>
+    <ul>
+      <li>
+        <em>TypeError: Cannot read property 'reload' of undefined</em> if you would try to call
+        <em>datasource.adapter.reload()</em> method on the App component's constructor;
+      </li>
+      <li>
+        <em>ERROR TypeError: Cannot read property 'isLoading' of undefined</em> if you would try to use
+        <em>&#123;<!---->&#123;datasource.adapter.isLoading&#125;<!---->&#125;</em> in the App component's
+        template.
+      </li>
+    </ul>
+    <p>
+      Of course the problem could be avoided by writing something like <em>datasource.adapter &&
+      datasource.adapter.isLoading</em>, but instantiating the <em>Datasource</em> object via operator <em>new</em>
+      solves the issue by immediately setting up the <em>Adapter mock object</em> on the <em>Datasource's</em>
+      constructor. It defines the adapter property and null-returning stub methods on it. The <em>uiScroll</em>
+      will override this adapter property after it is integrated to the App component.
+    </p>
+  </div>
 </app-demo>

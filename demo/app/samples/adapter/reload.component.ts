@@ -15,7 +15,7 @@ export class DemoReloadComponent {
     scope: 'adapter',
     title: `Reload`,
     titleId: `reload`,
-    id: `reload-viewport`,
+    viewportId: `reload-viewport`,
     count: 0,
     log: ''
   };

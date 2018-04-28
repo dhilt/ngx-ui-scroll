@@ -53,8 +53,8 @@ export const datasourceGetPromiseInfinite = (demoContext: DemoContext) =>
 
 export const datasourceGetCallbackInfinite = (demoContext: DemoContext, delay?: number) =>
   (index: number, count: number, success: Function) =>
-    delayedCall(datasourceGetInfinite(demoContext, index, count), success, Number(delay));
+    delayedCall(datasourceGetInfinite(demoContext, index, count), success, delay);
 
 export const datasourceGetCallbackLimited = (demoContext: DemoContext, min: number, max: number, delay?: number) =>
   (index: number, count: number, success: Function) =>
-    delayedCall(datasourceGetLimited(demoContext, min, max, index, count), success, Number(delay));
+    delayedCall(datasourceGetLimited(demoContext, min, max, index, count), success, delay);

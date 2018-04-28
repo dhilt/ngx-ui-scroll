@@ -14,7 +14,7 @@ export class DemoDifferentHeightsComponent {
   demoContext: DemoContext = <DemoContext> {
     title: `Different item heights`,
     titleId: `different-item-heights`,
-    id: `different-heights`,
+    viewportId: `different-heights-viewport`,
     count: 0,
     log: ''
   };

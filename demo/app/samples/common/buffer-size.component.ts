@@ -13,8 +13,8 @@ export class DemoBufferSizeComponent {
 
   demoContext: DemoContext = <DemoContext> {
     title: `bufferSize setting`,
-    titleId: `bufferSize-setting`,
-    id: `buffer`,
+    titleId: `buffer-size-setting`,
+    viewportId: `buffer-size-viewport`,
     count: 0,
     log: ''
   };

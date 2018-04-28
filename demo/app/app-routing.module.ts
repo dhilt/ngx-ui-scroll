@@ -7,11 +7,11 @@ import { AdapterComponent } from './samples/adapter.component';
 const routes: Routes = [
   { path: '', component: CommonComponent },
   { path: 'adapter', component: AdapterComponent },
-  { path: '**', redirectTo: '/', pathMatch: 'full' },
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {

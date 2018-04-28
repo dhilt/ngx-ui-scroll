@@ -19,6 +19,7 @@ import { DemoInfiniteComponent } from './samples/common/infinite.component';
 import { DemoHorizontalComponent } from './samples/common/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
+import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -35,7 +36,8 @@ import { AppRoutingModule } from './app-routing.module';
     DemoInfiniteComponent,
     DemoHorizontalComponent,
     DemoDifferentHeightsComponent,
-    DemoReloadComponent
+    DemoReloadComponent,
+    DemoIsLoadingComponent
   ],
   imports: [
     BrowserModule,

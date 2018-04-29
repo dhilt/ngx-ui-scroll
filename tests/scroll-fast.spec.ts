@@ -100,10 +100,13 @@ describe('Fast Scroll Spec', () => {
   const checkFastScroll = (config) => (misc) => (done) => {
     clearTimeout(expectationsTimer);
     const _done = debounce(() => preExpectations(config, misc, done), 25);
-    spyOn(misc.workflow, 'finalize').and.callFake(() =>
-      misc.shared.fin && _done()
-    );
-    runFastScroll(misc, config.custom);
+    spyOn(misc.workflow, 'finalize').and.callFake(() => {
+      if (misc.workflow.cyclesDone === 1) {
+        runFastScroll(misc, config.custom);
+      } else if (misc.shared.fin) {
+        _done();
+      }
+    });
   };
 
   describe('multi-bouncing to the BOF', () =>

@@ -48,7 +48,6 @@ describe('Bug Spec', () => {
           }
         });
 
-        misc.scrollMax();
       }
     });
   });

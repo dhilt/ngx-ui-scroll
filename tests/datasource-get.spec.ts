@@ -2,11 +2,11 @@ import { makeTest } from './scaffolding/runner';
 
 describe('Datasource Get', () => {
 
-  const shouldWork = (misc) => (done) => {
-    expect(misc.workflow.cyclesDone).toBe(1);
-    expect(misc.scroller.state.fetch.count).toBeGreaterThan(0);
-    done();
-  };
+  const shouldWork = (misc) => (done) =>
+    spyOn(misc.workflow, 'finalize').and.callFake(() => {
+      expect(misc.scroller.state.fetch.count).toBeGreaterThan(0);
+      done();
+    });
 
   describe('immediate', () => {
     makeTest({

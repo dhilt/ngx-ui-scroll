@@ -167,20 +167,20 @@ const calculateIt = (config, misc) => {
 };
 
 const shouldScroll = (config) => (misc) => (done) => {
-  const wfCount = config.custom.count;
-  const count = misc.scroller.state.cycleCount;
-  let result = calculateIt(config, misc);
+  const wfCount = config.custom.count + 1;
+  let result;
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    if (misc.workflow.cyclesDone < count + wfCount) {
+    const cycles = misc.workflow.cyclesDone;
+    if (cycles < wfCount) {
       if (config.custom.bouncing) {
         invertDirection(config);
       } else if (config.custom.mass) {
-        if (misc.workflow.cyclesDone - count === (wfCount / 2)) {
+        if (cycles === (wfCount / 2)) {
           invertDirection(config);
         }
       }
-      if (misc.workflow.cyclesDone === count + wfCount - 1) {
+      if (cycles === wfCount - 1) {
         result = calculateIt(config, misc);
       }
       doScrollMax(config, misc);
@@ -197,7 +197,6 @@ const shouldScroll = (config) => (misc) => (done) => {
       done();
     }
   });
-  doScrollMax(config, misc);
 };
 
 describe('Basic Scroll Spec', () => {

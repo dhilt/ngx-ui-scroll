@@ -64,7 +64,7 @@ export const makeTest = (data: MakeTestConfig) => {
     if (data.config) {
       let misc: Misc;
       let error;
-      beforeEach(async(() => {
+      beforeEach(() => {
         const datasourceClass = data.config.datasourceClass ?
           data.config.datasourceClass :
           generateDatasourceClass(
@@ -79,7 +79,7 @@ export const makeTest = (data: MakeTestConfig) => {
         } catch (_error) {
           error = _error && _error.message;
         }
-      }));
+      });
       _it = (done) => data.it(data.config.toThrow ? error : misc)(done);
       timeout = data.config.timeout || timeout;
     } else {

@@ -48,7 +48,7 @@ const configListInfinite = [configListWithClip[1], configListWithClip[3], config
     }
   }));
 
-const shouldNotClip = (settings) => (misc) => (done) => {
+const _shouldNotClip = (settings, misc, done) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
@@ -77,7 +77,7 @@ const shouldNotClip = (settings) => (misc) => (done) => {
   done();
 };
 
-const shouldClip = (settings) => (misc) => (done) => {
+const _shouldClip = (settings, misc, done) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
@@ -113,6 +113,16 @@ const shouldClip = (settings) => (misc) => (done) => {
 
   done();
 };
+
+const shouldNotClip = (settings) => (misc) => (done) =>
+  spyOn(misc.workflow, 'finalize').and.callFake(() =>
+    _shouldNotClip(settings, misc, done)
+  );
+
+const shouldClip = (settings) => (misc) => (done) =>
+  spyOn(misc.workflow, 'finalize').and.callFake(() =>
+    _shouldClip(settings, misc, done)
+  );
 
 describe('Initial Load Spec', () => {
 

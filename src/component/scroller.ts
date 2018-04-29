@@ -32,7 +32,8 @@ export class Scroller {
 
   constructor(context) {
     this.resolver$ = Observable.create(observer => this.observer = observer);
-    this._bindData = () => context.changeDetector.markForCheck();
+    // this._bindData = () => context.changeDetector.markForCheck();
+    this._bindData = () => context.changeDetector.detectChanges();
     this.datasource = checkDatasource(context.datasource);
 
     this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);

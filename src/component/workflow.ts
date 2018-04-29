@@ -79,8 +79,7 @@ export class Workflow {
       this.runQueue = null;
       this.run(options);
     } else {
-      this.cyclesDone++;
-      this.finalize();
+      this.done();
     }
   }
 
@@ -116,17 +115,20 @@ export class Workflow {
     scroller.start(options);
 
     scroller.process$.subscribe((data: ProcessSubject) => {
-      if (data.stop && !data.error) {
-        scroller.log(`-- wf ${state.cycleCount} ${state.process} process ${data.break ? 'break' : 'stop'}`);
-        scroller.done(data.break);
+      const status = !data.stop ? 'done' : (data.break ? 'break' : 'stop');
+      scroller.log(`-- wf ${state.cycleCount} ${state.process} process ${status}`);
+      if (data.stop) {
+        if (data.break || data.error) {
+          if (data.error && data.payload) {
+            scroller.log(`ERROR: ${data.payload}`);
+          }
+          scroller.done(true);
+          this.done();
+        } else {
+          scroller.done();
+        }
         return;
       }
-      if (data.stop && data.error) {
-        scroller.log(`-- wf ${state.cycleCount} ${state.process} process fail`);
-        scroller.fail();
-        return;
-      }
-      scroller.log(`-- wf ${state.cycleCount} ${state.process} process done`);
 
       // processes state machine
       switch (data.process) {
@@ -160,8 +162,13 @@ export class Workflow {
     });
   }
 
-  finalize() {
+  done() {
     this.scroller.log(`~~~~~~ WF Cycle ${this.cyclesDone} FINALIZED ~~~~~~`);
+    this.cyclesDone++;
+    this.finalize();
+  }
+
+  finalize() {
   }
 
 }

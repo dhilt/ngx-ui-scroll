@@ -1,4 +1,3 @@
-import { Direction } from '../src/component/interfaces';
 import { makeTest } from './scaffolding/runner';
 
 const customDefault = { startIndex: null, scrollCount: 0, preLoad: false };
@@ -43,12 +42,26 @@ const preLoadConfigList = configList.map((config, i) => ({
   }
 }));
 
+const interruptConfigList = configList.map((config, i) => ({
+  ...config,
+  datasourceName: 'infinite-callback-delay-150',
+  custom: {
+    ...config.custom,
+    startIndex: [null, 1025, -40][i]
+  }
+}));
+
 const checkExpectation = (config, misc) => {
   const startIndex = config.custom.startIndex === null ?
     config.datasourceSettings.startIndex : config.custom.startIndex;
-  const firstIndex = startIndex - config.datasourceSettings.bufferSize;
+  const bufferSize = config.datasourceSettings.bufferSize;
+  const firstIndex = startIndex - bufferSize;
+  const nextIndex = firstIndex + bufferSize + 1;
   const firstItem = misc.scroller.buffer.getFirstVisibleItem();
+
   expect(firstItem.$index).toEqual(firstIndex);
+  expect(misc.getElementText(firstIndex)).toEqual(`${firstIndex} : item #${firstIndex}`);
+  expect(misc.getElementText(nextIndex)).toEqual(`${nextIndex} : item #${nextIndex}`);
 };
 
 const doReload = (config, misc) => {
@@ -81,46 +94,86 @@ const shouldReload = (config) => (misc) => (done) => {
   }
 };
 
+const shouldReloadBeforeLoad = (config) => (misc) => (done) => {
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    expect(misc.scroller.cycleSubscriptions.length).toEqual(0);
+    if (misc.workflow.cyclesDone === 1) {
+      checkExpectation(config, misc);
+      done();
+    }
+  });
+  spyOn(misc.scroller, 'finalize').and.callFake(() => {
+    if (misc.scroller.state.cycleCount === 2) {
+      setTimeout(() => doReload(config, misc));
+    }
+  });
+};
+
+const shouldReloadInterruption = (config) => (misc) => (done) => {
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    expect(misc.scroller.cycleSubscriptions.length).toEqual(0);
+    if (misc.workflow.cyclesDone === 1) {
+      checkExpectation(config, misc);
+      done();
+    }
+  });
+  spyOn(misc.scroller, 'finalize').and.callFake(() => {
+    if (misc.scroller.state.cycleCount === 1) {
+      setTimeout(() => doReload(config, misc), 75);
+    }
+  });
+};
+
 describe('Adapter Reload Spec', () => {
 
-    describe('simple reload', () =>
-      configList.forEach(config =>
-        makeTest({
-          config,
-          title: 'should reload at initial position',
-          it: shouldReload(config)
-        })
-      )
-    );
+  describe('simple reload', () =>
+    configList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload at initial position',
+        it: shouldReload(config)
+      })
+    )
+  );
 
-    describe('reload with parameter', () =>
-      indexedConfigList.forEach(config =>
-        makeTest({
-          config,
-          title: 'should reload at param position',
-          it: shouldReload(config)
-        })
-      )
-    );
+  describe('reload with parameter', () =>
+    indexedConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload at param position',
+        it: shouldReload(config)
+      })
+    )
+  );
 
-    describe('reload after scroll', () =>
-      scrolledConfigList.forEach(config =>
-        makeTest({
-          config,
-          title: 'should reload at proper position',
-          it: shouldReload(config)
-        })
-      )
-    );
+  describe('reload after scroll', () =>
+    scrolledConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload at proper position',
+        it: shouldReload(config)
+      })
+    )
+  );
 
-    describe('reload before load', () =>
-      preLoadConfigList.forEach(config =>
-        makeTest({
-          config,
-          title: 'should reload at proper position',
-          it: shouldReload(config)
-        })
-      )
-    );
+  describe('reload before load', () =>
+    preLoadConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload at proper position',
+        it: shouldReloadBeforeLoad(config)
+      })
+    )
+  );
+
+  describe('reload interruption', () =>
+    interruptConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload before second datasource.get done',
+        it: shouldReloadInterruption(config)
+      })
+    )
+  );
 
 });

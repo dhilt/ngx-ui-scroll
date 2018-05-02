@@ -160,6 +160,10 @@ const datasourceStore = {
   'default-bad-settings': <Datasource>{
     get: infiniteDatasourceGet(),
     settings: 'invalid'
+  },
+
+  'infinite-callback-delay-150': <Datasource>{
+    get: infiniteDatasourceGet(DatasourceType.Callback, 150)
   }
 
 };

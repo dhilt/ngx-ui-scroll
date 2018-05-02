@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs/Subject';
 
-import { Adapter as IAdapter, AdapterAction, ActionType } from '../interfaces/index';
+import { Adapter as IAdapter, AdapterAction, AdapterActionType } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
   public isInitialized;
@@ -18,7 +18,7 @@ export class Adapter implements IAdapter {
 
   reload(reloadIndex?: number | string) {
     this.subject.next(<AdapterAction>{
-      action: ActionType.reload,
+      action: AdapterActionType.reload,
       payload: reloadIndex
     });
   }

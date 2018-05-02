@@ -2,7 +2,7 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { Datasource, Direction, Process, Run, ProcessSubject } from './interfaces/index';
+import { Datasource, Direction, Process, Run, ProcessSubject, AdapterActionType, AdapterAction } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
@@ -29,6 +29,7 @@ export class Scroller {
 
   public process$: BehaviorSubject<ProcessSubject>;
   public cycleSubscriptions: Array<Subscription>;
+  private adapterResolverSubscription: Subscription;
 
   constructor(context) {
     this.resolver$ = Observable.create(observer => this.observer = observer);
@@ -45,12 +46,13 @@ export class Scroller {
 
     this.datasource.adapter = this.adapter;
     this.cycleSubscriptions = [];
+    this.adapterResolverSubscription = this.adapter.subject.subscribe(this.resolveAdapter.bind(this));
   }
 
   bindData(): Observable<any> {
     this._bindData();
     return Observable.create(observer => {
-      setTimeout(() => {
+        setTimeout(() => {
           observer.next();
           observer.complete();
         });
@@ -64,6 +66,7 @@ export class Scroller {
   }
 
   dispose() {
+    this.adapterResolverSubscription.unsubscribe();
     this.observer.complete();
     this.process$.complete();
     this.adapter.dispose();
@@ -110,14 +113,21 @@ export class Scroller {
   done(noNext?: boolean) {
     this.log(`---=== Workflow ${this.state.cycleCount} done`);
     this.end();
-    if (!noNext) {
-      this.observer.next(this.getNextRun());
-    }
+    this.observer.next(!noNext ? this.getNextRun() : {});
   }
 
   fail() {
     this.log(`---=== Workflow ${this.state.cycleCount} fail`);
     this.end();
+  }
+
+  resolveAdapter(data: AdapterAction) {
+    this.log(`"${data.action}" action is triggered via Adapter`);
+    switch (data.action) {
+      case AdapterActionType.reload:
+        this.reload(data.payload);
+        return;
+    }
   }
 
   reload(reloadIndex: number | string) {
@@ -128,10 +138,14 @@ export class Scroller {
     this.purgeCycleSubscriptions();
 
     this.settings.setCurrentStartIndex(reloadIndex);
-    this.process$.next(<ProcessSubject>{
-      stop: true,
-      break: true
-    });
+    if (this.process$.isStopped) {
+      this.observer.next({});
+    } else {
+      this.process$.next(<ProcessSubject>{
+        stop: true,
+        break: true
+      });
+    }
   }
 
   stat(str?) {

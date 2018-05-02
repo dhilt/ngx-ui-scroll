@@ -4,11 +4,11 @@ export interface Adapter {
   reload: Function;
 }
 
-export enum ActionType {
+export enum AdapterActionType {
   reload = 'reload'
 }
 
 export interface AdapterAction {
-  action: ActionType;
+  action: AdapterActionType;
   payload: any;
 }

@@ -2,7 +2,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
-import { Direction, Run, AdapterAction, ActionType, Process, ProcessSubject } from './interfaces/index';
+import { Direction, Run, AdapterAction, AdapterActionType, Process, ProcessSubject } from './interfaces/index';
 import { PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip } from './processes/index';
 
 export class Workflow {
@@ -11,7 +11,6 @@ export class Workflow {
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
   private scrollerResolverSubscription: Subscription;
-  private adapterResolverSubscription: Subscription;
 
   public scroller: Scroller;
   public cyclesDone: number;
@@ -38,14 +37,12 @@ export class Workflow {
       this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.scrollerResolverSubscription = this.scroller.resolver$.subscribe(this.resolveScroller.bind(this));
-    this.adapterResolverSubscription = this.scroller.adapter.subject.subscribe(this.resolveAdapter.bind(this));
   }
 
   dispose() {
     this.onScrollUnsubscribe();
     this.itemsSubscription.unsubscribe();
     this.scrollerResolverSubscription.unsubscribe();
-    this.adapterResolverSubscription.unsubscribe();
     this.scroller.dispose();
   }
 
@@ -83,17 +80,6 @@ export class Workflow {
     }
   }
 
-  resolveAdapter(data: AdapterAction) {
-    this.scroller.log(`"${data.action}" action is triggered via Adapter`);
-    switch (data.action) {
-      case ActionType.reload:
-        this.scroller.reload(data.payload);
-        this.reset();
-        this.run();
-        return;
-    }
-  }
-
   run(options: Run = {}) {
     if (!options.direction) {
       options.direction = Direction.forward; // default direction
@@ -123,7 +109,6 @@ export class Workflow {
             scroller.log(`ERROR: ${data.payload}`);
           }
           scroller.done(true);
-          this.done();
         } else {
           scroller.done();
         }

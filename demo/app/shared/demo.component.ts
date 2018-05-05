@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { DemoContext, DemoSources } from './interfaces';
 
-import { Datasource } from '../../../public_api';
-// import { Datasource } from 'ngx-ui-scroll';
+import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo',

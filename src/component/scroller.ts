@@ -2,7 +2,15 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { Datasource, Direction, Process, Run, ProcessSubject, AdapterActionType, AdapterAction } from './interfaces/index';
+import {
+  Datasource,
+  Direction,
+  Process,
+  Run,
+  ProcessSubject,
+  AdapterActionType,
+  AdapterAction
+} from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
@@ -29,7 +37,6 @@ export class Scroller {
 
   public process$: BehaviorSubject<ProcessSubject>;
   public cycleSubscriptions: Array<Subscription>;
-  private adapterResolverSubscription: Subscription;
 
   constructor(context) {
     this.resolver$ = Observable.create(observer => this.observer = observer);
@@ -42,11 +49,15 @@ export class Scroller {
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
     this.state = new State();
-    this.adapter = new Adapter();
+    this.adapter = new Adapter(() => this.process$);
 
     this.datasource.adapter = this.adapter;
     this.cycleSubscriptions = [];
-    this.adapterResolverSubscription = this.adapter.subject.subscribe(this.resolveAdapter.bind(this));
+
+    this.process$ = new BehaviorSubject(<ProcessSubject>{
+      process: Process.init,
+      status: 'start'
+    });
   }
 
   bindData(): Observable<any> {
@@ -66,7 +77,6 @@ export class Scroller {
   }
 
   dispose() {
-    this.adapterResolverSubscription.unsubscribe();
     this.observer.complete();
     this.process$.complete();
     this.adapter.dispose();
@@ -77,14 +87,12 @@ export class Scroller {
     this.state.startCycle(options);
     this.adapter.isLoading = true;
     this.log(`---=== Workflow ${this.state.cycleCount} start`, options);
-    this.process$ = new BehaviorSubject(<ProcessSubject>{ process: Process.start });
   }
 
   end() {
     this.state.endCycle();
     this.adapter.isLoading = false;
     this.viewport.saveScrollPosition();
-    this.process$.complete();
     this.purgeCycleSubscriptions();
     this.finalize();
   }

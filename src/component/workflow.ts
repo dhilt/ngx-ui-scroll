@@ -2,8 +2,9 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
-import { Direction, Run, AdapterAction, AdapterActionType, Process, ProcessSubject } from './interfaces/index';
-import { PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip } from './processes/index';
+import { Direction, Run, Process, ProcessSubject } from './interfaces/index';
+import { Init, Reload, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip } from './processes/index';
+import Start from './processes/start';
 
 export class Workflow {
 
@@ -24,7 +25,86 @@ export class Workflow {
     this.cyclesDone = 0;
     this.reset();
     this.subscribe();
-    setTimeout(() => this.run());
+    setTimeout(() => this.wf());
+  }
+
+  wf() {
+    const scroller = this.scroller;
+    scroller.process$.subscribe((data: ProcessSubject) => {
+      scroller.log('process ' + data.process + ', ' + data.status);
+      if (data.status === 'error') {
+        scroller.done();
+        return;
+      }
+      switch (data.process) {
+        case Process.reload:
+          if (data.status === 'start') {
+            Reload.run(scroller, data.payload);
+          }
+          if (data.status === 'next') {
+            Init.run(scroller);
+          }
+          break;
+        case Process.init:
+          if (data.status === 'start') {
+            Init.run(scroller);
+          }
+          if (data.status === 'next') {
+            Start.run(scroller);
+          }
+          break;
+        case Process.start:
+          if (data.status === 'next') {
+            PreFetch.run(scroller);
+          }
+          break;
+        case Process.preFetch:
+          if (data.status === 'next') {
+            Fetch.run(scroller);
+          }
+          if (data.status === 'done') {
+            if (scroller.state.isInitial) {
+              Start.run(scroller, { resetInit: true });
+            } else {
+              scroller.done();
+            }
+          }
+          break;
+        case Process.fetch:
+          if (data.status === 'next') {
+            PostFetch.run(scroller);
+          }
+          break;
+        case Process.postFetch:
+          if (data.status === 'next') {
+            Render.run(scroller);
+          }
+          break;
+        case Process.render:
+          if (data.status === 'next') {
+            PostRender.run(scroller);
+          }
+          break;
+        case Process.postRender:
+          if (data.status === 'next') {
+            PreClip.run(scroller);
+          }
+          break;
+        case Process.preClip:
+          if (data.status === 'next') {
+            Clip.run(scroller);
+          }
+          if (data.status === 'done') {
+            Start.run(scroller);
+          }
+          break;
+        case Process.clip:
+          if (data.status === 'next') {
+            scroller.done();
+          }
+          break;
+      }
+    });
   }
 
   reset() {
@@ -99,52 +179,6 @@ export class Workflow {
     const scroller = this.scroller;
     const state = scroller.state;
     scroller.start(options);
-
-    scroller.process$.subscribe((data: ProcessSubject) => {
-      const status = !data.stop ? 'done' : (data.break ? 'break' : 'stop');
-      scroller.log(`-- wf ${state.cycleCount} ${state.process} process ${status}`);
-      if (data.stop) {
-        if (data.break || data.error) {
-          if (data.error && data.payload) {
-            scroller.log(`ERROR: ${data.payload}`);
-          }
-          scroller.done(true);
-        } else {
-          scroller.done();
-        }
-        return;
-      }
-
-      // processes state machine
-      switch (data.process) {
-        case Process.start:
-          PreFetch.run(scroller);
-          break;
-        case Process.preFetch:
-          Fetch.run(scroller);
-          break;
-        case Process.fetch:
-          PostFetch.run(scroller);
-          break;
-        case Process.postFetch:
-          Render.run(scroller);
-          break;
-        case Process.render:
-          PostRender.run(scroller);
-          break;
-        case Process.postRender:
-          PreClip.run(scroller);
-          break;
-        case Process.preClip:
-          Clip.run(scroller);
-          break;
-        case Process.clip:
-          scroller.done();
-          break;
-      }
-    }, () => null, function (this: any) {
-      this.unsubscribe();
-    });
   }
 
   done() {

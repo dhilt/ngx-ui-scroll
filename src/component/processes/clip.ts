@@ -14,7 +14,8 @@ export default class Clip {
       scroller.bindData().subscribe(() => {
         Clip.processClip(scroller);
         scroller.process$.next(<ProcessSubject>{
-          process: Process.clip
+          process: Process.clip,
+          status: 'next'
         });
       })
     );

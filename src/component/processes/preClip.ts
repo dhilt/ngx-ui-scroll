@@ -24,7 +24,7 @@ export default class PreClip {
 
     scroller.process$.next(<ProcessSubject>{
       process: Process.preClip,
-      stop: shouldNotClip
+      status: !shouldNotClip ? 'next' : 'done'
     });
   }
 

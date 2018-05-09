@@ -15,7 +15,7 @@ export const minSettings: ISettings = {
 };
 
 export const defaultDevSettings: IDevSettings = {
-  debug: false, // logging is enabled if true; need to turn off in release
+  debug: true, // logging is enabled if true; need to turn off in release
   immediateLog: true, // logging is not immediate if false, it could be forced via Workflow.logForce call
   itemIdPrefix: '', // todo : scroll instance index ?
   clipAfterFetchOnly: true,
@@ -51,7 +51,7 @@ export class Settings implements ISettings {
     this.currentStartIndex = this.startIndex;
   }
 
-  setCurrentStartIndex(startIndex: number | string) {
+  setCurrentStartIndex(startIndex: any) {
     startIndex = Number(startIndex);
     this.currentStartIndex = !isNaN(startIndex) ? startIndex : this.startIndex;
   }

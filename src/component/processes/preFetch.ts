@@ -21,7 +21,7 @@ export default class PreFetch {
 
     scroller.process$.next(<ProcessSubject>{
       process: Process.preFetch,
-      stop: !shouldFetch
+      status: shouldFetch ? 'next' : 'done'
     });
   }
 

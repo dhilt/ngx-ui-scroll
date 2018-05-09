@@ -1,26 +1,31 @@
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { Adapter as IAdapter, AdapterAction, AdapterActionType } from '../interfaces/index';
+import { Adapter as IAdapter, Process, ProcessSubject } from '../interfaces/index';
+
+type GetProcessMethod = () => BehaviorSubject<ProcessSubject>;
 
 export class Adapter implements IAdapter {
   public isInitialized;
   public isLoading;
-  public subject: Subject<AdapterAction>;
+  public getProcessSubject: GetProcessMethod;
 
-  constructor() {
+  constructor(getProcessSubject: GetProcessMethod) {
     this.isInitialized = true;
-    this.subject = new Subject();
+    this.getProcessSubject = getProcessSubject;
   }
 
   dispose() {
-    this.subject.complete();
   }
 
   reload(reloadIndex?: number | string) {
-    this.subject.next(<AdapterAction>{
-      action: AdapterActionType.reload,
-      payload: reloadIndex
-    });
+    const process: BehaviorSubject<ProcessSubject> = this.getProcessSubject();
+    if (!process.isStopped) {
+      process.next(<ProcessSubject>{
+        process: Process.reload,
+        status: 'start',
+        payload: reloadIndex
+      });
+    }
   }
 
 }

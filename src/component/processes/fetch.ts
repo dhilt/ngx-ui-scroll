@@ -33,15 +33,15 @@ export default class Fetch {
     scroller.state.fetch[direction].newItemsData = data;
 
     scroller.process$.next(<ProcessSubject>{
-      process: Process.fetch
+      process: Process.fetch,
+      status: 'next'
     });
   }
 
   static fail(error: any, scroller: Scroller) {
     scroller.process$.next(<ProcessSubject>{
       process: Process.fetch,
-      stop: true,
-      error: true,
+      status: 'error',
       payload: error
     });
   }

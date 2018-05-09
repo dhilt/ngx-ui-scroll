@@ -11,7 +11,7 @@ export default class PostFetch {
     const hasItems = PostFetch.setItems(scroller);
     scroller.process$.next(<ProcessSubject>{
       process: Process.postFetch,
-      stop: !hasItems
+      status: hasItems ? 'next' : 'done'
     });
   }
 

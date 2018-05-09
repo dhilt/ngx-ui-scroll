@@ -10,13 +10,13 @@ export default class Render {
       scroller.bindData().subscribe(() => {
         if (Render.setElements(scroller)) {
           scroller.process$.next(<ProcessSubject>{
-            process: Process.render
+            process: Process.render,
+            status: 'next'
           });
         } else {
           scroller.process$.next(<ProcessSubject>{
             process: Process.render,
-            stop: true,
-            error: true,
+            status: 'error',
             payload: 'Can not associate item with element'
           });
         }

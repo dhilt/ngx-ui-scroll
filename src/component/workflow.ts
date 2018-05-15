@@ -4,7 +4,7 @@ import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
 import { Direction, Run, Process, ProcessSubject } from './interfaces/index';
 import {
-  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
+  Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
 } from './processes/index';
 
 export class Workflow {
@@ -37,20 +37,28 @@ export class Workflow {
         return;
       }
       switch (data.process) {
-        case Process.reload:
-          if (data.status === 'start') {
-            Reload.run(scroller, data.payload);
-          }
-          if (data.status === 'next') {
-            Init.run(scroller);
-          }
-          break;
         case Process.init:
           if (data.status === 'start') {
             Init.run(scroller);
           }
           if (data.status === 'next') {
             Start.run(scroller);
+          }
+          break;
+        case Process.scroll:
+          if (data.status === 'start') {
+            Scroll.run(scroller);
+          }
+          if (data.status === 'next') {
+            Start.run(scroller, data.payload);
+          }
+          break;
+        case Process.reload:
+          if (data.status === 'start') {
+            Reload.run(scroller, data.payload);
+          }
+          if (data.status === 'next') {
+            Init.run(scroller);
           }
           break;
         case Process.start:
@@ -98,7 +106,7 @@ export class Workflow {
           }
           break;
         case Process.clip:
-          if (data.status === 'done') {
+          if (data.status === 'next') {
             End.run(scroller);
           }
           break;
@@ -142,9 +150,9 @@ export class Workflow {
       });
       return;
     }
-    this.run({
-      scroll: true,
-      direction: calculateFlowDirection(viewport)
+    this.scroller.process$.next(<ProcessSubject>{
+      process: Process.scroll,
+      status: 'start'
     });
   }
 

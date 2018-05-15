@@ -4,9 +4,6 @@ import { Direction, Process, ProcessSubject, Run } from '../interfaces/index';
 export default class Start {
 
   static run(scroller: Scroller, options: Run = {}) {
-    if (options.resetInit) {
-      scroller.state.isInitial = false;
-    }
     if (!options.direction) {
       options.direction = scroller.state.direction || Direction.forward;
     }

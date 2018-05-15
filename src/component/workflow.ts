@@ -5,13 +5,13 @@ import { calculateFlowDirection } from './utils/index';
 import { Direction, Run, Process, ProcessSubject } from './interfaces/index';
 import { Init, Reload, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip } from './processes/index';
 import Start from './processes/start';
+import End from './processes/end';
 
 export class Workflow {
 
   readonly context;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
-  private scrollerResolverSubscription: Subscription;
 
   public scroller: Scroller;
   public cyclesDone: number;
@@ -63,11 +63,7 @@ export class Workflow {
             Fetch.run(scroller);
           }
           if (data.status === 'done') {
-            if (scroller.state.isInitial) {
-              Start.run(scroller, { resetInit: true });
-            } else {
-              scroller.done();
-            }
+            End.run(scroller);
           }
           break;
         case Process.fetch:
@@ -78,6 +74,9 @@ export class Workflow {
         case Process.postFetch:
           if (data.status === 'next') {
             Render.run(scroller);
+          }
+          if (data.status === 'done') {
+            End.run(scroller);
           }
           break;
         case Process.render:
@@ -95,12 +94,20 @@ export class Workflow {
             Clip.run(scroller);
           }
           if (data.status === 'done') {
-            Start.run(scroller);
+            End.run(scroller);
           }
           break;
         case Process.clip:
+          if (data.status === 'done') {
+            End.run(scroller);
+          }
+          break;
+        case Process.end:
           if (data.status === 'next') {
-            scroller.done();
+            Start.run(scroller, data.payload);
+          }
+          if (data.status === 'done') {
+            this.finalize();
           }
           break;
       }
@@ -116,13 +123,11 @@ export class Workflow {
     this.onScrollUnsubscribe =
       this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
-    this.scrollerResolverSubscription = this.scroller.resolver$.subscribe(this.resolveScroller.bind(this));
   }
 
   dispose() {
     this.onScrollUnsubscribe();
     this.itemsSubscription.unsubscribe();
-    this.scrollerResolverSubscription.unsubscribe();
     this.scroller.dispose();
   }
 

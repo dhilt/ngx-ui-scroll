@@ -8,6 +8,7 @@ export enum Process {
   postRender = 'postRender',
   preClip = 'preClip',
   clip = 'clip',
+  end = 'end',
   reload = 'reload'
 }
 

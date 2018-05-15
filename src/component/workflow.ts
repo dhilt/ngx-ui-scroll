@@ -3,9 +3,9 @@ import { Subscription } from 'rxjs/Subscription';
 import { Scroller } from './scroller';
 import { calculateFlowDirection } from './utils/index';
 import { Direction, Run, Process, ProcessSubject } from './interfaces/index';
-import { Init, Reload, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip } from './processes/index';
-import Start from './processes/start';
-import End from './processes/end';
+import {
+  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
+} from './processes/index';
 
 export class Workflow {
 
@@ -25,15 +25,15 @@ export class Workflow {
     this.cyclesDone = 0;
     this.reset();
     this.subscribe();
-    setTimeout(() => this.wf());
+    setTimeout(() => this.runWorkflow());
   }
 
-  wf() {
+  runWorkflow() {
     const scroller = this.scroller;
     scroller.process$.subscribe((data: ProcessSubject) => {
       scroller.log('process ' + data.process + ', ' + data.status);
       if (data.status === 'error') {
-        scroller.done();
+        End.run(scroller, true);
         return;
       }
       switch (data.process) {
@@ -107,7 +107,7 @@ export class Workflow {
             Start.run(scroller, data.payload);
           }
           if (data.status === 'done') {
-            this.finalize();
+            this.done();
           }
           break;
       }
@@ -183,12 +183,12 @@ export class Workflow {
   start(options: Run) {
     const scroller = this.scroller;
     const state = scroller.state;
-    scroller.start(options);
+    // scroller.start(options);
   }
 
   done() {
-    this.scroller.log(`~~~~~~ WF Cycle ${this.cyclesDone} FINALIZED ~~~~~~`);
     this.cyclesDone++;
+    this.scroller.log(`~~~~~~ WF Run ${this.cyclesDone} FINALIZED ~~~~~~`);
     this.finalize();
   }
 

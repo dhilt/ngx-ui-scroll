@@ -6,13 +6,13 @@ export default class Start {
   static run(scroller: Scroller, options: Run = {}) {
     if (options.resetInit) {
       scroller.state.isInitial = false;
-      options.direction = Direction.backward;
     }
     if (!options.direction) {
       options.direction = scroller.state.direction || Direction.forward;
     }
     scroller.state.startCycle(options);
     scroller.adapter.isLoading = true;
+    scroller.log(`---=== Workflow ${scroller.state.cycleCount} start`, options);
     scroller.process$.next(<ProcessSubject>{
       process: Process.start,
       status: 'next'

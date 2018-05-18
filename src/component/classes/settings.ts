@@ -21,7 +21,8 @@ export const defaultDevSettings: IDevSettings = {
   clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,
   paddingForwardSize: 0,
-  paddingBackwardSize: 0
+  paddingBackwardSize: 0,
+  throttle: 50
 };
 
 export class Settings implements ISettings {
@@ -41,6 +42,7 @@ export class Settings implements ISettings {
   clipAfterScrollOnly;
   paddingForwardSize;
   paddingBackwardSize;
+  throttle;
 
   // internal current settings (could be changed during scroller's life)
   currentStartIndex;

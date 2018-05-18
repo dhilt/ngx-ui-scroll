@@ -24,8 +24,6 @@ export class Scroller {
 
   readonly _bindData: Function;
   private logs: Array<any> = [];
-  private observer;
-  public resolver$: Observable<any>;
 
   public datasource: Datasource;
   public settings: Settings;
@@ -40,7 +38,6 @@ export class Scroller {
   public scrollSubscription: Subscription;
 
   constructor(context) {
-    this.resolver$ = Observable.create(observer => this.observer = observer);
     // this._bindData = () => context.changeDetector.markForCheck();
     this._bindData = () => context.changeDetector.detectChanges();
     this.datasource = checkDatasource(context.datasource);
@@ -84,7 +81,6 @@ export class Scroller {
   }
 
   dispose() {
-    this.observer.complete();
     this.process$.complete();
     this.adapter.dispose();
     this.purgeCycleSubscriptions();

@@ -14,4 +14,5 @@ export interface DevSettings {
   clipAfterScrollOnly?: boolean;
   paddingForwardSize?: number;
   paddingBackwardSize?: number;
+  throttle?: number;
 }

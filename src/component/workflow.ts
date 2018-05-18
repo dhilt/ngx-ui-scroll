@@ -5,6 +5,7 @@ import { Process, ProcessSubject, Proc } from './interfaces/index';
 import {
   Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
 } from './processes/index';
+import { throttle } from './utils';
 
 export class Workflow {
 
@@ -119,8 +120,11 @@ export class Workflow {
   }
 
   subscribe() {
+    console.log(this.scroller.settings.throttle);
+    const onScroll = !this.scroller.settings.throttle ? () => this.scroll() :
+      throttle(() => this.scroll(), this.scroller.settings.throttle);
     this.onScrollUnsubscribe =
-      this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
+      this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', onScroll.bind(this));
     this.itemsSubscription = this.scroller.buffer.$items.subscribe(items => this.context.items = items);
   }
 

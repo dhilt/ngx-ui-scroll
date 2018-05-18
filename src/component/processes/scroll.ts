@@ -5,7 +5,6 @@ import { calculateFlowDirection } from '../utils';
 export default class Scroll {
 
   static run(scroller: Scroller) {
-    scroller.log('*** is loading?', scroller.adapter.isLoading);
     const direction = calculateFlowDirection(scroller.viewport);
     if (!scroller.adapter.isLoading) {
       Scroll.next(scroller, direction);

@@ -1,8 +1,7 @@
 import { Subscription } from 'rxjs/Subscription';
 
 import { Scroller } from './scroller';
-import { calculateFlowDirection } from './utils/index';
-import { Direction, Run, Process, ProcessSubject } from './interfaces/index';
+import { Process, ProcessSubject, Proc } from './interfaces/index';
 import {
   Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
 } from './processes/index';
@@ -12,25 +11,22 @@ export class Workflow {
   readonly context;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
+  private workflowSubscription: Subscription;
 
   public scroller: Scroller;
   public cyclesDone: number;
-
-  private runNew: Run;
-  private runQueue: Run;
 
   constructor(context) {
     this.context = context;
     this.scroller = new Scroller(this.context);
     this.cyclesDone = 0;
-    this.reset();
     this.subscribe();
     setTimeout(() => this.runWorkflow());
   }
 
   runWorkflow() {
     const scroller = this.scroller;
-    scroller.process$.subscribe((data: ProcessSubject) => {
+    this.workflowSubscription = scroller.process$.subscribe((data: ProcessSubject) => {
       scroller.log('process ' + data.process + ', ' + data.status);
       if (data.status === 'error') {
         End.run(scroller, true);
@@ -122,11 +118,6 @@ export class Workflow {
     });
   }
 
-  reset() {
-    this.runNew = null;
-    this.runQueue = null;
-  }
-
   subscribe() {
     this.onScrollUnsubscribe =
       this.context.renderer.listen(this.scroller.viewport.scrollable, 'scroll', this.scroll.bind(this));
@@ -136,6 +127,7 @@ export class Workflow {
   dispose() {
     this.onScrollUnsubscribe();
     this.itemsSubscription.unsubscribe();
+    this.workflowSubscription.unsubscribe();
     this.scroller.dispose();
   }
 
@@ -154,44 +146,6 @@ export class Workflow {
       process: Process.scroll,
       status: 'start'
     });
-  }
-
-  resolveScroller(next: Run = null) {
-    let options = {};
-    if (this.runNew) {
-      options = { ...this.runNew };
-      this.runNew = null;
-      this.run(options);
-    } else if (next) {
-      this.run(next);
-    } else if (this.runQueue) {
-      options = { ...this.runQueue };
-      this.runQueue = null;
-      this.run(options);
-    } else {
-      this.done();
-    }
-  }
-
-  run(options: Run = {}) {
-    if (!options.direction) {
-      options.direction = Direction.forward; // default direction
-      this.runQueue = { // queue opposite direction
-        ...options,
-        direction: options.direction === Direction.forward ? Direction.backward : Direction.forward
-      };
-    }
-    if (this.scroller.state.pending) { // postpone run if pending
-      this.runNew = { ...options }; // only 1 (last) run should be postponed
-      return;
-    }
-    this.start(options);
-  }
-
-  start(options: Run) {
-    const scroller = this.scroller;
-    const state = scroller.state;
-    // scroller.start(options);
   }
 
   done() {

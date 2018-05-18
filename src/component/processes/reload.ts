@@ -10,6 +10,7 @@ export default class Reload {
     scroller.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
     scroller.state.direction = null;
     scroller.purgeCycleSubscriptions();
+    scroller.purgeScrollSubscription();
     scroller.settings.setCurrentStartIndex(reloadIndex);
     scroller.process$.next(<ProcessSubject>{
       process: Process.reload,

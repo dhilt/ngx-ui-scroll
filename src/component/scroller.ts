@@ -37,6 +37,7 @@ export class Scroller {
 
   public process$: BehaviorSubject<ProcessSubject>;
   public cycleSubscriptions: Array<Subscription>;
+  public scrollSubscription: Subscription;
 
   constructor(context) {
     this.resolver$ = Observable.create(observer => this.observer = observer);
@@ -76,11 +77,18 @@ export class Scroller {
     this.cycleSubscriptions = [];
   }
 
+  purgeScrollSubscription() {
+    if (this.scrollSubscription && !this.scrollSubscription.closed) {
+      this.scrollSubscription.unsubscribe();
+    }
+  }
+
   dispose() {
     this.observer.complete();
     this.process$.complete();
     this.adapter.dispose();
     this.purgeCycleSubscriptions();
+    this.purgeScrollSubscription();
   }
 
   finalize() {

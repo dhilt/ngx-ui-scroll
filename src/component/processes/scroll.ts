@@ -1,23 +1,33 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject, Run } from '../interfaces/index';
+import { Direction, Process, ProcessSubject, Run } from '../interfaces/index';
 import { calculateFlowDirection } from '../utils';
 
 export default class Scroll {
 
   static run(scroller: Scroller) {
-    scroller.log('is loading?', scroller.adapter.isLoading);
-    if (scroller.adapter.isLoading) {
-      return;
-    }
+    scroller.log('*** is loading?', scroller.adapter.isLoading);
     const direction = calculateFlowDirection(scroller.viewport);
-    const run: Run = {
-      scroll: true,
-      direction
-    };
+    if (!scroller.adapter.isLoading) {
+      Scroll.next(scroller, direction);
+    } else if (!scroller.scrollSubscription || scroller.scrollSubscription.closed) {
+      scroller.log('*** scroll subscribe ***');
+      scroller.scrollSubscription = scroller.process$.subscribe((data: ProcessSubject) => {
+        if (data.process === Process.end && data.status === 'done') {
+          scroller.scrollSubscription.unsubscribe();
+          Scroll.next(scroller, direction);
+        }
+      });
+    }
+  }
+
+  static next(scroller: Scroller, direction: Direction) {
     scroller.process$.next(<ProcessSubject>{
       process: Process.scroll,
       status: 'next',
-      payload: run
+      payload: <Run>{
+        scroll: true,
+        direction
+      }
     });
   }
 }

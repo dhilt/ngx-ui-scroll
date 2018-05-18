@@ -22,7 +22,7 @@ export default class PreClip {
       shouldNotClip = !scroller.state.clip.shouldClip;
     }
 
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.preClip,
       status: !shouldNotClip ? 'next' : 'done'
     });

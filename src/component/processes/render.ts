@@ -9,12 +9,12 @@ export default class Render {
     scroller.cycleSubscriptions.push(
       scroller.bindData().subscribe(() => {
         if (Render.setElements(scroller)) {
-          scroller.process$.next(<ProcessSubject>{
+          scroller.callWorkflow(<ProcessSubject>{
             process: Process.render,
             status: 'next'
           });
         } else {
-          scroller.process$.next(<ProcessSubject>{
+          scroller.callWorkflow(<ProcessSubject>{
             process: Process.render,
             status: 'error',
             payload: 'Can not associate item with element'

@@ -10,7 +10,7 @@ export default class Start {
     scroller.state.startCycle(options);
     scroller.adapter.isLoading = true;
     scroller.log(`---=== Workflow ${scroller.state.cycleCount} start`, options);
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.start,
       status: 'next'
     });

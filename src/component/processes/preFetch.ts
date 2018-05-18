@@ -19,7 +19,7 @@ export default class PreFetch {
       PreFetch.processPreviousClip(scroller);
     }
 
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
       status: shouldFetch ? 'next' : 'done'
     });

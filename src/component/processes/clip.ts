@@ -13,7 +13,7 @@ export default class Clip {
     scroller.cycleSubscriptions.push(
       scroller.bindData().subscribe(() => {
         Clip.processClip(scroller);
-        scroller.process$.next(<ProcessSubject>{
+        scroller.callWorkflow(<ProcessSubject>{
           process: Process.clip,
           status: 'next'
         });

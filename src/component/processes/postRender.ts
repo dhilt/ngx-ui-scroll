@@ -20,7 +20,7 @@ export default class PostRender {
       PostRender.runBackward(scroller, height);
     }
 
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.postRender,
       status: 'next'
     });

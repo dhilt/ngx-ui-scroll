@@ -12,7 +12,7 @@ export default class Reload {
     scroller.purgeCycleSubscriptions();
     scroller.purgeScrollSubscription();
     scroller.settings.setCurrentStartIndex(reloadIndex);
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.reload,
       status: 'next'
     });

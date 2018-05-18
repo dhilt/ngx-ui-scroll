@@ -9,7 +9,7 @@ export default class PostFetch {
 
     PostFetch.setEOF(scroller);
     const hasItems = PostFetch.setItems(scroller);
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.postFetch,
       status: hasItems ? 'next' : 'done'
     });

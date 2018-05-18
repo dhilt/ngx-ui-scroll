@@ -18,7 +18,7 @@ export default class End {
       next = End.getNextRun(scroller);
     }
 
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.end,
       status: next ? 'next' : 'done',
       payload: next

@@ -1,31 +1,21 @@
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
-import { Adapter as IAdapter, Process, ProcessSubject } from '../interfaces/index';
-
-type GetProcessMethod = () => BehaviorSubject<ProcessSubject>;
+import { Adapter as IAdapter, Process } from '../interfaces/index';
+import { ProcessSubject } from '../interfaces';
 
 export class Adapter implements IAdapter {
   public isInitialized;
   public isLoading;
-  public getProcessSubject: GetProcessMethod;
+  readonly callWorkflow: Function;
 
-  constructor(getProcessSubject: GetProcessMethod) {
+  constructor(callWorkflow: Function) {
     this.isInitialized = true;
-    this.getProcessSubject = getProcessSubject;
-  }
-
-  dispose() {
+    this.callWorkflow = callWorkflow;
   }
 
   reload(reloadIndex?: number | string) {
-    const process: BehaviorSubject<ProcessSubject> = this.getProcessSubject();
-    if (!process.isStopped) {
-      process.next(<ProcessSubject>{
-        process: Process.reload,
-        status: 'start',
-        payload: reloadIndex
-      });
-    }
+    this.callWorkflow(<ProcessSubject>{
+      process: Process.reload,
+      status: 'start',
+      payload: reloadIndex
+    });
   }
-
 }

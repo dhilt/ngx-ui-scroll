@@ -5,7 +5,7 @@ export default class Init {
 
   static run(scroller: Scroller) {
     scroller.state.isInitial = true;
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.init,
       status: 'next'
     });

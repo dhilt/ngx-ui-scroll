@@ -1,6 +1,6 @@
 export interface Adapter {
   isInitialized: boolean;
-  isLoading?: boolean;
+  isLoading: boolean;
   reload: Function;
 }
 

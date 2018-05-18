@@ -1,16 +1,7 @@
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import {
-  Datasource,
-  Direction,
-  Process,
-  Run,
-  ProcessSubject,
-  AdapterActionType,
-  AdapterAction
-} from './interfaces/index';
+import { Datasource } from './interfaces/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
@@ -23,6 +14,7 @@ import { checkDatasource } from './utils/index';
 export class Scroller {
 
   readonly _bindData: Function;
+  readonly callWorkflow: Function;
   private logs: Array<any> = [];
 
   public datasource: Datasource;
@@ -33,29 +25,24 @@ export class Scroller {
   public state: State;
   public adapter: Adapter;
 
-  public process$: BehaviorSubject<ProcessSubject>;
   public cycleSubscriptions: Array<Subscription>;
   public scrollSubscription: Subscription;
 
-  constructor(context) {
+  constructor(context, callWorkflow: Function) {
     // this._bindData = () => context.changeDetector.markForCheck();
     this._bindData = () => context.changeDetector.detectChanges();
     this.datasource = checkDatasource(context.datasource);
+    this.callWorkflow = callWorkflow;
 
     this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
     this.state = new State();
-    this.adapter = new Adapter(() => this.process$);
+    this.adapter = new Adapter(this.callWorkflow);
 
     this.datasource.adapter = this.adapter;
     this.cycleSubscriptions = [];
-
-    this.process$ = new BehaviorSubject(<ProcessSubject>{
-      process: Process.init,
-      status: 'start'
-    });
   }
 
   bindData(): Observable<any> {
@@ -81,8 +68,6 @@ export class Scroller {
   }
 
   dispose() {
-    this.process$.complete();
-    this.adapter.dispose();
     this.purgeCycleSubscriptions();
     this.purgeScrollSubscription();
   }

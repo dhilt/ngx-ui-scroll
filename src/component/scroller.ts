@@ -11,7 +11,7 @@ import { Adapter } from './classes/adapter';
 
 import { checkDatasource } from './utils/index';
 
-let instanceCount: number = 0;
+let instanceCount = 0;
 
 export class Scroller {
 

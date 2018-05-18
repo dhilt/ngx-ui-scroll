@@ -15,7 +15,7 @@ export const minSettings: ISettings = {
 };
 
 export const defaultDevSettings: IDevSettings = {
-  debug: true, // logging is enabled if true; need to turn off in release
+  debug: false, // logging is enabled if true; need to turn off in release
   immediateLog: true, // logging is not immediate if false, it could be forced via Workflow.logForce call
   clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,

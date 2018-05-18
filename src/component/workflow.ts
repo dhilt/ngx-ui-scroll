@@ -1,12 +1,12 @@
 import { Subscription } from 'rxjs/Subscription';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { Scroller } from './scroller';
 import { Process, ProcessSubject } from './interfaces/index';
-import { throttle } from './utils';
+import { throttle } from './utils/index';
 import {
   Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
 } from './processes/index';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export class Workflow {
 

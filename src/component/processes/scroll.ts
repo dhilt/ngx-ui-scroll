@@ -1,7 +1,7 @@
+import { Workflow } from '../workflow';
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessSubject, Run } from '../interfaces/index';
-import { calculateFlowDirection } from '../utils';
-import { Workflow } from '../workflow';
+import { calculateFlowDirection } from '../utils/index';
 
 export default class Scroll {
 

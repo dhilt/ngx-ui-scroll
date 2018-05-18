@@ -12,9 +12,9 @@ export default class End {
 
     let next: Run;
     if (isFail) {
-      scroller.log(`---=== Workflow ${scroller.state.cycleCount } fail`);
+      scroller.log(`---=== Workflow ${scroller.settings.instanceIndex}-${scroller.state.cycleCount } fail`);
     } else {
-      scroller.log(`---=== Workflow ${scroller.state.cycleCount } done`);
+      scroller.log(`---=== Workflow ${scroller.settings.instanceIndex}-${scroller.state.cycleCount } done`);
       next = End.getNextRun(scroller);
     }
 

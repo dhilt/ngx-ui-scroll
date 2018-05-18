@@ -54,7 +54,8 @@ export class Workflow {
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
-    scroller.log('process ' + data.process + ', ' + data.status);
+    const pl = typeof data.payload === 'string' ? ` (${data.payload})` : '';
+    scroller.log(`process ${data.process}, ${data.status + pl}`);
     if (data.status === 'error') {
       End.run(scroller, true);
       return;
@@ -153,7 +154,7 @@ export class Workflow {
 
   done() {
     this.cyclesDone++;
-    this.scroller.log(`~~~~~~ WF Run ${this.cyclesDone} FINALIZED ~~~~~~`);
+    this.scroller.log(`~~~~~~ WF Run ${this.scroller.settings.instanceIndex}-${this.cyclesDone} FINALIZED ~~~~~~`);
     this.finalize();
   }
 

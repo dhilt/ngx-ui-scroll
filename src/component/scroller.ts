@@ -11,6 +11,8 @@ import { Adapter } from './classes/adapter';
 
 import { checkDatasource } from './utils/index';
 
+let instanceCount: number = 0;
+
 export class Scroller {
 
   readonly _bindData: Function;
@@ -26,7 +28,7 @@ export class Scroller {
   public adapter: Adapter;
 
   public cycleSubscriptions: Array<Subscription>;
-  public scrollSubscription: Subscription;
+  public scrollDelaySubscription: Subscription;
 
   constructor(context, callWorkflow: Function) {
     // this._bindData = () => context.changeDetector.markForCheck();
@@ -34,7 +36,7 @@ export class Scroller {
     this.datasource = checkDatasource(context.datasource);
     this.callWorkflow = callWorkflow;
 
-    this.settings = new Settings(context.datasource.settings, context.datasource.devSettings);
+    this.settings = new Settings(context.datasource.settings, context.datasource.devSettings, ++instanceCount);
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
@@ -61,15 +63,15 @@ export class Scroller {
     this.cycleSubscriptions = [];
   }
 
-  purgeScrollSubscription() {
-    if (this.scrollSubscription && !this.scrollSubscription.closed) {
-      this.scrollSubscription.unsubscribe();
+  purgeScrollDelaySubscription() {
+    if (this.scrollDelaySubscription && !this.scrollDelaySubscription.closed) {
+      this.scrollDelaySubscription.unsubscribe();
     }
   }
 
   dispose() {
     this.purgeCycleSubscriptions();
-    this.purgeScrollSubscription();
+    this.purgeScrollDelaySubscription();
   }
 
   finalize() {

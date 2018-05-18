@@ -20,10 +20,10 @@ export default class Scroll {
     const direction = calculateFlowDirection(scroller.viewport);
     if (!scroller.adapter.isLoading) {
       Scroll.next(scroller, direction);
-    } else if (!scroller.scrollSubscription || scroller.scrollSubscription.closed) {
-      scroller.scrollSubscription = workflow.process$.subscribe((data: ProcessSubject) => {
+    } else if (!scroller.scrollDelaySubscription || scroller.scrollDelaySubscription.closed) {
+      scroller.scrollDelaySubscription = workflow.process$.subscribe((data: ProcessSubject) => {
         if (data.process === Process.end && data.status === 'done') {
-          scroller.scrollSubscription.unsubscribe();
+          scroller.scrollDelaySubscription.unsubscribe();
           Scroll.next(scroller, direction);
         }
       });

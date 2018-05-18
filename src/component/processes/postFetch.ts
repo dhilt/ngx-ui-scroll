@@ -33,7 +33,7 @@ export default class PostFetch {
     }
     fetch.items = fetch.newItemsData.map((item, index) => {
       const $index = fetch.startIndex + index;
-      const nodeId = scroller.settings.itemIdPrefix + String($index);
+      const nodeId = String($index);
       return new Item($index, item, nodeId, scroller.routines);
     });
     if (direction === Direction.forward) {

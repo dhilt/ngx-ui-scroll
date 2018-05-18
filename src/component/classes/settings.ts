@@ -17,7 +17,6 @@ export const minSettings: ISettings = {
 export const defaultDevSettings: IDevSettings = {
   debug: true, // logging is enabled if true; need to turn off in release
   immediateLog: true, // logging is not immediate if false, it could be forced via Workflow.logForce call
-  itemIdPrefix: '', // todo : scroll instance index ?
   clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,
   paddingForwardSize: 0,
@@ -27,30 +26,31 @@ export const defaultDevSettings: IDevSettings = {
 
 export class Settings implements ISettings {
 
-  // external settings
+  // user settings
   startIndex;
   bufferSize;
   padding;
   infinite;
   horizontal;
 
-  // internal dev settings
+  // development settings
   debug;
   immediateLog;
-  itemIdPrefix;
   clipAfterFetchOnly;
   clipAfterScrollOnly;
   paddingForwardSize;
   paddingBackwardSize;
   throttle;
 
-  // internal current settings (could be changed during scroller's life)
+  // internal settings, managed by scroller itself
   currentStartIndex;
+  instanceIndex;
 
-  constructor(settings?: ISettings, devSettings?: IDevSettings) {
+  constructor(settings: ISettings, devSettings: IDevSettings, instanceIndex: number) {
     assignSettings(this, settings, defaultSettings, minSettings);
     Object.assign(this, defaultDevSettings, devSettings);
     this.currentStartIndex = this.startIndex;
+    this.instanceIndex = instanceIndex;
   }
 
   setCurrentStartIndex(startIndex: any) {

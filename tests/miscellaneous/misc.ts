@@ -72,7 +72,7 @@ export class Misc {
   }
 
   getElement(index: number) {
-    return this.fixture.nativeElement.querySelector(`[data-sid="${this.scroller.settings.itemIdPrefix}${index}"]`);
+    return this.fixture.nativeElement.querySelector(`[data-sid="${index}"]`);
   }
 
   getElementText(index: number): string {
@@ -80,17 +80,16 @@ export class Misc {
     return element ? element.innerText.trim() : null;
   }
 
-  checkElementId(element, index: number) {
-    return element.getAttribute('data-sid') === `${this.scroller.settings.itemIdPrefix}${index}`;
+  checkElementId(element, index: number): boolean {
+    return element.getAttribute('data-sid') === `${index}`;
   }
 
-  getElementIndex(element) {
+  getElementIndex(element): number {
     const id = element.getAttribute('data-sid');
     if (!id) {
       return null;
     }
-    const index = id.replace(this.scroller.settings.itemIdPrefix, '');
-    return parseInt(index, 10) || null;
+    return parseInt(id, 10) || null;
   }
 
   getScrollableSize(): number {

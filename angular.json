@@ -5,7 +5,7 @@
   "projects": {
     "project-name": {
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "./",
       "projectType": "application",
       "architect": {
         "build": {

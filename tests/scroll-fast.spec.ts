@@ -1,4 +1,4 @@
-import { debounce } from '../src/component/utils/throttle';
+import { debounce } from './miscellaneous/debounce';
 import { makeTest } from './scaffolding/runner';
 
 describe('Fast Scroll Spec', () => {

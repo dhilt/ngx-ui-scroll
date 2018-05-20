@@ -21,7 +21,7 @@ export const defaultDevSettings: IDevSettings = {
   clipAfterScrollOnly: true,
   paddingForwardSize: 0,
   paddingBackwardSize: 0,
-  throttle: 50
+  throttle: 40
 };
 
 export class Settings implements ISettings {

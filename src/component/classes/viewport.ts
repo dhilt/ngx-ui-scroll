@@ -1,6 +1,6 @@
 import { ElementRef } from '@angular/core';
 import { Padding } from './padding';
-import { Direction } from '../interfaces/direction';
+import { Direction } from '../interfaces/index';
 import { Routines } from './domRoutines';
 import { Settings } from './settings';
 

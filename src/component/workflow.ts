@@ -2,8 +2,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { Scroller } from './scroller';
+import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessSubject } from './interfaces/index';
-import { throttle } from './utils/index';
 import {
   Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
 } from './processes/index';
@@ -19,9 +19,12 @@ export class Workflow {
   public process$: BehaviorSubject<ProcessSubject>;
   public cyclesDone: number;
 
+  private scrollHelper: ScrollHelper;
+
   constructor(context) {
     this.context = context;
     this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
+    this.scrollHelper = new ScrollHelper(this.scroller);
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: 'start'
@@ -35,9 +38,7 @@ export class Workflow {
     this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
     this.onScrollUnsubscribe =
-      this.context.renderer.listen(scroller.viewport.scrollable, 'scroll',
-        !scroller.settings.throttle ? this.scroll.bind(this) :
-          throttle(() => this.scroll(), scroller.settings.throttle));
+      this.context.renderer.listen(scroller.viewport.scrollable, 'scroll', this.scrollHelper.run.bind(this.scrollHelper));
   }
 
   dispose() {
@@ -71,7 +72,7 @@ export class Workflow {
         break;
       case Process.scroll:
         if (data.status === 'start') {
-          Scroll.run(this);
+          Scroll.run(this, data.payload);
         }
         if (data.status === 'next') {
           Start.run(scroller, data.payload);
@@ -143,13 +144,6 @@ export class Workflow {
         }
         break;
     }
-  }
-
-  scroll() {
-    this.callWorkflow(<ProcessSubject>{
-      process: Process.scroll,
-      status: 'start'
-    });
   }
 
   done() {

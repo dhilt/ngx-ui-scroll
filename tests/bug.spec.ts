@@ -17,6 +17,7 @@ describe('Bug Spec', () => {
     const config = {
       datasourceName: 'default-delay-25',
       datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
+      datasourceDevSettings: { throttle: 50 },
       templateSettings: { viewportHeight: 100 },
       timeout: 4000
     };
@@ -25,16 +26,16 @@ describe('Bug Spec', () => {
       title: 'should continue fetch',
       config,
       it: (misc) => (done) => {
-
         const fwdCount = 4;
         let wfCount = null;
+        let jump = false;
 
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           if (misc.workflow.cyclesDone < fwdCount) {
-            misc.scrollMax();
+            setTimeout(() => misc.scrollMax(), 50);
           } else if (misc.workflow.cyclesDone === fwdCount) {
             wfCount = misc.workflow.cyclesDone;
-            misc.scrollMin();
+            setTimeout(() => misc.scrollMin(), 50);
             // 150 immediate jump will be here
           } else if (misc.workflow.cyclesDone > fwdCount) {
             checkViewport(misc, config.templateSettings.viewportHeight);
@@ -43,11 +44,11 @@ describe('Bug Spec', () => {
         });
 
         spyOn(misc.scroller, 'finalize').and.callFake(() => {
-          if (misc.scroller.state.cycleCount === wfCount + 1) {
+          if (!jump && misc.workflow.cyclesDone === fwdCount) {
             misc.scrollTo(150);
+            jump = true;
           }
         });
-
       }
     });
   });

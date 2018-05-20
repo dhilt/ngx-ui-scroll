@@ -1,5 +1,4 @@
-import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';

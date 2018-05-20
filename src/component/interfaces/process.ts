@@ -1,4 +1,7 @@
 export enum Process {
+  init = 'init',
+  scroll = 'scroll',
+  reload = 'reload',
   start = 'start',
   preFetch = 'preFetch',
   fetch = 'fetch',
@@ -6,13 +9,12 @@ export enum Process {
   render = 'render',
   postRender = 'postRender',
   preClip = 'preClip',
-  clip = 'clip'
+  clip = 'clip',
+  end = 'end'
 }
 
 export interface ProcessSubject {
   process: Process;
-  stop?: boolean;
-  error?: boolean;
-  break?: boolean;
+  status: string;
   payload?: any;
 }

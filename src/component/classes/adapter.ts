@@ -1,26 +1,21 @@
-import { Subject } from 'rxjs/Subject';
-
-import { Adapter as IAdapter, AdapterAction, AdapterActionType } from '../interfaces/index';
+import { Adapter as IAdapter, Process } from '../interfaces/index';
+import { ProcessSubject } from '../interfaces';
 
 export class Adapter implements IAdapter {
   public isInitialized;
   public isLoading;
-  public subject: Subject<AdapterAction>;
+  readonly callWorkflow: Function;
 
-  constructor() {
+  constructor(callWorkflow: Function) {
     this.isInitialized = true;
-    this.subject = new Subject();
-  }
-
-  dispose() {
-    this.subject.complete();
+    this.callWorkflow = callWorkflow;
   }
 
   reload(reloadIndex?: number | string) {
-    this.subject.next(<AdapterAction>{
-      action: AdapterActionType.reload,
+    this.callWorkflow(<ProcessSubject>{
+      process: Process.reload,
+      status: 'start',
       payload: reloadIndex
     });
   }
-
 }

@@ -32,16 +32,16 @@ export default class Fetch {
       `(index = ${scroller.state.fetch[direction].startIndex}, count = ${scroller.settings.bufferSize})`);
     scroller.state.fetch[direction].newItemsData = data;
 
-    scroller.process$.next(<ProcessSubject>{
-      process: Process.fetch
+    scroller.callWorkflow(<ProcessSubject>{
+      process: Process.fetch,
+      status: 'next'
     });
   }
 
   static fail(error: any, scroller: Scroller) {
-    scroller.process$.next(<ProcessSubject>{
+    scroller.callWorkflow(<ProcessSubject>{
       process: Process.fetch,
-      stop: true,
-      error: true,
+      status: 'error',
       payload: error
     });
   }

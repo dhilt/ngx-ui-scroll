@@ -13,8 +13,10 @@ export class State implements IState {
   clip: ClipModel;
   previousClip: PreviousClip;
   reload: boolean;
+  isInitial: boolean;
 
   constructor() {
+    this.isInitial = false;
     this.cycleCount = 0;
     this.countDone = 0;
     this.fetch = new FetchModel();

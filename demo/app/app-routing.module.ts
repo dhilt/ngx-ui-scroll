@@ -3,11 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { CommonComponent } from './samples/common.component';
 import { AdapterComponent } from './samples/adapter.component';
+import { WindowComponent } from './samples/window.component';
 import { TestComponent } from './samples/test.component';
 
 const routes: Routes = [
   { path: '', component: CommonComponent },
   { path: 'adapter', component: AdapterComponent },
+  { path: 'window', component: WindowComponent },
   { path: 'test', component: TestComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];

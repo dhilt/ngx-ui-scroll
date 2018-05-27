@@ -9,8 +9,8 @@ import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav.component';
 import { DemoComponent } from './shared/demo.component';
 
-import { CommonComponent }   from './samples/common.component';
-import { AdapterComponent }   from './samples/adapter.component';
+import { CommonComponent } from './samples/common.component';
+import { AdapterComponent } from './samples/adapter.component';
 
 import { DemoBasicComponent } from './samples/common/basic.component';
 import { DemoBufferSizeComponent } from './samples/common/buffer-size.component';
@@ -21,6 +21,7 @@ import { DemoHorizontalComponent } from './samples/common/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
+import { WindowComponent } from './samples/window.component';
 import { TestComponent } from './samples/test.component';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -40,6 +41,8 @@ import { AppRoutingModule } from './app-routing.module';
     DemoHorizontalComponent,
     DemoDifferentHeightsComponent,
     DemoReloadComponent,
+    DemoIsLoadingComponent,
+    WindowComponent
     DemoIsLoadingComponent,
     TestComponent
   ],

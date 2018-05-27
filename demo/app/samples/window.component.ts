@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Datasource } from '../../../public_api';
+
+import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-samples-window',

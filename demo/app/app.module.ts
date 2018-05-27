@@ -42,7 +42,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoDifferentHeightsComponent,
     DemoReloadComponent,
     DemoIsLoadingComponent,
-    WindowComponent
+    WindowComponent,
     DemoIsLoadingComponent,
     TestComponent
   ],

@@ -21,6 +21,7 @@ import { DemoHorizontalComponent } from './samples/common/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
+import { TestComponent } from './samples/test.component';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -39,7 +40,8 @@ import { AppRoutingModule } from './app-routing.module';
     DemoHorizontalComponent,
     DemoDifferentHeightsComponent,
     DemoReloadComponent,
-    DemoIsLoadingComponent
+    DemoIsLoadingComponent,
+    TestComponent
   ],
   imports: [
     BrowserModule,

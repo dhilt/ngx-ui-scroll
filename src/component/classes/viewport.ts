@@ -34,9 +34,14 @@ export class Viewport {
     this.settings = settings;
     this.routines = routines;
     this.host = elementRef.nativeElement;
-    this.scrollable = elementRef.nativeElement.parentElement;
     this.padding = new ViewportPadding(this.host, this.routines, settings);
     this.syntheticScrollPosition = null;
+
+    if (settings.windowViewport) {
+      this.scrollable = elementRef.nativeElement.ownerDocument;
+    } else {
+      this.scrollable = elementRef.nativeElement.parentElement;
+    }
   }
 
   reset() {

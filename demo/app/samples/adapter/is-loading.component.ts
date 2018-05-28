@@ -20,26 +20,11 @@ export class DemoIsLoadingComponent {
     log: ''
   };
 
-  datasource = new Datasource ({
+  datasource = new Datasource({
     get: datasourceGetCallbackInfinite(this.demoContext, 125)
   });
 
-  reloadIndex: number = 1;
-
-  onInputChanged(target) {
-    let value = parseInt(target.value, 10);
-    if (isNaN(value)) {
-      value = 1;
-    }
-    target.value = value;
-    this.reloadIndex = value;
-  }
-
-  doReload() {
-    this.demoContext.count = 0;
-    this.demoContext.log = '';
-    this.datasource.adapter.reload(this.reloadIndex);
-  }
+  reloadIndex = 1;
 
   sources: DemoSources = {
     datasource: `datasource = new Datasource ({
@@ -49,7 +34,7 @@ export class DemoIsLoadingComponent {
       data.push({ id: i, text: 'item #' + i });
     }
     setTimeout(() => success(data), 125);
-  } 
+  }
 });`,
     template: `The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
 
@@ -69,5 +54,20 @@ export class DemoIsLoadingComponent {
   height: 25px;
 }`
   };
+
+  onInputChanged(target) {
+    let value = parseInt(target.value, 10);
+    if (isNaN(value)) {
+      value = 1;
+    }
+    target.value = value;
+    this.reloadIndex = value;
+  }
+
+  doReload() {
+    this.demoContext.count = 0;
+    this.demoContext.log = '';
+    this.datasource.adapter.reload(this.reloadIndex);
+  }
 
 }

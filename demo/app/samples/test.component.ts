@@ -12,8 +12,8 @@ const MIN = 1;
 })
 export class TestComponent {
 
-  reloadIndex: number = 1;
-  private data: Array<any>;
+  reloadIndex = 1;
+  readonly data: Array<any>;
 
   constructor() {
     this.data = [];
@@ -24,6 +24,18 @@ export class TestComponent {
       });
     }
   }
+
+  datasource: Datasource = {
+    get: (index, count) =>
+      this.fetchData(index, count)
+    ,
+    settings: {
+      bufferSize: 10
+    },
+    devSettings: {
+      debug: true
+    }
+  };
 
   doReload() {
     // this.data.forEach(item => item.text += '+');
@@ -44,16 +56,4 @@ export class TestComponent {
       observer.next(data);
     });
   }
-
-  datasource: Datasource = {
-    get: (index, count) =>
-      this.fetchData(index, count)
-    ,
-    settings: {
-      bufferSize: 10
-    },
-    devSettings: {
-      debug: true
-    }
-  };
 }

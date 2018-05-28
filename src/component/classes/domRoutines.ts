@@ -3,21 +3,36 @@ import { Settings } from './settings';
 
 export class Routines {
 
-  private horizontal: boolean;
+  readonly horizontal: boolean;
 
   constructor(settings: Settings) {
     this.horizontal = settings.horizontal;
   }
 
+  getScrollable(element) {
+    return element instanceof Document ? element.scrollingElement : element;
+  }
+
   getScrollPosition(element): number {
-    return element[this.horizontal ? 'scrollLeft' : 'scrollTop'];
+    return this.getScrollable(element)[this.horizontal ? 'scrollLeft' : 'scrollTop'];
   }
 
   setScrollPosition(element, value: number) {
-    element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
+    this.getScrollable(element)[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
   getParams(element): ClientRect {
+    if (element instanceof Document) {
+      element = element.scrollingElement;
+      return <ClientRect>{
+        'height': element.clientHeight,
+        'width': element.clientWidth,
+        'top': element.clientTop,
+        'bottom': element.clientTop + element.clientHeight,
+        'left': element.clientLeft,
+        'right': element.clientLeft + element.clientWidth
+      };
+    }
     return element.getBoundingClientRect();
   }
 
@@ -34,7 +49,7 @@ export class Routines {
   }
 
   getScrollableSize(element): number {
-    return element[this.horizontal ? 'scrollWidth' : 'scrollHeight'];
+    return this.getScrollable(element)[this.horizontal ? 'scrollWidth' : 'scrollHeight'];
   }
 
   getRectEdge(params: ClientRect, direction: Direction, opposite: boolean): number {

@@ -56,4 +56,5 @@ export const assignSettings = (target, settings, defaults, minSettings) => {
   assignMinimalNumeric(target, settings, 'padding', defaults, minSettings);
   assignBoolean(target, settings, 'infinite', defaults);
   assignBoolean(target, settings, 'horizontal', defaults);
+  assignBoolean(target, settings, 'windowViewport', defaults);
 };

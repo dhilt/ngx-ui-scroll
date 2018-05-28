@@ -9,7 +9,7 @@ import { Datasource } from './component/interfaces/index';
 import { Item } from './component/classes/item';
 
 @Component({
-  selector: 'ui-scroll',
+  selector: '[ui-scroll]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<div data-padding-backward></div><div
   *ngFor="let item of items"

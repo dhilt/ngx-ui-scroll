@@ -1,5 +1,5 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -8,29 +8,41 @@ import { Subscription } from 'rxjs';
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
 
-  private subscription: Subscription;
+  hasLayout = true;
+  private subscriptions: Array<Subscription> = [];
 
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.subscriptions.push(
+      router.events
+        .filter(event => event instanceof NavigationStart)
+        .subscribe((event: NavigationStart) => {
+          this.hasLayout = !(event.url === '/window' || event.url === '/test');
+        })
+    );
   }
 
   ngAfterViewInit() {
-    this.subscription = this.route.fragment.subscribe((hash: string) => {
-      if (hash) {
-        setTimeout(() => {
-          const cmp = document.getElementById(hash);
-          if (cmp) {
-            cmp.scrollIntoView();
-          }
-        });
-      } else {
-        window.scrollTo(0, 0);
-      }
-    });
-
+    this.subscriptions.push(
+      this.route.fragment.subscribe((hash: string) => {
+        if (hash) {
+          setTimeout(() => {
+            const cmp = document.getElementById(hash);
+            if (cmp) {
+              cmp.scrollIntoView();
+            }
+          });
+        } else {
+          window.scrollTo(0, 0);
+        }
+      })
+    );
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach((subscription: Subscription) => subscription.unsubscribe());
   }
 
 }

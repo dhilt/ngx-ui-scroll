@@ -4,6 +4,7 @@ export interface Settings {
   padding?: number;
   infinite?: boolean;
   horizontal?: boolean;
+  windowViewport?: boolean;
 }
 
 export interface DevSettings {

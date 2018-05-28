@@ -16,5 +16,5 @@ export enum Process {
 export interface ProcessSubject {
   process: Process;
   status: string;
-  payload?: any;
+  payload?: string | any;
 }

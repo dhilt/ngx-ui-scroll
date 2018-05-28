@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
-const MAX = 5;
+const MAX = 500;
 const MIN = 1;
 
 @Component({
@@ -20,7 +20,7 @@ export class TestComponent {
     for (let i = 0; i <= MAX - MIN; i++) {
       this.data.push({
         id: i + MIN,
-        text: "item #" + (i + MIN)
+        text: 'item #' + (i + MIN)
       });
     }
   }
@@ -40,7 +40,8 @@ export class TestComponent {
       }
     }
     return Observable.create(observer => {
-      setTimeout(() => observer.next(data), 100)
+      // setTimeout(() => observer.next(data), 500);
+      observer.next(data);
     });
   }
 
@@ -49,7 +50,7 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 100
+      bufferSize: 10
     },
     devSettings: {
       debug: true

@@ -19,7 +19,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       router.events
         .filter(event => event instanceof NavigationStart)
         .subscribe((event: NavigationStart) => {
-          this.hasLayout = !(event.url === '/window' || event.url === '/demo');
+          this.hasLayout = !(event.url === '/window' || event.url === '/test');
         })
     );
   }

@@ -21,13 +21,13 @@ export class ViewportPadding {
 
 export class Viewport {
 
-  private settings: Settings;
-  private routines: Routines;
-  private host;
   scrollable;
   padding: ViewportPadding;
   syntheticScrollPosition: number;
 
+  readonly host;
+  readonly routines: Routines;
+  private settings: Settings;
   private lastPosition: number;
 
   constructor(elementRef: ElementRef, settings: Settings, routines: Routines) {

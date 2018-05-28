@@ -6,7 +6,8 @@ export const defaultSettings: ISettings = {
   bufferSize: 5,
   padding: 0.5,
   infinite: false,
-  horizontal: false
+  horizontal: false,
+  windowViewport: false
 };
 
 export const minSettings: ISettings = {
@@ -32,6 +33,7 @@ export class Settings implements ISettings {
   padding;
   infinite;
   horizontal;
+  windowViewport;
 
   // development settings
   debug;

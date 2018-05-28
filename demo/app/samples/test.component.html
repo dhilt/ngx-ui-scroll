@@ -1,0 +1,11 @@
+<div>
+  <input [(ngModel)]="reloadIndex">
+  <button (click)="doReload()">Reload</button>
+  <br><br>
+</div>
+
+<div class="viewport">
+  <div *uiScroll="let item of datasource">
+    <b>{{item.text}}</b>
+  </div>
+</div>

@@ -49,7 +49,7 @@ export class Misc {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
     this.datasource = this.testComponent.datasource;
-    this.uiScrollElement = this.fixture.debugElement.query(By.css('ui-scroll'));
+    this.uiScrollElement = this.fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent;
     this.workflow = this.uiScrollComponent.workflow;

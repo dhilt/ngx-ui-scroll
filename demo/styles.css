@@ -50,7 +50,7 @@ h3 {
   margin-left: 20px;
 }
 
-.demo .work .viewport {
+.demo .work .viewport, .viewport {
   width: 175px;
   height: 175px;
   overflow-anchor: none;
@@ -107,6 +107,11 @@ h3 {
 .demo .work .log.datasource {
   padding-left: 10px;
   width: 190px;
+}
+
+.over {
+  position: fixed;
+  left: 150px;
 }
 
 /* code styles */

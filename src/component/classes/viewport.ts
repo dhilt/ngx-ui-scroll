@@ -21,22 +21,27 @@ export class ViewportPadding {
 
 export class Viewport {
 
-  private settings: Settings;
-  private routines: Routines;
-  private host;
   scrollable;
   padding: ViewportPadding;
   syntheticScrollPosition: number;
 
+  readonly host;
+  readonly routines: Routines;
+  private settings: Settings;
   private lastPosition: number;
 
   constructor(elementRef: ElementRef, settings: Settings, routines: Routines) {
     this.settings = settings;
     this.routines = routines;
     this.host = elementRef.nativeElement;
-    this.scrollable = elementRef.nativeElement.parentElement;
     this.padding = new ViewportPadding(this.host, this.routines, settings);
     this.syntheticScrollPosition = null;
+
+    if (settings.windowViewport) {
+      this.scrollable = elementRef.nativeElement.ownerDocument;
+    } else {
+      this.scrollable = elementRef.nativeElement.parentElement;
+    }
   }
 
   reset() {

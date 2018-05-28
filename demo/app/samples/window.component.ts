@@ -17,10 +17,9 @@ export class WindowComponent {
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });
       }
-      setTimeout(success(data), 125);
+      success(data);
     },
     settings: {
-      bufferSize: 10,
       windowViewport: true
     },
     devSettings: {

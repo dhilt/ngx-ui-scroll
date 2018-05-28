@@ -19,6 +19,7 @@ import { DemoStartIndexComponent } from './samples/common/start-index.component'
 import { DemoInfiniteComponent } from './samples/common/infinite.component';
 import { DemoHorizontalComponent } from './samples/common/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
+import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 import { WindowComponent } from './samples/window.component';
@@ -40,10 +41,10 @@ import { AppRoutingModule } from './app-routing.module';
     DemoInfiniteComponent,
     DemoHorizontalComponent,
     DemoDifferentHeightsComponent,
+    DemoWindowViewportComponent,
     DemoReloadComponent,
     DemoIsLoadingComponent,
     WindowComponent,
-    DemoIsLoadingComponent,
     TestComponent
   ],
   imports: [

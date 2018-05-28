@@ -9,7 +9,7 @@
     <ng-content select="[actions]"></ng-content>
   </div>
 
-  <div class="work">
+  <div class="work" *ngIf="!context.noWorkView">
     <div style="float: left">
       <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId}}">
         <div *uiScroll="let item of datasource">

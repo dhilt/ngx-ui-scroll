@@ -26,8 +26,8 @@ The \*uiScroll directive dynamically destroys elements as they become invisible 
  - virtualization settings (you can specify when and how many items need to be requested/rendered by the uiScroll), [demos](https://dhilt.github.io/ngx-ui-scroll/#/#buffer-size-setting)
  - infinite mode (items rendered once are never removed), [demo](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)
  - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)
- - entire window scrolling, [demo](https://dhilt.github.io/ngx-ui-scroll/#/window)
  - different item heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#different-item-heights)
+ - entire window scrollable, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#window-viewport-setting)
  - special Adapter API object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/#/adapter)
 
 ### Getting

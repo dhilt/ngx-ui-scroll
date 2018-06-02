@@ -7,6 +7,17 @@ const MAX = 500;
 const MIN = 1;
 
 @Component({
+  selector: 'app-samples-test-inner',
+  template: '<b><ng-content></ng-content></b>'
+})
+export class TestInnerComponent {
+
+  constructor() {
+  }
+}
+
+
+@Component({
   selector: 'app-samples-test',
   templateUrl: './test.component.html'
 })
@@ -50,7 +61,7 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 10
+      bufferSize: 50
     },
     devSettings: {
       debug: true

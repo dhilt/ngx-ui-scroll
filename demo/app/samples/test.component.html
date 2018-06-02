@@ -4,8 +4,8 @@
   <br><br>
 </div>
 
-<div class="viewport">
+<div class="viewport" style="height: 600px">
   <div *uiScroll="let item of datasource">
-    <b>{{item.text}}</b>
+    <app-samples-test-inner>{{item.text}}</app-samples-test-inner>
   </div>
 </div>

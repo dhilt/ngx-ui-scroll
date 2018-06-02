@@ -7,12 +7,13 @@ const globals = {
   'rxjs/Observable': 'Rx',
   'rxjs/BehaviorSubject': 'Rx',
   'rxjs/Subject': 'Rx',
+  'rxjs/operators': 'Rx'
 };
 
 export default {
   external: Object.keys(globals),
   plugins: [resolve(), sourcemaps()],
-  onwarn: () => { return },
+  onwarn: () => null,
   output: {
     format: 'umd',
     name: 'ng.ngxUiScroll',
@@ -20,4 +21,4 @@ export default {
     sourcemap: true,
     exports: 'named'
   }
-}
+};

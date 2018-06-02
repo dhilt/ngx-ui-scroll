@@ -41,7 +41,7 @@ export default class End {
       scroller.state.isInitial = false;
       nextRun = {
         direction: Direction.backward,
-        scroll: false
+        scroll: scroller.state.scroll || false
       };
     }
     return nextRun;

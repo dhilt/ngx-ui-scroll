@@ -5,26 +5,25 @@ import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessSubject } from './interfaces/index';
 import {
-  Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
+  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
 } from './processes/index';
 
 export class Workflow {
 
+  scroller: Scroller;
+  process$: BehaviorSubject<ProcessSubject>;
+  cyclesDone: number;
+
   readonly context;
+  readonly scrollHelper: ScrollHelper;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
   private workflowSubscription: Subscription;
 
-  public scroller: Scroller;
-  public process$: BehaviorSubject<ProcessSubject>;
-  public cyclesDone: number;
-
-  private scrollHelper: ScrollHelper;
-
   constructor(context) {
     this.context = context;
     this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
-    this.scrollHelper = new ScrollHelper(this.scroller);
+    this.scrollHelper = new ScrollHelper(this);
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: 'start'
@@ -67,14 +66,6 @@ export class Workflow {
           Init.run(scroller);
         }
         if (data.status === 'next') {
-          Start.run(scroller);
-        }
-        break;
-      case Process.scroll:
-        if (data.status === 'start') {
-          Scroll.run(this, data.payload);
-        }
-        if (data.status === 'next') {
           Start.run(scroller, data.payload);
         }
         break;
@@ -84,6 +75,11 @@ export class Workflow {
         }
         if (data.status === 'next') {
           Init.run(scroller);
+        }
+        break;
+      case Process.scroll:
+        if (data.status === 'next') {
+          Init.run(scroller, true);
         }
         break;
       case Process.start:

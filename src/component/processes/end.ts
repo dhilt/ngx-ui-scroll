@@ -11,10 +11,11 @@ export default class End {
     scroller.finalize();
 
     let next: Run;
+    const logData = `${scroller.settings.instanceIndex}-${scroller.state.cycleCount}`;
     if (isFail) {
-      scroller.log(`---=== Workflow ${scroller.settings.instanceIndex}-${scroller.state.cycleCount } fail`);
+      scroller.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
     } else {
-      scroller.log(`---=== Workflow ${scroller.settings.instanceIndex}-${scroller.state.cycleCount } done`);
+      scroller.log(`%c---=== Workflow ${logData} done`, 'color: #006600;');
       next = End.getNextRun(scroller);
     }
 

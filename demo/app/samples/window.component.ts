@@ -28,6 +28,7 @@ export class WindowComponent {
     },
     settings: {
       bufferSize: 10,
+      padding: 0.1,
       startIndex: 1,
       windowViewport: true
     },

@@ -36,8 +36,9 @@ export class Workflow {
     const scroller = this.scroller;
     this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
-    this.onScrollUnsubscribe =
-      this.context.renderer.listen(scroller.viewport.scrollable, 'scroll', this.scrollHelper.run.bind(this.scrollHelper));
+    this.onScrollUnsubscribe = this.context.renderer.listen(
+      scroller.viewport.scrollEventElement, 'scroll', this.scrollHelper.run.bind(this.scrollHelper)
+    );
   }
 
   dispose() {

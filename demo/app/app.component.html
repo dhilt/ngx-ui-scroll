@@ -11,6 +11,7 @@
 </div>
 
 <div *ngIf="!hasLayout">
+  <link rel="stylesheet" [href]='sanitizer.bypassSecurityTrustResourceUrl("/assets/window.css")'>
   <router-outlet></router-outlet>
 </div>
 

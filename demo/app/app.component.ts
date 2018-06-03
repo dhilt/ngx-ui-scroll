@@ -1,5 +1,6 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs/Subscription';
 import { filter } from 'rxjs/operators';
 
@@ -14,7 +15,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public sanitizer: DomSanitizer
   ) {
     this.subscriptions.push(
       router.events.pipe(

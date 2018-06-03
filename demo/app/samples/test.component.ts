@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -16,14 +16,13 @@ export class TestInnerComponent {
   }
 }
 
-
 @Component({
   selector: 'app-samples-test',
   templateUrl: './test.component.html'
 })
 export class TestComponent {
 
-  reloadIndex: number = 1;
+  reloadIndex = 1;
   private data: Array<any>;
 
   constructor() {
@@ -35,6 +34,18 @@ export class TestComponent {
       });
     }
   }
+
+  datasource: Datasource = {
+    get: (index, count) =>
+      this.fetchData(index, count)
+    ,
+    settings: {
+      bufferSize: 20
+    },
+    devSettings: {
+      debug: true
+    }
+  };
 
   doReload() {
     // this.data.forEach(item => item.text += '+');
@@ -55,16 +66,4 @@ export class TestComponent {
       observer.next(data);
     });
   }
-
-  datasource: Datasource = {
-    get: (index, count) =>
-      this.fetchData(index, count)
-    ,
-    settings: {
-      bufferSize: 50
-    },
-    devSettings: {
-      debug: true
-    }
-  };
 }

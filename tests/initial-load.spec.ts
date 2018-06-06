@@ -13,6 +13,9 @@ const configList = [{
 }, {
   datasourceSettings: { startIndex: -77, bufferSize: 4, padding: 0.62, horizontal: true },
   templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
+}, {
+  datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 0.5, windowViewport: true },
+  templateSettings: { noViewportClass: true, viewportHeight: 0 }
 }];
 
 const datasourceDevSettings = { clipAfterFetchOnly: false, clipAfterScrollOnly: false };
@@ -37,9 +40,14 @@ const configListWithClip = [{
   datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, horizontal: true },
   datasourceDevSettings,
   templateSettings: { viewportWidth: 509, itemWidth: 90, horizontal: true }
+}, {
+  datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, windowViewport: true },
+  datasourceDevSettings,
+  templateSettings: { noViewportClass: true, viewportHeight: 0 }
 }];
 
-const configListInfinite = [configListWithClip[1], configListWithClip[3], configListWithClip[4]]
+const configListInfinite = configListWithClip
+  .filter((item, i) => [1, 3, 4, 5].includes(i))
   .map(config => ({
     ...config,
     datasourceSettings: {

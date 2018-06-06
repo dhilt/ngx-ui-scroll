@@ -5,6 +5,7 @@ const globals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
   'rxjs/Observable': 'Rx',
+  'rxjs/Subscription': 'Rx',
   'rxjs/BehaviorSubject': 'Rx',
   'rxjs/Subject': 'Rx',
   'rxjs/operators': 'Rx'
@@ -17,7 +18,7 @@ export default {
   output: {
     format: 'umd',
     name: 'ng.ngxUiScroll',
-    globals: globals,
+    globals,
     sourcemap: true,
     exports: 'named'
   }

@@ -9,21 +9,17 @@ export class Routines {
     this.horizontal = settings.horizontal;
   }
 
-  getScrollable(element) {
-    return element instanceof Document ? element.scrollingElement : element;
-  }
-
   getScrollPosition(element): number {
-    return this.getScrollable(element)[this.horizontal ? 'scrollLeft' : 'scrollTop'];
+    return element[this.horizontal ? 'scrollLeft' : 'scrollTop'];
   }
 
   setScrollPosition(element, value: number) {
-    this.getScrollable(element)[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
+    element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
   getParams(element): ClientRect {
-    if (element instanceof Document) {
-      element = element.scrollingElement;
+    if (element.tagName.toLowerCase() === 'body') {
+      element = element.parentElement;
       return <ClientRect>{
         'height': element.clientHeight,
         'width': element.clientWidth,
@@ -46,10 +42,6 @@ export class Routines {
 
   setSizeStyle(element, value: number) {
     element.style[this.horizontal ? 'width' : 'height'] = `${value}px`;
-  }
-
-  getScrollableSize(element): number {
-    return this.getScrollable(element)[this.horizontal ? 'scrollWidth' : 'scrollHeight'];
   }
 
   getRectEdge(params: ClientRect, direction: Direction, opposite: boolean): number {

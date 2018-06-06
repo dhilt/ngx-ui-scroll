@@ -16,7 +16,7 @@ export class Padding {
   element: DebugElement;
   style: CSSStyleDeclaration;
 
-  constructor(fixture: ComponentFixture <any>, direction: Direction, horizontal: boolean) {
+  constructor(fixture: ComponentFixture<any>, direction: Direction, horizontal: boolean) {
     this.direction = direction;
     this.horizontal = horizontal;
     this.element = fixture.debugElement.query(By.css(`[data-padding-${direction}]`));
@@ -30,7 +30,7 @@ export class Padding {
 
 export class Misc {
 
-  fixture: ComponentFixture <TestComponentInterface>;
+  fixture: ComponentFixture<TestComponentInterface>;
   testComponent: TestComponentInterface;
   datasource: Datasource;
   uiScrollElement: DebugElement;
@@ -40,12 +40,13 @@ export class Misc {
   scroller: Scroller;
   padding = {};
   horizontal: boolean;
+  window: boolean;
 
   itemHeight = 20;
   itemWidth = 90;
   shared = {};
 
-  constructor(fixture: ComponentFixture <any>) {
+  constructor(fixture: ComponentFixture<any>) {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
     this.datasource = this.testComponent.datasource;
@@ -55,12 +56,14 @@ export class Misc {
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.uiScrollComponent.workflow.scroller;
     this.horizontal = this.scroller.settings.horizontal;
+    this.window = this.scroller.settings.windowViewport;
     this.padding[Direction.forward] = new Padding(fixture, Direction.forward, this.horizontal);
     this.padding[Direction.backward] = new Padding(fixture, Direction.backward, this.horizontal);
   }
 
-  getViewportSize(settings: TestBedConfig) {
-    return settings.templateSettings[this.horizontal ? 'viewportWidth' : 'viewportHeight'];
+  getViewportSize(settings: TestBedConfig): number {
+    return this.scroller.viewport.getSize();
+    // return settings.templateSettings[this.horizontal ? 'viewportWidth' : 'viewportHeight'];
   }
 
   getItemSize(): number {
@@ -98,12 +101,16 @@ export class Misc {
     return params[this.horizontal ? 'width' : 'height'];
   }
 
+  getScrollableElement() {
+    return this.window ? document.scrollingElement : this.viewportElement.nativeElement;
+  }
+
   getScrollPosition(): number {
-    return this.viewportElement.nativeElement[this.horizontal ? 'scrollLeft' : 'scrollTop'];
+    return this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'];
   }
 
   scrollTo(value: number) {
-    this.viewportElement.nativeElement[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
+    this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
   scrollMin() {

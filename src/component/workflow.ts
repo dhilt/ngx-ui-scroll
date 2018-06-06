@@ -5,26 +5,25 @@ import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessSubject } from './interfaces/index';
 import {
-  Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
+  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
 } from './processes/index';
 
 export class Workflow {
 
+  scroller: Scroller;
+  process$: BehaviorSubject<ProcessSubject>;
+  cyclesDone: number;
+
   readonly context;
+  readonly scrollHelper: ScrollHelper;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
   private workflowSubscription: Subscription;
 
-  public scroller: Scroller;
-  public process$: BehaviorSubject<ProcessSubject>;
-  public cyclesDone: number;
-
-  private scrollHelper: ScrollHelper;
-
   constructor(context) {
     this.context = context;
     this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
-    this.scrollHelper = new ScrollHelper(this.scroller);
+    this.scrollHelper = new ScrollHelper(this);
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: 'start'
@@ -37,8 +36,9 @@ export class Workflow {
     const scroller = this.scroller;
     this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
-    this.onScrollUnsubscribe =
-      this.context.renderer.listen(scroller.viewport.scrollable, 'scroll', this.scrollHelper.run.bind(this.scrollHelper));
+    this.onScrollUnsubscribe = this.context.renderer.listen(
+      scroller.viewport.scrollEventElement, 'scroll', this.scrollHelper.run.bind(this.scrollHelper)
+    );
   }
 
   dispose() {
@@ -64,15 +64,7 @@ export class Workflow {
     switch (data.process) {
       case Process.init:
         if (data.status === 'start') {
-          Init.run(scroller);
-        }
-        if (data.status === 'next') {
-          Start.run(scroller);
-        }
-        break;
-      case Process.scroll:
-        if (data.status === 'start') {
-          Scroll.run(this, data.payload);
+          Init.run(scroller, this.cyclesDone);
         }
         if (data.status === 'next') {
           Start.run(scroller, data.payload);
@@ -83,7 +75,12 @@ export class Workflow {
           Reload.run(scroller, data.payload);
         }
         if (data.status === 'next') {
-          Init.run(scroller);
+          Init.run(scroller, this.cyclesDone);
+        }
+        break;
+      case Process.scroll:
+        if (data.status === 'next') {
+          Init.run(scroller, this.cyclesDone, true);
         }
         break;
       case Process.start:
@@ -148,7 +145,9 @@ export class Workflow {
 
   done() {
     this.cyclesDone++;
-    this.scroller.log(`~~~~~~ WF Run ${this.scroller.settings.instanceIndex}-${this.cyclesDone} FINALIZED ~~~~~~`);
+    const logData = `${this.scroller.settings.instanceIndex}-${this.cyclesDone}`;
+    const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
+    this.scroller.log(`%c   ~~~ WF Run ${logData} FINALIZED ~~~  `, logStyles);
     this.finalize();
   }
 

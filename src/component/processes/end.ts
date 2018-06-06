@@ -6,15 +6,15 @@ export default class End {
   static run(scroller: Scroller, isFail?: boolean) {
     scroller.state.endCycle();
     scroller.adapter.isLoading = false;
-    scroller.viewport.saveScrollPosition();
     scroller.purgeCycleSubscriptions();
     scroller.finalize();
 
     let next: Run;
+    const logData = `${scroller.settings.instanceIndex}-${scroller.state.cycleCount}`;
     if (isFail) {
-      scroller.log(`---=== Workflow ${scroller.settings.instanceIndex}-${scroller.state.cycleCount } fail`);
+      scroller.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
     } else {
-      scroller.log(`---=== Workflow ${scroller.settings.instanceIndex}-${scroller.state.cycleCount } done`);
+      scroller.log(`%c---=== Workflow ${logData} done`, 'color: #006600;');
       next = End.getNextRun(scroller);
     }
 
@@ -41,7 +41,7 @@ export default class End {
       scroller.state.isInitial = false;
       nextRun = {
         direction: Direction.backward,
-        scroll: false
+        scroll: scroller.state.scroll || false
       };
     }
     return nextRun;

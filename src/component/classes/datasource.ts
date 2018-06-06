@@ -1,16 +1,19 @@
-import { Adapter as IAdapter, Datasource as IDatasource } from '../interfaces/index';
+import {
+  Datasource as IDatasource, DatasourceGet,
+  Adapter, DevSettings, Settings
+} from '../interfaces/index';
 
 export class Datasource implements IDatasource {
-  get;
-  settings?;
-  devSettings?;
-  adapter?;
+  get: DatasourceGet;
+  settings?: Settings;
+  devSettings?: DevSettings;
+  adapter?: Adapter;
 
   constructor(datasource: IDatasource) {
     Object.assign(this, datasource);
 
     // set up mock adapter
-    this.adapter = <IAdapter> {
+    this.adapter = <Adapter> {
       isInitialized: false,
       isLoading: false,
       reload: () => null

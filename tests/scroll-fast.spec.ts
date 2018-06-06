@@ -24,6 +24,13 @@ describe('Fast Scroll Spec', () => {
     templateSettings: { viewportHeight: 69 },
     custom: { items: 150, bounce: 6, start: 'top' },
     timeout: 5000
+  }, {
+    datasourceName: 'limited-51-200-no-delay',
+    datasourceSettings: { startIndex: 51, bufferSize: 20, padding: 0.2, windowViewport: true },
+    datasourceDevSettings: { paddingForwardSize: 3000 },
+    templateSettings: { noViewportClass: true, viewportHeight: 0 },
+    custom: { items: 150, bounce: 5, start: 'top' },
+    timeout: 7000
   }];
 
   const configBofList = configList.map(config => ({

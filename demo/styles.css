@@ -2,6 +2,15 @@ h1 {
   margin: 3rem 0 0 0;
 }
 
+.no-layout h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.no-layout .header {
+  margin-bottom: 80px;
+}
+
 h3 {
   cursor: pointer;
   border-bottom: 1px solid #efefef;

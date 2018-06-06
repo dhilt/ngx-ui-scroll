@@ -1,10 +1,20 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 500;
 const MIN = 1;
+
+@Component({
+  selector: 'app-samples-test-inner',
+  template: '<b><ng-content></ng-content></b>'
+})
+export class TestInnerComponent {
+
+  constructor() {
+  }
+}
 
 @Component({
   selector: 'app-samples-test',
@@ -12,8 +22,8 @@ const MIN = 1;
 })
 export class TestComponent {
 
-  reloadIndex: number = 1;
-  private data: Array<any>;
+  reloadIndex = 1;
+  readonly data: Array<any>;
 
   constructor() {
     this.data = [];
@@ -24,6 +34,18 @@ export class TestComponent {
       });
     }
   }
+
+  datasource: IDatasource = {
+    get: (index, count) =>
+      this.fetchData(index, count)
+    ,
+    settings: {
+      bufferSize: 20
+    },
+    devSettings: {
+      debug: true
+    }
+  };
 
   doReload() {
     // this.data.forEach(item => item.text += '+');
@@ -44,16 +66,4 @@ export class TestComponent {
       observer.next(data);
     });
   }
-
-  datasource: Datasource = {
-    get: (index, count) =>
-      this.fetchData(index, count)
-    ,
-    settings: {
-      bufferSize: 10
-    },
-    devSettings: {
-      debug: true
-    }
-  };
 }

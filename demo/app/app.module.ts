@@ -23,7 +23,7 @@ import { DemoWindowViewportComponent } from './samples/common/window-viewport.co
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 import { WindowComponent } from './samples/window.component';
-import { TestComponent } from './samples/test.component';
+import { TestComponent, TestInnerComponent } from './samples/test.component';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -45,7 +45,8 @@ import { AppRoutingModule } from './app-routing.module';
     DemoReloadComponent,
     DemoIsLoadingComponent,
     WindowComponent,
-    TestComponent
+    TestComponent,
+    TestInnerComponent
   ],
   imports: [
     BrowserModule,

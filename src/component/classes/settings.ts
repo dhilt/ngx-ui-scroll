@@ -12,7 +12,7 @@ export const defaultSettings: ISettings = {
 
 export const minSettings: ISettings = {
   bufferSize: 1,
-  padding: 0.1
+  padding: 0.01
 };
 
 export const defaultDevSettings: IDevSettings = {

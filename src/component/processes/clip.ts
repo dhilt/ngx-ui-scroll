@@ -30,14 +30,17 @@ export default class Clip {
   }
 
   static processBuffer(scroller: Scroller) {
+    const clipped = [];
     scroller.buffer.items = scroller.buffer.items.filter(item => {
       if (item.toRemove) {
         scroller.buffer.cache.add(item);
         item.hide();
+        clipped.push(item.$index);
         return false;
       }
       return true;
     });
+    scroller.log(`clipped ${clipped.length} items`, clipped);
     if (!scroller.buffer.size) {
       scroller.state.setPreviousClip();
     }

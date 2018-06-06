@@ -18,5 +18,5 @@ export default {
       }
     })
   ],
-  onwarn: () => { return }
+  onwarn: () => null
 }

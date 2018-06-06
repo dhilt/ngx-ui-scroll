@@ -13,11 +13,13 @@ export default class PostRender {
 
     PostRender.processFetchedItems(items);
 
+    // pre-adjustment, scroll position only
     if (position !== viewport.scrollPosition) {
       viewport.scrollPosition = position;
       viewport.syntheticScrollPosition = position;
     }
 
+    // paddings and scroll position adjustments
     const height = Math.round(
       Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
     );
@@ -28,6 +30,7 @@ export default class PostRender {
       syntheticScrollPosition = PostRender.runBackward(scroller, height);
     }
 
+    // post-adjustment, scroll position only
     if (position !== viewport.scrollPosition) {
       if (syntheticScrollPosition !== null) {
         viewport.scrollPosition += viewport.scrollPosition - syntheticScrollPosition;

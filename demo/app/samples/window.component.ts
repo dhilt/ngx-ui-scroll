@@ -28,13 +28,13 @@ export class WindowComponent {
     },
     settings: {
       bufferSize: 10,
-      padding: 0.1,
+      padding: 0.01,
       startIndex: 1,
       windowViewport: true
     },
     devSettings: {
       debug: true,
-      throttle: 100
+      throttle: 10
     }
   };
 

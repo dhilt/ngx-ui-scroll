@@ -27,6 +27,8 @@ const singleForwardMaxScrollConfigList = [{
   custom: { direction: Direction.forward, count: 1 }
 }];
 
+const treatIndex = (index) => index <= 3 ? index : (3 * 2 - index);
+
 const singleBackwardMaxScrollConfigList =
   singleForwardMaxScrollConfigList.map(config => ({
     ...config,
@@ -41,7 +43,7 @@ const massForwardScrollsConfigList =
     ...config,
     custom: {
       direction: Direction.backward,
-      count: 3 + index // 3-5 bwd scroll events per config
+      count: 3 + treatIndex(index) // 3-6 bwd scroll events per config
     }
   }));
 
@@ -50,7 +52,7 @@ const massBackwardScrollsConfigList =
     ...config,
     custom: {
       direction: Direction.backward,
-      count: 3 + index // 3-5 fwd scroll events per config
+      count: 3 + treatIndex(index) // 3-6 fwd scroll events per config
     }
   }));
 
@@ -59,10 +61,10 @@ const massBouncingScrollsConfigList_fwd =
     ...config,
     custom: {
       direction: Direction.forward,
-      count: (3 + index) * 2, // 3-5 (fwd + bwd) scroll events per config
+      count: (3 + treatIndex(index)) * 2, // 3-6 (fwd + bwd) scroll events per config
       bouncing: true
     },
-    timeout: 6000
+    timeout: 5000
   }));
 
 const massBouncingScrollsConfigList_bwd =
@@ -70,10 +72,10 @@ const massBouncingScrollsConfigList_bwd =
     ...config,
     custom: {
       direction: Direction.backward,
-      count: (3 + index) * 2, // 3-5 (fwd + bwd) scroll events per config
+      count: (3 + treatIndex(index)) * 2, // 3-6 (fwd + bwd) scroll events per config
       bouncing: true
     },
-    timeout: 6000
+    timeout: 5000
   }));
 
 const massTwoDirectionalScrollsConfigList_fwd =
@@ -81,7 +83,7 @@ const massTwoDirectionalScrollsConfigList_fwd =
     ...config,
     custom: {
       direction: Direction.forward,
-      count: (3 + index) * 2, // 3-5 fwd + 3-5 bwd scroll events per config
+      count: (3 + treatIndex(index)) * 2, // 3-6 fwd + 3-6 bwd scroll events per config
       mass: true
     },
     timeout: 4000
@@ -92,7 +94,7 @@ const massTwoDirectionalScrollsConfigList_bwd =
     ...config,
     custom: {
       direction: Direction.backward,
-      count: (3 + index) * 2, // 3-5 fwd + 3-5 bwd scroll events per config
+      count: (3 + treatIndex(index)) * 2, // 3-6 fwd + 3-6 bwd scroll events per config
       mass: true
     },
     timeout: 4000

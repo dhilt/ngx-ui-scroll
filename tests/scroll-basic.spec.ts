@@ -22,7 +22,7 @@ const singleForwardMaxScrollConfigList = [{
   templateSettings: { viewportWidth: 300, itemWidth: 90, horizontal: true },
   custom: { direction: Direction.forward, count: 1 }
 }, {
-  datasourceSettings: { startIndex: -15, bufferSize: 30, padding: 0.53, windowViewport: true },
+  datasourceSettings: { startIndex: -15, bufferSize: 35, padding: 0.33, windowViewport: true },
   templateSettings: { noViewportClass: true, viewportHeight: 0 },
   custom: { direction: Direction.forward, count: 1 }
 }];
@@ -62,7 +62,7 @@ const massBouncingScrollsConfigList_fwd =
       count: (3 + index) * 2, // 3-5 (fwd + bwd) scroll events per config
       bouncing: true
     },
-    timeout: 5500
+    timeout: 6000
   }));
 
 const massBouncingScrollsConfigList_bwd =
@@ -73,7 +73,7 @@ const massBouncingScrollsConfigList_bwd =
       count: (3 + index) * 2, // 3-5 (fwd + bwd) scroll events per config
       bouncing: true
     },
-    timeout: 5500
+    timeout: 6000
   }));
 
 const massTwoDirectionalScrollsConfigList_fwd =

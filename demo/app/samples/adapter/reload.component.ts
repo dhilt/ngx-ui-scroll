@@ -24,23 +24,6 @@ export class DemoReloadComponent {
     get: datasourceGetCallbackInfinite(this.demoContext)
   });
 
-  reloadIndex: number = 1;
-
-  onInputChanged(target) {
-    let value = parseInt(target.value, 10);
-    if (isNaN(value)) {
-      value = 1;
-    }
-    target.value = value;
-    this.reloadIndex = value;
-  }
-
-  doReload() {
-    this.demoContext.count = 0;
-    this.demoContext.log = '';
-    this.datasource.adapter.reload(this.reloadIndex);
-  }
-
   sources: DemoSources = {
     datasource: `datasource = new Datasource ({
   get: (index, count, success) => {
@@ -49,7 +32,7 @@ export class DemoReloadComponent {
       data.push({ id: i, text: 'item #' + i });
     }
     success(data);
-  } 
+  }
 });
 
 reloadIndex: number = 1;
@@ -76,5 +59,22 @@ doReload() {
   height: 25px;
 }`
   };
+
+  reloadIndex = 1;
+
+  onInputChanged(target) {
+    let value = parseInt(target.value, 10);
+    if (isNaN(value)) {
+      value = 1;
+    }
+    target.value = value;
+    this.reloadIndex = value;
+  }
+
+  doReload() {
+    this.demoContext.count = 0;
+    this.demoContext.log = '';
+    this.datasource.adapter.reload(this.reloadIndex);
+  }
 
 }

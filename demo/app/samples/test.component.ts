@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 500;
 const MIN = 1;
@@ -35,7 +35,7 @@ export class TestComponent {
     }
   }
 
-  datasource: Datasource = {
+  datasource: IDatasource = {
     get: (index, count) =>
       this.fetchData(index, count)
     ,

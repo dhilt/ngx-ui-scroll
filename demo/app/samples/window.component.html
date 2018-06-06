@@ -3,7 +3,7 @@
   <a class="navbar-link" routerLink="/">Home</a>
 </div>
 
-<div *ngIf="init" style="margin: 0 auto; min-height: 300px">
+<div *ngIf="init">
   <div *uiScroll="let item of datasource">
     <b>{{item.text}}</b>
   </div>

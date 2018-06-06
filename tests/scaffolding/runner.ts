@@ -33,7 +33,7 @@ const generateMetaTitle = (config: TestBedConfig): string => {
     result.push(`vp width = ${config.templateSettings.viewportWidth}`);
   }
   if (config.datasourceSettings) {
-    const { startIndex, bufferSize, padding, horizontal } = config.datasourceSettings;
+    const { startIndex, bufferSize, padding, horizontal, windowViewport } = config.datasourceSettings;
     if (startIndex) {
       result.push(`start = ${startIndex}`);
     }
@@ -45,6 +45,9 @@ const generateMetaTitle = (config: TestBedConfig): string => {
     }
     if (horizontal) {
       result.push(`HORIZONTAL`);
+    }
+    if (windowViewport) {
+      result.push(`ENTIRE WINDOW`);
     }
   }
   if (config.custom) {

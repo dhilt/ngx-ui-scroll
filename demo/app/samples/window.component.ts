@@ -31,10 +31,6 @@ export class WindowComponent {
       padding: 0.01,
       startIndex: 1,
       windowViewport: true
-    },
-    devSettings: {
-      debug: true,
-      throttle: 10
     }
   };
 

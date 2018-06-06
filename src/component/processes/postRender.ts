@@ -16,7 +16,6 @@ export default class PostRender {
     // pre-adjustment, scroll position only
     if (position !== viewport.scrollPosition) {
       viewport.scrollPosition = position;
-      viewport.syntheticScrollPosition = position;
     }
 
     // paddings and scroll position adjustments
@@ -37,7 +36,6 @@ export default class PostRender {
       } else {
         viewport.scrollPosition = position;
       }
-      viewport.syntheticScrollPosition = viewport.scrollPosition;
     }
 
     scroller.callWorkflow(<ProcessSubject>{
@@ -83,8 +81,7 @@ export default class PostRender {
         paddingForward.size = paddingSize + diff;
         viewport.scrollPosition += diff;
       }
-      viewport.syntheticScrollPosition = viewport.scrollPosition;
-      return viewport.syntheticScrollPosition;
+      return viewport.scrollPosition;
     }
     return null;
   }

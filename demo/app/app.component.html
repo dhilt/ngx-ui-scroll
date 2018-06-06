@@ -10,8 +10,7 @@
   </div>
 </div>
 
-<div *ngIf="!hasLayout">
-  <link rel="stylesheet" [href]='sanitizer.bypassSecurityTrustResourceUrl("/assets/window.css")'>
+<div *ngIf="!hasLayout" class="no-layout">
   <router-outlet></router-outlet>
 </div>
 

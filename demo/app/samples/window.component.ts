@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-samples-window',
@@ -14,7 +14,7 @@ export class WindowComponent {
     setTimeout(() => this.init = true);
   }
 
-  datasource: Datasource = {
+  datasource: IDatasource = {
     get: (index: number, count: number, success: Function) => {
       const start = Math.max(index, 1);
       const end = start + count;
@@ -33,7 +33,8 @@ export class WindowComponent {
       windowViewport: true
     },
     devSettings: {
-      debug: true
+      debug: true,
+      throttle: 100
     }
   };
 

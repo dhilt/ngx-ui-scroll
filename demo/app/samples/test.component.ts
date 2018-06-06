@@ -23,7 +23,7 @@ export class TestInnerComponent {
 export class TestComponent {
 
   reloadIndex = 1;
-  private data: Array<any>;
+  readonly data: Array<any>;
 
   constructor() {
     this.data = [];

@@ -1,4 +1,4 @@
-import { Datasource } from './datasource';
+import { Datasource, DatasourceGet } from './datasource';
 import { Adapter, AdapterAction, AdapterActionType } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
@@ -8,6 +8,7 @@ import { Process, ProcessSubject } from './process';
 
 export {
   Datasource,
+  DatasourceGet,
   Direction,
   Settings,
   DevSettings,

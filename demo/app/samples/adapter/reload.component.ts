@@ -20,11 +20,9 @@ export class DemoReloadComponent {
     log: ''
   };
 
-  datasource = new Datasource({
+  datasource = new Datasource ({
     get: datasourceGetCallbackInfinite(this.demoContext)
   });
-
-  reloadIndex = 1;
 
   sources: DemoSources = {
     datasource: `datasource = new Datasource ({
@@ -61,6 +59,8 @@ doReload() {
   height: 25px;
 }`
   };
+
+  reloadIndex = 1;
 
   onInputChanged(target) {
     let value = parseInt(target.value, 10);

@@ -6,18 +6,36 @@ export default class PostRender {
   static run(scroller: Scroller) {
     scroller.state.process = Process.postRender;
 
+    const viewport = scroller.viewport;
     const direction = scroller.state.direction;
     const items = scroller.state.fetch[direction].items;
+    const position = viewport.scrollPosition;
 
     PostRender.processFetchedItems(items);
 
+    // pre-adjustment, scroll position only
+    if (position !== viewport.scrollPosition) {
+      viewport.scrollPosition = position;
+    }
+
+    // paddings and scroll position adjustments
     const height = Math.round(
       Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
     );
+    let syntheticScrollPosition = null;
     if (direction === Direction.forward) {
       PostRender.runForward(scroller, height);
     } else {
-      PostRender.runBackward(scroller, height);
+      syntheticScrollPosition = PostRender.runBackward(scroller, height);
+    }
+
+    // post-adjustment, scroll position only
+    if (position !== viewport.scrollPosition) {
+      if (syntheticScrollPosition !== null) {
+        viewport.scrollPosition += viewport.scrollPosition - syntheticScrollPosition;
+      } else {
+        viewport.scrollPosition = position;
+      }
     }
 
     scroller.callWorkflow(<ProcessSubject>{
@@ -63,8 +81,9 @@ export default class PostRender {
         paddingForward.size = paddingSize + diff;
         viewport.scrollPosition += diff;
       }
-      viewport.syntheticScrollPosition = viewport.scrollPosition;
+      return viewport.scrollPosition;
     }
+    return null;
   }
 
 }

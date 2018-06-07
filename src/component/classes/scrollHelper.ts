@@ -1,21 +1,26 @@
-import { Direction, Process, ProcessSubject } from '../interfaces/index';
-import { Scroller } from '../scroller';
+import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs/Subscription';
+
+import { Workflow } from '../workflow';
+import { Process, ProcessSubject } from '../interfaces/index';
 
 export class ScrollHelper {
 
-  readonly scroller: Scroller;
+  readonly workflow: Workflow;
   private lastScrollTime: number;
   private scrollTimer: number;
   private lastScrollPosition: number;
+  private endSubscription: Subscription;
 
-  constructor(scroller: Scroller) {
-    this.scroller = scroller;
+  constructor(workflow: Workflow) {
+    this.workflow = workflow;
     this.lastScrollTime = 0;
     this.scrollTimer = null;
+    this.endSubscription = null;
   }
 
   run() {
-    const viewport = this.scroller.viewport;
+    const viewport = this.workflow.scroller.viewport;
     if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
       const ssp = viewport.scrollPosition;
       setTimeout(() => {
@@ -23,59 +28,54 @@ export class ScrollHelper {
           viewport.syntheticScrollPosition = null;
         }
       });
-      return true;
+      return;
     }
-    let direction;
-    if (!this.scroller.adapter.isLoading) {
-      direction = this.calculateFixedDirection();
-    } else {
-      const diff = this.scroller.viewport.scrollPosition - this.lastScrollPosition;
-      if (!diff) {
-        return;
+    if (this.workflow.scroller.adapter.isLoading) {
+      if (!this.endSubscription) {
+        this.endSubscription = this.workflow.process$.pipe(
+          filter((data: ProcessSubject) => data.process === Process.end && data.status === 'done')
+        ).subscribe(() => {
+          this.endSubscription.unsubscribe();
+          this.endSubscription = null;
+          this.run();
+        });
       }
-      direction = diff > 0 ? Direction.forward : Direction.backward;
+      return;
     }
-    this.throttledScroll(direction);
+    this.throttledScroll();
   }
 
-  calculateFixedDirection(): Direction {
-    const viewport = this.scroller.viewport;
-    const scrollPosition = viewport.scrollPosition;
-    const viewportSize = viewport.scrollable.scrollHeight;
-    const backwardPadding = viewport.padding[Direction.backward].size;
-    if (scrollPosition < backwardPadding || scrollPosition === 0) {
-      return Direction.backward;
-    }
-    if (scrollPosition <= viewportSize - backwardPadding) {
-      const lastScrollPosition = viewport.getLastPosition();
-      if (lastScrollPosition < scrollPosition) {
-        return Direction.forward;
-      } else if (lastScrollPosition > scrollPosition) {
-        return Direction.backward;
-      }
-    }
-    return Direction.forward;
-  }
-
-  throttledScroll(direction: Direction) {
-    const scroller = this.scroller;
+  throttledScroll() {
+    const scroller = this.workflow.scroller;
     const diff = this.lastScrollTime + scroller.settings.throttle - Date.now();
     if (this.scrollTimer) {
       clearTimeout(this.scrollTimer);
+      this.scrollTimer = null;
     }
     if (diff < 0) {
-      scroller.callWorkflow(<ProcessSubject>{
-        process: Process.scroll,
-        status: 'start',
-        payload: direction
-      });
       this.lastScrollTime = Date.now();
       this.lastScrollPosition = scroller.viewport.scrollPosition;
+      this.processScroll();
     } else {
       this.scrollTimer = <any>setTimeout(() => {
-        this.throttledScroll(direction);
+        this.run();
         this.scrollTimer = null;
       }, diff);
     }
+  }
+
+  processScroll() {
+    if (this.endSubscription) {
+      this.endSubscription.unsubscribe();
+      this.endSubscription = null;
+    }
+    if (this.scrollTimer) {
+      clearTimeout(this.scrollTimer);
+      this.scrollTimer = null;
+    }
+    this.workflow.callWorkflow(<ProcessSubject>{
+      process: Process.scroll,
+      status: 'next'
+    });
   }
 }

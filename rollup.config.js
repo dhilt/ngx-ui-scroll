@@ -10,12 +10,12 @@ const globals = {
 export default {
   external: Object.keys(globals),
   plugins: [resolve(), sourcemaps()],
-  onwarn: () => { return },
+  onwarn: () => null,
   output: {
     format: 'umd',
     name: 'ng.ngxUiScroll',
-    globals: globals,
+    globals,
     sourcemap: true,
     exports: 'named'
   }
-}
+};

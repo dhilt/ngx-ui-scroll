@@ -1,6 +1,10 @@
-<div class="over">
+<div class="header">
+  <h1>Entire window scrolling demo</h1>
   <a class="navbar-link" routerLink="/">Home</a>
 </div>
-<div *uiScroll="let item of datasource">
-  <b>{{item.text}}</b>
+
+<div *ngIf="init">
+  <div *uiScroll="let item of datasource">
+    <b>{{item.text}}</b>
+  </div>
 </div>

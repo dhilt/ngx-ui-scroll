@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
 
 export class DatasourceService implements Datasource {

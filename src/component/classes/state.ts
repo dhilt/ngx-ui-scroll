@@ -4,6 +4,7 @@ import { ClipModel } from './clip';
 
 export class State implements IState {
   process: Process;
+  wfCycleCount: number;
   cycleCount: number;
   countDone: number;
   pending: boolean;
@@ -17,6 +18,7 @@ export class State implements IState {
 
   constructor() {
     this.isInitial = false;
+    this.wfCycleCount = 1;
     this.cycleCount = 0;
     this.countDone = 0;
     this.fetch = new FetchModel();

@@ -53,21 +53,4 @@ export class DemoIsLoadingComponent {
 }`
   };
 
-  reloadIndex = 1;
-
-  onInputChanged(target) {
-    let value = parseInt(target.value, 10);
-    if (isNaN(value)) {
-      value = 1;
-    }
-    target.value = value;
-    this.reloadIndex = value;
-  }
-
-  doReload() {
-    this.demoContext.count = 0;
-    this.demoContext.log = '';
-    this.datasource.adapter.reload(this.reloadIndex);
-  }
-
 }

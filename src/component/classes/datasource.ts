@@ -7,7 +7,7 @@ export class Datasource implements IDatasource {
   get: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;
-  adapter?: Adapter;
+  adapter: Adapter;
 
   constructor(datasource: IDatasource) {
     Object.assign(this, datasource);

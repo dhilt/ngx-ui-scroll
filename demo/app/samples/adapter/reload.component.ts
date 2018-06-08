@@ -62,12 +62,12 @@ doReload() {
 
   reloadIndex = 1;
 
-  onInputChanged(target) {
+  onInputChanged(target: HTMLInputElement) {
     let value = parseInt(target.value, 10);
     if (isNaN(value)) {
       value = 1;
     }
-    target.value = value;
+    target.value = value.toString();
     this.reloadIndex = value;
   }
 

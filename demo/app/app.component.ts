@@ -1,5 +1,5 @@
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router, Event } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -18,8 +18,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ) {
     this.subscriptions.push(
       router.events.pipe(
-        filter(event => event instanceof NavigationStart)
-      ).subscribe((event: NavigationStart) => {
+        filter((event: Event) => event instanceof NavigationStart)
+      ).subscribe((event: Event) => {
+        event = <NavigationStart>event;
         this.hasLayout = !(event.url === '/window' || event.url === '/test');
       })
     );

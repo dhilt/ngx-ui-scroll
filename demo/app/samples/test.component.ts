@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 
-import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 500;
 const MIN = 1;
@@ -35,8 +35,8 @@ export class TestComponent {
     }
   }
 
-  datasource: IDatasource = {
-    get: (index, count) =>
+  datasource = new Datasource({
+    get: (index: number, count: number) =>
       this.fetchData(index, count)
     ,
     settings: {
@@ -45,15 +45,15 @@ export class TestComponent {
     devSettings: {
       debug: true
     }
-  };
+  });
 
   doReload() {
     // this.data.forEach(item => item.text += '+');
     this.datasource.adapter.reload(this.reloadIndex);
   }
 
-  fetchData(index, count): Observable<Array<any>> {
-    const data = [];
+  fetchData(index: number, count: number): Observable<Array<any>> {
+    const data: Array<any> = [];
     const start = Math.max(MIN, index);
     const end = Math.min(MAX, index + count - 1);
     if (start <= end) {
@@ -61,7 +61,7 @@ export class TestComponent {
         data.push(this.data[i - MIN]);
       }
     }
-    return Observable.create(observer => {
+    return Observable.create((observer: Observer<any>) => {
       // setTimeout(() => observer.next(data), 500);
       observer.next(data);
     });

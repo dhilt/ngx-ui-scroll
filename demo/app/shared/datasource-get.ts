@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 
 import { DemoContext } from './interfaces';
 
@@ -42,12 +42,12 @@ export const datasourceGetLimited =
   };
 
 export const datasourceGetObservableInfinite = (demoContext: DemoContext) =>
-  (index, count) => Observable.create(observer =>
+  (index: number, count: number) => Observable.create((observer: Observer<any>) =>
     observer.next(datasourceGetInfinite(demoContext, index, count))
   );
 
 export const datasourceGetPromiseInfinite = (demoContext: DemoContext) =>
-  (index, count) => new Promise(success =>
+  (index: number, count: number) => new Promise(success =>
     success(datasourceGetInfinite(demoContext, index, count))
   );
 

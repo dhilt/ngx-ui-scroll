@@ -15,8 +15,9 @@ const OUT_DIR_ESM5 = `${NPM_DIR}/package/esm5`;
 /* Package version */
 shell.echo(`Setup package version`);
 let version = config.version;
-const versionContent = `export default '${version}';`;
-if(shell.exec(`echo "${versionContent}" > './src/ui-scroll.version.ts'`).code !== 0) {
+const versionContent = `export default '${version}';\\n`;
+let result = shell.exec(`printf "${versionContent}" >./src/ui-scroll.version.ts`);
+if(result.code !== 0) {
   shell.echo(chalk.red(`Error: Can't define package version`));
   shell.exit(1);
 }

@@ -1,7 +1,7 @@
 export class ClipByDirection {
   shouldClip: boolean;
-  size: number;
-  items: number;
+  size: number | null;
+  items: number | null;
 
   constructor() {
     this.reset();

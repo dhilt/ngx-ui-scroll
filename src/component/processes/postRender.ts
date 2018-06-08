@@ -1,5 +1,6 @@
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessSubject } from '../interfaces/index';
+import { Item } from '../classes/item';
 
 export default class PostRender {
 
@@ -8,7 +9,7 @@ export default class PostRender {
 
     const viewport = scroller.viewport;
     const direction = scroller.state.direction;
-    const items = scroller.state.fetch[direction].items;
+    const items = <Array<Item>>scroller.state.fetch[direction].items;
     const position = viewport.scrollPosition;
 
     PostRender.processFetchedItems(items);
@@ -44,7 +45,7 @@ export default class PostRender {
     });
   }
 
-  static processFetchedItems(items) {
+  static processFetchedItems(items: Array<Item>) {
     for (let i = items.length - 1; i >= 0; i--) {
       const element = items[i].element;
       element.style.left = '';

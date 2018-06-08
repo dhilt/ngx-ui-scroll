@@ -1,4 +1,5 @@
 import { ElementRef } from '@angular/core';
+
 import { Padding } from './padding';
 import { Direction } from '../interfaces/index';
 import { Routines } from './domRoutines';
@@ -8,7 +9,7 @@ export class ViewportPadding {
   forward: Padding;
   backward: Padding;
 
-  constructor(element, routines: Routines, settings: Settings) {
+  constructor(element: HTMLElement, routines: Routines, settings: Settings) {
     this.forward = new Padding(element, Direction.forward, routines, settings.paddingForwardSize);
     this.backward = new Padding(element, Direction.backward, routines, settings.paddingBackwardSize);
   }
@@ -22,11 +23,11 @@ export class ViewportPadding {
 export class Viewport {
 
   padding: ViewportPadding;
-  syntheticScrollPosition: number;
+  syntheticScrollPosition: number | null;
 
-  readonly element;
-  readonly host;
-  readonly scrollable;
+  readonly element: HTMLElement;
+  readonly host: HTMLElement;
+  readonly scrollable: HTMLElement;
   readonly routines: Routines;
   private settings: Settings;
 
@@ -39,10 +40,10 @@ export class Viewport {
 
     if (settings.windowViewport) {
       this.host = this.element.ownerDocument.body;
-      this.scrollable = this.element.ownerDocument.scrollingElement;
+      this.scrollable = <HTMLElement>this.element.ownerDocument.scrollingElement;
     } else {
-      this.host = this.element.parentElement;
-      this.scrollable = this.element.parentElement;
+      this.host = <HTMLElement>this.element.parentElement;
+      this.scrollable = <HTMLElement>this.element.parentElement;
     }
   }
 

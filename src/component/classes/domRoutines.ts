@@ -9,17 +9,17 @@ export class Routines {
     this.horizontal = settings.horizontal;
   }
 
-  getScrollPosition(element): number {
+  getScrollPosition(element: HTMLElement): number {
     return element[this.horizontal ? 'scrollLeft' : 'scrollTop'];
   }
 
-  setScrollPosition(element, value: number) {
+  setScrollPosition(element: HTMLElement, value: number) {
     element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
-  getParams(element): ClientRect {
+  getParams(element: HTMLElement): ClientRect {
     if (element.tagName.toLowerCase() === 'body') {
-      element = element.parentElement;
+      element = <HTMLElement>element.parentElement;
       return <ClientRect>{
         'height': element.clientHeight,
         'width': element.clientWidth,
@@ -32,35 +32,36 @@ export class Routines {
     return element.getBoundingClientRect();
   }
 
-  getSize(element): number {
+  getSize(element: HTMLElement): number {
     return this.getParams(element)[this.horizontal ? 'width' : 'height'];
   }
 
-  getSizeStyle(element): number {
-    return parseInt(element.style[this.horizontal ? 'width' : 'height'], 10) || 0;
+  getSizeStyle(element: HTMLElement): number {
+    const size = element.style[this.horizontal ? 'width' : 'height'];
+    return parseInt(<string>size, 10) || 0;
   }
 
-  setSizeStyle(element, value: number) {
+  setSizeStyle(element: HTMLElement, value: number) {
     element.style[this.horizontal ? 'width' : 'height'] = `${value}px`;
   }
 
-  getRectEdge(params: ClientRect, direction: Direction, opposite: boolean): number {
+  getRectEdge(params: ClientRect, direction: Direction, opposite?: boolean): number {
     const forward = !opposite ? Direction.forward : Direction.backward;
     return params[direction === forward ? (this.horizontal ? 'right' : 'bottom') : (this.horizontal ? 'left' : 'top')];
   }
 
-  getEdge(element, direction: Direction, opposite: boolean): number {
+  getEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
     const params = this.getParams(element);
     return this.getRectEdge(params, direction, opposite);
   }
 
-  getEdge2(element, direction: Direction, relativeElement, opposite: boolean): number {
+  getEdge2(element: HTMLElement, direction: Direction, relativeElement: HTMLElement, opposite: boolean): number {
     // vertical only ?
     return element.offsetTop - (relativeElement ? relativeElement.scrollTop : 0) +
       (direction === (!opposite ? Direction.forward : Direction.backward) ? this.getSize(element) : 0);
   }
 
-  hideElement(element) {
+  hideElement(element: HTMLElement) {
     element.style.display = 'none';
   }
 

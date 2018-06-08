@@ -39,7 +39,7 @@ export default class PreClip {
     const lastItemEdge = items[lastIndex].getEdge(direction);
 
     let i, itemEdge, start = -1, end = -1;
-    const getItemEdge = (index) =>
+    const getItemEdge = (index: number) =>
       index === firstIndex ? firstItemEdge : (
         index === lastIndex ? lastItemEdge :
           items[index].getEdge(direction));

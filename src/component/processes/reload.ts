@@ -8,7 +8,6 @@ export default class Reload {
     scroller.buffer.reset(true);
     scroller.viewport.reset();
     scroller.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
-    scroller.state.direction = null;
     scroller.purgeCycleSubscriptions();
     scroller.purgeScrollDelaySubscription();
     scroller.settings.setCurrentStartIndex(reloadIndex);

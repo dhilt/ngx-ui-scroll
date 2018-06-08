@@ -31,7 +31,7 @@ export class State implements IState {
     this.cycleCount++;
 
     this.process = Process.start;
-    this.direction = options.direction;
+    this.direction = options.direction || Direction.forward;
     this.scroll = options.scroll || false;
     this.fetch.reset();
     this.clip.reset();
@@ -54,7 +54,7 @@ export class State implements IState {
     };
   }
 
-  getStartIndex(): number {
+  getStartIndex(): number | null {
     return this.fetch[this.direction].startIndex;
   }
 

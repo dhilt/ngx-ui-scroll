@@ -34,11 +34,12 @@ export default class PreFetch {
     const direction = scroller.state.direction;
     const forward = direction === Direction.forward;
     const back = -scroller.settings.bufferSize;
+    const lastIndex = scroller.buffer.lastIndex[direction];
     let start;
-    if (scroller.buffer.lastIndex[direction] === null) {
+    if (lastIndex === null) {
       start = scroller.settings.currentStartIndex + (forward ? 0 : back);
     } else {
-      start = scroller.buffer.lastIndex[direction] + (forward ? 1 : back);
+      start = lastIndex + (forward ? 1 : back);
     }
     scroller.state.fetch[direction].startIndex = start;
   }
@@ -51,12 +52,12 @@ export default class PreFetch {
     const direction = scroller.state.direction;
     const forward = direction === Direction.forward;
     const opposite = forward ? Direction.backward : Direction.forward;
-    const clipSize = previousClip[`${opposite}Size`];
+    const clipSize = (<any>previousClip)[`${opposite}Size`];
     if (clipSize && previousClip.direction !== scroller.state.direction) {
       scroller.viewport.padding[direction].size -= clipSize;
       scroller.viewport.padding[opposite].size += clipSize;
       if (!forward) {
-        scroller.buffer.lastIndex[opposite] = scroller.buffer.lastIndex[direction] - 1;
+        scroller.buffer.lastIndex[opposite] = (scroller.buffer.lastIndex[direction] || 0) - 1;
       } else {
         scroller.buffer.lastIndex[direction] = scroller.buffer.lastIndex[opposite];
       }

@@ -11,7 +11,7 @@ export class Item {
   invisible: boolean;
   toRemove: boolean;
 
-  constructor($index, data, nodeId, routines) {
+  constructor($index: number, data: any, nodeId: string, routines: Routines) {
     this.$index = $index;
     this.data = data;
     this.nodeId = nodeId;

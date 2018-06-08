@@ -3,12 +3,12 @@ import { Routines } from './domRoutines';
 
 export class Padding {
 
-  element = null;
+  element: HTMLElement;
   direction: Direction;
   routines: Routines;
 
-  constructor(element, direction: Direction, routines: Routines, initialSize?: number) {
-    this.element = element.querySelector(`[data-padding-${direction}]`);
+  constructor(element: HTMLElement, direction: Direction, routines: Routines, initialSize?: number) {
+    this.element = <HTMLElement>element.querySelector(`[data-padding-${direction}]`);
     this.direction = direction;
     this.routines = routines;
     if (initialSize) {

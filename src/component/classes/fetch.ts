@@ -1,11 +1,10 @@
-import { Subscription } from 'rxjs';
 import { Item } from './item';
 
 export class FetchByDirection {
   shouldFetch: boolean;
-  startIndex: number;
-  private _newItemsData: Array<any>;
-  items: Array<Item>;
+  startIndex: number | null;
+  private _newItemsData: Array<any> | null;
+  items: Array<Item> | null;
   count: number;
 
   constructor() {
@@ -22,12 +21,12 @@ export class FetchByDirection {
     this.count = count;
   }
 
-  set newItemsData(items: Array<Item>) {
+  set newItemsData(items: Array<Item> | null) {
     this._newItemsData = items;
     this.count++;
   }
 
-  get newItemsData(): Array<Item> {
+  get newItemsData(): Array<Item> | null {
     return this._newItemsData;
   }
 }
@@ -35,7 +34,6 @@ export class FetchByDirection {
 export class FetchModel {
   forward: FetchByDirection;
   backward: FetchByDirection;
-  subscription: Subscription;
 
   constructor() {
     this.forward = new FetchByDirection();

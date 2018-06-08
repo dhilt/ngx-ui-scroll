@@ -9,7 +9,7 @@ export default class End {
     scroller.purgeCycleSubscriptions();
     scroller.finalize();
 
-    let next: Run;
+    let next: Run | null = null;
     const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
     if (isFail) {
       scroller.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
@@ -25,8 +25,8 @@ export default class End {
     });
   }
 
-  static getNextRun(scroller: Scroller): Run {
-    let nextRun: Run = null;
+  static getNextRun(scroller: Scroller): Run | null {
+    let nextRun: Run | null = null;
     if (scroller.state.fetch.hasNewItems || scroller.state.clip.shouldClip) {
       nextRun = {
         direction: scroller.state.direction,

@@ -1,5 +1,6 @@
 import { Subscription, BehaviorSubject } from 'rxjs';
 
+import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessSubject } from './interfaces/index';
@@ -13,13 +14,13 @@ export class Workflow {
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
 
-  readonly context;
+  readonly context: UiScrollComponent;
   readonly scrollHelper: ScrollHelper;
   private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
   private workflowSubscription: Subscription;
 
-  constructor(context) {
+  constructor(context: UiScrollComponent) {
     this.context = context;
     this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
     this.scrollHelper = new ScrollHelper(this);

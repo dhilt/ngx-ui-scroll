@@ -5,8 +5,12 @@ import { Cache } from './cache';
 import { Item } from './item';
 
 export class Index {
-  forward: number = null;
-  backward: number = null;
+  forward: number | null;
+  backward: number | null;
+
+  constructor() {
+    this.reset();
+  }
 
   reset() {
     this.backward = null;
@@ -17,7 +21,7 @@ export class Index {
 export class Buffer {
 
   private _items: Array<Item>;
-  public $items = new BehaviorSubject(null);
+  public $items: BehaviorSubject<any>;
 
   bof: boolean;
   eof: boolean;
@@ -25,6 +29,7 @@ export class Buffer {
   cache: Cache;
 
   constructor() {
+    this.$items = new BehaviorSubject(null);
     this.lastIndex = new Index();
     this.cache = new Cache();
     this.reset();
@@ -90,21 +95,21 @@ export class Buffer {
       this.getLastVisibleItemIndex() : this.getFirstVisibleItemIndex();
   }
 
-  getFirstVisibleItem(): Item {
+  getFirstVisibleItem(): Item | undefined {
     const index = this.getFirstVisibleItemIndex();
     if (index >= 0) {
       return this.items[index];
     }
   }
 
-  getLastVisibleItem(): Item {
+  getLastVisibleItem(): Item | undefined {
     const index = this.getLastVisibleItemIndex();
     if (index >= 0) {
       return this.items[index];
     }
   }
 
-  getEdgeVisibleItem(direction: Direction, opposite?: boolean): Item {
+  getEdgeVisibleItem(direction: Direction, opposite?: boolean): Item | undefined {
     return direction === (!opposite ? Direction.forward : Direction.backward) ?
       this.getLastVisibleItem() : this.getFirstVisibleItem();
   }

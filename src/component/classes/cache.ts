@@ -33,7 +33,7 @@ export class Cache {
     }
   }
 
-  get(index: number): ItemCache {
+  get(index: number): ItemCache | undefined {
     return this.items.find(i => i.$index === index);
   }
 }

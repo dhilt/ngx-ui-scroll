@@ -1,14 +1,14 @@
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, Observer } from 'rxjs';
 
+import { UiScrollComponent } from '../ui-scroll.component';
 import { Datasource } from './interfaces/index';
+import { checkDatasource } from './utils/index';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
-
-import { checkDatasource } from './utils/index';
 
 let instanceCount = 0;
 
@@ -30,7 +30,7 @@ export class Scroller {
   public cycleSubscriptions: Array<Subscription>;
   public scrollDelaySubscription: Subscription;
 
-  constructor(context, callWorkflow: Function) {
+  constructor(context: UiScrollComponent, callWorkflow: Function) {
     // this._bindData = () => context.changeDetector.markForCheck();
     this._bindData = () => context.changeDetector.detectChanges();
     this.version = context.version;
@@ -50,9 +50,9 @@ export class Scroller {
 
   bindData(): Observable<any> {
     this._bindData();
-    return Observable.create(observer => {
+    return Observable.create((observer: Observer<any>) => {
         setTimeout(() => {
-          observer.next();
+          observer.next(true);
           observer.complete();
         });
       }
@@ -78,7 +78,7 @@ export class Scroller {
   finalize() {
   }
 
-  stat(str?) {
+  stat(str?: string) {
     if (this.settings.debug) {
       this.log((str ? str + ' — ' : '') +
         'top: ' + this.viewport.scrollPosition + ', ' +
@@ -89,7 +89,7 @@ export class Scroller {
     }
   }
 
-  log(...args) {
+  log(...args: Array<any>) {
     if (this.settings.debug) {
       if (this.settings.immediateLog) {
         console.log.apply(this, args);
@@ -99,7 +99,7 @@ export class Scroller {
     }
   }
 
-  logForce(...args) {
+  logForce(...args: Array<any>) {
     if (this.settings.debug) {
       if (!this.settings.immediateLog && this.logs.length) {
         this.logs.forEach(logArgs => console.log.apply(this, logArgs));

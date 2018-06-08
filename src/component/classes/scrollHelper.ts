@@ -8,9 +8,9 @@ export class ScrollHelper {
 
   readonly workflow: Workflow;
   private lastScrollTime: number;
-  private scrollTimer: number;
+  private scrollTimer: number | null;
   private lastScrollPosition: number;
-  private endSubscription: Subscription;
+  private endSubscription: Subscription | null;
 
   constructor(workflow: Workflow) {
     this.workflow = workflow;
@@ -35,7 +35,9 @@ export class ScrollHelper {
         this.endSubscription = this.workflow.process$.pipe(
           filter((data: ProcessSubject) => data.process === Process.end && data.status === 'done')
         ).subscribe(() => {
-          this.endSubscription.unsubscribe();
+          if (this.endSubscription) {
+            this.endSubscription.unsubscribe();
+          }
           this.endSubscription = null;
           this.run();
         });

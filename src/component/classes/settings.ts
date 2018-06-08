@@ -28,28 +28,30 @@ export const defaultDevSettings: IDevSettings = {
 export class Settings implements ISettings {
 
   // user settings
-  startIndex;
-  bufferSize;
-  padding;
-  infinite;
-  horizontal;
-  windowViewport;
+  startIndex: number;
+  bufferSize: number;
+  padding: number;
+  infinite: boolean;
+  horizontal: boolean;
+  windowViewport: boolean;
 
   // development settings
-  debug;
-  immediateLog;
-  clipAfterFetchOnly;
-  clipAfterScrollOnly;
-  paddingForwardSize;
-  paddingBackwardSize;
-  throttle;
+  debug: boolean;
+  immediateLog: boolean;
+  clipAfterFetchOnly: boolean;
+  clipAfterScrollOnly: boolean;
+  paddingForwardSize: number;
+  paddingBackwardSize: number;
+  throttle: number;
 
   // internal settings, managed by scroller itself
-  currentStartIndex;
-  instanceIndex;
+  currentStartIndex: number;
+  instanceIndex: number;
 
-  constructor(settings: ISettings, devSettings: IDevSettings, instanceIndex: number) {
-    assignSettings(this, settings, defaultSettings, minSettings);
+  constructor(
+    settings: ISettings | undefined, devSettings: IDevSettings | undefined, instanceIndex: number
+  ) {
+    assignSettings(this, settings || {}, defaultSettings || {}, minSettings);
     Object.assign(this, defaultDevSettings, devSettings);
     this.currentStartIndex = this.startIndex;
     this.instanceIndex = instanceIndex;

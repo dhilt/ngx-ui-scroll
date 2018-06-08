@@ -26,11 +26,11 @@ export default class Clip {
       return;
     }
     const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
-    scroller.viewport.padding[opposite].size += scroller.state.clip[direction].size;
+    scroller.viewport.padding[opposite].size += scroller.state.clip[direction].size || 0;
   }
 
   static processBuffer(scroller: Scroller) {
-    const clipped = [];
+    const clipped: Array<number> = [];
     scroller.buffer.items = scroller.buffer.items.filter(item => {
       if (item.toRemove) {
         scroller.buffer.cache.add(item);

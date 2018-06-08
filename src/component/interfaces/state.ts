@@ -3,10 +3,10 @@ import { Process } from './process';
 
 export interface PreviousClip {
   isSet: boolean;
-  backwardSize: number;
-  forwardSize: number;
-  backwardItems: number;
-  forwardItems: number;
+  backwardSize: number | null;
+  forwardSize: number | null;
+  backwardItems: number | null;
+  forwardItems: number | null;
   direction: Direction;
 }
 

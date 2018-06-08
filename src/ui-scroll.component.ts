@@ -38,9 +38,9 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public workflow: Workflow;
 
   constructor(
-    private changeDetector: ChangeDetectorRef,
-    private elementRef: ElementRef,
-    private renderer: Renderer2
+    public changeDetector: ChangeDetectorRef,
+    public elementRef: ElementRef,
+    public renderer: Renderer2
   ) {
   }
 

@@ -18,14 +18,14 @@ export default class Fetch {
     } else {
       scroller.cycleSubscriptions.push(
         result.subscribe(
-          (data) => Fetch.success(data, scroller),
-          (error) => Fetch.success(error, scroller)
+          (data: Array<any>) => Fetch.success(data, scroller),
+          (error: any) => Fetch.fail(error, scroller)
         )
       );
     }
   }
 
-  static success(data: any, scroller: Scroller) {
+  static success(data: Array<any>, scroller: Scroller) {
     const direction = scroller.state.direction;
     scroller.log(`resolved ${data.length} ${direction} items ` +
       `(index = ${scroller.state.fetch[direction].startIndex}, count = ${scroller.settings.bufferSize})`);
@@ -50,7 +50,7 @@ export default class Fetch {
 
     let immediateData, immediateError;
     let observer: Observer<any>;
-    const success = data => {
+    const success = (data: any) => {
       if (!observer) {
         immediateData = data || null;
         return;
@@ -58,7 +58,7 @@ export default class Fetch {
       observer.next(data);
       observer.complete();
     };
-    const reject = error => {
+    const reject = (error: any) => {
       if (!observer) {
         immediateError = error || null;
         return;
@@ -81,7 +81,7 @@ export default class Fetch {
       };
     }
 
-    return Observable.create(_observer => {
+    return Observable.create((_observer: Observer<any>) => {
       observer = _observer;
     });
   }

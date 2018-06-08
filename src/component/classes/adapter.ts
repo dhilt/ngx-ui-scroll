@@ -4,9 +4,9 @@ import { Scroller } from '../scroller';
 import { Adapter as IAdapter, Process } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
-  public version;
-  public isInitialized;
-  public isLoading;
+  public version: string;
+  public isInitialized: boolean;
+  public isLoading: boolean;
   readonly callWorkflow: Function;
 
   constructor(scroller: Scroller) {

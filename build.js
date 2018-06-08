@@ -3,6 +3,7 @@
 const fs = require('fs');
 const shell = require('shelljs');
 const chalk = require('chalk');
+const config = require('./package-dist');
 
 const PACKAGE = `ngx-ui-scroll`;
 const NPM_DIR = `dist`;
@@ -11,6 +12,17 @@ const ESM5_DIR = `${NPM_DIR}/esm5`;
 const BUNDLES_DIR = `${NPM_DIR}/bundles`;
 const OUT_DIR_ESM5 = `${NPM_DIR}/package/esm5`;
 
+/* Package version */
+shell.echo(`Setup package version`);
+let version = config.version;
+const versionContent = `export default '${version}';`;
+if(shell.exec(`echo "${versionContent}" > './src/ui-scroll.version.ts'`).code !== 0) {
+  shell.echo(chalk.red(`Error: Can't define package version`));
+  shell.exit(1);
+}
+shell.echo(chalk.green(`Version is ${version}`));
+
+/* Build prerequisites */
 shell.echo(`Start building...`);
 
 shell.rm(`-Rf`, `${NPM_DIR}/*`);

@@ -1,5 +1,4 @@
-import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
@@ -30,6 +29,7 @@ export class Workflow {
     });
     this.cyclesDone = 0;
     setTimeout(() => this.initListeners());
+    this.scroller.log(`The uiScroll Workflow has been initialized (${this.context.version})`);
   }
 
   initListeners() {
@@ -64,7 +64,7 @@ export class Workflow {
     switch (data.process) {
       case Process.init:
         if (data.status === 'start') {
-          Init.run(scroller, this.cyclesDone);
+          Init.run(scroller);
         }
         if (data.status === 'next') {
           Start.run(scroller, data.payload);
@@ -75,12 +75,12 @@ export class Workflow {
           Reload.run(scroller, data.payload);
         }
         if (data.status === 'next') {
-          Init.run(scroller, this.cyclesDone);
+          Init.run(scroller);
         }
         break;
       case Process.scroll:
         if (data.status === 'next') {
-          Init.run(scroller, this.cyclesDone, true);
+          Init.run(scroller, true);
         }
         break;
       case Process.start:
@@ -145,6 +145,7 @@ export class Workflow {
 
   done() {
     this.cyclesDone++;
+    this.scroller.state.wfCycleCount = this.cyclesDone + 1;
     const logData = `${this.scroller.settings.instanceIndex}-${this.cyclesDone}`;
     const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
     this.scroller.log(`%c   ~~~ WF Run ${logData} FINALIZED ~~~  `, logStyles);

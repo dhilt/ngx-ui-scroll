@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 

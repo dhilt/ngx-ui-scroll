@@ -6,7 +6,6 @@ module.exports = function (config) {
       require('karma-jasmine'),
       require('karma-webpack'),
       require('karma-spec-reporter'),
-      require('karma-ie-launcher'),
       require('karma-chrome-launcher'),
       require('karma-firefox-launcher'),
       require('karma-sourcemap-loader'),
@@ -21,7 +20,7 @@ module.exports = function (config) {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     coverageIstanbulReporter: {
-      reports: [ 'html', 'lcovonly' ],
+      dir: require('path').join(__dirname, 'coverage'), reports: [ 'html', 'lcovonly' ],
       fixWebpackSourcePaths: true
     },
 
@@ -29,6 +28,7 @@ module.exports = function (config) {
       './tests/miscellaneous/entry-files.js': ['webpack', 'sourcemap']
     },
     webpack: {
+      mode: 'development',
       resolve: {
         extensions: ['.ts', '.js']
       },

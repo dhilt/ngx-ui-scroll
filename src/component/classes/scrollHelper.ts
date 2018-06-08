@@ -1,5 +1,5 @@
 import { filter } from 'rxjs/operators';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { Workflow } from '../workflow';
 import { Process, ProcessSubject } from '../interfaces/index';

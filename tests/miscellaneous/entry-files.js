@@ -14,6 +14,9 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 
 import 'rxjs';
+import { config } from 'rxjs';
+
+config.useDeprecatedSynchronousErrorHandling = true;
 
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,

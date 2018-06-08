@@ -27,6 +27,7 @@ import { Item } from './component/classes/item';
 export class UiScrollComponent implements OnInit, OnDestroy {
 
   // come from the directive
+  public version: string;
   public template: TemplateRef<any>;
   public datasource: Datasource;
 

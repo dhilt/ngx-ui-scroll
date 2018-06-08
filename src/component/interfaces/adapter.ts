@@ -1,4 +1,5 @@
 export interface Adapter {
+  version: string;
   isInitialized: boolean;
   isLoading: boolean;
   reload: Function;

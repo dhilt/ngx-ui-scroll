@@ -3,8 +3,8 @@ import { Direction, Process, ProcessSubject, Run } from '../interfaces/index';
 
 export default class Init {
 
-  static run(scroller: Scroller, cyclesDone: number, isScroll?: boolean) {
-    const logData = `${scroller.settings.instanceIndex}-${cyclesDone + 1}`;
+  static run(scroller: Scroller, isScroll?: boolean) {
+    const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}`;
     const logStyles = 'color: #0000aa; border: solid black 1px; border-width: 1px 0 0 1px; margin-left: -2px';
     scroller.log(`%c   ~~~ WF Run ${logData} STARTED ~~~  `, logStyles);
     scroller.state.isInitial = true;

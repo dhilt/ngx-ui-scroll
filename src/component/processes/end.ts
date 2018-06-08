@@ -10,7 +10,7 @@ export default class End {
     scroller.finalize();
 
     let next: Run;
-    const logData = `${scroller.settings.instanceIndex}-${scroller.state.cycleCount}`;
+    const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
     if (isFail) {
       scroller.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
     } else {

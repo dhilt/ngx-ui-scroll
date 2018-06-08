@@ -1,5 +1,5 @@
+import { Subscription } from 'rxjs';
 import { Item } from './item';
-import { Subscription } from 'rxjs/Subscription';
 
 export class FetchByDirection {
   shouldFetch: boolean;

@@ -14,6 +14,7 @@ export class Datasource implements IDatasource {
 
     // set up mock adapter
     this.adapter = <Adapter> {
+      version: null,
       isInitialized: false,
       isLoading: false,
       reload: () => null

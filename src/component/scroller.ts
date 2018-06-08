@@ -42,7 +42,7 @@ export class Scroller {
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
     this.state = new State();
-    this.adapter = new Adapter(this.callWorkflow);
+    this.adapter = new Adapter(this);
 
     this.datasource.adapter = this.adapter;
     this.cycleSubscriptions = [];

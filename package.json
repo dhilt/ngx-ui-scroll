@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "node build.js",
     "test": "karma start",
-    "install-package": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-0.0.5-rc.2.tgz --no-save",
+    "install-package": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-0.0.5.tgz --no-save",
     "start-package": "npm run install-package && npm start",
     "build-app": "ng build"
   },

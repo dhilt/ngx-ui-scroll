@@ -12,6 +12,7 @@ export interface PreviousClip {
 
 export interface State {
   process: Process;
+  wfCycleCount: number;
   cycleCount: number;
   countDone: number;
   pending: boolean;

@@ -18,6 +18,7 @@ export class Scroller {
   readonly callWorkflow: Function;
   private logs: Array<any> = [];
 
+  public version: string;
   public datasource: Datasource;
   public settings: Settings;
   public routines: Routines;
@@ -32,6 +33,7 @@ export class Scroller {
   constructor(context, callWorkflow: Function) {
     // this._bindData = () => context.changeDetector.markForCheck();
     this._bindData = () => context.changeDetector.detectChanges();
+    this.version = context.version;
     this.datasource = checkDatasource(context.datasource);
     this.callWorkflow = callWorkflow;
 

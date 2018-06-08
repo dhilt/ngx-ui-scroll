@@ -4,7 +4,8 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
-  'rxjs': 'Rx'
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators'
 };
 
 export default {
@@ -16,6 +17,7 @@ export default {
     name: 'ng.ngxUiScroll',
     globals,
     sourcemap: true,
-    exports: 'named'
+    exports: 'named',
+    amd: { id: 'ngx-ui-scroll' }
   }
 };

@@ -1,5 +1,6 @@
 import { Direction } from '../src/component/interfaces';
 import { makeTest } from './scaffolding/runner';
+import { Misc } from './miscellaneous/misc';
 
 const min = 1, max = 100, scrollCount = 10;
 
@@ -18,7 +19,7 @@ describe('EOF/BOF Spec', () => {
     }
   };
 
-  const expectLimit = (misc, direction: Direction, noscroll = false) => {
+  const expectLimit = (misc: Misc, direction: Direction, noscroll = false) => {
     const _forward = direction === Direction.forward;
     const elements = misc.getElements();
     expect(elements.length).toBeGreaterThan(config[_forward ? 'eof' : 'bof'].datasourceSettings.bufferSize);
@@ -40,13 +41,13 @@ describe('EOF/BOF Spec', () => {
       const _eof = isEOF ? 'bof' : 'eof';
       const direction = isEOF ? Direction.forward : Direction.backward;
       const directionOpposite = isEOF ? Direction.backward : Direction.forward;
-      const doScroll = (misc) => isEOF ? misc.scrollMin() : misc.scrollMax();
-      const doScrollOpposite = (misc) => isEOF ? misc.scrollMax() : misc.scrollMin();
+      const doScroll = (misc: Misc) => isEOF ? misc.scrollMin() : misc.scrollMax();
+      const doScrollOpposite = (misc: Misc) => isEOF ? misc.scrollMax() : misc.scrollMin();
 
       makeTest({
-        config: config[eof],
+        config: (<any>config)[eof],
         title: `should get ${eof} on init`,
-        it: (misc) => (done) =>
+        it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             expectLimit(misc, direction, true);
             done();
@@ -54,30 +55,30 @@ describe('EOF/BOF Spec', () => {
       });
 
       makeTest({
-        config: config[eof],
+        config: (<any>config)[eof],
         title: `should reset ${eof} after scroll`,
-        it: (misc) => (done) =>
+        it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
+            const buffer = (<any>misc.scroller.buffer);
             if (misc.workflow.cyclesDone === 1) {
-              expect(misc.scroller.buffer[eof]).toEqual(true);
+              expect(buffer[eof]).toEqual(true);
               doScroll(misc);
             } else {
-              expect(misc.scroller.buffer[eof]).toEqual(false);
-              expect(misc.scroller.buffer[_eof]).toEqual(false);
+              expect(buffer[eof]).toEqual(false);
+              expect(buffer[_eof]).toEqual(false);
               done();
             }
           })
       });
 
       makeTest({
-        config: config[eof],
+        config: (<any>config)[eof],
         title: `should stop when ${eof} is reached again`,
-        it: (misc) => (done) =>
+        it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             if (misc.workflow.cyclesDone === 1) {
               doScroll(misc);
-            }
-            else if (misc.workflow.cyclesDone === 2) {
+            } else if (misc.workflow.cyclesDone === 2) {
               doScrollOpposite(misc);
             } else {
               expectLimit(misc, direction);
@@ -87,9 +88,9 @@ describe('EOF/BOF Spec', () => {
       });
 
       makeTest({
-        config: config[eof],
+        config: (<any>config)[eof],
         title: `should reach ${_eof} after some scrolls`,
-        it: (misc) => (done) =>
+        it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             if (misc.workflow.cyclesDone < scrollCount) {
               doScroll(misc);

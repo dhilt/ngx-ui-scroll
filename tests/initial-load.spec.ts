@@ -1,5 +1,6 @@
 import { Direction } from '../src/component/interfaces';
-import { makeTest } from './scaffolding/runner';
+import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { Misc } from './miscellaneous/misc';
 
 const configList = [{
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 2 },
@@ -47,7 +48,7 @@ const configListWithClip = [{
 }];
 
 const configListInfinite = configListWithClip
-  .filter((item, i) => [1, 3, 4, 5].includes(i))
+  .filter((item, i) => [1, 3, 4, 5].indexOf(i) !== -1)
   .map(config => ({
     ...config,
     datasourceSettings: {
@@ -56,7 +57,7 @@ const configListInfinite = configListWithClip
     }
   }));
 
-const _shouldNotClip = (settings, misc, done) => {
+const _shouldNotClip = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
@@ -85,7 +86,7 @@ const _shouldNotClip = (settings, misc, done) => {
   done();
 };
 
-const _shouldClip = (settings, misc, done) => {
+const _shouldClip = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const startIndex = settings.datasourceSettings.startIndex;
   const bufferSize = settings.datasourceSettings.bufferSize;
   const padding = settings.datasourceSettings.padding;
@@ -122,12 +123,12 @@ const _shouldClip = (settings, misc, done) => {
   done();
 };
 
-const shouldNotClip = (settings) => (misc) => (done) =>
+const shouldNotClip = (settings: TestBedConfig) => (misc: Misc) => (done: Function) =>
   spyOn(misc.workflow, 'finalize').and.callFake(() =>
     _shouldNotClip(settings, misc, done)
   );
 
-const shouldClip = (settings) => (misc) => (done) =>
+const shouldClip = (settings: TestBedConfig) => (misc: Misc) => (done: Function) =>
   spyOn(misc.workflow, 'finalize').and.callFake(() =>
     _shouldClip(settings, misc, done)
   );

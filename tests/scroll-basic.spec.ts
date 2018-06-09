@@ -1,5 +1,6 @@
 import { Direction } from '../src/component/interfaces';
-import { makeTest } from './scaffolding/runner';
+import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { Misc } from './miscellaneous/misc';
 
 const singleForwardMaxScrollConfigList = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22 },
@@ -27,7 +28,7 @@ const singleForwardMaxScrollConfigList = [{
   custom: { direction: Direction.forward, count: 1 }
 }];
 
-const treatIndex = (index) => index <= 3 ? index : (3 * 2 - index);
+const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);
 
 const singleBackwardMaxScrollConfigList =
   singleForwardMaxScrollConfigList.map(config => ({
@@ -100,7 +101,7 @@ const massTwoDirectionalScrollsConfigList_bwd =
     timeout: 4000
   }));
 
-const doScrollMax = (config, misc) => {
+const doScrollMax = (config: TestBedConfig, misc: Misc) => {
   if (config.custom.direction === Direction.forward) {
     misc.scrollMax();
   } else {
@@ -108,12 +109,12 @@ const doScrollMax = (config, misc) => {
   }
 };
 
-const invertDirection = (config) => {
+const invertDirection = (config: TestBedConfig) => {
   const _forward = config.custom.direction === Direction.forward;
   config.custom.direction = _forward ? Direction.backward : Direction.forward;
 };
 
-const calculateIt = (config, misc) => {
+const calculateIt = (config: TestBedConfig, misc: Misc) => {
   // settings
   const bufferSize = config.datasourceSettings.bufferSize;
   const padding = config.datasourceSettings.padding;
@@ -126,7 +127,7 @@ const calculateIt = (config, misc) => {
   const forward = direction === Direction.forward;
   const elements = misc.getElements();
   const _edgeElement = forward ? elements[elements.length - 1] : elements[0];
-  const _edgeItemIndex = misc.getElementIndex(_edgeElement);
+  const _edgeItemIndex = misc.getElementIndex(_edgeElement) || 0;
   const _edgePosition = misc.padding[Direction.backward].getSize() + (forward ? elements.length * itemSize : 0);
 
   // future state calculations (direct)
@@ -172,9 +173,9 @@ const calculateIt = (config, misc) => {
   };
 };
 
-const shouldScroll = (config) => (misc) => (done) => {
+const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const wfCount = config.custom.count + 1;
-  let result;
+  let result: any;
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
@@ -196,10 +197,10 @@ const shouldScroll = (config) => (misc) => (done) => {
       const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
       const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(direction);
       const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(opposite);
-      expect(misc.padding[direction].getSize()).toEqual(result.paddingSize);
-      expect(misc.padding[opposite].getSize()).toEqual(result.paddingSizeOpposite);
-      expect(edgeItem.$index).toEqual(result.edgeItemIndex);
-      expect(oppositeEdgeItem.$index).toEqual(result.edgeItemIndexOpposite);
+      expect((<any>misc.padding)[direction].getSize()).toEqual(result.paddingSize);
+      expect((<any>misc.padding)[opposite].getSize()).toEqual(result.paddingSizeOpposite);
+      expect(edgeItem ? edgeItem.$index : null).toEqual(result.edgeItemIndex);
+      expect(oppositeEdgeItem ? oppositeEdgeItem.$index : null).toEqual(result.edgeItemIndexOpposite);
       done();
     }
   });

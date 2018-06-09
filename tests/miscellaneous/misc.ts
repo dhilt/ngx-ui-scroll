@@ -5,10 +5,11 @@ import { DebugElement } from '@angular/core';
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
 
-import { Direction, Datasource } from '../../src/component/interfaces';
+import { Direction } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { Scroller } from '../../src/component/scroller';
 import { Workflow } from '../../src/component/workflow';
+import { Datasource } from '../../src/component/classes/datasource';
 
 export class Padding {
   direction: Direction;
@@ -24,7 +25,8 @@ export class Padding {
   }
 
   getSize(): number {
-    return parseInt(this.style[this.horizontal ? 'width' : 'height'], 10) || 0;
+    const size = this.style[this.horizontal ? 'width' : 'height'] || '';
+    return parseInt(size, 10) || 0;
   }
 }
 
@@ -38,7 +40,10 @@ export class Misc {
   uiScrollComponent: UiScrollComponent;
   workflow: Workflow;
   scroller: Scroller;
-  padding = {};
+  padding: {
+    forward: Padding;
+    backward: Padding;
+  };
   horizontal: boolean;
   window: boolean;
 
@@ -49,16 +54,18 @@ export class Misc {
   constructor(fixture: ComponentFixture<any>) {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
-    this.datasource = this.testComponent.datasource;
+    this.datasource = <Datasource>this.testComponent.datasource;
     this.uiScrollElement = this.fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
-    this.viewportElement = this.uiScrollElement.parent;
+    this.viewportElement = <DebugElement>this.uiScrollElement.parent;
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.uiScrollComponent.workflow.scroller;
     this.horizontal = this.scroller.settings.horizontal;
     this.window = this.scroller.settings.windowViewport;
-    this.padding[Direction.forward] = new Padding(fixture, Direction.forward, this.horizontal);
-    this.padding[Direction.backward] = new Padding(fixture, Direction.backward, this.horizontal);
+    this.padding = {
+      forward: new Padding(fixture, Direction.forward, this.horizontal),
+      backward: new Padding(fixture, Direction.backward, this.horizontal)
+    };
   }
 
   getViewportSize(settings: TestBedConfig): number {
@@ -83,11 +90,11 @@ export class Misc {
     return element ? element.innerText.trim() : null;
   }
 
-  checkElementId(element, index: number): boolean {
+  checkElementId(element: HTMLElement, index: number): boolean {
     return element.getAttribute('data-sid') === `${index}`;
   }
 
-  getElementIndex(element): number {
+  getElementIndex(element: HTMLElement): number | null {
     const id = element.getAttribute('data-sid');
     if (!id) {
       return null;

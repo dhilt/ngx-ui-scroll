@@ -1,9 +1,9 @@
 export interface TemplateSettings {
   noViewportClass?: boolean;
   viewportHeight?: number;
-  viewportWidth?: number;
+  viewportWidth?: number | null;
   itemHeight?: number;
-  itemWidth?: number;
+  itemWidth?: number | null;
   horizontal?: boolean;
 }
 

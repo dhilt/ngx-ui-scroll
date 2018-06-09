@@ -1,10 +1,11 @@
+import { async } from '@angular/core/testing';
+
 import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources';
-import { async } from '@angular/core/testing';
 
 export interface TestBedConfig {
   datasourceClass?: any;
@@ -19,7 +20,7 @@ export interface TestBedConfig {
 
 interface MakeTestConfig {
   title: string;
-  config?: TestBedConfig;
+  config: TestBedConfig;
   it?: any;
   async?: boolean;
 }
@@ -66,7 +67,7 @@ export const makeTest = (data: MakeTestConfig) => {
     let _it, timeout = 2000;
     if (data.config) {
       let misc: Misc;
-      let error;
+      let error: any;
       beforeEach(() => {
         const datasourceClass = data.config.datasourceClass ?
           data.config.datasourceClass :
@@ -80,10 +81,15 @@ export const makeTest = (data: MakeTestConfig) => {
           const fixture = configureTestBed(datasourceClass, templateData.template);
           misc = new Misc(fixture);
         } catch (_error) {
-          error = _error && _error.message;
+          error = _error;
         }
       });
-      _it = (done) => data.it(data.config.toThrow ? error : misc)(done);
+      _it = (done: Function) => {
+        if (!data.config.toThrow && error) {
+          throw error;
+        }
+        return data.it(data.config.toThrow ? error.message : misc)(done);
+      };
       timeout = data.config.timeout || timeout;
     } else {
       _it = data.it;

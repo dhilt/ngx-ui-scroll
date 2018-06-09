@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
 
 export class DatasourceService implements Datasource {
@@ -13,16 +13,16 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings, _de
     devSettings: DevSettings;
 
     constructor() {
-      this.get = datasourceStore[_name].get.bind(this);
-      this.settings = datasourceStore[_name].settings || _settings || {};
-      this.devSettings = datasourceStore[_name].devSettings || _devSettings || {};
+      this.get = (<any>datasourceStore)[_name].get.bind(this);
+      this.settings = (<any>datasourceStore)[_name].settings || _settings || {};
+      this.devSettings = (<any>datasourceStore)[_name].devSettings || _devSettings || {};
     }
   };
 };
 
 export const defaultDatasourceClass = generateDatasourceClass('initial');
 
-const datasourceGetInfinite = (index, count) => {
+const datasourceGetInfinite = (index: number, count: number) => {
   const data = [];
   for (let i = index; i <= index + count - 1; i++) {
     data.push({ id: i, text: 'item #' + i });
@@ -30,13 +30,13 @@ const datasourceGetInfinite = (index, count) => {
   return data;
 };
 
-const datasourceGetLimited = (index, count, min, max) => {
+const datasourceGetLimited = (index: number, count: number, min: number, max: number) => {
   const data = [];
   const start = Math.max(min, index);
   const end = Math.min(index + count - 1, max);
   if (start <= end) {
     for (let i = start; i <= end; i++) {
-      data.push({ id: i, text: "item #" + i });
+      data.push({ id: i, text: 'item #' + i });
     }
   }
   return data;
@@ -60,13 +60,13 @@ const infiniteDatasourceGet = (type?: DatasourceType, delay?: number) =>
   (index: number, count: number, success?: Function) => {
     switch (type) {
       case DatasourceType.Callback:
-        return delayedRun(() => success(datasourceGetInfinite(index, count)), delay);
+        return delayedRun(() => (<Function>success)(datasourceGetInfinite(index, count)), delay);
       case DatasourceType.Promise:
         return new Promise(resolve =>
           delayedRun(() => resolve(datasourceGetInfinite(index, count)), delay)
         );
       default: // DatasourceType.Observable
-        return Observable.create(observer =>
+        return Observable.create((observer: Observer<any>) =>
           delayedRun(() => observer.next(datasourceGetInfinite(index, count)), delay)
         );
     }
@@ -76,13 +76,13 @@ const limitedDatasourceGet = (min: number, max: number, type?: DatasourceType, d
   (index: number, count: number, success?: Function) => {
     switch (type) {
       case DatasourceType.Callback:
-        return delayedRun(() => success(datasourceGetLimited(index, count, min, max)), delay);
+        return delayedRun(() => (<Function>success)(datasourceGetLimited(index, count, min, max)), delay);
       case DatasourceType.Promise:
         return new Promise(resolve =>
           delayedRun(() => resolve(datasourceGetLimited(index, count, min, max)), delay)
         );
       default: // DatasourceType.Observable
-        return Observable.create(observer =>
+        return Observable.create((observer: Observer<any>) =>
           delayedRun(() => observer.next(datasourceGetLimited(index, count, min, max)), delay)
         );
     }

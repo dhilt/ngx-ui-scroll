@@ -7,13 +7,13 @@ import { configureTestBed } from './scaffolding/testBed';
 import { defaultDatasourceClass } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
-import { makeTest } from './scaffolding/runner';
+import { makeTest, TestBedConfig } from './scaffolding/runner';
 
 describe('Common Spec', () => {
-  let misc: Misc;
 
   describe('Initialization', () => {
 
+    let misc: Misc;
     let reconfigure = true;
 
     beforeEach(async(() => {
@@ -53,11 +53,11 @@ describe('Common Spec', () => {
     const _settings3 = { infinite: true };
     const _settings4 = { startIndex: 99, bufferSize: 11, infinite: true };
 
-    const checkSettings = (_settings) => (misc) => (done) => {
+    const checkSettings = (_settings: any) => (misc: Misc) => (done: Function) => {
       expect(misc.scroller.settings).toEqual(jasmine.any(Object));
       const mergedSettings = { ...defaultSettings, ..._settings };
       Object.keys(defaultSettings).forEach(key => {
-        expect(misc.scroller.settings[key]).toEqual(mergedSettings[key]);
+        expect((<any>misc.scroller.settings)[key]).toEqual((<any>mergedSettings)[key]);
       });
       done();
     };
@@ -95,7 +95,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { startIndex: false } },
       title: 'should fallback startIndex to the default',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.startIndex).toEqual(defaultSettings.startIndex);
         done();
       }
@@ -104,7 +104,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { bufferSize: { weird: true } } },
       title: 'should fallback bufferSize to the default',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.bufferSize).toEqual(defaultSettings.bufferSize);
         done();
       }
@@ -113,7 +113,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { bufferSize: 5.5 } },
       title: 'should fallback bufferSize to the default',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.bufferSize).toEqual(defaultSettings.bufferSize);
         done();
       }
@@ -122,7 +122,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { bufferSize: -1 } },
       title: 'should fallback bufferSize to the minimum',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.bufferSize).toEqual(minSettings.bufferSize);
         done();
       }
@@ -131,7 +131,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { padding: 'something' } },
       title: 'should fallback padding to the default',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.padding).toEqual(defaultSettings.padding);
         done();
       }
@@ -140,7 +140,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { padding: -0.1 } },
       title: 'should fallback padding to the minimum',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.padding).toEqual(minSettings.padding);
         done();
       }
@@ -149,7 +149,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { infinite: 'something' } },
       title: 'should fallback infinite to the default',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.infinite).toEqual(defaultSettings.infinite);
         done();
       }
@@ -158,7 +158,7 @@ describe('Common Spec', () => {
     makeTest({
       config: { datasourceSettings: { horizontal: null } },
       title: 'should fallback horizontal to the default',
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         expect(misc.scroller.settings.horizontal).toEqual(defaultSettings.horizontal);
         done();
       }
@@ -176,7 +176,7 @@ describe('Bad datasource', () => {
       toThrow: true
     },
     title: 'should throw exception (datasource is not a constructor)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('datasource is not a constructor');
       done();
     }
@@ -194,7 +194,7 @@ describe('Bad datasource', () => {
       toThrow: true
     },
     title: 'should throw exception (no get)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('Datasource get method is not implemented');
       done();
     }
@@ -214,7 +214,7 @@ describe('Bad datasource', () => {
       toThrow: true
     },
     title: 'should throw exception (get is not a function)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('Datasource get is not a function');
       done();
     }
@@ -229,13 +229,14 @@ describe('Bad datasource', () => {
           this.settings = {};
         }
 
-        get(offset) {
-        };
+        get(offset: number) {
+          return ++offset;
+        }
       },
       toThrow: true
     },
     title: 'should throw exception (get has less than 2 arguments)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('Datasource get method invalid signature');
       done();
     }

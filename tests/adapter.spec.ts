@@ -1,4 +1,5 @@
-import { makeTest } from './scaffolding/runner';
+import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { Misc } from './miscellaneous/misc';
 
 const customDefault = { startIndex: null, scrollCount: 0, preLoad: false };
 
@@ -51,7 +52,7 @@ const interruptConfigList = configList.map((config, i) => ({
   }
 }));
 
-const checkExpectation = (config, misc) => {
+const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   const startIndex = config.custom.startIndex === null ?
     config.datasourceSettings.startIndex : config.custom.startIndex;
   const bufferSize = config.datasourceSettings.bufferSize;
@@ -59,12 +60,12 @@ const checkExpectation = (config, misc) => {
   const nextIndex = firstIndex + bufferSize + 1;
   const firstItem = misc.scroller.buffer.getFirstVisibleItem();
 
-  expect(firstItem.$index).toEqual(firstIndex);
+  expect(firstItem ? firstItem.$index : null).toEqual(firstIndex);
   expect(misc.getElementText(firstIndex)).toEqual(`${firstIndex} : item #${firstIndex}`);
   expect(misc.getElementText(nextIndex)).toEqual(`${nextIndex} : item #${nextIndex}`);
 };
 
-const doReload = (config, misc) => {
+const doReload = (config: TestBedConfig, misc: Misc) => {
   if (config.custom.startIndex !== null) {
     misc.datasource.adapter.reload(config.custom.startIndex);
   } else {
@@ -72,7 +73,7 @@ const doReload = (config, misc) => {
   }
 };
 
-const shouldReload = (config) => (misc) => (done) => {
+const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const startWFCount = config.custom.preLoad ? 0 : 1;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     if (misc.workflow.cyclesDone < startWFCount + config.custom.scrollCount) {
@@ -94,7 +95,7 @@ const shouldReload = (config) => (misc) => (done) => {
   }
 };
 
-const shouldReloadBeforeLoad = (config) => (misc) => (done) => {
+const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.cycleSubscriptions.length).toEqual(0);
     if (misc.workflow.cyclesDone === 1) {
@@ -109,7 +110,7 @@ const shouldReloadBeforeLoad = (config) => (misc) => (done) => {
   });
 };
 
-const shouldReloadInterruption = (config) => (misc) => (done) => {
+const shouldReloadInterruption = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.cycleSubscriptions.length).toEqual(0);
     if (misc.workflow.cyclesDone === 1) {

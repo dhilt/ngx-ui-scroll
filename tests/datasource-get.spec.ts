@@ -1,8 +1,9 @@
 import { makeTest } from './scaffolding/runner';
+import { Misc } from './miscellaneous/misc';
 
 describe('Datasource Get', () => {
 
-  const shouldWork = (misc) => (done) =>
+  const shouldWork = (misc: Misc) => (done: Function) =>
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       expect(misc.scroller.state.fetch.count).toBeGreaterThan(0);
       done();

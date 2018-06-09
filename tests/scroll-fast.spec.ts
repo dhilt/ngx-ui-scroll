@@ -1,5 +1,6 @@
 import { debounce } from './miscellaneous/debounce';
-import { makeTest } from './scaffolding/runner';
+import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { Misc } from './miscellaneous/misc';
 
 describe('Fast Scroll Spec', () => {
 
@@ -41,9 +42,9 @@ describe('Fast Scroll Spec', () => {
     }
   }));
 
-  const runFastScroll = (misc, customConfig) => {
-    misc.shared.fin = false;
-    const scr = (iteration) => new Promise(success => {
+  const runFastScroll = (misc: Misc, customConfig: any) => {
+    (<any>misc.shared).fin = false;
+    const scr = (iteration: number) => new Promise(success => {
       setTimeout(() => {
         misc.scrollMax();
         setTimeout(() => {
@@ -58,10 +59,10 @@ describe('Fast Scroll Spec', () => {
     for (let i = 1; i <= customConfig.bounce; i++) {
       result = result.then(() => scr(i));
     }
-    result.then(() => misc.shared.fin = true);
+    result.then(() => (<any>misc.shared).fin = true);
   };
 
-  const expectations = (config, misc, done) => {
+  const expectations = (config: TestBedConfig, misc: Misc, done: Function) => {
     const itemsCount = misc.scroller.buffer.size;
     const bufferHeight = itemsCount * misc.itemHeight;
     const _size = misc.padding.backward.getSize() + misc.padding.forward.getSize() + bufferHeight;
@@ -82,8 +83,8 @@ describe('Fast Scroll Spec', () => {
     done();
   };
 
-  let expectationsTimer;
-  const preExpectations = (config, misc, done) => {
+  let expectationsTimer: number;
+  const preExpectations = (config: TestBedConfig, misc: Misc, done: Function) => {
     const position = misc.getScrollPosition();
     const buffer = misc.scroller.buffer;
     const index = position === 0 ? 0 : buffer.size - 1;
@@ -100,17 +101,17 @@ describe('Fast Scroll Spec', () => {
     if (!misc.scroller.state.pending && buffer.size && buffer.items[index] && buffer.items[index].element) {
       runExpectations();
     } else {
-      expectationsTimer = setTimeout(() => preExpectations(config, misc, done), 25);
+      expectationsTimer = <any>setTimeout(() => preExpectations(config, misc, done), 25);
     }
   };
 
-  const checkFastScroll = (config) => (misc) => (done) => {
+  const checkFastScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
     clearTimeout(expectationsTimer);
     const _done = debounce(() => preExpectations(config, misc, done), 25);
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       if (misc.workflow.cyclesDone === 1) {
         runFastScroll(misc, config.custom);
-      } else if (misc.shared.fin) {
+      } else if ((<any>misc.shared).fin) {
         _done();
       }
     });

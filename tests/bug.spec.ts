@@ -1,6 +1,7 @@
 import { makeTest } from './scaffolding/runner';
+import { Misc } from './miscellaneous/misc';
 
-const checkViewport = (misc, viewportHeight) => {
+const checkViewport = (misc: Misc, viewportHeight: number) => {
   const position = misc.getScrollPosition();
   const size = misc.getScrollableSize();
   const bwdPadding = misc.padding.backward.getSize();
@@ -25,7 +26,7 @@ describe('Bug Spec', () => {
     makeTest({
       title: 'should continue fetch',
       config,
-      it: (misc) => (done) => {
+      it: (misc: Misc) => (done: Function) => {
         const fwdCount = 4;
         let wfCount = null;
         let jump = false;

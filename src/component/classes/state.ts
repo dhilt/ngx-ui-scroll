@@ -1,3 +1,5 @@
+import { BehaviorSubject } from 'rxjs';
+
 import { Direction, State as IState, Process, PreviousClip, Run } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
@@ -7,14 +9,24 @@ export class State implements IState {
   wfCycleCount: number;
   cycleCount: number;
   countDone: number;
-  pending: boolean;
   direction: Direction;
   scroll: boolean;
   fetch: FetchModel;
   clip: ClipModel;
   previousClip: PreviousClip;
-  reload: boolean;
   isInitial: boolean;
+
+  pendingSource: BehaviorSubject<boolean>;
+
+  get pending(): boolean {
+    return this.pendingSource.getValue();
+  }
+
+  set pending(value: boolean) {
+    if (this.pending !== value) {
+      this.pendingSource.next(value);
+    }
+  }
 
   constructor() {
     this.isInitial = false;
@@ -24,6 +36,7 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.setPreviousClip(true);
+    this.pendingSource = new BehaviorSubject<boolean>(false);
   }
 
   startCycle(options: Run = {}) {
@@ -35,7 +48,6 @@ export class State implements IState {
     this.scroll = options.scroll || false;
     this.fetch.reset();
     this.clip.reset();
-    this.reload = false;
   }
 
   endCycle() {

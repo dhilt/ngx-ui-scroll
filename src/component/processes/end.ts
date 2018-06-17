@@ -5,7 +5,6 @@ export default class End {
 
   static run(scroller: Scroller, isFail?: boolean) {
     scroller.state.endCycle();
-    scroller.adapter.isLoading = false;
     scroller.purgeCycleSubscriptions();
     scroller.finalize();
 

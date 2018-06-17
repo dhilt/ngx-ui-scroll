@@ -8,7 +8,7 @@
     "test": "karma start",
     "install-package": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-0.0.5.tgz --no-save",
     "start-package": "npm run install-package && npm start",
-    "build-app": "ng build"
+    "build-app": "ng build --prod --aot"
   },
   "private": true,
   "dependencies": {

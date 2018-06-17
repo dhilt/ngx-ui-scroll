@@ -30,7 +30,7 @@ export class ScrollHelper {
       });
       return;
     }
-    if (this.workflow.scroller.adapter.isLoading) {
+    if (this.workflow.scroller.state.pending) {
       if (!this.endSubscription) {
         this.endSubscription = this.workflow.process$.pipe(
           filter((data: ProcessSubject) => data.process === Process.end && data.status === 'done')
@@ -66,7 +66,7 @@ export class ScrollHelper {
     }
   }
 
-  processScroll() {
+  purgeProcesses() {
     if (this.endSubscription) {
       this.endSubscription.unsubscribe();
       this.endSubscription = null;
@@ -75,6 +75,10 @@ export class ScrollHelper {
       clearTimeout(this.scrollTimer);
       this.scrollTimer = null;
     }
+  }
+
+  processScroll() {
+    this.purgeProcesses();
     this.workflow.callWorkflow(<ProcessSubject>{
       process: Process.scroll,
       status: 'next'

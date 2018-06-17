@@ -28,7 +28,6 @@ export class Scroller {
   public adapter: Adapter;
 
   public cycleSubscriptions: Array<Subscription>;
-  public scrollDelaySubscription: Subscription;
 
   constructor(context: UiScrollComponent, callWorkflow: Function) {
     // this._bindData = () => context.changeDetector.markForCheck();
@@ -64,15 +63,8 @@ export class Scroller {
     this.cycleSubscriptions = [];
   }
 
-  purgeScrollDelaySubscription() {
-    if (this.scrollDelaySubscription && !this.scrollDelaySubscription.closed) {
-      this.scrollDelaySubscription.unsubscribe();
-    }
-  }
-
   dispose() {
     this.purgeCycleSubscriptions();
-    this.purgeScrollDelaySubscription();
   }
 
   finalize() {

@@ -21,5 +21,4 @@ export interface State {
   fetch: any;
   clip: any;
   previousClip: PreviousClip;
-  reload: boolean;
 }

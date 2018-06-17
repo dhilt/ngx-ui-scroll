@@ -2,6 +2,7 @@ import {
   Datasource as IDatasource, DatasourceGet,
   Adapter, DevSettings, Settings
 } from '../interfaces/index';
+import { generateMockAdapter } from './adapter';
 
 export class Datasource implements IDatasource {
   get: DatasourceGet;
@@ -11,13 +12,6 @@ export class Datasource implements IDatasource {
 
   constructor(datasource: IDatasource) {
     Object.assign(this, datasource);
-
-    // set up mock adapter
-    this.adapter = <Adapter> {
-      version: null,
-      isInitialized: false,
-      isLoading: false,
-      reload: () => null
-    };
+    this.adapter = generateMockAdapter();
   }
 }

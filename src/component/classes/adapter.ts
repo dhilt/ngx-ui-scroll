@@ -1,18 +1,30 @@
-import { ProcessSubject } from '../interfaces';
-
 import { Scroller } from '../scroller';
-import { Adapter as IAdapter, Process } from '../interfaces/index';
+import { Adapter as IAdapter, Process, ProcessSubject } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
-  public version: string;
-  public isInitialized: boolean;
-  public isLoading: boolean;
-  readonly callWorkflow: Function;
+
+  get isInitialized(): boolean {
+    return this.getIsInitialized();
+  }
+
+  get version(): string | null {
+    return this.getVersion();
+  }
+
+  get isLoading(): boolean {
+    return this.getIsLoading();
+  }
+
+  private readonly getIsInitialized: Function;
+  private readonly getVersion: Function;
+  private readonly getIsLoading: Function;
+  private readonly callWorkflow: Function;
 
   constructor(scroller: Scroller) {
-    this.version = scroller.version;
-    this.isInitialized = true;
     this.callWorkflow = scroller.callWorkflow;
+    this.getIsInitialized = (): boolean => true;
+    this.getVersion = (): string | null => scroller.version;
+    this.getIsLoading = (): boolean => scroller.state.pendingSource.getValue();
   }
 
   reload(reloadIndex?: number | string) {
@@ -23,3 +35,12 @@ export class Adapter implements IAdapter {
     });
   }
 }
+
+export const generateMockAdapter = (): IAdapter => (
+  <IAdapter> {
+    version: null,
+    isInitialized: false,
+    isLoading: false,
+    reload: () => null
+  }
+);

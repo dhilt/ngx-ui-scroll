@@ -1,5 +1,5 @@
 import { Datasource, DatasourceGet } from './datasource';
-import { Adapter, AdapterAction, AdapterActionType } from './adapter';
+import { Adapter } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { Run } from './run';
@@ -17,7 +17,5 @@ export {
   ProcessSubject,
   State,
   PreviousClip,
-  Adapter,
-  AdapterAction,
-  AdapterActionType
+  Adapter
 };

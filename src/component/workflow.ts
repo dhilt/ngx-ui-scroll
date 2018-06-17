@@ -43,10 +43,11 @@ export class Workflow {
   }
 
   dispose() {
+    this.scrollHelper.purgeProcesses();
     this.onScrollUnsubscribe();
-    this.itemsSubscription.unsubscribe();
     this.process$.complete();
     this.workflowSubscription.unsubscribe();
+    this.itemsSubscription.unsubscribe();
     this.scroller.dispose();
   }
 

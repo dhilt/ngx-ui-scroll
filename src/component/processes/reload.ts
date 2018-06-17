@@ -9,7 +9,6 @@ export default class Reload {
     scroller.viewport.reset();
     scroller.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
     scroller.purgeCycleSubscriptions();
-    scroller.purgeScrollDelaySubscription();
     scroller.settings.setCurrentStartIndex(reloadIndex);
     // todo: do we need to emit Process.end before?
     scroller.callWorkflow(<ProcessSubject>{

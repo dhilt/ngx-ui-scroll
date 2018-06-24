@@ -39,7 +39,7 @@ export class Scroller {
     this.settings = new Settings(context.datasource.settings, context.datasource.devSettings, ++instanceCount);
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
-    this.buffer = new Buffer();
+    this.buffer = new Buffer(this.settings);
     this.state = new State();
     this.adapter = new Adapter(this);
 

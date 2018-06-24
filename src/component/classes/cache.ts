@@ -23,8 +23,8 @@ export class Cache {
   constructor() {
     this.items = [];
     this.averageSize = 0;
-    this.minIndex = -Infinity;
-    this.maxIndex = Infinity;
+    this.minIndex = +Infinity;
+    this.maxIndex = -Infinity;
   }
 
   updateAverageSize(item: ItemCache) {

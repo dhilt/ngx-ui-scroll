@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
+import { Settings } from './settings';
 
 export class Index {
   forward: number | null;
@@ -28,11 +29,14 @@ export class Buffer {
   lastIndex: Index;
   cache: Cache;
 
-  constructor() {
+  private startIndex: number;
+
+  constructor(settings: Settings) {
     this.$items = new BehaviorSubject(null);
     this.lastIndex = new Index();
     this.cache = new Cache();
     this.reset();
+    this.startIndex = settings.startIndex;
   }
 
   reset(reload?: boolean) {
@@ -63,6 +67,18 @@ export class Buffer {
 
   get size(): number {
     return this._items.length;
+  }
+
+  get averageSize(): number {
+    return this.cache.averageSize;
+  }
+
+  get minIndex(): number {
+    return isFinite(this.cache.minIndex) ? this.cache.minIndex : this.startIndex;
+  }
+
+  get maxIndex(): number {
+    return isFinite(this.cache.maxIndex) ? this.cache.maxIndex : this.startIndex;
   }
 
   get(index: number): Item | undefined {

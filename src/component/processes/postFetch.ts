@@ -35,8 +35,7 @@ export default class PostFetch {
     }
     fetch.items = items.map((item, index) => {
       const $index = <number>fetch.startIndex + index;
-      const nodeId = String($index);
-      return new Item($index, item, nodeId, scroller.routines);
+      return new Item($index, item, scroller.routines);
     });
     if (direction === Direction.forward) {
       scroller.buffer.items = [...scroller.buffer.items, ...fetch.items];

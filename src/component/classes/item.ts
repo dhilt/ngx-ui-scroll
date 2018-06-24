@@ -6,21 +6,22 @@ export class Item {
   data: any;
   nodeId: string;
   routines: Routines;
+  size: number;
 
   element: any;
   invisible: boolean;
   toRemove: boolean;
 
-  constructor($index: number, data: any, nodeId: string, routines: Routines) {
+  constructor($index: number, data: any, routines: Routines) {
     this.$index = $index;
     this.data = data;
-    this.nodeId = nodeId;
+    this.nodeId = String($index);
     this.routines = routines;
     this.invisible = true;
   }
 
-  getParams() {
-    return this.routines.getParams(this.element);
+  setSize() {
+    this.size = this.routines.getSize(this.element);
   }
 
   getEdge(direction: Direction): number {

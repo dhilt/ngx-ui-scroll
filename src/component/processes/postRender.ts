@@ -12,7 +12,7 @@ export default class PostRender {
     const items = <Array<Item>>scroller.state.fetch[direction].items;
     const position = viewport.scrollPosition;
 
-    PostRender.processFetchedItems(items);
+    PostRender.processFetchedItems(scroller, items);
 
     // pre-adjustment, scroll position only
     if (position !== viewport.scrollPosition) {
@@ -45,12 +45,14 @@ export default class PostRender {
     });
   }
 
-  static processFetchedItems(items: Array<Item>) {
+  static processFetchedItems(scroller: Scroller, items: Array<Item>) {
     for (let i = items.length - 1; i >= 0; i--) {
       const element = items[i].element;
       element.style.left = '';
       element.style.position = '';
       items[i].invisible = false;
+      items[i].setSize();
+      scroller.buffer.cache.add(items[i]);
     }
   }
 

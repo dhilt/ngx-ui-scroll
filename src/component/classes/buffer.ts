@@ -39,7 +39,6 @@ export class Buffer {
     if (reload) {
       this.items.forEach(item => {
         if (item.element) {
-          this.cache.add(item);
           item.hide();
         }
       });
@@ -64,6 +63,10 @@ export class Buffer {
 
   get size(): number {
     return this._items.length;
+  }
+
+  get(index: number): Item | undefined {
+    return this.items.find((item: Item) => item.$index === index);
   }
 
   setLastIndices() {

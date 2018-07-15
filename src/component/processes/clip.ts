@@ -33,7 +33,6 @@ export default class Clip {
     const clipped: Array<number> = [];
     scroller.buffer.items = scroller.buffer.items.filter(item => {
       if (item.toRemove) {
-        scroller.buffer.cache.add(item);
         item.hide();
         clipped.push(item.$index);
         return false;

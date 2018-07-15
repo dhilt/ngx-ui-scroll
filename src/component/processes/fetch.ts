@@ -27,9 +27,9 @@ export default class Fetch {
 
   static success(data: Array<any>, scroller: Scroller) {
     const direction = scroller.state.direction;
-    scroller.log(`resolved ${data.length} ${direction} items ` +
-      `(index = ${scroller.state.fetch[direction].startIndex}, count = ${scroller.settings.bufferSize})`);
-    scroller.state.fetch[direction].newItemsData = data;
+    scroller.log(`resolved ${data.length} items ` +
+      `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
+    scroller.state.fetch.newItemsData = data;
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.fetch,
@@ -66,7 +66,7 @@ export default class Fetch {
       observer.error(error);
     };
 
-    const result = _get(scroller.state.getStartIndex(), scroller.settings.bufferSize, success, reject);
+    const result = _get(scroller.state.fetch.index, scroller.state.fetch.count, success, reject);
     if (result && typeof result.then === 'function') { // DatasourceGetPromise
       result.then(success, reject);
     } else if (result && typeof result.subscribe === 'function') { // DatasourceGetObservable

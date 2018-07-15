@@ -9,7 +9,7 @@ export default class PostRender {
 
     const viewport = scroller.viewport;
     const direction = scroller.state.direction;
-    const items = <Array<Item>>scroller.state.fetch[direction].items;
+    const items = scroller.state.fetch.items;
     const position = viewport.scrollPosition;
 
     PostRender.processFetchedItems(scroller, items);
@@ -23,12 +23,14 @@ export default class PostRender {
     const height = Math.round(
       Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
     );
-    let syntheticScrollPosition = null;
-    if (direction === Direction.forward) {
-      PostRender.runForward(scroller, height);
-    } else {
-      syntheticScrollPosition = PostRender.runBackward(scroller, height);
-    }
+    const bwdHeight = scroller.state.fetch.bwdItemsCount ? Math.round(
+      Math.abs(items[0].getEdge(Direction.backward) -
+        items[scroller.state.fetch.bwdItemsCount - 1].getEdge(Direction.forward)
+      )
+    ) : 0;
+    const fwdHeight = height - bwdHeight;
+    PostRender.runForward(scroller, fwdHeight);
+    const syntheticScrollPosition = PostRender.runBackward(scroller, bwdHeight);
 
     // post-adjustment, scroll position only
     if (position !== viewport.scrollPosition) {

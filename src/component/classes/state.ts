@@ -5,16 +5,17 @@ import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
 export class State implements IState {
+  isInitial: boolean;
   process: Process;
   wfCycleCount: number;
   cycleCount: number;
   countDone: number;
+  position: number;
   direction: Direction;
   scroll: boolean;
   fetch: FetchModel;
   clip: ClipModel;
   previousClip: PreviousClip;
-  isInitial: boolean;
 
   pendingSource: BehaviorSubject<boolean>;
 
@@ -33,6 +34,7 @@ export class State implements IState {
     this.wfCycleCount = 1;
     this.cycleCount = 0;
     this.countDone = 0;
+    this.position = 0;
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.setPreviousClip(true);
@@ -64,10 +66,6 @@ export class State implements IState {
       forwardItems: this.clip.forward.items,
       direction: this.direction
     };
-  }
-
-  getStartIndex(): number | null {
-    return this.fetch[this.direction].startIndex;
   }
 
 }

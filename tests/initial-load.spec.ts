@@ -73,7 +73,7 @@ const _shouldNotClip = (settings: TestBedConfig, misc: Misc, done: Function) => 
   const last = startIndex + forwardFetchCount * bufferSize - 1;
 
   expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(misc.scroller.state.fetch.count).toEqual(fetchCount);
+  expect(misc.scroller.state.fetch.callCount).toEqual(fetchCount);
   expect(misc.scroller.state.cycleCount).toEqual(fetchCount + 2);
   expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(0);
@@ -110,7 +110,7 @@ const _shouldClip = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemSize;
 
   expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(misc.scroller.state.fetch.count).toEqual(fetchCount);
+  expect(misc.scroller.state.fetch.callCount).toEqual(fetchCount);
   expect(misc.scroller.state.cycleCount).toEqual(fetchCount + 2);
   expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
   expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);

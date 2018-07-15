@@ -1,69 +1,48 @@
 import { Item } from './item';
 
-export class FetchByDirection {
-  shouldFetch: boolean;
-  startIndex: number | null;
+export class FetchModel {
   private _newItemsData: Array<any> | null;
-  items: Array<Item> | null;
-  count: number;
+  items: Array<Item>;
+  bwdItemsCount: number;
+  firstIndex: number | null;
+  lastIndex: number | null;
+  callCount: number;
 
   constructor() {
-    this.count = 0;
+    this.callCount = 0;
     this.reset();
   }
 
   reset() {
-    const count = this.count;
-    this.shouldFetch = false;
-    this.startIndex = null;
     this._newItemsData = null;
-    this.items = null;
-    this.count = count;
-  }
-
-  set newItemsData(items: Array<Item> | null) {
-    this._newItemsData = items;
-    this.count++;
+    this.items = [];
+    this.bwdItemsCount = 0;
+    this.firstIndex = null;
+    this.lastIndex = null;
   }
 
   get newItemsData(): Array<Item> | null {
     return this._newItemsData;
   }
-}
 
-export class FetchModel {
-  forward: FetchByDirection;
-  backward: FetchByDirection;
-
-  constructor() {
-    this.forward = new FetchByDirection();
-    this.backward = new FetchByDirection();
-  }
-
-  reset() {
-    this.forward.reset();
-    this.backward.reset();
-  }
-
-  get count(): number {
-    return this.backward.count + this.forward.count;
-  }
-
-  get items(): Array<Item> {
-    return [
-      ...this.backward.items ? this.backward.items : [],
-      ...this.forward.items ? this.forward.items : [],
-    ];
+  set newItemsData(items: Array<Item> | null) {
+    this._newItemsData = items;
+    this.callCount++;
   }
 
   get shouldFetch(): boolean {
-    return this.forward.shouldFetch || this.backward.shouldFetch;
+    return !!this.count;
   }
 
   get hasNewItems(): boolean {
-    return !!(
-      (this.forward.newItemsData && this.forward.newItemsData.length) ||
-      (this.backward.newItemsData && this.backward.newItemsData.length)
-    );
+    return !!((this._newItemsData && this._newItemsData.length));
+  }
+
+  get index(): number | null {
+    return this.firstIndex;
+  }
+
+  get count(): number {
+    return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
   }
 }

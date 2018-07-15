@@ -20,9 +20,9 @@ export class Cache {
   minIndex: number;
   maxIndex: number;
 
-  constructor() {
+  constructor(initialItemSize: number) {
     this.items = [];
-    this.averageSize = 0;
+    this.averageSize = initialItemSize;
     this.minIndex = +Infinity;
     this.maxIndex = -Infinity;
   }

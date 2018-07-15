@@ -24,6 +24,7 @@ export class Buffer {
   private _items: Array<Item>;
   public $items: BehaviorSubject<any>;
 
+  pristine: boolean;
   bof: boolean;
   eof: boolean;
   lastIndex: Index;
@@ -34,7 +35,7 @@ export class Buffer {
   constructor(settings: Settings) {
     this.$items = new BehaviorSubject(null);
     this.lastIndex = new Index();
-    this.cache = new Cache();
+    this.cache = new Cache(settings.itemSize);
     this.reset();
     this.startIndex = settings.startIndex;
   }
@@ -48,12 +49,14 @@ export class Buffer {
       });
     }
     this.items = [];
+    this.pristine = true;
     this.bof = false;
     this.eof = false;
     this.lastIndex.reset();
   }
 
   set items(items: Array<Item>) {
+    this.pristine = false;
     this._items = items;
     if (items.length) {
       this.setLastIndices();
@@ -83,6 +86,19 @@ export class Buffer {
 
   get(index: number): Item | undefined {
     return this.items.find((item: Item) => item.$index === index);
+  }
+
+  setItems(items: Array<Item>): boolean {
+    if (!this.items.length) {
+      this.items = items;
+    } else if (this.items[0].$index < items[items.length - 1].$index) {
+      this.items = [...items, ...this.items];
+    } else if (items[0].$index > this.items[this.items.length - 1].$index) {
+      this.items = [...this.items, ...items];
+    } else {
+      return false;
+    }
+    return true;
   }
 
   setLastIndices() {

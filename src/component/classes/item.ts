@@ -1,16 +1,29 @@
 import { Direction } from '../interfaces/direction';
 import { Routines } from './domRoutines';
 
+export class Stub {
+  $index: number;
+  size: number;
+  position: number;
+
+  constructor(index: number, size: number, position: number) {
+    this.$index = index;
+    this.size = size;
+    this.position = position;
+  }
+}
+
 export class Item {
   $index: number;
   data: any;
   nodeId: string;
   routines: Routines;
   size: number;
-
   element: any;
   invisible: boolean;
   toRemove: boolean;
+  remain: boolean;
+  stub: Stub | null;
 
   constructor($index: number, data: any, routines: Routines) {
     this.$index = $index;
@@ -18,6 +31,7 @@ export class Item {
     this.nodeId = String($index);
     this.routines = routines;
     this.invisible = true;
+    this.stub = null;
   }
 
   setSize() {
@@ -32,4 +46,7 @@ export class Item {
     this.routines.hideElement(this.element);
   }
 
+  setStub(size: number, position: number) {
+    this.stub = new Stub(this.$index, size, position);
+  }
 }

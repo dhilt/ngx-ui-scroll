@@ -4,7 +4,7 @@ import { Observable, Observer } from 'rxjs';
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 500;
-const MIN = 1;
+const MIN = -10;
 
 @Component({
   selector: 'app-samples-test-inner',
@@ -40,7 +40,9 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 20
+      bufferSize: 20,
+      minIndex: MIN,
+      itemSize: 40
     },
     devSettings: {
       debug: true

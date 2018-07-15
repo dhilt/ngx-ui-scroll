@@ -1,8 +1,11 @@
 import { Settings as ISettings, DevSettings as IDevSettings } from '../interfaces/index';
-import { assignSettings } from '../utils/index';
+import { assignSettings, assignDevSettings } from '../utils/index';
 
 export const defaultSettings: ISettings = {
   startIndex: 1,
+  minIndex: -Infinity,
+  maxIndex: Infinity,
+  itemSize: 20,
   bufferSize: 5,
   padding: 0.5,
   infinite: false,
@@ -11,12 +14,13 @@ export const defaultSettings: ISettings = {
 };
 
 export const minSettings: ISettings = {
+  itemSize: 1,
   bufferSize: 1,
   padding: 0.01
 };
 
 export const defaultDevSettings: IDevSettings = {
-  debug: false, // logging is enabled if true; need to turn off in release
+  debug: false, // logging is enabled if true; need to turn off when release
   immediateLog: true, // logging is not immediate if false, it could be forced via Workflow.logForce call
   clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,
@@ -29,6 +33,9 @@ export class Settings implements ISettings {
 
   // user settings
   startIndex: number;
+  minIndex: number;
+  maxIndex: number;
+  itemSize: number;
   bufferSize: number;
   padding: number;
   infinite: boolean;
@@ -51,8 +58,8 @@ export class Settings implements ISettings {
   constructor(
     settings: ISettings | undefined, devSettings: IDevSettings | undefined, instanceIndex: number
   ) {
-    assignSettings(this, settings || {}, defaultSettings || {}, minSettings);
-    Object.assign(this, defaultDevSettings, devSettings);
+    assignSettings(this, settings || {}, defaultSettings, minSettings);
+    assignDevSettings(this, devSettings || {}, defaultDevSettings);
     this.currentStartIndex = this.startIndex;
     this.instanceIndex = instanceIndex;
   }
@@ -60,5 +67,8 @@ export class Settings implements ISettings {
   setCurrentStartIndex(startIndex: any) {
     startIndex = Number(startIndex);
     this.currentStartIndex = !isNaN(startIndex) ? startIndex : this.startIndex;
+    if (this.currentStartIndex < this.minIndex) {
+      this.currentStartIndex = this.minIndex;
+    }
   }
 }

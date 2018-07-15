@@ -1,4 +1,4 @@
-import { Settings as ISettings } from '../interfaces/index';
+import { Settings as ISettings, DevSettings as IDevSettings } from '../interfaces/index';
 import { Settings } from '../classes/settings';
 
 const assignBoolean = (
@@ -63,9 +63,16 @@ export const assignSettings = (
   }
 
   assignNumeric(target, settings, 'startIndex', defaults);
+  assignNumeric(target, settings, 'minIndex', defaults);
+  assignNumeric(target, settings, 'maxIndex', defaults);
+  assignMinimalNumeric(target, settings, 'itemSize', defaults, minSettings, true);
   assignMinimalNumeric(target, settings, 'bufferSize', defaults, minSettings, true);
   assignMinimalNumeric(target, settings, 'padding', defaults, minSettings);
   assignBoolean(target, settings, 'infinite', defaults);
   assignBoolean(target, settings, 'horizontal', defaults);
   assignBoolean(target, settings, 'windowViewport', defaults);
+};
+
+export const assignDevSettings = (target: Settings, devSettings: IDevSettings, defaults: IDevSettings) => {
+  Object.assign(target, defaults, devSettings);
 };

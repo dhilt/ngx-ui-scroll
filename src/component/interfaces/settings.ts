@@ -1,5 +1,8 @@
 export interface Settings {
   startIndex?: number;
+  minIndex?: number;
+  maxIndex?: number;
+  itemSize?: number;
   bufferSize?: number;
   padding?: number;
   infinite?: boolean;

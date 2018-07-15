@@ -1,4 +1,4 @@
 import { checkDatasource } from './checkDatasource';
-import { assignSettings } from './assignSettings';
+import { assignSettings, assignDevSettings } from './assignSettings';
 
-export { checkDatasource, assignSettings };
+export { checkDatasource, assignSettings, assignDevSettings };

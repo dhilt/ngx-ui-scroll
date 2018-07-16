@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Adapter as IAdapter, Process, ProcessSubject } from '../interfaces/index';
+import { Adapter as IAdapter, Process, ProcessSubject, ItemAdapter } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
 
@@ -15,9 +15,14 @@ export class Adapter implements IAdapter {
     return this.getIsLoading();
   }
 
+  get firstVisible(): ItemAdapter {
+    return this.getFirstVisible();
+  }
+
   private readonly getIsInitialized: Function;
   private readonly getVersion: Function;
   private readonly getIsLoading: Function;
+  private readonly getFirstVisible: Function;
   private readonly callWorkflow: Function;
 
   constructor(scroller: Scroller) {
@@ -25,6 +30,14 @@ export class Adapter implements IAdapter {
     this.getIsInitialized = (): boolean => true;
     this.getVersion = (): string | null => scroller.version;
     this.getIsLoading = (): boolean => scroller.state.pendingSource.getValue();
+    this.getFirstVisible = (): ItemAdapter => {
+      const item = scroller.state.firstVisibleSource.getValue();
+      return item ? {
+        $index: item.$index,
+        data: item.data,
+        element: item.element
+      } : {};
+    };
   }
 
   reload(reloadIndex?: number | string) {
@@ -41,6 +54,7 @@ export const generateMockAdapter = (): IAdapter => (
     version: null,
     isInitialized: false,
     isLoading: false,
+    firstVisible: {},
     reload: () => null
   }
 );

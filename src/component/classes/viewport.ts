@@ -87,4 +87,10 @@ export class Viewport {
       (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();
   }
 
+  isElementVisible(element: HTMLElement): boolean {
+    const elementEdge = this.routines.getEdge(element, Direction.forward);
+    const viewportEdge = this.getEdge(Direction.backward);
+    return elementEdge > viewportEdge;
+  }
+
 }

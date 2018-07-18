@@ -18,8 +18,9 @@ export class Item {
   data: any;
   nodeId: string;
   routines: Routines;
+
+  element: HTMLElement;
   size: number;
-  element: any;
   invisible: boolean;
   toRemove: boolean;
   remain: boolean;

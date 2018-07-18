@@ -4,7 +4,7 @@ import { Observable, Observer } from 'rxjs';
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 500;
-const MIN = -10000;
+const MIN = -1000;
 
 @Component({
   selector: 'app-samples-test-inner',

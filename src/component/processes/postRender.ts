@@ -11,8 +11,15 @@ export default class PostRender {
     const direction = scroller.state.direction;
     const items = scroller.state.fetch.items;
     const position = viewport.scrollPosition;
+    const fetch = scroller.state.fetch;
 
     PostRender.processFetchedItems(scroller, items);
+
+    // calculate bwd size
+    const startItem = scroller.buffer.get(scroller.state.startIndex);
+    const startItemEdge = startItem ? viewport.getElementEdge(startItem.element, Direction.backward) : 0;
+    const vpEdge = viewport.getEdge(Direction.backward);
+    const bwdSize = startItemEdge - vpEdge;
 
     // pre-adjustment, scroll position only
     if (position !== viewport.scrollPosition) {
@@ -20,17 +27,12 @@ export default class PostRender {
     }
 
     // paddings and scroll position adjustments
-    const height = Math.round(
+    const totalSize = Math.round(
       Math.abs(items[0].getEdge(Direction.backward) - items[items.length - 1].getEdge(Direction.forward))
     );
-    const bwdHeight = scroller.state.fetch.bwdItemsCount ? Math.round(
-      Math.abs(items[0].getEdge(Direction.backward) -
-        items[scroller.state.fetch.bwdItemsCount - 1].getEdge(Direction.forward)
-      )
-    ) : 0;
-    const fwdHeight = height - bwdHeight;
-    PostRender.runForward(scroller, fwdHeight);
-    const syntheticScrollPosition = PostRender.runBackward(scroller, bwdHeight);
+    const fwdSize = totalSize - bwdSize;
+    PostRender.runForward(scroller, fwdSize);
+    const syntheticScrollPosition = PostRender.runBackward(scroller, bwdSize);
 
     // post-adjustment, scroll position only
     if (position !== viewport.scrollPosition) {
@@ -39,6 +41,8 @@ export default class PostRender {
       } else {
         viewport.scrollPosition = position;
       }
+      // update startDelta in accordance with artificial scrollPosition change
+      viewport.startDelta += viewport.scrollPosition - position;
     }
 
     scroller.callWorkflow(<ProcessSubject>{
@@ -48,14 +52,16 @@ export default class PostRender {
   }
 
   static processFetchedItems(scroller: Scroller, items: Array<Item>) {
-    for (let i = items.length - 1; i >= 0; i--) {
+    const limit = items.length - 1;
+    for (let i = 0; i <= limit; i++) {
       const element = items[i].element;
       element.style.left = '';
       element.style.position = '';
       items[i].invisible = false;
       items[i].setSize();
-      scroller.buffer.cache.add(items[i]);
+      // scroller.buffer.cache.add(items[i]);
     }
+    scroller.buffer.cache.addList(items, scroller.state.isInitial ? scroller.state.startIndex : null);
   }
 
   static runForward(scroller: Scroller, size: number) {

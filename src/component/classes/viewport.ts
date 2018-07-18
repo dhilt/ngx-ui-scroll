@@ -23,6 +23,7 @@ export class ViewportPadding {
 export class Viewport {
 
   padding: ViewportPadding;
+  startDelta: number;
   syntheticScrollPosition: number | null;
 
   readonly element: HTMLElement;
@@ -35,6 +36,7 @@ export class Viewport {
     this.settings = settings;
     this.routines = routines;
     this.element = elementRef.nativeElement;
+    this.startDelta = settings.paddingBackwardSize || 0;
     this.syntheticScrollPosition = null;
 
     if (settings.windowViewport) {
@@ -83,9 +85,17 @@ export class Viewport {
     return this.routines.getEdge(this.host, direction, opposite);
   }
 
+  getElementEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
+    return this.routines.getEdge(element, direction, opposite);
+  }
+
   getLimit(direction: Direction, opposite?: boolean): number {
     return this.getEdge(direction, opposite) +
       (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();
+  }
+
+  isElementVisible(element: HTMLElement): boolean {
+    return this.getElementEdge(element, Direction.forward) > this.getEdge(Direction.backward);
   }
 
 }

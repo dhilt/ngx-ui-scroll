@@ -52,7 +52,6 @@ export class Settings implements ISettings {
   throttle: number;
 
   // internal settings, managed by scroller itself
-  currentStartIndex: number;
   instanceIndex: number;
 
   constructor(
@@ -60,15 +59,6 @@ export class Settings implements ISettings {
   ) {
     assignSettings(this, settings || {}, defaultSettings, minSettings);
     assignDevSettings(this, devSettings || {}, defaultDevSettings);
-    this.currentStartIndex = this.startIndex;
     this.instanceIndex = instanceIndex;
-  }
-
-  setCurrentStartIndex(startIndex: any) {
-    startIndex = Number(startIndex);
-    this.currentStartIndex = !isNaN(startIndex) ? startIndex : this.startIndex;
-    if (this.currentStartIndex < this.minIndex) {
-      this.currentStartIndex = this.minIndex;
-    }
   }
 }

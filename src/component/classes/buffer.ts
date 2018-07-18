@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 
 import { Direction } from '../interfaces/index';
-import { Cache } from './cache';
+import { Cache, ItemCache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
 
@@ -35,7 +35,7 @@ export class Buffer {
   constructor(settings: Settings) {
     this.$items = new BehaviorSubject(null);
     this.lastIndex = new Index();
-    this.cache = new Cache(settings.itemSize);
+    this.cache = new Cache(settings);
     this.reset();
     this.startIndex = settings.startIndex;
   }
@@ -91,7 +91,7 @@ export class Buffer {
   setItems(items: Array<Item>): boolean {
     if (!this.items.length) {
       this.items = items;
-    } else if (this.items[0].$index < items[items.length - 1].$index) {
+    } else if (this.items[0].$index > items[items.length - 1].$index) {
       this.items = [...items, ...this.items];
     } else if (items[0].$index > this.items[this.items.length - 1].$index) {
       this.items = [...this.items, ...items];

@@ -16,6 +16,7 @@ export class State implements IState {
   fetch: FetchModel;
   clip: ClipModel;
   previousClip: PreviousClip;
+  startIndex: number;
 
   pendingSource: BehaviorSubject<boolean>;
 
@@ -29,7 +30,7 @@ export class State implements IState {
     }
   }
 
-  constructor() {
+  constructor(startIndex: number) {
     this.isInitial = false;
     this.wfCycleCount = 1;
     this.cycleCount = 0;
@@ -38,6 +39,7 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.setPreviousClip(true);
+    this.startIndex = startIndex;
     this.pendingSource = new BehaviorSubject<boolean>(false);
   }
 

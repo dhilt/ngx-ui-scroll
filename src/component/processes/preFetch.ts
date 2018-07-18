@@ -9,13 +9,14 @@ export default class PreFetch {
     scroller.state.process = Process.preFetch;
 
     if (scroller.buffer.pristine) {
-      PreFetch.setStartIndexOnInit(scroller);
-      scroller.callWorkflow(<ProcessSubject>{
-        process: Process.preFetch,
-        status: 'next'
-      });
-      return;
+      PreFetch.setFetchParamsOnInit(scroller);
+    } else {
+      PreFetch.setFetchParams(scroller);
     }
+    scroller.callWorkflow(<ProcessSubject>{
+      process: Process.preFetch,
+      status: scroller.state.fetch.shouldFetch ? 'next' : 'done'
+    });
 
     /* const bufferPadding = scroller.viewport.getBufferPadding();
     const averageItemSize = scroller.buffer.averageSize;
@@ -61,19 +62,57 @@ export default class PreFetch {
     }); */
   }
 
-  static setStartIndexOnInit(scroller: Scroller) {
-    const averageItemSize = scroller.buffer.averageSize;
-    const settings = scroller.settings;
-    const fetch = scroller.state.fetch;
-    const bwdItemsCount = Math.ceil(scroller.viewport.getBufferPadding() / averageItemSize);
-    const fwdItemsCount = Math.ceil(scroller.viewport.getSize() * (1 + settings.padding) / averageItemSize);
-    const firstIndex = settings.currentStartIndex - bwdItemsCount;
-    const lastIndex = settings.currentStartIndex + fwdItemsCount - 1;
+  static setFetchParamsOnInit(scroller: Scroller) {
+    const { settings, buffer, viewport, state } = scroller;
+    const fetch = state.fetch;
+    const averageItemSize = buffer.averageSize;
+    const bwdItemsCount = Math.ceil(viewport.getBufferPadding() / averageItemSize);
+    const fwdItemsCount = Math.ceil(viewport.getSize() * (1 + settings.padding) / averageItemSize);
+    const firstIndex = state.startIndex - bwdItemsCount;
+    const lastIndex = state.startIndex + fwdItemsCount - 1;
     fetch.firstIndex = Math.max(firstIndex, settings.minIndex);
     fetch.lastIndex = Math.min(lastIndex, settings.maxIndex);
     fetch.bwdItemsCount = bwdItemsCount;
     if (firstIndex !== fetch.firstIndex) {
       fetch.bwdItemsCount = Math.max(0, bwdItemsCount - (fetch.firstIndex - firstIndex));
+    }
+  }
+
+  static setFetchParams(scroller: Scroller) {
+    const { settings, buffer, viewport, state } = scroller;
+    const fetch = state.fetch;
+    const averageItemSize = buffer.averageSize;
+    const bwdItemsCount = Math.ceil(viewport.getBufferPadding() / averageItemSize);
+    const fwdItemsCount = Math.ceil(viewport.getSize() * (1 + settings.padding) / averageItemSize);
+
+    fetch.startPosition = viewport.scrollPosition - viewport.startDelta;
+    const startItemIndex = state.startIndex;
+
+    const firstIndex = startItemIndex - bwdItemsCount;
+    const lastIndex = startItemIndex + fwdItemsCount - 1;
+    fetch.firstIndex = Math.max(firstIndex, settings.minIndex);
+    fetch.lastIndex = Math.min(lastIndex, settings.maxIndex);
+
+    if (buffer.items.length) {
+      // pick items indexes that should be fetched and that are not in the buffer
+      const packs: Array<Array<number>> = [[]];
+      let p = 0;
+      for (let i = fetch.firstIndex; i <= fetch.lastIndex; i++) {
+        if (!scroller.buffer.get(i)) {
+          packs[p].push(i);
+        } else if (packs[p].length) {
+          packs[++p] = [];
+        }
+      }
+      let pack = packs[0];
+      if (packs[0].length && packs[1] && packs[1].length) {
+        // todo: need to look for biggest pack in visible area
+        if (packs[1].length > packs[0].length) {
+          pack = packs[1];
+        }
+      }
+      fetch.firstIndex = Math.max(pack[0], settings.minIndex);
+      fetch.lastIndex = Math.min(pack[pack.length - 1], settings.maxIndex);
     }
   }
 
@@ -103,7 +142,7 @@ export default class PreFetch {
     const lastIndex = scroller.buffer.lastIndex[direction];
     let start;
     if (lastIndex === null) {
-      start = scroller.settings.currentStartIndex + (forward ? 0 : back);
+      start = scroller.state.startIndex + (forward ? 0 : back);
     } else {
       start = lastIndex + (forward ? 1 : back);
     }

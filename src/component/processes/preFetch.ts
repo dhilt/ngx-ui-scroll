@@ -13,63 +13,22 @@ export default class PreFetch {
       process: Process.preFetch,
       status: scroller.state.fetch.shouldFetch ? 'next' : 'done'
     });
-
-    /* const bufferPadding = scroller.viewport.getBufferPadding();
-    const averageItemSize = scroller.buffer.averageSize;
-    const _scrollPosition = scroller.viewport.scrollPosition;
-    const _backwardBorderPosition = _scrollPosition - bufferPadding;
-    const scrollPosition = _backwardBorderPosition < 0 ? -_backwardBorderPosition : 0;
-    const backwardScrollPosition = _backwardBorderPosition < 0 ? 0 : _backwardBorderPosition;
-    const forwardBorderPosition = scrollPosition + scroller.viewport.getSize() + bufferPadding;
-
-    let index = scroller.buffer.minIndex;
-    let position = 0;
-    const newItems: Array<Item> = [];
-
-    // for fetch from backwardScrollPosition to forwardBorderPosition
-    while (position <= forwardBorderPosition) {
-      const item = scroller.buffer.get(index) || scroller.buffer.cache.get(index);
-      const size = item ? item.size : averageItemSize;
-      if (position + size > backwardScrollPosition) {
-        newItems.push(
-          PreFetch.getNewItem(scroller, item, index, size, position)
-        );
-      }
-      index++;
-      position += size;
-    }
-
-    const direction = scroller.state.direction;
-    const paddingEdge = scroller.viewport.padding[direction].getEdge();
-    const limit = scroller.viewport.getLimit(direction);
-
-    scroller.state.fetch[direction].shouldFetch = PreFetch.checkEOF(scroller) ? false :
-      (direction === Direction.forward) ? paddingEdge < limit : paddingEdge > limit;
-
-    const shouldFetch = scroller.state.fetch[direction].shouldFetch;
-    if (shouldFetch) {
-      PreFetch.setStartIndex(scroller);
-      PreFetch.processPreviousClip(scroller);
-    }
-
-    scroller.callWorkflow(<ProcessSubject>{
-      process: Process.preFetch,
-      status: shouldFetch ? 'next' : 'done'
-    }); */
   }
 
   static setFetchParams(scroller: Scroller) {
     const { settings, buffer, viewport, state } = scroller;
     const fetch = state.fetch;
     const averageItemSize = buffer.averageSize;
+    const scrollPosition = viewport.scrollPosition - viewport.startDelta;
+    const startPosition = scrollPosition - viewport.getBufferPadding();
+    const endPosition = scrollPosition + viewport.getSize() + viewport.getBufferPadding();
 
-    fetch.startPosition = viewport.scrollPosition - viewport.startDelta;
-    let firstIndex, lastIndex;
-
-    const startPosition = viewport.scrollPosition - viewport.getBufferPadding() - viewport.startDelta;
     let position = 0;
     let index = state.startIndex;
     let item = buffer.cache.get(index);
+    let firstIndex, lastIndex;
+
+    // first index to fetch
     const inc = startPosition < 0 ? -1 : 1;
     while (startPosition < 0 ? position > startPosition : position < startPosition) {
       if (index <= settings.minIndex) {
@@ -80,7 +39,8 @@ export default class PreFetch {
       position += inc * (item ? item.size : averageItemSize);
     }
     firstIndex = lastIndex = index;
-    const endPosition = viewport.scrollPosition + viewport.getSize() + viewport.getBufferPadding() - viewport.startDelta;
+
+    // last index to fetch
     while (position < endPosition) {
       if (index >= settings.maxIndex) {
         break;
@@ -93,12 +53,12 @@ export default class PreFetch {
     fetch.firstIndex = firstIndex;
     fetch.lastIndex = lastIndex;
 
+    // skip indexes that are in buffer
     if (buffer.items.length) {
-      // pick items indexes that should be fetched and that are not in the buffer
       const packs: Array<Array<number>> = [[]];
       let p = 0;
       for (let i = fetch.firstIndex; i <= fetch.lastIndex; i++) {
-        if (!scroller.buffer.get(i)) {
+        if (!buffer.get(i)) {
           packs[p].push(i);
         } else if (packs[p].length) {
           packs[++p] = [];

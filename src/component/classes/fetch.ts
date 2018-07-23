@@ -6,7 +6,6 @@ export class FetchModel {
   bwdItemsCount: number;
   firstIndex: number | null;
   lastIndex: number | null;
-  startPosition: number | null;
   callCount: number;
 
   constructor() {
@@ -20,7 +19,6 @@ export class FetchModel {
     this.bwdItemsCount = 0;
     this.firstIndex = null;
     this.lastIndex = null;
-    this.startPosition = null;
   }
 
   get newItemsData(): Array<Item> | null {

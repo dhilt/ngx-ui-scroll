@@ -54,6 +54,7 @@ export class Viewport {
     this.scrollPosition = 0;
     this.syntheticScrollPosition = null;
     this.padding.reset();
+    this.startDelta = 0;
   }
 
   get scrollEventElement() {

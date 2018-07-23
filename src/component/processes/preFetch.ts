@@ -8,11 +8,7 @@ export default class PreFetch {
   static run(scroller: Scroller) {
     scroller.state.process = Process.preFetch;
 
-    if (scroller.buffer.pristine) {
-      PreFetch.setFetchParamsOnInit(scroller);
-    } else {
-      PreFetch.setFetchParams(scroller);
-    }
+    PreFetch.setFetchParams(scroller);
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
       status: scroller.state.fetch.shouldFetch ? 'next' : 'done'
@@ -62,36 +58,40 @@ export default class PreFetch {
     }); */
   }
 
-  static setFetchParamsOnInit(scroller: Scroller) {
-    const { settings, buffer, viewport, state } = scroller;
-    const fetch = state.fetch;
-    const averageItemSize = buffer.averageSize;
-    const bwdItemsCount = Math.ceil(viewport.getBufferPadding() / averageItemSize);
-    const fwdItemsCount = Math.ceil(viewport.getSize() * (1 + settings.padding) / averageItemSize);
-    const firstIndex = state.startIndex - bwdItemsCount;
-    const lastIndex = state.startIndex + fwdItemsCount - 1;
-    fetch.firstIndex = Math.max(firstIndex, settings.minIndex);
-    fetch.lastIndex = Math.min(lastIndex, settings.maxIndex);
-    fetch.bwdItemsCount = bwdItemsCount;
-    if (firstIndex !== fetch.firstIndex) {
-      fetch.bwdItemsCount = Math.max(0, bwdItemsCount - (fetch.firstIndex - firstIndex));
-    }
-  }
-
   static setFetchParams(scroller: Scroller) {
     const { settings, buffer, viewport, state } = scroller;
     const fetch = state.fetch;
     const averageItemSize = buffer.averageSize;
-    const bwdItemsCount = Math.ceil(viewport.getBufferPadding() / averageItemSize);
-    const fwdItemsCount = Math.ceil(viewport.getSize() * (1 + settings.padding) / averageItemSize);
 
     fetch.startPosition = viewport.scrollPosition - viewport.startDelta;
-    const startItemIndex = state.startIndex;
+    let firstIndex, lastIndex;
 
-    const firstIndex = startItemIndex - bwdItemsCount;
-    const lastIndex = startItemIndex + fwdItemsCount - 1;
-    fetch.firstIndex = Math.max(firstIndex, settings.minIndex);
-    fetch.lastIndex = Math.min(lastIndex, settings.maxIndex);
+    const startPosition = viewport.scrollPosition - viewport.getBufferPadding() - viewport.startDelta;
+    let position = 0;
+    let index = state.startIndex;
+    let item = buffer.cache.get(index);
+    const inc = startPosition < 0 ? -1 : 1;
+    while (startPosition < 0 ? position > startPosition : position < startPosition) {
+      if (index <= settings.minIndex) {
+        break;
+      }
+      index += inc;
+      item = buffer.cache.get(index);
+      position += inc * (item ? item.size : averageItemSize);
+    }
+    firstIndex = lastIndex = index;
+    const endPosition = viewport.scrollPosition + viewport.getSize() + viewport.getBufferPadding() - viewport.startDelta;
+    while (position < endPosition) {
+      if (index >= settings.maxIndex) {
+        break;
+      }
+      lastIndex = index;
+      item = buffer.cache.get(++index);
+      position += item ? item.size : averageItemSize;
+    }
+
+    fetch.firstIndex = firstIndex;
+    fetch.lastIndex = lastIndex;
 
     if (buffer.items.length) {
       // pick items indexes that should be fetched and that are not in the buffer

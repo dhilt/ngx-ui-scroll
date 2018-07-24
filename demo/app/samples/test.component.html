@@ -4,9 +4,15 @@
   <br>
   <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
   <br>
-  <small>isLoading: {{datasource.adapter.isLoading}}</small>
+  <small>isLoading:
+    {{datasource.adapter.isLoading}}
+    ({{(datasource.adapter.isLoading$ | async)}})
+  </small>
   <br>
-  <small>first visible: {{datasource.adapter.firstVisible.$index}}</small>
+  <small>first visible:
+    {{datasource.adapter.firstVisible.$index}}
+    ({{(datasource.adapter.firstVisible$ | async)?.$index}})
+  </small>
   <br><br>
 </div>
 

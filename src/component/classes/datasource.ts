@@ -12,6 +12,6 @@ export class Datasource implements IDatasource {
 
   constructor(datasource: IDatasource) {
     Object.assign(this, datasource);
-    this.adapter = generateMockAdapter();
+    this.adapter = generateMockAdapter(this);
   }
 }

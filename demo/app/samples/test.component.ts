@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -33,6 +34,13 @@ export class TestComponent {
         text: 'item #' + (i + MIN)
       });
     }
+    this.datasource.adapter.isInitialized$
+      .pipe(switchMap(() =>
+        this.datasource.adapter.firstVisible$
+      ))
+      .subscribe((value) => {
+        console.log('..............................first visible item:', value);
+      });
   }
 
   datasource = new Datasource({
@@ -48,7 +56,6 @@ export class TestComponent {
   });
 
   doReload() {
-    // this.data.forEach(item => item.text += '+');
     this.datasource.adapter.reload(this.reloadIndex);
   }
 

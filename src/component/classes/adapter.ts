@@ -4,7 +4,7 @@ import { switchMap } from 'rxjs/operators';
 import { Adapter as IAdapter, Process, ProcessSubject, ItemAdapter } from '../interfaces/index';
 import { Scroller } from '../scroller';
 
-const getIsInitialized = (adapter: Adapter) =>
+const getIsInitialized = (adapter: Adapter): Observable<boolean> =>
   Observable.create((observer: Observer<boolean>) => {
     const intervalId = setInterval(() => {
       if (adapter && adapter.init) {
@@ -15,7 +15,7 @@ const getIsInitialized = (adapter: Adapter) =>
     }, 25);
   });
 
-const getInitializedSubject = (adapter: Adapter, method) => {
+const getInitializedSubject = (adapter: Adapter, method: Function): BehaviorSubject<any> => {
   return adapter.init ? method() :
     adapter.init$
       .pipe(switchMap(() =>

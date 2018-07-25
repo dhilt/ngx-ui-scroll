@@ -1,6 +1,6 @@
-import { Datasource } from '../interfaces/index';
+import { Datasource as IDatasource } from '../interfaces/index';
 
-export const checkDatasource = (datasource: Datasource) => {
+export const checkDatasource = (datasource: IDatasource) => {
   if (!datasource) {
     throw new Error('No datasource provided');
   }

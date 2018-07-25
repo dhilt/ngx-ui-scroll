@@ -62,6 +62,7 @@ export const assignSettings = (
     return;
   }
 
+  assignBoolean(target, settings, 'adapter', defaults);
   assignNumeric(target, settings, 'startIndex', defaults);
   assignNumeric(target, settings, 'minIndex', defaults);
   assignNumeric(target, settings, 'maxIndex', defaults);

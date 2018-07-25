@@ -5,7 +5,9 @@ export default class End {
 
   static run(scroller: Scroller, isFail?: boolean) {
     scroller.state.endCycle();
-    End.calculateParams(scroller);
+    if (scroller.datasource.adapter.init) {
+      End.calculateParams(scroller);
+    }
     scroller.purgeCycleSubscriptions();
     scroller.finalize();
 
@@ -35,7 +37,11 @@ export default class End {
         break;
       }
     }
-    scroller.state.firstVisibleItem = index !== null ? items[index] : null;
+    scroller.state.firstVisibleItem = index !== null ? {
+      $index: items[index].$index,
+      data: items[index].data,
+      element: items[index].element
+    } : {};
   }
 
   static getNextRun(scroller: Scroller): Run | null {

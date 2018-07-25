@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
 
 import { Direction } from '../interfaces/index';
-import { Cache, ItemCache } from './cache';
+import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
 

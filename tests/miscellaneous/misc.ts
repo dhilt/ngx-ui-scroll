@@ -54,12 +54,12 @@ export class Misc {
   constructor(fixture: ComponentFixture<any>) {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
-    this.datasource = <Datasource>this.testComponent.datasource;
     this.uiScrollElement = this.fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = <DebugElement>this.uiScrollElement.parent;
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.uiScrollComponent.workflow.scroller;
+    this.datasource = this.scroller.datasource;
     this.horizontal = this.scroller.settings.horizontal;
     this.window = this.scroller.settings.windowViewport;
     this.padding = {

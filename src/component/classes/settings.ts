@@ -2,6 +2,7 @@ import { Settings as ISettings, DevSettings as IDevSettings } from '../interface
 import { assignSettings, assignDevSettings } from '../utils/index';
 
 export const defaultSettings: ISettings = {
+  adapter: false,
   startIndex: 1,
   minIndex: -Infinity,
   maxIndex: Infinity,
@@ -32,6 +33,7 @@ export const defaultDevSettings: IDevSettings = {
 export class Settings implements ISettings {
 
   // user settings
+  adapter: boolean;
   startIndex: number;
   minIndex: number;
   maxIndex: number;

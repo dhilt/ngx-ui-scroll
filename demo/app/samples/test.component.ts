@@ -33,6 +33,10 @@ export class TestComponent {
         text: 'item #' + (i + MIN)
       });
     }
+    this.datasource.adapter.firstVisible$
+      .subscribe((value) => {
+        console.log('..............................first visible item:', value);
+      });
   }
 
   datasource = new Datasource({
@@ -50,7 +54,6 @@ export class TestComponent {
   });
 
   doReload() {
-    // this.data.forEach(item => item.text += '+');
     this.datasource.adapter.reload(this.reloadIndex);
   }
 

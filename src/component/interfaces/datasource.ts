@@ -9,6 +9,7 @@ export type DatasourceGetPromise = (index: number, count: number) => PromiseLike
 export type DatasourceGet = DatasourceGetCallback | DatasourceGetObservable | DatasourceGetPromise;
 
 export interface Datasource {
+  readonly constructed?: boolean;
   get: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;

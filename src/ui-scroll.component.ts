@@ -5,7 +5,8 @@ import {
 } from '@angular/core';
 
 import { Workflow } from './component/workflow';
-import { Datasource } from './component/interfaces/index';
+import { Datasource as IDatasource } from './component/interfaces/index';
+import { Datasource } from './component/classes/datasource';
 import { Item } from './component/classes/item';
 
 @Component({
@@ -29,7 +30,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   // come from the directive
   public version: string;
   public template: TemplateRef<any>;
-  public datasource: Datasource;
+  public datasource: IDatasource | Datasource;
 
   // use in the template
   public items: Array<Item>;

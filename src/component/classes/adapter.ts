@@ -5,48 +5,56 @@ import { Scroller } from '../scroller';
 
 export class Adapter implements IAdapter {
 
-  get isInitialized(): boolean {
-    return true;
+  get init(): boolean {
+    return this.isInitialized;
   }
 
-  get isInitialized$(): Observable<boolean> {
-    return observableOf(true);
+  get init$(): Observable<boolean> {
+    return observableOf(this.isInitialized);
   }
 
   get version(): string | null {
-    return this.getVersion();
+    return this.isInitialized ? this.getVersion() : null;
   }
 
   get isLoading(): boolean {
-    return this.getIsLoading();
+    return this.isInitialized ? this.getIsLoading() : false;
   }
 
   get isLoading$(): BehaviorSubject<boolean> {
-    return this.getIsLoading$();
+    return this.isInitialized ? this.getIsLoading$() : observableOf(false);
   }
 
   get firstVisible(): ItemAdapter {
-    return this.getFirstVisible();
+    return this.isInitialized ? this.getFirstVisible() : {};
   }
 
   get firstVisible$(): BehaviorSubject<ItemAdapter> {
-    return this.getFirstVisible$();
+    return this.isInitialized ? this.getFirstVisible$() : observableOf({});
   }
 
-  private readonly getVersion: Function;
-  private readonly getIsLoading: Function;
-  private readonly getIsLoading$: Function;
-  private readonly getFirstVisible: Function;
-  private readonly getFirstVisible$: Function;
-  private readonly callWorkflow: Function;
+  private isInitialized: boolean;
+  private callWorkflow: Function;
+  private getVersion: Function;
+  private getIsLoading: Function;
+  private getIsLoading$: Function;
+  private getFirstVisible: Function;
+  private getFirstVisible$: Function;
 
-  constructor(scroller: Scroller) {
-    this.callWorkflow = scroller.callWorkflow;
-    this.getVersion = (): string | null => scroller.version;
-    this.getIsLoading = (): boolean => scroller.state.pendingSource.getValue();
-    this.getIsLoading$ = (): BehaviorSubject<boolean> => scroller.state.pendingSource;
-    this.getFirstVisible = (): ItemAdapter => scroller.state.firstVisibleSource.getValue();
-    this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.firstVisibleSource;
+  constructor() {
+    this.isInitialized = false;
+  }
+
+  initialize(scroller: Scroller) {
+    if (!this.isInitialized) {
+      this.isInitialized = true;
+      this.callWorkflow = scroller.callWorkflow;
+      this.getVersion = (): string | null => scroller.version;
+      this.getIsLoading = (): boolean => scroller.state.pendingSource.getValue();
+      this.getIsLoading$ = (): BehaviorSubject<boolean> => scroller.state.pendingSource;
+      this.getFirstVisible = (): ItemAdapter => scroller.state.firstVisibleSource.getValue();
+      this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.firstVisibleSource;
+    }
   }
 
   reload(reloadIndex?: number | string) {
@@ -58,22 +66,22 @@ export class Adapter implements IAdapter {
   }
 }
 
-const getIsInitialized = (datasource: Datasource) =>
-  Observable.create((observer: Observer<boolean>) => {
-    const intervalId = setInterval(() => {
-      if (datasource.adapter && datasource.adapter.isInitialized) {
-        clearInterval(intervalId);
-        observer.next(true);
-        observer.complete();
-      }
-    }, 25);
-  });
+// const getIsInitialized = (datasource: Datasource) =>
+//   Observable.create((observer: Observer<boolean>) => {
+//     const intervalId = setInterval(() => {
+//       if (datasource.adapter && datasource.adapter.init) {
+//         clearInterval(intervalId);
+//         observer.next(true);
+//         observer.complete();
+//       }
+//     }, 25);
+//   });
 
-export const generateMockAdapter = (datasource: Datasource): IAdapter => (
+export const generateMockAdapter = (): IAdapter => (
   <IAdapter> {
     version: null,
-    isInitialized: false,
-    isInitialized$: getIsInitialized(datasource),
+    init: false,
+    init$: observableOf(false),
     isLoading: false,
     isLoading$: new BehaviorSubject<boolean>(false),
     firstVisible: {},

@@ -1,5 +1,4 @@
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
-import { Observable } from 'rxjs/index';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 export interface ItemAdapter {
   $index?: number;
@@ -9,8 +8,8 @@ export interface ItemAdapter {
 
 export interface Adapter {
   readonly version: string | null;
-  readonly isInitialized: boolean;
-  readonly isInitialized$: Observable<boolean>;
+  readonly init: boolean;
+  readonly init$: Observable<boolean>;
   readonly isLoading: boolean;
   readonly isLoading$: BehaviorSubject<boolean>;
   readonly firstVisible: ItemAdapter;

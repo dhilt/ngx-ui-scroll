@@ -34,7 +34,7 @@ export class TestComponent {
         text: 'item #' + (i + MIN)
       });
     }
-    this.datasource.adapter.isInitialized$
+    this.datasource.adapter.init$
       .pipe(switchMap(() =>
         this.datasource.adapter.firstVisible$
       ))

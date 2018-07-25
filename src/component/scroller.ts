@@ -1,14 +1,14 @@
 import { Observable, Subscription, Observer } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
-import { Datasource } from './interfaces/index';
 import { checkDatasource } from './utils/index';
+import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
-import { Adapter } from './classes/adapter';
+import { generateMockAdapter } from './classes/adapter';
 
 let instanceCount = 0;
 
@@ -25,26 +25,30 @@ export class Scroller {
   public viewport: Viewport;
   public buffer: Buffer;
   public state: State;
-  public adapter: Adapter;
 
   public cycleSubscriptions: Array<Subscription>;
 
   constructor(context: UiScrollComponent, callWorkflow: Function) {
+    const datasource = <Datasource>checkDatasource(context.datasource);
+    this.version = context.version;
+
     // this._bindData = () => context.changeDetector.markForCheck();
     this._bindData = () => context.changeDetector.detectChanges();
-    this.version = context.version;
-    this.datasource = checkDatasource(context.datasource);
     this.callWorkflow = callWorkflow;
+    this.cycleSubscriptions = [];
 
-    this.settings = new Settings(context.datasource.settings, context.datasource.devSettings, ++instanceCount);
+    this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
-    this.state = new State();
-    this.adapter = new Adapter(this);
 
-    this.datasource.adapter = this.adapter;
-    this.cycleSubscriptions = [];
+    if (!datasource.adapter) {
+      this.datasource = new Datasource(datasource, true);
+    } else {
+      this.datasource = datasource;
+      this.datasource.adapter.initialize(this);
+    }
+    this.state = new State(!!datasource.adapter);
   }
 
   bindData(): Observable<any> {

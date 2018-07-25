@@ -5,6 +5,7 @@ import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
 export class State implements IState {
+  hasAdapter: boolean;
   process: Process;
   wfCycleCount: number;
   cycleCount: number;
@@ -39,7 +40,8 @@ export class State implements IState {
     }
   }
 
-  constructor() {
+  constructor(hasAdapter: boolean) {
+    this.hasAdapter = hasAdapter;
     this.isInitial = false;
     this.wfCycleCount = 1;
     this.cycleCount = 0;
@@ -48,7 +50,9 @@ export class State implements IState {
     this.clip = new ClipModel();
     this.setPreviousClip(true);
     this.pendingSource = new BehaviorSubject<boolean>(false);
-    this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
+    if (hasAdapter) {
+      this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
+    }
   }
 
   startCycle(options: Run = {}) {

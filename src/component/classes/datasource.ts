@@ -1,8 +1,5 @@
-import {
-  Datasource as IDatasource, DatasourceGet,
-  Adapter, DevSettings, Settings
-} from '../interfaces/index';
-import { generateMockAdapter } from './adapter';
+import { Datasource as IDatasource, DatasourceGet, DevSettings, Settings } from '../interfaces/index';
+import { Adapter, generateMockAdapter } from './adapter';
 
 export class Datasource implements IDatasource {
   get: DatasourceGet;
@@ -10,8 +7,9 @@ export class Datasource implements IDatasource {
   devSettings?: DevSettings;
   adapter: Adapter;
 
-  constructor(datasource: IDatasource) {
-    Object.assign(this, datasource);
-    this.adapter = generateMockAdapter(this);
+  constructor(datasource: IDatasource, auto?: boolean) {
+    Object.assign(<any>this, datasource);
+    // true Adapter is available only if Datasource is instantiated manually
+    this.adapter = auto ? <Adapter>generateMockAdapter() : new Adapter();
   }
 }

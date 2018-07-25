@@ -40,8 +40,7 @@ export class State implements IState {
     }
   }
 
-  constructor(hasAdapter: boolean) {
-    this.hasAdapter = hasAdapter;
+  constructor() {
     this.isInitial = false;
     this.wfCycleCount = 1;
     this.cycleCount = 0;
@@ -50,9 +49,7 @@ export class State implements IState {
     this.clip = new ClipModel();
     this.setPreviousClip(true);
     this.pendingSource = new BehaviorSubject<boolean>(false);
-    if (hasAdapter) {
-      this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
-    }
+    this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
   }
 
   startCycle(options: Run = {}) {

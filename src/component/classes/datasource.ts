@@ -2,14 +2,19 @@ import { Datasource as IDatasource, DatasourceGet, DevSettings, Settings } from 
 import { Adapter, generateMockAdapter } from './adapter';
 
 export class Datasource implements IDatasource {
+  readonly constructed: boolean;
   get: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;
   adapter: Adapter;
 
-  constructor(datasource: IDatasource, auto?: boolean) {
+  constructor(datasource: IDatasource, hasNoAdapter?: boolean) {
+    this.constructed = true;
     Object.assign(<any>this, datasource);
-    // true Adapter is available only if Datasource is instantiated manually
-    this.adapter = auto ? <Adapter>generateMockAdapter() : new Adapter();
+    if (hasNoAdapter) {
+      this.adapter = <Adapter>generateMockAdapter();
+    } else {
+      this.adapter = new Adapter();
+    }
   }
 }

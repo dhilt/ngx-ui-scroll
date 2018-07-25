@@ -30,6 +30,7 @@ export class Scroller {
 
   constructor(context: UiScrollComponent, callWorkflow: Function) {
     const datasource = <Datasource>checkDatasource(context.datasource);
+    this.datasource = datasource;
     this.version = context.version;
 
     // this._bindData = () => context.changeDetector.markForCheck();
@@ -41,14 +42,16 @@ export class Scroller {
     this.routines = new Routines(this.settings);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
     this.buffer = new Buffer();
+    this.state = new State();
 
-    if (!datasource.adapter) {
-      this.datasource = new Datasource(datasource, true);
+    if (!datasource.constructed) {
+      this.datasource = new Datasource(datasource, !this.settings.adapter);
+      if (this.settings.adapter) {
+        this.datasource.adapter.initialize(this);
+      }
     } else {
-      this.datasource = datasource;
       this.datasource.adapter.initialize(this);
     }
-    this.state = new State(!!datasource.adapter);
   }
 
   bindData(): Observable<any> {

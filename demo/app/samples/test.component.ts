@@ -34,10 +34,7 @@ export class TestComponent {
         text: 'item #' + (i + MIN)
       });
     }
-    this.datasource.adapter.init$
-      .pipe(switchMap(() =>
-        this.datasource.adapter.firstVisible$
-      ))
+    this.datasource.adapter.firstVisible$
       .subscribe((value) => {
         console.log('..............................first visible item:', value);
       });
@@ -48,7 +45,8 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 20
+      bufferSize: 20,
+      adapter: true
     },
     devSettings: {
       debug: true

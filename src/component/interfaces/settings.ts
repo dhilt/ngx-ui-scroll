@@ -1,4 +1,5 @@
 export interface Settings {
+  adapter?: boolean;
   startIndex?: number;
   bufferSize?: number;
   padding?: number;

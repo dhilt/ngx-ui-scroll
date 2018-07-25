@@ -30,7 +30,7 @@ export default class Render {
       const nodes = scroller.viewport.children;
       for (let i = nodes.length - 1; i >= 0; i--) {
         if (nodes[i].getAttribute('data-sid') === items[j].nodeId) {
-          items[j].element = nodes[i];
+          items[j].element = <HTMLElement>nodes[i];
         }
       }
       if (!items[j].element) { // todo: is this situation possible?

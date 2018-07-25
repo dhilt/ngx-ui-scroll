@@ -5,6 +5,9 @@ export default class End {
 
   static run(scroller: Scroller, isFail?: boolean) {
     scroller.state.endCycle();
+    if (scroller.datasource.adapter.init) {
+      End.calculateParams(scroller);
+    }
     scroller.purgeCycleSubscriptions();
     scroller.finalize();
 
@@ -22,6 +25,23 @@ export default class End {
       status: next ? 'next' : 'done',
       payload: next
     });
+  }
+
+  static calculateParams(scroller: Scroller) {
+    const items = scroller.buffer.items;
+    const length = items.length;
+    let index = null;
+    for (let i = 0; i < length; i++) {
+      if (scroller.viewport.isElementVisible(items[i].element)) {
+        index = i;
+        break;
+      }
+    }
+    scroller.state.firstVisibleItem = index !== null ? {
+      $index: items[index].$index,
+      data: items[index].data,
+      element: items[index].element
+    } : {};
   }
 
   static getNextRun(scroller: Scroller): Run | null {

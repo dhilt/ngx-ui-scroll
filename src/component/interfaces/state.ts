@@ -11,6 +11,7 @@ export interface PreviousClip {
 }
 
 export interface State {
+  hasAdapter: boolean;
   process: Process;
   wfCycleCount: number;
   cycleCount: number;

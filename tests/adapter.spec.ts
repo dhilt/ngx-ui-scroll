@@ -4,15 +4,15 @@ import { Misc } from './miscellaneous/misc';
 const customDefault = { startIndex: null, scrollCount: 0, preLoad: false };
 
 const configList = [{
-  datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2 },
+  datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
   templateSettings: { viewportHeight: 100 },
   custom: { ...customDefault }
 }, {
-  datasourceSettings: { startIndex: -50, bufferSize: 4, padding: 0.49 },
+  datasourceSettings: { startIndex: -50, bufferSize: 4, padding: 0.49, adapter: true },
   templateSettings: { viewportHeight: 70 },
   custom: { ...customDefault }
 }, {
-  datasourceSettings: { startIndex: -33, bufferSize: 5, padding: 0.3, horizontal: true },
+  datasourceSettings: { startIndex: -33, bufferSize: 5, padding: 0.3, adapter: true, horizontal: true },
   templateSettings: { viewportWidth: 300, itemWidth: 100, horizontal: true },
   custom: { ...customDefault }
 }];

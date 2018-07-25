@@ -62,6 +62,7 @@ export const assignSettings = (
     return;
   }
 
+  assignBoolean(target, settings, 'adapter', defaults);
   assignNumeric(target, settings, 'startIndex', defaults);
   assignMinimalNumeric(target, settings, 'bufferSize', defaults, minSettings, true);
   assignMinimalNumeric(target, settings, 'padding', defaults, minSettings);

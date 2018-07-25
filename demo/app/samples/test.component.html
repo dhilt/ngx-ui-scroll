@@ -4,13 +4,22 @@
   <br>
   <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
   <br>
-  <small>isLoading: {{datasource.adapter.isLoading}}</small>
+  <small>isLoading:
+    {{datasource.adapter.isLoading}}
+    ({{(datasource.adapter.isLoading$ | async)}})
+  </small>
+  <br>
+  <small>first visible:
+    {{datasource.adapter.firstVisible.$index}}
+    ({{(datasource.adapter.firstVisible$ | async)?.$index}})
+  </small>
   <br><br>
 </div>
 
 <div class="viewport" style="height: 600px">
-  <!--<div style="height: 100px">gap</div>-->
   <div *uiScroll="let item of datasource">
-    <app-samples-test-inner>{{item.text}}</app-samples-test-inner>
+    <app-samples-test-inner>
+      {{item.text}} {{item.id % 10 === 0 ? '**********' : ''}}
+    </app-samples-test-inner>
   </div>
 </div>

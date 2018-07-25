@@ -7,7 +7,7 @@ export class Item {
   nodeId: string;
   routines: Routines;
 
-  element: any;
+  element: HTMLElement;
   invisible: boolean;
   toRemove: boolean;
 

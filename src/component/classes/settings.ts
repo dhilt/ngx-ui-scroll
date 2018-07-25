@@ -2,6 +2,7 @@ import { Settings as ISettings, DevSettings as IDevSettings } from '../interface
 import { assignSettings } from '../utils/index';
 
 export const defaultSettings: ISettings = {
+  adapter: false,
   startIndex: 1,
   bufferSize: 5,
   padding: 0.5,
@@ -28,6 +29,7 @@ export const defaultDevSettings: IDevSettings = {
 export class Settings implements ISettings {
 
   // user settings
+  adapter: boolean;
   startIndex: number;
   bufferSize: number;
   padding: number;

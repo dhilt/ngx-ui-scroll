@@ -45,8 +45,7 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 20,
-      adapter: true
+      bufferSize: 20
     },
     devSettings: {
       debug: true

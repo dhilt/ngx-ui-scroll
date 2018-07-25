@@ -1,7 +1,40 @@
 import { BehaviorSubject, Observable, Observer, of as observableOf } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
-import { Adapter as IAdapter, Process, ProcessSubject, ItemAdapter, Datasource } from '../interfaces/index';
+import { Adapter as IAdapter, Process, ProcessSubject, ItemAdapter } from '../interfaces/index';
 import { Scroller } from '../scroller';
+
+const getIsInitialized = (adapter: Adapter) =>
+  Observable.create((observer: Observer<boolean>) => {
+    const intervalId = setInterval(() => {
+      if (adapter && adapter.init) {
+        clearInterval(intervalId);
+        observer.next(true);
+        observer.complete();
+      }
+    }, 25);
+  });
+
+const getInitializedSubject = (adapter: Adapter, method) => {
+  return adapter.init ? method() :
+    adapter.init$
+      .pipe(switchMap(() =>
+        method()
+      ));
+};
+
+export const generateMockAdapter = (): IAdapter => (
+  <IAdapter> {
+    version: null,
+    init: false,
+    init$: observableOf(false),
+    isLoading: false,
+    isLoading$: new BehaviorSubject<boolean>(false),
+    firstVisible: {},
+    firstVisible$: new BehaviorSubject<ItemAdapter>({}),
+    reload: () => null
+  }
+);
 
 export class Adapter implements IAdapter {
 
@@ -10,7 +43,7 @@ export class Adapter implements IAdapter {
   }
 
   get init$(): Observable<boolean> {
-    return observableOf(this.isInitialized);
+    return getIsInitialized(this);
   }
 
   get version(): string | null {
@@ -22,7 +55,7 @@ export class Adapter implements IAdapter {
   }
 
   get isLoading$(): BehaviorSubject<boolean> {
-    return this.isInitialized ? this.getIsLoading$() : observableOf(false);
+    return getInitializedSubject(this, () => this.getIsLoading$());
   }
 
   get firstVisible(): ItemAdapter {
@@ -30,7 +63,7 @@ export class Adapter implements IAdapter {
   }
 
   get firstVisible$(): BehaviorSubject<ItemAdapter> {
-    return this.isInitialized ? this.getFirstVisible$() : observableOf({});
+    return getInitializedSubject(this, () => this.getFirstVisible$());
   }
 
   private isInitialized: boolean;
@@ -65,27 +98,3 @@ export class Adapter implements IAdapter {
     });
   }
 }
-
-// const getIsInitialized = (datasource: Datasource) =>
-//   Observable.create((observer: Observer<boolean>) => {
-//     const intervalId = setInterval(() => {
-//       if (datasource.adapter && datasource.adapter.init) {
-//         clearInterval(intervalId);
-//         observer.next(true);
-//         observer.complete();
-//       }
-//     }, 25);
-//   });
-
-export const generateMockAdapter = (): IAdapter => (
-  <IAdapter> {
-    version: null,
-    init: false,
-    init$: observableOf(false),
-    isLoading: false,
-    isLoading$: new BehaviorSubject<boolean>(false),
-    firstVisible: {},
-    firstVisible$: new BehaviorSubject<ItemAdapter>({}),
-    reload: () => null
-  }
-);

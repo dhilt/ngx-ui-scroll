@@ -89,6 +89,19 @@ export class Workflow {
         break;
       case Process.start:
         if (data.status === 'next') {
+          PreClip.run(scroller);
+        }
+        break;
+      case Process.preClip:
+        if (data.status === 'next') {
+          Clip.run(scroller);
+        }
+        if (data.status === 'done') {
+          PreFetch.run(scroller);
+        }
+        break;
+      case Process.clip:
+        if (data.status === 'next') {
           PreFetch.run(scroller);
         }
         break;
@@ -119,19 +132,6 @@ export class Workflow {
         }
         break;
       case Process.postRender:
-        if (data.status === 'next') {
-          PreClip.run(scroller);
-        }
-        break;
-      case Process.preClip:
-        if (data.status === 'next') {
-          Clip.run(scroller);
-        }
-        if (data.status === 'done') {
-          End.run(scroller);
-        }
-        break;
-      case Process.clip:
         if (data.status === 'next') {
           End.run(scroller);
         }

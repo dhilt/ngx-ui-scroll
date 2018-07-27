@@ -59,9 +59,9 @@ export default class PostRender {
       element.style.position = '';
       items[i].invisible = false;
       items[i].setSize();
-      // scroller.buffer.cache.add(items[i]);
+      scroller.buffer.cache.add(items[i]);
     }
-    scroller.buffer.cache.addList(items, scroller.state.isInitial ? scroller.state.startIndex : null);
+    // scroller.buffer.cache.addList(items, scroller.state.isInitial ? scroller.state.startIndex : null);
   }
 
   static runForward(scroller: Scroller, size: number) {

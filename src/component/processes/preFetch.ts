@@ -26,11 +26,12 @@ export default class PreFetch {
     let position = 0;
     let index = state.startIndex;
     let item = buffer.cache.get(index);
-    let firstIndex, lastIndex;
+    let firstIndex = index, lastIndex;
 
     // first index to fetch
     const inc = startPosition < 0 ? -1 : 1;
     while (startPosition < 0 ? position > startPosition : position < startPosition) {
+      firstIndex = lastIndex = index;
       if (index <= settings.minIndex) {
         break;
       }
@@ -38,7 +39,6 @@ export default class PreFetch {
       item = buffer.cache.get(index);
       position += inc * (item ? item.size : averageItemSize);
     }
-    firstIndex = lastIndex = index;
 
     // last index to fetch
     while (position < endPosition) {

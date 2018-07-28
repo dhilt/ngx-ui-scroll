@@ -1,7 +1,7 @@
 export class ClipByDirection {
   shouldClip: boolean;
-  size: number | null;
-  items: number | null;
+  size: number;
+  items: number;
 
   constructor() {
     this.reset();
@@ -9,12 +9,13 @@ export class ClipByDirection {
 
   reset() {
     this.shouldClip = false;
-    this.size = null;
-    this.items = null;
+    this.size = 0;
+    this.items = 0;
   }
 }
 
 export class ClipModel {
+  shouldClip: boolean;
   forward: ClipByDirection;
   backward: ClipByDirection;
 
@@ -25,11 +26,12 @@ export class ClipModel {
   }
 
   reset() {
+    this.shouldClip = false;
     this.backward.reset();
     this.forward.reset();
   }
 
-  get shouldClip(): boolean {
-    return this.forward.shouldClip || this.backward.shouldClip;
+  get size(): number {
+    return this.backward.size + this.forward.size;
   }
 }

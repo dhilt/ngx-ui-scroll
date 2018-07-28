@@ -12,7 +12,6 @@ export default class Clip {
 
     scroller.cycleSubscriptions.push(
       scroller.bindData().subscribe(() => {
-        Clip.processClip(scroller);
         scroller.callWorkflow(<ProcessSubject>{
           process: Process.clip,
           status: 'next'
@@ -22,11 +21,11 @@ export default class Clip {
   }
 
   static runByDirection(direction: Direction, scroller: Scroller) {
-    if (!scroller.state.clip[direction].shouldClip) {
+    if (!scroller.state.clip[direction].size) {
       return;
     }
     const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
-    scroller.viewport.padding[opposite].size += scroller.state.clip[direction].size || 0;
+    scroller.viewport.padding[direction].size += scroller.state.clip[direction].size;
   }
 
   static processBuffer(scroller: Scroller) {
@@ -40,18 +39,6 @@ export default class Clip {
       return true;
     });
     scroller.log(`clipped ${clipped.length} items`, clipped);
-    if (!scroller.buffer.size) {
-      scroller.state.setPreviousClip();
-    }
-  }
-
-  static processClip(scroller: Scroller) {
-    if (!scroller.state.clip[Direction.backward].shouldClip) {
-      scroller.buffer.bof = false;
-    }
-    if (!scroller.state.clip[Direction.forward].shouldClip) {
-      scroller.buffer.eof = false;
-    }
   }
 
 }

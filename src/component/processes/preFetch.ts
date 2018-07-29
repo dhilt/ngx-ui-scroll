@@ -23,22 +23,43 @@ export default class PreFetch {
     const startPosition = scrollPosition - viewport.getBufferPadding();
     const endPosition = scrollPosition + viewport.getSize() + viewport.getBufferPadding();
 
-    let position = 0;
+    let position = 0, count = 0;
     let index = state.startIndex;
     let item = buffer.cache.get(index);
-    let firstIndex = index, lastIndex;
+    let firstIndex = index, lastIndex = index;
 
     // first index to fetch
     const inc = startPosition < 0 ? -1 : 1;
-    while (startPosition < 0 ? position > startPosition : position < startPosition) {
-      firstIndex = lastIndex = index;
-      if (index <= settings.minIndex) {
-        break;
-      }
+    while (1) {
       index += inc;
       item = buffer.cache.get(index);
       position += inc * (item ? item.size : averageItemSize);
+      if (inc < 0) {
+        firstIndex = index;
+        fetch.backwardItems.push(index);
+        if (position < startPosition) {
+          break;
+        }
+      } else {
+        if (position > startPosition) {
+          break;
+        }
+        firstIndex = index;
+      }
     }
+    // while (startPosition < 0 ? position > startPosition : position < startPosition) {
+    //   firstIndex = lastIndex = index;
+    //   if (startPosition < 0 && count > 0) {
+    //     fetch.backwardItems.push(index);
+    //   }
+    //   count++;
+    //   if (index <= settings.minIndex) {
+    //     break;
+    //   }
+    //   index += inc;
+    //   item = buffer.cache.get(index);
+    //   position += inc * (item ? item.size : averageItemSize);
+    // }
 
     // last index to fetch
     while (position < endPosition) {
@@ -67,12 +88,16 @@ export default class PreFetch {
       let pack = packs[0];
       if (packs[0].length && packs[1] && packs[1].length) {
         // todo: need to look for biggest pack in visible area
+        // todo: or think about merging two requests in a single Fetch process
         if (packs[1].length > packs[0].length) {
           pack = packs[1];
         }
       }
       fetch.firstIndex = Math.max(pack[0], settings.minIndex);
       fetch.lastIndex = Math.min(pack[pack.length - 1], settings.maxIndex);
+      fetch.backwardItems = fetch.backwardItems.reduce((acc, i) =>
+          i >= fetch.firstIndex && i <= fetch.lastIndex ? acc.push(i) && acc : acc
+        , []);
     }
   }
 

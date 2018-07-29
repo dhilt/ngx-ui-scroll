@@ -3,10 +3,10 @@ import { Item } from './item';
 export class FetchModel {
   private _newItemsData: Array<any> | null;
   items: Array<Item>;
-  bwdItemsCount: number;
   firstIndex: number | null;
   lastIndex: number | null;
   callCount: number;
+  backwardItems: Array<number>;
 
   constructor() {
     this.callCount = 0;
@@ -16,9 +16,9 @@ export class FetchModel {
   reset() {
     this._newItemsData = null;
     this.items = [];
-    this.bwdItemsCount = 0;
     this.firstIndex = null;
     this.lastIndex = null;
+    this.backwardItems = [];
   }
 
   get newItemsData(): Array<Item> | null {

@@ -57,6 +57,11 @@ export class TestComponent {
     this.datasource.adapter.reload(this.reloadIndex);
   }
 
+  doScrollEnd() {
+    const viewportElement = document.getElementsByClassName('viewport')[0];
+    viewportElement.scrollTop = 999999;
+  }
+
   fetchData(index: number, count: number): Observable<Array<any>> {
     const data: Array<any> = [];
     const start = Math.max(MIN, index);

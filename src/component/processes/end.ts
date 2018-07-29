@@ -5,9 +5,7 @@ export default class End {
 
   static run(scroller: Scroller, isFail?: boolean) {
     scroller.state.endCycle();
-    if (scroller.datasource.adapter.init) {
-      End.calculateParams(scroller);
-    }
+    End.calculateParams(scroller);
     scroller.purgeCycleSubscriptions();
     scroller.finalize();
 

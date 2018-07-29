@@ -78,6 +78,10 @@ export class Viewport {
     return this.routines.getSize(this.host);
   }
 
+  getScrollableSize(): number {
+    return this.routines.getSize(this.element);
+  }
+
   getBufferPadding(): number {
     return this.getSize() * this.settings.padding;
   }

@@ -23,7 +23,7 @@ export default class PreFetch {
     const startPosition = scrollPosition - viewport.getBufferPadding();
     const endPosition = scrollPosition + viewport.getSize() + viewport.getBufferPadding();
 
-    let position = 0, count = 0;
+    let position = 0;
     let index = state.startIndex;
     let item = buffer.cache.get(index);
     let firstIndex = index, lastIndex = index;
@@ -95,9 +95,12 @@ export default class PreFetch {
       }
       fetch.firstIndex = Math.max(pack[0], settings.minIndex);
       fetch.lastIndex = Math.min(pack[pack.length - 1], settings.maxIndex);
-      fetch.backwardItems = fetch.backwardItems.reduce((acc, i) =>
-          i >= fetch.firstIndex && i <= fetch.lastIndex ? acc.push(i) && acc : acc
-        , []);
+      fetch.backwardItems = fetch.backwardItems.reduce((acc: Array<number>, i) => {
+        if (i >= <number>fetch.firstIndex && i <= <number>fetch.lastIndex) {
+          acc.push(i);
+        }
+        return acc;
+      }, []);
     }
   }
 

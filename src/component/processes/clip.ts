@@ -38,7 +38,7 @@ export default class Clip {
       }
       return true;
     });
-    scroller.log(`clipped ${clipped.length} items`, clipped);
+    scroller.log(`clipped ${clipped.length} items; from ${clipped[0]} to ${clipped[clipped.length - 1]}`);
   }
 
 }

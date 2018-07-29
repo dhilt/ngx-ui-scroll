@@ -6,6 +6,7 @@ export class Padding {
   element: HTMLElement;
   direction: Direction;
   routines: Routines;
+  canBeReducedSafely: boolean;
 
   constructor(
     element: HTMLElement, hostElement: HTMLElement, direction: Direction, routines: Routines, initialSize?: number
@@ -13,6 +14,7 @@ export class Padding {
     this.element = <HTMLElement>element.querySelector(`[data-padding-${direction}]`);
     this.direction = direction;
     this.routines = routines;
+    this.canBeReducedSafely = false;
     if (direction === Direction.forward && !initialSize) {
       initialSize = this.routines.getSize(hostElement);
     }
@@ -23,6 +25,7 @@ export class Padding {
 
   reset() {
     this.size = 0;
+    this.canBeReducedSafely = false;
   }
 
   get size(): number {

@@ -1,6 +1,5 @@
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessSubject } from '../interfaces/index';
-import { Item } from '../classes/item';
 
 export default class PostRender {
 
@@ -37,8 +36,18 @@ export default class PostRender {
     }
 
     const position = viewport.scrollPosition;
-    const fwdSizeDelta = viewport.getEdge(Direction.forward) - viewport.padding.forward.getEdge();
-    fwdSize = Math.max(fwdSize, fwdSizeDelta);
+
+    // fix forward padding size when the viewport is not filled enough
+    const forwardPadding = scroller.viewport.padding[Direction.forward];
+    if (!forwardPadding.canBeReducedSafely) {
+      const viewportSize = viewport.getSize();
+      if (fwdSize < viewportSize) {
+        const fwdSizeDelta = viewportSize - (viewport.getScrollableSize() - forwardPadding.size - viewport.startDelta);
+        fwdSize = Math.max(fwdSize, fwdSizeDelta);
+      }
+    } else if (fwdSize === 0) {
+      forwardPadding.canBeReducedSafely = true;
+    }
     scroller.viewport.padding[Direction.forward].size = fwdSize;
     scroller.viewport.padding[Direction.backward].size = bwdSize;
 

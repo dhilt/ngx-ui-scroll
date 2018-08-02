@@ -44,13 +44,13 @@ export default class PreClip {
     let clipBackward = true, clipForward = false;
     for (let i = firstIndex; i <= lastIndex; i++) {
       const item = items[i];
-      if (clipBackward && item.getEdge(Direction.forward) < viewportBackwardLimit) {
+      if (clipBackward && item.getEdge(Direction.forward) <= viewportBackwardLimit) {
         item.toRemove = true;
         clip[Direction.backward].size += item.size;
         continue;
       }
       clipBackward = false;
-      if (!clipForward && item.getEdge(Direction.backward) <= viewportForwardLimit) {
+      if (!clipForward && item.getEdge(Direction.backward) < viewportForwardLimit) {
         continue;
       }
       clipForward = true;

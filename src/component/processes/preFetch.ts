@@ -35,11 +35,13 @@ export default class PreFetch {
       item = buffer.cache.get(index);
       position += inc * (item ? item.size : averageItemSize);
       if (inc < 0) {
-        firstIndex = index;
-        fetch.backwardItems.push(index);
+        if (position < scrollPosition) {
+          fetch.backwardItems.push(index);
+        }
         if (position < startPosition) {
           break;
         }
+        firstIndex = index;
       } else {
         if (position > startPosition) {
           break;

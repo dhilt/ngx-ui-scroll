@@ -49,19 +49,6 @@ export default class PreFetch {
         firstIndex = index;
       }
     }
-    // while (startPosition < 0 ? position > startPosition : position < startPosition) {
-    //   firstIndex = lastIndex = index;
-    //   if (startPosition < 0 && count > 0) {
-    //     fetch.backwardItems.push(index);
-    //   }
-    //   count++;
-    //   if (index <= settings.minIndex) {
-    //     break;
-    //   }
-    //   index += inc;
-    //   item = buffer.cache.get(index);
-    //   position += inc * (item ? item.size : averageItemSize);
-    // }
 
     // last index to fetch
     while (position < endPosition) {

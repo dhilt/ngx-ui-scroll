@@ -8,8 +8,8 @@ export default class Reload {
     scroller.buffer.reset(true);
     scroller.viewport.reset();
     scroller.viewport.syntheticScrollPosition = scrollPosition > 0 ? 0 : null;
-    scroller.purgeCycleSubscriptions();
     Reload.setCurrentStartIndex(scroller, reloadIndex);
+    scroller.purgeCycleSubscriptions();
     // todo: do we need to emit Process.end before?
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.reload,
@@ -18,10 +18,11 @@ export default class Reload {
   }
 
   static setCurrentStartIndex(scroller: Scroller, startIndex: any) {
+    const { state, settings } = scroller;
     startIndex = Number(startIndex);
-    scroller.state.startIndex = !isNaN(startIndex) ? startIndex : scroller.settings.startIndex;
-    if (scroller.state.startIndex < scroller.settings.minIndex) {
-      scroller.state.startIndex = scroller.settings.minIndex;
+    state.startIndex = !isNaN(startIndex) ? startIndex : settings.startIndex;
+    if (state.startIndex < settings.minIndex) {
+      state.startIndex = settings.minIndex;
     }
   }
 }

@@ -57,6 +57,11 @@ export class TestComponent {
     this.datasource.adapter.reload(this.reloadIndex);
   }
 
+  doScrollHome() {
+    const viewportElement = document.getElementsByClassName('viewport')[0];
+    viewportElement.scrollTop = 0;
+  }
+
   doScrollEnd() {
     const viewportElement = document.getElementsByClassName('viewport')[0];
     viewportElement.scrollTop = 999999;

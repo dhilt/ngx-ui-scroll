@@ -1,6 +1,7 @@
 <div>
   <input [(ngModel)]="reloadIndex">
   <button (click)="doReload()">Reload</button>
+  <button (click)="doScrollHome()">Up</button>
   <button (click)="doScrollEnd()">Down</button>
   <br>
   <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
@@ -18,7 +19,7 @@
 </div>
 
 <div class="viewport" style="height: 600px">
-  <div *uiScroll="let item of datasource">
+  <div *uiScroll="let item of datasource" style="height: 20px;">
     <app-samples-test-inner>
       {{item.text}} {{item.id % 10 === 0 ? '**********' : ''}}
     </app-samples-test-inner>

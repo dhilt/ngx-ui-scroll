@@ -15,9 +15,9 @@ export class Padding {
     this.direction = direction;
     this.routines = routines;
     this.canBeReducedSafely = false;
-    if (direction === Direction.forward && !initialSize) {
-      initialSize = this.routines.getSize(hostElement);
-    }
+    // if (direction === Direction.forward && !initialSize) {
+    //   initialSize = this.routines.getSize(hostElement);
+    // }
     if (initialSize) {
       this.routines.setSizeStyle(this.element, initialSize);
     }

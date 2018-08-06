@@ -9,6 +9,9 @@ export default class PostRender {
     const { viewport, buffer } = scroller;
     const items = buffer.items;
     const fetch = scroller.state.fetch;
+    const forwardPadding = scroller.viewport.padding[Direction.forward];
+    const backwardPadding = scroller.viewport.padding[Direction.backward];
+    const position = viewport.scrollPosition;
 
     PostRender.processFetchedItems(scroller);
 
@@ -18,8 +21,13 @@ export default class PostRender {
       return acc + (item ? item.size : 0);
     }, 0);
     if (scrollTopDelta > 0) {
-      viewport.scrollPosition += scrollTopDelta;
-      viewport.startDelta += scrollTopDelta;
+      const newScrollPosition = viewport.scrollPosition + scrollTopDelta;
+      viewport.scrollPosition = newScrollPosition;
+      if (viewport.scrollPosition < newScrollPosition) {
+        forwardPadding.size += newScrollPosition - viewport.scrollPosition;
+        viewport.scrollPosition = newScrollPosition;
+      }
+      // viewport.startDelta += scrollTopDelta;
     }
 
     // calculate backward and forward padding sizes
@@ -35,37 +43,39 @@ export default class PostRender {
       fwdSize += item ? item.size : 0;
     }
 
-    const position = viewport.scrollPosition;
+    // calculate size before start position
+    viewport.startDelta = 0;
+    for (let index = buffer.minIndex; index < scroller.state.startIndex; index++) {
+      const item = buffer.cache.get(index);
+      viewport.startDelta += item ? item.size : buffer.averageSize;
+    }
 
     // fix forward padding size when the viewport is not filled enough
-    const forwardPadding = scroller.viewport.padding[Direction.forward];
     if (!forwardPadding.canBeReducedSafely) {
       const viewportSize = viewport.getSize();
       if (fwdSize < viewportSize) {
-        const fwdSizeDelta = viewportSize - (viewport.getScrollableSize() - forwardPadding.size - viewport.startDelta);
+        const fwdSizeDelta = viewportSize - (viewport.getScrollableSize() - forwardPadding.size - scrollTopDelta);
         fwdSize = Math.max(fwdSize, fwdSizeDelta);
       }
-    } else if (fwdSize === 0) {
+    }
+    if (fwdSize === 0) {
       forwardPadding.canBeReducedSafely = true;
     }
-    scroller.viewport.padding[Direction.forward].size = fwdSize;
-    scroller.viewport.padding[Direction.backward].size = bwdSize;
+
+    forwardPadding.size = fwdSize;
+    if (position !== 0) {
+      backwardPadding.size = bwdSize;
+    } else {
+      const _bwdSize = backwardPadding.size;
+      backwardPadding.size = bwdSize;
+      if (_bwdSize < bwdSize) {
+        const diff = bwdSize - _bwdSize;
+        viewport.scrollPosition += diff;
+      }
+    }
 
     // if (position !== viewport.scrollPosition) {
     //   viewport.scrollPosition = position;
-    // }
-
-    // const syntheticScrollPosition = PostRender.runBackward(scroller, bwdSize);
-    //
-    // // scroll position adjustment: paddings
-    // if (position !== viewport.scrollPosition) {
-    //   if (syntheticScrollPosition !== null) {
-    //     viewport.scrollPosition += viewport.scrollPosition - syntheticScrollPosition;
-    //   } else {
-    //     viewport.scrollPosition = position;
-    //   }
-    //   // update startDelta in accordance with artificial scrollPosition change
-    //   // viewport.startDelta += viewport.scrollPosition - position;
     // }
 
     scroller.callWorkflow(<ProcessSubject>{

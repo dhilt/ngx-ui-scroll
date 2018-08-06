@@ -1,7 +1,5 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject } from '../interfaces/index';
-import { Item } from '../classes/item';
-import { ItemCache } from '../classes/cache';
+import { Process, ProcessSubject } from '../interfaces/index';
 
 export default class PreFetch {
 
@@ -52,13 +50,14 @@ export default class PreFetch {
 
     // last index to fetch
     while (position < endPosition) {
-      if (index >= settings.maxIndex) {
-        break;
-      }
       lastIndex = index;
       item = buffer.cache.get(++index);
       position += item ? item.size : averageItemSize;
     }
+
+    // take absolute buffer limit values into the account
+    firstIndex = Math.max(firstIndex, buffer.absMinIndex);
+    lastIndex = Math.min(lastIndex, buffer.absMaxIndex);
 
     fetch.firstIndex = firstIndex;
     fetch.lastIndex = lastIndex;
@@ -91,60 +90,6 @@ export default class PreFetch {
         return acc;
       }, []);
     }
-  }
-
-  static getNewItem(scroller: Scroller,
-    item: Item | ItemCache | undefined,
-    index: number, size: number, position: number
-  ): Item {
-    if (item instanceof Item) {
-      item.remain = true;
-      return item;
-    } else {
-      const newItem = new Item(index, item ? item.data : null, scroller.routines);
-      newItem.setStub(size, position);
-      return newItem;
-    }
-  }
-
-  static checkEOF(scroller: Scroller) {
-    return (scroller.state.direction === Direction.forward && scroller.buffer.eof) ||
-      (scroller.state.direction === Direction.backward && scroller.buffer.bof);
-  }
-
-  static setStartIndex(scroller: Scroller) {
-    const direction = scroller.state.direction;
-    const forward = direction === Direction.forward;
-    const back = -scroller.settings.bufferSize;
-    const lastIndex = scroller.buffer.lastIndex[direction];
-    let start;
-    if (lastIndex === null) {
-      start = scroller.state.startIndex + (forward ? 0 : back);
-    } else {
-      start = lastIndex + (forward ? 1 : back);
-    }
-    // scroller.state.fetch[direction].startIndex = start;
-  }
-
-  static processPreviousClip(scroller: Scroller) {
-    const previousClip = scroller.state.previousClip;
-    if (!previousClip.isSet) {
-      return;
-    }
-    const direction = scroller.state.direction;
-    const forward = direction === Direction.forward;
-    const opposite = forward ? Direction.backward : Direction.forward;
-    const clipSize = (<any>previousClip)[`${opposite}Size`];
-    if (clipSize && previousClip.direction !== scroller.state.direction) {
-      scroller.viewport.padding[direction].size -= clipSize;
-      scroller.viewport.padding[opposite].size += clipSize;
-      if (!forward) {
-        scroller.buffer.lastIndex[opposite] = (scroller.buffer.lastIndex[direction] || 0) - 1;
-      } else {
-        scroller.buffer.lastIndex[direction] = scroller.buffer.lastIndex[opposite];
-      }
-    }
-    scroller.state.setPreviousClip(true);
   }
 
 }

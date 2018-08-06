@@ -25,10 +25,10 @@ export class Buffer {
   public $items: BehaviorSubject<any>;
 
   pristine: boolean;
-  bof: boolean;
-  eof: boolean;
   lastIndex: Index;
   cache: Cache;
+  absMinIndex: number;
+  absMaxIndex: number;
 
   private startIndex: number;
 
@@ -37,21 +37,17 @@ export class Buffer {
     this.lastIndex = new Index();
     this.cache = new Cache(settings);
     this.reset();
+    this.absMinIndex = settings.minIndex;
+    this.absMaxIndex = settings.maxIndex;
     this.startIndex = settings.startIndex;
   }
 
   reset(reload?: boolean) {
     if (reload) {
-      this.items.forEach(item => {
-        if (item.element) {
-          item.hide();
-        }
-      });
+      this.items.forEach(item => item.hide());
     }
     this.items = [];
     this.pristine = true;
-    this.bof = false;
-    this.eof = false;
     this.lastIndex.reset();
   }
 
@@ -82,6 +78,16 @@ export class Buffer {
 
   get maxIndex(): number {
     return isFinite(this.cache.maxIndex) ? this.cache.maxIndex : this.startIndex;
+  }
+
+  get bof(): boolean {
+    return this.items.length ? (this.items[0].$index === this.absMinIndex) :
+      isFinite(this.absMinIndex);
+  }
+
+  get eof(): boolean {
+    return this.items.length ? (this.items[this.items.length - 1].$index === this.absMaxIndex) :
+      isFinite(this.absMaxIndex);
   }
 
   get(index: number): Item | undefined {

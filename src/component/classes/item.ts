@@ -44,7 +44,9 @@ export class Item {
   }
 
   hide() {
-    this.routines.hideElement(this.element);
+    if (this.element) {
+      this.routines.hideElement(this.element);
+    }
   }
 
   setStub(size: number, position: number) {

@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessSubject } from '../interfaces/index';
 import { Item } from '../classes/item';
 
 export default class PostFetch {
@@ -8,7 +8,7 @@ export default class PostFetch {
     scroller.state.process = Process.postFetch;
 
     if (PostFetch.setItems(scroller)) {
-      PostFetch.setEOF(scroller);
+      PostFetch.setBufferLimits(scroller);
       scroller.callWorkflow(<ProcessSubject>{
         process: Process.postFetch,
         status: scroller.state.fetch.hasNewItems ? 'next' : 'done'
@@ -22,10 +22,25 @@ export default class PostFetch {
     }
   }
 
-  static setEOF(scroller: Scroller) {
+  static setBufferLimits(scroller: Scroller) {
+    const { buffer } = scroller;
     const { firstIndex, lastIndex, items } = scroller.state.fetch;
-    scroller.buffer.bof = <number>firstIndex < items[0].$index;
-    scroller.buffer.eof = <number>lastIndex > items[items.length - 1].$index;
+    if (!items.length) {
+      if (<number>lastIndex < buffer.minIndex) {
+        buffer.absMinIndex = buffer.minIndex;
+      }
+      if (<number>firstIndex > buffer.maxIndex) {
+        buffer.absMaxIndex = buffer.maxIndex;
+      }
+    } else {
+      const last = items.length - 1;
+      if (<number>firstIndex < items[0].$index) {
+        buffer.absMinIndex = items[0].$index;
+      }
+      if (<number>lastIndex > items[last].$index) {
+        buffer.absMaxIndex = items[last].$index;
+      }
+    }
   }
 
   static setItems(scroller: Scroller): boolean {

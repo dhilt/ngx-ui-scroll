@@ -16,6 +16,12 @@ export class TestInnerComponent {
   }
 }
 
+interface Item {
+  id: number;
+  text: string;
+  isSelected: boolean;
+}
+
 @Component({
   selector: 'app-samples-test',
   templateUrl: './test.component.html'
@@ -28,9 +34,10 @@ export class TestComponent {
   constructor() {
     this.data = [];
     for (let i = 0; i <= MAX - MIN; i++) {
-      this.data.push({
+      this.data.push(<Item>{
         id: i + MIN,
-        text: 'item #' + (i + MIN)
+        text: 'item #' + (i + MIN),
+        isSelected: i % 10 === 0
       });
     }
     this.datasource.adapter.firstVisible$
@@ -67,8 +74,12 @@ export class TestComponent {
     viewportElement.scrollTop = 999999;
   }
 
-  fetchData(index: number, count: number): Observable<Array<any>> {
-    const data: Array<any> = [];
+  doToggleItem(item: Item) {
+    item.isSelected = !item.isSelected;
+  }
+
+  fetchData(index: number, count: number): Observable<Array<Item>> {
+    const data: Array<Item> = [];
     const start = Math.max(MIN, index);
     const end = Math.min(MAX, index + count - 1);
     if (start <= end) {

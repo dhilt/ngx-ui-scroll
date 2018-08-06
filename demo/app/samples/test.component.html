@@ -19,9 +19,13 @@
 </div>
 
 <div class="viewport" style="height: 600px">
-  <div *uiScroll="let item of datasource" style="height: 20px;">
+  <div
+    *uiScroll="let item of datasource"
+    (click)="doToggleItem(item)"
+    style="height: 20px;"
+  >
     <app-samples-test-inner>
-      {{item.text}} {{item.id % 10 === 0 ? '**********' : ''}}
+      {{item.text}} {{item.isSelected ? '**********' : ''}}
     </app-samples-test-inner>
   </div>
 </div>

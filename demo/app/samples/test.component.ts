@@ -55,8 +55,10 @@ export class TestComponent {
 
   getVisibleItemsCount(): number {
     const adapter = this.datasource.adapter;
-    const last = (adapter.lastVisible && adapter.lastVisible.$index) || NaN;
-    const first = (adapter.firstVisible && adapter.firstVisible.$index) || NaN;
+    let last = <number>adapter.lastVisible.$index;
+    last = Number.isInteger(last) ? last : NaN;
+    let first = <number>adapter.firstVisible.$index;
+    first = Number.isInteger(first) ? first : NaN;
     return (Number.isNaN(last) || Number.isNaN(first)) ? 0 : last - first + 1;
   }
 

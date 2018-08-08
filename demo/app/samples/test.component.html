@@ -22,7 +22,7 @@
   <small>total:
     {{datasource.adapter.itemsCount}},
     visible:
-    {{datasource.adapter.lastVisible.$index - datasource.adapter.firstVisible.$index + 1}}
+    {{getVisibleItemsCount()}}
   </small>
   <br><br>
 </div>

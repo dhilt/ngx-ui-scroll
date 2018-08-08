@@ -24,6 +24,7 @@ export class TestInnerComponent {
 export class TestComponent {
 
   reloadIndex = 1;
+  visibleItemsCount: number;
   readonly data: Array<any>;
 
   constructor() {
@@ -51,6 +52,13 @@ export class TestComponent {
       debug: true
     }
   });
+
+  getVisibleItemsCount(): number {
+    const adapter = this.datasource.adapter;
+    const last = (adapter.lastVisible && adapter.lastVisible.$index) || NaN;
+    const first = (adapter.firstVisible && adapter.firstVisible.$index) || NaN;
+    return (Number.isNaN(last) || Number.isNaN(first)) ? 0 : last - first + 1;
+  }
 
   doReload() {
     this.datasource.adapter.reload(this.reloadIndex);

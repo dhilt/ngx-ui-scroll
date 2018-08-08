@@ -41,7 +41,7 @@ export class Viewport {
 
     if (settings.windowViewport) {
       this.host = this.element.ownerDocument.body;
-      this.scrollable = <HTMLElement>this.element.ownerDocument.scrollingElement;
+      this.scrollable = <HTMLElement>this.element.ownerDocument.documentElement;
     } else {
       this.host = <HTMLElement>this.element.parentElement;
       this.scrollable = <HTMLElement>this.element.parentElement;

@@ -3,6 +3,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { Adapter as IAdapter, Process, ProcessSubject, ItemAdapter } from '../interfaces/index';
 import { Scroller } from '../scroller';
+import { Item } from './item';
 
 const getIsInitialized = (adapter: Adapter): Observable<boolean> =>
   Observable.create((observer: Observer<boolean>) => {
@@ -32,6 +33,9 @@ export const generateMockAdapter = (): IAdapter => (
     isLoading$: new BehaviorSubject<boolean>(false),
     firstVisible: {},
     firstVisible$: new BehaviorSubject<ItemAdapter>({}),
+    lastVisible: {},
+    lastVisible$: new BehaviorSubject<ItemAdapter>({}),
+    itemsCount: 0,
     reload: () => null
   }
 );
@@ -66,6 +70,18 @@ export class Adapter implements IAdapter {
     return getInitializedSubject(this, () => this.getFirstVisible$());
   }
 
+  get lastVisible(): ItemAdapter {
+    return this.isInitialized ? this.getLastVisible() : {};
+  }
+
+  get lastVisible$(): BehaviorSubject<ItemAdapter> {
+    return getInitializedSubject(this, () => this.getLastVisible$());
+  }
+
+  get itemsCount(): number {
+    return this.getItemsCount();
+  }
+
   private isInitialized: boolean;
   private callWorkflow: Function;
   private getVersion: Function;
@@ -73,6 +89,9 @@ export class Adapter implements IAdapter {
   private getIsLoading$: Function;
   private getFirstVisible: Function;
   private getFirstVisible$: Function;
+  private getLastVisible: Function;
+  private getLastVisible$: Function;
+  private getItemsCount: Function;
 
   constructor() {
     this.isInitialized = false;
@@ -87,6 +106,10 @@ export class Adapter implements IAdapter {
       this.getIsLoading$ = (): BehaviorSubject<boolean> => scroller.state.pendingSource;
       this.getFirstVisible = (): ItemAdapter => scroller.state.firstVisibleSource.getValue();
       this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.firstVisibleSource;
+      this.getLastVisible = (): ItemAdapter => scroller.state.lastVisibleSource.getValue();
+      this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.lastVisibleSource;
+      this.getItemsCount = (): number =>
+        scroller.buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
     }
   }
 

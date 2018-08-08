@@ -20,6 +20,7 @@ export class State implements IState {
 
   pendingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
+  lastVisibleSource: BehaviorSubject<ItemAdapter>;
 
   get pending(): boolean {
     return this.pendingSource.getValue();
@@ -40,6 +41,15 @@ export class State implements IState {
       this.firstVisibleSource.next(item);
     }
   }
+  get lastVisibleItem(): ItemAdapter {
+    return this.lastVisibleSource.getValue();
+  }
+
+  set lastVisibleItem(item: ItemAdapter) {
+    if (this.lastVisibleItem.$index !== item.$index) {
+      this.lastVisibleSource.next(item);
+    }
+  }
 
   constructor(startIndex: number) {
     this.isInitial = false;
@@ -53,6 +63,7 @@ export class State implements IState {
     this.startIndex = startIndex;
     this.pendingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
+    this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
   }
 
   startCycle(options: Run = {}) {

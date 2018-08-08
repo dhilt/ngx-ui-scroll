@@ -14,5 +14,8 @@ export interface Adapter {
   readonly isLoading$: BehaviorSubject<boolean>;
   readonly firstVisible: ItemAdapter;
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
+  readonly lastVisible: ItemAdapter;
+  readonly lastVisible$: BehaviorSubject<ItemAdapter>;
+  readonly itemsCount: number;
   reload: Function;
 }

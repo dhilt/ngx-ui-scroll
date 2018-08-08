@@ -29,6 +29,7 @@ interface Item {
 export class TestComponent {
 
   reloadIndex = 1;
+  visibleItemsCount: number;
   readonly data: Array<any>;
 
   constructor() {
@@ -61,6 +62,15 @@ export class TestComponent {
       throttle: 20
     }
   });
+
+  getVisibleItemsCount(): number {
+    const adapter = this.datasource.adapter;
+    let last = <number>adapter.lastVisible.$index;
+    last = Number.isInteger(last) ? last : NaN;
+    let first = <number>adapter.firstVisible.$index;
+    first = Number.isInteger(first) ? first : NaN;
+    return (Number.isNaN(last) || Number.isNaN(first)) ? 0 : last - first + 1;
+  }
 
   doReload() {
     this.datasource.adapter.reload(this.reloadIndex);

@@ -82,6 +82,10 @@ export class Viewport {
     return this.routines.getEdge(this.host, direction, opposite);
   }
 
+  getElementEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
+    return this.routines.getEdge(element, direction, opposite);
+  }
+
   getLimit(direction: Direction, opposite?: boolean): number {
     return this.getEdge(direction, opposite) +
       (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();

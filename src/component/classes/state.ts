@@ -5,7 +5,6 @@ import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
 export class State implements IState {
-  hasAdapter: boolean;
   process: Process;
   wfCycleCount: number;
   cycleCount: number;
@@ -19,6 +18,7 @@ export class State implements IState {
 
   pendingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
+  lastVisibleSource: BehaviorSubject<ItemAdapter>;
 
   get pending(): boolean {
     return this.pendingSource.getValue();
@@ -40,6 +40,16 @@ export class State implements IState {
     }
   }
 
+  get lastVisibleItem(): ItemAdapter {
+    return this.lastVisibleSource.getValue();
+  }
+
+  set lastVisibleItem(item: ItemAdapter) {
+    if (this.lastVisibleItem.$index !== item.$index) {
+      this.lastVisibleSource.next(item);
+    }
+  }
+
   constructor() {
     this.isInitial = false;
     this.wfCycleCount = 1;
@@ -50,6 +60,7 @@ export class State implements IState {
     this.setPreviousClip(true);
     this.pendingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
+    this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
   }
 
   startCycle(options: Run = {}) {

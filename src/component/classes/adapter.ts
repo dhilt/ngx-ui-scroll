@@ -32,6 +32,8 @@ export const generateMockAdapter = (): IAdapter => (
     isLoading$: new BehaviorSubject<boolean>(false),
     firstVisible: {},
     firstVisible$: new BehaviorSubject<ItemAdapter>({}),
+    lastVisible: {},
+    lastVisible$: new BehaviorSubject<ItemAdapter>({}),
     reload: () => null
   }
 );
@@ -66,6 +68,14 @@ export class Adapter implements IAdapter {
     return getInitializedSubject(this, () => this.getFirstVisible$());
   }
 
+  get lastVisible(): ItemAdapter {
+    return this.isInitialized ? this.getLastVisible() : {};
+  }
+
+  get lastVisible$(): BehaviorSubject<ItemAdapter> {
+    return getInitializedSubject(this, () => this.getLastVisible$());
+  }
+
   private isInitialized: boolean;
   private callWorkflow: Function;
   private getVersion: Function;
@@ -73,6 +83,8 @@ export class Adapter implements IAdapter {
   private getIsLoading$: Function;
   private getFirstVisible: Function;
   private getFirstVisible$: Function;
+  private getLastVisible: Function;
+  private getLastVisible$: Function;
 
   constructor() {
     this.isInitialized = false;
@@ -87,6 +99,8 @@ export class Adapter implements IAdapter {
       this.getIsLoading$ = (): BehaviorSubject<boolean> => scroller.state.pendingSource;
       this.getFirstVisible = (): ItemAdapter => scroller.state.firstVisibleSource.getValue();
       this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.firstVisibleSource;
+      this.getLastVisible = (): ItemAdapter => scroller.state.lastVisibleSource.getValue();
+      this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.lastVisibleSource;
     }
   }
 

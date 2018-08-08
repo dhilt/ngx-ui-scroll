@@ -18,6 +18,12 @@
     {{datasource.adapter.lastVisible.$index}}
     ({{(datasource.adapter.lastVisible$ | async)?.$index}})
   </small>
+  <br>
+  <small>total:
+    {{datasource.adapter.itemsCount}},
+    visible:
+    {{datasource.adapter.lastVisible.$index - datasource.adapter.firstVisible.$index + 1}}
+  </small>
   <br><br>
 </div>
 

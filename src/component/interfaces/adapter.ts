@@ -16,5 +16,6 @@ export interface Adapter {
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;
   readonly lastVisible$: BehaviorSubject<ItemAdapter>;
+  readonly itemsCount: number;
   reload: Function;
 }

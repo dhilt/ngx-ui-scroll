@@ -62,5 +62,6 @@ export class Settings implements ISettings {
     assignSettings(this, settings || {}, defaultSettings, minSettings);
     assignDevSettings(this, devSettings || {}, defaultDevSettings);
     this.instanceIndex = instanceIndex;
+    // todo: min/max indexes must be ignored if infinite mode is enabled
   }
 }

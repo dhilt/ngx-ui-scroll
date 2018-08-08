@@ -13,22 +13,9 @@ export default class PostRender {
     const backwardPadding = scroller.viewport.padding[Direction.backward];
     const position = viewport.scrollPosition;
 
+    scroller.stat('Before unhide');
     PostRender.processFetchedItems(scroller);
-
-    // scroll position adjustment: backward items
-    const scrollTopDelta = fetch.backwardItems.reduce((acc, i) => {
-      const item = fetch.items.find(_item => _item.$index === i);
-      return acc + (item ? item.size : 0);
-    }, 0);
-    if (scrollTopDelta > 0) {
-      const newScrollPosition = viewport.scrollPosition + scrollTopDelta;
-      viewport.scrollPosition = newScrollPosition;
-      if (viewport.scrollPosition < newScrollPosition) {
-        forwardPadding.size += newScrollPosition - viewport.scrollPosition;
-        viewport.scrollPosition = newScrollPosition;
-      }
-      // viewport.startDelta += scrollTopDelta;
-    }
+    scroller.stat('After unhide');
 
     // calculate backward and forward padding sizes
     let bwdSize = 0, fwdSize = 0;
@@ -50,29 +37,32 @@ export default class PostRender {
       viewport.startDelta += item ? item.size : buffer.averageSize;
     }
 
-    // fix forward padding size when the viewport is not filled enough
-    if (!forwardPadding.canBeReducedSafely) {
-      const viewportSize = viewport.getSize();
-      if (fwdSize < viewportSize) {
-        const fwdSizeDelta = viewportSize - (viewport.getScrollableSize() - forwardPadding.size - scrollTopDelta);
-        fwdSize = Math.max(fwdSize, fwdSizeDelta);
-      }
+    // set paddings
+    forwardPadding.size = fwdSize;
+    const bwdPaddingDiff = bwdSize - backwardPadding.size;
+    backwardPadding.size = bwdSize;
+    if (bwdPaddingDiff > 0) {
+      viewport.scrollPosition += bwdPaddingDiff;
     }
-    if (fwdSize === 0) {
-      forwardPadding.canBeReducedSafely = true;
+    scroller.stat('After set paddings');
+
+    // backward items adjustments
+    const bwdItemsSize = fetch.backwardItems.reduce((acc, i) => {
+      const item = fetch.items.find(_item => _item.$index === i);
+      return acc + (item ? item.size : 0);
+    }, 0);
+    if (bwdItemsSize > 0) {
+      const newScrollPosition = viewport.scrollPosition + bwdItemsSize;
+      viewport.scrollPosition = newScrollPosition;
+      const diff = newScrollPosition - viewport.scrollPosition;
+      if (diff) {
+        forwardPadding.size += diff;
+        viewport.scrollPosition = newScrollPosition;
+      }
+      scroller.stat('Backward items adjustments');
     }
 
-    forwardPadding.size = fwdSize;
-    if (position !== 0) {
-      backwardPadding.size = bwdSize;
-    } else {
-      const _bwdSize = backwardPadding.size;
-      backwardPadding.size = bwdSize;
-      if (_bwdSize < bwdSize) {
-        const diff = bwdSize - _bwdSize;
-        viewport.scrollPosition += diff;
-      }
-    }
+    scroller.stat('After adjustments');
 
     // if (position !== viewport.scrollPosition) {
     //   viewport.scrollPosition = position;

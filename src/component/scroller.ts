@@ -78,8 +78,9 @@ export class Scroller {
 
   stat(str?: string) {
     if (this.settings.debug) {
-      this.log((str ? str + ' — ' : '') +
+      this.log((str ? str + ', ' : '') +
         'top: ' + this.viewport.scrollPosition + ', ' +
+        'size: ' + this.viewport.getScrollableSize() + ', ' +
         'bwd_p: ' + this.viewport.padding.backward.size + ', ' +
         'fwd_p: ' + this.viewport.padding.forward.size + ', ' +
         'items: ' + this.buffer.size

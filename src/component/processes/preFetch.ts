@@ -24,7 +24,8 @@ export default class PreFetch {
     let position = 0;
     let index = state.startIndex;
     let item = buffer.cache.get(index);
-    let firstIndex = index, lastIndex = index;
+    let firstIndex = index, lastIndex = index, firstIndexPosition = position;
+    const bwdItems = {};
 
     // first index to fetch
     const inc = startPosition < 0 ? -1 : 1;
@@ -33,27 +34,38 @@ export default class PreFetch {
       item = buffer.cache.get(index);
       position += inc * (item ? item.size : averageItemSize);
       if (inc < 0) {
-        if (position < scrollPosition) {
-          fetch.backwardItems.push(index);
-        }
         if (position < startPosition) {
           break;
         }
-        firstIndex = index;
+        if (position < scrollPosition) {
+          bwdItems[index] = position;
+        }
       } else {
         if (position > startPosition) {
           break;
         }
-        firstIndex = index;
       }
+      firstIndex = index;
+      firstIndexPosition = position;
     }
 
     // last index to fetch
-    while (position < endPosition) {
+    index = firstIndex;
+    position = firstIndexPosition;
+    while (1) {
+      if (position < scrollPosition) {
+        // bwdItems[index] = position;
+      }
       lastIndex = index;
-      item = buffer.cache.get(++index);
+      index++;
+      item = buffer.cache.get(index);
       position += item ? item.size : averageItemSize;
+      if (position >= endPosition) {
+        break;
+      }
     }
+
+    fetch.backwardItems = Object.keys(bwdItems).map(i => Number(i));
 
     // take absolute buffer limit values into the account
     firstIndex = Math.max(firstIndex, buffer.absMinIndex);

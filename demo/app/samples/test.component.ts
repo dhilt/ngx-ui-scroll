@@ -53,10 +53,12 @@ export class TestComponent {
     settings: {
       bufferSize: 20,
       minIndex: MIN,
-      itemSize: 40
+      itemSize: 40,
+      infinite: false
     },
     devSettings: {
-      debug: true
+      debug: true,
+      throttle: 20
     }
   });
 
@@ -66,6 +68,15 @@ export class TestComponent {
 
   doScrollHome() {
     const viewportElement = document.getElementsByClassName('viewport')[0];
+    const doScroll = (limit: number, delay: number, delta: number) => {
+      setTimeout(() => {
+        viewportElement.scrollTop -= delta;
+        if (--limit > 0) {
+          doScroll(limit, delay, delta);
+        }
+      }, delay);
+    };
+    // doScroll(400, 25, 1);
     viewportElement.scrollTop = 0;
   }
 
@@ -88,7 +99,7 @@ export class TestComponent {
       }
     }
     return Observable.create((observer: Observer<any>) => {
-      // setTimeout(() => observer.next(data), 500);
+      // setTimeout(() => observer.next(data), 0);
       observer.next(data);
     });
   }

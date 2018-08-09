@@ -6,6 +6,7 @@ export class FetchModel {
   firstIndex: number | null;
   lastIndex: number | null;
   callCount: number;
+  position: number;
   backwardItems: Array<number>;
 
   constructor() {
@@ -18,6 +19,7 @@ export class FetchModel {
     this.items = [];
     this.firstIndex = null;
     this.lastIndex = null;
+    this.position = 0;
     this.backwardItems = [];
   }
 

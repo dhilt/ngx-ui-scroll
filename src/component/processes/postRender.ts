@@ -12,6 +12,8 @@ export default class PostRender {
     const forwardPadding = scroller.viewport.padding[Direction.forward];
     const backwardPadding = scroller.viewport.padding[Direction.backward];
     const position = viewport.scrollPosition;
+    const posDiff = position - fetch.position;
+    scroller.log('scr pos diff:', posDiff, ', fetch pos:', fetch.position);
 
     scroller.stat('Before unhide');
     PostRender.processFetchedItems(scroller);
@@ -30,20 +32,10 @@ export default class PostRender {
       fwdSize += item ? item.size : 0;
     }
 
-    // calculate size before start position
-    viewport.startDelta = 0;
-    for (let index = buffer.minIndex; index < scroller.state.startIndex; index++) {
-      const item = buffer.cache.get(index);
-      viewport.startDelta += item ? item.size : buffer.averageSize;
-    }
-
     // set paddings
     forwardPadding.size = fwdSize;
     const bwdPaddingDiff = bwdSize - backwardPadding.size;
     backwardPadding.size = bwdSize;
-    if (bwdPaddingDiff > 0) {
-      viewport.scrollPosition += bwdPaddingDiff;
-    }
     scroller.stat('After set paddings');
 
     // backward items adjustments
@@ -51,22 +43,28 @@ export default class PostRender {
       const item = fetch.items.find(_item => _item.$index === i);
       return acc + (item ? item.size : 0);
     }, 0);
+    const bwdDiff = bwdSize - bwdItemsSize;
+    const diff = bwdItemsSize + bwdPaddingDiff;
     if (bwdItemsSize > 0) {
-      const newScrollPosition = viewport.scrollPosition + bwdItemsSize;
-      viewport.scrollPosition = newScrollPosition;
-      const diff = newScrollPosition - viewport.scrollPosition;
-      if (diff) {
-        forwardPadding.size += diff;
-        viewport.scrollPosition = newScrollPosition;
+      const oldPosition = viewport.scrollPosition;
+      const newPosition = oldPosition + bwdItemsSize;
+      viewport.scrollPosition = newPosition;
+      const positionDiff = newPosition - viewport.scrollPosition;
+      if (positionDiff > 0) {
+        forwardPadding.size += positionDiff;
+        viewport.scrollPosition = newPosition;
       }
-      scroller.stat('Backward items adjustments');
     }
 
     scroller.stat('After adjustments');
+    scroller.settings.debug = false;
 
-    // if (position !== viewport.scrollPosition) {
-    //   viewport.scrollPosition = position;
-    // }
+    // calculate size before start position
+    viewport.startDelta = 0;
+    for (let index = buffer.minIndex; index < scroller.state.startIndex; index++) {
+      const item = buffer.cache.get(index);
+      viewport.startDelta += item ? item.size : buffer.averageSize;
+    }
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.postRender,
@@ -86,39 +84,6 @@ export default class PostRender {
       scroller.buffer.cache.add(items[i]);
     }
     // scroller.buffer.cache.addList(items, scroller.state.isInitial ? scroller.state.startIndex : null);
-  }
-
-  static runForward(scroller: Scroller, size: number) {
-    const paddingForward = scroller.viewport.padding[Direction.forward];
-    const _paddingSize = paddingForward.size || 0;
-    paddingForward.size = Math.max(_paddingSize - size, 0);
-  }
-
-  static runBackward(scroller: Scroller, size: number) {
-    const viewport = scroller.viewport;
-    const _scrollPosition = viewport.scrollPosition;
-    const paddingBackward = viewport.padding[Direction.backward];
-    const paddingForward = viewport.padding[Direction.forward];
-
-    // need to make "size" pixels in backward direction
-    // 1) via paddingTop
-    const _paddingSize = paddingBackward.size || 0;
-    let paddingSize = Math.max(_paddingSize - size, 0);
-    paddingBackward.size = paddingSize;
-    const paddingDiff = size - (_paddingSize - paddingSize);
-    // 2) via scrollTop
-    if (paddingDiff > 0) {
-      size = paddingDiff;
-      viewport.scrollPosition += size;
-      const diff = size - viewport.scrollPosition - _scrollPosition;
-      if (diff > 0) {
-        paddingSize = paddingForward.size || 0;
-        paddingForward.size = paddingSize + diff;
-        viewport.scrollPosition += diff;
-      }
-      return viewport.scrollPosition;
-    }
-    return null;
   }
 
 }

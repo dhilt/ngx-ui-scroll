@@ -7,6 +7,10 @@ export default class PreFetch {
     scroller.state.process = Process.preFetch;
 
     PreFetch.setFetchParams(scroller);
+
+    if (scroller.state.fetch.shouldFetch) {
+      scroller.settings.debug = true;
+    }
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
       status: scroller.state.fetch.shouldFetch ? 'next' : 'done'
@@ -17,15 +21,17 @@ export default class PreFetch {
     const { settings, buffer, viewport, state } = scroller;
     const fetch = state.fetch;
     const averageItemSize = buffer.averageSize;
-    const scrollPosition = viewport.scrollPosition - viewport.startDelta;
-    const startPosition = scrollPosition - viewport.getBufferPadding();
-    const endPosition = scrollPosition + viewport.getSize() + viewport.getBufferPadding();
+    const scrollPosition = viewport.scrollPosition;
+    const relativePosition = scrollPosition - viewport.startDelta;
+    const startPosition = relativePosition - viewport.getBufferPadding();
+    const endPosition = relativePosition + viewport.getSize() + viewport.getBufferPadding();
+    fetch.position = scrollPosition;
 
     let position = 0;
     let index = state.startIndex;
     let item = buffer.cache.get(index);
     let firstIndex = index, lastIndex = index, firstIndexPosition = position;
-    const bwdItems = {};
+    const bwdItems: any = {};
 
     // first index to fetch
     const inc = startPosition < 0 ? -1 : 1;
@@ -37,7 +43,7 @@ export default class PreFetch {
         if (position < startPosition) {
           break;
         }
-        if (position < scrollPosition) {
+        if (position < relativePosition) {
           bwdItems[index] = position;
         }
       } else {
@@ -53,7 +59,7 @@ export default class PreFetch {
     index = firstIndex;
     position = firstIndexPosition;
     while (1) {
-      if (position < scrollPosition) {
+      if (position < relativePosition) {
         // bwdItems[index] = position;
       }
       lastIndex = index;

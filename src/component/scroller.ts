@@ -83,7 +83,7 @@ export class Scroller {
         'size: ' + this.viewport.getScrollableSize() + ', ' +
         'bwd_p: ' + this.viewport.padding.backward.size + ', ' +
         'fwd_p: ' + this.viewport.padding.forward.size + ', ' +
-        'items: ' + this.buffer.size
+        'items: ' + this.datasource.adapter.itemsCount
       );
     }
   }

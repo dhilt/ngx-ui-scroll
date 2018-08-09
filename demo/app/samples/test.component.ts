@@ -58,7 +58,7 @@ export class TestComponent {
       infinite: false
     },
     devSettings: {
-      debug: true,
+      debug: false,
       throttle: 20
     }
   });
@@ -109,8 +109,8 @@ export class TestComponent {
       }
     }
     return Observable.create((observer: Observer<any>) => {
-      // setTimeout(() => observer.next(data), 0);
-      observer.next(data);
+      setTimeout(() => observer.next(data), 150);
+      // observer.next(data);
     });
   }
 }

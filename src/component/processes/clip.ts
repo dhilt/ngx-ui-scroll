@@ -6,25 +6,26 @@ export default class Clip {
   static run(scroller: Scroller) {
     scroller.state.process = Process.clip;
 
+    scroller.stat('Before clip');
     Clip.runByDirection(Direction.forward, scroller);
     Clip.runByDirection(Direction.backward, scroller);
     Clip.processBuffer(scroller);
+    scroller.stat('After clip');
 
-    scroller.cycleSubscriptions.push(
-      scroller.bindData().subscribe(() => {
+    // scroller.cycleSubscriptions.push(
+    //   scroller.bindData().subscribe(() => {
         scroller.callWorkflow(<ProcessSubject>{
           process: Process.clip,
           status: 'next'
         });
-      })
-    );
+    //   })
+    // );
   }
 
   static runByDirection(direction: Direction, scroller: Scroller) {
     if (!scroller.state.clip[direction].size) {
       return;
     }
-    const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
     scroller.viewport.padding[direction].size += scroller.state.clip[direction].size;
   }
 

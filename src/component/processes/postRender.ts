@@ -11,7 +11,6 @@ export default class PostRender {
     const fetch = scroller.state.fetch;
     const forwardPadding = scroller.viewport.padding[Direction.forward];
     const backwardPadding = scroller.viewport.padding[Direction.backward];
-    const firstItem = buffer.getFirstVisibleItem();
     const position = viewport.scrollPosition;
     const posDiff = position - fetch.position;
     scroller.log('scr pos diff:', posDiff, ', fetch pos:', fetch.position);

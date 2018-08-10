@@ -25,6 +25,10 @@ export class Cache {
   constructor(settings: Settings) {
     this.items = [];
     this.averageSize = settings.itemSize;
+    this.resetIndexes();
+  }
+
+  resetIndexes() {
     this.minIndex = +Infinity;
     this.maxIndex = -Infinity;
   }

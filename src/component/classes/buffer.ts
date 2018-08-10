@@ -42,13 +42,15 @@ export class Buffer {
     this.startIndex = settings.startIndex;
   }
 
-  reset(reload?: boolean) {
+  reset(reload?: boolean, startIndex?: number) {
     if (reload) {
       this.items.forEach(item => item.hide());
     }
     this.items = [];
     this.pristine = true;
     this.lastIndex.reset();
+    this.cache.resetIndexes();
+    this.startIndex = startIndex;
   }
 
   set items(items: Array<Item>) {

@@ -11,6 +11,7 @@ export default class PostRender {
     const fetch = scroller.state.fetch;
     const forwardPadding = scroller.viewport.padding[Direction.forward];
     const backwardPadding = scroller.viewport.padding[Direction.backward];
+    const firstItem = buffer.getFirstVisibleItem();
     const position = viewport.scrollPosition;
     const posDiff = position - fetch.position;
     scroller.log('scr pos diff:', posDiff, ', fetch pos:', fetch.position);
@@ -38,21 +39,19 @@ export default class PostRender {
     backwardPadding.size = bwdSize;
     scroller.stat('After set paddings');
 
-    // backward items adjustments
-    const bwdItemsSize = fetch.backwardItems.reduce((acc, i) => {
-      const item = fetch.items.find(_item => _item.$index === i);
-      return acc + (item ? item.size : 0);
-    }, 0);
-    const bwdDiff = bwdSize - bwdItemsSize;
-    const diff = bwdItemsSize + bwdPaddingDiff;
-    if (bwdItemsSize > 0) {
-      const oldPosition = viewport.scrollPosition;
-      const newPosition = oldPosition + bwdItemsSize;
-      viewport.scrollPosition = newPosition;
-      const positionDiff = newPosition - viewport.scrollPosition;
-      if (positionDiff > 0) {
-        forwardPadding.size += positionDiff;
+    // negative size adjustments
+    if (fetch.negativeSize) {
+      const newItemsSize = buffer.items.reduce((acc, item) => (acc += item.size) && acc, 0);
+      const negativeSize = newItemsSize - fetch.positiveSize;
+      if (negativeSize > 0) {
+        const oldPosition = viewport.scrollPosition;
+        const newPosition = oldPosition + negativeSize;
         viewport.scrollPosition = newPosition;
+        const positionDiff = newPosition - viewport.scrollPosition;
+        if (positionDiff > 0) {
+          forwardPadding.size += positionDiff;
+          viewport.scrollPosition = newPosition;
+        }
       }
     }
 

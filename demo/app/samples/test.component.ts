@@ -54,7 +54,7 @@ export class TestComponent {
     settings: {
       bufferSize: 20,
       minIndex: MIN,
-      itemSize: 40,
+      itemSize: 20,
       infinite: false
     },
     devSettings: {
@@ -109,8 +109,8 @@ export class TestComponent {
       }
     }
     return Observable.create((observer: Observer<any>) => {
-      setTimeout(() => observer.next(data), 150);
-      // observer.next(data);
+      // setTimeout(() => observer.next(data), 100);
+      observer.next(data);
     });
   }
 }

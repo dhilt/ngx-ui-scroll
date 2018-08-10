@@ -29,56 +29,65 @@ export default class PreFetch {
 
     let position = 0;
     let index = state.startIndex;
-    let item = buffer.cache.get(index);
-    let firstIndex = index, lastIndex = index, firstIndexPosition = position;
-    const bwdItems: any = {};
+    let item = buffer.cache.get(index), size;
 
     // first index to fetch
     const inc = startPosition < 0 ? -1 : 1;
+    let firstIndex = state.startIndex;
+    let firstIndexPosition = position;
     while (1) {
       index += inc;
       item = buffer.cache.get(index);
-      position += inc * (item ? item.size : averageItemSize);
+      size = item ? item.size : averageItemSize;
+      position += inc * size;
       if (inc < 0) {
-        if (position < startPosition) {
+        firstIndex = index;
+        firstIndexPosition = position;
+        if (position <= startPosition) {
           break;
-        }
-        if (position < relativePosition) {
-          bwdItems[index] = position;
         }
       } else {
         if (position > startPosition) {
           break;
         }
+        firstIndex = index;
+        firstIndexPosition = position;
       }
-      firstIndex = index;
-      firstIndexPosition = position;
     }
 
     // last index to fetch
+    let lastIndex = state.startIndex;
+    let lastIndexPosition = position;
     index = firstIndex;
     position = firstIndexPosition;
     while (1) {
-      if (position < relativePosition) {
-        // bwdItems[index] = position;
-      }
       lastIndex = index;
       index++;
       item = buffer.cache.get(index);
-      position += item ? item.size : averageItemSize;
+      size = item ? item.size : averageItemSize;
+      position += size;
+      lastIndexPosition = position;
       if (position >= endPosition) {
         break;
       }
     }
 
-    fetch.backwardItems = Object.keys(bwdItems).map(i => Number(i));
-
     // take absolute buffer limit values into the account
     firstIndex = Math.max(firstIndex, buffer.absMinIndex);
     lastIndex = Math.min(lastIndex, buffer.absMaxIndex);
-
     fetch.firstIndex = firstIndex;
     fetch.lastIndex = lastIndex;
+
+    // negative size
+    fetch.negativeSize = 0;
+    if (firstIndex < buffer.minIndex) {
+      for (index = firstIndex; index < buffer.minIndex; index++) {
+        item = buffer.cache.get(index);
+        size = item ? item.size : averageItemSize;
+        fetch.negativeSize += size;
+      }
+    }
+    fetch.positiveSize = lastIndexPosition - firstIndexPosition - fetch.negativeSize;
 
     // skip indexes that are in buffer
     if (buffer.items.length) {
@@ -101,12 +110,6 @@ export default class PreFetch {
       }
       fetch.firstIndex = Math.max(pack[0], settings.minIndex);
       fetch.lastIndex = Math.min(pack[pack.length - 1], settings.maxIndex);
-      fetch.backwardItems = fetch.backwardItems.reduce((acc: Array<number>, i) => {
-        if (i >= <number>fetch.firstIndex && i <= <number>fetch.lastIndex) {
-          acc.push(i);
-        }
-        return acc;
-      }, []);
     }
   }
 

@@ -50,7 +50,9 @@ export class Buffer {
     this.pristine = true;
     this.lastIndex.reset();
     this.cache.resetIndexes();
-    this.startIndex = startIndex;
+    if (typeof startIndex !== 'undefined') {
+      this.startIndex = startIndex;
+    }
   }
 
   set items(items: Array<Item>) {

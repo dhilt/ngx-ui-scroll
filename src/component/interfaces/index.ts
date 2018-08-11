@@ -3,7 +3,7 @@ import { ItemAdapter, Adapter } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { Run } from './run';
-import { State, PreviousClip } from './state';
+import { State } from './state';
 import { Process, ProcessSubject } from './process';
 
 export {
@@ -16,7 +16,6 @@ export {
   Process,
   ProcessSubject,
   State,
-  PreviousClip,
   ItemAdapter,
   Adapter
 };

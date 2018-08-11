@@ -40,7 +40,7 @@ export default class PostRender {
 
     // negative size adjustments
     if (fetch.negativeSize) {
-      const newItemsSize = buffer.items.reduce((acc, item) => (acc += item.size) && acc, 0);
+      const newItemsSize = fetch.items.reduce((acc, item) => (acc += item.size) && acc, 0);
       const negativeSize = newItemsSize - fetch.positiveSize;
       if (negativeSize > 0) {
         const oldPosition = viewport.scrollPosition;
@@ -55,7 +55,7 @@ export default class PostRender {
     }
 
     scroller.stat('After adjustments');
-    scroller.settings.debug = false;
+    // scroller.settings.debug = false;
 
     // calculate size before start position
     viewport.startDelta = 0;

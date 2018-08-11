@@ -99,6 +99,12 @@ export class Viewport {
       (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();
   }
 
+  getClipLimit(direction: Direction, clipPaddingDelta: number, opposite?: boolean): number {
+    return this.getEdge(direction, opposite) +
+      (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) *
+      (this.getBufferPadding() + clipPaddingDelta);
+  }
+
   isElementVisible(element: HTMLElement): boolean {
     return this.getElementEdge(element, Direction.forward) > this.getEdge(Direction.backward);
   }

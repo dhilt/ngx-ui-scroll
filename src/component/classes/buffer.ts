@@ -4,6 +4,7 @@ import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
+import { Scroller } from '../scroller';
 
 export class Index {
   forward: number | null;
@@ -31,6 +32,7 @@ export class Buffer {
   absMaxIndex: number;
 
   private startIndex: number;
+  private minBufferSize: number;
 
   constructor(settings: Settings) {
     this.$items = new BehaviorSubject(null);
@@ -40,6 +42,7 @@ export class Buffer {
     this.absMinIndex = settings.minIndex;
     this.absMaxIndex = settings.maxIndex;
     this.startIndex = settings.startIndex;
+    this.minBufferSize = settings.bufferSize;
   }
 
   reset(reload?: boolean, startIndex?: number) {
@@ -157,6 +160,15 @@ export class Buffer {
   getEdgeVisibleItem(direction: Direction, opposite?: boolean): Item | undefined {
     return direction === (!opposite ? Direction.forward : Direction.backward) ?
       this.getLastVisibleItem() : this.getFirstVisibleItem();
+  }
+
+  getSizeByIndex(index: number): number {
+    const item = this.cache.get(index);
+    return item ? item.size : this.averageSize;
+  }
+
+  getAveragePackSize(): number {
+    return this.cache.averageSize * this.minBufferSize;
   }
 
 }

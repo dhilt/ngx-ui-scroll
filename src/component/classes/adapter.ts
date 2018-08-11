@@ -99,15 +99,16 @@ export class Adapter implements IAdapter {
 
   initialize(scroller: Scroller) {
     if (!this.isInitialized) {
+      const state = scroller.state;
       this.isInitialized = true;
       this.callWorkflow = scroller.callWorkflow;
       this.getVersion = (): string | null => scroller.version;
-      this.getIsLoading = (): boolean => scroller.state.pendingSource.getValue();
-      this.getIsLoading$ = (): BehaviorSubject<boolean> => scroller.state.pendingSource;
-      this.getFirstVisible = (): ItemAdapter => scroller.state.firstVisibleSource.getValue();
-      this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.firstVisibleSource;
-      this.getLastVisible = (): ItemAdapter => scroller.state.lastVisibleSource.getValue();
-      this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => scroller.state.lastVisibleSource;
+      this.getIsLoading = (): boolean => state.pending;
+      this.getIsLoading$ = (): BehaviorSubject<boolean> => state.pendingSource;
+      this.getFirstVisible = (): ItemAdapter => state.firstVisibleItem;
+      this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => state.firstVisibleSource;
+      this.getLastVisible = (): ItemAdapter => state.lastVisibleItem;
+      this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => state.lastVisibleSource;
       this.getItemsCount = (): number =>
         scroller.buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
     }

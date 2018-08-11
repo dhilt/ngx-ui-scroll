@@ -13,7 +13,7 @@ let instanceCount = 0;
 
 export class Scroller {
 
-  readonly _bindData: Function;
+  readonly runChangeDetector: Function;
   readonly callWorkflow: Function;
   private logs: Array<any> = [];
 
@@ -32,8 +32,8 @@ export class Scroller {
     this.datasource = datasource;
     this.version = context.version;
 
-    // this._bindData = () => context.changeDetector.markForCheck();
-    this._bindData = () => context.changeDetector.detectChanges();
+    this.runChangeDetector = () => context.changeDetector.markForCheck();
+    // this.runChangeDetector = () => context.changeDetector.detectChanges();
     this.callWorkflow = callWorkflow;
     this.cycleSubscriptions = [];
 
@@ -54,7 +54,7 @@ export class Scroller {
   }
 
   bindData(): Observable<any> {
-    this._bindData();
+    this.runChangeDetector();
     return Observable.create((observer: Observer<any>) => {
         setTimeout(() => {
           observer.next(true);

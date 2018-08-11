@@ -52,14 +52,14 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 20,
+      bufferSize: 10,
       minIndex: MIN,
       itemSize: 20,
       infinite: false
     },
     devSettings: {
-      debug: false,
-      throttle: 20
+      debug: true,
+      throttle: 45
     }
   });
 

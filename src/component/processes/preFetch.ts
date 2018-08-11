@@ -20,7 +20,6 @@ export default class PreFetch {
   static setFetchParams(scroller: Scroller) {
     const { settings, buffer, viewport, state } = scroller;
     const fetch = state.fetch;
-    const averageItemSize = buffer.averageSize;
     const scrollPosition = viewport.scrollPosition;
     const relativePosition = scrollPosition - viewport.startDelta;
     const startPosition = relativePosition - viewport.getBufferPadding();
@@ -29,7 +28,6 @@ export default class PreFetch {
 
     let position = 0;
     let index = state.startIndex;
-    let item = buffer.cache.get(index), size;
 
     // first index to fetch
     const inc = startPosition < 0 ? -1 : 1;
@@ -37,9 +35,7 @@ export default class PreFetch {
     let firstIndexPosition = position;
     while (1) {
       index += inc;
-      item = buffer.cache.get(index);
-      size = item ? item.size : averageItemSize;
-      position += inc * size;
+      position += inc * buffer.getSizeByIndex(index);
       if (inc < 0) {
         firstIndex = index;
         firstIndexPosition = position;
@@ -63,9 +59,7 @@ export default class PreFetch {
     while (1) {
       lastIndex = index;
       index++;
-      item = buffer.cache.get(index);
-      size = item ? item.size : averageItemSize;
-      position += size;
+      position += buffer.getSizeByIndex(index);
       lastIndexPosition = position;
       if (position >= endPosition) {
         break;
@@ -73,24 +67,11 @@ export default class PreFetch {
     }
 
     // take absolute buffer limit values into the account
-    firstIndex = Math.max(firstIndex, buffer.absMinIndex);
-    lastIndex = Math.min(lastIndex, buffer.absMaxIndex);
-    fetch.firstIndex = firstIndex;
-    fetch.lastIndex = lastIndex;
-
-    // negative size
-    fetch.negativeSize = 0;
-    if (firstIndex < buffer.minIndex) {
-      for (index = firstIndex; index < buffer.minIndex; index++) {
-        item = buffer.cache.get(index);
-        size = item ? item.size : averageItemSize;
-        fetch.negativeSize += size;
-      }
-    }
-    fetch.positiveSize = lastIndexPosition - firstIndexPosition - fetch.negativeSize;
+    fetch.firstIndex = Math.max(firstIndex, buffer.absMinIndex);
+    fetch.lastIndex = Math.min(lastIndex, buffer.absMaxIndex);
 
     // skip indexes that are in buffer
-    if (buffer.items.length) {
+    if (buffer.size) {
       const packs: Array<Array<number>> = [[]];
       let p = 0;
       for (let i = fetch.firstIndex; i <= fetch.lastIndex; i++) {
@@ -110,6 +91,51 @@ export default class PreFetch {
       }
       fetch.firstIndex = Math.max(pack[0], settings.minIndex);
       fetch.lastIndex = Math.min(pack[pack.length - 1], settings.maxIndex);
+    }
+    if (!fetch.shouldFetch) {
+      return;
+    }
+
+    // too few items to fetch
+    const diff = settings.bufferSize - (fetch.lastIndex - fetch.firstIndex + 1);
+    if (diff > 0) {
+      if (!buffer.size) {
+        return;
+      }
+      const isForward = fetch.lastIndex > buffer.items[0].$index;
+      if (isForward) {
+        const newLastIndex = Math.min(fetch.lastIndex + diff, settings.maxIndex);
+        if (newLastIndex > fetch.lastIndex) {
+          for (index = fetch.lastIndex + 1; index <= newLastIndex; index++) {
+            if (index < buffer.minIndex) {
+              fetch.negativeSize += buffer.getSizeByIndex(index);
+            }
+          }
+          fetch.lastIndex = newLastIndex;
+        }
+      } else {
+        const newFirstIndex = Math.max(fetch.firstIndex - diff, settings.minIndex);
+        if (newFirstIndex < fetch.firstIndex) {
+          for (index = newFirstIndex; index < fetch.firstIndex; index++) {
+            if (index < buffer.minIndex) {
+              fetch.negativeSize += buffer.getSizeByIndex(index);
+            }
+          }
+          fetch.firstIndex = newFirstIndex;
+        }
+      }
+    }
+
+    // negative size
+    fetch.negativeSize = 0;
+    fetch.positiveSize = 0;
+    for (index = fetch.firstIndex; index < buffer.minIndex; index++) {
+      fetch.negativeSize += buffer.getSizeByIndex(index);
+    }
+    if (fetch.negativeSize) {
+      for (index = buffer.minIndex; index <= fetch.lastIndex; index++) {
+        fetch.positiveSize += buffer.getSizeByIndex(index);
+      }
     }
   }
 

@@ -12,14 +12,10 @@ export default class Clip {
     Clip.processBuffer(scroller);
     scroller.stat('After clip');
 
-    // scroller.cycleSubscriptions.push(
-    //   scroller.bindData().subscribe(() => {
-        scroller.callWorkflow(<ProcessSubject>{
-          process: Process.clip,
-          status: 'next'
-        });
-    //   })
-    // );
+    scroller.callWorkflow(<ProcessSubject>{
+      process: Process.clip,
+      status: 'next'
+    });
   }
 
   static runByDirection(direction: Direction, scroller: Scroller) {
@@ -39,7 +35,7 @@ export default class Clip {
       }
       return true;
     });
-    scroller.log(`clipped ${clipped.length} items; from ${clipped[0]} to ${clipped[clipped.length - 1]}`);
+    scroller.log(`clipped ${clipped.length} items`, clipped);
   }
 
 }

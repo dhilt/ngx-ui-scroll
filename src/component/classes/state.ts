@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { Direction, State as IState, Process, PreviousClip, Run, ItemAdapter } from '../interfaces/index';
+import { Direction, State as IState, Process, Run, ItemAdapter } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
@@ -12,11 +12,10 @@ export class State implements IState {
   countDone: number;
   position: number;
   direction: Direction;
+  startIndex: number;
   scroll: boolean;
   fetch: FetchModel;
   clip: ClipModel;
-  previousClip: PreviousClip;
-  startIndex: number;
 
   pendingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
@@ -59,7 +58,6 @@ export class State implements IState {
     this.position = 0;
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
-    this.setPreviousClip(true);
     this.startIndex = startIndex;
     this.pendingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
@@ -79,17 +77,6 @@ export class State implements IState {
   endCycle() {
     this.pending = false;
     this.countDone++;
-  }
-
-  setPreviousClip(reset?: boolean) {
-    this.previousClip = {
-      isSet: !reset,
-      backwardSize: this.clip.backward.size,
-      forwardSize: this.clip.forward.size,
-      backwardItems: this.clip.backward.items,
-      forwardItems: this.clip.forward.items,
-      direction: this.direction
-    };
   }
 
 }

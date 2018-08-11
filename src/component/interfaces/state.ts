@@ -1,24 +1,21 @@
-import { Direction } from './direction';
-import { Process } from './process';
-
-export interface PreviousClip {
-  isSet: boolean;
-  backwardSize: number | null;
-  forwardSize: number | null;
-  backwardItems: number | null;
-  forwardItems: number | null;
-  direction: Direction;
-}
+import { Process, Direction, ItemAdapter } from './index';
+import { FetchModel } from '../classes/fetch';
+import { ClipModel } from '../classes/clip';
 
 export interface State {
+  isInitial: boolean;
   process: Process;
   wfCycleCount: number;
   cycleCount: number;
   countDone: number;
-  pending: boolean;
+  position: number;
   direction: Direction;
   scroll: boolean;
-  fetch: any;
-  clip: any;
-  previousClip: PreviousClip;
+  fetch: FetchModel;
+  clip: ClipModel;
+  startIndex: number;
+
+  pending: boolean;
+  firstVisibleItem: ItemAdapter;
+  lastVisibleItem: ItemAdapter;
 }

@@ -18,6 +18,11 @@ export default class End {
       next = End.getNextRun(scroller);
     }
 
+    // clip with no fetch, need to apply Buffer.items changes
+    if (scroller.state.clip.shouldClip && !scroller.state.fetch.hasNewItems) {
+      scroller.runChangeDetector();
+    }
+
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.end,
       status: next ? 'next' : 'done',
@@ -61,7 +66,7 @@ export default class End {
 
   static getNextRun(scroller: Scroller): Run | null {
     let nextRun: Run | null = null;
-    if (scroller.state.fetch.hasNewItems || scroller.state.clip.shouldClip) {
+    if (scroller.state.fetch.hasNewItems) {
       nextRun = {
         scroll: scroller.state.scroll
       };

@@ -21,16 +21,16 @@ export class ScrollHelper {
 
   run() {
     const viewport = this.workflow.scroller.viewport;
-    // if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
-    //   const ssp = viewport.scrollPosition;
-    //   setTimeout(() => {
-    //     if (ssp === viewport.scrollPosition) {
-    //       viewport.syntheticScrollPosition = null;
-    //     }
-    //   });
-    //   console.log(viewport.scrollPosition, 'synth');
-    //   return;
-    // }
+    if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
+      const ssp = viewport.scrollPosition;
+      setTimeout(() => {
+        if (ssp === viewport.scrollPosition) {
+          viewport.syntheticScrollPosition = null;
+        }
+      });
+      console.log(viewport.scrollPosition, 'synth');
+      return;
+    }
     console.log(viewport.scrollPosition);
     if (this.workflow.scroller.state.pending) {
       if (!this.endSubscription) {

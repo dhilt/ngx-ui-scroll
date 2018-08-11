@@ -29,7 +29,7 @@ interface Item {
 export class TestComponent {
 
   reloadIndex = 1;
-  visibleItemsCount: number;
+  datasourceDelay = 0;
   readonly data: Array<any>;
 
   constructor() {
@@ -109,8 +109,11 @@ export class TestComponent {
       }
     }
     return Observable.create((observer: Observer<any>) => {
-      // setTimeout(() => observer.next(data), 100);
-      observer.next(data);
+      if (!this.datasourceDelay) {
+        observer.next(data);
+      } else {
+        setTimeout(() => observer.next(data), this.datasourceDelay);
+      }
     });
   }
 }

@@ -1,5 +1,10 @@
 <div>
-  <input [(ngModel)]="reloadIndex">
+  <input [(ngModel)]="datasourceDelay" style="width: 50px"> -
+  <small>datasource delay</small>
+  <br>
+  <input [(ngModel)]="reloadIndex" style="width: 50px"> -
+  <small>reload index</small>
+  <br>
   <button (click)="doReload()">Reload</button>
   <button (click)="doScrollHome()">Up</button>
   <button (click)="doScrollEnd()">Down</button>

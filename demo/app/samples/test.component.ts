@@ -59,7 +59,9 @@ export class TestComponent {
     },
     devSettings: {
       debug: true,
-      throttle: 45
+      throttle: 45,
+      inertialScrollDelay: 10,
+      logTime: true
     }
   });
 

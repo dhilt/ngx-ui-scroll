@@ -89,6 +89,9 @@ export class Scroller {
   }
 
   log(...args: Array<any>) {
+    if (this.settings.logTime) {
+      args = [...args, ` // time:`, this.state.time];
+    }
     if (this.settings.debug) {
       if (this.settings.immediateLog) {
         console.log.apply(this, args);

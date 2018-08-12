@@ -14,9 +14,11 @@ export interface Settings {
 export interface DevSettings {
   debug?: boolean;
   immediateLog?: boolean;
+  logTime?: boolean;
   clipAfterFetchOnly?: boolean;
   clipAfterScrollOnly?: boolean;
   paddingForwardSize?: number;
   paddingBackwardSize?: number;
   throttle?: number;
+  inertialScrollDelay?: number;
 }

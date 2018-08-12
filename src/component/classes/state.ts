@@ -5,6 +5,7 @@ import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
 export class State implements IState {
+  initTime: number;
   isInitial: boolean;
   process: Process;
   wfCycleCount: number;
@@ -40,6 +41,7 @@ export class State implements IState {
       this.firstVisibleSource.next(item);
     }
   }
+
   get lastVisibleItem(): ItemAdapter {
     return this.lastVisibleSource.getValue();
   }
@@ -50,7 +52,12 @@ export class State implements IState {
     }
   }
 
+  get time(): number {
+    return Number(new Date()) - this.initTime;
+  }
+
   constructor(startIndex: number) {
+    this.initTime = Number(new Date());
     this.isInitial = false;
     this.wfCycleCount = 1;
     this.cycleCount = 0;

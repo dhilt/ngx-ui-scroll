@@ -16,7 +16,6 @@ export class Workflow {
 
   readonly context: UiScrollComponent;
   readonly scrollHelper: ScrollHelper;
-  private onScrollUnsubscribe: Function;
   private itemsSubscription: Subscription;
   private workflowSubscription: Subscription;
 
@@ -39,14 +38,12 @@ export class Workflow {
     const scroller = this.scroller;
     this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
-    this.onScrollUnsubscribe = this.context.renderer.listen(
-      scroller.viewport.scrollEventElement, 'scroll', this.scrollHelper.run.bind(this.scrollHelper)
-    );
+    this.scrollHelper.addScrollHandler();
   }
 
   dispose() {
     this.scrollHelper.purgeProcesses();
-    this.onScrollUnsubscribe();
+    this.scrollHelper.removeScrollHandler();
     this.process$.complete();
     this.workflowSubscription.unsubscribe();
     this.itemsSubscription.unsubscribe();

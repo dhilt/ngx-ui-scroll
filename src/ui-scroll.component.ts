@@ -1,6 +1,6 @@
 import {
   Component, OnInit, OnDestroy,
-  TemplateRef, ElementRef, Renderer2,
+  TemplateRef, ElementRef,
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
@@ -40,8 +40,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
 
   constructor(
     public changeDetector: ChangeDetectorRef,
-    public elementRef: ElementRef,
-    public renderer: Renderer2
+    public elementRef: ElementRef
   ) {
   }
 

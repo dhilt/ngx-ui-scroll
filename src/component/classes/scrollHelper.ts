@@ -7,16 +7,40 @@ import { Process, ProcessSubject } from '../interfaces/index';
 export class ScrollHelper {
 
   readonly workflow: Workflow;
+  readonly onScrollHandler: Function;
+  readonly scrollEventOptions: any;
   private lastScrollTime: number;
   private scrollTimer: number | null;
   private lastScrollPosition: number;
   private endSubscription: Subscription | null;
+  private scrollEventElement;
 
   constructor(workflow: Workflow) {
     this.workflow = workflow;
     this.lastScrollTime = 0;
     this.scrollTimer = null;
     this.endSubscription = null;
+    this.scrollEventElement = workflow.scroller.viewport.scrollEventElement;
+    this.onScrollHandler = this.run.bind(this);
+
+    let passiveSupported = false;
+    try {
+      window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
+        get: () => {
+          passiveSupported = true;
+        }
+      }));
+    } catch (err) {
+    }
+    this.scrollEventOptions = passiveSupported ? { passive: false } : false;
+  }
+
+  addScrollHandler() {
+    this.scrollEventElement.addEventListener('scroll', this.onScrollHandler, this.scrollEventOptions);
+  }
+
+  removeScrollHandler() {
+    this.scrollEventElement.removeEventListener('scroll', this.onScrollHandler, this.scrollEventOptions);
   }
 
   run() {

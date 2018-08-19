@@ -27,7 +27,7 @@ export default class Fetch {
 
   static success(data: Array<any>, scroller: Scroller) {
     const direction = scroller.state.direction;
-    scroller.log(`resolved ${data.length} items ` +
+    scroller.logger.log(`resolved ${data.length} items ` +
       `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
     scroller.state.fetch.newItemsData = data;
 

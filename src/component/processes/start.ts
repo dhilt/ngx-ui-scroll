@@ -9,7 +9,7 @@ export default class Start {
     }
     scroller.state.startCycle(options);
     const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
-    scroller.log(`%c---=== Workflow ${logData} start`, 'color: #006600;', options);
+    scroller.logger.log(`%c---=== Workflow ${logData} start`, 'color: #006600;', options);
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.start,
       status: 'next'

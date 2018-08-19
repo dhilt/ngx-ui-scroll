@@ -36,7 +36,9 @@ export const generateMockAdapter = (): IAdapter => (
     lastVisible: {},
     lastVisible$: new BehaviorSubject<ItemAdapter>({}),
     itemsCount: 0,
-    reload: () => null
+    initialize: () => null,
+    reload: () => null,
+    showLog: () => null
   }
 );
 
@@ -79,7 +81,7 @@ export class Adapter implements IAdapter {
   }
 
   get itemsCount(): number {
-    return this.getItemsCount();
+    return this.isInitialized ? this.getItemsCount() : 0;
   }
 
   private isInitialized: boolean;
@@ -100,21 +102,22 @@ export class Adapter implements IAdapter {
   }
 
   initialize(scroller: Scroller) {
-    if (!this.isInitialized) {
-      const state = scroller.state;
-      this.isInitialized = true;
-      this.callWorkflow = scroller.callWorkflow;
-      this.getVersion = (): string | null => scroller.version;
-      this.getIsLoading = (): boolean => state.pending;
-      this.getIsLoading$ = (): BehaviorSubject<boolean> => state.pendingSource;
-      this.getFirstVisible = (): ItemAdapter => state.firstVisibleItem;
-      this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => state.firstVisibleSource;
-      this.getLastVisible = (): ItemAdapter => state.lastVisibleItem;
-      this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => state.lastVisibleSource;
-      this.getItemsCount = (): number =>
-        scroller.buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
-      this.showLog = () => scroller.logForce();
+    if (this.isInitialized) {
+      return;
     }
+    const state = scroller.state;
+    this.isInitialized = true;
+    this.callWorkflow = scroller.callWorkflow;
+    this.getVersion = (): string | null => scroller.version;
+    this.getIsLoading = (): boolean => state.pending;
+    this.getIsLoading$ = (): BehaviorSubject<boolean> => state.pendingSource;
+    this.getFirstVisible = (): ItemAdapter => state.firstVisibleItem;
+    this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => state.firstVisibleSource;
+    this.getLastVisible = (): ItemAdapter => state.lastVisibleItem;
+    this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => state.lastVisibleSource;
+    this.getItemsCount = (): number =>
+      scroller.buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
+    this.showLog = () => scroller.logger.logForce();
   }
 
   reload(reloadIndex?: number | string) {

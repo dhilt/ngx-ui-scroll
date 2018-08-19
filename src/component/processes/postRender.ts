@@ -12,7 +12,7 @@ export default class PostRender {
     const forwardPadding = scroller.viewport.padding[Direction.forward];
     const backwardPadding = scroller.viewport.padding[Direction.backward];
 
-    scroller.stat('Before unhide');
+    scroller.logger.stat('Before unhide');
     PostRender.processFetchedItems(scroller);
 
     // calculate backward and forward padding sizes
@@ -29,7 +29,7 @@ export default class PostRender {
     }
     forwardPadding.size = fwdSize;
     backwardPadding.size = bwdSize;
-    scroller.stat('After set paddings');
+    scroller.logger.stat('After set paddings');
 
     // negative size adjustments
     if (fetch.negativeSize) {
@@ -46,7 +46,7 @@ export default class PostRender {
         }
         viewport.syntheticScrollPositionBefore = oldPosition;
       }
-      scroller.stat('After adjustments');
+      scroller.logger.stat('After adjustments');
     }
 
     // calculate size before start position

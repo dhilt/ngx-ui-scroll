@@ -12,9 +12,9 @@ export default class End {
     let next: Run | null = null;
     const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
     if (isFail) {
-      scroller.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
+      scroller.logger.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
     } else {
-      scroller.log(`%c---=== Workflow ${logData} done`, 'color: #006600;');
+      scroller.logger.log(`%c---=== Workflow ${logData} done`, 'color: #006600;');
       next = End.getNextRun(scroller);
     }
 

@@ -6,11 +6,11 @@ export default class Clip {
   static run(scroller: Scroller) {
     scroller.state.process = Process.clip;
 
-    scroller.stat('Before clip');
+    scroller.logger.stat('Before clip');
     Clip.runByDirection(Direction.forward, scroller);
     Clip.runByDirection(Direction.backward, scroller);
     Clip.processBuffer(scroller);
-    scroller.stat('After clip');
+    scroller.logger.stat('After clip');
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.clip,
@@ -35,7 +35,7 @@ export default class Clip {
       }
       return true;
     });
-    scroller.log(`clipped ${clipped.length} items`, clipped);
+    scroller.logger.log(`clipped ${clipped.length} items`, clipped);
   }
 
 }

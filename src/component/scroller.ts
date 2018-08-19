@@ -4,6 +4,7 @@ import { UiScrollComponent } from '../ui-scroll.component';
 import { checkDatasource } from './utils/index';
 import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';
+import { Logger } from './classes/logger';
 import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
@@ -15,11 +16,11 @@ export class Scroller {
 
   readonly runChangeDetector: Function;
   readonly callWorkflow: Function;
-  private logs: Array<any> = [];
 
   public version: string;
   public datasource: Datasource;
   public settings: Settings;
+  public logger: Logger;
   public routines: Routines;
   public viewport: Viewport;
   public buffer: Buffer;
@@ -38,8 +39,9 @@ export class Scroller {
     this.cycleSubscriptions = [];
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
+    this.logger = new Logger(this);
     this.routines = new Routines(this.settings);
-    this.viewport = new Viewport(context.elementRef, this.settings, this.routines);
+    this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.logger);
     this.buffer = new Buffer(this.settings);
     this.state = new State(this.settings.startIndex);
 
@@ -74,43 +76,6 @@ export class Scroller {
   }
 
   finalize() {
-  }
-
-  stat(str?: string) {
-    if (this.settings.debug) {
-      this.log((str ? str + ', ' : '') +
-        'top: ' + this.viewport.scrollPosition + ', ' +
-        'size: ' + this.viewport.getScrollableSize() + ', ' +
-        'bwd_p: ' + this.viewport.padding.backward.size + ', ' +
-        'fwd_p: ' + this.viewport.padding.forward.size + ', ' +
-        'items: ' + this.datasource.adapter.itemsCount
-      );
-    }
-  }
-
-  log(...args: Array<any>) {
-    if (this.settings.debug) {
-      if (this.settings.logTime) {
-        args = [...args, ` // time:`, this.state.time];
-      }
-      if (this.settings.immediateLog) {
-        console.log.apply(this, args);
-      } else {
-        this.logs.push(args);
-      }
-    }
-  }
-
-  logForce(...args: Array<any>) {
-    if (this.settings.debug) {
-      if (!this.settings.immediateLog && this.logs.length) {
-        this.logs.forEach(logArgs => console.log.apply(this, logArgs));
-        this.logs = [];
-      }
-      if (args.length) {
-        console.log.apply(this, args);
-      }
-    }
   }
 
 }

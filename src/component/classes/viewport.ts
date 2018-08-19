@@ -2,8 +2,9 @@ import { ElementRef } from '@angular/core';
 
 import { Padding } from './padding';
 import { Direction } from '../interfaces/index';
-import { Routines } from './domRoutines';
 import { Settings } from './settings';
+import { Routines } from './domRoutines';
+import { Logger } from './logger';
 
 export class ViewportPadding {
   forward: Padding;
@@ -32,12 +33,14 @@ export class Viewport {
   readonly element: HTMLElement;
   readonly host: HTMLElement;
   readonly scrollable: HTMLElement;
+  readonly settings: Settings;
   readonly routines: Routines;
-  private settings: Settings;
+  readonly logger: Logger;
 
-  constructor(elementRef: ElementRef, settings: Settings, routines: Routines) {
+  constructor(elementRef: ElementRef, settings: Settings, routines: Routines, logger: Logger) {
     this.settings = settings;
     this.routines = routines;
+    this.logger = logger;
     this.element = elementRef.nativeElement;
     this.startDelta = settings.paddingBackwardSize || 0;
     this.syntheticScrollPosition = null;
@@ -76,8 +79,8 @@ export class Viewport {
   }
 
   set scrollPosition(value: number) {
-    // todo : log synthetic position set
     const oldPosition = this.scrollPosition;
+    this.logger.log('Setting scroll position at', value);
     this.routines.setScrollPosition(this.scrollable, value);
     this.syntheticScrollTime = Number(Date.now());
     this.syntheticScrollPosition = this.scrollPosition;

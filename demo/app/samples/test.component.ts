@@ -6,20 +6,19 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 const MAX = 500;
 const MIN = -1000;
 
+interface MyItem {
+  id: number;
+  text: string;
+  isSelected: boolean;
+}
+
 @Component({
   selector: 'app-samples-test-inner',
   template: '<b><ng-content></ng-content></b>'
 })
 export class TestInnerComponent {
-
   constructor() {
   }
-}
-
-interface Item {
-  id: number;
-  text: string;
-  isSelected: boolean;
 }
 
 @Component({
@@ -30,22 +29,7 @@ export class TestComponent {
 
   reloadIndex = 1;
   datasourceDelay = 0;
-  readonly data: Array<any>;
-
-  constructor() {
-    this.data = [];
-    for (let i = 0; i <= MAX - MIN; i++) {
-      this.data.push(<Item>{
-        id: i + MIN,
-        text: 'item #' + (i + MIN),
-        isSelected: i % 10 === 0
-      });
-    }
-    this.datasource.adapter.firstVisible$
-      .subscribe((value) => {
-        console.log('..............................first visible item:', value);
-      });
-  }
+  data: Array<MyItem>;
 
   datasource = new Datasource({
     get: (index: number, count: number) =>
@@ -54,55 +38,36 @@ export class TestComponent {
     settings: {
       bufferSize: 10,
       minIndex: MIN,
-      itemSize: 20,
-      infinite: false
+      itemSize: 20
     },
     devSettings: {
       debug: true,
-      throttle: 45,
-      inertialScrollDelay: 10,
-      logTime: true
+      immediateLog: false,
+      logTime: true,
+      throttle: 40,
+      inertia: false,
+      inertiaScrollDelay: 125,
+      inertiaScrollDelta: 35
     }
   });
 
-  getVisibleItemsCount(): number {
-    const adapter = this.datasource.adapter;
-    let last = <number>adapter.lastVisible.$index;
-    last = Number.isInteger(last) ? last : NaN;
-    let first = <number>adapter.firstVisible.$index;
-    first = Number.isInteger(first) ? first : NaN;
-    return (Number.isNaN(last) || Number.isNaN(first)) ? 0 : last - first + 1;
+  constructor() {
+    this.data = [];
+    for (let i = 0; i <= MAX - MIN; i++) {
+      this.data.push(<MyItem>{
+        id: i + MIN,
+        text: 'item #' + (i + MIN),
+        isSelected: i % 15 === 0
+      });
+    }
+    this.datasource.adapter.firstVisible$
+      .subscribe((result) => {
+        console.log('..............................first visible item:', result.data);
+      });
   }
 
-  doReload() {
-    this.datasource.adapter.reload(this.reloadIndex);
-  }
-
-  doScrollHome() {
-    const viewportElement = document.getElementsByClassName('viewport')[0];
-    const doScroll = (limit: number, delay: number, delta: number) => {
-      setTimeout(() => {
-        viewportElement.scrollTop -= delta;
-        if (--limit > 0) {
-          doScroll(limit, delay, delta);
-        }
-      }, delay);
-    };
-    // doScroll(400, 25, 1);
-    viewportElement.scrollTop = 0;
-  }
-
-  doScrollEnd() {
-    const viewportElement = document.getElementsByClassName('viewport')[0];
-    viewportElement.scrollTop = 999999;
-  }
-
-  doToggleItem(item: Item) {
-    item.isSelected = !item.isSelected;
-  }
-
-  fetchData(index: number, count: number): Observable<Array<Item>> {
-    const data: Array<Item> = [];
+  fetchData(index: number, count: number): Observable<Array<MyItem>> {
+    const data: Array<MyItem> = [];
     const start = Math.max(MIN, index);
     const end = Math.min(MAX, index + count - 1);
     if (start <= end) {
@@ -117,5 +82,49 @@ export class TestComponent {
         setTimeout(() => observer.next(data), this.datasourceDelay);
       }
     });
+  }
+
+  getVisibleItemsCount(): number {
+    const adapter = this.datasource.adapter;
+    let last = <number>adapter.lastVisible.$index;
+    last = Number.isInteger(last) ? last : NaN;
+    let first = <number>adapter.firstVisible.$index;
+    first = Number.isInteger(first) ? first : NaN;
+    return (Number.isNaN(last) || Number.isNaN(first)) ? 0 : last - first + 1;
+  }
+
+  getViewportElement(): Element {
+    return document.getElementsByClassName('viewport')[0];
+  }
+
+  doScroll(limit: number, delay: number, delta: number) {
+    const viewportElement = this.getViewportElement();
+    setTimeout(() => {
+      viewportElement.scrollTop -= delta;
+      if (--limit > 0) {
+        this.doScroll(limit, delay, delta);
+      }
+    }, delay);
+  }
+
+  doReload() {
+    this.datasource.adapter.reload(this.reloadIndex);
+  }
+
+  doScrollHome() {
+    // this.doScroll(400, 25, 1);
+    this.getViewportElement().scrollTop = 0;
+  }
+
+  doScrollEnd() {
+    this.getViewportElement().scrollTop = 999999;
+  }
+
+  doLog() {
+    this.datasource.adapter.showLog();
+  }
+
+  doToggleItem(item: MyItem) {
+    item.isSelected = !item.isSelected;
   }
 }

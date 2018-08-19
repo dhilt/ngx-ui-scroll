@@ -93,6 +93,8 @@ export class Adapter implements IAdapter {
   private getLastVisible$: Function;
   private getItemsCount: Function;
 
+  showLog: Function;
+
   constructor() {
     this.isInitialized = false;
   }
@@ -111,6 +113,7 @@ export class Adapter implements IAdapter {
       this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => state.lastVisibleSource;
       this.getItemsCount = (): number =>
         scroller.buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
+      this.showLog = () => scroller.logForce();
     }
   }
 

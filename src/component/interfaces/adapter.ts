@@ -18,4 +18,5 @@ export interface Adapter {
   readonly lastVisible$: BehaviorSubject<ItemAdapter>;
   readonly itemsCount: number;
   reload: Function;
+  showLog: Function;
 }

@@ -11,13 +11,9 @@ export default class PostRender {
     const fetch = scroller.state.fetch;
     const forwardPadding = scroller.viewport.padding[Direction.forward];
     const backwardPadding = scroller.viewport.padding[Direction.backward];
-    const position = viewport.scrollPosition;
-    const posDiff = position - fetch.position;
-    scroller.log('scr pos diff:', posDiff, ', fetch pos:', fetch.position);
 
     scroller.stat('Before unhide');
     PostRender.processFetchedItems(scroller);
-    scroller.stat('After unhide');
 
     // calculate backward and forward padding sizes
     let bwdSize = 0, fwdSize = 0;
@@ -31,10 +27,7 @@ export default class PostRender {
       const item = buffer.cache.get(index);
       fwdSize += item ? item.size : 0;
     }
-
-    // set paddings
     forwardPadding.size = fwdSize;
-    const bwdPaddingDiff = bwdSize - backwardPadding.size;
     backwardPadding.size = bwdSize;
     scroller.stat('After set paddings');
 
@@ -51,11 +44,10 @@ export default class PostRender {
           forwardPadding.size += positionDiff;
           viewport.scrollPosition = newPosition;
         }
+        viewport.syntheticScrollPositionBefore = oldPosition;
       }
+      scroller.stat('After adjustments');
     }
-
-    scroller.stat('After adjustments');
-    // scroller.settings.debug = false;
 
     // calculate size before start position
     viewport.startDelta = 0;

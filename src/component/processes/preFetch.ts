@@ -8,9 +8,6 @@ export default class PreFetch {
 
     PreFetch.setFetchParams(scroller);
 
-    if (scroller.state.fetch.shouldFetch) {
-      scroller.settings.debug = true;
-    }
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
       status: scroller.state.fetch.shouldFetch ? 'next' : 'done'
@@ -96,7 +93,7 @@ export default class PreFetch {
       return;
     }
 
-    // too few items to fetch
+    // too few items to fetch, clip padding
     const diff = settings.bufferSize - (fetch.lastIndex - fetch.firstIndex + 1);
     if (diff > 0) {
       if (!buffer.size) {
@@ -126,7 +123,7 @@ export default class PreFetch {
       }
     }
 
-    // negative size
+    // negative/positive sizes calculations
     fetch.negativeSize = 0;
     fetch.positiveSize = 0;
     for (index = fetch.firstIndex; index < buffer.minIndex; index++) {

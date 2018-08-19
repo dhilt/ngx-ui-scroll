@@ -21,15 +21,17 @@ export const minSettings: ISettings = {
 };
 
 export const defaultDevSettings: IDevSettings = {
-  debug: false, // logging is enabled if true; need to turn off when release
-  immediateLog: true, // logging is not immediate if false, it could be forced via Workflow.logForce call
-  logTime: false, // log time difference
+  debug: false, // if true, logging is enabled; need to turn off when release
+  immediateLog: true, // if false, logging is not immediate and could be done via Workflow.logForce call
+  logTime: false, // if true, time differences are logging
   clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,
   paddingForwardSize: 0,
   paddingBackwardSize: 0,
-  throttle: 40,
-  inertialScrollDelay: 25
+  throttle: 40, // if > 0, scroll event handling is throttled (ms)
+  inertia: false, // if true, inertia scroll delay (ms) and delta (px) are taken into the account
+  inertiaScrollDelay: 125,
+  inertiaScrollDelta: 35
 };
 
 export class Settings implements ISettings {
@@ -55,7 +57,9 @@ export class Settings implements ISettings {
   paddingForwardSize: number;
   paddingBackwardSize: number;
   throttle: number;
-  inertialScrollDelay: number;
+  inertia: boolean;
+  inertiaScrollDelay: number;
+  inertiaScrollDelta: number;
 
   // internal settings, managed by scroller itself
   instanceIndex: number;

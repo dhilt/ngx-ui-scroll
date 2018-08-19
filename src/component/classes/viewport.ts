@@ -25,6 +25,9 @@ export class Viewport {
   padding: ViewportPadding;
   startDelta: number;
   syntheticScrollPosition: number | null;
+  syntheticScrollPositionBefore: number;
+  syntheticScrollDelta: number;
+  syntheticScrollTime: number;
 
   readonly element: HTMLElement;
   readonly host: HTMLElement;
@@ -53,6 +56,9 @@ export class Viewport {
   reset() {
     this.scrollPosition = 0;
     this.syntheticScrollPosition = null;
+    this.syntheticScrollPositionBefore = 0;
+    this.syntheticScrollDelta = 0;
+    this.syntheticScrollTime = 0;
     this.padding.reset();
     this.startDelta = 0;
   }
@@ -70,8 +76,12 @@ export class Viewport {
   }
 
   set scrollPosition(value: number) {
+    // todo : log synthetic position set
+    const oldPosition = this.scrollPosition;
     this.routines.setScrollPosition(this.scrollable, value);
+    this.syntheticScrollTime = Number(Date.now());
     this.syntheticScrollPosition = this.scrollPosition;
+    this.syntheticScrollDelta = this.syntheticScrollPosition - oldPosition;
   }
 
   getSize(): number {

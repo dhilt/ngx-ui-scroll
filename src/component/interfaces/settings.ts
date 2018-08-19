@@ -20,5 +20,7 @@ export interface DevSettings {
   paddingForwardSize?: number;
   paddingBackwardSize?: number;
   throttle?: number;
-  inertialScrollDelay?: number;
+  inertia?: boolean;
+  inertiaScrollDelay?: number;
+  inertiaScrollDelta?: number;
 }

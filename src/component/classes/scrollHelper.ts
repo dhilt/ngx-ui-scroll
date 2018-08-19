@@ -13,7 +13,7 @@ export class ScrollHelper {
   private scrollTimer: number | null;
   private lastScrollPosition: number;
   private endSubscription: Subscription | null;
-  private scrollEventElement;
+  private scrollEventElement: any;
 
   constructor(workflow: Workflow) {
     this.workflow = workflow;
@@ -23,9 +23,10 @@ export class ScrollHelper {
     this.scrollEventElement = workflow.scroller.viewport.scrollEventElement;
     this.onScrollHandler = this.run.bind(this);
 
+    // passive mode
     let passiveSupported = false;
     try {
-      window.addEventListener('test', null, Object.defineProperty({}, 'passive', {
+      window.addEventListener('test', <EventListenerOrEventListenerObject>{}, Object.defineProperty({}, 'passive', {
         get: () => {
           passiveSupported = true;
         }
@@ -44,37 +45,49 @@ export class ScrollHelper {
   }
 
   run() {
-    const viewport = this.workflow.scroller.viewport;
-    if (viewport.syntheticScrollPosition === viewport.scrollPosition) {
-      const ssp = viewport.scrollPosition;
-      setTimeout(() => {
-        if (ssp === viewport.scrollPosition) {
-          viewport.syntheticScrollPosition = null;
-        }
-      });
-      console.log(viewport.scrollPosition, 'synth');
-      return;
-    }
-    console.log(viewport.scrollPosition);
-    if (this.workflow.scroller.state.pending) {
-      if (!this.endSubscription) {
-        this.endSubscription = this.workflow.process$.pipe(
-          filter((data: ProcessSubject) => data.process === Process.end && data.status === 'done')
-        ).subscribe(() => {
-          if (this.endSubscription) {
-            this.endSubscription.unsubscribe();
-          }
-          this.endSubscription = null;
-          this.run();
-        });
-      }
-      return;
+    // console.log(this.workflow.scroller.viewport.scrollPosition);
+    if (this.workflow.scroller.viewport.syntheticScrollPosition !== null) {
+      this.processSyntheticScroll();
     }
     this.throttledScroll();
   }
 
+  processSyntheticScroll() {
+    const { viewport, settings } = this.workflow.scroller;
+    const position = viewport.scrollPosition;
+    const syntheticPosition = <number>viewport.syntheticScrollPosition;
+
+    if (position !== syntheticPosition) {
+      const inertiaDelay = Number(new Date()) - viewport.syntheticScrollTime;
+      const inertiaDelta = viewport.syntheticScrollPositionBefore - position;
+      const syntheticDelta = syntheticPosition - position;
+      const newPosition = Math.max(0, position + viewport.syntheticScrollDelta);
+
+      if (inertiaDelta > 0 && inertiaDelta < syntheticDelta) {
+        const log = 'Inertia scroll adjustment. Position: ' + position +
+          ', synthetic position: ' + syntheticPosition + ', synthetic delta: ' + syntheticDelta +
+          ', delay: ' + inertiaDelay + ', delta: ' + inertiaDelta;
+        this.workflow.scroller.log(log);
+        if (settings.inertia) {
+          if (inertiaDelta <= settings.inertiaScrollDelta && inertiaDelay <= settings.inertiaScrollDelay) {
+            viewport.scrollPosition = newPosition;
+          }
+        } else {
+          viewport.scrollPosition = newPosition;
+        }
+      }
+    }
+    if (syntheticPosition === viewport.syntheticScrollPosition) {
+      viewport.syntheticScrollPosition = null;
+    }
+  }
+
   throttledScroll() {
     const scroller = this.workflow.scroller;
+    if (!scroller.settings.throttle) {
+      this.debouncedScroll();
+      return;
+    }
     const diff = this.lastScrollTime + scroller.settings.throttle - Date.now();
     if (this.scrollTimer) {
       clearTimeout(this.scrollTimer);
@@ -83,13 +96,32 @@ export class ScrollHelper {
     if (diff < 0) {
       this.lastScrollTime = Date.now();
       this.lastScrollPosition = scroller.viewport.scrollPosition;
-      this.processScroll();
+      this.debouncedScroll();
     } else {
       this.scrollTimer = <any>setTimeout(() => {
-        this.run();
+        this.debouncedScroll();
         this.scrollTimer = null;
       }, diff);
     }
+  }
+
+  debouncedScroll() {
+    if (!this.workflow.scroller.state.pending) {
+      this.runWorkflow();
+      return;
+    }
+    if (this.endSubscription) {
+      return;
+    }
+    this.endSubscription = this.workflow.process$.pipe(
+      filter((data: ProcessSubject) => data.process === Process.end && data.status === 'done')
+    ).subscribe(() => {
+      if (this.endSubscription) {
+        this.endSubscription.unsubscribe();
+      }
+      this.endSubscription = null;
+      this.runWorkflow();
+    });
   }
 
   purgeProcesses() {
@@ -103,11 +135,12 @@ export class ScrollHelper {
     }
   }
 
-  processScroll() {
+  runWorkflow() {
     this.purgeProcesses();
     this.workflow.callWorkflow(<ProcessSubject>{
       process: Process.scroll,
       status: 'next'
     });
   }
+
 }

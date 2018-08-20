@@ -7,8 +7,7 @@ export class FetchModel {
   lastIndex: number | null;
   callCount: number;
   position: number;
-  negativeSize: number;
-  positiveSize: number;
+  minIndex: number | null;
 
   constructor() {
     this.callCount = 0;
@@ -21,8 +20,7 @@ export class FetchModel {
     this.firstIndex = null;
     this.lastIndex = null;
     this.position = 0;
-    this.negativeSize = 0;
-    this.positiveSize = 0;
+    this.minIndex = null;
   }
 
   get newItemsData(): Array<Item> | null {

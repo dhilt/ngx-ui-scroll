@@ -38,11 +38,11 @@ export class TestComponent {
     settings: {
       bufferSize: 10,
       minIndex: MIN,
-      itemSize: 20
+      itemSize: 40
     },
     devSettings: {
       debug: true,
-      immediateLog: false,
+      immediateLog: true,
       logTime: true,
       throttle: 40,
       inertia: false,

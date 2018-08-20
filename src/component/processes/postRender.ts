@@ -32,9 +32,11 @@ export default class PostRender {
     scroller.logger.stat('After set paddings');
 
     // negative size adjustments
-    if (fetch.negativeSize) {
-      const newItemsSize = fetch.items.reduce((acc, item) => (acc += item.size) && acc, 0);
-      const negativeSize = newItemsSize - fetch.positiveSize;
+    if (items[0].$index < fetch.minIndex) {
+      let negativeSize = 0;
+      for (let index = items[0].$index; index < fetch.minIndex; index++) {
+        negativeSize += buffer.getSizeByIndex(index);
+      }
       if (negativeSize > 0) {
         const oldPosition = viewport.scrollPosition;
         const newPosition = oldPosition + negativeSize;
@@ -45,6 +47,9 @@ export default class PostRender {
           viewport.scrollPosition = newPosition;
         }
         viewport.syntheticScrollPositionBefore = oldPosition;
+      } else if (negativeSize < 0) {
+        forwardPadding.size -= negativeSize;
+        viewport.scrollPosition -= negativeSize;
       }
       scroller.logger.stat('After adjustments');
     }

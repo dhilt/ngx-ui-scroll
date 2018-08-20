@@ -22,6 +22,7 @@ export default class PreFetch {
     const startPosition = relativePosition - viewport.getBufferPadding();
     const endPosition = relativePosition + viewport.getSize() + viewport.getBufferPadding();
     fetch.position = scrollPosition;
+    fetch.minIndex = buffer.minIndex;
 
     let position = 0;
     let index = state.startIndex;
@@ -99,39 +100,16 @@ export default class PreFetch {
       if (!buffer.size) {
         return;
       }
-      const isForward = fetch.lastIndex > buffer.items[0].$index;
-      if (isForward) {
+      if (fetch.lastIndex > buffer.items[0].$index) { // forward
         const newLastIndex = Math.min(fetch.lastIndex + diff, settings.maxIndex);
         if (newLastIndex > fetch.lastIndex) {
-          for (index = fetch.lastIndex + 1; index <= newLastIndex; index++) {
-            if (index < buffer.minIndex) {
-              fetch.negativeSize += buffer.getSizeByIndex(index);
-            }
-          }
           fetch.lastIndex = newLastIndex;
         }
       } else {
         const newFirstIndex = Math.max(fetch.firstIndex - diff, settings.minIndex);
         if (newFirstIndex < fetch.firstIndex) {
-          for (index = newFirstIndex; index < fetch.firstIndex; index++) {
-            if (index < buffer.minIndex) {
-              fetch.negativeSize += buffer.getSizeByIndex(index);
-            }
-          }
           fetch.firstIndex = newFirstIndex;
         }
-      }
-    }
-
-    // negative/positive sizes calculations
-    fetch.negativeSize = 0;
-    fetch.positiveSize = 0;
-    for (index = fetch.firstIndex; index < buffer.minIndex; index++) {
-      fetch.negativeSize += buffer.getSizeByIndex(index);
-    }
-    if (fetch.negativeSize) {
-      for (index = buffer.minIndex; index <= fetch.lastIndex; index++) {
-        fetch.positiveSize += buffer.getSizeByIndex(index);
       }
     }
   }

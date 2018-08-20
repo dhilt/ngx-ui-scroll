@@ -17,19 +17,9 @@ export class Routines {
     element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
-  static getWindowParam(horizontal?: boolean): number {
-    const innerParam = horizontal ? 'innerWidth' : 'innerHeight';
-    const clientParam = horizontal ? 'clientWidth' : 'clientHeight';
-    return window[innerParam] && document.documentElement[clientParam] ?
-      Math.min(window[innerParam], document.documentElement[clientParam]) :
-      window[innerParam] ||
-      document.documentElement[clientParam] ||
-      document.getElementsByTagName('body')[0][clientParam];
-  }
-
   static getWindowParams(): ClientRect {
-    const width = Routines.getWindowParam(true);
-    const height = Routines.getWindowParam(false);
+    const width = window.innerWidth;
+    const height = window.innerHeight;
     return <ClientRect>{
       'height': height,
       'width': width,

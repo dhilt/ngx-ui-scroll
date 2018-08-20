@@ -17,19 +17,33 @@ export class Routines {
     element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
+  static getWindowParam(horizontal?: boolean): number {
+    const innerParam = horizontal ? 'innerWidth' : 'innerHeight';
+    const clientParam = horizontal ? 'clientWidth' : 'clientHeight';
+    return window[innerParam] && document.documentElement[clientParam] ?
+      Math.min(window[innerParam], document.documentElement[clientParam]) :
+      window[innerParam] ||
+      document.documentElement[clientParam] ||
+      document.getElementsByTagName('body')[0][clientParam];
+  }
+
+  static getWindowParams(): ClientRect {
+    const width = Routines.getWindowParam(true);
+    const height = Routines.getWindowParam(false);
+    return <ClientRect>{
+      'height': height,
+      'width': width,
+      'top': 0,
+      'bottom': height,
+      'left': 0,
+      'right': width
+    };
+  }
+
   getParams(element: HTMLElement): ClientRect {
-    if (element.tagName.toLowerCase() === 'body') {
-      element = <HTMLElement>element.parentElement;
-      return <ClientRect>{
-        'height': element.clientHeight,
-        'width': element.clientWidth,
-        'top': element.clientTop,
-        'bottom': element.clientTop + element.clientHeight,
-        'left': element.clientLeft,
-        'right': element.clientLeft + element.clientWidth
-      };
-    }
-    return element.getBoundingClientRect();
+    return element.tagName.toLowerCase() === 'body' ?
+      Routines.getWindowParams() :
+      element.getBoundingClientRect();
   }
 
   getSize(element: HTMLElement): number {

@@ -47,16 +47,20 @@ export class ScrollHelper {
   run() {
     // console.log(this.workflow.scroller.viewport.scrollPosition);
     if (this.workflow.scroller.viewport.syntheticScrollPosition !== null) {
-      this.processSyntheticScroll();
+      if (!this.processSyntheticScroll()) {
+        return;
+      }
     }
     this.throttledScroll();
   }
 
-  processSyntheticScroll() {
+  processSyntheticScroll(): boolean {
     const { viewport, settings } = this.workflow.scroller;
     const position = viewport.scrollPosition;
     const syntheticPosition = <number>viewport.syntheticScrollPosition;
+    let result = true;
 
+    // inertia scroll over synthetic scroll
     if (position !== syntheticPosition) {
       const inertiaDelay = Number(new Date()) - viewport.syntheticScrollTime;
       const inertiaDelta = viewport.syntheticScrollPositionBefore - position;
@@ -76,10 +80,14 @@ export class ScrollHelper {
           viewport.scrollPosition = newPosition;
         }
       }
+    } else {
+      result = false;
     }
+
     if (syntheticPosition === viewport.syntheticScrollPosition) {
       viewport.syntheticScrollPosition = null;
     }
+    return result;
   }
 
   throttledScroll() {

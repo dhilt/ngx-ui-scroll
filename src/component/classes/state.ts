@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { Direction, State as IState, Process, Run, ItemAdapter } from '../interfaces/index';
+import { State as IState, Process, ProcessRun, ItemAdapter } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { ClipModel } from './clip';
 
@@ -12,7 +12,6 @@ export class State implements IState {
   cycleCount: number;
   countDone: number;
   position: number;
-  direction: Direction;
   startIndex: number;
   scroll: boolean;
   fetch: FetchModel;
@@ -71,11 +70,10 @@ export class State implements IState {
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
   }
 
-  startCycle(options: Run = {}) {
+  startCycle(options: ProcessRun = {}) {
     this.pending = true;
     this.cycleCount++;
     this.process = Process.start;
-    this.direction = options.direction || Direction.forward;
     this.scroll = options.scroll || false;
     this.fetch.reset();
     this.clip.reset();

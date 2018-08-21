@@ -10,7 +10,7 @@ export const checkDatasource = (datasource: IDatasource) => {
   if (typeof datasource.get !== 'function') {
     throw new Error('Datasource get is not a function');
   }
-  if (datasource.get.length < 2) {
+  if ((<Function>(datasource.get)).length < 2) {
     throw new Error('Datasource get method invalid signature');
   }
   return datasource;

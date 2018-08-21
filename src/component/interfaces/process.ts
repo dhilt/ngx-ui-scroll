@@ -18,3 +18,7 @@ export interface ProcessSubject {
   status: string;
   payload?: string | any;
 }
+
+export interface ProcessRun {
+  scroll?: boolean;
+}

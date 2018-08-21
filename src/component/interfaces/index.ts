@@ -2,9 +2,8 @@ import { Datasource, DatasourceGet } from './datasource';
 import { ItemAdapter, Adapter } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
-import { Run } from './run';
 import { State } from './state';
-import { Process, ProcessSubject } from './process';
+import { Process, ProcessSubject, ProcessRun } from './process';
 
 export {
   Datasource,
@@ -12,7 +11,7 @@ export {
   Direction,
   Settings,
   DevSettings,
-  Run,
+  ProcessRun,
   Process,
   ProcessSubject,
   State,

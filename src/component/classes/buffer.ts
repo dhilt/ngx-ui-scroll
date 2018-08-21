@@ -4,39 +4,22 @@ import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
-import { Scroller } from '../scroller';
-
-export class Index {
-  forward: number | null;
-  backward: number | null;
-
-  constructor() {
-    this.reset();
-  }
-
-  reset() {
-    this.backward = null;
-    this.forward = null;
-  }
-}
 
 export class Buffer {
 
   private _items: Array<Item>;
-  public $items: BehaviorSubject<any>;
+  $items: BehaviorSubject<Array<Item>>;
 
   pristine: boolean;
-  lastIndex: Index;
   cache: Cache;
   absMinIndex: number;
   absMaxIndex: number;
 
   private startIndex: number;
-  private minBufferSize: number;
+  readonly minBufferSize: number;
 
   constructor(settings: Settings) {
-    this.$items = new BehaviorSubject(null);
-    this.lastIndex = new Index();
+    this.$items = new BehaviorSubject<Array<Item>>([]);
     this.cache = new Cache(settings);
     this.reset();
     this.absMinIndex = settings.minIndex;
@@ -51,7 +34,6 @@ export class Buffer {
     }
     this.items = [];
     this.pristine = true;
-    this.lastIndex.reset();
     this.cache.resetIndexes();
     if (typeof startIndex !== 'undefined') {
       this.startIndex = startIndex;
@@ -61,9 +43,6 @@ export class Buffer {
   set items(items: Array<Item>) {
     this.pristine = false;
     this._items = items;
-    if (items.length) {
-      this.setLastIndices();
-    }
     this.$items.next(items);
   }
 
@@ -112,11 +91,6 @@ export class Buffer {
       return false;
     }
     return true;
-  }
-
-  setLastIndices() {
-    this.lastIndex[Direction.backward] = this.items[0].$index;
-    this.lastIndex[Direction.forward] = this.items[this.items.length - 1].$index;
   }
 
   getFirstVisibleItemIndex(): number {

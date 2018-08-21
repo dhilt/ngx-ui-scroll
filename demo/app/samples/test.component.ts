@@ -62,7 +62,9 @@ export class TestComponent {
     }
     this.datasource.adapter.firstVisible$
       .subscribe((result) => {
-        console.log('..............................first visible item:', result.data);
+        if (result.data) {
+          console.log('..............................first visible item:', result.data);
+        }
       });
   }
 

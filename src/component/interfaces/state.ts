@@ -9,7 +9,6 @@ export interface State {
   cycleCount: number;
   countDone: number;
   position: number;
-  direction: Direction;
   scroll: boolean;
   fetch: FetchModel;
   clip: ClipModel;

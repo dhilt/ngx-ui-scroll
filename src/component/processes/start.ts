@@ -1,12 +1,9 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject, Run } from '../interfaces/index';
+import { Process, ProcessSubject, ProcessRun } from '../interfaces/index';
 
 export default class Start {
 
-  static run(scroller: Scroller, options: Run = {}) {
-    if (!options.direction) {
-      options.direction = scroller.state.direction || Direction.forward;
-    }
+  static run(scroller: Scroller, options: ProcessRun = {}) {
     scroller.state.startCycle(options);
     const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
     scroller.logger.log(`%c---=== Workflow ${logData} start`, 'color: #006600;', options);

@@ -23,7 +23,6 @@ export class Item {
   size: number;
   invisible: boolean;
   toRemove: boolean;
-  remain: boolean;
   stub: Stub | null;
 
   constructor($index: number, data: any, routines: Routines) {

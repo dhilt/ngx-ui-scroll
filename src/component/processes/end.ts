@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject, Run, Direction } from '../interfaces/index';
+import { Process, ProcessSubject, ProcessRun, Direction } from '../interfaces/index';
 
 export default class End {
 
@@ -9,13 +9,15 @@ export default class End {
     scroller.purgeCycleSubscriptions();
     scroller.finalize();
 
-    let next: Run | null = null;
+    let next: ProcessRun | null = null;
     const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
     if (isFail) {
       scroller.logger.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
     } else {
       scroller.logger.log(`%c---=== Workflow ${logData} done`, 'color: #006600;');
-      next = End.getNextRun(scroller);
+      next = scroller.state.fetch.hasNewItems ? <ProcessRun> {
+        scroll: scroller.state.scroll
+      } : null;
     }
 
     // clip with no fetch, need to apply Buffer.items changes
@@ -62,15 +64,5 @@ export default class End {
       data: items[index].data,
       element: items[index].element
     } : {};
-  }
-
-  static getNextRun(scroller: Scroller): Run | null {
-    let nextRun: Run | null = null;
-    if (scroller.state.fetch.hasNewItems) {
-      nextRun = {
-        scroll: scroller.state.scroll
-      };
-    }
-    return nextRun;
   }
 }

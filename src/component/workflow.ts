@@ -29,7 +29,7 @@ export class Workflow {
     });
     this.cyclesDone = 0;
     setTimeout(() => {
-      this.scroller.logger.log(`The uiScroll Workflow has been initialized (${this.context.version})`);
+      this.scroller.logger.log(() => `The uiScroll Workflow has been initialized (${this.context.version})`);
       this.initListeners();
     });
   }
@@ -57,7 +57,7 @@ export class Workflow {
   process(data: ProcessSubject) {
     const scroller = this.scroller;
     const pl = typeof data.payload === 'string' ? ` (${data.payload})` : '';
-    scroller.logger.log(`process ${data.process}, ${data.status + pl}`);
+    scroller.logger.log(() => `process ${data.process}, ${data.status + pl}`);
     if (data.status === 'error') {
       End.run(scroller, true);
       return;
@@ -147,9 +147,11 @@ export class Workflow {
   done() {
     this.cyclesDone++;
     this.scroller.state.wfCycleCount = this.cyclesDone + 1;
-    const logData = `${this.scroller.settings.instanceIndex}-${this.cyclesDone}`;
-    const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
-    this.scroller.logger.log(`%c   ~~~ WF Run ${logData} FINALIZED ~~~  `, logStyles);
+    this.scroller.logger.log(() => {
+      const logData = `${this.scroller.settings.instanceIndex}-${this.cyclesDone}`;
+      const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
+      return [`%c   ~~~ WF Run ${logData} FINALIZED ~~~  `, logStyles];
+    });
     this.finalize();
   }
 

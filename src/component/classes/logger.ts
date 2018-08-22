@@ -31,6 +31,12 @@ export class Logger {
 
   log(...args: Array<any>) {
     if (this.debug) {
+      if (typeof args[0] === 'function') {
+        args = args[0]();
+        if (!Array.isArray(args)) {
+          args = [args];
+        }
+      }
       if (this.logTime) {
         args = [...args, this.getTime()];
       }

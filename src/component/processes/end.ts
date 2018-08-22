@@ -10,11 +10,13 @@ export default class End {
     scroller.finalize();
 
     let next: ProcessRun | null = null;
-    const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
-    if (isFail) {
-      scroller.logger.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
-    } else {
-      scroller.logger.log(`%c---=== Workflow ${logData} done`, 'color: #006600;');
+    scroller.logger.log(() => {
+      const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
+      return isFail ?
+        [`%c---=== Workflow ${logData} fail`, 'color: #006600;'] :
+        [`%c---=== Workflow ${logData} done`, 'color: #006600;'];
+    });
+    if (!isFail) {
       next = scroller.state.fetch.hasNewItems ? <ProcessRun> {
         scroll: scroller.state.scroll
       } : null;

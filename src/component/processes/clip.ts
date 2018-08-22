@@ -35,7 +35,7 @@ export default class Clip {
       }
       return true;
     });
-    scroller.logger.log(`clipped ${clipped.length} items`, clipped);
+    scroller.logger.log(() => [`clipped ${clipped.length} items`, clipped]);
   }
 
 }

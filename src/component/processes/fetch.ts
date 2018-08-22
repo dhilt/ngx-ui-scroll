@@ -26,7 +26,7 @@ export default class Fetch {
   }
 
   static success(data: Array<any>, scroller: Scroller) {
-    scroller.logger.log(`resolved ${data.length} items ` +
+    scroller.logger.log(() => `resolved ${data.length} items ` +
       `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
     scroller.state.fetch.newItemsData = data;
 

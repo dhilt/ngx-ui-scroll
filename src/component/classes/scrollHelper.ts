@@ -68,10 +68,9 @@ export class ScrollHelper {
       const newPosition = Math.max(0, position + viewport.syntheticScrollDelta);
 
       if (inertiaDelta > 0 && inertiaDelta < syntheticDelta) {
-        const logString = 'Inertia scroll adjustment. Position: ' + position +
+        this.workflow.scroller.logger.log(() => 'Inertia scroll adjustment. Position: ' + position +
           ', synthetic position: ' + syntheticPosition + ', synthetic delta: ' + syntheticDelta +
-          ', delay: ' + inertiaDelay + ', delta: ' + inertiaDelta;
-        this.workflow.scroller.logger.log(logString);
+          ', delay: ' + inertiaDelay + ', delta: ' + inertiaDelta);
         if (settings.inertia) {
           if (inertiaDelta <= settings.inertiaScrollDelta && inertiaDelay <= settings.inertiaScrollDelay) {
             viewport.scrollPosition = newPosition;

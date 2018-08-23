@@ -44,15 +44,23 @@ export default class PostFetch {
   }
 
   static setItems(scroller: Scroller): boolean {
+    const buffer = scroller.buffer;
     const fetch = scroller.state.fetch;
     const items = fetch.newItemsData;
+    let fetchIndex = <number>fetch.index;
     if (!items || !items.length) { // empty result
       return true;
     }
+    if (items.length < fetch.count) { // eof/bof case
+      // shift fetch index in bof case
+      if (<number>fetch.firstIndex < buffer.minIndex) { // bof
+        fetchIndex = buffer.minIndex - items.length;
+      }
+    }
     fetch.items = items.map((item, index: number) =>
-      new Item(<number>fetch.index + index, item, scroller.routines)
+      new Item(fetchIndex + index, item, scroller.routines)
     );
-    return scroller.buffer.setItems(fetch.items);
+    return buffer.setItems(fetch.items);
   }
 
 }

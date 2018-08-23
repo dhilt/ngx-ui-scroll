@@ -24,49 +24,12 @@ export default class PreFetch {
     fetch.position = scrollPosition;
     fetch.minIndex = buffer.minIndex;
 
-    let position = 0;
-    let index = state.startIndex;
-
-    // first index to fetch
-    const inc = startPosition < 0 ? -1 : 1;
-    let firstIndex = state.startIndex;
-    let firstIndexPosition = position;
-    while (1) {
-      index += inc;
-      position += inc * buffer.getSizeByIndex(index);
-      if (inc < 0) {
-        firstIndex = index;
-        firstIndexPosition = position;
-        if (position <= startPosition) {
-          break;
-        }
-      } else {
-        if (position > startPosition) {
-          break;
-        }
-        firstIndex = index;
-        firstIndexPosition = position;
-      }
-    }
-
-    // last index to fetch
-    let lastIndex = state.startIndex;
-    let lastIndexPosition = position;
-    index = firstIndex;
-    position = firstIndexPosition;
-    while (1) {
-      lastIndex = index;
-      index++;
-      position += buffer.getSizeByIndex(index);
-      lastIndexPosition = position;
-      if (position >= endPosition) {
-        break;
-      }
-    }
-
-    // take absolute buffer limit values into the account
-    fetch.firstIndex = Math.max(firstIndex, buffer.absMinIndex);
-    fetch.lastIndex = Math.min(lastIndex, buffer.absMaxIndex);
+    // set first and last indexes to fetch
+    const firstIndexPosition =
+      PreFetch.setFirstIndex(scroller, startPosition);
+    PreFetch.setLastIndex(scroller, firstIndexPosition, endPosition);
+    fetch.firstIndex = <number>fetch.firstIndex;
+    fetch.lastIndex = <number>fetch.lastIndex;
 
     // skip indexes that are in buffer
     if (buffer.size) {
@@ -114,4 +77,56 @@ export default class PreFetch {
     }
   }
 
+
+  static setFirstIndex(scroller: Scroller, startPosition: number): number {
+    const { state, buffer } = scroller;
+    const inc = startPosition < 0 ? -1 : 1;
+    let position = 0;
+    let index = state.startIndex;
+    let firstIndex = state.startIndex;
+    let firstIndexPosition = position;
+    while (1) {
+      index += inc;
+      position += inc * buffer.getSizeByIndex(index);
+      if (inc < 0) {
+        firstIndex = index;
+        firstIndexPosition = position;
+        if (position <= startPosition) {
+          break;
+        }
+      } else {
+        if (position > startPosition) {
+          break;
+        }
+        firstIndex = index;
+        firstIndexPosition = position;
+      }
+      if (firstIndex - 1 < buffer.absMinIndex) {
+        break;
+      }
+    }
+    state.fetch.firstIndex = firstIndex;
+    return firstIndexPosition;
+  }
+
+  static setLastIndex(scroller: Scroller, startPosition: number, endPosition: number) {
+    const { state, buffer } = scroller;
+    let position = startPosition;
+    let index = <number>state.fetch.firstIndex;
+    let lastIndex = state.startIndex;
+    let lastIndexPosition = startPosition;
+    while (1) {
+      lastIndex = index;
+      index++;
+      position += buffer.getSizeByIndex(index);
+      lastIndexPosition = position;
+      if (position >= endPosition) {
+        break;
+      }
+      if (lastIndex + 1 > buffer.absMaxIndex) {
+        break;
+      }
+    }
+    state.fetch.lastIndex = lastIndex;
+  }
 }

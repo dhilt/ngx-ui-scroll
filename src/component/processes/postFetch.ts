@@ -47,13 +47,16 @@ export default class PostFetch {
     const buffer = scroller.buffer;
     const fetch = scroller.state.fetch;
     const items = fetch.newItemsData;
-    let fetchIndex = <number>fetch.index;
     if (!items || !items.length) { // empty result
       return true;
     }
-    if (items.length < fetch.count) { // eof/bof case
-      // shift fetch index in bof case
-      if (<number>fetch.firstIndex < buffer.minIndex) { // bof
+    // eof/bof case, need to shift fetch index if bof
+    let fetchIndex = <number>fetch.index;
+    if (items.length < fetch.count) {
+      // initial poor fetch should be treated as startIndex-bof by default
+      if (scroller.state.isInitialCycle) {
+        fetchIndex = scroller.state.startIndex;
+      } else if (<number>fetch.firstIndex < buffer.minIndex) { // normal bof
         fetchIndex = buffer.minIndex - items.length;
       }
     }

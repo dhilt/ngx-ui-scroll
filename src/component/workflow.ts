@@ -157,7 +157,8 @@ export class Workflow {
 
   done() {
     this.cyclesDone++;
-    this.scroller.state.wfCycleCount = this.cyclesDone + 1;
+    this.scroller.state.workflowCycleCount = this.cyclesDone + 1;
+    this.scroller.state.isInitialWorkflowCycle = false;
     this.scroller.logger.log(() => {
       const logData = `${this.scroller.settings.instanceIndex}-${this.cyclesDone}`;
       const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';

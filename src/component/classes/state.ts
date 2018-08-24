@@ -6,13 +6,15 @@ import { ClipModel } from './clip';
 
 export class State implements IState {
   initTime: number;
-  isInitial: boolean;
-  process: Process;
-  wfCycleCount: number;
   cycleCount: number;
+  isInitialCycle: boolean;
+  workflowCycleCount: number;
+  isInitialWorkflowCycle: boolean;
   countDone: number;
-  position: number;
+
+  process: Process;
   startIndex: number;
+  position: number;
   scroll: boolean;
   fetch: FetchModel;
   clip: ClipModel;
@@ -57,14 +59,18 @@ export class State implements IState {
 
   constructor(startIndex: number) {
     this.initTime = Number(new Date());
-    this.isInitial = false;
-    this.wfCycleCount = 1;
     this.cycleCount = 0;
+    this.isInitialCycle = false;
+    this.workflowCycleCount = 1;
+    this.isInitialWorkflowCycle = false;
     this.countDone = 0;
+
+    this.startIndex = startIndex;
     this.position = 0;
+    this.scroll = false;
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
-    this.startIndex = startIndex;
+
     this.pendingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
@@ -82,6 +88,7 @@ export class State implements IState {
   endCycle() {
     this.pending = false;
     this.countDone++;
+    this.isInitialCycle = false;
   }
 
 }

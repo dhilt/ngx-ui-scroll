@@ -11,7 +11,7 @@ export default class End {
 
     let next: ProcessRun | null = null;
     scroller.logger.log(() => {
-      const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
+      const logData = `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}-${scroller.state.cycleCount}`;
       return isFail ?
         [`%c---=== Workflow ${logData} fail`, 'color: #006600;'] :
         [`%c---=== Workflow ${logData} done`, 'color: #006600;'];

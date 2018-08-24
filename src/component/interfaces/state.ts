@@ -1,18 +1,21 @@
-import { Process, Direction, ItemAdapter } from './index';
+import { Process, ItemAdapter } from './index';
 import { FetchModel } from '../classes/fetch';
 import { ClipModel } from '../classes/clip';
 
 export interface State {
-  isInitial: boolean;
-  process: Process;
-  wfCycleCount: number;
+  initTime: number;
   cycleCount: number;
+  isInitialCycle: boolean;
+  workflowCycleCount: number;
+  isInitialWorkflowCycle: boolean;
   countDone: number;
+
+  process: Process;
+  startIndex: number;
   position: number;
   scroll: boolean;
   fetch: FetchModel;
   clip: ClipModel;
-  startIndex: number;
 
   pending: boolean;
   firstVisibleItem: ItemAdapter;

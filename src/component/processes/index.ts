@@ -6,8 +6,9 @@ import Fetch from './fetch';
 import PostFetch from './postFetch';
 import Render from './render';
 import PostRender from './postRender';
+import FetchEnd from './fetchEnd';
 import PreClip from './preClip';
 import Clip from './clip';
 import End from './end';
 
-export { Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End };
+export { Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, FetchEnd, PreClip, Clip, End };

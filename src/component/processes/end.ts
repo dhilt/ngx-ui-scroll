@@ -17,13 +17,13 @@ export default class End {
         [`%c---=== Workflow ${logData} done`, 'color: #006600;'];
     });
     if (!isFail) {
-      next = scroller.state.fetch.hasNewItems ? <ProcessRun> {
+      next = scroller.state.fetch.hasNewItems && !scroller.state.scroll ? <ProcessRun> {
         scroll: scroller.state.scroll
       } : null;
     }
 
-    // clip with no fetch, need to apply Buffer.items changes
-    if (scroller.state.clip.shouldClip && !scroller.state.fetch.hasNewItems) {
+    // need to apply Buffer.items changes if clip
+    if (scroller.state.clip.shouldClip) {
       scroller.runChangeDetector();
     }
 

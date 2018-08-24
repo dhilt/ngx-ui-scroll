@@ -17,7 +17,7 @@ export default class PostFetch {
       scroller.callWorkflow(<ProcessSubject>{
         process: Process.postFetch,
         status: 'error',
-        payload: 'Can not set buffer items'
+        payload: 'Can\'t set buffer items'
       });
     }
   }

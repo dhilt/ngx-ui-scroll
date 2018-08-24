@@ -1,23 +1,32 @@
 export class ClipByDirection {
-  shouldClip: boolean;
   size: number;
   items: number;
+
+  get shouldClip(): boolean {
+    return !!this.size;
+  }
 
   constructor() {
     this.reset();
   }
 
   reset() {
-    this.shouldClip = false;
     this.size = 0;
     this.items = 0;
   }
 }
 
 export class ClipModel {
-  shouldClip: boolean;
   forward: ClipByDirection;
   backward: ClipByDirection;
+
+  get size(): number {
+    return this.backward.size + this.forward.size;
+  }
+
+  get shouldClip(): boolean {
+    return !!this.size;
+  }
 
   constructor() {
     this.forward = new ClipByDirection();
@@ -26,12 +35,7 @@ export class ClipModel {
   }
 
   reset() {
-    this.shouldClip = false;
     this.backward.reset();
     this.forward.reset();
-  }
-
-  get size(): number {
-    return this.backward.size + this.forward.size;
   }
 }

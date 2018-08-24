@@ -4,24 +4,20 @@ import { Direction, Process, ProcessSubject } from '../interfaces/index';
 export default class PreClip {
 
   static run(scroller: Scroller) {
-    const state = scroller.state;
-    state.process = Process.preClip;
+    scroller.state.process = Process.preClip;
 
-    state.clip.shouldClip =
-      !scroller.settings.infinite &&
-      !!scroller.buffer.size &&
-      (!scroller.settings.clipAfterScrollOnly || scroller.state.scroll);
+    PreClip.setClipParams(scroller);
 
-    if (state.clip.shouldClip) {
-      PreClip.shouldClip(scroller);
-    }
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preClip,
-      status: state.clip.shouldClip ? 'next' : 'done'
+      status: scroller.state.clip.shouldClip ? 'next' : 'done'
     });
   }
 
-  static shouldClip(scroller: Scroller) {
+  static setClipParams(scroller: Scroller) {
+    if (!scroller.buffer.size) {
+      return;
+    }
     const items = scroller.buffer.items;
     const viewport = scroller.viewport;
     const clip = scroller.state.clip;
@@ -58,8 +54,6 @@ export default class PreClip {
       item.toRemove = true;
       clip[Direction.forward].size += item.size;
     }
-
-    clip.shouldClip = !!clip.size;
   }
 
 }

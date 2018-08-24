@@ -6,7 +6,17 @@ export default class PreFetch {
   static run(scroller: Scroller) {
     scroller.state.process = Process.preFetch;
 
-    PreFetch.setFetchParams(scroller);
+    scroller.state.fetch.position = scroller.viewport.scrollPosition;
+    scroller.state.fetch.minIndex = scroller.buffer.minIndex;
+
+    // set first and last indexes to fetch
+    PreFetch.setFetchIndexes(scroller);
+
+    // skip indexes that are in buffer
+    PreFetch.skipBufferedItems(scroller);
+
+    // add indexes if there are too few items to fetch (clip padding)
+    PreFetch.checkBufferSize(scroller);
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
@@ -14,71 +24,19 @@ export default class PreFetch {
     });
   }
 
-  static setFetchParams(scroller: Scroller) {
-    const { settings, buffer, viewport, state } = scroller;
+  static setFetchIndexes(scroller: Scroller) {
+    const { state, viewport } = scroller;
     const fetch = state.fetch;
-    const scrollPosition = viewport.scrollPosition;
-    const relativePosition = scrollPosition - viewport.startDelta;
+    const relativePosition = fetch.position - viewport.startDelta;
     const startPosition = relativePosition - viewport.getBufferPadding();
     const endPosition = relativePosition + viewport.getSize() + viewport.getBufferPadding();
-    fetch.position = scrollPosition;
-    fetch.minIndex = buffer.minIndex;
 
-    // set first and last indexes to fetch
     const firstIndexPosition =
-      PreFetch.setFirstIndex(scroller, startPosition);
-    PreFetch.setLastIndex(scroller, firstIndexPosition, endPosition);
-    fetch.firstIndex = <number>fetch.firstIndex;
-    fetch.lastIndex = <number>fetch.lastIndex;
-
-    // skip indexes that are in buffer
-    if (buffer.size) {
-      const packs: Array<Array<number>> = [[]];
-      let p = 0;
-      for (let i = fetch.firstIndex; i <= fetch.lastIndex; i++) {
-        if (!buffer.get(i)) {
-          packs[p].push(i);
-        } else if (packs[p].length) {
-          packs[++p] = [];
-        }
-      }
-      let pack = packs[0];
-      if (packs[0].length && packs[1] && packs[1].length) {
-        // todo: need to look for biggest pack in visible area
-        // todo: or think about merging two requests in a single Fetch process
-        if (packs[1].length > packs[0].length) {
-          pack = packs[1];
-        }
-      }
-      fetch.firstIndex = Math.max(pack[0], settings.minIndex);
-      fetch.lastIndex = Math.min(pack[pack.length - 1], settings.maxIndex);
-    }
-    if (!fetch.shouldFetch) {
-      return;
-    }
-
-    // too few items to fetch, clip padding
-    const diff = settings.bufferSize - (fetch.lastIndex - fetch.firstIndex + 1);
-    if (diff > 0) {
-      if (!buffer.size) {
-        return;
-      }
-      if (fetch.lastIndex > buffer.items[0].$index) { // forward
-        const newLastIndex = Math.min(fetch.lastIndex + diff, settings.maxIndex);
-        if (newLastIndex > fetch.lastIndex) {
-          fetch.lastIndex = newLastIndex;
-        }
-      } else {
-        const newFirstIndex = Math.max(fetch.firstIndex - diff, settings.minIndex);
-        if (newFirstIndex < fetch.firstIndex) {
-          fetch.firstIndex = newFirstIndex;
-        }
-      }
-    }
+      PreFetch.setFirstFetchIndex(scroller, startPosition);
+    PreFetch.setLastFetchIndex(scroller, firstIndexPosition, endPosition);
   }
 
-
-  static setFirstIndex(scroller: Scroller, startPosition: number): number {
+  static setFirstFetchIndex(scroller: Scroller, startPosition: number): number {
     const { state, buffer } = scroller;
     const inc = startPosition < 0 ? -1 : 1;
     let position = 0;
@@ -109,7 +67,7 @@ export default class PreFetch {
     return firstIndexPosition;
   }
 
-  static setLastIndex(scroller: Scroller, startPosition: number, endPosition: number) {
+  static setLastFetchIndex(scroller: Scroller, startPosition: number, endPosition: number) {
     const { state, buffer } = scroller;
     let position = startPosition;
     let index = <number>state.fetch.firstIndex;
@@ -128,5 +86,64 @@ export default class PreFetch {
       }
     }
     state.fetch.lastIndex = lastIndex;
+  }
+
+  static skipBufferedItems(scroller: Scroller) {
+    const buffer = scroller.buffer;
+    if (!buffer.size) {
+      return;
+    }
+    const fetch = scroller.state.fetch;
+    const packs: Array<Array<number>> = [[]];
+    let p = 0;
+    for (let i = <number>fetch.firstIndex; i <= <number>fetch.lastIndex; i++) {
+      if (!buffer.get(i)) {
+        packs[p].push(i);
+      } else if (packs[p].length) {
+        packs[++p] = [];
+      }
+    }
+    let pack = packs[0];
+    if (packs[0].length && packs[1] && packs[1].length) {
+      // todo: need to look for biggest pack in visible area
+      // todo: or think about merging two requests in a single Fetch process
+      if (packs[1].length > packs[0].length) {
+        pack = packs[1];
+      }
+    }
+    fetch.firstIndex = Math.max(pack[0], buffer.absMinIndex);
+    fetch.lastIndex = Math.min(pack[pack.length - 1], buffer.absMaxIndex);
+  }
+
+  static checkBufferSize(scroller: Scroller) {
+    const buffer = scroller.buffer;
+    if (!buffer.size) {
+      return;
+    }
+    const fetch = scroller.state.fetch;
+    if (!fetch.shouldFetch) {
+      return;
+    }
+    const firstIndex = <number>fetch.firstIndex;
+    const lastIndex = <number>fetch.lastIndex;
+    const diff = scroller.settings.bufferSize - (lastIndex - firstIndex + 1);
+    if (diff <= 0) {
+      return;
+    }
+    if (lastIndex > buffer.items[0].$index) { // forward
+      const newLastIndex = Math.min(lastIndex + diff, buffer.absMaxIndex);
+      if (newLastIndex > lastIndex) {
+        fetch.lastIndex = newLastIndex;
+      }
+    } else {
+      const newFirstIndex = Math.max(firstIndex - diff, buffer.absMinIndex);
+      if (newFirstIndex < firstIndex) {
+        fetch.firstIndex = newFirstIndex;
+      }
+    }
+    if (fetch.firstIndex === firstIndex && fetch.lastIndex === lastIndex) {
+      return;
+    }
+    PreFetch.skipBufferedItems(scroller);
   }
 }

@@ -17,7 +17,7 @@ export default class Render {
           scroller.callWorkflow(<ProcessSubject>{
             process: Process.render,
             status: 'error',
-            payload: 'Can not associate item with element'
+            payload: 'Can\'t associate item with element'
           });
         }
       })

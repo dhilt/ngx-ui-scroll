@@ -5,7 +5,7 @@ import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessSubject } from './interfaces/index';
 import {
-  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
+  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, FetchEnd, PreClip, Clip, End
 } from './processes/index';
 
 export class Workflow {
@@ -56,8 +56,11 @@ export class Workflow {
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
-    const pl = typeof data.payload === 'string' ? ` (${data.payload})` : '';
-    scroller.logger.log(() => `process ${data.process}, ${data.status + pl}`);
+    scroller.logger.log(() => [
+      `process ${data.process}, ${data.status}` +
+      (data.payload && typeof data.payload !== 'object' ? ',' : ''),
+      ...(data.payload ? [data.payload] : [])
+    ]);
     if (data.status === 'error') {
       End.run(scroller, true);
       return;
@@ -86,28 +89,15 @@ export class Workflow {
         break;
       case Process.start:
         if (data.status === 'next') {
-          PreClip.run(scroller);
-        }
-        break;
-      case Process.preClip:
-        if (data.status === 'next') {
-          Clip.run(scroller);
-        }
-        if (data.status === 'done') {
-          PreFetch.run(scroller);
-        }
-        break;
-      case Process.clip:
-        if (data.status === 'next') {
           PreFetch.run(scroller);
         }
         break;
       case Process.preFetch:
+        if (data.status === 'done') {
+          FetchEnd.run(scroller);
+        }
         if (data.status === 'next') {
           Fetch.run(scroller);
-        }
-        if (data.status === 'done') {
-          End.run(scroller);
         }
         break;
       case Process.fetch:
@@ -120,7 +110,7 @@ export class Workflow {
           Render.run(scroller);
         }
         if (data.status === 'done') {
-          End.run(scroller);
+          FetchEnd.run(scroller);
         }
         break;
       case Process.render:
@@ -129,6 +119,27 @@ export class Workflow {
         }
         break;
       case Process.postRender:
+        if (data.status === 'next') {
+          FetchEnd.run(scroller);
+        }
+        break;
+      case Process.fetchEnd:
+        if (data.status === 'done') {
+          End.run(scroller);
+        }
+        if (data.status === 'next') {
+          PreClip.run(scroller);
+        }
+        break;
+      case Process.preClip:
+        if (data.status === 'done') {
+          End.run(scroller);
+        }
+        if (data.status === 'next') {
+          Clip.run(scroller);
+        }
+        break;
+      case Process.clip:
         if (data.status === 'next') {
           End.run(scroller);
         }

@@ -1,8 +1,8 @@
-import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 import { Workflow } from '../workflow';
-import { Process, ProcessSubject } from '../interfaces/index';
+import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
 export class ScrollHelper {
 
@@ -102,7 +102,6 @@ export class ScrollHelper {
     }
     if (diff < 0) {
       this.lastScrollTime = Date.now();
-      this.lastScrollPosition = scroller.viewport.scrollPosition;
       this.debouncedScroll();
     } else {
       this.scrollTimer = <any>setTimeout(() => {
@@ -144,9 +143,17 @@ export class ScrollHelper {
 
   runWorkflow() {
     this.purgeProcesses();
+    const position = this.workflow.scroller.viewport.scrollPosition;
+    this.workflow.scroller.logger.log(() => `scroll position: ${position}`);
+    if (position === this.lastScrollPosition) {
+      return;
+    }
+    const direction = position < this.lastScrollPosition ? Direction.backward : Direction.forward;
+    this.lastScrollPosition = position;
     this.workflow.callWorkflow(<ProcessSubject>{
       process: Process.scroll,
-      status: 'next'
+      status: 'next',
+      payload: direction
     });
   }
 

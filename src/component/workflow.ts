@@ -84,7 +84,7 @@ export class Workflow {
         break;
       case Process.scroll:
         if (data.status === 'next') {
-          Init.run(scroller, true);
+          Init.run(scroller, data.payload);
         }
         break;
       case Process.start:

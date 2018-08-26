@@ -3,7 +3,7 @@ import { Process, ProcessSubject, ProcessRun } from '../interfaces/index';
 
 export default class Start {
 
-  static run(scroller: Scroller, options: ProcessRun = {}) {
+  static run(scroller: Scroller, options?: ProcessRun) {
     const { state } = scroller;
     state.startCycle(options);
     scroller.logger.log(() => {

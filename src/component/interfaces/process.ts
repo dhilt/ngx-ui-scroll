@@ -1,3 +1,5 @@
+import { Direction } from './direction';
+
 export enum Process {
   init = 'init',
   scroll = 'scroll',
@@ -21,5 +23,6 @@ export interface ProcessSubject {
 }
 
 export interface ProcessRun {
-  scroll?: boolean;
+  scroll: boolean;
+  direction: Direction;
 }

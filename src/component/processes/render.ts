@@ -6,6 +6,7 @@ export default class Render {
   static run(scroller: Scroller) {
     scroller.state.process = Process.render;
 
+    scroller.logger.stat('Before render new items');
     scroller.cycleSubscriptions.push(
       scroller.bindData().subscribe(() => {
         if (Render.setElements(scroller)) {
@@ -26,17 +27,20 @@ export default class Render {
 
   static setElements(scroller: Scroller) {
     const items = scroller.state.fetch.items;
-    for (let j = items.length - 1; j >= 0; j--) {
-      const nodes = scroller.viewport.children;
-      for (let i = nodes.length - 1; i >= 0; i--) {
-        if (nodes[i].getAttribute('data-sid') === items[j].nodeId) {
-          items[j].element = <HTMLElement>nodes[i];
-        }
-      }
-      if (!items[j].element) { // todo: is this situation possible?
+    for (let j = 0; j < items.length; j++) {
+      const item = items[j];
+      const element = scroller.viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);
+      if (!element) {
         return false;
       }
+      item.element = <HTMLElement>element;
+      item.element.style.left = '';
+      item.element.style.position = '';
+      item.invisible = false;
+      item.setSize();
+      scroller.buffer.cache.add(item);
     }
+    scroller.logger.stat('After render new items');
     return true;
   }
 }

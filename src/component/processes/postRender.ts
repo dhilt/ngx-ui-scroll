@@ -1,14 +1,10 @@
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessSubject } from '../interfaces/index';
-import PreClip from './preClip';
 
 export default class PostRender {
 
   static run(scroller: Scroller) {
     scroller.state.process = Process.postRender;
-
-    // show fetched items, update cache
-    PostRender.processFetchedItems(scroller);
 
     // clip
     // todo: wf refactoring needed
@@ -35,23 +31,6 @@ export default class PostRender {
       status: 'done'
     });
   }
-
-  static processFetchedItems(scroller: Scroller) {
-    scroller.logger.stat('Before insert new items');
-    const items = scroller.state.fetch.items;
-    const limit = items.length - 1;
-    for (let i = 0; i <= limit; i++) {
-      const element = items[i].element;
-      element.style.left = '';
-      element.style.position = '';
-      items[i].invisible = false;
-      items[i].setSize();
-      scroller.buffer.cache.add(items[i]);
-    }
-    // scroller.buffer.cache.addList(items, scroller.state.isInitial ? scroller.state.startIndex : null);
-    scroller.logger.stat('After insert new items');
-  }
-
 
   static clip(scroller: Scroller) {
     PostRender.setClipParams(scroller);

@@ -16,7 +16,7 @@ export class State implements IState {
   startIndex: number;
   position: number;
   scroll: boolean;
-  direction: Direction;
+  direction: Direction | null;
   fetch: FetchModel;
   clip: ClipModel;
 
@@ -69,6 +69,7 @@ export class State implements IState {
     this.startIndex = startIndex;
     this.position = 0;
     this.scroll = false;
+    this.direction = null;
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
 
@@ -86,6 +87,7 @@ export class State implements IState {
       this.direction = options.direction;
     } else {
       this.scroll = false;
+      this.direction = null;
     }
     this.fetch.reset();
     this.clip.reset();

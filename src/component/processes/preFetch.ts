@@ -10,13 +10,13 @@ export default class PreFetch {
     scroller.state.fetch.minIndex = scroller.buffer.minIndex;
 
     // set first and last indexes to fetch
-    PreFetch.setFetchIndexes(scroller);
+    PreFetch.setBufferIndexes(scroller);
 
     // skip indexes that are in buffer
-    PreFetch.skipBufferedItems(scroller);
+    PreFetch.skipExistedItems(scroller);
 
     // add indexes if there are too few items to fetch (clip padding)
-    PreFetch.checkBufferSize(scroller);
+    PreFetch.checkFetchPackSize(scroller);
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
@@ -24,19 +24,18 @@ export default class PreFetch {
     });
   }
 
-  static setFetchIndexes(scroller: Scroller) {
+  static setBufferIndexes(scroller: Scroller) {
     const { state, viewport } = scroller;
     const fetch = state.fetch;
     const relativePosition = fetch.position - viewport.startDelta;
     const startPosition = relativePosition - viewport.getBufferPadding();
     const endPosition = relativePosition + viewport.getSize() + viewport.getBufferPadding();
-
     const firstIndexPosition =
-      PreFetch.setFirstFetchIndex(scroller, startPosition);
-    PreFetch.setLastFetchIndex(scroller, firstIndexPosition, endPosition);
+      PreFetch.setFirstIndexBuffer(scroller, startPosition);
+    PreFetch.setLastIndexBuffer(scroller, firstIndexPosition, endPosition);
   }
 
-  static setFirstFetchIndex(scroller: Scroller, startPosition: number): number {
+  static setFirstIndexBuffer(scroller: Scroller, startPosition: number): number {
     const { state, buffer } = scroller;
     const inc = startPosition < 0 ? -1 : 1;
     let position = 0;
@@ -63,14 +62,14 @@ export default class PreFetch {
         break;
       }
     }
-    state.fetch.firstIndex = firstIndex;
+    state.fetch.firstIndex = state.fetch.firstIndexBuffer = Math.max(firstIndex, buffer.absMinIndex);
     return firstIndexPosition;
   }
 
-  static setLastFetchIndex(scroller: Scroller, startPosition: number, endPosition: number) {
+  static setLastIndexBuffer(scroller: Scroller, startPosition: number, endPosition: number) {
     const { state, buffer } = scroller;
     let position = startPosition;
-    let index = <number>state.fetch.firstIndex;
+    let index = <number>state.fetch.firstIndexBuffer;
     let lastIndex = state.startIndex;
     let lastIndexPosition = startPosition;
     while (1) {
@@ -85,10 +84,10 @@ export default class PreFetch {
         break;
       }
     }
-    state.fetch.lastIndex = lastIndex;
+    state.fetch.lastIndex = state.fetch.lastIndexBuffer = Math.min(lastIndex, buffer.absMaxIndex);
   }
 
-  static skipBufferedItems(scroller: Scroller) {
+  static skipExistedItems(scroller: Scroller) {
     const buffer = scroller.buffer;
     if (!buffer.size) {
       return;
@@ -96,7 +95,7 @@ export default class PreFetch {
     const fetch = scroller.state.fetch;
     const packs: Array<Array<number>> = [[]];
     let p = 0;
-    for (let i = <number>fetch.firstIndex; i <= <number>fetch.lastIndex; i++) {
+    for (let i = <number>fetch.firstIndexBuffer; i <= <number>fetch.lastIndexBuffer; i++) {
       if (!buffer.get(i)) {
         packs[p].push(i);
       } else if (packs[p].length) {
@@ -115,13 +114,9 @@ export default class PreFetch {
     fetch.lastIndex = Math.min(pack[pack.length - 1], buffer.absMaxIndex);
   }
 
-  static checkBufferSize(scroller: Scroller) {
-    const buffer = scroller.buffer;
-    if (!buffer.size) {
-      return;
-    }
-    const fetch = scroller.state.fetch;
-    if (!fetch.shouldFetch) {
+  static checkFetchPackSize(scroller: Scroller) {
+    const { buffer, state: { fetch } } = scroller;
+    if (!buffer.size || !fetch.shouldFetch) {
       return;
     }
     const firstIndex = <number>fetch.firstIndex;
@@ -133,17 +128,17 @@ export default class PreFetch {
     if (lastIndex > buffer.items[0].$index) { // forward
       const newLastIndex = Math.min(lastIndex + diff, buffer.absMaxIndex);
       if (newLastIndex > lastIndex) {
-        fetch.lastIndex = newLastIndex;
+        fetch.lastIndex = fetch.lastIndexBuffer = newLastIndex;
       }
     } else {
       const newFirstIndex = Math.max(firstIndex - diff, buffer.absMinIndex);
       if (newFirstIndex < firstIndex) {
-        fetch.firstIndex = newFirstIndex;
+        fetch.firstIndex = fetch.firstIndexBuffer = newFirstIndex;
       }
     }
     if (fetch.firstIndex === firstIndex && fetch.lastIndex === lastIndex) {
       return;
     }
-    PreFetch.skipBufferedItems(scroller);
+    PreFetch.skipExistedItems(scroller);
   }
 }

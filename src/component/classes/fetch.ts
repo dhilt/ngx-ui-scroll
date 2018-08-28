@@ -3,6 +3,8 @@ import { Item } from './item';
 export class FetchModel {
   private _newItemsData: Array<any> | null;
   items: Array<Item>;
+  firstIndexBuffer: number | null;
+  lastIndexBuffer: number | null;
   firstIndex: number | null;
   lastIndex: number | null;
   callCount: number;
@@ -17,6 +19,8 @@ export class FetchModel {
   reset() {
     this._newItemsData = null;
     this.items = [];
+    this.firstIndexBuffer = null;
+    this.lastIndexBuffer = null;
     this.firstIndex = null;
     this.lastIndex = null;
     this.position = 0;

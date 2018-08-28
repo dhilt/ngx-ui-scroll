@@ -4,6 +4,8 @@ import { Process, ProcessSubject } from '../interfaces/index';
 export default class Reload {
 
   static run(scroller: Scroller, reloadIndex: any) {
+    scroller.state.process = Process.reload;
+
     const scrollPosition = scroller.viewport.scrollPosition;
     Reload.setCurrentStartIndex(scroller, reloadIndex);
     scroller.buffer.reset(true, scroller.state.startIndex);
@@ -26,4 +28,5 @@ export default class Reload {
       state.startIndex = settings.minIndex;
     }
   }
+
 }

@@ -6,7 +6,8 @@ export default class Clip {
   static run(scroller: Scroller) {
     scroller.state.process = Process.clip;
 
-    if (Clip.setClipParams(scroller)) {
+    Clip.prepareClip(scroller);
+    if (scroller.state.clip) {
       Clip.doClip(scroller);
     }
 
@@ -16,43 +17,40 @@ export default class Clip {
     });
   }
 
-  static setClipParams(scroller: Scroller): boolean {
-    const { settings, state, buffer, state: { fetch } } = scroller;
+  static prepareClip(scroller: Scroller) {
+    const { state, buffer, state: { fetch } } = scroller;
     if (!buffer.size) {
-      return false;
+      return;
     }
     const firstIndex = <number>fetch.firstIndexBuffer;
     const lastIndex = <number>fetch.lastIndexBuffer;
-    if (settings.clipAfterScrollOnly && (state.scroll === false || state.direction === null)) {
-      return false;
+    if (state.scroll === false || state.direction === null) {
+      return;
     }
-    let result = false;
-    if (state.direction === Direction.forward || !settings.clipAfterScrollOnly) {
+    if (state.direction === Direction.forward) {
       if (firstIndex - 1 >= buffer.absMinIndex) {
-        result = result || Clip.setClipParamsByDirection(scroller, Direction.forward, firstIndex);
+        Clip.prepareClipByDirection(scroller, Direction.forward, firstIndex);
       }
     }
-    if (state.direction === Direction.backward || !settings.clipAfterScrollOnly) {
+    if (state.direction === Direction.backward) {
       if (lastIndex + 1 <= buffer.absMaxIndex) {
-        result = result || Clip.setClipParamsByDirection(scroller, Direction.backward, lastIndex);
+        Clip.prepareClipByDirection(scroller, Direction.backward, lastIndex);
       }
     }
-    return result;
+    return;
   }
 
-  static setClipParamsByDirection(scroller: Scroller, direction: Direction, edgeIndex: number): boolean {
+  static prepareClipByDirection(scroller: Scroller, direction: Direction, edgeIndex: number) {
     const forward = direction === Direction.forward;
-    let result = false;
     scroller.buffer.items.forEach(item => {
       if (
         (forward && item.$index < edgeIndex) ||
         (!forward && item.$index > edgeIndex)
       ) {
         item.toRemove = true;
-        result = true;
+        scroller.state.clip = true;
       }
     });
-    return result;
   }
 
   static doClip(scroller: Scroller) {

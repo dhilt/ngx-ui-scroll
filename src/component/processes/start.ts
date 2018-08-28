@@ -4,6 +4,8 @@ import { Process, ProcessSubject, ProcessRun } from '../interfaces/index';
 export default class Start {
 
   static run(scroller: Scroller, options?: ProcessRun) {
+    scroller.state.process = Process.start;
+
     const { state } = scroller;
     state.startCycle(options);
     scroller.logger.log(() => {
@@ -16,17 +18,4 @@ export default class Start {
     });
   }
 
-  // static setItemsToRemove(scroller: Scroller) {
-  //   if (!scroller.buffer.size) {
-  //     return;
-  //   }
-  //   const firstIndex = <number>scroller.state.fetch.firstIndex;
-  //   const lastIndex = <number>scroller.state.fetch.lastIndex;
-  //   scroller.buffer.items.forEach(item => {
-  //     if (item.$index < firstIndex || item.$index > lastIndex) {
-  //       item.toRemove = true;
-  //       scroller.state.clip.shouldClip = true;
-  //     }
-  //   });
-  // }
 }

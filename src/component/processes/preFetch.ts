@@ -141,4 +141,5 @@ export default class PreFetch {
     }
     PreFetch.skipExistedItems(scroller);
   }
+
 }

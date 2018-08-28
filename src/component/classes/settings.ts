@@ -24,7 +24,6 @@ export const defaultDevSettings: IDevSettings = {
   debug: false, // if true, logging is enabled; need to turn off when release
   immediateLog: true, // if false, logging is not immediate and could be done via Workflow.logForce call
   logTime: false, // if true, time differences are logging
-  clipAfterFetchOnly: true,
   clipAfterScrollOnly: true,
   paddingForwardSize: 0,
   paddingBackwardSize: 0,
@@ -52,7 +51,6 @@ export class Settings implements ISettings {
   debug: boolean;
   immediateLog: boolean;
   logTime: boolean;
-  clipAfterFetchOnly: boolean;
   clipAfterScrollOnly: boolean;
   paddingForwardSize: number;
   paddingBackwardSize: number;

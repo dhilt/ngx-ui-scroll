@@ -4,6 +4,8 @@ import { Process, ProcessSubject, ProcessRun, Direction } from '../interfaces/in
 export default class End {
 
   static run(scroller: Scroller, isFail?: boolean) {
+    scroller.state.process = Process.end;
+
     scroller.state.endCycle();
     End.calculateParams(scroller);
     scroller.purgeCycleSubscriptions();
@@ -23,7 +25,7 @@ export default class End {
     }
 
     // need to apply Buffer.items changes if clip
-    if (scroller.state.clip.shouldClip) {
+    if (scroller.state.clip) {
       scroller.runChangeDetector();
     }
 
@@ -67,4 +69,5 @@ export default class End {
       element: items[index].element
     } : {};
   }
+
 }

@@ -6,7 +6,7 @@ export default class Adjust {
   static run(scroller: Scroller) {
     scroller.state.process = Process.adjust;
 
-    // calculate backward and forward padding sizes
+    // backward and forward paddings adjustment
     if (!Adjust.adjustPaddings(scroller)) {
       scroller.callWorkflow(<ProcessSubject>{
         process: Process.adjust,
@@ -16,7 +16,7 @@ export default class Adjust {
       return;
     }
 
-    // negative size adjustments
+    // negative scroll adjustments
     Adjust.adjustScroll(scroller);
 
     // calculate size before start position

@@ -43,4 +43,5 @@ export default class Render {
     scroller.logger.stat('After render new items');
     return true;
   }
+
 }

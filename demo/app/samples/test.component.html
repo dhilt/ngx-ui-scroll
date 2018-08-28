@@ -39,7 +39,7 @@
   <div
     *uiScroll="let item of datasource"
     (click)="doToggleItem(item)"
-    style="height: 20px;"
+    [style.height]="item.height + 'px'"
   >
     <app-samples-test-inner>
       {{item.text}} {{item.isSelected ? '********' : ''}}

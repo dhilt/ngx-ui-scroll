@@ -76,8 +76,12 @@ export class Buffer {
       isFinite(this.absMaxIndex);
   }
 
-  get(index: number): Item | undefined {
-    return this.items.find((item: Item) => item.$index === index);
+  get($index: number): Item | undefined {
+    return this.items.find((item: Item) => item.$index === $index);
+  }
+
+  getIndex($index: number): number {
+    return this.items.findIndex((item: Item) => item.$index === $index);
   }
 
   setItems(items: Array<Item>): boolean {

@@ -94,7 +94,7 @@ export class Workflow {
         break;
       case Process.preFetch:
         if (data.status === 'done') {
-          FetchEnd.run(scroller);
+          End.run(scroller);
         }
         if (data.status === 'next') {
           Fetch.run(scroller);
@@ -110,7 +110,7 @@ export class Workflow {
           Render.run(scroller);
         }
         if (data.status === 'done') {
-          FetchEnd.run(scroller);
+          End.run(scroller);
         }
         break;
       case Process.render:
@@ -119,31 +119,31 @@ export class Workflow {
         }
         break;
       case Process.postRender:
-        if (data.status === 'next') {
-          FetchEnd.run(scroller);
-        }
-        break;
-      case Process.fetchEnd:
         if (data.status === 'done') {
           End.run(scroller);
         }
-        if (data.status === 'next') {
-          PreClip.run(scroller);
-        }
         break;
-      case Process.preClip:
-        if (data.status === 'done') {
-          End.run(scroller);
-        }
-        if (data.status === 'next') {
-          Clip.run(scroller);
-        }
-        break;
-      case Process.clip:
-        if (data.status === 'next') {
-          End.run(scroller);
-        }
-        break;
+      // case Process.fetchEnd:
+      //   if (data.status === 'done') {
+      //     End.run(scroller);
+      //   }
+      //   if (data.status === 'next') {
+      //     PreClip.run(scroller);
+      //   }
+      //   break;
+      // case Process.preClip:
+      //   if (data.status === 'done') {
+      //     End.run(scroller);
+      //   }
+      //   if (data.status === 'next') {
+      //     Clip.run(scroller);
+      //   }
+      //   break;
+      // case Process.clip:
+      //   if (data.status === 'done') {
+      //     End.run(scroller);
+      //   }
+      //   break;
       case Process.end:
         if (data.status === 'next') {
           Start.run(scroller, data.payload);

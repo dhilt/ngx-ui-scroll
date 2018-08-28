@@ -15,6 +15,47 @@ export default class PreClip {
   }
 
   static setClipParams(scroller: Scroller) {
+    const { settings, state, buffer, state: { fetch } } = scroller;
+    if (!buffer.size) {
+      return;
+    }
+    const firstIndex = <number>fetch.firstIndexBuffer;
+    const lastIndex = <number>fetch.lastIndexBuffer;
+    if (settings.clipAfterScrollOnly && (state.scroll === false || state.direction === null)) {
+      return;
+    }
+    if (state.direction === Direction.forward || !settings.clipAfterScrollOnly) {
+      if (firstIndex - 1 >= buffer.absMinIndex) {
+        PreClip.setClipParamsByDirection(scroller, Direction.forward, firstIndex);
+      }
+    }
+    if (state.direction === Direction.backward || !settings.clipAfterScrollOnly) {
+      if (lastIndex + 1 <= buffer.absMaxIndex) {
+        PreClip.setClipParamsByDirection(scroller, Direction.backward, lastIndex);
+      }
+    }
+  }
+
+  static setClipParamsByDirection(scroller: Scroller, direction: Direction, edgeIndex: number) {
+    const { buffer, state: { clip } } = scroller;
+    const bufferEdgeIndex = buffer.getIndex(edgeIndex);
+    if (bufferEdgeIndex === -1) {
+      return;
+    }
+    const forward = direction === Direction.forward;
+    let size = 0;
+    buffer.items.forEach((item, index) => {
+      if ((forward && item.$index < edgeIndex) || (!forward && item.$index > edgeIndex)) {
+        buffer.items[index].toRemove = true;
+        size += buffer.items[index].size;
+      }
+    });
+    if (size) {
+      clip[forward ? Direction.backward : Direction.forward].size = size;
+    }
+  }
+
+  static _setClipParams(scroller: Scroller) {
     if (!scroller.buffer.size) {
       return;
     }

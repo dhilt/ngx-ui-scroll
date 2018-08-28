@@ -7,22 +7,23 @@ export default class Clip {
     scroller.state.process = Process.clip;
 
     scroller.logger.stat('Before clip');
-    Clip.runByDirection(Direction.forward, scroller);
-    Clip.runByDirection(Direction.backward, scroller);
+    Clip.adjustPadding(scroller, Direction.forward);
+    Clip.adjustPadding(scroller, Direction.backward);
     Clip.processBuffer(scroller);
     scroller.logger.stat('After clip');
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.clip,
-      status: 'next'
+      status: 'done'
     });
   }
 
-  static runByDirection(direction: Direction, scroller: Scroller) {
-    if (!scroller.state.clip[direction].size) {
+  static adjustPadding(scroller: Scroller, direction: Direction) {
+    const clip = scroller.state.clip[direction];
+    if (!clip.shouldClip) {
       return;
     }
-    scroller.viewport.padding[direction].size += scroller.state.clip[direction].size;
+    scroller.viewport.padding[direction].size += clip.size;
   }
 
   static processBuffer(scroller: Scroller) {

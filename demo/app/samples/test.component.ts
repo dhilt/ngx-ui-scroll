@@ -3,13 +3,15 @@ import { Observable, Observer } from 'rxjs';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
-const MAX = 500;
-const MIN = -1000;
+const MAX = 70;
+const MIN = 1;
+const MIN_ROW_HEIGHT = 2;
 
 interface MyItem {
   id: number;
   text: string;
   isSelected: boolean;
+  height: number;
 }
 
 @Component({
@@ -36,15 +38,15 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 10,
+      bufferSize: 7,
       minIndex: MIN,
       itemSize: 40
     },
     devSettings: {
       debug: true,
       immediateLog: true,
-      logTime: true,
-      throttle: 40,
+      logTime: false,
+      throttle: 140,
       inertia: false,
       inertiaScrollDelay: 125,
       inertiaScrollDelta: 35
@@ -57,13 +59,14 @@ export class TestComponent {
       this.data.push(<MyItem>{
         id: i + MIN,
         text: 'item #' + (i + MIN),
-        isSelected: i % 15 === 0
+        isSelected: i % 15 === 0,
+        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
       });
     }
     this.datasource.adapter.firstVisible$
       .subscribe((result) => {
         if (result.data) {
-          console.log('..............................first visible item:', result.data);
+          console.log('...first visible item:', result.data);
         }
       });
   }

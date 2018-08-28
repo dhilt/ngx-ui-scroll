@@ -1,5 +1,6 @@
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessSubject } from '../interfaces/index';
+import PreClip from './preClip';
 
 export default class PostRender {
 
@@ -8,6 +9,10 @@ export default class PostRender {
 
     // show fetched items, update cache
     PostRender.processFetchedItems(scroller);
+
+    // clip
+    // todo: wf refactoring needed
+    PostRender.clip(scroller);
 
     // calculate backward and forward padding sizes
     if (!PostRender.adjustPaddings(scroller)) {
@@ -27,7 +32,7 @@ export default class PostRender {
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.postRender,
-      status: 'next'
+      status: 'done'
     });
   }
 
@@ -47,6 +52,53 @@ export default class PostRender {
     scroller.logger.stat('After insert new items');
   }
 
+
+  static clip(scroller: Scroller) {
+    PostRender.setClipParams(scroller);
+    const clipped: Array<number> = [];
+    scroller.buffer.items = scroller.buffer.items.filter(item => {
+      if (item.toRemove) {
+        item.hide();
+        clipped.push(item.$index);
+        return false;
+      }
+      return true;
+    });
+    scroller.logger.log(() => [`clipped ${clipped.length} items`, clipped]);
+  }
+
+  static setClipParams(scroller: Scroller) {
+    const { settings, state, buffer, state: { fetch } } = scroller;
+    if (!buffer.size) {
+      return;
+    }
+    const firstIndex = <number>fetch.firstIndexBuffer;
+    const lastIndex = <number>fetch.lastIndexBuffer;
+    if (settings.clipAfterScrollOnly && (state.scroll === false || state.direction === null)) {
+      return;
+    }
+    if (state.direction === Direction.forward || !settings.clipAfterScrollOnly) {
+      if (firstIndex - 1 >= buffer.absMinIndex) {
+        PostRender.setClipParamsByDirection(scroller, Direction.forward, firstIndex);
+      }
+    }
+    if (state.direction === Direction.backward || !settings.clipAfterScrollOnly) {
+      if (lastIndex + 1 <= buffer.absMaxIndex) {
+        PostRender.setClipParamsByDirection(scroller, Direction.backward, lastIndex);
+      }
+    }
+  }
+
+  static setClipParamsByDirection(scroller: Scroller, direction: Direction, edgeIndex: number) {
+    const { buffer } = scroller;
+    const forward = direction === Direction.forward;
+    buffer.items.forEach((item, index) => {
+      if ((forward && item.$index < edgeIndex) || (!forward && item.$index > edgeIndex)) {
+        buffer.items[index].toRemove = true;
+      }
+    });
+  }
+
   static adjustPaddings(scroller: Scroller): boolean {
     const { buffer } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
@@ -63,7 +115,7 @@ export default class PostRender {
       const item = buffer.cache.get(index);
       bwdSize += item ? item.size : 0;
     }
-    for (let index = lastIndex; index < buffer.maxIndex; index++) {
+    for (let index = lastIndex + 1; index <= buffer.maxIndex; index++) {
       const item = buffer.cache.get(index);
       fwdSize += item ? item.size : 0;
     }

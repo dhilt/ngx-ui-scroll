@@ -55,15 +55,21 @@ export default class Clip {
 
   static doClip(scroller: Scroller) {
     const clipped: Array<number> = [];
+    let size = 0;
     scroller.logger.stat('Before clip');
     scroller.buffer.items = scroller.buffer.items.filter(item => {
       if (item.toRemove) {
+        size += item.size;
         item.hide();
         clipped.push(item.$index);
         return false;
       }
       return true;
     });
+    if (size) {
+      const opposite = scroller.state.direction === Direction.forward ? Direction.backward : Direction.forward;
+      scroller.viewport.padding[opposite].size += size;
+    }
     scroller.logger.log(() => [`clipped ${clipped.length} items`, clipped]);
     scroller.logger.stat('After clip');
   }

@@ -5,7 +5,7 @@ import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessSubject } from './interfaces/index';
 import {
-  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, FetchEnd, PreClip, Clip, End
+  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
 } from './processes/index';
 
 export class Workflow {
@@ -120,35 +120,14 @@ export class Workflow {
         break;
       case Process.clip:
         if (data.status === 'next') {
-          PostRender.run(scroller);
+          Adjust.run(scroller);
         }
         break;
-      case Process.postRender:
+      case Process.adjust:
         if (data.status === 'done') {
           End.run(scroller);
         }
         break;
-      // case Process.fetchEnd:
-      //   if (data.status === 'done') {
-      //     End.run(scroller);
-      //   }
-      //   if (data.status === 'next') {
-      //     PreClip.run(scroller);
-      //   }
-      //   break;
-      // case Process.preClip:
-      //   if (data.status === 'done') {
-      //     End.run(scroller);
-      //   }
-      //   if (data.status === 'next') {
-      //     Clip.run(scroller);
-      //   }
-      //   break;
-      // case Process.clip:
-      //   if (data.status === 'done') {
-      //     End.run(scroller);
-      //   }
-      //   break;
       case Process.end:
         if (data.status === 'next') {
           Start.run(scroller, data.payload);

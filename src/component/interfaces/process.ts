@@ -9,7 +9,7 @@ export enum Process {
   fetch = 'fetch',
   postFetch = 'postFetch',
   render = 'render',
-  postRender = 'postRender',
+  adjust = 'adjust',
   fetchEnd = 'fetchEnd',
   preClip = 'preClip',
   clip = 'clip',

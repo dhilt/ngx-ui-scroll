@@ -115,6 +115,11 @@ export class Workflow {
         break;
       case Process.render:
         if (data.status === 'next') {
+          Clip.run(scroller);
+        }
+        break;
+      case Process.clip:
+        if (data.status === 'next') {
           PostRender.run(scroller);
         }
         break;

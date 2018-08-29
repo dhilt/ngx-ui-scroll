@@ -65,4 +65,8 @@ export class Routines {
     element.style.display = 'none';
   }
 
+  getOffset(element: HTMLElement): number {
+    return this.horizontal ? element.offsetLeft : element.offsetTop;
+  }
+
 }

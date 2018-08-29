@@ -3,11 +3,13 @@ import { Direction, Process, ProcessSubject } from '../interfaces/index';
 
 export default class Adjust {
 
+  static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
+
   static run(scroller: Scroller) {
     scroller.state.process = Process.adjust;
 
     // backward and forward paddings adjustment
-    if (!Adjust.adjustPaddings(scroller)) {
+    if (!Adjust.setPaddings(scroller)) {
       scroller.callWorkflow(<ProcessSubject>{
         process: Process.adjust,
         status: 'error',
@@ -28,7 +30,7 @@ export default class Adjust {
     });
   }
 
-  static adjustPaddings(scroller: Scroller): boolean {
+  static setPaddings(scroller: Scroller): boolean {
     const { buffer } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
     const lastItem = buffer.getLastVisibleItem();
@@ -48,11 +50,32 @@ export default class Adjust {
       const item = buffer.cache.get(index);
       fwdSize += item ? item.size : 0;
     }
+    const oldPosition = scroller.viewport.scrollPosition;
     forwardPadding.size = fwdSize;
     backwardPadding.size = bwdSize;
+    const positionDiff = oldPosition - scroller.viewport.scrollPosition;
+    if (positionDiff > 0) {
+      Adjust.setScroll(scroller, positionDiff);
+    }
 
     scroller.logger.stat('After paddings adjustments');
     return true;
+  }
+
+  static setScroll(scroller: Scroller, delta: number) {
+    const { viewport } = scroller;
+    const forwardPadding = viewport.padding[Direction.forward];
+    const oldPosition = viewport.scrollPosition;
+    const newPosition = oldPosition + delta;
+    for (let i = 0; i < Adjust.MAX_SCROLL_ADJUSTMENTS_COUNT; i++) {
+      viewport.scrollPosition = newPosition;
+      const positionDiff = newPosition - viewport.scrollPosition;
+      if (positionDiff > 0) {
+        forwardPadding.size += positionDiff;
+      } else {
+        break;
+      }
+    }
   }
 
   static adjustScroll(scroller: Scroller) {
@@ -68,15 +91,7 @@ export default class Adjust {
       negativeSize += buffer.getSizeByIndex(index);
     }
     if (negativeSize > 0) {
-      const oldPosition = viewport.scrollPosition;
-      const newPosition = oldPosition + negativeSize;
-      viewport.scrollPosition = newPosition;
-      const positionDiff = newPosition - viewport.scrollPosition;
-      if (positionDiff > 0) {
-        forwardPadding.size += positionDiff;
-        viewport.scrollPosition = newPosition;
-      }
-      viewport.syntheticScrollPositionBefore = oldPosition;
+      Adjust.setScroll(scroller, negativeSize);
     } else if (negativeSize < 0) {
       forwardPadding.size -= negativeSize;
       viewport.scrollPosition -= negativeSize;
@@ -90,6 +105,9 @@ export default class Adjust {
     for (let index = buffer.minIndex; index < scroller.state.startIndex; index++) {
       const item = buffer.cache.get(index);
       viewport.startDelta += item ? item.size : buffer.averageSize;
+    }
+    if (scroller.settings.windowViewport) {
+      viewport.startDelta += viewport.getOffset();
     }
   }
 

@@ -63,7 +63,7 @@ export class ScrollHelper {
     // inertia scroll over synthetic scroll
     if (position !== syntheticPosition) {
       const inertiaDelay = Number(new Date()) - viewport.syntheticScrollTime;
-      const inertiaDelta = viewport.syntheticScrollPositionBefore - position;
+      const inertiaDelta = <number>viewport.syntheticScrollPositionBefore - position;
       const syntheticDelta = syntheticPosition - position;
       const newPosition = Math.max(0, position + viewport.syntheticScrollDelta);
 

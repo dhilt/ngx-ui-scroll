@@ -26,7 +26,7 @@ export class Viewport {
   padding: ViewportPadding;
   startDelta: number;
   syntheticScrollPosition: number | null;
-  syntheticScrollPositionBefore: number;
+  syntheticScrollPositionBefore: number | null;
   syntheticScrollDelta: number;
   syntheticScrollTime: number;
 
@@ -59,7 +59,7 @@ export class Viewport {
   reset() {
     this.scrollPosition = 0;
     this.syntheticScrollPosition = null;
-    this.syntheticScrollPositionBefore = 0;
+    this.syntheticScrollPositionBefore = null;
     this.syntheticScrollDelta = 0;
     this.syntheticScrollTime = 0;
     this.padding.reset();
@@ -85,6 +85,9 @@ export class Viewport {
     this.syntheticScrollTime = Number(Date.now());
     this.syntheticScrollPosition = this.scrollPosition;
     this.syntheticScrollDelta = this.syntheticScrollPosition - oldPosition;
+    if (this.syntheticScrollPositionBefore === null) {
+      this.syntheticScrollPositionBefore = oldPosition;
+    }
   }
 
   getSize(): number {
@@ -120,6 +123,10 @@ export class Viewport {
 
   isElementVisible(element: HTMLElement): boolean {
     return this.getElementEdge(element, Direction.forward) > this.getEdge(Direction.backward);
+  }
+
+  getOffset(): number {
+    return this.routines.getOffset(this.element);
   }
 
 }

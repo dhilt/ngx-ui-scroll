@@ -70,8 +70,7 @@ export default class PreFetch {
     const { state, buffer } = scroller;
     let position = startPosition;
     let index = <number>state.fetch.firstIndexBuffer;
-    let lastIndex = state.startIndex;
-    let lastIndexPosition = startPosition;
+    let lastIndex = index, lastIndexPosition;
     while (1) {
       lastIndex = index;
       index++;

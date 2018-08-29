@@ -141,19 +141,27 @@ export class ScrollHelper {
     }
   }
 
+  getScrollDirection(): Direction {
+    const scroller = this.workflow.scroller;
+    const position = scroller.viewport.scrollPosition;
+    let lastPosition = scroller.state.lastPosition;
+    if (position === lastPosition) {
+      lastPosition = scroller.state.fetch.position;
+      if (position === lastPosition) {
+        scroller.logger.log(() => `scroll position: ${position} (has not been changed)`);
+        return Direction.forward;
+      }
+    }
+    scroller.logger.log(() => `scroll position: ${position}`);
+    return position < lastPosition ? Direction.backward : Direction.forward;
+  }
+
   runWorkflow() {
     this.purgeProcesses();
-    const position = this.workflow.scroller.viewport.scrollPosition;
-    this.workflow.scroller.logger.log(() => `scroll position: ${position}`);
-    if (position === this.lastScrollPosition) {
-      return;
-    }
-    const direction = position < this.lastScrollPosition ? Direction.backward : Direction.forward;
-    this.lastScrollPosition = position;
     this.workflow.callWorkflow(<ProcessSubject>{
       process: Process.scroll,
       status: 'next',
-      payload: direction
+      payload: this.getScrollDirection()
     });
   }
 

@@ -1,6 +1,5 @@
-import { Process, ItemAdapter } from './index';
+import { Process, ItemAdapter, Direction } from './index';
 import { FetchModel } from '../classes/fetch';
-import { ClipModel } from '../classes/clip';
 
 export interface State {
   initTime: number;
@@ -12,10 +11,11 @@ export interface State {
 
   process: Process;
   startIndex: number;
-  position: number;
   scroll: boolean;
+  direction: Direction | null;
   fetch: FetchModel;
-  clip: ClipModel;
+  clip: boolean;
+  lastPosition: number;
 
   pending: boolean;
   firstVisibleItem: ItemAdapter;

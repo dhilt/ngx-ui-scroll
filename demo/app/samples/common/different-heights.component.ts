@@ -20,7 +20,7 @@ export class DemoDifferentHeightsComponent {
   };
 
   datasource: IDatasource = {
-    get: datasourceGetCallbackLimited(this.demoContext, 1, 75)
+    get: datasourceGetCallbackLimited(this.demoContext, -20, 75)
   };
 
   sources: DemoSources = {

@@ -13,11 +13,11 @@ export class State implements IState {
 
   process: Process;
   startIndex: number;
-  position: number;
   scroll: boolean;
   direction: Direction | null;
   fetch: FetchModel;
   clip: boolean;
+  lastPosition: number;
 
   pendingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
@@ -66,7 +66,6 @@ export class State implements IState {
     this.countDone = 0;
 
     this.startIndex = startIndex;
-    this.position = 0;
     this.scroll = false;
     this.direction = null;
     this.fetch = new FetchModel();

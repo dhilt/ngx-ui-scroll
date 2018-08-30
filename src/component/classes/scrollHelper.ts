@@ -46,7 +46,7 @@ export class ScrollHelper {
 
   run() {
     // console.log(this.workflow.scroller.viewport.scrollPosition);
-    if (this.workflow.scroller.viewport.syntheticScrollPosition !== null) {
+    if (this.workflow.scroller.state.syntheticScroll.position !== null) {
       if (!this.processSyntheticScroll()) {
         return;
       }
@@ -55,17 +55,17 @@ export class ScrollHelper {
   }
 
   processSyntheticScroll(): boolean {
-    const { viewport, settings } = this.workflow.scroller;
+    const { viewport, state, settings } = this.workflow.scroller;
     const position = viewport.scrollPosition;
-    const syntheticPosition = <number>viewport.syntheticScrollPosition;
+    const syntheticPosition = <number>state.syntheticScroll.position;
     let result = true;
 
     // inertia scroll over synthetic scroll
     if (position !== syntheticPosition) {
-      const inertiaDelay = Number(new Date()) - viewport.syntheticScrollTime;
-      const inertiaDelta = <number>viewport.syntheticScrollPositionBefore - position;
+      const inertiaDelay = Number(new Date()) - state.syntheticScroll.time;
+      const inertiaDelta = <number>state.syntheticScroll.positionBefore - position;
       const syntheticDelta = syntheticPosition - position;
-      const newPosition = Math.max(0, position + viewport.syntheticScrollDelta);
+      const newPosition = Math.max(0, position + state.syntheticScroll.delta);
 
       if (inertiaDelta > 0 && inertiaDelta < syntheticDelta) {
         this.workflow.scroller.logger.log(() => 'Inertia scroll adjustment. Position: ' + position +
@@ -83,8 +83,8 @@ export class ScrollHelper {
       result = false;
     }
 
-    if (syntheticPosition === viewport.syntheticScrollPosition) {
-      viewport.syntheticScrollPosition = null;
+    if (syntheticPosition === state.syntheticScroll.position) {
+      state.syntheticScroll.position = null;
     }
     return result;
   }

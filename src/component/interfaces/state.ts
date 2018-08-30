@@ -1,6 +1,13 @@
 import { Process, ItemAdapter, Direction } from './index';
 import { FetchModel } from '../classes/fetch';
 
+export interface SyntheticScroll {
+  position: number | null;
+  positionBefore: number | null;
+  delta: number;
+  time: number;
+}
+
 export interface State {
   initTime: number;
   cycleCount: number;

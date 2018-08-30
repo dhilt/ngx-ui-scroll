@@ -28,9 +28,12 @@ export class WindowComponent {
     },
     settings: {
       bufferSize: 10,
-      padding: 0.01,
+      padding: 0.25,
       startIndex: 1,
       windowViewport: true
+    },
+    devSettings: {
+      debug: true
     }
   };
 

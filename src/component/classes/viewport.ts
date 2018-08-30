@@ -1,9 +1,10 @@
 import { ElementRef } from '@angular/core';
 
-import { Padding } from './padding';
 import { Direction } from '../interfaces/index';
+import { Padding } from './padding';
 import { Settings } from './settings';
 import { Routines } from './domRoutines';
+import { State } from './state';
 import { Logger } from './logger';
 
 export class ViewportPadding {
@@ -25,25 +26,22 @@ export class Viewport {
 
   padding: ViewportPadding;
   startDelta: number;
-  syntheticScrollPosition: number | null;
-  syntheticScrollPositionBefore: number | null;
-  syntheticScrollDelta: number;
-  syntheticScrollTime: number;
 
   readonly element: HTMLElement;
   readonly host: HTMLElement;
   readonly scrollable: HTMLElement;
   readonly settings: Settings;
   readonly routines: Routines;
+  readonly state: State;
   readonly logger: Logger;
 
-  constructor(elementRef: ElementRef, settings: Settings, routines: Routines, logger: Logger) {
+  constructor(elementRef: ElementRef, settings: Settings, routines: Routines, state: State, logger: Logger) {
     this.settings = settings;
     this.routines = routines;
+    this.state = state;
     this.logger = logger;
     this.element = elementRef.nativeElement;
     this.startDelta = settings.paddingBackwardSize || 0;
-    this.syntheticScrollPosition = null;
 
     if (settings.windowViewport) {
       this.host = this.element.ownerDocument.body;
@@ -56,12 +54,13 @@ export class Viewport {
     this.padding = new ViewportPadding(this.element, this.host, this.routines, settings);
   }
 
-  reset() {
-    this.scrollPosition = 0;
-    this.syntheticScrollPosition = null;
-    this.syntheticScrollPositionBefore = null;
-    this.syntheticScrollDelta = 0;
-    this.syntheticScrollTime = 0;
+  reset(scrollPosition: number) {
+    const newPosition = 0;
+    this.scrollPosition = newPosition;
+    this.state.syntheticScroll.position = scrollPosition !== newPosition ? newPosition : null;
+    this.state.syntheticScroll.positionBefore = null;
+    this.state.syntheticScroll.delta = 0;
+    this.state.syntheticScroll.time = 0;
     this.padding.reset();
     this.startDelta = 0;
   }
@@ -82,11 +81,12 @@ export class Viewport {
     const oldPosition = this.scrollPosition;
     this.logger.log(() => ['Setting scroll position at', value]);
     this.routines.setScrollPosition(this.scrollable, value);
-    this.syntheticScrollTime = Number(Date.now());
-    this.syntheticScrollPosition = this.scrollPosition;
-    this.syntheticScrollDelta = this.syntheticScrollPosition - oldPosition;
-    if (this.syntheticScrollPositionBefore === null) {
-      this.syntheticScrollPositionBefore = oldPosition;
+    this.state.syntheticScroll.time = Number(Date.now());
+    this.state.syntheticScroll.position = this.scrollPosition;
+    this.state.syntheticScroll.delta = this.state.syntheticScroll.position - oldPosition;
+    if (this.state.syntheticScroll.positionBefore === null) {
+      // syntheticScroll.positionBefore should be set once per cycle
+      this.state.syntheticScroll.positionBefore = oldPosition;
     }
   }
 

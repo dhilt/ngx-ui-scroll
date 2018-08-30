@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { State as IState, Process, ProcessRun, ItemAdapter, Direction } from '../interfaces/index';
+import { State as IState, Process, ProcessRun, ItemAdapter, Direction, SyntheticScroll } from '../interfaces/index';
 import { FetchModel } from './fetch';
 
 export class State implements IState {
@@ -18,6 +18,8 @@ export class State implements IState {
   fetch: FetchModel;
   clip: boolean;
   lastPosition: number;
+
+  syntheticScroll: SyntheticScroll;
 
   pendingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
@@ -71,6 +73,13 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.clip = false;
 
+    this.syntheticScroll = {
+      position: null,
+      positionBefore: null,
+      delta: 0,
+      time: 0
+    };
+
     this.pendingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
@@ -89,6 +98,7 @@ export class State implements IState {
     }
     this.fetch.reset();
     this.clip = false;
+    this.syntheticScroll.positionBefore = null;
   }
 
   endCycle() {

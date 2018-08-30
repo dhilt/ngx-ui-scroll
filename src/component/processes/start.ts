@@ -8,7 +8,6 @@ export default class Start {
 
     const { state } = scroller;
     state.startCycle(options);
-    scroller.viewport.syntheticScrollPositionBefore = null;
     scroller.logger.log(() => {
       const logData = `${scroller.settings.instanceIndex}-${state.workflowCycleCount}-${state.cycleCount}`;
       return [`%c---=== Workflow ${logData} start`, 'color: #006600;'];

@@ -9,9 +9,7 @@ export default class Reload {
     const scrollPosition = scroller.viewport.scrollPosition;
     Reload.setCurrentStartIndex(scroller, reloadIndex);
     scroller.buffer.reset(true, scroller.state.startIndex);
-    scroller.viewport.reset();
-    scroller.viewport.syntheticScrollPosition =
-      scrollPosition !== scroller.viewport.scrollPosition ? scroller.viewport.scrollPosition : null;
+    scroller.viewport.reset(scrollPosition);
     scroller.purgeCycleSubscriptions();
     // todo: do we need to emit Process.end before?
     scroller.callWorkflow(<ProcessSubject>{

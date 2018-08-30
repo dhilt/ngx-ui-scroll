@@ -2,7 +2,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 import { Workflow } from '../workflow';
-import { Direction, Process, ProcessSubject } from '../interfaces/index';
+import { Direction, Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 
 export class ScrollHelper {
 
@@ -120,7 +120,7 @@ export class ScrollHelper {
       return;
     }
     this.endSubscription = this.workflow.process$.pipe(
-      filter((data: ProcessSubject) => data.process === Process.end && data.status === 'done')
+      filter((data: ProcessSubject) => data.process === Process.end && data.status === ProcessStatus.done)
     ).subscribe(() => {
       if (this.endSubscription) {
         this.endSubscription.unsubscribe();
@@ -160,7 +160,7 @@ export class ScrollHelper {
     this.purgeProcesses();
     this.workflow.callWorkflow(<ProcessSubject>{
       process: Process.scroll,
-      status: 'next',
+      status: ProcessStatus.next,
       payload: this.getScrollDirection()
     });
   }

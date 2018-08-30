@@ -3,7 +3,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
-import { Process, ProcessSubject } from './interfaces/index';
+import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
 import {
   Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
 } from './processes/index';
@@ -25,7 +25,7 @@ export class Workflow {
     this.scrollHelper = new ScrollHelper(this);
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
-      status: 'start'
+      status: Status.start
     });
     this.cyclesDone = 0;
     setTimeout(() => {
@@ -56,83 +56,84 @@ export class Workflow {
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
+    const { status } = data;
     scroller.logger.log(() => [
-      `process ${data.process}, ${data.status}` +
+      `process ${data.process}, ${status}` +
       (data.payload && typeof data.payload !== 'object' ? ',' : ''),
       ...(data.payload ? [data.payload] : [])
     ]);
-    if (data.status === 'error') {
+    if (status === Status.error) {
       End.run(scroller, true);
       return;
     }
     switch (data.process) {
       case Process.init:
-        if (data.status === 'start') {
+        if (status === Status.start) {
           Init.run(scroller);
         }
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Start.run(scroller, data.payload);
         }
         break;
       case Process.reload:
-        if (data.status === 'start') {
+        if (status === Status.start) {
           Reload.run(scroller, data.payload);
         }
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Init.run(scroller);
         }
         break;
       case Process.scroll:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Init.run(scroller, data.payload);
         }
         break;
       case Process.start:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           PreFetch.run(scroller);
         }
         break;
       case Process.preFetch:
-        if (data.status === 'done') {
+        if (status === Status.done) {
           End.run(scroller);
         }
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Fetch.run(scroller);
         }
         break;
       case Process.fetch:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           PostFetch.run(scroller);
         }
         break;
       case Process.postFetch:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Render.run(scroller);
         }
-        if (data.status === 'done') {
+        if (status === Status.done) {
           End.run(scroller);
         }
         break;
       case Process.render:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Clip.run(scroller);
         }
         break;
       case Process.clip:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Adjust.run(scroller);
         }
         break;
       case Process.adjust:
-        if (data.status === 'done') {
+        if (status === Status.done) {
           End.run(scroller);
         }
         break;
       case Process.end:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Start.run(scroller, data.payload);
         }
-        if (data.status === 'done') {
+        if (status === Status.done) {
           this.done();
         }
         break;

@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject } from '../interfaces/index';
+import { Direction, Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 
 export default class Adjust {
 
@@ -12,7 +12,7 @@ export default class Adjust {
     if (!Adjust.setPaddings(scroller)) {
       scroller.callWorkflow(<ProcessSubject>{
         process: Process.adjust,
-        status: 'error',
+        status: ProcessStatus.error,
         payload: 'Can\'t get visible item'
       });
       return;
@@ -26,7 +26,7 @@ export default class Adjust {
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.adjust,
-      status: 'done'
+      status: ProcessStatus.done
     });
   }
 

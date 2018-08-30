@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject, ProcessRun } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject, ProcessRun } from '../interfaces/index';
 
 export default class Start {
 
@@ -14,7 +14,7 @@ export default class Start {
     });
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.start,
-      status: 'next'
+      status: ProcessStatus.next
     });
   }
 

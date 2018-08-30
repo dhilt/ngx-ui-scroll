@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable, Observer, of as observableOf } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Adapter as IAdapter, Process, ProcessSubject, ItemAdapter } from '../interfaces/index';
+import { Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter } from '../interfaces/index';
 import { Scroller } from '../scroller';
 import { Item } from './item';
 
@@ -123,7 +123,7 @@ export class Adapter implements IAdapter {
   reload(reloadIndex?: number | string) {
     this.callWorkflow(<ProcessSubject>{
       process: Process.reload,
-      status: 'start',
+      status: ProcessStatus.start,
       payload: reloadIndex
     });
   }

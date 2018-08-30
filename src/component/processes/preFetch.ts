@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 
 export default class PreFetch {
 
@@ -20,7 +20,7 @@ export default class PreFetch {
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
-      status: scroller.state.fetch.shouldFetch ? 'next' : 'done'
+      status: scroller.state.fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done
     });
   }
 

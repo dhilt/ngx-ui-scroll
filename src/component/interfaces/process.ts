@@ -9,16 +9,21 @@ export enum Process {
   fetch = 'fetch',
   postFetch = 'postFetch',
   render = 'render',
-  adjust = 'adjust',
-  fetchEnd = 'fetchEnd',
-  preClip = 'preClip',
   clip = 'clip',
+  adjust = 'adjust',
   end = 'end'
+}
+
+export enum ProcessStatus {
+  start,
+  next,
+  done,
+  error
 }
 
 export interface ProcessSubject {
   process: Process;
-  status: string;
+  status: ProcessStatus;
   payload?: string | any;
 }
 

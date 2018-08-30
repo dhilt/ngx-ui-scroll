@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject, ProcessRun, Direction } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject, ProcessRun, Direction } from '../interfaces/index';
 
 export default class Init {
 
@@ -14,7 +14,7 @@ export default class Init {
     scroller.state.isInitialWorkflowCycle = !direction;
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.init,
-      status: 'next',
+      status: ProcessStatus.next,
       payload: <ProcessRun>{
         scroll: !!direction,
         direction

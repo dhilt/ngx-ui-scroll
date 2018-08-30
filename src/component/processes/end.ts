@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject, ProcessRun, Direction } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject, ProcessRun, Direction } from '../interfaces/index';
 
 export default class End {
 
@@ -33,7 +33,7 @@ export default class End {
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.end,
-      status: next ? 'next' : 'done',
+      status: next ? ProcessStatus.next : ProcessStatus.done,
       payload: next
     });
   }

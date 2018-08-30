@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 
 export default class Render {
 
@@ -12,12 +12,12 @@ export default class Render {
         if (Render.setElements(scroller)) {
           scroller.callWorkflow(<ProcessSubject>{
             process: Process.render,
-            status: 'next'
+            status: ProcessStatus.next
           });
         } else {
           scroller.callWorkflow(<ProcessSubject>{
             process: Process.render,
-            status: 'error',
+            status: ProcessStatus.error,
             payload: 'Can\'t associate item with element'
           });
         }

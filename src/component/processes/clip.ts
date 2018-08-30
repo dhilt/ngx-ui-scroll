@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject } from '../interfaces/index';
+import { Direction, Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 
 export default class Clip {
 
@@ -13,7 +13,7 @@ export default class Clip {
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.clip,
-      status: 'next'
+      status: ProcessStatus.next
     });
   }
 
@@ -22,11 +22,11 @@ export default class Clip {
     if (!buffer.size) {
       return;
     }
-    const firstIndex = <number>fetch.firstIndexBuffer;
-    const lastIndex = <number>fetch.lastIndexBuffer;
     if (state.scroll === false || state.direction === null) {
       return;
     }
+    const firstIndex = <number>fetch.firstIndexBuffer;
+    const lastIndex = <number>fetch.lastIndexBuffer;
     if (state.direction === Direction.forward) {
       if (firstIndex - 1 >= buffer.absMinIndex) {
         Clip.prepareClipByDirection(scroller, Direction.forward, firstIndex);

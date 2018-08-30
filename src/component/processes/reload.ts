@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 
 export default class Reload {
 
@@ -14,7 +14,7 @@ export default class Reload {
     // todo: do we need to emit Process.end before?
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.reload,
-      status: 'next'
+      status: ProcessStatus.next
     });
   }
 

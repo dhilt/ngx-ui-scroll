@@ -4,121 +4,175 @@ import { Misc } from './miscellaneous/misc';
 
 const configList = [{
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 2 },
-  templateSettings: { viewportHeight: 20 }
+  templateSettings: { viewportHeight: 20 },
+  expected: {
+    workflow: {
+      cyclesDone: 1
+    },
+    padding: {
+      [Direction.backward]: {
+        size: 0
+      },
+      [Direction.forward]: {
+        size: 0
+      },
+    },
+    scroller: {
+      state: {
+        fetch: {
+          callCount: 1
+        },
+        cycleCount: 2
+      },
+      buffer: {
+        items: {
+          length: 5
+        }
+      }
+    },
+    firstElement: {
+      text: `${1} : item #${1}`,
+    }
+  }
 }, {
   datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 0.5 },
-  templateSettings: { viewportHeight: 120 }
+  templateSettings: { viewportHeight: 120 },
+  expected: {
+    workflow: {
+      cyclesDone: 1
+    },
+    padding: {
+      [Direction.backward]: {
+        size: 0
+      },
+      [Direction.forward]: {
+        size: 0
+      },
+    },
+    scroller: {
+      state: {
+        fetch: {
+          callCount: 1
+        },
+        cycleCount: 2
+      },
+      buffer: {
+        items: {
+          length: 12
+        }
+      }
+    },
+    firstElement: {
+      text: `${1} : item #${1}`,
+    }
+  }
 }, {
   datasourceSettings: { startIndex: -99, bufferSize: 5, padding: 0.5 },
-  templateSettings: { viewportHeight: 200 }
+  templateSettings: { viewportHeight: 200 },
+  expected: {
+    workflow: {
+      cyclesDone: 1
+    },
+    padding: {
+      [Direction.backward]: {
+        size: 0
+      },
+      [Direction.forward]: {
+        size: 0
+      },
+    },
+    scroller: {
+      state: {
+        fetch: {
+          callCount: 1
+        },
+        cycleCount: 2
+      },
+      buffer: {
+        items: {
+          length: 20
+        }
+      }
+    },
+    firstElement: {
+      text: null,
+    }
+  }
 }, {
   datasourceSettings: { startIndex: -77, bufferSize: 4, padding: 0.62, horizontal: true },
-  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
+  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true },
+  expected: {
+    workflow: {
+      cyclesDone: 1
+    },
+    padding: {
+      [Direction.backward]: {
+        size: 0
+      },
+      [Direction.forward]: {
+        size: 0
+      },
+    },
+    scroller: {
+      state: {
+        fetch: {
+          callCount: 1
+        },
+        cycleCount: 2
+      },
+      buffer: {
+        items: {
+          length: 51
+        }
+      }
+    },
+    firstElement: {
+      text: null,
+    }
+  }
 }, {
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 0.5, windowViewport: true },
-  templateSettings: { noViewportClass: true, viewportHeight: 0 }
-}];
-
-const datasourceDevSettings = { clipAfterFetchOnly: false, clipAfterScrollOnly: false };
-
-const configListWithClip = [{
-  datasourceSettings: { startIndex: 1, bufferSize: 2, padding: 1 },
-  datasourceDevSettings,
-  templateSettings: { viewportHeight: 20 }
-}, {
-  datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 9.1 },
-  datasourceDevSettings,
-  templateSettings: { viewportHeight: 70 }
-}, {
-  datasourceSettings: { startIndex: 33, bufferSize: 4, padding: 2 },
-  datasourceDevSettings,
-  templateSettings: { viewportHeight: 99 }
-}, {
-  datasourceSettings: { startIndex: -50, bufferSize: 10, padding: 0.3 },
-  datasourceDevSettings,
-  templateSettings: { viewportHeight: 400 }
-}, {
-  datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, horizontal: true },
-  datasourceDevSettings,
-  templateSettings: { viewportWidth: 509, itemWidth: 90, horizontal: true }
-}, {
-  datasourceSettings: { startIndex: -7, bufferSize: 6, padding: 1.2, windowViewport: true },
-  datasourceDevSettings,
-  templateSettings: { noViewportClass: true, viewportHeight: 0 }
-}];
-
-const configListInfinite = configListWithClip
-  .filter((item, i) => [1, 3, 4, 5].indexOf(i) !== -1)
-  .map(config => ({
-    ...config,
-    datasourceSettings: {
-      ...config.datasourceSettings,
-      infinite: true
+  templateSettings: { noViewportClass: true, viewportHeight: 0 },
+  expected: {
+    workflow: {
+      cyclesDone: 1
+    },
+    padding: {
+      [Direction.backward]: {
+        size: 0
+      },
+      [Direction.forward]: {
+        size: 0
+      },
+    },
+    scroller: {
+      state: {
+        fetch: {
+          callCount: 1
+        },
+        cycleCount: 2
+      },
+      buffer: {
+        items: {
+          length: 76
+        }
+      }
+    },
+    firstElement: {
+      text: `${1} : item #${1}`,
     }
-  }));
+  }
+}];
 
 const _shouldNotClip = (settings: TestBedConfig, misc: Misc, done: Function) => {
-  const startIndex = settings.datasourceSettings.startIndex;
-  const bufferSize = settings.datasourceSettings.bufferSize;
-  const padding = settings.datasourceSettings.padding;
-  const viewportSize = misc.getViewportSize(settings);
-  const itemSize = misc.getItemSize();
-
-  const backwardLimit = viewportSize * padding;
-  const forwardLimit = viewportSize + backwardLimit;
-  const backwardFetchCount = Math.ceil((backwardLimit / itemSize) / bufferSize);
-  const forwardFetchCount = Math.ceil((forwardLimit / itemSize) / bufferSize);
-  const fetchCount = backwardFetchCount + forwardFetchCount;
-  const first = startIndex - backwardFetchCount * bufferSize;
-  const last = startIndex + forwardFetchCount * bufferSize - 1;
-
-  expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(misc.scroller.state.fetch.callCount).toEqual(fetchCount);
-  expect(misc.scroller.state.cycleCount).toEqual(fetchCount + 2);
-  expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
-  expect(misc.padding[Direction.backward].getSize()).toEqual(0);
-  expect(misc.padding[Direction.forward].getSize()).toEqual(0);
-  expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
-  expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
-  expect(misc.getElement(first - 1)).toBeFalsy();
-  expect(misc.getElement(last + 1)).toBeFalsy();
-
-  done();
-};
-
-const _shouldClip = (settings: TestBedConfig, misc: Misc, done: Function) => {
-  const startIndex = settings.datasourceSettings.startIndex;
-  const bufferSize = settings.datasourceSettings.bufferSize;
-  const padding = settings.datasourceSettings.padding;
-  const viewportSize = misc.getViewportSize(settings);
-  const itemSize = misc.getItemSize();
-
-  const backwardLimit = viewportSize * padding;
-  const forwardLimit = viewportSize + backwardLimit;
-
-  const backwardCount = Math.ceil(backwardLimit / itemSize);
-  const forwardCount = Math.ceil(forwardLimit / itemSize);
-
-  const backwardFetchCount = Math.ceil((backwardLimit / itemSize) / bufferSize);
-  const forwardFetchCount = Math.ceil((forwardLimit / itemSize) / bufferSize);
-  const fetchCount = backwardFetchCount + forwardFetchCount;
-
-  const first = startIndex - backwardCount;
-  const last = startIndex - 1 + forwardCount;
-
-  const backwardClipLimit = (backwardFetchCount * bufferSize - backwardCount) * itemSize;
-  const forwardClipLimit = (forwardFetchCount * bufferSize - forwardCount) * itemSize;
-
-  expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(misc.scroller.state.fetch.callCount).toEqual(fetchCount);
-  expect(misc.scroller.state.cycleCount).toEqual(fetchCount + 2);
-  expect(misc.scroller.buffer.items.length).toEqual(last - first + 1);
-  expect(misc.padding[Direction.backward].getSize()).toEqual(backwardClipLimit);
-  expect(misc.padding[Direction.forward].getSize()).toEqual(forwardClipLimit);
-  expect(misc.getElementText(first)).toEqual(`${first} : item #${first}`);
-  expect(misc.getElementText(last)).toEqual(`${last} : item #${last}`);
-  expect(misc.getElement(first - 1)).toBeFalsy();
-  expect(misc.getElement(last + 1)).toBeFalsy();
+  expect(misc.workflow.cyclesDone).toEqual(settings.expected.workflow.cyclesDone);
+  expect(misc.scroller.state.fetch.callCount).toEqual(settings.expected.scroller.state.fetch.callCount);
+  expect(misc.scroller.state.cycleCount).toEqual(settings.expected.scroller.state.cycleCount);
+  expect(misc.scroller.buffer.items.length).toEqual(settings.expected.scroller.buffer.items.length);
+  expect(misc.padding[Direction.backward].getSize()).toEqual(settings.expected.padding[Direction.backward].size);
+  expect(misc.padding[Direction.forward].getSize()).toEqual(settings.expected.padding[Direction.forward].size);
+  expect(misc.getElementText(1)).toEqual(settings.expected.firstElement.text);
+  // todo: add last, next after last and previous before first items check
 
   done();
 };
@@ -128,13 +182,7 @@ const shouldNotClip = (settings: TestBedConfig) => (misc: Misc) => (done: Functi
     _shouldNotClip(settings, misc, done)
   );
 
-const shouldClip = (settings: TestBedConfig) => (misc: Misc) => (done: Function) =>
-  spyOn(misc.workflow, 'finalize').and.callFake(() =>
-    _shouldClip(settings, misc, done)
-  );
-
 describe('Initial Load Spec', () => {
-
   describe('No Clip', () => {
     configList.forEach(config =>
       makeTest({
@@ -144,25 +192,4 @@ describe('Initial Load Spec', () => {
       })
     );
   });
-
-  describe('Clip', () => {
-    configListWithClip.forEach(config =>
-      makeTest({
-        config,
-        title: 'should fetch some items with clip',
-        it: shouldClip(config)
-      })
-    );
-  });
-
-  describe('No Clip (infinite)', () => {
-    configListInfinite.forEach(config =>
-      makeTest({
-        config,
-        title: 'should fetch some items with no clip',
-        it: shouldNotClip(config)
-      })
-    );
-  });
-
 });

@@ -16,6 +16,7 @@ export interface TestBedConfig {
   toThrow?: boolean;
   custom?: any;
   timeout?: number;
+  expected?: any;
 }
 
 interface MakeTestConfig {

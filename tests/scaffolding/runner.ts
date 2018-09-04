@@ -1,5 +1,3 @@
-import { async } from '@angular/core/testing';
-
 import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
@@ -22,7 +20,7 @@ export interface TestBedConfig {
 interface MakeTestConfig {
   title: string;
   config: TestBedConfig;
-  it?: any;
+  it: Function;
   async?: boolean;
 }
 
@@ -95,6 +93,6 @@ export const makeTest = (data: MakeTestConfig) => {
     } else {
       _it = data.it;
     }
-    it(data.title, _it, timeout);
+    (<Function>it)(data.title, _it, timeout);
   });
 };

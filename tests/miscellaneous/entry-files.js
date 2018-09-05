@@ -29,4 +29,4 @@ function requireAll(requireContext) {
   return requireContext.keys().map(requireContext);
 }
 
-const testServices = requireAll(testContext);
+requireAll(testContext);

@@ -80,10 +80,6 @@ export class Buffer {
     return this.items.find((item: Item) => item.$index === $index);
   }
 
-  getIndex($index: number): number {
-    return this.items.findIndex((item: Item) => item.$index === $index);
-  }
-
   setItems(items: Array<Item>): boolean {
     if (!this.items.length) {
       this.items = items;
@@ -116,11 +112,6 @@ export class Buffer {
     return -1;
   }
 
-  getEdgeVisibleItemIndex(direction: Direction, opposite?: boolean): number {
-    return direction === (!opposite ? Direction.forward : Direction.backward) ?
-      this.getLastVisibleItemIndex() : this.getFirstVisibleItemIndex();
-  }
-
   getFirstVisibleItem(): Item | undefined {
     const index = this.getFirstVisibleItemIndex();
     if (index >= 0) {
@@ -143,10 +134,6 @@ export class Buffer {
   getSizeByIndex(index: number): number {
     const item = this.cache.get(index);
     return item ? item.size : this.averageSize;
-  }
-
-  getAveragePackSize(): number {
-    return this.cache.averageSize * this.minBufferSize;
   }
 
 }

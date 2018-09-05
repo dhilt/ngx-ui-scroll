@@ -31,8 +31,4 @@ export class Padding {
     this.routines.setSizeStyle(this.element, Math.round(value));
   }
 
-  getEdge(opposite = true): number {
-    return this.routines.getEdge(this.element, this.direction, opposite);
-  }
-
 }

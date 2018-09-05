@@ -81,10 +81,6 @@ export class Viewport {
     return this.settings.windowViewport ? this.element.ownerDocument : this.host;
   }
 
-  get children(): HTMLCollection {
-    return this.element.children;
-  }
-
   get scrollPosition(): number {
     return this.routines.getScrollPosition(this.scrollable);
   }
@@ -120,21 +116,6 @@ export class Viewport {
 
   getElementEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
     return this.routines.getEdge(element, direction, opposite);
-  }
-
-  getLimit(direction: Direction, opposite?: boolean): number {
-    return this.getEdge(direction, opposite) +
-      (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();
-  }
-
-  getClipLimit(direction: Direction, clipPaddingDelta: number, opposite?: boolean): number {
-    return this.getEdge(direction, opposite) +
-      (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) *
-      (this.getBufferPadding() + clipPaddingDelta);
-  }
-
-  isElementVisible(element: HTMLElement): boolean {
-    return this.getElementEdge(element, Direction.forward) > this.getEdge(Direction.backward);
   }
 
   getOffset(): number {

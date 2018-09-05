@@ -64,40 +64,6 @@ export class Cache {
     return itemCache;
   }
 
-  addList(items: Array<Item>, startIndex: number | null) {
-    if (startIndex !== null) {
-      const startItem = items.find(item => item.$index === startIndex);
-      if (!startItem) {
-        return false;
-      }
-      const itemCache = this.add(startItem);
-      itemCache.position = 0;
-      let itemNext, itemCachePrev = itemCache, itemCacheNext, i = itemCache.$index + 1;
-      while (itemNext = items.find(_item => _item.$index === i)) {
-        itemCacheNext = this.add(itemNext);
-        itemCacheNext.position = itemCachePrev.position + itemCachePrev.size;
-        itemCachePrev = itemCacheNext;
-        i++;
-      }
-      itemCachePrev = itemCache;
-      i = itemCache.$index - 1;
-      while (itemNext = items.find(_item => _item.$index === i)) {
-        itemCacheNext = this.add(itemNext);
-        itemCacheNext.position = itemCachePrev.position - itemCacheNext.size;
-        itemCachePrev = itemCacheNext;
-        i--;
-      }
-    }
-    // set position
-    // if (newItem.$index > this.minIndex) {
-    //   const sibling = this.items.find(i => i.$index === newItem.$index + (isForward ? -1 : 1));
-    //   if (sibling) {
-    //     newItem.position = sibling.position + (isForward ? 1 : -1) * sibling.size;
-    //   }
-    // }
-    // newItem.position = newItem.position || 0;
-  }
-
   get(index: number): ItemCache | undefined {
     return this.items.find((item: ItemCache) => item.$index === index);
   }

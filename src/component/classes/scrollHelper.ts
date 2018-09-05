@@ -11,7 +11,6 @@ export class ScrollHelper {
   readonly scrollEventOptions: any;
   private lastScrollTime: number;
   private scrollTimer: number | null;
-  private lastScrollPosition: number;
   private endSubscription: Subscription | null;
   private scrollEventElement: any;
 
@@ -146,7 +145,7 @@ export class ScrollHelper {
     const position = scroller.viewport.scrollPosition;
     let lastPosition = scroller.state.lastPosition;
     if (position === lastPosition) {
-      lastPosition = scroller.state.fetch.position;
+      lastPosition = scroller.state.preFetchPosition;
       if (position === lastPosition) {
         scroller.logger.log(() => `scroll position: ${position} (has not been changed)`);
         return Direction.forward;

@@ -8,8 +8,9 @@ export class FetchModel {
   firstIndex: number | null;
   lastIndex: number | null;
   callCount: number;
-  position: number;
   minIndex: number;
+  negativeSize: number;
+  averageItemSize: number;
 
   constructor() {
     this.callCount = 0;
@@ -23,7 +24,7 @@ export class FetchModel {
     this.lastIndexBuffer = null;
     this.firstIndex = null;
     this.lastIndex = null;
-    this.position = 0;
+    this.negativeSize = 0;
   }
 
   get newItemsData(): Array<Item> | null {

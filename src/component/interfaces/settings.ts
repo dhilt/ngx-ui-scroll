@@ -15,8 +15,6 @@ export interface DevSettings {
   debug?: boolean;
   immediateLog?: boolean;
   logTime?: boolean;
-  paddingForwardSize?: number;
-  paddingBackwardSize?: number;
   throttle?: number;
   inertia?: boolean;
   inertiaScrollDelay?: number;

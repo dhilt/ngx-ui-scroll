@@ -6,8 +6,12 @@ export default class PreFetch {
   static run(scroller: Scroller) {
     scroller.state.process = Process.preFetch;
 
-    scroller.state.fetch.position = scroller.viewport.scrollPosition;
+    scroller.state.preFetchPosition = scroller.viewport.scrollPosition;
     scroller.state.fetch.minIndex = scroller.buffer.minIndex;
+    scroller.state.fetch.averageItemSize = scroller.buffer.averageSize;
+
+    // calculate size before start index
+    PreFetch.setStartDelta(scroller);
 
     // set first and last indexes to fetch
     PreFetch.setBufferIndexes(scroller);
@@ -24,10 +28,22 @@ export default class PreFetch {
     });
   }
 
+  static setStartDelta(scroller: Scroller) {
+    const { buffer, viewport } = scroller;
+    viewport.startDelta = 0;
+    const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
+    for (let index = minIndex; index < scroller.state.startIndex; index++) {
+      const item = buffer.cache.get(index);
+      viewport.startDelta += item ? item.size : buffer.averageSize;
+    }
+    if (scroller.settings.windowViewport) {
+      viewport.startDelta += viewport.getOffset();
+    }
+  }
+
   static setBufferIndexes(scroller: Scroller) {
     const { state, viewport } = scroller;
-    const fetch = state.fetch;
-    const relativePosition = fetch.position - viewport.startDelta;
+    const relativePosition = state.preFetchPosition - viewport.startDelta;
     const startPosition = relativePosition - viewport.getBufferPadding();
     const endPosition = relativePosition + viewport.getSize() + viewport.getBufferPadding();
     const firstIndexPosition =
@@ -36,7 +52,7 @@ export default class PreFetch {
   }
 
   static setFirstIndexBuffer(scroller: Scroller, startPosition: number): number {
-    const { state, buffer } = scroller;
+    const { state, buffer, state: { fetch } } = scroller;
     const inc = startPosition < 0 ? -1 : 1;
     let position = 0;
     let index = state.startIndex;
@@ -62,7 +78,7 @@ export default class PreFetch {
         break;
       }
     }
-    state.fetch.firstIndex = state.fetch.firstIndexBuffer = Math.max(firstIndex, buffer.absMinIndex);
+    fetch.firstIndex = fetch.firstIndexBuffer = Math.max(firstIndex, buffer.absMinIndex);
     return firstIndexPosition;
   }
 

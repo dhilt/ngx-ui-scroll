@@ -3,8 +3,8 @@ import { Observable, Observer } from 'rxjs';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
-const MAX = 70;
-const MIN = 1;
+const MAX = 500;
+const MIN = -499;
 const MIN_ROW_HEIGHT = 2;
 
 interface MyItem {
@@ -38,9 +38,11 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      bufferSize: 7,
-      minIndex: MIN,
-      itemSize: 40
+      padding: 0.25,
+      bufferSize: 5,
+      minIndex: -249,
+      maxIndex: 250,
+      itemSize: 10
     },
     devSettings: {
       debug: true,
@@ -60,7 +62,7 @@ export class TestComponent {
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
-        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
+        height: 20 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
       });
     }
     this.datasource.adapter.firstVisible$

@@ -9,7 +9,8 @@ export default class Render {
     scroller.logger.stat('Before render new items');
     scroller.cycleSubscriptions.push(
       scroller.bindData().subscribe(() => {
-        if (Render.setElements(scroller)) {
+        scroller.state.sizeBeforeRender = scroller.viewport.getScrollableSize();
+        if (Render.processElements(scroller)) {
           scroller.callWorkflow(<ProcessSubject>{
             process: Process.render,
             status: ProcessStatus.next
@@ -25,8 +26,8 @@ export default class Render {
     );
   }
 
-  static setElements(scroller: Scroller) {
-    const items = scroller.state.fetch.items;
+  static processElements(scroller: Scroller) {
+    const { fetch, fetch: { items } } = scroller.state;
     for (let j = 0; j < items.length; j++) {
       const item = items[j];
       const element = scroller.viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);
@@ -39,6 +40,9 @@ export default class Render {
       item.invisible = false;
       item.setSize();
       scroller.buffer.cache.add(item);
+      if (item.$index < fetch.minIndex) {
+        fetch.negativeSize += item.size;
+      }
     }
     scroller.logger.stat('After render new items');
     return true;

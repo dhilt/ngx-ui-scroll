@@ -23,6 +23,10 @@ export interface State {
   fetch: FetchModel;
   clip: boolean;
   lastPosition: number;
+  preFetchPosition: number;
+  preAdjustPosition: number;
+  sizeBeforeRender: number;
+  bwdPaddingAverageSizeItemsCount: number;
 
   pending: boolean;
   firstVisibleItem: ItemAdapter;

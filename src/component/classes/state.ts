@@ -18,6 +18,10 @@ export class State implements IState {
   fetch: FetchModel;
   clip: boolean;
   lastPosition: number;
+  preFetchPosition: number;
+  preAdjustPosition: number;
+  sizeBeforeRender: number;
+  bwdPaddingAverageSizeItemsCount: number;
 
   syntheticScroll: SyntheticScroll;
 
@@ -72,6 +76,8 @@ export class State implements IState {
     this.direction = null;
     this.fetch = new FetchModel();
     this.clip = false;
+    this.sizeBeforeRender = 0;
+    this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.syntheticScroll = {
       position: null,

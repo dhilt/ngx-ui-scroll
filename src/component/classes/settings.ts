@@ -24,8 +24,6 @@ export const defaultDevSettings: IDevSettings = {
   debug: false, // if true, logging is enabled; need to turn off when release
   immediateLog: true, // if false, logging is not immediate and could be done via Workflow.logForce call
   logTime: false, // if true, time differences are logging
-  paddingForwardSize: 0,
-  paddingBackwardSize: 0,
   throttle: 40, // if > 0, scroll event handling is throttled (ms)
   inertia: false, // if true, inertia scroll delay (ms) and delta (px) are taken into the account
   inertiaScrollDelay: 125,
@@ -50,8 +48,6 @@ export class Settings implements ISettings {
   debug: boolean;
   immediateLog: boolean;
   logTime: boolean;
-  paddingForwardSize: number;
-  paddingBackwardSize: number;
   throttle: number;
   inertia: boolean;
   inertiaScrollDelay: number;

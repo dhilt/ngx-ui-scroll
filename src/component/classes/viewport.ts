@@ -11,9 +11,17 @@ export class ViewportPadding {
   forward: Padding;
   backward: Padding;
 
-  constructor(element: HTMLElement, hostElement: HTMLElement, routines: Routines, settings: Settings) {
-    this.forward = new Padding(element, hostElement, Direction.forward, routines, settings.paddingForwardSize);
-    this.backward = new Padding(element, hostElement, Direction.backward, routines, settings.paddingBackwardSize);
+  constructor(element: HTMLElement, routines: Routines, settings: Settings, viewportSize: number) {
+    let negativeSize, positiveSize;
+    if (isFinite(settings.minIndex) && isFinite(settings.maxIndex)) {
+      negativeSize = (settings.startIndex - settings.minIndex) * settings.itemSize;
+      positiveSize = (settings.maxIndex - settings.startIndex + 1) * settings.itemSize;
+    } else {
+      negativeSize = 0;
+      positiveSize = viewportSize;
+    }
+    this.forward = new Padding(element, Direction.forward, routines, positiveSize);
+    this.backward = new Padding(element, Direction.backward, routines, negativeSize);
   }
 
   reset() {
@@ -41,7 +49,6 @@ export class Viewport {
     this.state = state;
     this.logger = logger;
     this.element = elementRef.nativeElement;
-    this.startDelta = settings.paddingBackwardSize || 0;
 
     if (settings.windowViewport) {
       this.host = this.element.ownerDocument.body;
@@ -51,7 +58,12 @@ export class Viewport {
       this.scrollable = <HTMLElement>this.element.parentElement;
     }
 
-    this.padding = new ViewportPadding(this.element, this.host, this.routines, settings);
+    this.padding = new ViewportPadding(this.element, this.routines, settings, this.getSize());
+    const negativeSize = this.padding[Direction.backward].size;
+    if (negativeSize) {
+      this.scrollPosition = negativeSize;
+      state.bwdPaddingAverageSizeItemsCount = negativeSize / settings.itemSize;
+    }
   }
 
   reset(scrollPosition: number) {

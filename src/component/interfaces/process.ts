@@ -15,10 +15,10 @@ export enum Process {
 }
 
 export enum ProcessStatus {
-  start,
-  next,
-  done,
-  error
+  start = 'start',
+  next = 'next',
+  done = 'done',
+  error = 'error'
 }
 
 export interface ProcessSubject {

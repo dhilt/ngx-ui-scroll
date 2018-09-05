@@ -131,7 +131,7 @@ export default class PreFetch {
 
   static checkFetchPackSize(scroller: Scroller) {
     const { buffer, state: { fetch } } = scroller;
-    if (!buffer.size || !fetch.shouldFetch) {
+    if (!fetch.shouldFetch) {
       return;
     }
     const firstIndex = <number>fetch.firstIndex;
@@ -140,7 +140,7 @@ export default class PreFetch {
     if (diff <= 0) {
       return;
     }
-    if (lastIndex > buffer.items[0].$index) { // forward
+    if (!buffer.size || lastIndex > buffer.items[0].$index) { // forward
       const newLastIndex = Math.min(lastIndex + diff, buffer.absMaxIndex);
       if (newLastIndex > lastIndex) {
         fetch.lastIndex = fetch.lastIndexBuffer = newLastIndex;

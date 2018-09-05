@@ -94,12 +94,8 @@ export class Misc {
     return element.getAttribute('data-sid') === `${index}`;
   }
 
-  getElementIndex(element: HTMLElement): number | null {
-    const id = element.getAttribute('data-sid');
-    if (!id) {
-      return null;
-    }
-    return parseInt(id, 10) || null;
+  getElementIndex(element: HTMLElement): number {
+    return Number(element.getAttribute('data-sid'));
   }
 
   getScrollableSize(): number {

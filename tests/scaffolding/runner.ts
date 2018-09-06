@@ -5,16 +5,22 @@ import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources';
 
+interface Expect {
+  fetch: {
+    callCount: number
+  };
+}
+
 export interface TestBedConfig {
   datasourceClass?: any;
   datasourceName?: string;
   datasourceSettings?: Settings | any;
   datasourceDevSettings?: DevSettings;
-  templateSettings?: TemplateSettings;
+  templateSettings?: TemplateSettings | any;
   toThrow?: boolean;
   custom?: any;
   timeout?: number;
-  expected?: any;
+  expect?: Expect;
 }
 
 interface MakeTestConfig {

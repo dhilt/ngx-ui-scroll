@@ -4,9 +4,7 @@ import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
-import {
-  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
-} from './processes/index';
+import { Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End } from './processes/index';
 
 export class Workflow {
 
@@ -29,7 +27,7 @@ export class Workflow {
     });
     this.cyclesDone = 0;
     setTimeout(() => {
-      this.scroller.logger.log(() => `The uiScroll Workflow has been initialized (${this.context.version})`);
+      this.scroller.logger.log(() => `The uiScroll Workflow listeners are being initialized`);
       this.initListeners();
     });
   }

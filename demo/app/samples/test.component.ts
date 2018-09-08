@@ -40,9 +40,10 @@ export class TestComponent {
     settings: {
       padding: 0.25,
       bufferSize: 5,
-      minIndex: -249,
-      maxIndex: 250,
-      itemSize: 20
+      minIndex: -49,
+      maxIndex: 100,
+      itemSize: 20,
+      startIndex: 10
     },
     devSettings: {
       debug: true,

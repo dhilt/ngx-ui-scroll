@@ -18,25 +18,25 @@ export class ViewportPadding {
     this.backward = new Padding(element, Direction.backward, routines);
   }
 
-  reset(viewportSize: number) {
-    this.forward.reset(this.getPositiveSize(viewportSize));
-    this.backward.reset(this.getNegativeSize());
+  reset(viewportSize: number, startIndex: number) {
+    this.forward.reset(this.getPositiveSize(startIndex, viewportSize));
+    this.backward.reset(this.getNegativeSize(startIndex));
   }
 
-  getNegativeSize() {
+  getPositiveSize(startIndex: number, viewportSize: number) {
+    const { settings } = this;
+    let positiveSize = viewportSize;
+    if (isFinite(settings.maxIndex)) {
+      positiveSize = (settings.maxIndex - startIndex + 1) * settings.itemSize;
+    }
+    return positiveSize;
+  }
+
+  getNegativeSize(startIndex: number) {
     const { settings } = this;
     let negativeSize = 0;
     if (isFinite(settings.minIndex)) {
-      negativeSize = (settings.startIndex - settings.minIndex) * settings.itemSize;
-    }
-    return negativeSize;
-  }
-
-  getPositiveSize(viewportSize: number) {
-    const { settings } = this;
-    let negativeSize = viewportSize;
-    if (isFinite(settings.maxIndex)) {
-      negativeSize = (settings.maxIndex - settings.startIndex + 1) * settings.itemSize;
+      negativeSize = (startIndex - settings.minIndex) * settings.itemSize;
     }
     return negativeSize;
   }
@@ -76,7 +76,7 @@ export class Viewport {
 
   reset(scrollPosition: number) {
     let newPosition = 0;
-    this.padding.reset(this.getSize());
+    this.padding.reset(this.getSize(), this.state.startIndex);
     const negativeSize = this.padding[Direction.backward].size;
     if (negativeSize) {
       newPosition = negativeSize;

@@ -21,6 +21,7 @@ export class Logger {
       'bwd_p: ' + scroller.viewport.padding.backward.size + ', ' +
       'fwd_p: ' + scroller.viewport.padding.forward.size + ', ' +
       'items: ' + scroller.datasource.adapter.itemsCount;
+    this.log(() => `The uiScroll Workflow has been started (${scroller.version})`);
   }
 
   stat(str?: string) {

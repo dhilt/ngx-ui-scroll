@@ -56,7 +56,7 @@ export default class Clip {
   static doClip(scroller: Scroller) {
     const clipped: Array<number> = [];
     let size = 0;
-    scroller.logger.stat('Before clip');
+    scroller.logger.stat('before clip');
     scroller.buffer.items = scroller.buffer.items.filter(item => {
       if (item.toRemove) {
         size += item.size;
@@ -71,7 +71,7 @@ export default class Clip {
       scroller.viewport.padding[opposite].size += size;
     }
     scroller.logger.log(() => [`clipped ${clipped.length} items`, clipped]);
-    scroller.logger.stat('After clip');
+    scroller.logger.stat('after clip');
   }
 
 }

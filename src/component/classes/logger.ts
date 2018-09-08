@@ -21,12 +21,13 @@ export class Logger {
       'bwd_p: ' + scroller.viewport.padding.backward.size + ', ' +
       'fwd_p: ' + scroller.viewport.padding.forward.size + ', ' +
       'items: ' + scroller.datasource.adapter.itemsCount;
-    this.log(() => `The uiScroll Workflow has been started (${scroller.version})`);
+    this.log(() => `uiScroll Workflow has been started (v${scroller.version})`);
   }
 
   stat(str?: string) {
     if (this.debug) {
-      this.log((str ? str + ', ' : '') + this.getStat());
+      const logStyles = ['color: #888; border: dashed #888 0; border-bottom-width: 0px', 'color: #000; border-width: 0'];
+      this.log(() => [(str ? `%c${str} ` : '') + 'stat,%c ' + this.getStat(), ...logStyles]);
     }
   }
 

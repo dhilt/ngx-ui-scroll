@@ -27,7 +27,7 @@ export class Workflow {
     });
     this.cyclesDone = 0;
     setTimeout(() => {
-      this.scroller.logger.log(() => `The uiScroll Workflow listeners are being initialized`);
+      this.scroller.logger.log(() => `uiScroll Workflow listeners are being initialized`);
       this.initListeners();
     });
   }

@@ -68,7 +68,7 @@ export default class Adjust {
     forwardPadding.size = fwdSize;
     backwardPadding.size = bwdSize;
 
-    scroller.logger.stat('After paddings adjustments');
+    scroller.logger.stat('after paddings adjustments');
     return bwdPaddingAverageSizeItemsCount;
   }
 
@@ -83,7 +83,7 @@ export default class Adjust {
     const positionDiff = oldPosition - viewport.scrollPosition + bwdDiff;
     if (positionDiff !== 0) {
       Adjust.setScroll(scroller, positionDiff);
-      scroller.logger.stat('After scroll position adjustment (average)');
+      scroller.logger.stat('after scroll position adjustment (average)');
     }
     state.bwdPaddingAverageSizeItemsCount = bwdPaddingAverageSizeItemsCount;
 
@@ -103,7 +103,7 @@ export default class Adjust {
       forwardPadding.size -= negativeSize;
       viewport.scrollPosition -= negativeSize;
     }
-    scroller.logger.stat('After scroll position adjustment (negative)');
+    scroller.logger.stat('after scroll position adjustment (negative)');
   }
 
   static setScroll(scroller: Scroller, delta: number) {

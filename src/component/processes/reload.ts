@@ -18,13 +18,23 @@ export default class Reload {
     });
   }
 
-  static setCurrentStartIndex(scroller: Scroller, startIndex: any) {
-    const { state, settings } = scroller;
-    startIndex = Number(startIndex);
-    state.startIndex = !isNaN(startIndex) ? startIndex : settings.startIndex;
-    if (state.startIndex < settings.minIndex) {
-      state.startIndex = settings.minIndex;
+  static setCurrentStartIndex(scroller: Scroller, newStartIndex: any) {
+    const { state, settings: { startIndex, minIndex, maxIndex } } = scroller;
+    let index = Number(newStartIndex);
+    if (isNaN(index)) {
+      scroller.logger.log(() =>
+        `fallback startIndex to settings.startIndex (${startIndex}) because ${newStartIndex} is not a number`);
+      index = startIndex;
     }
+    if (index < minIndex) {
+      scroller.logger.log(() => `setting startIndex to settings.minIndex (${minIndex}) because ${index} < ${minIndex}`);
+      index = minIndex;
+    }
+    if (index > maxIndex) {
+      scroller.logger.log(() => `setting startIndex to settings.maxIndex (${maxIndex}) because ${index} > ${maxIndex}`);
+      index = maxIndex;
+    }
+    state.startIndex = index;
   }
 
 }

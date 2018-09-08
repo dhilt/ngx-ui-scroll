@@ -6,7 +6,7 @@ export default class Render {
   static run(scroller: Scroller) {
     scroller.state.process = Process.render;
 
-    scroller.logger.stat('Before render new items');
+    scroller.logger.stat('before new items render');
     scroller.cycleSubscriptions.push(
       scroller.bindData().subscribe(() => {
         scroller.state.sizeBeforeRender = scroller.viewport.getScrollableSize();
@@ -44,7 +44,7 @@ export default class Render {
         fetch.negativeSize += item.size;
       }
     }
-    scroller.logger.stat('After render new items');
+    scroller.logger.stat('after new items render');
     return true;
   }
 

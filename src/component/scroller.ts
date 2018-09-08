@@ -53,7 +53,7 @@ export class Scroller {
     } else {
       this.datasource.adapter.initialize(this);
     }
-    this.logger.stat('Scroller initialization');
+    this.logger.stat('initialization');
   }
 
   bindData(): Observable<any> {

@@ -100,7 +100,7 @@ export class Viewport {
 
   set scrollPosition(value: number) {
     const oldPosition = this.scrollPosition;
-    this.logger.log(() => ['Setting scroll position at', value]);
+    this.logger.log(() => ['setting scroll position at', value]);
     this.routines.setScrollPosition(this.scrollable, value);
     this.state.syntheticScroll.time = Number(Date.now());
     this.state.syntheticScroll.position = this.scrollPosition;

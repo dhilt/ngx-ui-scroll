@@ -8,18 +8,15 @@ export class Padding {
   routines: Routines;
   canBeReducedSafely: boolean;
 
-  constructor(element: HTMLElement, direction: Direction, routines: Routines, initialSize?: number) {
+  constructor(element: HTMLElement, direction: Direction, routines: Routines) {
     this.element = <HTMLElement>element.querySelector(`[data-padding-${direction}]`);
     this.direction = direction;
     this.routines = routines;
     this.canBeReducedSafely = false;
-    if (initialSize) {
-      this.routines.setSizeStyle(this.element, initialSize);
-    }
   }
 
-  reset() {
-    this.size = 0;
+  reset(size?: number) {
+    this.size = size || 0;
     this.canBeReducedSafely = false;
   }
 

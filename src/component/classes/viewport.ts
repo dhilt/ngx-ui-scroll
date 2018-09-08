@@ -8,25 +8,37 @@ import { State } from './state';
 import { Logger } from './logger';
 
 export class ViewportPadding {
+  settings: Settings;
   forward: Padding;
   backward: Padding;
 
-  constructor(element: HTMLElement, routines: Routines, settings: Settings, viewportSize: number) {
-    let negativeSize, positiveSize;
-    if (isFinite(settings.minIndex) && isFinite(settings.maxIndex)) {
-      negativeSize = (settings.startIndex - settings.minIndex) * settings.itemSize;
-      positiveSize = (settings.maxIndex - settings.startIndex + 1) * settings.itemSize;
-    } else {
-      negativeSize = 0;
-      positiveSize = viewportSize;
-    }
-    this.forward = new Padding(element, Direction.forward, routines, positiveSize);
-    this.backward = new Padding(element, Direction.backward, routines, negativeSize);
+  constructor(element: HTMLElement, routines: Routines, settings: Settings) {
+    this.settings = settings;
+    this.forward = new Padding(element, Direction.forward, routines);
+    this.backward = new Padding(element, Direction.backward, routines);
   }
 
-  reset() {
-    this.forward.reset();
-    this.backward.reset();
+  reset(viewportSize: number) {
+    this.forward.reset(this.getPositiveSize(viewportSize));
+    this.backward.reset(this.getNegativeSize());
+  }
+
+  getNegativeSize() {
+    const { settings } = this;
+    let negativeSize = 0;
+    if (isFinite(settings.minIndex)) {
+      negativeSize = (settings.startIndex - settings.minIndex) * settings.itemSize;
+    }
+    return negativeSize;
+  }
+
+  getPositiveSize(viewportSize: number) {
+    const { settings } = this;
+    let negativeSize = viewportSize;
+    if (isFinite(settings.maxIndex)) {
+      negativeSize = (settings.maxIndex - settings.startIndex + 1) * settings.itemSize;
+    }
+    return negativeSize;
   }
 }
 
@@ -58,22 +70,23 @@ export class Viewport {
       this.scrollable = <HTMLElement>this.element.parentElement;
     }
 
-    this.padding = new ViewportPadding(this.element, this.routines, settings, this.getSize());
-    const negativeSize = this.padding[Direction.backward].size;
-    if (negativeSize) {
-      this.scrollPosition = negativeSize;
-      state.bwdPaddingAverageSizeItemsCount = negativeSize / settings.itemSize;
-    }
+    this.padding = new ViewportPadding(this.element, this.routines, settings);
+    this.reset(0);
   }
 
   reset(scrollPosition: number) {
-    const newPosition = 0;
+    let newPosition = 0;
+    this.padding.reset(this.getSize());
+    const negativeSize = this.padding[Direction.backward].size;
+    if (negativeSize) {
+      newPosition = negativeSize;
+      this.state.bwdPaddingAverageSizeItemsCount = negativeSize / this.settings.itemSize;
+    }
     this.scrollPosition = newPosition;
     this.state.syntheticScroll.position = scrollPosition !== newPosition ? newPosition : null;
     this.state.syntheticScroll.positionBefore = null;
     this.state.syntheticScroll.delta = 0;
     this.state.syntheticScroll.time = 0;
-    this.padding.reset();
     this.startDelta = 0;
   }
 

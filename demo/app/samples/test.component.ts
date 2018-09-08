@@ -3,8 +3,8 @@ import { Observable, Observer } from 'rxjs';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
-const MAX = 500;
-const MIN = -499;
+const MAX = 100;
+const MIN = -49;
 const MIN_ROW_HEIGHT = 2;
 
 interface MyItem {
@@ -42,7 +42,7 @@ export class TestComponent {
       bufferSize: 5,
       minIndex: -249,
       maxIndex: 250,
-      itemSize: 10
+      itemSize: 20
     },
     devSettings: {
       debug: true,

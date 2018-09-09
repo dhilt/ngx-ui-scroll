@@ -21,6 +21,7 @@ export interface TestBedConfig {
   custom?: any;
   timeout?: number;
   expect?: Expect;
+  expected?: any;
 }
 
 interface MakeTestConfig {

@@ -31,8 +31,8 @@ const singleForwardMaxScrollConfigList = [{
   templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true },
   custom: { direction: Direction.forward, count: 1 },
   expected: {
-    paddingSizeOpposite: 5130,
-    edgeItemIndexOpposite: 35
+    paddingSizeOpposite: 5220,
+    edgeItemIndexOpposite: 36
   }
 }, {
   datasourceSettings: { startIndex: -74, bufferSize: 4, padding: 0.72, horizontal: true },
@@ -47,7 +47,7 @@ const singleForwardMaxScrollConfigList = [{
   templateSettings: { noViewportClass: true, viewportHeight: 0 },
   custom: { direction: Direction.forward, count: 1 },
   expected: {
-    paddingSizeOpposite: 260,
+    paddingSizeOpposite: 320,
     edgeItemIndexOpposite: -15
   }
 }];
@@ -81,8 +81,8 @@ const singleBackwardMaxScrollExpected = [{
   }
 }, {
   expected: {
-    paddingSizeOpposite: 260,
-    edgeItemIndexOpposite: 22
+    paddingSizeOpposite: 320,
+    edgeItemIndexOpposite: 31
   }
 }];
 const massForwardScrollsExpected = [{
@@ -112,8 +112,8 @@ const massForwardScrollsExpected = [{
   }
 }, {
   expected: {
-    paddingSizeOpposite: 2360,
-    edgeItemIndexOpposite: -83
+    paddingSizeOpposite: 2420,
+    edgeItemIndexOpposite: -74
   }
 }];
 const massBackwardScrollsExpected = [{
@@ -143,8 +143,8 @@ const massBackwardScrollsExpected = [{
   }
 }, {
   expected: {
-    paddingSizeOpposite: 2360,
-    edgeItemIndexOpposite: -83
+    paddingSizeOpposite: 2420,
+    edgeItemIndexOpposite: -74
   }
 }];
 

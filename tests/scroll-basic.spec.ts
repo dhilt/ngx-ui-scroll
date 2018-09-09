@@ -147,6 +147,80 @@ const massBackwardScrollsExpected = [{
     edgeItemIndexOpposite: -74
   }
 }];
+const massBouncingScrollsConfigListExpected = [{
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 220,
+    edgeItemIndexOpposite: Direction.forward === direction ? 104 : 99,
+    edgeItemIndex: Direction.forward === direction ? 109 : 94
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 300,
+    edgeItemIndexOpposite: Direction.forward === direction ? 7 : -1,
+    edgeItemIndex: Direction.forward === direction ? 13 : -7
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 1180,
+    edgeItemIndexOpposite: Direction.forward === direction ? 8 : -35,
+    edgeItemIndex: Direction.forward === direction ? 19 : -46
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 10170,
+    edgeItemIndexOpposite: Direction.forward === direction ? 61 : -38,
+    edgeItemIndex: Direction.forward === direction ? 75 : -52
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 5310,
+    edgeItemIndexOpposite: Direction.forward === direction ? -42 : -92,
+    edgeItemIndex: Direction.forward === direction ? -34 : -100
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 3000,
+    edgeItemIndexOpposite: Direction.forward === direction ? 36 : -20,
+    edgeItemIndex: Direction.forward === direction ? 114 : -98
+  })
+}];
+const massTwoDirectionalScrollsConfigListExpected = [{
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 420,
+    edgeItemIndexOpposite: Direction.forward === direction ? 120 : 83,
+    edgeItemIndex: Direction.forward === direction ? 128 : 75
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 720,
+    edgeItemIndexOpposite: Direction.forward === direction ? 36 : -30,
+    edgeItemIndex: Direction.forward === direction ? 46 : -40
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 2260,
+    edgeItemIndexOpposite: Direction.forward === direction ? 94 : -121,
+    edgeItemIndex: Direction.forward === direction ? 112 : -139
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 10170,
+    edgeItemIndexOpposite: Direction.forward === direction ? 91 : -68,
+    edgeItemIndex: Direction.forward === direction ? 105 : -82
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 6030,
+    edgeItemIndexOpposite: Direction.forward === direction ? -18 : -116,
+    edgeItemIndex: Direction.forward === direction ? -9 : -125
+  })
+}, {
+  expected: (direction: string) => ({
+    paddingSizeOpposite: 5220,
+    edgeItemIndexOpposite: Direction.forward === direction ? 230 : -214,
+    edgeItemIndex: Direction.forward === direction ? 327 : -311
+  })
+}];
 
 const singleBackwardMaxScrollConfigList =
   singleForwardMaxScrollConfigList.map((config, index) => ({
@@ -186,7 +260,7 @@ const massBouncingScrollsConfigList_fwd =
       count: (3 + treatIndex(index)) * 2, // 3-6 (fwd + bwd) scroll events per config
       bouncing: true
     },
-    timeout: 5000
+    expected: massBouncingScrollsConfigListExpected[index].expected(Direction.forward)
   }));
 
 const massBouncingScrollsConfigList_bwd =
@@ -197,7 +271,7 @@ const massBouncingScrollsConfigList_bwd =
       count: (3 + treatIndex(index)) * 2, // 3-6 (fwd + bwd) scroll events per config
       bouncing: true
     },
-    timeout: 5000
+    expected: massBouncingScrollsConfigListExpected[index].expected(Direction.backward)
   }));
 
 const massTwoDirectionalScrollsConfigList_fwd =
@@ -208,7 +282,7 @@ const massTwoDirectionalScrollsConfigList_fwd =
       count: (3 + treatIndex(index)) * 2, // 3-6 fwd + 3-6 bwd scroll events per config
       mass: true
     },
-    timeout: 4000
+    expected: massTwoDirectionalScrollsConfigListExpected[index].expected(Direction.forward)
   }));
 
 const massTwoDirectionalScrollsConfigList_bwd =
@@ -219,7 +293,7 @@ const massTwoDirectionalScrollsConfigList_bwd =
       count: (3 + treatIndex(index)) * 2, // 3-6 fwd + 3-6 bwd scroll events per config
       mass: true
     },
-    timeout: 4000
+    expected: massTwoDirectionalScrollsConfigListExpected[index].expected(Direction.backward)
   }));
 
 const doScrollMax = (config: TestBedConfig, misc: Misc) => {
@@ -320,7 +394,8 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
       const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(opposite);
       expect((<any>misc.padding)[direction].getSize()).toEqual(result.paddingSize);
       expect((<any>misc.padding)[opposite].getSize()).toEqual(config.expected.paddingSizeOpposite);
-      expect(edgeItem ? edgeItem.$index : null).toEqual(result.edgeItemIndex);
+      /* expect(edgeItem ? edgeItem.$index : null).toEqual(result.edgeItemIndex); */
+      expect(edgeItem ? edgeItem.$index : null).toEqual((config.custom.bouncing || config.custom.mass) ? config.expected.edgeItemIndex : result.edgeItemIndex);
       expect(oppositeEdgeItem ? oppositeEdgeItem.$index : null).toEqual(config.expected.edgeItemIndexOpposite);
       done();
     }
@@ -369,44 +444,44 @@ describe('Basic Scroll Spec', () => {
     )
   );
 
-  // describe('Bouncing max two-directional scroll events (fwd started)', () =>
-  //   massBouncingScrollsConfigList_fwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some bouncing scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
-  // describe('Bouncing max two-directional scroll events (bwd started)', () =>
-  //   massBouncingScrollsConfigList_bwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some bouncing scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
-  // describe('Mass max two-directional scroll events (fwd started)', () =>
-  //   massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some two-directional scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
-  // describe('Mass max two-directional scroll events (bwd started)', () =>
-  //   massTwoDirectionalScrollsConfigList_bwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some two-directional scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
+  describe('Bouncing max two-directional scroll events (fwd started)', () =>
+    massBouncingScrollsConfigList_fwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some bouncing scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
+  describe('Bouncing max two-directional scroll events (bwd started)', () =>
+    massBouncingScrollsConfigList_bwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some bouncing scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
+  describe('Mass max two-directional scroll events (fwd started)', () =>
+    massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some two-directional scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
+  describe('Mass max two-directional scroll events (bwd started)', () =>
+    massTwoDirectionalScrollsConfigList_bwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some two-directional scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
 
 });

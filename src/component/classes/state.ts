@@ -83,7 +83,8 @@ export class State implements IState {
       position: null,
       positionBefore: null,
       delta: 0,
-      time: 0
+      time: 0,
+      readyToReset: false
     };
 
     this.pendingSource = new BehaviorSubject<boolean>(false);

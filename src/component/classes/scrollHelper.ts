@@ -57,17 +57,26 @@ export class ScrollHelper {
     const { viewport, state, settings } = this.workflow.scroller;
     const position = viewport.scrollPosition;
     const syntheticPosition = <number>state.syntheticScroll.position;
-    let result = true;
+
+    // synthetic scroll
+    if (position === syntheticPosition) {
+      // let's reset syntheticScroll.position on first change
+      state.syntheticScroll.readyToReset = true;
+      this.workflow.scroller.logger.log(() => `skip scroll (${position})`);
+      return false;
+    } else if (state.syntheticScroll.readyToReset) {
+      state.syntheticScroll.position = null;
+    }
 
     // inertia scroll over synthetic scroll
     if (position !== syntheticPosition) {
       const inertiaDelay = Number(new Date()) - state.syntheticScroll.time;
       const inertiaDelta = <number>state.syntheticScroll.positionBefore - position;
       const syntheticDelta = syntheticPosition - position;
-      const newPosition = Math.max(0, position + state.syntheticScroll.delta);
 
+      const newPosition = Math.max(0, position + state.syntheticScroll.delta);
       if (inertiaDelta > 0 && inertiaDelta < syntheticDelta) {
-        this.workflow.scroller.logger.log(() => 'Inertia scroll adjustment. Position: ' + position +
+        this.workflow.scroller.logger.log(() => 'inertia scroll adjustment. Position: ' + position +
           ', synthetic position: ' + syntheticPosition + ', synthetic delta: ' + syntheticDelta +
           ', delay: ' + inertiaDelay + ', delta: ' + inertiaDelta);
         if (settings.inertia) {
@@ -78,14 +87,9 @@ export class ScrollHelper {
           viewport.scrollPosition = newPosition;
         }
       }
-    } else {
-      result = false;
     }
 
-    if (syntheticPosition === state.syntheticScroll.position) {
-      state.syntheticScroll.position = null;
-    }
-    return result;
+    return true;
   }
 
   throttledScroll() {
@@ -104,7 +108,7 @@ export class ScrollHelper {
       this.debouncedScroll();
     } else {
       this.scrollTimer = <any>setTimeout(() => {
-        this.debouncedScroll();
+        this.run();
         this.scrollTimer = null;
       }, diff);
     }
@@ -125,7 +129,7 @@ export class ScrollHelper {
         this.endSubscription.unsubscribe();
       }
       this.endSubscription = null;
-      this.runWorkflow();
+      this.run();
     });
   }
 

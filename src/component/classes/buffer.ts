@@ -16,14 +16,16 @@ export class Buffer {
   absMaxIndex: number;
 
   private startIndex: number;
+  private minIndexSetting: number;
+  private maxIndexSetting: number;
   readonly minBufferSize: number;
 
   constructor(settings: Settings) {
     this.$items = new BehaviorSubject<Array<Item>>([]);
     this.cache = new Cache(settings);
+    this.minIndexSetting = settings.minIndex;
+    this.maxIndexSetting = settings.maxIndex;
     this.reset();
-    this.absMinIndex = settings.minIndex;
-    this.absMaxIndex = settings.maxIndex;
     this.startIndex = settings.startIndex;
     this.minBufferSize = settings.bufferSize;
   }
@@ -35,6 +37,8 @@ export class Buffer {
     this.items = [];
     this.pristine = true;
     this.cache.resetIndexes();
+    this.absMinIndex = this.minIndexSetting;
+    this.absMaxIndex = this.maxIndexSetting;
     if (typeof startIndex !== 'undefined') {
       this.startIndex = startIndex;
     }

@@ -6,6 +6,7 @@ export interface SyntheticScroll {
   positionBefore: number | null;
   delta: number;
   time: number;
+  readyToReset: boolean;
 }
 
 export interface State {

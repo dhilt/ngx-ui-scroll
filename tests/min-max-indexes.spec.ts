@@ -25,7 +25,24 @@ const configList: TestBedConfig[] = [{
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
 }];
 
-const _testIt = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const invalidStartIndexConfigList: TestBedConfig[] = [{
+  datasourceSettings: { startIndex: -9999, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
+  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+}, {
+  datasourceSettings: { startIndex: -50, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
+  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+}, {
+  datasourceSettings: { startIndex: -49, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
+  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+}, {
+  datasourceSettings: { startIndex: -48, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
+  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+}, /*{
+  datasourceSettings: { startIndex: 9999, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
+  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+}*/];
+
+const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
   const viewportSize = misc.getViewportSize(settings);
   const totalSize = (maxIndex - minIndex + 1) * itemSize;
@@ -47,16 +64,52 @@ const _testIt = (settings: TestBedConfig, misc: Misc, done: Function) => {
   done();
 };
 
+const _testStartIndexCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+  const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
+  const viewportSize = misc.getViewportSize(settings);
+  const totalSize = (maxIndex - minIndex + 1) * itemSize;
+  const viewportSizeDelta = viewportSize * padding;
+  const _startIndex = Math.max(minIndex, startIndex); // startIndex < minIndex
+
+  const negativeSize = (_startIndex - minIndex) * itemSize;
+  const negativeItemsAmount = Math.ceil(viewportSizeDelta / itemSize);
+  const negativeItemsSize = negativeItemsAmount * itemSize;
+  const bwdPaddingSize = Math.max(0, negativeSize - negativeItemsSize);
+
+  const positiveSize = (maxIndex - _startIndex + 1) * itemSize;
+  const positiveItemsAmount = Math.ceil((viewportSize + viewportSizeDelta) / itemSize);
+  const positiveItemsSize = positiveItemsAmount * itemSize;
+  const fwdPaddingSize = positiveSize - positiveItemsSize;
+
+  expect(misc.getScrollableSize()).toEqual(totalSize);
+  expect(misc.padding.backward.getSize()).toEqual(bwdPaddingSize);
+  expect(misc.padding.forward.getSize()).toEqual(fwdPaddingSize);
+  done();
+};
+
 describe('Min/max Indexes Spec', () => {
 
-  describe('Fixed average item size', () => {
+  describe('Common cases', () => {
     configList.forEach(config =>
       makeTest({
         config,
-        title: 'should make 1 fetch to satisfy padding limits',
+        title: 'should fill the viewport and the paddings',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testIt(config, misc, done)
+            _testCommonCase(config, misc, done)
+          )
+      })
+    );
+  });
+
+  describe('startIndex < minIndex cases', () => {
+    invalidStartIndexConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reset backward padding',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            _testStartIndexCase(config, misc, done)
           )
       })
     );

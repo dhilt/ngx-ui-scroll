@@ -42,14 +42,6 @@ const singleForwardMaxScrollConfigList = [{
     paddingSizeOpposite: 2790,
     edgeItemIndexOpposite: -54
   }
-}, {
-  datasourceSettings: { startIndex: -15, bufferSize: 35, padding: 0.33, windowViewport: true },
-  templateSettings: { noViewportClass: true, viewportHeight: 0 },
-  custom: { direction: Direction.forward, count: 1 },
-  expected: {
-    paddingSizeOpposite: 320,
-    edgeItemIndexOpposite: -15
-  }
 }];
 
 const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);

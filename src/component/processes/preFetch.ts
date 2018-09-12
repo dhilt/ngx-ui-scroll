@@ -59,6 +59,9 @@ export default class PreFetch {
     let firstIndex = state.startIndex;
     let firstIndexPosition = position;
     while (1) {
+      if (firstIndex <= buffer.absMinIndex) {
+        break;
+      }
       index += inc;
       position += inc * buffer.getSizeByIndex(index);
       if (inc < 0) {
@@ -73,9 +76,6 @@ export default class PreFetch {
         }
         firstIndex = index;
         firstIndexPosition = position;
-      }
-      if (firstIndex - 1 < buffer.absMinIndex) {
-        break;
       }
     }
     fetch.firstIndex = fetch.firstIndexBuffer = Math.max(firstIndex, buffer.absMinIndex);
@@ -95,7 +95,7 @@ export default class PreFetch {
       if (position >= endPosition) {
         break;
       }
-      if (lastIndex + 1 > buffer.absMaxIndex) {
+      if (index > buffer.absMaxIndex) {
         break;
       }
     }

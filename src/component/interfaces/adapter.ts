@@ -20,4 +20,5 @@ export interface Adapter {
   initialize: Function;
   reload: Function;
   showLog: Function;
+  setMinIndex: Function;
 }

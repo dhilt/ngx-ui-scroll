@@ -38,7 +38,8 @@ export const generateMockAdapter = (): IAdapter => (
     itemsCount: 0,
     initialize: () => null,
     reload: () => null,
-    showLog: () => null
+    showLog: () => null,
+    setMinIndex: () => null
   }
 );
 
@@ -84,6 +85,7 @@ export class Adapter implements IAdapter {
     return this.isInitialized ? this.getItemsCount() : 0;
   }
 
+  private scroller: Scroller;
   private isInitialized: boolean;
   private callWorkflow: Function;
   private getVersion: Function;
@@ -95,8 +97,6 @@ export class Adapter implements IAdapter {
   private getLastVisible$: Function;
   private getItemsCount: Function;
 
-  showLog: Function;
-
   constructor() {
     this.isInitialized = false;
   }
@@ -105,7 +105,8 @@ export class Adapter implements IAdapter {
     if (this.isInitialized) {
       return;
     }
-    const state = scroller.state;
+    this.scroller = scroller;
+    const { state, buffer } = scroller;
     this.isInitialized = true;
     this.callWorkflow = scroller.callWorkflow;
     this.getVersion = (): string | null => scroller.version;
@@ -116,8 +117,7 @@ export class Adapter implements IAdapter {
     this.getLastVisible = (): ItemAdapter => state.lastVisibleItem;
     this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => state.lastVisibleSource;
     this.getItemsCount = (): number =>
-      scroller.buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
-    this.showLog = () => scroller.logger.logForce();
+      buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
   }
 
   reload(reloadIndex?: number | string) {
@@ -126,5 +126,19 @@ export class Adapter implements IAdapter {
       status: ProcessStatus.start,
       payload: reloadIndex
     });
+  }
+
+  showLog() {
+    this.scroller.logger.logForce();
+  }
+
+  setMinIndex(value: number) {
+    const index = Number(value);
+    if (isNaN(index)) {
+      this.scroller.logger.log(() =>
+        `can't set minIndex because ${value} is not a number`);
+    } else {
+      this.scroller.buffer.minIndexUser = index;
+    }
   }
 }

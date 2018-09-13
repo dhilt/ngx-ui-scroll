@@ -25,22 +25,27 @@ const configList: TestBedConfig[] = [{
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
 }];
 
-const invalidStartIndexConfigList: TestBedConfig[] = [{
-  datasourceSettings: { startIndex: -9999, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
-  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+const commonConfig = configList[0]; // [-49, ..., 100]
+
+const startIndexAroundMinIndexConfigList: TestBedConfig[] = [{
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: -9999 }
 }, {
-  datasourceSettings: { startIndex: -50, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
-  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: -50 }
 }, {
-  datasourceSettings: { startIndex: -49, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
-  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: -49 }
 }, {
-  datasourceSettings: { startIndex: -48, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
-  templateSettings: { viewportHeight: 200, itemHeight: 20 }
-}, /*{
-  datasourceSettings: { startIndex: 9999, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
-  templateSettings: { viewportHeight: 200, itemHeight: 20 }
-}*/];
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: -48 }
+}];
+
+const startIndexAroundMaxIndexConfigList: TestBedConfig[] = [{
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: 99 }
+}, {
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: 100 }
+}, {
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: 101 }
+}, {
+  ...commonConfig, datasourceSettings: { ...commonConfig.datasourceSettings, startIndex: 999 }
+}];
 
 const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
@@ -64,12 +69,20 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
   done();
 };
 
-const _testStartIndexCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const _testStartIndexEdgeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
   const viewportSize = misc.getViewportSize(settings);
   const totalSize = (maxIndex - minIndex + 1) * itemSize;
   const viewportSizeDelta = viewportSize * padding;
-  const _startIndex = Math.max(minIndex, startIndex); // startIndex < minIndex
+  let _startIndex = Math.max(minIndex, startIndex); // startIndex < minIndex
+  _startIndex = Math.min(maxIndex, _startIndex); // startIndex > maxIndex
+
+  // visible part of the viewport must be filled
+  const viewportItemsAmount = Math.ceil(viewportSize / itemSize);
+  const diff = _startIndex + viewportItemsAmount - maxIndex - 1;
+  if (diff > 0) {
+    _startIndex -= diff;
+  }
 
   const negativeSize = (_startIndex - minIndex) * itemSize;
   const negativeItemsAmount = Math.ceil(viewportSizeDelta / itemSize);
@@ -79,7 +92,7 @@ const _testStartIndexCase = (settings: TestBedConfig, misc: Misc, done: Function
   const positiveSize = (maxIndex - _startIndex + 1) * itemSize;
   const positiveItemsAmount = Math.ceil((viewportSize + viewportSizeDelta) / itemSize);
   const positiveItemsSize = positiveItemsAmount * itemSize;
-  const fwdPaddingSize = positiveSize - positiveItemsSize;
+  const fwdPaddingSize = Math.max(0, positiveSize - positiveItemsSize);
 
   expect(misc.getScrollableSize()).toEqual(totalSize);
   expect(misc.padding.backward.getSize()).toEqual(bwdPaddingSize);
@@ -102,14 +115,27 @@ describe('Min/max Indexes Spec', () => {
     );
   });
 
-  describe('startIndex < minIndex cases', () => {
-    invalidStartIndexConfigList.forEach(config =>
+  describe('startIndex\'s around minIndex', () => {
+    startIndexAroundMinIndexConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should reset backward padding',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testStartIndexCase(config, misc, done)
+            _testStartIndexEdgeCase(config, misc, done)
+          )
+      })
+    );
+  });
+
+  describe('startIndex\'s around maxIndex', () => {
+    startIndexAroundMaxIndexConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reset forward padding',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            _testStartIndexEdgeCase(config, misc, done)
           )
       })
     );

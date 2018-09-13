@@ -41,7 +41,7 @@ export class Scroller {
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.logger = new Logger(this);
     this.routines = new Routines(this.settings);
-    this.state = new State(this.settings.startIndex);
+    this.state = new State(this.settings, this.logger);
     this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.state, this.logger);
     this.buffer = new Buffer(this.settings);
 

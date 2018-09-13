@@ -7,7 +7,7 @@ export default class Reload {
     scroller.state.process = Process.reload;
 
     const scrollPosition = scroller.viewport.scrollPosition;
-    Reload.setCurrentStartIndex(scroller, reloadIndex);
+    scroller.state.setCurrentStartIndex(reloadIndex);
     scroller.buffer.reset(true, scroller.state.startIndex);
     scroller.viewport.reset(scrollPosition);
     scroller.purgeCycleSubscriptions();
@@ -16,25 +16,6 @@ export default class Reload {
       process: Process.reload,
       status: ProcessStatus.next
     });
-  }
-
-  static setCurrentStartIndex(scroller: Scroller, newStartIndex: any) {
-    const { state, settings: { startIndex, minIndex, maxIndex } } = scroller;
-    let index = Number(newStartIndex);
-    if (isNaN(index)) {
-      scroller.logger.log(() =>
-        `fallback startIndex to settings.startIndex (${startIndex}) because ${newStartIndex} is not a number`);
-      index = startIndex;
-    }
-    if (index < minIndex) {
-      scroller.logger.log(() => `setting startIndex to settings.minIndex (${minIndex}) because ${index} < ${minIndex}`);
-      index = minIndex;
-    }
-    if (index > maxIndex) {
-      scroller.logger.log(() => `setting startIndex to settings.maxIndex (${maxIndex}) because ${index} > ${maxIndex}`);
-      index = maxIndex;
-    }
-    state.startIndex = index;
   }
 
 }

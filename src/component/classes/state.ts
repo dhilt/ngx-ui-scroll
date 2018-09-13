@@ -2,8 +2,14 @@ import { BehaviorSubject } from 'rxjs';
 
 import { State as IState, Process, ProcessRun, ItemAdapter, Direction, SyntheticScroll } from '../interfaces/index';
 import { FetchModel } from './fetch';
+import { Settings } from './settings';
+import { Logger } from './logger';
 
 export class State implements IState {
+
+  protected settings: Settings;
+  protected logger: Logger;
+
   initTime: number;
   cycleCount: number;
   isInitialCycle: boolean;
@@ -63,7 +69,9 @@ export class State implements IState {
     return Number(new Date()) - this.initTime;
   }
 
-  constructor(startIndex: number) {
+  constructor(settings: Settings, logger: Logger) {
+    this.settings = settings;
+    this.logger = logger;
     this.initTime = Number(new Date());
     this.cycleCount = 0;
     this.isInitialCycle = false;
@@ -71,7 +79,7 @@ export class State implements IState {
     this.isInitialWorkflowCycle = false;
     this.countDone = 0;
 
-    this.startIndex = startIndex;
+    this.setCurrentStartIndex(settings.startIndex);
     this.scroll = false;
     this.direction = null;
     this.fetch = new FetchModel();
@@ -112,6 +120,25 @@ export class State implements IState {
     this.pending = false;
     this.countDone++;
     this.isInitialCycle = false;
+  }
+
+  setCurrentStartIndex(newStartIndex: any) {
+    const { startIndex, minIndex, maxIndex } = this.settings;
+    let index = Number(newStartIndex);
+    if (isNaN(index)) {
+      this.logger.log(() =>
+        `fallback startIndex to settings.startIndex (${startIndex}) because ${newStartIndex} is not a number`);
+      index = startIndex;
+    }
+    if (index < minIndex) {
+      this.logger.log(() => `setting startIndex to settings.minIndex (${minIndex}) because ${index} < ${minIndex}`);
+      index = minIndex;
+    }
+    if (index > maxIndex) {
+      this.logger.log(() => `setting startIndex to settings.maxIndex (${maxIndex}) because ${index} > ${maxIndex}`);
+      index = maxIndex;
+    }
+    this.startIndex = index;
   }
 
 }

@@ -17,13 +17,14 @@ export class ItemCache {
 }
 
 export class Cache {
-  items: Array<ItemCache>;
   averageSize: number;
   minIndex: number;
   maxIndex: number;
 
+  private items: Map<number, ItemCache>;
+
   constructor(settings: Settings) {
-    this.items = [];
+    this.items = new Map<number, ItemCache>();
     this.averageSize = settings.itemSize;
     this.resetIndexes();
   }
@@ -34,12 +35,11 @@ export class Cache {
   }
 
   updateAverageSize(item: ItemCache) {
-    this.averageSize = ((this.items.length - 1) * this.averageSize + item.size) / this.items.length;
+    this.averageSize = ((this.items.size - 1) * this.averageSize + item.size) / this.items.size;
   }
 
   add(item: Item): ItemCache {
-    // const isForward = direction !== Direction.backward;
-    let itemCache = this.items.find(i => i.$index === item.$index);
+    let itemCache = this.items.get(item.$index);
     if (itemCache) {
       itemCache.data = item.data;
       if (itemCache.size !== item.size) {
@@ -48,9 +48,8 @@ export class Cache {
         // todo: update positions ?
       }
     } else {
-      // todo: do we need the list to be sorted? maybe an object?
       itemCache = new ItemCache(item);
-      this.items.push(itemCache);
+      this.items.set(item.$index, itemCache);
       if (this.averageSize !== itemCache.size) {
         this.updateAverageSize(itemCache);
       }
@@ -65,6 +64,6 @@ export class Cache {
   }
 
   get(index: number): ItemCache | undefined {
-    return this.items.find((item: ItemCache) => item.$index === index);
+    return this.items.get(index);
   }
 }

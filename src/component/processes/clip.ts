@@ -22,7 +22,7 @@ export default class Clip {
     if (!buffer.size) {
       return;
     }
-    if (state.scroll === false || state.direction === null) {
+    if (!state.direction) {
       return;
     }
     const firstIndex = <number>fetch.firstIndexBuffer;

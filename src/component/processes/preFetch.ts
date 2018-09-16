@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject, Direction } from '../interfaces/index';
 
 export default class PreFetch {
 
@@ -127,6 +127,11 @@ export default class PreFetch {
     }
     fetch.firstIndex = Math.max(pack[0], buffer.absMinIndex);
     fetch.lastIndex = Math.min(pack[pack.length - 1], buffer.absMaxIndex);
+    if (pack.length && !scroller.state.direction) {
+      const direction = pack[pack.length - 1] < buffer.items[0].$index ? Direction.backward : Direction.forward;
+      scroller.logger.log(() => `setting direction to "${direction}"`);
+      scroller.state.direction = direction;
+    }
   }
 
   static checkFetchPackSize(scroller: Scroller) {

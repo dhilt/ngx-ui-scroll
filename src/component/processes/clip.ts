@@ -18,21 +18,18 @@ export default class Clip {
   }
 
   static prepareClip(scroller: Scroller) {
-    const { state, buffer, state: { fetch } } = scroller;
+    const { buffer, state: { fetch, scrollState } } = scroller;
     if (!buffer.size) {
-      return;
-    }
-    if (!state.direction) {
       return;
     }
     const firstIndex = <number>fetch.firstIndexBuffer;
     const lastIndex = <number>fetch.lastIndexBuffer;
-    if (state.direction === Direction.forward) {
+    if (scrollState.direction === Direction.forward) {
       if (firstIndex - 1 >= buffer.absMinIndex) {
         Clip.prepareClipByDirection(scroller, Direction.forward, firstIndex);
       }
     }
-    if (state.direction === Direction.backward) {
+    if (scrollState.direction === Direction.backward) {
       if (lastIndex + 1 <= buffer.absMaxIndex) {
         Clip.prepareClipByDirection(scroller, Direction.backward, lastIndex);
       }
@@ -49,15 +46,17 @@ export default class Clip {
       ) {
         item.toRemove = true;
         scroller.state.clip = true;
+        scroller.state.clipCall++;
       }
     });
   }
 
   static doClip(scroller: Scroller) {
+    const { buffer, state, viewport, logger } = scroller;
     const clipped: Array<number> = [];
     let size = 0;
-    scroller.logger.stat('before clip');
-    scroller.buffer.items = scroller.buffer.items.filter(item => {
+    logger.stat('before clip');
+    buffer.items = buffer.items.filter(item => {
       if (item.toRemove) {
         size += item.size;
         item.hide();
@@ -67,11 +66,11 @@ export default class Clip {
       return true;
     });
     if (size) {
-      const opposite = scroller.state.direction === Direction.forward ? Direction.backward : Direction.forward;
-      scroller.viewport.padding[opposite].size += size;
+      const opposite = state.scrollState.direction === Direction.forward ? Direction.backward : Direction.forward;
+      viewport.padding[opposite].size += size;
     }
-    scroller.logger.log(() => [`clipped ${clipped.length} items`, clipped]);
-    scroller.logger.stat('after clip');
+    logger.log(() => [`clipped ${clipped.length} items`, clipped]);
+    logger.stat('after clip');
   }
 
 }

@@ -6,9 +6,10 @@ export default class PreFetch {
   static run(scroller: Scroller) {
     scroller.state.process = Process.preFetch;
 
+    const { fetch } = scroller.state;
     scroller.state.preFetchPosition = scroller.viewport.scrollPosition;
-    scroller.state.fetch.minIndex = scroller.buffer.minIndex;
-    scroller.state.fetch.averageItemSize = scroller.buffer.averageSize;
+    fetch.minIndex = scroller.buffer.minIndex;
+    fetch.averageItemSize = scroller.buffer.averageSize;
 
     // calculate size before start index
     PreFetch.setStartDelta(scroller);
@@ -21,6 +22,10 @@ export default class PreFetch {
 
     // add indexes if there are too few items to fetch (clip padding)
     PreFetch.checkFetchPackSize(scroller);
+
+    if (fetch.shouldFetch) {
+      scroller.logger.log(() => `going to fetch ${fetch.count} items started from index ${fetch.index}`);
+    }
 
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.preFetch,
@@ -58,24 +63,28 @@ export default class PreFetch {
     let index = state.startIndex;
     let firstIndex = state.startIndex;
     let firstIndexPosition = position;
-    while (1) {
-      if (firstIndex <= buffer.absMinIndex) {
-        break;
-      }
-      index += inc;
-      position += inc * buffer.getSizeByIndex(index);
-      if (inc < 0) {
-        firstIndex = index;
-        firstIndexPosition = position;
-        if (position <= startPosition) {
+    if (scroller.state.isInitialCycle) {
+      scroller.logger.log(`skipping backward direction [initial cycle]`);
+    } else {
+      while (1) {
+        if (firstIndex <= buffer.absMinIndex) {
           break;
         }
-      } else {
-        if (position > startPosition) {
-          break;
+        index += inc;
+        position += inc * buffer.getSizeByIndex(index);
+        if (inc < 0) {
+          firstIndex = index;
+          firstIndexPosition = position;
+          if (position <= startPosition) {
+            break;
+          }
+        } else {
+          if (position > startPosition) {
+            break;
+          }
+          firstIndex = index;
+          firstIndexPosition = position;
         }
-        firstIndex = index;
-        firstIndexPosition = position;
       }
     }
     fetch.firstIndex = fetch.firstIndexBuffer = Math.max(firstIndex, buffer.absMinIndex);
@@ -107,7 +116,7 @@ export default class PreFetch {
     if (!buffer.size) {
       return;
     }
-    const fetch = scroller.state.fetch;
+    const { fetch, scrollState } = scroller.state;
     const packs: Array<Array<number>> = [[]];
     let p = 0;
     for (let i = <number>fetch.firstIndexBuffer; i <= <number>fetch.lastIndexBuffer; i++) {
@@ -127,10 +136,10 @@ export default class PreFetch {
     }
     fetch.firstIndex = Math.max(pack[0], buffer.absMinIndex);
     fetch.lastIndex = Math.min(pack[pack.length - 1], buffer.absMaxIndex);
-    if (pack.length && !scroller.state.direction) {
+    if (pack.length && !scrollState.direction) {
       const direction = pack[pack.length - 1] < buffer.items[0].$index ? Direction.backward : Direction.forward;
       scroller.logger.log(() => `setting direction to "${direction}"`);
-      scroller.state.direction = direction;
+      scrollState.direction = direction;
     }
   }
 

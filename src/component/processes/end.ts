@@ -3,7 +3,7 @@ import { Process, ProcessStatus, ProcessSubject, ProcessRun, Direction } from '.
 
 export default class End {
 
-  static run(scroller: Scroller, isFail?: boolean) {
+  static run(scroller: Scroller, error?: any) {
     scroller.state.process = Process.end;
 
     const { state } = scroller;
@@ -14,16 +14,13 @@ export default class End {
     scroller.finalize();
 
     let next: ProcessRun | null = null;
-    scroller.logger.log(() => {
-      const logData = `${scroller.settings.instanceIndex}-${state.workflowCycleCount}-${state.cycleCount}`;
-      return isFail ?
-        [`%c---=== Workflow ${logData} fail`, 'color: #006600;'] :
-        [`%c---=== Workflow ${logData} done`, 'color: #006600;'];
-    });
-    if (!isFail) {
-      next = state.fetch.hasNewItems && !state.scroll ? <ProcessRun> {
-        scroll: state.scroll
-      } : null;
+    if (!error) {
+      if (state.fetch.hasNewItems) {
+        next = { scroll: false, direction: null, keepScroll: false };
+      }
+      if (state.scrollState.keepScroll) {
+        next = { scroll: true, direction: null, keepScroll: true };
+      }
     }
 
     // need to apply Buffer.items changes if clip

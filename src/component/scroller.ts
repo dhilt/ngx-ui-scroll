@@ -9,6 +9,7 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
+import { Direction } from './interfaces';
 
 let instanceCount = 0;
 
@@ -53,7 +54,14 @@ export class Scroller {
     } else {
       this.datasource.adapter.initialize(this);
     }
+
     this.logger.stat('initialization');
+    this.logger.log(() => ['uiScroll settings object', this.settings]);
+    // this.logger.log(() => ['uiScroll settings object',
+    //   JSON.stringify(this.settings)
+    //     .replace(/"/g, '')
+    //     .replace(/(\{|\:|\,)/g, '$1 ')
+    // ]);
   }
 
   bindData(): Observable<any> {
@@ -70,6 +78,24 @@ export class Scroller {
   purgeCycleSubscriptions() {
     this.cycleSubscriptions.forEach((item: Subscription) => item.unsubscribe());
     this.cycleSubscriptions = [];
+  }
+
+  getScrollDirection(): Direction {
+    const position = this.viewport.scrollPosition;
+    let lastPosition = this.state.lastPosition;
+    let direction: Direction, notChanged = false;
+    if (position === lastPosition) {
+      lastPosition = this.state.preFetchPosition;
+      if (position === lastPosition) {
+        notChanged = true;
+      }
+    }
+    direction = notChanged ? Direction.forward :
+      position < lastPosition ? Direction.backward : Direction.forward;
+    this.logger.log(() =>
+      `scroll direction: ${direction}, position: ${position}` + (notChanged ? '(has not been changed)' : '')
+    );
+    return direction;
   }
 
   dispose() {

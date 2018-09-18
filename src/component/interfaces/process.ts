@@ -21,13 +21,14 @@ export enum ProcessStatus {
   error = 'error'
 }
 
+export interface ProcessRun {
+  scroll: boolean;
+  direction: Direction | null;
+  keepScroll: boolean;
+}
+
 export interface ProcessSubject {
   process: Process;
   status: ProcessStatus;
-  payload?: string | any;
-}
-
-export interface ProcessRun {
-  scroll: boolean;
-  direction: Direction;
+  payload?: any;
 }

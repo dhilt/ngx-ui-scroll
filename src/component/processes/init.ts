@@ -3,21 +3,16 @@ import { Process, ProcessStatus, ProcessSubject, ProcessRun, Direction } from '.
 
 export default class Init {
 
-  static run(scroller: Scroller, direction?: Direction) {
+  static run(scroller: Scroller, payload?: ProcessRun) {
     scroller.state.process = Process.init;
-    scroller.logger.log(() => {
-      const logData = `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
-      const logStyles = 'color: #0000aa; border: solid black 1px; border-width: 1px 0 0 1px; margin-left: -2px';
-      return [`%c   ~~~ WF Run ${logData} STARTED ~~~  `, logStyles];
-    });
-    scroller.state.isInitialCycle = !direction;
-    scroller.state.isInitialWorkflowCycle = !direction;
+    scroller.state.isInitialCycle = !payload;
+    scroller.state.isInitialWorkflowCycle = !payload;
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.init,
       status: ProcessStatus.next,
       payload: <ProcessRun>{
-        scroll: !!direction,
-        direction
+        scroll: payload && payload.scroll || false,
+        direction: payload && payload.direction || Direction.forward
       }
     });
   }

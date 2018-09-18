@@ -2,9 +2,8 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { ScrollHelper } from './classes/scrollHelper';
 import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
-import { Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End } from './processes/index';
+import { Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End } from './processes/index';
 
 export class Workflow {
 
@@ -13,19 +12,20 @@ export class Workflow {
   cyclesDone: number;
 
   readonly context: UiScrollComponent;
-  readonly scrollHelper: ScrollHelper;
+  readonly onScrollHandler: EventListener;
   private itemsSubscription: Subscription;
   private workflowSubscription: Subscription;
+  private scrollEventOptions: any;
 
   constructor(context: UiScrollComponent) {
     this.context = context;
     this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
-    this.scrollHelper = new ScrollHelper(this);
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
     });
     this.cyclesDone = 0;
+    this.onScrollHandler = () => Scroll.run(this.scroller);
     setTimeout(() => {
       this.scroller.logger.log(() => `uiScroll Workflow listeners are being initialized`);
       this.initListeners();
@@ -36,32 +36,37 @@ export class Workflow {
     const scroller = this.scroller;
     this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
-    this.scrollHelper.addScrollHandler();
+    this.iniScrollEventListener();
   }
 
-  dispose() {
-    this.scrollHelper.purgeProcesses();
-    this.scrollHelper.removeScrollHandler();
-    this.process$.complete();
-    this.workflowSubscription.unsubscribe();
-    this.itemsSubscription.unsubscribe();
-    this.scroller.dispose();
+  iniScrollEventListener() {
+    let passiveSupported = false;
+    try {
+      window.addEventListener(
+        'test', <EventListenerOrEventListenerObject>{}, Object.defineProperty({}, 'passive', {
+          get: () => passiveSupported = true
+        })
+      );
+    } catch (err) {
+    }
+    this.scrollEventOptions = passiveSupported ? { passive: false } : false;
+    this.scroller.viewport.scrollEventElement.addEventListener(
+      'scroll', this.onScrollHandler, this.scrollEventOptions
+    );
   }
 
-  callWorkflow(processSubject: ProcessSubject) {
-    this.process$.next(processSubject);
+  detachScrollEventListener() {
+    this.scroller.viewport.scrollEventElement.removeEventListener(
+      'scroll', this.onScrollHandler, this.scrollEventOptions
+    );
   }
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
-    const { status } = data;
-    scroller.logger.log(() => [
-      `process ${data.process}, ${status}` +
-      (data.payload && typeof data.payload !== 'object' ? ',' : ''),
-      ...(data.payload ? [data.payload] : [])
-    ]);
+    const { status, payload } = data;
+    this.scroller.logger.logProcess(data);
     if (status === Status.error) {
-      End.run(scroller, true);
+      End.run(scroller, payload);
       return;
     }
     switch (data.process) {
@@ -70,12 +75,12 @@ export class Workflow {
           Init.run(scroller);
         }
         if (status === Status.next) {
-          Start.run(scroller, data.payload);
+          Start.run(scroller);
         }
         break;
       case Process.reload:
         if (status === Status.start) {
-          Reload.run(scroller, data.payload);
+          Reload.run(scroller, payload);
         }
         if (status === Status.next) {
           Init.run(scroller);
@@ -83,7 +88,11 @@ export class Workflow {
         break;
       case Process.scroll:
         if (status === Status.next) {
-          Init.run(scroller, data.payload);
+          if (!payload.keepScroll) {
+            Init.run(scroller, payload);
+          } else {
+            Start.run(scroller, payload);
+          }
         }
         break;
       case Process.start:
@@ -129,7 +138,11 @@ export class Workflow {
         break;
       case Process.end:
         if (status === Status.next) {
-          Start.run(scroller, data.payload);
+          if (payload.keepScroll) {
+            Scroll.run(scroller);
+          } else {
+            Start.run(scroller);
+          }
         }
         if (status === Status.done) {
           this.done();
@@ -138,16 +151,23 @@ export class Workflow {
     }
   }
 
+  callWorkflow(processSubject: ProcessSubject) {
+    this.process$.next(processSubject);
+  }
+
   done() {
     this.cyclesDone++;
     this.scroller.state.workflowCycleCount = this.cyclesDone + 1;
     this.scroller.state.isInitialWorkflowCycle = false;
-    this.scroller.logger.log(() => {
-      const logData = `${this.scroller.settings.instanceIndex}-${this.cyclesDone}`;
-      const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
-      return [`%c   ~~~ WF Run ${logData} FINALIZED ~~~  `, logStyles];
-    });
     this.finalize();
+  }
+
+  dispose() {
+    this.detachScrollEventListener();
+    this.process$.complete();
+    this.workflowSubscription.unsubscribe();
+    this.itemsSubscription.unsubscribe();
+    this.scroller.dispose();
   }
 
   finalize() {

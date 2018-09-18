@@ -9,6 +9,9 @@ export default class Render {
     scroller.logger.stat('before new items render');
     scroller.cycleSubscriptions.push(
       scroller.bindData().subscribe(() => {
+        // if (scroller.state.isInitialCycle) { // window viewport init case
+        //   scroller.viewport.scrollPosition = scroller.state.preFetchPosition;
+        // }
         scroller.state.sizeBeforeRender = scroller.viewport.getScrollableSize();
         if (Render.processElements(scroller)) {
           scroller.callWorkflow(<ProcessSubject>{

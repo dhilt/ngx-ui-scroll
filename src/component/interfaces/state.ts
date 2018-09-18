@@ -1,6 +1,14 @@
 import { Process, ItemAdapter, Direction } from './index';
 import { FetchModel } from '../classes/fetch';
 
+export interface ScrollState {
+  lastScrollTime: number;
+  scrollTimer: number | null;
+  scroll: boolean;
+  direction: Direction | null;
+  keepScroll: boolean;
+}
+
 export interface SyntheticScroll {
   position: number | null;
   positionBefore: number | null;
@@ -19,8 +27,6 @@ export interface State {
 
   process: Process;
   startIndex: number;
-  scroll: boolean;
-  direction: Direction | null;
   fetch: FetchModel;
   clip: boolean;
   lastPosition: number;

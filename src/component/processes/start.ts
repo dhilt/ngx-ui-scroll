@@ -3,15 +3,10 @@ import { Process, ProcessStatus, ProcessSubject, ProcessRun } from '../interface
 
 export default class Start {
 
-  static run(scroller: Scroller, options?: ProcessRun) {
+  static run(scroller: Scroller, payload?: ProcessRun) {
     scroller.state.process = Process.start;
 
-    const { state } = scroller;
-    state.startCycle(options);
-    scroller.logger.log(() => {
-      const logData = `${scroller.settings.instanceIndex}-${state.workflowCycleCount}-${state.cycleCount}`;
-      return [`%c---=== Workflow ${logData} start`, 'color: #006600;'];
-    });
+    scroller.state.startCycle(payload);
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.start,
       status: ProcessStatus.next

@@ -2,7 +2,7 @@ import { Datasource, DatasourceGet } from './datasource';
 import { ItemAdapter, Adapter } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
-import { SyntheticScroll, State } from './state';
+import { ScrollState, SyntheticScroll, State } from './state';
 import { Process, ProcessStatus, ProcessSubject, ProcessRun } from './process';
 
 export {
@@ -15,6 +15,7 @@ export {
   ProcessStatus,
   ProcessSubject,
   ProcessRun,
+  ScrollState,
   SyntheticScroll,
   State,
   ItemAdapter,

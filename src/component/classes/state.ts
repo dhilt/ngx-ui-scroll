@@ -1,6 +1,14 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { State as IState, Process, ProcessRun, ItemAdapter, Direction, SyntheticScroll } from '../interfaces/index';
+import {
+  State as IState,
+  Process,
+  ProcessRun,
+  ItemAdapter,
+  Direction,
+  ScrollState,
+  SyntheticScroll
+} from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { Settings } from './settings';
 import { Logger } from './logger';
@@ -19,16 +27,16 @@ export class State implements IState {
 
   process: Process;
   startIndex: number;
-  scroll: boolean;
-  direction: Direction | null;
   fetch: FetchModel;
   clip: boolean;
+  clipCall: number;
   lastPosition: number;
   preFetchPosition: number;
   preAdjustPosition: number;
   sizeBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
+  scrollState: ScrollState;
   syntheticScroll: SyntheticScroll;
 
   pendingSource: BehaviorSubject<boolean>;
@@ -80,13 +88,19 @@ export class State implements IState {
     this.countDone = 0;
 
     this.setCurrentStartIndex(settings.startIndex);
-    this.scroll = false;
-    this.direction = null;
     this.fetch = new FetchModel();
     this.clip = false;
+    this.clipCall = 0;
     this.sizeBeforeRender = 0;
     this.bwdPaddingAverageSizeItemsCount = 0;
 
+    this.scrollState = {
+      lastScrollTime: 0,
+      scrollTimer: null,
+      scroll: false,
+      direction: null,
+      keepScroll: false
+    };
     this.syntheticScroll = {
       position: null,
       positionBefore: null,
@@ -104,16 +118,15 @@ export class State implements IState {
     this.pending = true;
     this.cycleCount++;
     this.process = Process.start;
-    if (options) {
-      this.scroll = options.scroll;
-      this.direction = options.direction;
-    } else {
-      this.scroll = false;
-      this.direction = null;
-    }
     this.fetch.reset();
     this.clip = false;
-    this.syntheticScroll.positionBefore = null;
+    if (options) {
+      this.scrollState = {
+        ...this.scrollState,
+        ...(options || {})
+      };
+    }
+    this.scrollState.keepScroll = false;
   }
 
   endCycle() {

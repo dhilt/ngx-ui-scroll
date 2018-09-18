@@ -16,7 +16,7 @@ export class WindowComponent {
 
   datasource: IDatasource = {
     get: (index: number, count: number, success: Function) => {
-      const start = Math.max(index, 1);
+      const start = Math.max(index, -49);
       const end = start + count;
       const data = [];
       if (start < end) {
@@ -27,9 +27,11 @@ export class WindowComponent {
       success(data);
     },
     settings: {
-      bufferSize: 10,
-      padding: 0.25,
       startIndex: 1,
+      padding: 0.25,
+      itemSize: 20,
+      minIndex: -49,
+      maxIndex: 150,
       windowViewport: true
     },
     devSettings: {

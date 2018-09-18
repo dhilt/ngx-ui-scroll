@@ -38,12 +38,12 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      padding: 0.25,
+      padding: 0.5,
       bufferSize: 5,
-      minIndex: -49,
-      maxIndex: 100,
+      // minIndex: MIN,
+      // maxIndex: MAX,
       itemSize: 20,
-      startIndex: 10
+      startIndex: 1
     },
     devSettings: {
       debug: true,
@@ -81,6 +81,9 @@ export class TestComponent {
     if (start <= end) {
       for (let i = start; i <= end; i++) {
         data.push(this.data[i - MIN]);
+      }
+      if (start === MIN) {
+        // this.datasource.adapter.setMinIndex(MIN);
       }
     }
     return Observable.create((observer: Observer<any>) => {
@@ -120,12 +123,16 @@ export class TestComponent {
   }
 
   doScrollHome() {
-    // this.doScroll(400, 25, 1);
     this.getViewportElement().scrollTop = 0;
   }
 
   doScrollEnd() {
     this.getViewportElement().scrollTop = 999999;
+  }
+
+  doScrollSome() {
+    // this.doScroll(400, 25, 1);
+    this.getViewportElement().scrollTop += 100;
   }
 
   doLog() {

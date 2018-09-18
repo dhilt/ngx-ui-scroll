@@ -83,10 +83,8 @@ export class Viewport {
       this.state.bwdPaddingAverageSizeItemsCount = negativeSize / this.settings.itemSize;
     }
     this.scrollPosition = newPosition;
-    this.state.syntheticScroll.position = scrollPosition !== newPosition ? newPosition : null;
-    this.state.syntheticScroll.positionBefore = null;
-    this.state.syntheticScroll.delta = 0;
-    this.state.syntheticScroll.time = 0;
+    this.state.scrollState.reset();
+    this.state.syntheticScroll.reset(scrollPosition !== newPosition ? newPosition : null);
     this.startDelta = 0;
   }
 
@@ -106,12 +104,13 @@ export class Viewport {
     }
     this.logger.log(() => ['setting scroll position at', value]);
     this.routines.setScrollPosition(this.scrollable, value);
-    this.state.syntheticScroll.time = Number(Date.now());
-    this.state.syntheticScroll.position = this.scrollPosition;
-    this.state.syntheticScroll.delta = this.state.syntheticScroll.position - oldPosition;
-    if (this.state.syntheticScroll.positionBefore === null) {
+    const synthState = this.state.syntheticScroll;
+    synthState.time = Number(Date.now());
+    synthState.position = this.scrollPosition;
+    synthState.delta = synthState.position - oldPosition;
+    if (synthState.positionBefore === null) {
       // syntheticScroll.positionBefore should be set once per cycle
-      this.state.syntheticScroll.positionBefore = oldPosition;
+      synthState.positionBefore = oldPosition;
     }
   }
 

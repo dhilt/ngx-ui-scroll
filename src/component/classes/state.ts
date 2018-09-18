@@ -6,12 +6,54 @@ import {
   ProcessRun,
   ItemAdapter,
   Direction,
-  ScrollState,
-  SyntheticScroll
+  ScrollState as IScrollState,
+  SyntheticScroll as ISyntheticScroll
 } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { Settings } from './settings';
 import { Logger } from './logger';
+
+class ScrollState implements IScrollState {
+  firstScroll: boolean;
+  lastScrollTime: number;
+  scrollTimer: number | null;
+  scroll: boolean;
+  direction: Direction | null;
+  keepScroll: boolean;
+
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.firstScroll = false;
+    this.lastScrollTime = 0;
+    this.scrollTimer = null;
+    this.scroll = false;
+    this.direction = null;
+    this.keepScroll = false;
+  }
+}
+
+class SyntheticScroll implements ISyntheticScroll {
+  position: number | null;
+  positionBefore: number | null;
+  delta: number;
+  time: number;
+  readyToReset: boolean;
+
+  constructor() {
+    this.reset(null);
+  }
+
+  reset(position: number | null) {
+    this.position = position;
+    this.positionBefore = null;
+    this.delta = 0;
+    this.time = 0;
+    this.readyToReset = false;
+  }
+}
 
 export class State implements IState {
 
@@ -36,8 +78,8 @@ export class State implements IState {
   sizeBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
-  scrollState: ScrollState;
-  syntheticScroll: SyntheticScroll;
+  scrollState: IScrollState;
+  syntheticScroll: ISyntheticScroll;
 
   pendingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
@@ -94,20 +136,8 @@ export class State implements IState {
     this.sizeBeforeRender = 0;
     this.bwdPaddingAverageSizeItemsCount = 0;
 
-    this.scrollState = {
-      lastScrollTime: 0,
-      scrollTimer: null,
-      scroll: false,
-      direction: null,
-      keepScroll: false
-    };
-    this.syntheticScroll = {
-      position: null,
-      positionBefore: null,
-      delta: 0,
-      time: 0,
-      readyToReset: false
-    };
+    this.scrollState = new ScrollState();
+    this.syntheticScroll = new SyntheticScroll();
 
     this.pendingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
@@ -121,10 +151,9 @@ export class State implements IState {
     this.fetch.reset();
     this.clip = false;
     if (options) {
-      this.scrollState = {
-        ...this.scrollState,
-        ...(options || {})
-      };
+      this.scrollState.scroll = options.scroll;
+      this.scrollState.direction = options.direction;
+      this.scrollState.keepScroll = options.keepScroll;
     }
     this.scrollState.keepScroll = false;
   }

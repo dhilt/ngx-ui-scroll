@@ -6,8 +6,6 @@ export default class Adjust {
   static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {
-    scroller.state.process = Process.adjust;
-
     // padding-elements adjustments
     const setPaddingsResult =
       Adjust.setPaddings(scroller);

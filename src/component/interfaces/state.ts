@@ -1,12 +1,12 @@
-import { Process, ItemAdapter, Direction } from './index';
+import { ItemAdapter } from './index';
 import { FetchModel } from '../classes/fetch';
 
 export interface ScrollState {
   firstScroll: boolean;
   lastScrollTime: number;
   scrollTimer: number | null;
+  workflowTimer: number | null;
   scroll: boolean;
-  direction: Direction | null;
   keepScroll: boolean;
 
   reset: Function;
@@ -30,10 +30,10 @@ export interface State {
   isInitialWorkflowCycle: boolean;
   countDone: number;
 
-  process: Process;
   startIndex: number;
   fetch: FetchModel;
   clip: boolean;
+  clipCall: number;
   lastPosition: number;
   preFetchPosition: number;
   preAdjustPosition: number;
@@ -44,6 +44,7 @@ export interface State {
   syntheticScroll: SyntheticScroll;
 
   pending: boolean;
+  workflowPending: boolean;
   firstVisibleItem: ItemAdapter;
   lastVisibleItem: ItemAdapter;
 }

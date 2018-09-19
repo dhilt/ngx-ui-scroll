@@ -9,7 +9,6 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
-import { Direction } from './interfaces';
 
 let instanceCount = 0;
 
@@ -80,26 +79,21 @@ export class Scroller {
     this.cycleSubscriptions = [];
   }
 
-  getScrollDirection(): Direction {
-    const position = this.viewport.scrollPosition;
-    let lastPosition = this.state.lastPosition;
-    let direction: Direction, notChanged = false;
-    if (position === lastPosition) {
-      lastPosition = this.state.preFetchPosition;
-      if (position === lastPosition) {
-        notChanged = true;
-      }
+  purgeTimers(localOnly?: boolean) {
+    const { state: { scrollState } } = this;
+    if (scrollState.scrollTimer) {
+      clearTimeout(scrollState.scrollTimer);
+      scrollState.scrollTimer = null;
     }
-    direction = notChanged ? Direction.forward :
-      position < lastPosition ? Direction.backward : Direction.forward;
-    this.logger.log(() =>
-      `scroll direction: ${direction}, position: ${position}` + (notChanged ? '(has not been changed)' : '')
-    );
-    return direction;
+    if (!localOnly && scrollState.workflowTimer) {
+      clearTimeout(scrollState.workflowTimer);
+      scrollState.workflowTimer = null;
+    }
   }
 
   dispose() {
     this.purgeCycleSubscriptions();
+    this.purgeTimers();
   }
 
   finalize() {

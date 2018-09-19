@@ -1,4 +1,5 @@
 import { Routines } from './domRoutines';
+import { Direction } from '../interfaces/index';
 
 export class Item {
   $index: number;
@@ -10,6 +11,7 @@ export class Item {
   size: number;
   invisible: boolean;
   toRemove: boolean;
+  removeDirection: Direction;
 
   constructor($index: number, data: any, routines: Routines) {
     this.$index = $index;

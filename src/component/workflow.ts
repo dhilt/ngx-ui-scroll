@@ -75,7 +75,7 @@ export class Workflow {
           Init.run(scroller);
         }
         if (status === Status.next) {
-          Start.run(scroller);
+          Start.run(scroller, payload);
         }
         break;
       case Process.reload:
@@ -88,7 +88,7 @@ export class Workflow {
         break;
       case Process.scroll:
         if (status === Status.next) {
-          if (!payload.keepScroll) {
+          if (!(payload && payload.keepScroll)) {
             Init.run(scroller, payload);
           } else {
             Start.run(scroller, payload);
@@ -138,10 +138,10 @@ export class Workflow {
         break;
       case Process.end:
         if (status === Status.next) {
-          if (payload.keepScroll) {
+          if (payload && payload.keepScroll) {
             Scroll.run(scroller);
           } else {
-            Start.run(scroller);
+            Start.run(scroller, payload);
           }
         }
         if (status === Status.done) {
@@ -159,6 +159,7 @@ export class Workflow {
     this.cyclesDone++;
     this.scroller.state.workflowCycleCount = this.cyclesDone + 1;
     this.scroller.state.isInitialWorkflowCycle = false;
+    this.scroller.state.workflowPending = false;
     this.finalize();
   }
 

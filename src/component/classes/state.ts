@@ -5,7 +5,6 @@ import {
   Process,
   ProcessRun,
   ItemAdapter,
-  Direction,
   ScrollState as IScrollState,
   SyntheticScroll as ISyntheticScroll
 } from '../interfaces/index';
@@ -17,8 +16,8 @@ class ScrollState implements IScrollState {
   firstScroll: boolean;
   lastScrollTime: number;
   scrollTimer: number | null;
+  workflowTimer: number | null;
   scroll: boolean;
-  direction: Direction | null;
   keepScroll: boolean;
 
   constructor() {
@@ -29,8 +28,8 @@ class ScrollState implements IScrollState {
     this.firstScroll = false;
     this.lastScrollTime = 0;
     this.scrollTimer = null;
+    this.workflowTimer = null;
     this.scroll = false;
-    this.direction = null;
     this.keepScroll = false;
   }
 }
@@ -67,7 +66,6 @@ export class State implements IState {
   isInitialWorkflowCycle: boolean;
   countDone: number;
 
-  process: Process;
   startIndex: number;
   fetch: FetchModel;
   clip: boolean;
@@ -94,6 +92,8 @@ export class State implements IState {
       this.pendingSource.next(value);
     }
   }
+
+  workflowPending: boolean;
 
   get firstVisibleItem(): ItemAdapter {
     return this.firstVisibleSource.getValue();
@@ -147,13 +147,11 @@ export class State implements IState {
   startCycle(options?: ProcessRun) {
     this.pending = true;
     this.cycleCount++;
-    this.process = Process.start;
     this.fetch.reset();
     this.clip = false;
     if (options) {
-      this.scrollState.scroll = options.scroll;
-      this.scrollState.direction = options.direction;
-      this.scrollState.keepScroll = options.keepScroll;
+      this.scrollState.scroll = options.scroll || false;
+      this.scrollState.keepScroll = options.keepScroll || false;
     }
     this.scrollState.keepScroll = false;
   }

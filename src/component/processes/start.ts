@@ -1,11 +1,9 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, ProcessSubject, ProcessRun } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 
 export default class Start {
 
-  static run(scroller: Scroller, payload?: ProcessRun) {
-    scroller.state.process = Process.start;
-
+  static run(scroller: Scroller, payload?: any) {
     scroller.state.startCycle(payload);
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.start,

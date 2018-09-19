@@ -4,8 +4,6 @@ import { Direction, Process, ProcessStatus, ProcessSubject } from '../interfaces
 export default class Clip {
 
   static run(scroller: Scroller) {
-    scroller.state.process = Process.clip;
-
     Clip.prepareClip(scroller);
     if (scroller.state.clip) {
       Clip.doClip(scroller);
@@ -18,18 +16,21 @@ export default class Clip {
   }
 
   static prepareClip(scroller: Scroller) {
-    const { buffer, state: { fetch, scrollState } } = scroller;
+    const { buffer, state: { fetch, fetch: { direction } } } = scroller;
     if (!buffer.size) {
       return;
     }
     const firstIndex = <number>fetch.firstIndexBuffer;
     const lastIndex = <number>fetch.lastIndexBuffer;
-    if (scrollState.direction === Direction.forward) {
+    scroller.logger.log(() =>
+      `looking for ${direction ? 'anti-' + direction + ' ' : ''}items ` +
+      `that are out of [${firstIndex}...${lastIndex}] range`);
+    if (!direction || direction === Direction.forward) {
       if (firstIndex - 1 >= buffer.absMinIndex) {
         Clip.prepareClipByDirection(scroller, Direction.forward, firstIndex);
       }
     }
-    if (scrollState.direction === Direction.backward) {
+    if (!direction || direction === Direction.backward) {
       if (lastIndex + 1 <= buffer.absMaxIndex) {
         Clip.prepareClipByDirection(scroller, Direction.backward, lastIndex);
       }
@@ -45,31 +46,39 @@ export default class Clip {
         (!forward && item.$index > edgeIndex)
       ) {
         item.toRemove = true;
+        item.removeDirection = direction;
         scroller.state.clip = true;
-        scroller.state.clipCall++;
       }
     });
   }
 
   static doClip(scroller: Scroller) {
-    const { buffer, state, viewport, logger } = scroller;
+    const { buffer, viewport: { padding }, logger } = scroller;
     const clipped: Array<number> = [];
-    let size = 0;
-    logger.stat('before clip');
+    const size = { backward: 0, forward: 0 };
+    scroller.state.clipCall++;
+    logger.stat(`before clip (${scroller.state.clipCall})`);
     buffer.items = buffer.items.filter(item => {
       if (item.toRemove) {
-        size += item.size;
+        size[item.removeDirection] += item.size;
         item.hide();
         clipped.push(item.$index);
         return false;
       }
       return true;
     });
-    if (size) {
-      const opposite = state.scrollState.direction === Direction.forward ? Direction.backward : Direction.forward;
-      viewport.padding[opposite].size += size;
+    if (size.backward) {
+      padding.backward.size += size.backward;
     }
-    logger.log(() => [`clipped ${clipped.length} items`, clipped]);
+    if (size.forward) {
+      padding.forward.size += size.forward;
+    }
+    logger.log(() => [
+      `clipped ${clipped.length} items` +
+      (size.backward ? `, +${size.backward} bwd px` : '') +
+      (size.forward ? `, +${size.forward} fwd px` : ''),
+      clipped
+    ]);
     logger.stat('after clip');
   }
 

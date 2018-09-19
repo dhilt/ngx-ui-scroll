@@ -6,8 +6,6 @@ import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 export default class Fetch {
 
   static run(scroller: Scroller) {
-    scroller.state.process = Process.fetch;
-
     const result = Fetch.get(scroller);
     if (typeof result.subscribe !== 'function') {
       if (!result.isError) {

@@ -4,35 +4,42 @@ import { Process, ProcessStatus, ProcessSubject, ProcessRun, Direction } from '.
 export default class End {
 
   static run(scroller: Scroller, error?: any) {
-    scroller.state.process = Process.end;
+    // finalize current sub-cycle
+    End.endCycle(scroller);
 
-    const { state } = scroller;
-    state.endCycle();
-    state.lastPosition = scroller.viewport.scrollPosition;
+    // set out params, accessible via Adapter
     End.calculateParams(scroller);
-    scroller.purgeCycleSubscriptions();
-    scroller.finalize();
 
-    let next: ProcessRun | null = null;
-    if (!error) {
-      if (state.fetch.hasNewItems) {
-        next = { scroll: false, direction: null, keepScroll: false };
-      }
-      if (state.scrollState.keepScroll) {
-        next = { scroll: true, direction: null, keepScroll: true };
-      }
-    }
+    // what next? done?
+    const next = End.getNext(scroller, error);
 
     // need to apply Buffer.items changes if clip
-    if (state.clip) {
+    if (scroller.state.clip) {
       scroller.runChangeDetector();
     }
 
+    // stub method call
+    scroller.finalize();
+
+    // continue the Workflow synchronously
     scroller.callWorkflow(<ProcessSubject>{
       process: Process.end,
       status: next ? ProcessStatus.next : ProcessStatus.done,
-      payload: next
+      ...(next ? { payload: next } : {})
     });
+
+    // the Workflow may freeze for no more than settings.throttle ms
+    if (next) {
+      // continue the Workflow asynchronously
+      End.continueWorkflowByTimer(scroller);
+    }
+  }
+
+  static endCycle(scroller: Scroller) {
+    const { state } = scroller;
+    state.endCycle();
+    state.lastPosition = scroller.viewport.scrollPosition;
+    scroller.purgeCycleSubscriptions();
   }
 
   static calculateParams(scroller: Scroller) {
@@ -67,6 +74,33 @@ export default class End {
       data: items[index].data,
       element: items[index].element
     } : {};
+  }
+
+  static getNext(scroller: Scroller, error?: any): ProcessRun | null {
+    let next: ProcessRun | null = null;
+    if (!error) {
+      if (scroller.state.fetch.hasNewItems) {
+        next = { scroll: false, keepScroll: false };
+      }
+      if (scroller.state.scrollState.keepScroll) {
+        next = { scroll: true, keepScroll: true };
+      }
+    }
+    return next;
+  }
+
+  static continueWorkflowByTimer(scroller: Scroller) {
+    const { state, state: { cycleCount } } = scroller;
+    state.scrollState.workflowTimer = setTimeout(() => {
+      // if the WF isn't finilized while the old sub-cycle is done and there's no new sub-cycle
+      if (state.workflowPending && !state.pending && cycleCount === state.cycleCount) {
+        scroller.callWorkflow(<ProcessSubject>{
+          process: Process.end,
+          status: ProcessStatus.next,
+          payload: 'by timer'
+        });
+      }
+    }, scroller.settings.throttle);
   }
 
 }

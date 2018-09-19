@@ -1,4 +1,5 @@
 import { Item } from './item';
+import { Direction } from '../interfaces/index';
 
 export class FetchModel {
   private _newItemsData: Array<any> | null;
@@ -11,6 +12,7 @@ export class FetchModel {
   minIndex: number;
   negativeSize: number;
   averageItemSize: number;
+  direction: Direction | null;
 
   constructor() {
     this.callCount = 0;
@@ -25,6 +27,7 @@ export class FetchModel {
     this.firstIndex = null;
     this.lastIndex = null;
     this.negativeSize = 0;
+    this.direction = null;
   }
 
   get newItemsData(): Array<Item> | null {

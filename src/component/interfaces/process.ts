@@ -23,7 +23,6 @@ export enum ProcessStatus {
 
 export interface ProcessRun {
   scroll: boolean;
-  direction: Direction | null;
   keepScroll: boolean;
 }
 

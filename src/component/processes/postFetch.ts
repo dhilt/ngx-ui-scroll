@@ -5,8 +5,6 @@ import { Item } from '../classes/item';
 export default class PostFetch {
 
   static run(scroller: Scroller) {
-    scroller.state.process = Process.postFetch;
-
     if (PostFetch.setItems(scroller)) {
       PostFetch.setBufferLimits(scroller);
       scroller.callWorkflow(<ProcessSubject>{

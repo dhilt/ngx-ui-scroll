@@ -1,7 +1,7 @@
 import { Observable, Observer } from 'rxjs';
 
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Fetch {
 
@@ -28,17 +28,17 @@ export default class Fetch {
       `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
     scroller.state.fetch.newItemsData = data;
 
-    scroller.callWorkflow(<ProcessSubject>{
+    scroller.callWorkflow({
       process: Process.fetch,
       status: ProcessStatus.next
     });
   }
 
-  static fail(error: any, scroller: Scroller) {
-    scroller.callWorkflow(<ProcessSubject>{
+  static fail(error: string, scroller: Scroller) {
+    scroller.callWorkflow({
       process: Process.fetch,
       status: ProcessStatus.error,
-      payload: error
+      payload: { error }
     });
   }
 

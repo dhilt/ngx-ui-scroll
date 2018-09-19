@@ -151,7 +151,6 @@ export class State implements IState {
     this.clip = false;
     if (options) {
       this.scrollState.scroll = options.scroll || false;
-      this.scrollState.keepScroll = options.keepScroll || false;
     }
     this.scrollState.keepScroll = false;
   }

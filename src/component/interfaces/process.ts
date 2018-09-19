@@ -22,12 +22,17 @@ export enum ProcessStatus {
 }
 
 export interface ProcessRun {
-  scroll: boolean;
-  keepScroll: boolean;
+  empty?: boolean;
+  scroll?: boolean;
+  keepScroll?: boolean;
+  byTimer?: boolean;
+  error?: string;
 }
 
 export interface ProcessSubject {
   process: Process;
   status: ProcessStatus;
-  payload?: any;
+  payload?: ProcessRun;
 }
+
+export type CallWorkflow = (processSubject: ProcessSubject) => undefined;

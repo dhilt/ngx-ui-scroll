@@ -135,6 +135,10 @@ export class Buffer {
       this.getLastVisibleItem() : this.getFirstVisibleItem();
   }
 
+  getVisibleItemsCount(): number {
+    return this.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
+  }
+
   getSizeByIndex(index: number): number {
     const item = this.cache.get(index);
     return item ? item.size : this.averageSize;

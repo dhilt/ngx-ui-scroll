@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus as Status, ProcessSubject } from '../interfaces';
+import { Process, ProcessRun, ProcessStatus as Status, ProcessSubject } from '../interfaces';
 
 export class Logger {
 
@@ -25,8 +25,9 @@ export class Logger {
         'size: ' + scroller.viewport.getScrollableSize() + ', ' +
         'bwd_p: ' + scroller.viewport.padding.backward.size + ', ' +
         'fwd_p: ' + scroller.viewport.padding.forward.size + ', ' +
-        'items: ' + scroller.datasource.adapter.itemsCount + ', ' +
-        'range: [' + (first ? first.$index : 'null') + '...' + (last ? last.$index : 'null') + ']';
+        'average: ' + scroller.buffer.averageSize + ', ' +
+        'items: ' + scroller.buffer.getVisibleItemsCount() + ', ' +
+        'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
     this.getCycleCount = (): number => scroller.state.cycleCount;
     this.getWorkflowCycleData = (more: boolean): string =>
@@ -45,12 +46,13 @@ export class Logger {
     if (!this.debug) {
       return;
     }
-    const { process, status, payload } = data;
+    const { process, status } = data;
+    const payload: ProcessRun = data.payload || { empty: true };
 
     // standard process log
-    const result = `process ${process}, %c${status}%c` + (payload && typeof payload !== 'object' ? ',' : '');
-    const styles = [status === Status.error ? 'color: #ff0000;' : '', 'color: #000000;'];
-    this.log(() => [result, ...styles, ...(payload ? [payload] : [])]);
+    const result = `process ${process}, %c${status}%c` + (!payload.empty ? ',' : '');
+    const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
+    this.log(() => [result, ...styles, ...(!payload.empty ? [payload] : [])]);
 
     // sub cycle log
     const preCycleData = this.getWorkflowCycleData(true);
@@ -58,15 +60,15 @@ export class Logger {
     const cycleResult: string[] = [];
     if (
       process === Process.init && status === Status.next ||
-      process === Process.scroll && status === Status.next && payload && payload.keepScroll ||
-      process === Process.end && status === Status.next && payload === 'by timer'
+      process === Process.scroll && status === Status.next && payload.keepScroll ||
+      process === Process.end && status === Status.next && payload.byTimer
     ) {
       cycleResult.push(`%c---=== cycle ${preCycleData + (cycleCount + 1)} start`);
     } else if (
-      process === Process.end && payload !== 'by timer'
+      process === Process.end && !payload.byTimer
     ) {
       cycleResult.push(`%c---=== cycle ${preCycleData + cycleCount} done`);
-      if (status === Status.next && !(payload && payload.keepScroll)) {
+      if (status === Status.next && !(payload.keepScroll)) {
         cycleResult[0] += `, cycle ${preCycleData + (cycleCount + 1)} start`;
       }
     }
@@ -78,7 +80,7 @@ export class Logger {
     if (
       process === Process.init && status === Status.start ||
       process === Process.reload && status === Status.next ||
-      process === Process.scroll && status === Status.next && !(payload && payload.keepScroll)
+      process === Process.scroll && status === Status.next && !(payload.keepScroll)
     ) {
       const logData = this.getWorkflowCycleData(false);
       const logStyles = 'color: #0000aa; border: solid black 1px; border-width: 1px 0 0 1px; margin-left: -2px';

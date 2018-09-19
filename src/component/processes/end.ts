@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, ProcessSubject, ProcessRun, Direction } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessRun, Direction } from '../interfaces/index';
 
 export default class End {
 
@@ -21,15 +21,15 @@ export default class End {
     // stub method call
     scroller.finalize();
 
-    // continue the Workflow synchronously
-    scroller.callWorkflow(<ProcessSubject>{
+    // continue the Workflow synchronously; current cycle could be finilized immediately
+    scroller.callWorkflow({
       process: Process.end,
       status: next ? ProcessStatus.next : ProcessStatus.done,
-      ...(next ? { payload: next } : {})
+      payload: next || { empty: true }
     });
 
-    // the Workflow may freeze for no more than settings.throttle ms
-    if (next) {
+    // if the Workflow isn't finilized, it may freeze for no more than settings.throttle ms
+    if (scroller.state.workflowPending && !scroller.state.pending) {
       // continue the Workflow asynchronously
       End.continueWorkflowByTimer(scroller);
     }
@@ -80,7 +80,7 @@ export default class End {
     let next: ProcessRun | null = null;
     if (!error) {
       if (scroller.state.fetch.hasNewItems) {
-        next = { scroll: false, keepScroll: false };
+        next = { scroll: false };
       }
       if (scroller.state.scrollState.keepScroll) {
         next = { scroll: true, keepScroll: true };
@@ -91,13 +91,14 @@ export default class End {
 
   static continueWorkflowByTimer(scroller: Scroller) {
     const { state, state: { cycleCount } } = scroller;
-    state.scrollState.workflowTimer = setTimeout(() => {
+    scroller.logger.log(() => [`%csetting Workflow timer (${cycleCount})`, 'background-color: yellow']);
+    state.scrollState.workflowTimer = <number>setTimeout(() => {
       // if the WF isn't finilized while the old sub-cycle is done and there's no new sub-cycle
       if (state.workflowPending && !state.pending && cycleCount === state.cycleCount) {
-        scroller.callWorkflow(<ProcessSubject>{
+        scroller.callWorkflow({
           process: Process.end,
           status: ProcessStatus.next,
-          payload: 'by timer'
+          payload: { scroll: true, byTimer: true }
         });
       }
     }, scroller.settings.throttle);

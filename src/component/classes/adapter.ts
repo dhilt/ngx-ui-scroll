@@ -116,8 +116,7 @@ export class Adapter implements IAdapter {
     this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => state.firstVisibleSource;
     this.getLastVisible = (): ItemAdapter => state.lastVisibleItem;
     this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => state.lastVisibleSource;
-    this.getItemsCount = (): number =>
-      buffer.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
+    this.getItemsCount = (): number => buffer.getVisibleItemsCount();
   }
 
   reload(reloadIndex?: number | string) {

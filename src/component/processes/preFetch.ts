@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, ProcessSubject, Direction } from '../interfaces/index';
+import { Process, ProcessStatus, Direction } from '../interfaces/index';
 
 export default class PreFetch {
 
@@ -28,7 +28,7 @@ export default class PreFetch {
       scroller.logger.log(() => `going to fetch ${fetch.count} items started from index ${fetch.index}`);
     }
 
-    scroller.callWorkflow(<ProcessSubject>{
+    scroller.callWorkflow({
       process: Process.preFetch,
       status: scroller.state.fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done
     });

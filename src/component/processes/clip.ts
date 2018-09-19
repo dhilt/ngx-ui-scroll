@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
+import { Direction, Process, ProcessStatus } from '../interfaces/index';
 
 export default class Clip {
 
@@ -9,7 +9,7 @@ export default class Clip {
       Clip.doClip(scroller);
     }
 
-    scroller.callWorkflow(<ProcessSubject>{
+    scroller.callWorkflow({
       process: Process.clip,
       status: ProcessStatus.next
     });
@@ -24,7 +24,7 @@ export default class Clip {
     const lastIndex = <number>fetch.lastIndexBuffer;
     scroller.logger.log(() =>
       `looking for ${direction ? 'anti-' + direction + ' ' : ''}items ` +
-      `that are out of [${firstIndex}...${lastIndex}] range`);
+      `that are out of [${firstIndex}..${lastIndex}] range`);
     if (!direction || direction === Direction.forward) {
       if (firstIndex - 1 >= buffer.absMinIndex) {
         Clip.prepareClipByDirection(scroller, Direction.forward, firstIndex);

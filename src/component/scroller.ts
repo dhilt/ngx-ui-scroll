@@ -9,13 +9,14 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
+import { CallWorkflow } from './interfaces/index';
 
 let instanceCount = 0;
 
 export class Scroller {
 
   readonly runChangeDetector: Function;
-  readonly callWorkflow: Function;
+  readonly callWorkflow: CallWorkflow;
 
   public version: string;
   public datasource: Datasource;
@@ -28,7 +29,7 @@ export class Scroller {
 
   public cycleSubscriptions: Array<Subscription>;
 
-  constructor(context: UiScrollComponent, callWorkflow: Function) {
+  constructor(context: UiScrollComponent, callWorkflow: CallWorkflow) {
     const datasource = <Datasource>checkDatasource(context.datasource);
     this.datasource = datasource;
     this.version = context.version;

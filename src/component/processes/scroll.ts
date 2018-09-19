@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Scroll {
 
@@ -81,11 +81,14 @@ export default class Scroll {
     const { state, state: { scrollState } } = scroller;
     if (state.workflowPending) {
       scroller.logger.log(() =>
-        !scrollState.keepScroll ? `setting keepScroll flag (scrolling while the Workflow is pending)` : '');
+        !scrollState.keepScroll ? [
+          `setting %ckeepScroll%c flag (scrolling while the Workflow is pending)`,
+          'color: #006600;', 'color: #000000;'
+        ] : '');
       scrollState.keepScroll = true;
       return;
     }
-    scroller.callWorkflow(<ProcessSubject>{
+    scroller.callWorkflow({
       process: Process.scroll,
       status: ProcessStatus.next,
       payload: {

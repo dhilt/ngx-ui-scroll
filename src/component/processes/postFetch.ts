@@ -1,21 +1,21 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, ProcessSubject } from '../interfaces/index';
 import { Item } from '../classes/item';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class PostFetch {
 
   static run(scroller: Scroller) {
     if (PostFetch.setItems(scroller)) {
       PostFetch.setBufferLimits(scroller);
-      scroller.callWorkflow(<ProcessSubject>{
+      scroller.callWorkflow({
         process: Process.postFetch,
         status: scroller.state.fetch.hasNewItems ? ProcessStatus.next : ProcessStatus.done
       });
     } else {
-      scroller.callWorkflow(<ProcessSubject>{
+      scroller.callWorkflow({
         process: Process.postFetch,
         status: ProcessStatus.error,
-        payload: 'Can\'t set buffer items'
+        payload: { error: 'Can\'t set buffer items' }
       });
     }
   }

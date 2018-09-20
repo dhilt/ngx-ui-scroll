@@ -5,6 +5,7 @@ export default class Clip {
 
   static run(scroller: Scroller) {
     Clip.prepareClip(scroller);
+
     if (scroller.state.clip) {
       Clip.doClip(scroller);
     }
@@ -16,8 +17,12 @@ export default class Clip {
   }
 
   static prepareClip(scroller: Scroller) {
-    const { buffer, state: { fetch, fetch: { direction } } } = scroller;
+    const { buffer, state, state: { fetch, fetch: { direction } } } = scroller;
     if (!buffer.size) {
+      return;
+    }
+    if (state.isInitialWorkflowCycle && !state.scrollState.scroll) {
+      scroller.logger.log(`skipping clip [initial cycle, no scroll]`);
       return;
     }
     const firstIndex = <number>fetch.firstIndexBuffer;

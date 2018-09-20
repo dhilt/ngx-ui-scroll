@@ -8,7 +8,7 @@ const threeFetchConfig = {
 const fixedAverageSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 2, itemSize: 15 },
   templateSettings: { viewportHeight: 20, itemHeight: 15 }
-}/*, {
+}, {
   datasourceSettings: { startIndex: 1, padding: 0.5, itemSize: 20 },
   templateSettings: { viewportHeight: 120, itemHeight: 20 }
 }, {
@@ -20,7 +20,7 @@ const fixedAverageSizeConfigList: TestBedConfig[] = [{
 }, {
   datasourceSettings: { startIndex: 1, padding: 0.5, itemSize: 20, windowViewport: true },
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
-}*/];
+}];
 
 const fixedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, padding: 0.1, itemSize: 20, bufferSize: 20 },
@@ -35,11 +35,11 @@ const fixedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
 );
 
 const tunedAverageSizeConfigList: TestBedConfig[] = [{
-  // datasourceDevSettings: { debug: true },
+  datasourceDevSettings: { debug: true },
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 0.5, itemSize: 40 },
   templateSettings: { viewportHeight: 100, itemHeight: 20 },
   expect: threeFetchConfig
-}, {
+}/*, {
   datasourceSettings: { startIndex: -50, bufferSize: 2, padding: 0.5, itemSize: 30 },
   templateSettings: { viewportHeight: 120, itemHeight: 20 },
   expect: threeFetchConfig
@@ -51,7 +51,7 @@ const tunedAverageSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -47, padding: 0.3, itemSize: 60, windowViewport: true },
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 40 },
   expect: threeFetchConfig
-}];
+}*/];
 
 const tunedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -50, bufferSize: 7, padding: 0.5, itemSize: 30 },
@@ -74,7 +74,7 @@ class ItemsCount {
   total: number;
 }
 
-const getItemsCount = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCount => {
+const getFixedAverageSizeItemsCount = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCount => {
   const bufferSize = misc.scroller.settings.bufferSize;
   const viewportSize = misc.getViewportSize(settings);
 
@@ -101,7 +101,35 @@ const getItemsCount = (settings: TestBedConfig, misc: Misc, itemSize: number): I
   return itemsCount;
 };
 
-const _testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCount: ItemsCount) => {
+const getTunedAverageSizeItemsCount = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCount => {
+  const bufferSize = misc.scroller.settings.bufferSize;
+  const viewportSize = misc.getViewportSize(settings);
+  const innerLoopCount = misc.scroller.state.innerLoopCount;
+
+  const backwardLimit = viewportSize * settings.datasourceSettings.padding;
+  const forwardLimit = viewportSize + backwardLimit;
+  const itemsCount = new ItemsCount();
+
+  itemsCount.backward = innerLoopCount > 1 ? Math.ceil(backwardLimit / itemSize) : 0;
+  itemsCount.forward = Math.ceil(forwardLimit / itemSize);
+  itemsCount.total = itemsCount.backward + itemsCount.forward;
+
+  // when bufferSize is big enough
+  const bwdDiff = innerLoopCount > 2 ? bufferSize - itemsCount.backward : 0;
+  if (bwdDiff > 0) {
+    itemsCount.backward += bwdDiff;
+    itemsCount.total += bwdDiff;
+  }
+  const fwdDiff = bufferSize - itemsCount.forward;
+  if (fwdDiff > 0) {
+    itemsCount.forward += fwdDiff;
+    itemsCount.total += fwdDiff;
+  }
+
+  return itemsCount;
+};
+
+const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCount: ItemsCount) => {
   const { startIndex } = settings.datasourceSettings;
   const elements = misc.getElements();
 
@@ -112,46 +140,39 @@ const _testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCount: ItemsC
   expect(misc.getElementText(startIndex)).toEqual(`${startIndex} : item #${startIndex}`);
 };
 
-const testItemsCount = (settings: TestBedConfig, misc: Misc, itemSize: number) => {
-  const itemsCount = getItemsCount(settings, misc, itemSize);
-  _testItemsCount(settings, misc, itemsCount);
-};
-
-const _testFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
-  if (misc.scroller.state.clipCall > 0) {
-    misc.fixture.detectChanges();
-  }
+const testFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const fetchCallCount = misc.scroller.state.fetch.callCount;
   const fetchCallCountExpected = settings.expect ? settings.expect.fetch.callCount : 1;
   expect(misc.workflow.cyclesDone).toEqual(1);
   expect(fetchCallCount).toEqual(fetchCallCountExpected);
-  expect(misc.scroller.state.cycleCount).toEqual(fetchCallCount + 1);
+  expect(misc.scroller.state.innerLoopCount).toEqual(fetchCallCount + 1);
   expect(misc.padding.backward.getSize()).toEqual(0);
   expect(misc.padding.forward.getSize()).toEqual(0);
 
   const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
-  testItemsCount(settings, misc, itemSize);
+  const itemsCount = getFixedAverageSizeItemsCount(settings, misc, itemSize);
+  testItemsCount(settings, misc, itemsCount);
   done();
 };
 
 const _testTunedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
-  const cycleCount = misc.scroller.state.cycleCount;
-  if (cycleCount > 3) {
+  const loopCount = misc.scroller.state.innerLoopCount;
+  if (loopCount > 3) {
     done();
     return;
   }
-  if (cycleCount === 1) {
-    testItemsCount(settings, misc, settings.datasourceSettings.itemSize);
+  const itemSize = settings.datasourceSettings.itemSize;
+  if (loopCount === 1) {
+    testItemsCount(settings, misc, itemSize);
     return;
   }
-  const itemSize = settings.datasourceSettings.itemSize;
   const _itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
-  const itemsCount = getItemsCount(settings, misc, itemSize);
-  const _itemsCount = getItemsCount(settings, misc, _itemSize);
+  const itemsCount = getTunedAverageSizeItemsCount(settings, misc, itemSize);
+  const _itemsCount = getFixedAverageSizeItemsCount(settings, misc, _itemSize);
   const fwdDiff = _itemsCount.forward - itemsCount.forward;
   const bwdDiff = _itemsCount.backward - itemsCount.backward;
   const bufferSize = misc.scroller.settings.bufferSize;
-  if (cycleCount === 2 || cycleCount === 3) {
+  if (loopCount === 2 || loopCount === 3) {
     const diff = Math.max(fwdDiff, bwdDiff);
     const buffDiff = Math.max(0, bufferSize - diff);
     if (fwdDiff > bwdDiff) {
@@ -162,7 +183,7 @@ const _testTunedAverageSize = (settings: TestBedConfig, misc: Misc, done: Functi
       itemsCount.total += diff + buffDiff;
     }
   }
-  if (cycleCount === 3) {
+  if (loopCount === 3) {
     const diff = Math.min(fwdDiff, bwdDiff);
     const buffDiff = Math.max(0, bufferSize - diff);
     if (fwdDiff > bwdDiff) {
@@ -173,7 +194,7 @@ const _testTunedAverageSize = (settings: TestBedConfig, misc: Misc, done: Functi
       itemsCount.total += diff + buffDiff;
     }
   }
-  _testItemsCount(settings, misc, itemsCount);
+  testItemsCount(settings, misc, itemsCount);
 };
 
 describe('Initial Load Spec', () => {
@@ -182,23 +203,23 @@ describe('Initial Load Spec', () => {
     fixedAverageSizeConfigList.forEach(config =>
       makeTest({
         config,
-        title: 'should make 1 fetch to satisfy padding limits',
+        title: 'should make 2 fetches to satisfy padding limits',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testFixedAverageSize(config, misc, done)
+            testFixedAverageSize(config, misc, done)
           )
       })
     );
-    // fixedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
-    //   makeTest({
-    //     config,
-    //     title: 'should make 1 big fetch to overflow padding limits (bufferSize is big enough)',
-    //     it: (misc: Misc) => (done: Function) =>
-    //       spyOn(misc.workflow, 'finalize').and.callFake(() =>
-    //         _testFixedAverageSize(config, misc, done)
-    //       )
-    //   })
-    // );
+    fixedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should make 2 big fetches to overflow padding limits (bufferSize is big enough)',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            testFixedAverageSize(config, misc, done)
+          )
+      })
+    );
   });
 
   describe('Tuned average item size', () => {

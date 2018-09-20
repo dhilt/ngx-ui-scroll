@@ -14,7 +14,7 @@ export default class Fetch {
         Fetch.fail(result.error, scroller);
       }
     } else {
-      scroller.cycleSubscriptions.push(
+      scroller.innerLoopSubscriptions.push(
         result.subscribe(
           (data: Array<any>) => Fetch.success(data, scroller),
           (error: any) => Fetch.fail(error, scroller)

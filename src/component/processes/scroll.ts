@@ -64,7 +64,7 @@ export default class Scroll {
     const { state: { scrollState } } = scroller;
     const diff = scrollState.lastScrollTime + scroller.settings.throttle - Date.now();
     if (diff <= 0) {
-      scroller.purgeTimers(true);
+      scroller.purgeScrollTimers(true);
       scrollState.lastScrollTime = Date.now();
       Scroll.doScroll(scroller);
     } else if (!scrollState.scrollTimer) {
@@ -93,7 +93,7 @@ export default class Scroll {
       status: ProcessStatus.next,
       payload: {
         scroll: true,
-        keepScroll: scrollState.keepScroll
+        ...(scrollState.keepScroll ? { keepScroll: scrollState.keepScroll } : {})
       }
     });
   }

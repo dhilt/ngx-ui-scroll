@@ -4,8 +4,8 @@ import { Process, ProcessStatus, ProcessRun, Direction } from '../interfaces/ind
 export default class End {
 
   static run(scroller: Scroller, error?: any) {
-    // finalize current sub-cycle
-    End.endCycle(scroller);
+    // finalize current workflow loop
+    End.endWorkflowLoop(scroller);
 
     // set out params, accessible via Adapter
     End.calculateParams(scroller);
@@ -35,11 +35,11 @@ export default class End {
     }
   }
 
-  static endCycle(scroller: Scroller) {
+  static endWorkflowLoop(scroller: Scroller) {
     const { state } = scroller;
-    state.endCycle();
+    state.endLoop();
     state.lastPosition = scroller.viewport.scrollPosition;
-    scroller.purgeCycleSubscriptions();
+    scroller.purgeInnerLoopSubscriptions();
   }
 
   static calculateParams(scroller: Scroller) {
@@ -90,11 +90,11 @@ export default class End {
   }
 
   static continueWorkflowByTimer(scroller: Scroller) {
-    const { state, state: { cycleCount } } = scroller;
-    scroller.logger.log(() => [`%csetting Workflow timer (${cycleCount})`, 'background-color: yellow']);
-    state.scrollState.workflowTimer = <number>setTimeout(() => {
+    const { state, state: { workflowCycleCount, innerLoopCount } } = scroller;
+    scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
+    state.scrollState.workflowTimer = <any>setTimeout(() => {
       // if the WF isn't finilized while the old sub-cycle is done and there's no new sub-cycle
-      if (state.workflowPending && !state.pending && cycleCount === state.cycleCount) {
+      if (state.workflowPending && !state.pending && innerLoopCount === state.innerLoopCount) {
         scroller.callWorkflow({
           process: Process.end,
           status: ProcessStatus.next,

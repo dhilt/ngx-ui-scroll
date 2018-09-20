@@ -49,7 +49,7 @@ export default class PostFetch {
     // eof/bof case, need to shift fetch index if bof
     let fetchIndex = <number>fetch.index;
     if (items.length < fetch.count) {
-      if (scroller.state.isInitialCycle) {
+      if (scroller.state.isInitialLoop) {
         // let's treat initial poor fetch as startIndex-bof
         fetchIndex = scroller.state.startIndex;
       } else if (<number>fetch.firstIndex < buffer.minIndex) { // normal bof

@@ -24,8 +24,8 @@ export interface SyntheticScroll {
 
 export interface State {
   initTime: number;
-  cycleCount: number;
-  isInitialCycle: boolean;
+  innerLoopCount: number;
+  isInitialLoop: boolean;
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;

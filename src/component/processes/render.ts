@@ -5,7 +5,7 @@ export default class Render {
 
   static run(scroller: Scroller) {
     scroller.logger.stat('before new items render');
-    scroller.cycleSubscriptions.push(
+    scroller.innerLoopSubscriptions.push(
       scroller.bindData().subscribe(() => {
         scroller.state.sizeBeforeRender = scroller.viewport.getScrollableSize();
         if (Render.processElements(scroller)) {

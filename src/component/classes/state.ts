@@ -2,7 +2,6 @@ import { BehaviorSubject } from 'rxjs';
 
 import {
   State as IState,
-  Process,
   ProcessRun,
   ItemAdapter,
   ScrollState as IScrollState,
@@ -60,8 +59,8 @@ export class State implements IState {
   protected logger: Logger;
 
   initTime: number;
-  cycleCount: number;
-  isInitialCycle: boolean;
+  innerLoopCount: number;
+  isInitialLoop: boolean;
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
@@ -123,8 +122,8 @@ export class State implements IState {
     this.settings = settings;
     this.logger = logger;
     this.initTime = Number(new Date());
-    this.cycleCount = 0;
-    this.isInitialCycle = false;
+    this.innerLoopCount = 0;
+    this.isInitialLoop = false;
     this.workflowCycleCount = 1;
     this.isInitialWorkflowCycle = false;
     this.countDone = 0;
@@ -144,9 +143,9 @@ export class State implements IState {
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
   }
 
-  startCycle(options?: ProcessRun) {
+  startLoop(options?: ProcessRun) {
     this.pending = true;
-    this.cycleCount++;
+    this.innerLoopCount++;
     this.fetch.reset();
     this.clip = false;
     if (options) {
@@ -155,10 +154,10 @@ export class State implements IState {
     this.scrollState.keepScroll = false;
   }
 
-  endCycle() {
+  endLoop() {
     this.pending = false;
     this.countDone++;
-    this.isInitialCycle = false;
+    this.isInitialLoop = false;
   }
 
   setCurrentStartIndex(newStartIndex: any) {

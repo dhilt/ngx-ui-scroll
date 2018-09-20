@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessRun, ProcessStatus as Status, ProcessSubject } from '../interfaces';
+import { Process, ProcessRun, ProcessStatus as Status, ProcessSubject } from '../interfaces/index';
 
 export class Logger {
 
@@ -8,7 +8,7 @@ export class Logger {
   readonly logTime: boolean;
   readonly getTime: Function;
   readonly getStat: Function;
-  readonly getCycleCount: Function;
+  readonly getInnerLoopCount: Function;
   readonly getWorkflowCycleData: Function;
   private logs: Array<any> = [];
 
@@ -29,7 +29,7 @@ export class Logger {
         'items: ' + scroller.buffer.getVisibleItemsCount() + ', ' +
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
-    this.getCycleCount = (): number => scroller.state.cycleCount;
+    this.getInnerLoopCount = (): number => scroller.state.innerLoopCount;
     this.getWorkflowCycleData = (more: boolean): string =>
       `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}` + (more ? '-' : '');
     this.log(() => `uiScroll Workflow has been started (v${scroller.version})`);
@@ -50,33 +50,33 @@ export class Logger {
     const payload: ProcessRun = data.payload || { empty: true };
 
     // standard process log
-    const result = `process ${process}, %c${status}%c` + (!payload.empty ? ',' : '');
+    const processLog = `process ${process}, %c${status}%c` + (!payload.empty ? ',' : '');
     const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
-    this.log(() => [result, ...styles, ...(!payload.empty ? [payload] : [])]);
+    this.log(() => [processLog, ...styles, ...(!payload.empty ? [payload] : [])]);
 
-    // sub cycle log
-    const preCycleData = this.getWorkflowCycleData(true);
-    const cycleCount = this.getCycleCount();
-    const cycleResult: string[] = [];
+    // inner loop start-end log
+    const workflowCycleData = this.getWorkflowCycleData(true);
+    const loopCount = this.getInnerLoopCount();
+    const loopLog: string[] = [];
     if (
       process === Process.init && status === Status.next ||
       process === Process.scroll && status === Status.next && payload.keepScroll ||
       process === Process.end && status === Status.next && payload.byTimer
     ) {
-      cycleResult.push(`%c---=== cycle ${preCycleData + (cycleCount + 1)} start`);
+      loopLog.push(`%c---=== loop ${workflowCycleData + (loopCount + 1)} start`);
     } else if (
       process === Process.end && !payload.byTimer
     ) {
-      cycleResult.push(`%c---=== cycle ${preCycleData + cycleCount} done`);
+      loopLog.push(`%c---=== loop ${workflowCycleData + loopCount} done`);
       if (status === Status.next && !(payload.keepScroll)) {
-        cycleResult[0] += `, cycle ${preCycleData + (cycleCount + 1)} start`;
+        loopLog[0] += `, loop ${workflowCycleData + (loopCount + 1)} start`;
       }
     }
-    if (cycleResult.length) {
-      this.log(() => [...cycleResult, 'color: #006600;']);
+    if (loopLog.length) {
+      this.log(() => [...loopLog, 'color: #006600;']);
     }
 
-    // workflow run-start log
+    // workflow cycle start log
     if (
       process === Process.init && status === Status.start ||
       process === Process.reload && status === Status.next ||
@@ -84,14 +84,14 @@ export class Logger {
     ) {
       const logData = this.getWorkflowCycleData(false);
       const logStyles = 'color: #0000aa; border: solid black 1px; border-width: 1px 0 0 1px; margin-left: -2px';
-      this.log(() => [`%c   ~~~ WF Run ${logData} STARTED ~~~  `, logStyles]);
+      this.log(() => [`%c   ~~~ WF Cycle ${logData} STARTED ~~~  `, logStyles]);
     }
 
-    // workflow run-end log
+    // workflow run end log
     if (process === Process.end && status === Status.done) {
       const logData = this.getWorkflowCycleData(false);
       const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
-      this.log(() => [`%c   ~~~ WF Run ${logData} FINALIZED ~~~  `, logStyles]);
+      this.log(() => [`%c   ~~~ WF Cycle ${logData} FINALIZED ~~~  `, logStyles]);
     }
   }
 

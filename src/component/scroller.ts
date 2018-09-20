@@ -27,7 +27,7 @@ export class Scroller {
   public buffer: Buffer;
   public state: State;
 
-  public cycleSubscriptions: Array<Subscription>;
+  public innerLoopSubscriptions: Array<Subscription>;
 
   constructor(context: UiScrollComponent, callWorkflow: CallWorkflow) {
     const datasource = <Datasource>checkDatasource(context.datasource);
@@ -37,7 +37,7 @@ export class Scroller {
     this.runChangeDetector = () => context.changeDetector.markForCheck();
     // this.runChangeDetector = () => context.changeDetector.detectChanges();
     this.callWorkflow = callWorkflow;
-    this.cycleSubscriptions = [];
+    this.innerLoopSubscriptions = [];
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.logger = new Logger(this);
@@ -75,12 +75,12 @@ export class Scroller {
     );
   }
 
-  purgeCycleSubscriptions() {
-    this.cycleSubscriptions.forEach((item: Subscription) => item.unsubscribe());
-    this.cycleSubscriptions = [];
+  purgeInnerLoopSubscriptions() {
+    this.innerLoopSubscriptions.forEach((item: Subscription) => item.unsubscribe());
+    this.innerLoopSubscriptions = [];
   }
 
-  purgeTimers(localOnly?: boolean) {
+  purgeScrollTimers(localOnly?: boolean) {
     const { state: { scrollState } } = this;
     if (scrollState.scrollTimer) {
       clearTimeout(scrollState.scrollTimer);
@@ -93,8 +93,8 @@ export class Scroller {
   }
 
   dispose() {
-    this.purgeCycleSubscriptions();
-    this.purgeTimers();
+    this.purgeInnerLoopSubscriptions();
+    this.purgeScrollTimers();
   }
 
   finalize() {

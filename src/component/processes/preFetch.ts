@@ -64,8 +64,8 @@ export default class PreFetch {
     let index = state.startIndex;
     let firstIndex = state.startIndex;
     let firstIndexPosition = position;
-    if (scroller.state.isInitialCycle) {
-      scroller.logger.log(`skipping backward direction [initial cycle]`);
+    if (scroller.state.isInitialLoop) {
+      scroller.logger.log(`skipping backward direction [initial loop]`);
     } else {
       while (1) {
         if (firstIndex <= buffer.absMinIndex) {

@@ -4,8 +4,8 @@ import { Process, ProcessStatus, ProcessRun } from '../interfaces/index';
 export default class Init {
 
   static run(scroller: Scroller, payload?: ProcessRun) {
-    scroller.state.isInitialCycle = !payload;
     scroller.state.isInitialWorkflowCycle = !payload;
+    scroller.state.isInitialLoop = !payload;
     scroller.state.workflowPending = true;
     scroller.callWorkflow({
       process: Process.init,

@@ -8,8 +8,8 @@ export default class Reload {
     scroller.state.setCurrentStartIndex(reloadIndex);
     scroller.buffer.reset(true, scroller.state.startIndex);
     scroller.viewport.reset(scrollPosition);
-    scroller.purgeCycleSubscriptions();
-    scroller.purgeTimers();
+    scroller.purgeInnerLoopSubscriptions();
+    scroller.purgeScrollTimers();
     // todo: do we need to have Process.end before?
     scroller.callWorkflow({
       process: Process.reload,

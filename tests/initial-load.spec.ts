@@ -46,12 +46,11 @@ const tunedAverageSizeConfigList: TestBedConfig[] = [{
 
 const tunedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -50, bufferSize: 7, padding: 0.5, itemSize: 30 },
-  datasourceDevSettings: { debug: true },
   templateSettings: { viewportHeight: 120, itemHeight: 20 }
-}/*, {
+}, {
   datasourceSettings: { startIndex: 50, padding: 0.33, itemSize: 35, bufferSize: 20, windowViewport: true },
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
-}*/];
+}];
 
 [...tunedAverageSizeConfigList, ...tunedAverageSizeWithBigBufferSizeConfigList].forEach(config =>
   config.expect = { fetch: { callCount: 3 } }
@@ -116,50 +115,49 @@ const testFixedAverageSizeCase = (settings: TestBedConfig, misc: Misc, done: Fun
 };
 
 const getNonFixedAverageSizeItemsCounter =
-  (settings: TestBedConfig, misc: Misc, itemSize: number, _itemsCounter?: ItemsCounter): ItemsCounter => {
+  (settings: TestBedConfig, misc: Misc, itemSize: number, previous?: ItemsCounter): ItemsCounter => {
     const bufferSize = misc.scroller.settings.bufferSize;
     const viewportSize = misc.getViewportSize(settings);
-    const innerLoopCount = misc.scroller.state.innerLoopCount;
-
     const backwardLimit = viewportSize * settings.datasourceSettings.padding;
     const forwardLimit = viewportSize + backwardLimit;
     const itemsCounter = new ItemsCounter();
+    let bwd, fwd;
 
-    itemsCounter.backward = _itemsCounter ? Math.ceil(backwardLimit / itemSize) : 0;
+    itemsCounter.backward = previous ? Math.ceil(backwardLimit / itemSize) : 0;
     itemsCounter.forward = Math.ceil(forwardLimit / itemSize);
-    itemsCounter.total = itemsCounter.backward + itemsCounter.forward;
+    if (previous) {
+      itemsCounter.backward = Math.max(itemsCounter.backward, previous.backward);
+      itemsCounter.forward = Math.max(itemsCounter.forward, previous.forward);
+    }
 
     // when bufferSize is big enough
-    const bwdDiff = _itemsCounter ? bufferSize - itemsCounter.backward : 0;
-    const fwdDiff = bufferSize - itemsCounter.forward;
-    if (bwdDiff > 0) {
+    bwd = itemsCounter.backward - (previous ? previous.backward : 0);
+    fwd = itemsCounter.forward - (previous ? previous.forward : 0);
+    const bwdDiff = bwd > 0 ? bufferSize - bwd : 0;
+    const fwdDiff = fwd > 0 ? bufferSize - fwd : 0;
+    if (bwdDiff > 0 && bwd > fwd) {
       itemsCounter.backward += bwdDiff;
-      itemsCounter.total += bwdDiff;
+      itemsCounter.forward = previous ? previous.forward : itemsCounter.forward;
     }
-    if (fwdDiff > 0) {
+    if (fwdDiff > 0 && fwd >= bwd) {
       itemsCounter.forward += fwdDiff;
-      itemsCounter.total += fwdDiff;
+      itemsCounter.backward = previous ? previous.backward : itemsCounter.backward;
     }
 
-    if (_itemsCounter) {
-      const _bwdDiff = itemsCounter.backward - _itemsCounter.backward;
-      const _fwdDiff = itemsCounter.forward - _itemsCounter.forward;
-      if (_bwdDiff > 0 && _fwdDiff < _bwdDiff) {
-        if (_fwdDiff > 0) {
-          itemsCounter.forward = _itemsCounter.forward;
-        }
-        itemsCounter.backward = _itemsCounter.backward + _bwdDiff;
-        itemsCounter.total = _itemsCounter.total + _bwdDiff;
+    if (previous) {
+      bwd = itemsCounter.backward - previous.backward;
+      fwd = itemsCounter.forward - previous.forward;
+      if (bwd > 0 && bwd > fwd) {
+        itemsCounter.backward = previous.backward + bwd;
+        itemsCounter.forward = fwd > 0 ? previous.forward : itemsCounter.forward;
       }
-      if (_fwdDiff > 0 && _fwdDiff >= _bwdDiff) {
-        if (_bwdDiff > 0) {
-          itemsCounter.backward = _itemsCounter.backward;
-        }
-        itemsCounter.forward = _itemsCounter.forward + _fwdDiff;
-        itemsCounter.total = _itemsCounter.total + _fwdDiff;
+      if (fwd > 0 && fwd >= bwd) {
+        itemsCounter.forward = previous.forward + fwd;
+        itemsCounter.backward = bwd > 0 ? previous.backward : itemsCounter.backward;
       }
     }
 
+    itemsCounter.total = itemsCounter.backward + itemsCounter.forward;
     return itemsCounter;
   };
 
@@ -174,9 +172,11 @@ const testNonFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Func
     done();
     return;
   }
-  const initialItemSize = settings.datasourceSettings.itemSize;
-  const initialItemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, initialItemSize);
-  let itemsCounter = initialItemsCounter;
+  let itemsCounter;
+  if (loopCount === 1) {
+    const initialItemSize = settings.datasourceSettings.itemSize;
+    itemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, initialItemSize);
+  }
   if (loopCount > 1) {
     const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
     itemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, itemSize, misc.shared.itemsCounter);
@@ -222,17 +222,17 @@ describe('Initial Load Spec', () => {
         }
       })
     );
-    // tunedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
-    //   makeTest({
-    //     config,
-    //     title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
-    //     it: (misc: Misc) => (done: Function) => {
-    //       spyOn(misc.scroller, 'finalize').and.callFake(() =>
-    //         testNonFixedAverageSize(config, misc, done)
-    //       );
-    //     }
-    //   })
-    // );
+    tunedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
+        it: (misc: Misc) => (done: Function) => {
+          spyOn(misc.scroller, 'finalize').and.callFake(() =>
+            testNonFixedAverageSize(config, misc, done)
+          );
+        }
+      })
+    );
   });
 
 });

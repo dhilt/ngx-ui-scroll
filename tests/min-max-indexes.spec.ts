@@ -49,17 +49,20 @@ const startIndexAroundMaxIndexConfigList: TestBedConfig[] = [{
 
 const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
+  const { bufferSize } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize(settings);
   const totalSize = (maxIndex - minIndex + 1) * itemSize;
   const viewportSizeDelta = viewportSize * padding;
 
   const negativeSize = (startIndex - minIndex) * itemSize;
-  const negativeItemsAmount = Math.ceil(viewportSizeDelta / itemSize);
+  const _negativeItemsAmount = Math.ceil(viewportSizeDelta / itemSize);
+  const negativeItemsAmount = Math.max(_negativeItemsAmount, bufferSize);
   const negativeItemsSize = negativeItemsAmount * itemSize;
   const bwdPaddingSize = negativeSize - negativeItemsSize;
 
   const positiveSize = (maxIndex - startIndex + 1) * itemSize;
-  const positiveItemsAmount = Math.ceil((viewportSize + viewportSizeDelta) / itemSize);
+  const _positiveItemsAmount = Math.ceil((viewportSize + viewportSizeDelta) / itemSize);
+  const positiveItemsAmount = Math.max(_positiveItemsAmount, bufferSize);
   const positiveItemsSize = positiveItemsAmount * itemSize;
   const fwdPaddingSize = positiveSize - positiveItemsSize;
 

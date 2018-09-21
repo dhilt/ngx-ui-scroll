@@ -176,8 +176,7 @@ const testNonFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Func
   if (loopCount === 1) {
     const initialItemSize = settings.datasourceSettings.itemSize;
     itemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, initialItemSize);
-  }
-  if (loopCount > 1) {
+  } else {
     const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
     itemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, itemSize, misc.shared.itemsCounter);
   }

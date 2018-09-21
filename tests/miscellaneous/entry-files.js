@@ -23,7 +23,8 @@ getTestBed().initTestEnvironment(
   platformBrowserDynamicTesting()
 );
 
-const testContext = require.context('../', true, /(common|load)\.spec\.ts/);
+// const testContext = require.context('../', true, /(basic)\.spec\.ts/);
+const testContext = require.context('../', true, /(common|load|indexes)\.spec\.ts/);
 
 function requireAll(requireContext) {
   return requireContext.keys().map(requireContext);

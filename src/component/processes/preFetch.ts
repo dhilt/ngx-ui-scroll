@@ -131,7 +131,7 @@ export default class PreFetch {
     if (packs[0].length && packs[1] && packs[1].length) {
       // todo: need to look for biggest pack in visible area
       // todo: or think about merging two requests in a single Fetch process
-      if (packs[1].length > packs[0].length) {
+      if (packs[1].length >= packs[0].length) {
         pack = packs[1];
       }
     }

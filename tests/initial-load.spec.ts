@@ -1,10 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
-const threeFetchConfig = {
-  fetch: { callCount: 3 }
-};
-
 const fixedAverageSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 2, itemSize: 15 },
   templateSettings: { viewportHeight: 20, itemHeight: 15 }
@@ -35,166 +31,158 @@ const fixedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
 );
 
 const tunedAverageSizeConfigList: TestBedConfig[] = [{
-  datasourceDevSettings: { debug: true },
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 0.5, itemSize: 40 },
-  templateSettings: { viewportHeight: 100, itemHeight: 20 },
-  expect: threeFetchConfig
-}/*, {
+  templateSettings: { viewportHeight: 100, itemHeight: 20 }
+}, {
   datasourceSettings: { startIndex: -50, bufferSize: 2, padding: 0.5, itemSize: 30 },
-  templateSettings: { viewportHeight: 120, itemHeight: 20 },
-  expect: threeFetchConfig
+  templateSettings: { viewportHeight: 120, itemHeight: 20 }
 }, {
   datasourceSettings: { startIndex: -77, padding: 0.82, itemSize: 200, horizontal: true },
-  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true },
-  expect: threeFetchConfig
+  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
 }, {
   datasourceSettings: { startIndex: -47, padding: 0.3, itemSize: 60, windowViewport: true },
-  templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 40 },
-  expect: threeFetchConfig
-}*/];
+  templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 40 }
+}];
 
 const tunedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -50, bufferSize: 7, padding: 0.5, itemSize: 30 },
   datasourceDevSettings: { debug: true },
-  templateSettings: { viewportHeight: 120, itemHeight: 20 },
-  expect: threeFetchConfig
+  templateSettings: { viewportHeight: 120, itemHeight: 20 }
 }/*, {
   datasourceSettings: { startIndex: 50, padding: 0.33, itemSize: 35, bufferSize: 20, windowViewport: true },
-  templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 },
-  expect: threeFetchConfig
+  templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
 }*/];
 
 [...tunedAverageSizeConfigList, ...tunedAverageSizeWithBigBufferSizeConfigList].forEach(config =>
   config.expect = { fetch: { callCount: 3 } }
 );
 
-class ItemsCount {
+class ItemsCounter {
   backward: number;
   forward: number;
   total: number;
 }
 
-const getFixedAverageSizeItemsCount = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCount => {
-  const bufferSize = misc.scroller.settings.bufferSize;
-  const viewportSize = misc.getViewportSize(settings);
-
-  const backwardLimit = viewportSize * settings.datasourceSettings.padding;
-  const forwardLimit = viewportSize + backwardLimit;
-  const itemsCount = new ItemsCount();
-
-  itemsCount.backward = Math.ceil(backwardLimit / itemSize);
-  itemsCount.forward = Math.ceil(forwardLimit / itemSize);
-  itemsCount.total = itemsCount.backward + itemsCount.forward;
-
-  // when bufferSize is big enough
-  const bwdDiff = bufferSize - itemsCount.backward;
-  if (bwdDiff > 0) {
-    itemsCount.backward += bwdDiff;
-    itemsCount.total += bwdDiff;
-  }
-  const fwdDiff = bufferSize - itemsCount.forward;
-  if (fwdDiff > 0) {
-    itemsCount.forward += fwdDiff;
-    itemsCount.total += fwdDiff;
-  }
-
-  return itemsCount;
-};
-
-const getTunedAverageSizeItemsCount = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCount => {
-  const bufferSize = misc.scroller.settings.bufferSize;
-  const viewportSize = misc.getViewportSize(settings);
-  const innerLoopCount = misc.scroller.state.innerLoopCount;
-
-  const backwardLimit = viewportSize * settings.datasourceSettings.padding;
-  const forwardLimit = viewportSize + backwardLimit;
-  const itemsCount = new ItemsCount();
-
-  itemsCount.backward = innerLoopCount > 1 ? Math.ceil(backwardLimit / itemSize) : 0;
-  itemsCount.forward = Math.ceil(forwardLimit / itemSize);
-  itemsCount.total = itemsCount.backward + itemsCount.forward;
-
-  // when bufferSize is big enough
-  const bwdDiff = innerLoopCount > 2 ? bufferSize - itemsCount.backward : 0;
-  if (bwdDiff > 0) {
-    itemsCount.backward += bwdDiff;
-    itemsCount.total += bwdDiff;
-  }
-  const fwdDiff = bufferSize - itemsCount.forward;
-  if (fwdDiff > 0) {
-    itemsCount.forward += fwdDiff;
-    itemsCount.total += fwdDiff;
-  }
-
-  return itemsCount;
-};
-
-const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCount: ItemsCount) => {
+const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCounter: ItemsCounter) => {
   const { startIndex } = settings.datasourceSettings;
   const elements = misc.getElements();
 
-  expect(elements.length).toEqual(itemsCount.total);
-  expect(misc.scroller.buffer.items.length).toEqual(itemsCount.total);
-  expect(misc.getElementIndex(elements[0])).toEqual(startIndex - itemsCount.backward);
-  expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(startIndex + itemsCount.forward - 1);
+  expect(elements.length).toEqual(itemsCounter.total);
+  expect(misc.scroller.buffer.items.length).toEqual(itemsCounter.total);
+  expect(misc.getElementIndex(elements[0])).toEqual(startIndex - itemsCounter.backward);
+  expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(startIndex + itemsCounter.forward - 1);
   expect(misc.getElementText(startIndex)).toEqual(`${startIndex} : item #${startIndex}`);
 };
 
-const testFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
-  const fetchCallCount = misc.scroller.state.fetch.callCount;
-  const fetchCallCountExpected = settings.expect ? settings.expect.fetch.callCount : 1;
+const getFixedAverageSizeItemsCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
+  const bufferSize = misc.scroller.settings.bufferSize;
+  const viewportSize = misc.getViewportSize(settings);
+
+  const backwardLimit = viewportSize * settings.datasourceSettings.padding;
+  const forwardLimit = viewportSize + backwardLimit;
+  const itemsCounter = new ItemsCounter();
+
+  itemsCounter.backward = Math.ceil(backwardLimit / itemSize);
+  itemsCounter.forward = Math.ceil(forwardLimit / itemSize);
+  itemsCounter.total = itemsCounter.backward + itemsCounter.forward;
+
+  // when bufferSize is big enough
+  const bwdDiff = bufferSize - itemsCounter.backward;
+  if (bwdDiff > 0) {
+    itemsCounter.backward += bwdDiff;
+    itemsCounter.total += bwdDiff;
+  }
+  const fwdDiff = bufferSize - itemsCounter.forward;
+  if (fwdDiff > 0) {
+    itemsCounter.forward += fwdDiff;
+    itemsCounter.total += fwdDiff;
+  }
+
+  return itemsCounter;
+};
+
+const testFixedAverageSizeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(fetchCallCount).toEqual(fetchCallCountExpected);
-  expect(misc.scroller.state.innerLoopCount).toEqual(fetchCallCount + 1);
+  expect(misc.scroller.state.fetch.callCount).toEqual(2);
+  expect(misc.scroller.state.innerLoopCount).toEqual(3);
+  expect(misc.scroller.state.clipCall).toEqual(0);
   expect(misc.padding.backward.getSize()).toEqual(0);
   expect(misc.padding.forward.getSize()).toEqual(0);
 
   const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
-  const itemsCount = getFixedAverageSizeItemsCount(settings, misc, itemSize);
-  testItemsCount(settings, misc, itemsCount);
+  const itemsCounter = getFixedAverageSizeItemsCounter(settings, misc, itemSize);
+  testItemsCount(settings, misc, itemsCounter);
   done();
 };
 
-const _testTunedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const getNonFixedAverageSizeItemsCounter =
+  (settings: TestBedConfig, misc: Misc, itemSize: number, _itemsCounter?: ItemsCounter): ItemsCounter => {
+    const bufferSize = misc.scroller.settings.bufferSize;
+    const viewportSize = misc.getViewportSize(settings);
+    const innerLoopCount = misc.scroller.state.innerLoopCount;
+
+    const backwardLimit = viewportSize * settings.datasourceSettings.padding;
+    const forwardLimit = viewportSize + backwardLimit;
+    const itemsCounter = new ItemsCounter();
+
+    itemsCounter.backward = _itemsCounter ? Math.ceil(backwardLimit / itemSize) : 0;
+    itemsCounter.forward = Math.ceil(forwardLimit / itemSize);
+    itemsCounter.total = itemsCounter.backward + itemsCounter.forward;
+
+    // when bufferSize is big enough
+    const bwdDiff = _itemsCounter ? bufferSize - itemsCounter.backward : 0;
+    const fwdDiff = bufferSize - itemsCounter.forward;
+    if (bwdDiff > 0) {
+      itemsCounter.backward += bwdDiff;
+      itemsCounter.total += bwdDiff;
+    }
+    if (fwdDiff > 0) {
+      itemsCounter.forward += fwdDiff;
+      itemsCounter.total += fwdDiff;
+    }
+
+    if (_itemsCounter) {
+      const _bwdDiff = itemsCounter.backward - _itemsCounter.backward;
+      const _fwdDiff = itemsCounter.forward - _itemsCounter.forward;
+      if (_bwdDiff > 0 && _fwdDiff < _bwdDiff) {
+        if (_fwdDiff > 0) {
+          itemsCounter.forward = _itemsCounter.forward;
+        }
+        itemsCounter.backward = _itemsCounter.backward + _bwdDiff;
+        itemsCounter.total = _itemsCounter.total + _bwdDiff;
+      }
+      if (_fwdDiff > 0 && _fwdDiff >= _bwdDiff) {
+        if (_bwdDiff > 0) {
+          itemsCounter.backward = _itemsCounter.backward;
+        }
+        itemsCounter.forward = _itemsCounter.forward + _fwdDiff;
+        itemsCounter.total = _itemsCounter.total + _fwdDiff;
+      }
+    }
+
+    return itemsCounter;
+  };
+
+const testNonFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const loopCount = misc.scroller.state.innerLoopCount;
-  if (loopCount > 3) {
+  if (loopCount === 4) {
+    expect(misc.scroller.state.workflowCycleCount).toEqual(1);
+    expect(misc.scroller.state.fetch.callCount).toEqual(3);
+    expect(misc.scroller.state.clipCall).toEqual(0);
+    expect(misc.padding.backward.getSize()).toEqual(0);
+    expect(misc.padding.forward.getSize()).toEqual(0);
     done();
     return;
   }
-  const itemSize = settings.datasourceSettings.itemSize;
-  if (loopCount === 1) {
-    testItemsCount(settings, misc, itemSize);
-    return;
+  const initialItemSize = settings.datasourceSettings.itemSize;
+  const initialItemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, initialItemSize);
+  let itemsCounter = initialItemsCounter;
+  if (loopCount > 1) {
+    const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
+    itemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, itemSize, misc.shared.itemsCounter);
   }
-  const _itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
-  const itemsCount = getTunedAverageSizeItemsCount(settings, misc, itemSize);
-  const _itemsCount = getFixedAverageSizeItemsCount(settings, misc, _itemSize);
-  const fwdDiff = _itemsCount.forward - itemsCount.forward;
-  const bwdDiff = _itemsCount.backward - itemsCount.backward;
-  const bufferSize = misc.scroller.settings.bufferSize;
-  if (loopCount === 2 || loopCount === 3) {
-    const diff = Math.max(fwdDiff, bwdDiff);
-    const buffDiff = Math.max(0, bufferSize - diff);
-    if (fwdDiff > bwdDiff) {
-      itemsCount.forward += diff + buffDiff;
-      itemsCount.total += diff + buffDiff;
-    } else if (fwdDiff < bwdDiff) {
-      itemsCount.backward += diff + buffDiff;
-      itemsCount.total += diff + buffDiff;
-    }
-  }
-  if (loopCount === 3) {
-    const diff = Math.min(fwdDiff, bwdDiff);
-    const buffDiff = Math.max(0, bufferSize - diff);
-    if (fwdDiff > bwdDiff) {
-      itemsCount.backward += diff + buffDiff;
-      itemsCount.total += diff + buffDiff;
-    } else if (fwdDiff < bwdDiff) {
-      itemsCount.forward += diff + buffDiff;
-      itemsCount.total += diff + buffDiff;
-    }
-  }
-  testItemsCount(settings, misc, itemsCount);
+  testItemsCount(settings, misc, itemsCounter);
+  misc.shared.itemsCounter = itemsCounter;
 };
 
 describe('Initial Load Spec', () => {
@@ -206,7 +194,7 @@ describe('Initial Load Spec', () => {
         title: 'should make 2 fetches to satisfy padding limits',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testFixedAverageSize(config, misc, done)
+            testFixedAverageSizeCase(config, misc, done)
           )
       })
     );
@@ -216,31 +204,31 @@ describe('Initial Load Spec', () => {
         title: 'should make 2 big fetches to overflow padding limits (bufferSize is big enough)',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testFixedAverageSize(config, misc, done)
+            testFixedAverageSizeCase(config, misc, done)
           )
       })
     );
   });
 
   describe('Tuned average item size', () => {
-    // tunedAverageSizeConfigList.forEach(config =>
-    //   makeTest({
-    //     config,
-    //     title: 'should make 3 fetches to satisfy padding limits',
-    //     it: (misc: Misc) => (done: Function) => {
-    //       spyOn(misc.scroller, 'finalize').and.callFake(() =>
-    //         _testTunedAverageSize(config, misc, done)
-    //       );
-    //     }
-    //   })
-    // );
+    tunedAverageSizeConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should make 3 fetches to satisfy padding limits',
+        it: (misc: Misc) => (done: Function) => {
+          spyOn(misc.scroller, 'finalize').and.callFake(() =>
+            testNonFixedAverageSize(config, misc, done)
+          );
+        }
+      })
+    );
     // tunedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
     //   makeTest({
     //     config,
     //     title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
     //     it: (misc: Misc) => (done: Function) => {
     //       spyOn(misc.scroller, 'finalize').and.callFake(() =>
-    //         _testTunedAverageSize(config, misc, done)
+    //         testNonFixedAverageSize(config, misc, done)
     //       );
     //     }
     //   })

@@ -57,7 +57,7 @@ const tunedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   config.expect = { fetch: { callCount: 3 } }
 );
 
-export const getFixedAverageSizeItemsCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
+const getFixedAverageSizeItemsCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
   const { bufferSize, startIndex, padding } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize(settings);
 

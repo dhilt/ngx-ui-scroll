@@ -1,13 +1,19 @@
 import { Direction } from '../../src/component/interfaces';
 
-export class ItemsDirCounter {
+interface IItemsDirCounter {
+  count?: number;
+  index?: number;
+  padding?: number;
+}
+
+export class ItemsDirCounter implements IItemsDirCounter{
   count: number;
   index: number;
   padding: number;
 
-  constructor() {
-    this.count = 0;
-    this.padding = 0;
+  constructor(count = 0, padding = 0) {
+    this.count = count;
+    this.padding = padding;
   }
 }
 
@@ -28,7 +34,7 @@ export class ItemsCounter {
     return token === Direction.backward ? this.backward : this.forward;
   }
 
-  set(token: Direction, value: ItemsDirCounter) {
+  set(token: Direction, value: IItemsDirCounter) {
     if (token === Direction.backward) {
       this.backward = { ...this.backward, ...value };
     } else {

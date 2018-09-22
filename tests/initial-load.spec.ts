@@ -1,5 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
+import { ItemsCounter, ItemsDirCounter } from './miscellaneous/itemsCounter';
 
 const fixedAverageSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 2, itemSize: 15 },
@@ -56,11 +57,83 @@ const tunedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   config.expect = { fetch: { callCount: 3 } }
 );
 
-class ItemsCounter {
-  backward: number;
-  forward: number;
-  total: number;
-}
+export const getFixedAverageSizeItemsCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
+  const { bufferSize, startIndex, padding } = misc.scroller.settings;
+  const viewportSize = misc.getViewportSize(settings);
+
+  const backwardLimit = viewportSize * padding;
+  const forwardLimit = viewportSize + backwardLimit;
+  const itemsCounter = new ItemsCounter();
+  const { backward, forward } = itemsCounter;
+
+  backward.count = Math.ceil(backwardLimit / itemSize);
+  forward.count = Math.ceil(forwardLimit / itemSize);
+
+  // when bufferSize is big enough
+  const bwdDiff = bufferSize - backward.count;
+  if (bwdDiff > 0) {
+    backward.count += bwdDiff;
+  }
+  const fwdDiff = bufferSize - forward.count;
+  if (fwdDiff > 0) {
+    forward.count += fwdDiff;
+  }
+
+  backward.index = startIndex - backward.count;
+  forward.index = startIndex + forward.count - 1;
+  return itemsCounter;
+};
+
+const getNonFixedAverageSizeItemsCounter =
+  (settings: TestBedConfig, misc: Misc, itemSize: number, previous?: ItemsCounter): ItemsCounter => {
+    const { bufferSize, startIndex, padding } = misc.scroller.settings;
+    const viewportSize = misc.getViewportSize(settings);
+    const backwardLimit = viewportSize * padding;
+    const forwardLimit = viewportSize + backwardLimit;
+    const itemsCounter = new ItemsCounter();
+    const { backward, forward } = itemsCounter;
+    const _backward = <ItemsDirCounter>(previous ? previous.backward : {});
+    const _forward = <ItemsDirCounter>(previous ? previous.forward : {});
+    let bwd, fwd;
+
+    backward.count = previous ? Math.ceil(backwardLimit / itemSize) : 0;
+    forward.count = Math.ceil(forwardLimit / itemSize);
+    if (previous) {
+      backward.count = Math.max(backward.count, _backward.count);
+      forward.count = Math.max(forward.count, _forward.count);
+    }
+
+    // when bufferSize is big enough
+    bwd = backward.count - (previous ? _backward.count : 0);
+    fwd = forward.count - (previous ? _forward.count : 0);
+    const bwdDiff = bwd > 0 ? bufferSize - bwd : 0;
+    const fwdDiff = fwd > 0 ? bufferSize - fwd : 0;
+    if (bwdDiff > 0 && bwd > fwd) {
+      backward.count += bwdDiff;
+      forward.count = previous ? _forward.count : forward.count;
+    }
+    if (fwdDiff > 0 && fwd >= bwd) {
+      forward.count += fwdDiff;
+      backward.count = previous ? _backward.count : backward.count;
+    }
+
+    if (previous) {
+      bwd = backward.count - _backward.count;
+      fwd = forward.count - _forward.count;
+      if (bwd > 0 && bwd > fwd) {
+        backward.count = _backward.count + bwd;
+        forward.count = fwd > 0 ? _forward.count : forward.count;
+      }
+      if (fwd > 0 && fwd >= bwd) {
+        forward.count = _forward.count + fwd;
+        backward.count = bwd > 0 ? _backward.count : backward.count;
+      }
+    }
+
+    backward.index = startIndex - backward.count;
+    forward.index = startIndex + forward.count - 1;
+    return itemsCounter;
+  };
 
 const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCounter: ItemsCounter) => {
   const { startIndex } = settings.datasourceSettings;
@@ -68,36 +141,9 @@ const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCounter: Items
 
   expect(elements.length).toEqual(itemsCounter.total);
   expect(misc.scroller.buffer.items.length).toEqual(itemsCounter.total);
-  expect(misc.getElementIndex(elements[0])).toEqual(startIndex - itemsCounter.backward);
-  expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(startIndex + itemsCounter.forward - 1);
+  expect(misc.getElementIndex(elements[0])).toEqual(itemsCounter.backward.index);
+  expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(itemsCounter.forward.index);
   expect(misc.getElementText(startIndex)).toEqual(`${startIndex} : item #${startIndex}`);
-};
-
-const getFixedAverageSizeItemsCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
-  const bufferSize = misc.scroller.settings.bufferSize;
-  const viewportSize = misc.getViewportSize(settings);
-
-  const backwardLimit = viewportSize * settings.datasourceSettings.padding;
-  const forwardLimit = viewportSize + backwardLimit;
-  const itemsCounter = new ItemsCounter();
-
-  itemsCounter.backward = Math.ceil(backwardLimit / itemSize);
-  itemsCounter.forward = Math.ceil(forwardLimit / itemSize);
-  itemsCounter.total = itemsCounter.backward + itemsCounter.forward;
-
-  // when bufferSize is big enough
-  const bwdDiff = bufferSize - itemsCounter.backward;
-  if (bwdDiff > 0) {
-    itemsCounter.backward += bwdDiff;
-    itemsCounter.total += bwdDiff;
-  }
-  const fwdDiff = bufferSize - itemsCounter.forward;
-  if (fwdDiff > 0) {
-    itemsCounter.forward += fwdDiff;
-    itemsCounter.total += fwdDiff;
-  }
-
-  return itemsCounter;
 };
 
 const testFixedAverageSizeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
@@ -113,53 +159,6 @@ const testFixedAverageSizeCase = (settings: TestBedConfig, misc: Misc, done: Fun
   testItemsCount(settings, misc, itemsCounter);
   done();
 };
-
-const getNonFixedAverageSizeItemsCounter =
-  (settings: TestBedConfig, misc: Misc, itemSize: number, previous?: ItemsCounter): ItemsCounter => {
-    const bufferSize = misc.scroller.settings.bufferSize;
-    const viewportSize = misc.getViewportSize(settings);
-    const backwardLimit = viewportSize * settings.datasourceSettings.padding;
-    const forwardLimit = viewportSize + backwardLimit;
-    const itemsCounter = new ItemsCounter();
-    let bwd, fwd;
-
-    itemsCounter.backward = previous ? Math.ceil(backwardLimit / itemSize) : 0;
-    itemsCounter.forward = Math.ceil(forwardLimit / itemSize);
-    if (previous) {
-      itemsCounter.backward = Math.max(itemsCounter.backward, previous.backward);
-      itemsCounter.forward = Math.max(itemsCounter.forward, previous.forward);
-    }
-
-    // when bufferSize is big enough
-    bwd = itemsCounter.backward - (previous ? previous.backward : 0);
-    fwd = itemsCounter.forward - (previous ? previous.forward : 0);
-    const bwdDiff = bwd > 0 ? bufferSize - bwd : 0;
-    const fwdDiff = fwd > 0 ? bufferSize - fwd : 0;
-    if (bwdDiff > 0 && bwd > fwd) {
-      itemsCounter.backward += bwdDiff;
-      itemsCounter.forward = previous ? previous.forward : itemsCounter.forward;
-    }
-    if (fwdDiff > 0 && fwd >= bwd) {
-      itemsCounter.forward += fwdDiff;
-      itemsCounter.backward = previous ? previous.backward : itemsCounter.backward;
-    }
-
-    if (previous) {
-      bwd = itemsCounter.backward - previous.backward;
-      fwd = itemsCounter.forward - previous.forward;
-      if (bwd > 0 && bwd > fwd) {
-        itemsCounter.backward = previous.backward + bwd;
-        itemsCounter.forward = fwd > 0 ? previous.forward : itemsCounter.forward;
-      }
-      if (fwd > 0 && fwd >= bwd) {
-        itemsCounter.forward = previous.forward + fwd;
-        itemsCounter.backward = bwd > 0 ? previous.backward : itemsCounter.backward;
-      }
-    }
-
-    itemsCounter.total = itemsCounter.backward + itemsCounter.forward;
-    return itemsCounter;
-  };
 
 const testNonFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const loopCount = misc.scroller.state.innerLoopCount;
@@ -200,7 +199,7 @@ describe('Initial Load Spec', () => {
     fixedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
       makeTest({
         config,
-        title: 'should make 2 big fetches to overflow padding limits (bufferSize is big enough)',
+        title: 'should make 2 fetches to overflow padding limits (bufferSize is big enough)',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
             testFixedAverageSizeCase(config, misc, done)

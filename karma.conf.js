@@ -14,7 +14,7 @@ module.exports = function (config) {
     ],
     files: [
       'tests/miscellaneous/styles.css',
-      { pattern: './tests/miscellaneous/entry-files.js', watched: false }
+      { pattern: './tests/_index.js', watched: false }
     ],
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
@@ -25,7 +25,7 @@ module.exports = function (config) {
     },
 
     preprocessors: {
-      './tests/miscellaneous/entry-files.js': ['webpack', 'sourcemap']
+      './tests/_index.js': ['webpack', 'sourcemap']
     },
     webpack: {
       mode: 'development',

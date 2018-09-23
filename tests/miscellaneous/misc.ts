@@ -90,6 +90,10 @@ export class Misc {
     return element ? element.innerText.trim() : null;
   }
 
+  checkElementContentByIndex(index: number): boolean {
+    return this.getElementText(index) === `${index} : item #${index}`;
+  }
+
   checkElementId(element: HTMLElement, index: number): boolean {
     return element.getAttribute('data-sid') === `${index}`;
   }

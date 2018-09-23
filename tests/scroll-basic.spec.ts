@@ -3,6 +3,13 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, ItemsDirCounter } from './miscellaneous/itemsCounter';
 
+interface Custom {
+  direction: Direction;
+  count: number;
+  bouncing?: boolean;
+  mass?: boolean;
+}
+
 const singleForwardMaxScrollConfigList = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22, itemSize: 20 },
   templateSettings: { viewportHeight: 71, itemHeight: 20 },
@@ -250,47 +257,51 @@ const invertDirection = (config: TestBedConfig) => {
   config.custom.direction = _forward ? Direction.backward : Direction.forward;
 };
 
-const setInitialItemsCounter = (misc: Misc) => {
+const getInitialItemsCounter = (misc: Misc): ItemsCounter => {
+  misc.fixture.detectChanges();
   const { startIndex } = misc.scroller.settings;
   const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(Direction.forward);
   const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(Direction.backward);
-  const itemsCounter = new ItemsCounter();
-  itemsCounter.set(Direction.forward, {
+  const result = new ItemsCounter();
+  result.set(Direction.forward, {
     count: (<any>edgeItem).$index - startIndex + 1,
     index: (<any>edgeItem).$index,
     padding: 0
   });
-  itemsCounter.set(Direction.backward, {
+  result.set(Direction.backward, {
     count: startIndex - (<any>oppositeEdgeItem).$index,
     index: (<any>oppositeEdgeItem).$index,
     padding: 0
   });
-  misc.shared.itemsCounter = itemsCounter;
+  return result;
 };
 
-const setNextItemsCounter = (misc: Misc, direction: Direction) => {
+const getCurrentItemsCounter = (misc: Misc, custom: Custom, initial: ItemsCounter): ItemsCounter => {
+  misc.fixture.detectChanges();
   const { bufferSize, padding } = misc.scroller.settings;
   const viewportSize = misc.scroller.viewport.getSize();
   const itemSize = misc.scroller.buffer.averageSize;
-  const fwd = direction === Direction.forward;
+  const fwd = custom.direction === Direction.forward;
   const opposite = fwd ? Direction.backward : Direction.forward;
-  const current = misc.shared.itemsCounter;
 
   // handle direction (fetch)
   const delta = viewportSize * padding;
-  const _fetchCount = Math.ceil(delta / itemSize);
-  const fetchCount = Math.max(bufferSize, _fetchCount);
-  const newDirectionIndex = current.get(direction).index + (fwd ? 1 : -1) * fetchCount;
+  const _singleFetchCount = Math.ceil(delta / itemSize);
+  const singleFetchCount = Math.max(bufferSize, _singleFetchCount);
+  const fetchCount = singleFetchCount * custom.count;
+  const newDirectionIndex = initial.get(custom.direction).index + (fwd ? 1 : -1) * fetchCount;
 
   // handle opposite (clip)
-  const totalItemsSize = current.total * itemSize;
-  const sizeToClip = totalItemsSize - viewportSize - delta;
+  const _total = initial.total + fetchCount;
+  const totalItemsSize = _total * itemSize;
+  const singleFetchSize = singleFetchCount * itemSize;
+  const sizeToClip = totalItemsSize - viewportSize - singleFetchSize - delta;
   const clipCount = Math.floor(sizeToClip / itemSize);
-  const newOppositeIndex = current.get(opposite).index + (fwd ? 1 : -1) * clipCount;
+  const newOppositeIndex = initial.get(opposite).index + (fwd ? 1 : -1) * clipCount;
   const newOppositePadding = clipCount * itemSize;
 
   const result = new ItemsCounter();
-  result.set(direction, {
+  result.set(custom.direction, {
     index: newDirectionIndex,
     padding: 0
   });
@@ -298,16 +309,17 @@ const setNextItemsCounter = (misc: Misc, direction: Direction) => {
     index: newOppositeIndex,
     padding: newOppositePadding
   });
-  misc.shared.itemsCounter = result;
+  return result;
 };
 
 const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const wfCount = config.custom.count + 1;
+  let initialItemsCounter: ItemsCounter;
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
-      setInitialItemsCounter(misc);
+      initialItemsCounter = getInitialItemsCounter(misc);
     }
     if (cycles < wfCount) {
       if (config.custom.bouncing) {
@@ -317,24 +329,22 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
           invertDirection(config);
         }
       }
-      if (cycles === wfCount - 1) {
-        setNextItemsCounter(misc, config.custom.direction);
-      }
       doScrollMax(config, misc);
     } else {
-      if (misc.scroller.state.clipCall > 0) {
-        misc.fixture.detectChanges();
-      }
       // expectations
-      const itemsCounter = misc.shared.itemsCounter;
+      const itemsCounter = getCurrentItemsCounter(misc, config.custom, initialItemsCounter);
       const direction = config.custom.direction;
       const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
       const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(direction);
       const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(opposite);
-      expect(edgeItem && edgeItem.$index).toEqual(itemsCounter.get(direction).index);
-      expect(oppositeEdgeItem && oppositeEdgeItem.$index).toEqual(itemsCounter.get(opposite).index);
+      const edgeItemIndex = itemsCounter.get(direction).index;
+      const edgeOppositeItemIndex = itemsCounter.get(opposite).index;
+      expect(edgeItem && edgeItem.$index).toEqual(edgeItemIndex);
+      expect(oppositeEdgeItem && oppositeEdgeItem.$index).toEqual(edgeOppositeItemIndex);
       expect((<any>misc.padding)[direction].getSize()).toEqual(itemsCounter.get(direction).padding);
       expect((<any>misc.padding)[opposite].getSize()).toEqual(itemsCounter.get(opposite).padding);
+      expect(misc.checkElementContentByIndex(edgeItemIndex)).toEqual(true);
+      expect(misc.checkElementContentByIndex(edgeOppositeItemIndex)).toEqual(true);
       done();
     }
   });
@@ -362,26 +372,26 @@ describe('Basic Scroll Spec', () => {
     )
   );
 
-  // describe('Mass max fwd scroll events', () =>
-  //   massForwardScrollsConfigList.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some forward scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
-  // describe('Mass max bwd scroll events', () =>
-  //   massBackwardScrollsConfigList.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some backward scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
+  describe('Mass max fwd scroll events', () =>
+    massForwardScrollsConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some forward scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
+  describe('Mass max bwd scroll events', () =>
+    massBackwardScrollsConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some backward scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
   // describe('Bouncing max two-directional scroll events (fwd started)', () =>
   //   massBouncingScrollsConfigList_fwd.forEach(config =>
   //     makeTest({

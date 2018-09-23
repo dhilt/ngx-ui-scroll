@@ -143,7 +143,7 @@ const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCounter: Items
   expect(misc.scroller.buffer.items.length).toEqual(itemsCounter.total);
   expect(misc.getElementIndex(elements[0])).toEqual(itemsCounter.backward.index);
   expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(itemsCounter.forward.index);
-  expect(misc.getElementText(startIndex)).toEqual(`${startIndex} : item #${startIndex}`);
+  expect(misc.checkElementContentByIndex(startIndex)).toEqual(true);
 };
 
 const testFixedAverageSizeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {

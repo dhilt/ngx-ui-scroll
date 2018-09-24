@@ -1,7 +1,7 @@
 import { Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { ItemsCounter, ItemsDirCounter } from './miscellaneous/itemsCounter';
+import { ItemsCounter } from './miscellaneous/itemsCounter';
 
 interface Custom {
   direction: Direction;
@@ -31,71 +31,10 @@ const singleForwardMaxScrollConfigList = [{
   templateSettings: { viewportWidth: 300, itemWidth: 75, horizontal: true },
   custom: { direction: Direction.forward, count: 1 }
 }];
+//  .reduce((acc, item, j) => [...acc, ...(j === 0 ? [{...item, datasourceDevSettings: { debug: true }}] : [])], []);
 
 const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);
 
-const massForwardScrollsExpected = [{
-  expected: {
-    paddingSizeOpposite: 180,
-    edgeItemIndexOpposite: 95
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 320,
-    edgeItemIndexOpposite: -10
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 1060,
-    edgeItemIndexOpposite: -61
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 7470,
-    edgeItemIndexOpposite: -38
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 4230,
-    edgeItemIndexOpposite: -96
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 2420,
-    edgeItemIndexOpposite: -74
-  }
-}];
-const massBackwardScrollsExpected = [{
-  expected: {
-    paddingSizeOpposite: 180,
-    edgeItemIndexOpposite: 95
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 320,
-    edgeItemIndexOpposite: -10
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 1060,
-    edgeItemIndexOpposite: -61
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 7470,
-    edgeItemIndexOpposite: -38
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 4230,
-    edgeItemIndexOpposite: -96
-  }
-}, {
-  expected: {
-    paddingSizeOpposite: 2420,
-    edgeItemIndexOpposite: -74
-  }
-}];
 const massBouncingScrollsConfigListExpected = [{
   expected: (direction: string) => ({
     paddingSizeOpposite: 220,
@@ -186,8 +125,7 @@ const massForwardScrollsConfigList =
     custom: {
       direction: Direction.backward,
       count: 3 + treatIndex(index) // 3-6 bwd scroll events per config
-    },
-    expected: massForwardScrollsExpected[index].expected
+    }
   }));
 
 const massBackwardScrollsConfigList =
@@ -196,8 +134,7 @@ const massBackwardScrollsConfigList =
     custom: {
       direction: Direction.backward,
       count: 3 + treatIndex(index) // 3-6 fwd scroll events per config
-    },
-    expected: massBackwardScrollsExpected[index].expected
+    }
   }));
 
 const massBouncingScrollsConfigList_fwd =
@@ -276,50 +213,53 @@ const getInitialItemsCounter = (misc: Misc): ItemsCounter => {
   return result;
 };
 
-const getCurrentItemsCounter = (misc: Misc, custom: Custom, initial: ItemsCounter): ItemsCounter => {
+const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: ItemsCounter): ItemsCounter => {
   misc.fixture.detectChanges();
   const { bufferSize, padding } = misc.scroller.settings;
   const viewportSize = misc.scroller.viewport.getSize();
   const itemSize = misc.scroller.buffer.averageSize;
-  const fwd = custom.direction === Direction.forward;
+  const fwd = direction === Direction.forward;
   const opposite = fwd ? Direction.backward : Direction.forward;
 
   // handle direction (fetch)
   const delta = viewportSize * padding;
   const _singleFetchCount = Math.ceil(delta / itemSize);
   const singleFetchCount = Math.max(bufferSize, _singleFetchCount);
-  const fetchCount = singleFetchCount * custom.count;
-  const newDirectionIndex = initial.get(custom.direction).index + (fwd ? 1 : -1) * fetchCount;
+  const itemsToFetch = previous.direction && previous.direction !== direction ? _singleFetchCount : singleFetchCount;
+  const newDirIndex = previous.get(direction).index + // previous edge index
+    (previous.get(direction).padding / itemSize) + // how many items are needed to fill the padding
+    (fwd ? 1 : -1) * itemsToFetch; // new pack of items
 
   // handle opposite (clip)
-  const _total = initial.total + fetchCount;
-  const totalItemsSize = _total * itemSize;
-  const singleFetchSize = singleFetchCount * itemSize;
-  const sizeToClip = totalItemsSize - viewportSize - singleFetchSize - delta;
-  const clipCount = Math.floor(sizeToClip / itemSize);
-  const newOppositeIndex = initial.get(opposite).index + (fwd ? 1 : -1) * clipCount;
-  const newOppositePadding = clipCount * itemSize;
+  const oppPadding = previous.get(opposite).padding;
+  const previousTotalSize = previous.total * itemSize + previous.paddings;
+  const sizeToClip = previousTotalSize - oppPadding - viewportSize - delta;
+  const itemsToClip = Math.floor(sizeToClip / itemSize);
+  const newOppIndex = previous.get(opposite).index + (fwd ? 1 : -1) * itemsToClip;
+  const newOppPadding = itemsToClip * itemSize + oppPadding;
 
-  const result = new ItemsCounter();
-  result.set(custom.direction, {
-    index: newDirectionIndex,
+  const result = new ItemsCounter(direction);
+  result.set(direction, {
+    index: newDirIndex,
     padding: 0
   });
   result.set(opposite, {
-    index: newOppositeIndex,
-    padding: newOppositePadding
+    index: newOppIndex,
+    padding: newOppPadding
   });
   return result;
 };
 
 const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const wfCount = config.custom.count + 1;
-  let initialItemsCounter: ItemsCounter;
+  let itemsCounter: ItemsCounter;
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
-      initialItemsCounter = getInitialItemsCounter(misc);
+      itemsCounter = getInitialItemsCounter(misc);
+    } else {
+      itemsCounter = getCurrentItemsCounter(misc, config.custom.direction, itemsCounter);
     }
     if (cycles < wfCount) {
       if (config.custom.bouncing) {
@@ -332,7 +272,6 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
       doScrollMax(config, misc);
     } else {
       // expectations
-      const itemsCounter = getCurrentItemsCounter(misc, config.custom, initialItemsCounter);
       const direction = config.custom.direction;
       const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
       const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(direction);

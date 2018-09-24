@@ -18,14 +18,21 @@ export class ItemsDirCounter implements IItemsDirCounter{
 }
 
 export class ItemsCounter {
+  direction: Direction | null; // direction per calculations
   backward: ItemsDirCounter;
   forward: ItemsDirCounter;
 
   get total(): number {
-    return this.backward.count + this.forward.count;
+    return this.forward.index - this.backward.index + 1;
+    // return this.backward.count + this.forward.count;
   }
 
-  constructor() {
+  get paddings(): number {
+    return this.forward.padding + this.backward.padding;
+  }
+
+  constructor(direction?: Direction) {
+    this.direction = direction || null;
     this.forward = new ItemsDirCounter();
     this.backward = new ItemsDirCounter();
   }

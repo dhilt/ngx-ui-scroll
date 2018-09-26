@@ -10,7 +10,7 @@ interface Custom {
   mass?: boolean;
 }
 
-const singleForwardMaxScrollConfigList = [{
+const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22, itemSize: 20 },
   templateSettings: { viewportHeight: 71, itemHeight: 20 },
   custom: { direction: Direction.forward, count: 1 }
@@ -31,47 +31,14 @@ const singleForwardMaxScrollConfigList = [{
   templateSettings: { viewportWidth: 300, itemWidth: 75, horizontal: true },
   custom: { direction: Direction.forward, count: 1 }
 }];
-//  .reduce((acc, item, j) => [...acc, ...(j === 0 ? [{...item, datasourceDevSettings: { debug: true }}] : [])], []);
+
+// Array.from(Array(configList.length).keys()).reverse().forEach(index =>
+//   !!(configList[index].datasourceDevSettings = { debug: true }) &&
+//   index !== 2 && configList.splice(index, 1)
+// );
 
 const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);
 
-const massBouncingScrollsConfigListExpected = [{
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 220,
-    edgeItemIndexOpposite: Direction.forward === direction ? 104 : 99,
-    edgeItemIndex: Direction.forward === direction ? 109 : 94
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 300,
-    edgeItemIndexOpposite: Direction.forward === direction ? 7 : -1,
-    edgeItemIndex: Direction.forward === direction ? 13 : -7
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 1180,
-    edgeItemIndexOpposite: Direction.forward === direction ? 8 : -35,
-    edgeItemIndex: Direction.forward === direction ? 19 : -46
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 10170,
-    edgeItemIndexOpposite: Direction.forward === direction ? 61 : -38,
-    edgeItemIndex: Direction.forward === direction ? 75 : -52
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 5310,
-    edgeItemIndexOpposite: Direction.forward === direction ? -42 : -92,
-    edgeItemIndex: Direction.forward === direction ? -34 : -100
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 3000,
-    edgeItemIndexOpposite: Direction.forward === direction ? 36 : -20,
-    edgeItemIndex: Direction.forward === direction ? 114 : -98
-  })
-}];
 const massTwoDirectionalScrollsConfigListExpected = [{
   expected: (direction: string) => ({
     paddingSizeOpposite: 420,
@@ -111,7 +78,7 @@ const massTwoDirectionalScrollsConfigListExpected = [{
 }];
 
 const singleBackwardMaxScrollConfigList =
-  singleForwardMaxScrollConfigList.map((config, index) => ({
+  configList.map((config, index) => ({
     ...config,
     custom: {
       ...config.custom,
@@ -120,7 +87,7 @@ const singleBackwardMaxScrollConfigList =
   }));
 
 const massForwardScrollsConfigList =
-  singleForwardMaxScrollConfigList.map((config, index) => ({
+  configList.map((config, index) => ({
     ...config,
     custom: {
       direction: Direction.backward,
@@ -144,8 +111,7 @@ const massBouncingScrollsConfigList_fwd =
       direction: Direction.forward,
       count: (3 + treatIndex(index)) * 2, // 3-6 (fwd + bwd) scroll events per config
       bouncing: true
-    },
-    expected: massBouncingScrollsConfigListExpected[index].expected(Direction.forward)
+    }
   }));
 
 const massBouncingScrollsConfigList_bwd =
@@ -155,8 +121,7 @@ const massBouncingScrollsConfigList_bwd =
       direction: Direction.backward,
       count: (3 + treatIndex(index)) * 2, // 3-6 (fwd + bwd) scroll events per config
       bouncing: true
-    },
-    expected: massBouncingScrollsConfigListExpected[index].expected(Direction.backward)
+    }
   }));
 
 const massTwoDirectionalScrollsConfigList_fwd =
@@ -213,6 +178,15 @@ const getInitialItemsCounter = (misc: Misc): ItemsCounter => {
   return result;
 };
 
+const getFullHouseDiff = (viewportSize, paddingDelta, itemSize, bufferSize): number => {
+  const sizeToFill = viewportSize + 2 * paddingDelta; // size to fill the viewport + padding deltas
+  const itemsToFillNotRounded = sizeToFill / itemSize;
+  const itemsToFillRounded = Math.ceil(sizeToFill / itemSize);
+  const itemsToFill = itemsToFillRounded + (itemsToFillNotRounded === itemsToFillRounded ? 0 : 1);
+  const bufferSizeDiff = bufferSize - itemsToFill;
+  return Math.max(0, bufferSizeDiff);
+};
+
 const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: ItemsCounter): ItemsCounter => {
   misc.fixture.detectChanges();
   const { bufferSize, padding } = misc.scroller.settings;
@@ -220,14 +194,16 @@ const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: Item
   const itemSize = misc.scroller.buffer.averageSize;
   const fwd = direction === Direction.forward;
   const opposite = fwd ? Direction.backward : Direction.forward;
+  const delta = viewportSize * padding;
 
   // handle direction (fetch)
-  const delta = viewportSize * padding;
+  const fullHouseDiff = getFullHouseDiff(viewportSize, delta, itemSize, bufferSize);
   const _singleFetchCount = Math.ceil(delta / itemSize);
   const singleFetchCount = Math.max(bufferSize, _singleFetchCount);
-  const itemsToFetch = previous.direction && previous.direction !== direction ? _singleFetchCount : singleFetchCount;
+  const itemsToFetch = previous.direction && previous.direction !== direction ?
+    (_singleFetchCount + fullHouseDiff) : singleFetchCount;
   const newDirIndex = previous.get(direction).index + // previous edge index
-    (previous.get(direction).padding / itemSize) + // how many items are needed to fill the padding
+    (fwd ? 1 : -1) * (previous.get(direction).padding / itemSize) + // how many items are needed to fill the padding
     (fwd ? 1 : -1) * itemsToFetch; // new pack of items
 
   // handle opposite (clip)
@@ -292,7 +268,7 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
 describe('Basic Scroll Spec', () => {
 
   describe('Single max fwd scroll event', () =>
-    singleForwardMaxScrollConfigList.forEach(config =>
+    configList.forEach(config =>
       makeTest({
         config,
         title: 'should process 1 forward max scroll',
@@ -331,26 +307,26 @@ describe('Basic Scroll Spec', () => {
     )
   );
 
-  // describe('Bouncing max two-directional scroll events (fwd started)', () =>
-  //   massBouncingScrollsConfigList_fwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some bouncing scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
-  // describe('Bouncing max two-directional scroll events (bwd started)', () =>
-  //   massBouncingScrollsConfigList_bwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some bouncing scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
+  describe('Bouncing max two-directional scroll events (fwd started)', () =>
+    massBouncingScrollsConfigList_fwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some bouncing scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
+  describe('Bouncing max two-directional scroll events (bwd started)', () =>
+    massBouncingScrollsConfigList_bwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some bouncing scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
   // describe('Mass max two-directional scroll events (fwd started)', () =>
   //   massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
   //     makeTest({
@@ -372,3 +348,4 @@ describe('Basic Scroll Spec', () => {
   // );
 
 });
+

@@ -8,6 +8,7 @@ export class Logger {
   readonly logTime: boolean;
   readonly getTime: Function;
   readonly getStat: Function;
+  readonly getFetchRange: Function;
   readonly getInnerLoopCount: Function;
   readonly getWorkflowCycleData: Function;
   private logs: Array<any> = [];
@@ -29,6 +30,11 @@ export class Logger {
         'items: ' + scroller.buffer.getVisibleItemsCount() + ', ' +
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
+    this.getFetchRange = (): string => {
+      const { firstIndex, lastIndex } = scroller.state.fetch;
+      const hasInterval = firstIndex !== null && lastIndex !== null && !isNaN(firstIndex) && !isNaN(lastIndex);
+      return hasInterval ? `[${firstIndex}..${lastIndex}]` : 'no';
+    };
     this.getInnerLoopCount = (): number => scroller.state.innerLoopCount;
     this.getWorkflowCycleData = (more: boolean): string =>
       `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}` + (more ? '-' : '');
@@ -38,7 +44,15 @@ export class Logger {
   stat(str?: string) {
     if (this.debug) {
       const logStyles = ['color: #888; border: dashed #888 0; border-bottom-width: 0px', 'color: #000; border-width: 0'];
-      this.log(() => [(str ? `%c${str} ` : '') + 'stat,%c ' + this.getStat(), ...logStyles]);
+      this.log(() => ['%cstat' + (str ? ` ${str}` : '') + ',%c ' + this.getStat(), ...logStyles]);
+    }
+  }
+
+  fetch(str?: string) {
+    if (this.debug) {
+      const _text = 'fetch interval' + (str ? ` ${str}` : '');
+      const logStyles = ['color: #888', 'color: #000'];
+      this.log(() => [`%c${_text}: %c${this.getFetchRange()}`, ...logStyles]);
     }
   }
 

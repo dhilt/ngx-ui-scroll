@@ -45,6 +45,7 @@ export default class PreFetch {
     if (scroller.settings.windowViewport) {
       viewport.startDelta += viewport.getOffset();
     }
+    scroller.logger.log(() => `start delta is ${viewport.startDelta}`);
   }
 
   static setFetchIndexes(scroller: Scroller) {
@@ -55,6 +56,7 @@ export default class PreFetch {
     const firstIndexPosition =
       PreFetch.setFirstIndexBuffer(scroller, startPosition);
     PreFetch.setLastIndexBuffer(scroller, firstIndexPosition, endPosition);
+    scroller.logger.fetch();
   }
 
   static setFirstIndexBuffer(scroller: Scroller, startPosition: number): number {
@@ -118,9 +120,11 @@ export default class PreFetch {
       return;
     }
     const { fetch } = scroller.state;
+    const firstIndex = <number>fetch.firstIndex;
+    const lastIndex = <number>fetch.lastIndex;
     const packs: Array<Array<number>> = [[]];
     let p = 0;
-    for (let i = <number>fetch.firstIndexBuffer; i <= <number>fetch.lastIndexBuffer; i++) {
+    for (let i = firstIndex; i <= lastIndex; i++) {
       if (!buffer.get(i)) {
         packs[p].push(i);
       } else if (packs[p].length) {
@@ -137,6 +141,9 @@ export default class PreFetch {
     }
     fetch.firstIndex = Math.max(pack[0], buffer.absMinIndex);
     fetch.lastIndex = Math.min(pack[pack.length - 1], buffer.absMaxIndex);
+    if (fetch.firstIndex !== firstIndex || fetch.lastIndex !== lastIndex) {
+      scroller.logger.fetch('after Buffer flushing');
+    }
   }
 
   static checkFetchPackSize(scroller: Scroller) {
@@ -161,10 +168,10 @@ export default class PreFetch {
         fetch.firstIndex = fetch.firstIndexBuffer = newFirstIndex;
       }
     }
-    if (fetch.firstIndex === firstIndex && fetch.lastIndex === lastIndex) {
-      return;
+    if (fetch.firstIndex !== firstIndex || fetch.lastIndex !== lastIndex) {
+      scroller.logger.fetch('after bufferSize adjustment');
+      PreFetch.skipBufferedItems(scroller);
     }
-    PreFetch.skipBufferedItems(scroller);
   }
 
   static setFetchDirection(scroller: Scroller) {
@@ -172,7 +179,7 @@ export default class PreFetch {
     if (fetch.lastIndex && buffer.size) {
       const direction = fetch.lastIndex < buffer.items[0].$index ? Direction.backward : Direction.forward;
       fetch.direction = direction;
-      scroller.logger.log(() => `setting fetch direction to "${direction}"`);
+      scroller.logger.log(() => `fetch direction is "${direction}"`);
     }
   }
 

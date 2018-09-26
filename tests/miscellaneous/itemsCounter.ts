@@ -43,9 +43,9 @@ export class ItemsCounter {
 
   set(token: Direction, value: IItemsDirCounter) {
     if (token === Direction.backward) {
-      this.backward = { ...this.backward, ...value };
+      Object.assign(this.backward, value);
     } else {
-      this.forward = { ...this.forward, ...value };
+      Object.assign(this.forward, value);
     }
   }
 }

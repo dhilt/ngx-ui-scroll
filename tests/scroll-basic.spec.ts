@@ -3,13 +3,6 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter } from './miscellaneous/itemsCounter';
 
-interface Custom {
-  direction: Direction;
-  count: number;
-  bouncing?: boolean;
-  mass?: boolean;
-}
-
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22, itemSize: 20 },
   templateSettings: { viewportHeight: 71, itemHeight: 20 },
@@ -34,48 +27,10 @@ const configList: TestBedConfig[] = [{
 
 // Array.from(Array(configList.length).keys()).reverse().forEach(index =>
 //   !!(configList[index].datasourceDevSettings = { debug: true }) &&
-//   index !== 2 && configList.splice(index, 1)
+//   index !== 0 && configList.splice(index, 1)
 // );
 
 const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);
-
-const massTwoDirectionalScrollsConfigListExpected = [{
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 420,
-    edgeItemIndexOpposite: Direction.forward === direction ? 120 : 83,
-    edgeItemIndex: Direction.forward === direction ? 128 : 75
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 720,
-    edgeItemIndexOpposite: Direction.forward === direction ? 36 : -30,
-    edgeItemIndex: Direction.forward === direction ? 46 : -40
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 2260,
-    edgeItemIndexOpposite: Direction.forward === direction ? 94 : -121,
-    edgeItemIndex: Direction.forward === direction ? 112 : -139
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 10170,
-    edgeItemIndexOpposite: Direction.forward === direction ? 91 : -68,
-    edgeItemIndex: Direction.forward === direction ? 105 : -82
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 6030,
-    edgeItemIndexOpposite: Direction.forward === direction ? -18 : -116,
-    edgeItemIndex: Direction.forward === direction ? -9 : -125
-  })
-}, {
-  expected: (direction: string) => ({
-    paddingSizeOpposite: 5220,
-    edgeItemIndexOpposite: Direction.forward === direction ? 230 : -214,
-    edgeItemIndex: Direction.forward === direction ? 327 : -311
-  })
-}];
 
 const singleBackwardMaxScrollConfigList =
   configList.map((config, index) => ({
@@ -131,8 +86,7 @@ const massTwoDirectionalScrollsConfigList_fwd =
       direction: Direction.forward,
       count: (3 + treatIndex(index)) * 2, // 3-6 fwd + 3-6 bwd scroll events per config
       mass: true
-    },
-    expected: massTwoDirectionalScrollsConfigListExpected[index].expected(Direction.forward)
+    }
   }));
 
 const massTwoDirectionalScrollsConfigList_bwd =
@@ -142,8 +96,7 @@ const massTwoDirectionalScrollsConfigList_bwd =
       direction: Direction.backward,
       count: (3 + treatIndex(index)) * 2, // 3-6 fwd + 3-6 bwd scroll events per config
       mass: true
-    },
-    expected: massTwoDirectionalScrollsConfigListExpected[index].expected(Direction.backward)
+    }
   }));
 
 const doScrollMax = (config: TestBedConfig, misc: Misc) => {
@@ -178,7 +131,9 @@ const getInitialItemsCounter = (misc: Misc): ItemsCounter => {
   return result;
 };
 
-const getFullHouseDiff = (viewportSize, paddingDelta, itemSize, bufferSize): number => {
+const getFullHouseDiff = (
+  viewportSize: number, paddingDelta: number, itemSize: number, bufferSize: number
+): number => {
   const sizeToFill = viewportSize + 2 * paddingDelta; // size to fill the viewport + padding deltas
   const itemsToFillNotRounded = sizeToFill / itemSize;
   const itemsToFillRounded = Math.ceil(sizeToFill / itemSize);
@@ -227,7 +182,9 @@ const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: Item
 };
 
 const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const wfCount = config.custom.count + 1;
+  const custom = config.custom;
+  const wfCount = custom.count + 1;
+  const wfCountMiddle = Math.ceil(wfCount / 2);
   let itemsCounter: ItemsCounter;
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -235,20 +192,20 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
     if (cycles === 1) {
       itemsCounter = getInitialItemsCounter(misc);
     } else {
-      itemsCounter = getCurrentItemsCounter(misc, config.custom.direction, itemsCounter);
+      itemsCounter = getCurrentItemsCounter(misc, custom.direction, itemsCounter);
     }
     if (cycles < wfCount) {
-      if (config.custom.bouncing) {
+      if (custom.bouncing) {
         invertDirection(config);
-      } else if (config.custom.mass) {
-        if (cycles === (wfCount / 2)) {
+      } else if (custom.mass) {
+        if (cycles === wfCountMiddle) {
           invertDirection(config);
         }
       }
       doScrollMax(config, misc);
     } else {
       // expectations
-      const direction = config.custom.direction;
+      const direction = custom.direction;
       const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
       const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(direction);
       const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(opposite);
@@ -327,25 +284,25 @@ describe('Basic Scroll Spec', () => {
     )
   );
 
-  // describe('Mass max two-directional scroll events (fwd started)', () =>
-  //   massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some two-directional scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
-  //
-  // describe('Mass max two-directional scroll events (bwd started)', () =>
-  //   massTwoDirectionalScrollsConfigList_bwd.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should process some two-directional scrolls',
-  //       it: shouldScroll(config)
-  //     })
-  //   )
-  // );
+  describe('Mass max two-directional scroll events (fwd started)', () =>
+    massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some two-directional scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
+
+  describe('Mass max two-directional scroll events (bwd started)', () =>
+    massTwoDirectionalScrollsConfigList_bwd.forEach(config =>
+      makeTest({
+        config,
+        title: 'should process some two-directional scrolls',
+        it: shouldScroll(config)
+      })
+    )
+  );
 
 });
 

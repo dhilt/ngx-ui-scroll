@@ -25,11 +25,6 @@ const configList: TestBedConfig[] = [{
   custom: { direction: Direction.forward, count: 1 }
 }];
 
-// Array.from(Array(configList.length).keys()).reverse().forEach(index =>
-//   !!(configList[index].datasourceDevSettings = { debug: true }) &&
-//   index !== 0 && configList.splice(index, 1)
-// );
-
 const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);
 
 const singleBackwardMaxScrollConfigList =

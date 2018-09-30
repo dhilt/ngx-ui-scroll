@@ -1,5 +1,6 @@
 import { Item } from './item';
 import { Settings } from '../classes/settings';
+import { Logger } from './logger';
 
 export class ItemCache {
   $index: number;
@@ -16,17 +17,35 @@ export class ItemCache {
   }
 }
 
+export class RecalculateAverage {
+  newItems: Array<number>;
+  oldItems: Array<number>;
+
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.newItems = [];
+    this.oldItems = [];
+  }
+}
+
 export class Cache {
   averageSize: number;
   minIndex: number;
   maxIndex: number;
+  recalculateAverage: RecalculateAverage;
 
   private items: Map<number, ItemCache>;
+  readonly logger: Logger;
 
-  constructor(settings: Settings) {
+  constructor(settings: Settings, logger: Logger) {
     this.items = new Map<number, ItemCache>();
     this.averageSize = settings.itemSize;
     this.resetIndexes();
+    this.recalculateAverage = new RecalculateAverage();
+    this.logger = logger;
   }
 
   resetIndexes() {
@@ -34,24 +53,38 @@ export class Cache {
     this.maxIndex = -Infinity;
   }
 
-  updateAverageSize(item: ItemCache) {
-    this.averageSize = ((this.items.size - 1) * this.averageSize + item.size) / this.items.size;
+  recalculateAverageSize() {
+    const lengthOld = this.recalculateAverage.oldItems.length;
+    const lengthNew = this.recalculateAverage.newItems.length;
+    if (!lengthOld && !lengthNew) {
+      return;
+    }
+    const sizeOld = this.recalculateAverage.oldItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
+    const sizeNew = this.recalculateAverage.newItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
+    const averageSizeLength = this.items.size - lengthNew;
+    if (lengthOld) {
+      this.averageSize = ((averageSizeLength - lengthOld) * this.averageSize + sizeOld) / averageSizeLength;
+    }
+    if (lengthNew) {
+      this.averageSize += sizeNew / lengthNew;
+    }
+    this.recalculateAverage.reset();
+    this.logger.log(() => `average size has been updated: ${this.averageSize}`);
   }
 
   add(item: Item): ItemCache {
-    let itemCache = this.items.get(item.$index);
+    let itemCache = this.get(item.$index);
     if (itemCache) {
       itemCache.data = item.data;
       if (itemCache.size !== item.size) {
         itemCache.size = item.size;
-        this.updateAverageSize(itemCache);
-        // todo: update positions ?
+        this.recalculateAverage.oldItems.push(item.$index);
       }
     } else {
       itemCache = new ItemCache(item);
       this.items.set(item.$index, itemCache);
       if (this.averageSize !== itemCache.size) {
-        this.updateAverageSize(itemCache);
+        this.recalculateAverage.newItems.push(item.$index);
       }
     }
     if (item.$index < this.minIndex) {
@@ -61,6 +94,11 @@ export class Cache {
       this.maxIndex = item.$index;
     }
     return itemCache;
+  }
+
+  getItemSize(index: number): number {
+    const item = this.get(index);
+    return item ? item.size : 0;
   }
 
   get(index: number): ItemCache | undefined {

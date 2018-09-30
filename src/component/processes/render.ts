@@ -25,10 +25,10 @@ export default class Render {
   }
 
   static processElements(scroller: Scroller) {
-    const { fetch, fetch: { items } } = scroller.state;
+    const { state: { fetch, fetch: { items } }, viewport, buffer } = scroller;
     for (let j = 0; j < items.length; j++) {
       const item = items[j];
-      const element = scroller.viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);
+      const element = viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);
       if (!element) {
         return false;
       }
@@ -37,11 +37,12 @@ export default class Render {
       item.element.style.position = '';
       item.invisible = false;
       item.setSize();
-      scroller.buffer.cache.add(item);
+      buffer.cache.add(item);
       if (item.$index < fetch.minIndex) {
         fetch.negativeSize += item.size;
       }
     }
+    buffer.checkAverageSize();
     scroller.logger.stat('after new items render');
     return true;
   }

@@ -4,6 +4,7 @@ import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
+import { Logger } from './logger';
 
 export class Buffer {
 
@@ -19,15 +20,17 @@ export class Buffer {
 
   private startIndex: number;
   readonly minBufferSize: number;
+  readonly logger: Logger;
 
-  constructor(settings: Settings) {
+  constructor(settings: Settings, logger: Logger) {
     this.$items = new BehaviorSubject<Array<Item>>([]);
-    this.cache = new Cache(settings);
+    this.cache = new Cache(settings, logger);
     this.minIndexUser = settings.minIndex;
     this.maxIndexUser = settings.maxIndex;
     this.reset();
     this.startIndex = settings.startIndex;
     this.minBufferSize = settings.bufferSize;
+    this.logger = logger;
   }
 
   reset(reload?: boolean, startIndex?: number) {
@@ -142,6 +145,12 @@ export class Buffer {
   getSizeByIndex(index: number): number {
     const item = this.cache.get(index);
     return item ? item.size : this.averageSize;
+  }
+
+
+
+  checkAverageSize() {
+    this.cache.recalculateAverageSize();
   }
 
 }

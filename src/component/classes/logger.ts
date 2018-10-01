@@ -20,14 +20,15 @@ export class Logger {
     this.logTime = settings.logTime;
     this.getTime = (): string => ` // time: ${scroller.state.time}`;
     this.getStat = (): string => {
-      const first = scroller.buffer.getFirstVisibleItem();
-      const last = scroller.buffer.getLastVisibleItem();
-      return 'top: ' + scroller.viewport.scrollPosition + ', ' +
-        'size: ' + scroller.viewport.getScrollableSize() + ', ' +
-        'bwd_p: ' + scroller.viewport.padding.backward.size + ', ' +
-        'fwd_p: ' + scroller.viewport.padding.forward.size + ', ' +
-        'average: ' + scroller.buffer.averageSize + ', ' +
-        'items: ' + scroller.buffer.getVisibleItemsCount() + ', ' +
+      const { buffer, viewport } = scroller;
+      const first = buffer.getFirstVisibleItem();
+      const last = buffer.getLastVisibleItem();
+      return 'top: ' + viewport.scrollPosition + ', ' +
+        'size: ' + viewport.getScrollableSize() + ', ' +
+        'bwd_p: ' + viewport.padding.backward.size + ', ' +
+        'fwd_p: ' + viewport.padding.forward.size + ', ' +
+        'average: ' + (buffer.hasItemSize ? buffer.averageSize : 'no') + ', ' +
+        'items: ' + buffer.getVisibleItemsCount() + ', ' +
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
     this.getFetchRange = (): string => {

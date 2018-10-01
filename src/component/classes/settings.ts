@@ -6,7 +6,6 @@ export const defaultSettings: ISettings = {
   startIndex: 1,
   minIndex: -Infinity,
   maxIndex: Infinity,
-  itemSize: 20,
   bufferSize: 5,
   padding: 0.5,
   infinite: false,

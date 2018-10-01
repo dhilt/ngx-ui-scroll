@@ -36,10 +36,18 @@ const assignNumeric = (
 };
 
 const assignMinimalNumeric = (
-  target: Settings, source: ISettings, token: string, defaults: ISettings, minSettings: ISettings, integer = false
+  target: Settings,
+  source: ISettings,
+  token: string,
+  defaults: ISettings,
+  minSettings: ISettings,
+  integer = false,
+  mustExist = true
 ) => {
   if (assignNumeric(target, source, token, defaults, integer) !== true) {
-    return;
+    if (!mustExist) {
+      return;
+    }
   }
   if ((<any>target)[token] < (<any>minSettings)[token]) {
     console.warn(token + ' setting is less than minimum, set it to ' + (<any>minSettings)[token]);
@@ -66,7 +74,7 @@ export const assignSettings = (
   assignNumeric(target, settings, 'startIndex', defaults);
   assignNumeric(target, settings, 'minIndex', defaults);
   assignNumeric(target, settings, 'maxIndex', defaults);
-  assignMinimalNumeric(target, settings, 'itemSize', defaults, minSettings, true);
+  assignMinimalNumeric(target, settings, 'itemSize', defaults, minSettings, true, false);
   assignMinimalNumeric(target, settings, 'bufferSize', defaults, minSettings, true);
   assignMinimalNumeric(target, settings, 'padding', defaults, minSettings);
   assignBoolean(target, settings, 'infinite', defaults);

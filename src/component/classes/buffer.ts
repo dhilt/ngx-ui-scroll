@@ -24,7 +24,7 @@ export class Buffer {
 
   constructor(settings: Settings, logger: Logger) {
     this.$items = new BehaviorSubject<Array<Item>>([]);
-    this.cache = new Cache(settings, logger);
+    this.cache = new Cache(settings.itemSize, logger);
     this.minIndexUser = settings.minIndex;
     this.maxIndexUser = settings.maxIndex;
     this.reset();
@@ -39,7 +39,7 @@ export class Buffer {
     }
     this.items = [];
     this.pristine = true;
-    this.cache.resetIndexes();
+    this.cache.reset();
     this.absMinIndex = this.minIndexUser;
     this.absMaxIndex = this.maxIndexUser;
     if (typeof startIndex !== 'undefined') {
@@ -63,6 +63,10 @@ export class Buffer {
 
   get averageSize(): number {
     return this.cache.averageSize;
+  }
+
+  get hasItemSize(): boolean {
+    return this.averageSize !== undefined;
   }
 
   get minIndex(): number {
@@ -146,8 +150,6 @@ export class Buffer {
     const item = this.cache.get(index);
     return item ? item.size : this.averageSize;
   }
-
-
 
   checkAverageSize() {
     this.cache.recalculateAverageSize();

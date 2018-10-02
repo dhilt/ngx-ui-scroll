@@ -26,7 +26,7 @@ getTestBed().initTestEnvironment(
 const testContext = require.context(
   './',
   false,
-  /(common|datasource|initial\-load|scroll\-basic|indexes)\.spec\.ts/
+  /(common|datasource\-get|initial\-load|scroll\-basic|min\-max\-indexes)\.spec\.ts/
 );
 
 function requireAll(requireContext) {

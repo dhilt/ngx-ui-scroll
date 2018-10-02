@@ -1,5 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
+import { configListDestructiveFilter } from './miscellaneous/common';
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },
@@ -24,6 +25,12 @@ const configList: TestBedConfig[] = [{
   },
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
 }];
+
+const noItemSizeConfigList = configList.map(
+  ({ datasourceSettings: { itemSize, ...restDatasourceSettings }, ...config }) => ({
+    ...config, datasourceSettings: { ...restDatasourceSettings }
+  })
+);
 
 const commonConfig = configList[0]; // [-49, ..., 100]
 
@@ -56,17 +63,30 @@ const noMinIndexConfigList: TestBedConfig[] = configList.map(
 );
 
 const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
-  const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
+  const { maxIndex, minIndex, itemSize: _itemSize, startIndex, padding } = settings.datasourceSettings;
   const { bufferSize } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize(settings);
   const viewportSizeDelta = viewportSize * padding;
+  const itemSize = _itemSize || misc.scroller.buffer.averageSize;
   const hasMinIndex = settings.datasourceSettings.hasOwnProperty('minIndex');
   const hasMaxIndex = settings.datasourceSettings.hasOwnProperty('maxIndex');
+  let innerLoopCount = 3;
 
   const _negativeItemsAmount = Math.ceil(viewportSizeDelta / itemSize);
   const negativeItemsAmount = Math.max(_negativeItemsAmount, bufferSize);
   const _positiveItemsAmount = Math.ceil((viewportSize + viewportSizeDelta) / itemSize);
-  const positiveItemsAmount = Math.max(_positiveItemsAmount, bufferSize);
+  let positiveItemsAmount = Math.max(_positiveItemsAmount, bufferSize);
+
+  if (!_itemSize) { // if Settings.itemSize is not set, then there could be 1 more fetch
+    const positiveDiff = _positiveItemsAmount - bufferSize;
+    if (positiveDiff > 0) {
+      innerLoopCount = 4;
+      // if the additional fetch size is less than bufferSize
+      if (positiveDiff < bufferSize) {
+        positiveItemsAmount = 2 * bufferSize;
+      }
+    }
+  }
 
   if (hasMinIndex) {
     const negativeSize = (startIndex - minIndex) * itemSize;
@@ -93,6 +113,8 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
     totalSize = knownSize + negativeItemsAmount * itemSize;
   }
   expect(misc.getScrollableSize()).toEqual(totalSize);
+
+  expect(misc.scroller.state.innerLoopCount).toEqual(innerLoopCount);
 
   done();
 };
@@ -143,32 +165,6 @@ describe('Min/max Indexes Spec', () => {
     );
   });
 
-  describe('startIndex\'s around minIndex', () => {
-    startIndexAroundMinIndexConfigList.forEach(config =>
-      makeTest({
-        config,
-        title: 'should reset backward padding',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testStartIndexEdgeCase(config, misc, done)
-          )
-      })
-    );
-  });
-
-  describe('startIndex\'s around maxIndex', () => {
-    startIndexAroundMaxIndexConfigList.forEach(config =>
-      makeTest({
-        config,
-        title: 'should reset forward padding',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testStartIndexEdgeCase(config, misc, done)
-          )
-      })
-    );
-  });
-
   describe('No maxIndex cases', () => {
     noMaxIndexConfigList.forEach(config =>
       makeTest({
@@ -190,6 +186,45 @@ describe('Min/max Indexes Spec', () => {
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
             _testCommonCase(config, misc, done)
+          )
+      })
+    );
+  });
+
+  describe('No itemSize cases', () => {
+    noItemSizeConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should fill the viewport and the paddings',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            _testCommonCase(config, misc, done)
+          )
+      })
+    );
+  });
+
+  describe('startIndex\'s around minIndex', () => {
+    startIndexAroundMinIndexConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reset backward padding',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            _testStartIndexEdgeCase(config, misc, done)
+          )
+      })
+    );
+  });
+
+  describe('startIndex\'s around maxIndex', () => {
+    startIndexAroundMaxIndexConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reset forward padding',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            _testStartIndexEdgeCase(config, misc, done)
           )
       })
     );

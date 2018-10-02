@@ -7,7 +7,7 @@ import { configureTestBed } from './scaffolding/testBed';
 import { defaultDatasourceClass } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest } from './scaffolding/runner';
 
 describe('Common Spec', () => {
 

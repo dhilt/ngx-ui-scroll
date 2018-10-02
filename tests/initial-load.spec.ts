@@ -2,7 +2,7 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, ItemsDirCounter } from './miscellaneous/itemsCounter';
 
-const fixedAverageSizeConfigList: TestBedConfig[] = [{
+const fixedItemSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 2, itemSize: 15 },
   templateSettings: { viewportHeight: 20, itemHeight: 15 }
 }, {
@@ -19,7 +19,7 @@ const fixedAverageSizeConfigList: TestBedConfig[] = [{
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
 }];
 
-const fixedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
+const fixedItemSizeAndBigBufferSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, padding: 0.1, itemSize: 20, bufferSize: 20 },
   templateSettings: { viewportHeight: 100, itemHeight: 20 }
 }, {
@@ -27,11 +27,7 @@ const fixedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   templateSettings: { viewportWidth: 200, itemWidth: 90, horizontal: true }
 }];
 
-[...fixedAverageSizeConfigList, ...fixedAverageSizeWithBigBufferSizeConfigList].forEach(config =>
-  config.expect = { fetch: { callCount: 2 } }
-);
-
-const tunedAverageSizeConfigList: TestBedConfig[] = [{
+const tunedItemSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, bufferSize: 1, padding: 0.5, itemSize: 40 },
   templateSettings: { viewportHeight: 100, itemHeight: 20 }
 }, {
@@ -45,7 +41,7 @@ const tunedAverageSizeConfigList: TestBedConfig[] = [{
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 40 }
 }];
 
-const tunedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
+const tunedItemSizeAndBigBufferSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -50, bufferSize: 7, padding: 0.5, itemSize: 30 },
   templateSettings: { viewportHeight: 120, itemHeight: 20 }
 }, {
@@ -53,11 +49,19 @@ const tunedAverageSizeWithBigBufferSizeConfigList: TestBedConfig[] = [{
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
 }];
 
-[...tunedAverageSizeConfigList, ...tunedAverageSizeWithBigBufferSizeConfigList].forEach(config =>
-  config.expect = { fetch: { callCount: 3 } }
+const noItemSizeConfigList = tunedItemSizeConfigList.map(
+  ({ datasourceSettings: { itemSize, ...restDatasourceSettings }, ...config }) => ({
+    ...config, datasourceSettings: { ...restDatasourceSettings }
+  })
 );
 
-const getFixedAverageSizeItemsCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
+const noItemSizeAndBigBufferConfigList = tunedItemSizeAndBigBufferSizeConfigList.map(
+  ({ datasourceSettings: { itemSize, ...restDatasourceSettings }, ...config }) => ({
+    ...config, datasourceSettings: { ...restDatasourceSettings }
+  })
+);
+
+const getFixedItemSizeCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
   const { bufferSize, startIndex, padding } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize(settings);
 
@@ -84,7 +88,7 @@ const getFixedAverageSizeItemsCounter = (settings: TestBedConfig, misc: Misc, it
   return itemsCounter;
 };
 
-const getNonFixedAverageSizeItemsCounter =
+const getTunedItemSizeCounter =
   (settings: TestBedConfig, misc: Misc, itemSize: number, previous?: ItemsCounter): ItemsCounter => {
     const { bufferSize, startIndex, padding } = misc.scroller.settings;
     const viewportSize = misc.getViewportSize(settings);
@@ -96,8 +100,10 @@ const getNonFixedAverageSizeItemsCounter =
     const _forward = <ItemsDirCounter>(previous ? previous.forward : {});
     let bwd, fwd;
 
-    backward.count = previous ? Math.ceil(backwardLimit / itemSize) : 0;
-    forward.count = Math.ceil(forwardLimit / itemSize);
+    // 1) fetch only in forward direction if this is the first fetch
+    // 2) fetch bufferSize items if Settings.itemSize value hasn't been set up
+    backward.count = previous ? (itemSize ? Math.ceil(backwardLimit / itemSize) : bufferSize) : 0;
+    forward.count = itemSize ? Math.ceil(forwardLimit / itemSize) : bufferSize;
     if (previous) {
       backward.count = Math.max(backward.count, _backward.count);
       forward.count = Math.max(forward.count, _forward.count);
@@ -146,7 +152,7 @@ const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCounter: Items
   expect(misc.checkElementContentByIndex(startIndex)).toEqual(true);
 };
 
-const testFixedAverageSizeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const testFixedItemSizeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   expect(misc.workflow.cyclesDone).toEqual(1);
   expect(misc.scroller.state.fetch.callCount).toEqual(2);
   expect(misc.scroller.state.innerLoopCount).toEqual(3);
@@ -155,15 +161,15 @@ const testFixedAverageSizeCase = (settings: TestBedConfig, misc: Misc, done: Fun
   expect(misc.padding.forward.getSize()).toEqual(0);
 
   const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
-  const itemsCounter = getFixedAverageSizeItemsCounter(settings, misc, itemSize);
+  const itemsCounter = getFixedItemSizeCounter(settings, misc, itemSize);
   testItemsCount(settings, misc, itemsCounter);
   done();
 };
 
-const testNonFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const testTunedItemSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const loopCount = misc.scroller.state.innerLoopCount;
   if (loopCount === 4) {
-    expect(misc.scroller.state.workflowCycleCount).toEqual(1);
+    expect(misc.workflow.cyclesDone).toEqual(0);
     expect(misc.scroller.state.fetch.callCount).toEqual(3);
     expect(misc.scroller.state.clipCall).toEqual(0);
     expect(misc.padding.backward.getSize()).toEqual(0);
@@ -174,10 +180,10 @@ const testNonFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Func
   let itemsCounter;
   if (loopCount === 1) {
     const initialItemSize = settings.datasourceSettings.itemSize;
-    itemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, initialItemSize);
+    itemsCounter = getTunedItemSizeCounter(settings, misc, initialItemSize);
   } else {
     const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
-    itemsCounter = getNonFixedAverageSizeItemsCounter(settings, misc, itemSize, misc.shared.itemsCounter);
+    itemsCounter = getTunedItemSizeCounter(settings, misc, itemSize, misc.shared.itemsCounter);
   }
   testItemsCount(settings, misc, itemsCounter);
   misc.shared.itemsCounter = itemsCounter;
@@ -185,48 +191,73 @@ const testNonFixedAverageSize = (settings: TestBedConfig, misc: Misc, done: Func
 
 describe('Initial Load Spec', () => {
 
-  describe('Fixed average item size', () => {
-    fixedAverageSizeConfigList.forEach(config =>
+  describe('Fixed itemSize', () => {
+    fixedItemSizeConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should make 2 fetches to satisfy padding limits',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testFixedAverageSizeCase(config, misc, done)
+            testFixedItemSizeCase(config, misc, done)
           )
       })
     );
-    fixedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
+    fixedItemSizeAndBigBufferSizeConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should make 2 fetches to overflow padding limits (bufferSize is big enough)',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testFixedAverageSizeCase(config, misc, done)
+            testFixedItemSizeCase(config, misc, done)
           )
       })
     );
   });
 
-  describe('Tuned average item size', () => {
-    tunedAverageSizeConfigList.forEach(config =>
+  describe('Tuned itemSize', () => {
+    tunedItemSizeConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should make 3 fetches to satisfy padding limits',
         it: (misc: Misc) => (done: Function) => {
           spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testNonFixedAverageSize(config, misc, done)
+            testTunedItemSize(config, misc, done)
           );
         }
       })
     );
-    tunedAverageSizeWithBigBufferSizeConfigList.forEach(config =>
+    tunedItemSizeAndBigBufferSizeConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
         it: (misc: Misc) => (done: Function) => {
           spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testNonFixedAverageSize(config, misc, done)
+            testTunedItemSize(config, misc, done)
+          );
+        }
+      })
+    );
+  });
+
+  describe('No itemSize', () => {
+    noItemSizeConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should make 3 fetches to satisfy padding limits',
+        it: (misc: Misc) => (done: Function) => {
+          spyOn(misc.scroller, 'finalize').and.callFake(() =>
+            testTunedItemSize(config, misc, done)
+          );
+        }
+      })
+    );
+    noItemSizeAndBigBufferConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
+        it: (misc: Misc) => (done: Function) => {
+          spyOn(misc.scroller, 'finalize').and.callFake(() =>
+            testTunedItemSize(config, misc, done)
           );
         }
       })

@@ -1,5 +1,7 @@
-import { Settings as ISettings, DevSettings as IDevSettings } from '../interfaces/index';
+import { Settings as _ISettings, DevSettings as _IDevSettings } from '../interfaces/index';
 import { Settings } from '../classes/settings';
+
+type ISettings = _ISettings | _IDevSettings;
 
 const assignBoolean = (
   target: Settings, source: ISettings, token: string, defaults: ISettings
@@ -57,11 +59,8 @@ const assignMinimalNumeric = (
   return true;
 };
 
-export const assignSettings = (
-  target: Settings, settings: ISettings, defaults: ISettings, minSettings: ISettings
-) => {
+const assignCommon = (target: Settings, settings: ISettings, defaults: ISettings) => {
   Object.assign(target, defaults);
-
   if (typeof settings === 'undefined') {
     return;
   }
@@ -69,7 +68,12 @@ export const assignSettings = (
     console.warn('settings is not an object, fallback to the defaults');
     return;
   }
+};
 
+export const assignSettings = (
+  target: Settings, settings: _ISettings, defaults: _ISettings, minSettings: _ISettings
+) => {
+  assignCommon(target, settings, defaults);
   assignBoolean(target, settings, 'adapter', defaults);
   assignNumeric(target, settings, 'startIndex', defaults);
   assignNumeric(target, settings, 'minIndex', defaults);
@@ -82,6 +86,17 @@ export const assignSettings = (
   assignBoolean(target, settings, 'windowViewport', defaults);
 };
 
-export const assignDevSettings = (target: Settings, devSettings: IDevSettings, defaults: IDevSettings) => {
-  Object.assign(target, defaults, devSettings);
+export const assignDevSettings = (
+  target: Settings, devSettings: _IDevSettings, defaults: _IDevSettings, minDevSettings: _IDevSettings
+) => {
+  assignCommon(target, devSettings, defaults);
+  assignBoolean(target, devSettings, 'debug', defaults);
+  assignBoolean(target, devSettings, 'immediateLog', defaults);
+  assignBoolean(target, devSettings, 'logTime', defaults);
+  assignMinimalNumeric(target, devSettings, 'throttle', defaults, minDevSettings, true);
+  assignBoolean(target, devSettings, 'inertia', defaults);
+  assignMinimalNumeric(target, devSettings, 'inertiaScrollDelay', defaults, minDevSettings, true);
+  assignMinimalNumeric(target, devSettings, 'inertiaScrollDelta', defaults, minDevSettings, true);
+  assignMinimalNumeric(target, devSettings, 'initDelay', defaults, minDevSettings, true);
+  assignMinimalNumeric(target, devSettings, 'initWindowDelay', defaults, minDevSettings, true);
 };

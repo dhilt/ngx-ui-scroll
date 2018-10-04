@@ -25,8 +25,8 @@ export class Logger {
       const last = buffer.getLastVisibleItem();
       return 'top: ' + viewport.scrollPosition + ', ' +
         'size: ' + viewport.getScrollableSize() + ', ' +
-        'bwd_p: ' + viewport.padding.backward.size + ', ' +
-        'fwd_p: ' + viewport.padding.forward.size + ', ' +
+        'bwd_p: ' + viewport.paddings.backward.size + ', ' +
+        'fwd_p: ' + viewport.paddings.forward.size + ', ' +
         'average: ' + (buffer.hasItemSize ? buffer.averageSize : 'no') + ', ' +
         'items: ' + buffer.getVisibleItemsCount() + ', ' +
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
@@ -40,6 +40,17 @@ export class Logger {
     this.getWorkflowCycleData = (more: boolean): string =>
       `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}` + (more ? '-' : '');
     this.log(() => `uiScroll Workflow has been started (v${scroller.version})`);
+  }
+
+  object(str: string, obj: any, stringify?: boolean) {
+    this.log(() => [
+      str,
+      stringify
+        ? JSON.stringify(obj)
+          .replace(/"/g, '')
+          .replace(/(\{|\:|\,)/g, '$1 ')
+        : obj
+    ]);
   }
 
   stat(str?: string) {

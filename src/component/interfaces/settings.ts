@@ -19,4 +19,6 @@ export interface DevSettings {
   inertia?: boolean;
   inertiaScrollDelay?: number;
   inertiaScrollDelta?: number;
+  initDelay?: number;
+  initWindowDelay?: number;
 }

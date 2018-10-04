@@ -26,20 +26,29 @@ export class Workflow {
     });
     this.cyclesDone = 0;
     this.onScrollHandler = () => Scroll.run(this.scroller);
-    setTimeout(() => {
-      this.scroller.logger.log(() => `uiScroll Workflow listeners are being initialized`);
-      this.initListeners();
-    });
+
+    if (this.scroller.settings.initializeDelay) {
+      setTimeout(() => this.init(), this.scroller.settings.initializeDelay);
+    } else {
+      this.init();
+    }
+  }
+
+  init() {
+    this.scroller.init();
+    this.scroller.logger.stat('initialization');
+    this.initListeners();
   }
 
   initListeners() {
     const scroller = this.scroller;
+    scroller.logger.log(() => `uiScroll Workflow listeners are being initialized`);
     this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
-    this.iniScrollEventListener();
+    this.initScrollEventListener();
   }
 
-  iniScrollEventListener() {
+  initScrollEventListener() {
     let passiveSupported = false;
     try {
       window.addEventListener(

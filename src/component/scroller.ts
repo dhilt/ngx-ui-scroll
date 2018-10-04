@@ -43,8 +43,10 @@ export class Scroller {
     this.logger = new Logger(this);
     this.routines = new Routines(this.settings);
     this.state = new State(this.settings, this.logger);
-    this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.state, this.logger);
     this.buffer = new Buffer(this.settings, this.logger);
+    this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.state, this.logger);
+
+    this.logger.object('uiScroll settings object', this.settings, true);
 
     if (!datasource.constructed) {
       this.datasource = new Datasource(datasource, !this.settings.adapter);
@@ -54,14 +56,10 @@ export class Scroller {
     } else {
       this.datasource.adapter.initialize(this);
     }
+  }
 
-    this.logger.stat('initialization');
-    this.logger.log(() => ['uiScroll settings object', this.settings]);
-    // this.logger.log(() => ['uiScroll settings object',
-    //   JSON.stringify(this.settings)
-    //     .replace(/"/g, '')
-    //     .replace(/(\{|\:|\,)/g, '$1 ')
-    // ]);
+  init() {
+    this.viewport.reset(0);
   }
 
   bindData(): Observable<any> {

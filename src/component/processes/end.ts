@@ -77,12 +77,17 @@ export default class End {
   }
 
   static getNext(scroller: Scroller, error?: any): ProcessRun | null {
+    const { state: { fetch, scrollState } } = scroller;
     let next: ProcessRun | null = null;
     if (!error) {
-      if (scroller.state.fetch.hasNewItems) {
+      if (fetch.hasNewItems) {
         next = { scroll: false };
       }
-      if (scroller.state.scrollState.keepScroll) {
+      // if (scrollState.window.delta) {
+      //   console.log('%cWINDOW DELTA', 'background-color: red;');
+      //   next = { scroll: true };
+      // }
+      if (scrollState.keepScroll) {
         next = { scroll: true, keepScroll: true };
       }
     }

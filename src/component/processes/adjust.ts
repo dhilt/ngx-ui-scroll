@@ -6,6 +6,8 @@ export default class Adjust {
   static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {
+    scroller.state.preAdjustPosition = scroller.viewport.scrollPosition;
+
     // padding-elements adjustments
     const setPaddingsResult =
       Adjust.setPaddings(scroller);
@@ -20,7 +22,7 @@ export default class Adjust {
     }
 
     // scroll position adjustments
-    Adjust.fixNegativeScroll(scroller, <number>setPaddingsResult);
+    Adjust.fixScrollPosition(scroller, <number>setPaddingsResult);
 
     scroller.callWorkflow({
       process: Process.adjust,
@@ -35,9 +37,8 @@ export default class Adjust {
     if (!firstItem || !lastItem) {
       return false;
     }
-    scroller.state.preAdjustPosition = viewport.scrollPosition;
-    const forwardPadding = viewport.padding[Direction.forward];
-    const backwardPadding = viewport.padding[Direction.backward];
+    const forwardPadding = viewport.paddings.forward;
+    const backwardPadding = viewport.paddings.backward;
     const firstIndex = firstItem.$index;
     const lastIndex = lastItem.$index;
     const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
@@ -65,22 +66,29 @@ export default class Adjust {
       fwdSize += item ? item.size : buffer.cache.averageSize;
     }
 
-    const oldPosition = viewport.scrollPosition;
     forwardPadding.size = fwdSize;
     backwardPadding.size = bwdSize;
-    if (scroller.settings.windowViewport) {
-      const positionDiff = oldPosition - viewport.scrollPosition;
-      if (positionDiff) {
-        Adjust.setScroll(scroller, positionDiff);
-      }
-    }
 
     scroller.logger.stat('after paddings adjustments');
     return bwdPaddingAverageSizeItemsCount;
   }
 
-  static fixNegativeScroll(scroller: Scroller, bwdPaddingAverageSizeItemsCount: number) {
+  static fixScrollPosition(scroller: Scroller, bwdPaddingAverageSizeItemsCount: number) {
     const { viewport, buffer, state, state: { fetch, fetch: { items, negativeSize } } } = scroller;
+
+    if (scroller.settings.windowViewport) {
+      const newPosition = viewport.scrollPosition;
+      const posDiff = state.preAdjustPosition - newPosition;
+      if (posDiff) {
+        const winState = state.scrollState.window;
+        if (newPosition === winState.positionToUpdate) {
+          winState.reset();
+          state.syntheticScroll.readyToReset = false;
+          scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
+          Adjust.setScroll(scroller, posDiff);
+        }
+      }
+    }
 
     // if backward padding has been changed due to average item size change
     const hasAverageItemSizeChanged = buffer.averageSize !== fetch.averageItemSize;
@@ -99,20 +107,22 @@ export default class Adjust {
       state.bwdPaddingAverageSizeItemsCount = bwdPaddingAverageSizeItemsCount;
     }
 
+    // no need to 'return' in case of entire window scrollable
+    // if (!scroller.settings.windowViewport) {
     // if scrollable area size has not been changed during this cycle
-    if (state.sizeBeforeRender === viewport.getScrollableSize()) {
+    if (/*!scroller.settings.windowViewport && */state.sizeBeforeRender === viewport.getScrollableSize()) {
       return;
     }
-
     // no negative area items
     if (items[0].$index >= fetch.minIndex) {
       return;
     }
+    // }
 
     if (negativeSize > 0) {
       Adjust.setScroll(scroller, negativeSize);
     } else if (negativeSize < 0) {
-      viewport.padding.forward.size -= negativeSize;
+      viewport.paddings.forward.size -= negativeSize;
       viewport.scrollPosition -= negativeSize;
     }
     scroller.logger.stat('after scroll position adjustment (negative)');
@@ -120,7 +130,7 @@ export default class Adjust {
 
   static setScroll(scroller: Scroller, delta: number) {
     const { viewport } = scroller;
-    const forwardPadding = viewport.padding[Direction.forward];
+    const forwardPadding = viewport.paddings[Direction.forward];
     const oldPosition = viewport.scrollPosition;
     const newPosition = oldPosition + delta;
     for (let i = 0; i < Adjust.MAX_SCROLL_ADJUSTMENTS_COUNT; i++) {

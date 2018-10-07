@@ -59,6 +59,7 @@ export default class PostFetch {
     fetch.items = items.map((item, index: number) =>
       new Item(fetchIndex + index, item, scroller.routines)
     );
+    fetch.isPrepend = !!buffer.items.length && buffer.items[0].$index > fetch.items[fetch.items.length - 1].$index;
     return buffer.setItems(fetch.items);
   }
 

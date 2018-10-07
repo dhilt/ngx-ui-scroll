@@ -5,6 +5,6 @@
 
 <div *ngIf="init">
   <div *uiScroll="let item of datasource" style="height: 20px;">
-    <b>{{item.text}}</b>
+    <b>{{item.text}}</b> {{item.isSelected ? '********' : ''}}
   </div>
 </div>

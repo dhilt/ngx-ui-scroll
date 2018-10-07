@@ -13,6 +13,7 @@ export class FetchModel {
   negativeSize: number;
   averageItemSize: number;
   direction: Direction | null;
+  isPrepend: boolean;
 
   constructor() {
     this.callCount = 0;
@@ -28,6 +29,7 @@ export class FetchModel {
     this.lastIndex = null;
     this.negativeSize = 0;
     this.direction = null;
+    this.isPrepend = false;
   }
 
   get newItemsData(): Array<Item> | null {

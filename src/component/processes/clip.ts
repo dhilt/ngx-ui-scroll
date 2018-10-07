@@ -58,7 +58,7 @@ export default class Clip {
   }
 
   static doClip(scroller: Scroller) {
-    const { buffer, viewport: { padding }, logger } = scroller;
+    const { buffer, viewport: { paddings }, logger } = scroller;
     const clipped: Array<number> = [];
     const size = { backward: 0, forward: 0 };
     scroller.state.clipCall++;
@@ -73,16 +73,16 @@ export default class Clip {
       return true;
     });
     if (size.backward) {
-      padding.backward.size += size.backward;
+      paddings.forward.size += size.backward;
     }
     if (size.forward) {
-      padding.forward.size += size.forward;
+      paddings.backward.size += size.forward;
     }
     logger.log(() => [
       `clipped ${clipped.length} items` +
-      (size.backward ? `, +${size.backward} bwd px` : '') +
-      (size.forward ? `, +${size.forward} fwd px` : ''),
-      clipped
+      (size.backward ? `, +${size.backward} fwd px,` : '') +
+      (size.forward ? `, +${size.forward} bwd px,` : ''),
+      `range: [${clipped[0]}..${clipped[clipped.length - 1]}]`
     ]);
     logger.stat('after clip');
   }

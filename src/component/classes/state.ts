@@ -4,12 +4,43 @@ import {
   State as IState,
   ProcessRun,
   ItemAdapter,
+  WindowScrollState as IWindowScrollState,
   ScrollState as IScrollState,
   SyntheticScroll as ISyntheticScroll
 } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { Settings } from './settings';
 import { Logger } from './logger';
+
+class WindowScrollState implements IWindowScrollState {
+  positionToUpdate: number;
+  private _reduceDelta: number;
+  private logger: Logger;
+
+  set delta(value: number) {
+    this.logger.log(() => {
+      if (value) {
+        const token = value < 0 ? 'reduced' : 'increased';
+        return [`next scroll position (if ${this.positionToUpdate}) should be ${token} by`, Math.abs(value)];
+      }
+    });
+    this._reduceDelta = value;
+  }
+
+  get delta(): number {
+    return this._reduceDelta;
+  }
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+    this.reset();
+  }
+
+  reset() {
+    this.delta = 0;
+    this.positionToUpdate = 0;
+  }
+}
 
 class ScrollState implements IScrollState {
   firstScroll: boolean;
@@ -18,8 +49,12 @@ class ScrollState implements IScrollState {
   workflowTimer: number | null;
   scroll: boolean;
   keepScroll: boolean;
+  window: IWindowScrollState;
 
-  constructor() {
+  // TODO move log here
+
+  constructor(logger: Logger) {
+    this.window = new WindowScrollState(logger);
     this.reset();
   }
 
@@ -30,6 +65,7 @@ class ScrollState implements IScrollState {
     this.workflowTimer = null;
     this.scroll = false;
     this.keepScroll = false;
+    this.window.reset();
   }
 }
 
@@ -44,7 +80,7 @@ class SyntheticScroll implements ISyntheticScroll {
     this.reset(null);
   }
 
-  reset(position: number | null) {
+  reset(position: number | null = null) {
     this.position = position;
     this.positionBefore = null;
     this.delta = 0;
@@ -135,7 +171,7 @@ export class State implements IState {
     this.sizeBeforeRender = 0;
     this.bwdPaddingAverageSizeItemsCount = 0;
 
-    this.scrollState = new ScrollState();
+    this.scrollState = new ScrollState(logger);
     this.syntheticScroll = new SyntheticScroll();
 
     this.pendingSource = new BehaviorSubject<boolean>(false);

@@ -4,13 +4,31 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Scroll {
 
   static run(scroller: Scroller) {
-    // scroller.logger.log(scroller.viewport.scrollPosition);
+    scroller.logger.log(scroller.viewport.scrollPosition);
     if (scroller.state.syntheticScroll.position !== null) {
       if (!Scroll.processSyntheticScroll(scroller)) {
         return;
       }
     }
+    if (scroller.settings.windowViewport) {
+      if (!Scroll.processWindowScroll(scroller)) {
+        return;
+      }
+    }
     this.throttledScroll(scroller);
+  }
+
+  static processWindowScroll(scroller: Scroller): boolean {
+    const { state: { scrollState: { window: windowState } }, viewport } = scroller;
+    if (windowState.delta) {
+      if (windowState.positionToUpdate === viewport.scrollPosition) {
+        scroller.logger.log(() => `process window scroll: sum(${windowState.positionToUpdate}, ${windowState.delta})`);
+        viewport.scrollPosition += windowState.delta;
+        windowState.reset();
+        return false;
+      }
+    }
+    return true;
   }
 
   static processSyntheticScroll(scroller: Scroller): boolean {
@@ -29,6 +47,10 @@ export default class Scroll {
       syntheticScroll.position = null;
       syntheticScroll.positionBefore = null;
       logger.log(() => 'reset synthetic scroll params');
+    } else if (settings.windowViewport) { // && !syntheticScroll.readyToReset
+      logger.log(() => 'reset synthetic scroll params (window)');
+      syntheticScroll.reset();
+      return true;
     }
 
     // inertia scroll over synthetic scroll
@@ -43,7 +65,8 @@ export default class Scroll {
           ', synthetic position: ' + syntheticPosition +
           ', synthetic position before: ' + syntheticPositionBefore +
           ', synthetic delta: ' + syntheticDelta +
-          ', inertia delay: ' + inertiaDelay + ', inertia delta: ' + inertiaDelta);
+          ', inertia delay: ' + inertiaDelay + ', inertia delta: ' + inertiaDelta +
+          ', new position: ' + newPosition);
         if (settings.inertia) { // precise inertia settings
           if (inertiaDelta <= settings.inertiaScrollDelta && inertiaDelay <= settings.inertiaScrollDelay) {
             viewport.scrollPosition = newPosition;

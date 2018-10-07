@@ -74,10 +74,10 @@ export default class PreFetch {
       let position = firstIndexPosition;
       let index = firstIndex;
       while (1) {
-        if (firstIndex <= buffer.absMinIndex) {
+        index += inc;
+        if (index < buffer.absMinIndex) {
           break;
         }
-        index += inc;
         position += inc * buffer.getSizeByIndex(index);
         if (inc < 0) {
           firstIndex = index;

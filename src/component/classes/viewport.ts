@@ -1,50 +1,15 @@
 import { ElementRef } from '@angular/core';
 
 import { Direction } from '../interfaces/index';
-import { Padding } from './padding';
+import { Paddings } from './paddings';
 import { Settings } from './settings';
 import { Routines } from './domRoutines';
 import { State } from './state';
 import { Logger } from './logger';
 
-export class ViewportPadding {
-  settings: Settings;
-  forward: Padding;
-  backward: Padding;
-
-  constructor(element: HTMLElement, routines: Routines, settings: Settings) {
-    this.settings = settings;
-    this.forward = new Padding(element, Direction.forward, routines);
-    this.backward = new Padding(element, Direction.backward, routines);
-  }
-
-  reset(viewportSize: number, startIndex: number) {
-    this.forward.reset(this.getPositiveSize(startIndex, viewportSize));
-    this.backward.reset(this.getNegativeSize(startIndex));
-  }
-
-  getPositiveSize(startIndex: number, viewportSize: number) {
-    const { settings } = this;
-    let positiveSize = viewportSize;
-    if (isFinite(settings.maxIndex)) {
-      positiveSize = (settings.maxIndex - startIndex + 1) * settings.itemSize;
-    }
-    return positiveSize;
-  }
-
-  getNegativeSize(startIndex: number) {
-    const { settings } = this;
-    let negativeSize = 0;
-    if (isFinite(settings.minIndex)) {
-      negativeSize = (startIndex - settings.minIndex) * settings.itemSize;
-    }
-    return negativeSize;
-  }
-}
-
 export class Viewport {
 
-  padding: ViewportPadding;
+  paddings: Paddings;
   startDelta: number;
 
   readonly element: HTMLElement;
@@ -70,14 +35,17 @@ export class Viewport {
       this.scrollable = <HTMLElement>this.element.parentElement;
     }
 
-    this.padding = new ViewportPadding(this.element, this.routines, settings);
-    this.reset(0);
+    this.paddings = new Paddings(this.element, this.routines, settings);
+
+    if (settings.windowViewport && 'scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
   }
 
   reset(scrollPosition: number) {
     let newPosition = 0;
-    this.padding.reset(this.getSize(), this.state.startIndex);
-    const negativeSize = this.padding[Direction.backward].size;
+    this.paddings.reset(this.getSize(), this.state.startIndex);
+    const negativeSize = this.paddings.backward.size;
     if (negativeSize) {
       newPosition = negativeSize;
       this.state.bwdPaddingAverageSizeItemsCount = negativeSize / this.settings.itemSize;

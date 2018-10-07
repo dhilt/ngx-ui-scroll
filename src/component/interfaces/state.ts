@@ -1,6 +1,13 @@
 import { ItemAdapter } from './index';
 import { FetchModel } from '../classes/fetch';
 
+export interface WindowScrollState {
+  delta: number;
+  positionToUpdate: number;
+
+  reset: Function;
+}
+
 export interface ScrollState {
   firstScroll: boolean;
   lastScrollTime: number;
@@ -8,6 +15,7 @@ export interface ScrollState {
   workflowTimer: number | null;
   scroll: boolean;
   keepScroll: boolean;
+  window: WindowScrollState;
 
   reset: Function;
 }

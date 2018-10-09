@@ -82,11 +82,9 @@ export default class End {
     if (!error) {
       if (fetch.hasNewItems) {
         next = { scroll: false };
+      } else if (fetch.hasAnotherPack) {
+        next = { scroll: false };
       }
-      // if (scrollState.window.delta) {
-      //   console.log('%cWINDOW DELTA', 'background-color: red;');
-      //   next = { scroll: true };
-      // }
       if (scrollState.keepScroll) {
         next = { scroll: true, keepScroll: true };
       }

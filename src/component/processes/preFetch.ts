@@ -145,6 +145,7 @@ export default class PreFetch {
     }
     let pack = packs[0];
     if (packs[0].length && packs[1] && packs[1].length) {
+      fetch.hasAnotherPack = true;
       // todo: need to look for biggest pack in visible area
       // todo: or think about merging two requests in a single Fetch process
       if (packs[1].length >= packs[0].length) {

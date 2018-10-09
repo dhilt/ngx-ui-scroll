@@ -8,6 +8,7 @@ export class FetchModel {
   lastIndexBuffer: number | null;
   firstIndex: number | null;
   lastIndex: number | null;
+  hasAnotherPack: boolean;
   callCount: number;
   minIndex: number;
   negativeSize: number;
@@ -27,6 +28,7 @@ export class FetchModel {
     this.lastIndexBuffer = null;
     this.firstIndex = null;
     this.lastIndex = null;
+    this.hasAnotherPack = false;
     this.negativeSize = 0;
     this.direction = null;
     this.isPrepend = false;

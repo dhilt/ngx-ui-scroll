@@ -14,6 +14,7 @@ export class Viewport {
 
   readonly element: HTMLElement;
   readonly host: HTMLElement;
+  readonly scrollEventElement: HTMLElement | Document;
   readonly scrollable: HTMLElement;
   readonly settings: Settings;
   readonly routines: Routines;
@@ -29,9 +30,11 @@ export class Viewport {
 
     if (settings.windowViewport) {
       this.host = this.element.ownerDocument.body;
-      this.scrollable = <HTMLElement>this.element.ownerDocument.documentElement;
+      this.scrollEventElement = this.element.ownerDocument;
+      this.scrollable = <HTMLElement>this.scrollEventElement.scrollingElement;
     } else {
       this.host = <HTMLElement>this.element.parentElement;
+      this.scrollEventElement = this.host;
       this.scrollable = <HTMLElement>this.element.parentElement;
     }
 
@@ -54,10 +57,6 @@ export class Viewport {
     this.state.scrollState.reset();
     this.state.syntheticScroll.reset(scrollPosition !== newPosition ? newPosition : null);
     this.startDelta = 0;
-  }
-
-  get scrollEventElement() {
-    return this.settings.windowViewport ? this.element.ownerDocument : this.host;
   }
 
   get scrollPosition(): number {

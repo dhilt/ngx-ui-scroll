@@ -4,14 +4,26 @@ import { Observable, Observer } from 'rxjs';
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 100;
-const MIN = -49;
-const MIN_ROW_HEIGHT = 2;
+const MIN = -899;
+const MIN_ROW_HEIGHT = 1;
+
+// (() => {
+//   let sum = 0;
+//   for (let i = -49; i <= 50; i++) {
+//     let size = 20 + i;
+//     size = size < 2 ? 2 : size;
+//     sum += size;
+//   }
+//   console.log(sum);
+// })();
 
 interface MyItem {
   id: number;
   text: string;
-  isSelected: boolean;
   height: number;
+  isSelected: boolean;
+  data?: string;
+  color?: string;
 }
 
 @Component({
@@ -39,7 +51,7 @@ export class TestComponent {
     ,
     settings: {
       padding: 0.5,
-      bufferSize: 5,
+      bufferSize: 1,
       // minIndex: MIN,
       // maxIndex: MAX,
       itemSize: 20,
@@ -47,9 +59,9 @@ export class TestComponent {
     },
     devSettings: {
       debug: true,
-      immediateLog: true,
+      immediateLog: false,
       logTime: false,
-      throttle: 140,
+      throttle: 40,
       inertia: false,
       inertiaScrollDelay: 125,
       inertiaScrollDelta: 35
@@ -59,12 +71,17 @@ export class TestComponent {
   constructor() {
     this.data = [];
     for (let i = 0; i <= MAX - MIN; i++) {
-      this.data.push(<MyItem>{
+      const item = <MyItem>{
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
         height: 20 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
-      });
+      };
+      if (item.isSelected) {
+        item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, (x, j) => '*').join('');
+        item.color = i % 30 === 0 ? 'red' : 'black';
+      }
+      this.data.push(item);
     }
     this.datasource.adapter.firstVisible$
       .subscribe((result) => {

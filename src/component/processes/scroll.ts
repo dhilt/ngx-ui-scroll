@@ -5,30 +5,12 @@ export default class Scroll {
 
   static run(scroller: Scroller) {
     scroller.logger.log(scroller.viewport.scrollPosition);
-    if (scroller.state.syntheticScroll.position !== null) {
+    if (!scroller.settings.windowViewport && scroller.state.syntheticScroll.position !== null) {
       if (!Scroll.processSyntheticScroll(scroller)) {
         return;
       }
     }
-    if (scroller.settings.windowViewport) {
-      if (!Scroll.processWindowScroll(scroller)) {
-        return;
-      }
-    }
     this.throttledScroll(scroller);
-  }
-
-  static processWindowScroll(scroller: Scroller): boolean {
-    const { state: { scrollState: { window: windowState } }, viewport } = scroller;
-    if (windowState.delta) {
-      if (windowState.positionToUpdate === viewport.scrollPosition) {
-        scroller.logger.log(() => `process window scroll: sum(${windowState.positionToUpdate}, ${windowState.delta})`);
-        viewport.scrollPosition += windowState.delta;
-        windowState.reset();
-        return false;
-      }
-    }
-    return true;
   }
 
   static processSyntheticScroll(scroller: Scroller): boolean {

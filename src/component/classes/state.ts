@@ -14,25 +14,9 @@ import { Logger } from './logger';
 
 class WindowScrollState implements IWindowScrollState {
   positionToUpdate: number;
-  private _reduceDelta: number;
-  private logger: Logger;
+  delta: number;
 
-  set delta(value: number) {
-    this.logger.log(() => {
-      if (value) {
-        const token = value < 0 ? 'reduced' : 'increased';
-        return [`next scroll position (if ${this.positionToUpdate}) should be ${token} by`, Math.abs(value)];
-      }
-    });
-    this._reduceDelta = value;
-  }
-
-  get delta(): number {
-    return this._reduceDelta;
-  }
-
-  constructor(logger: Logger) {
-    this.logger = logger;
+  constructor() {
     this.reset();
   }
 
@@ -51,10 +35,8 @@ class ScrollState implements IScrollState {
   keepScroll: boolean;
   window: IWindowScrollState;
 
-  // TODO move log here
-
-  constructor(logger: Logger) {
-    this.window = new WindowScrollState(logger);
+  constructor() {
+    this.window = new WindowScrollState();
     this.reset();
   }
 
@@ -171,7 +153,7 @@ export class State implements IState {
     this.sizeBeforeRender = 0;
     this.bwdPaddingAverageSizeItemsCount = 0;
 
-    this.scrollState = new ScrollState(logger);
+    this.scrollState = new ScrollState();
     this.syntheticScroll = new SyntheticScroll();
 
     this.pendingSource = new BehaviorSubject<boolean>(false);

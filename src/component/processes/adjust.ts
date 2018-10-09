@@ -86,6 +86,8 @@ export default class Adjust {
           state.syntheticScroll.readyToReset = false;
           scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
           Adjust.setScroll(scroller, posDiff);
+          scroller.logger.stat('after scroll position adjustment (window)');
+          return;
         }
       }
     }
@@ -107,17 +109,14 @@ export default class Adjust {
       state.bwdPaddingAverageSizeItemsCount = bwdPaddingAverageSizeItemsCount;
     }
 
-    // no need to 'return' in case of entire window scrollable
-    // if (!scroller.settings.windowViewport) {
     // if scrollable area size has not been changed during this cycle
-    if (/*!scroller.settings.windowViewport && */state.sizeBeforeRender === viewport.getScrollableSize()) {
+    if (state.sizeBeforeRender === viewport.getScrollableSize()) {
       return;
     }
     // no negative area items
     if (items[0].$index >= fetch.minIndex) {
       return;
     }
-    // }
 
     if (negativeSize > 0) {
       Adjust.setScroll(scroller, negativeSize);

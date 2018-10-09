@@ -45,7 +45,7 @@ export default class Render {
       }
     }
     buffer.checkAverageSize();
-    if (scroller.settings.windowViewport) {
+    if (scroller.settings.windowViewport && fetch.isPrepend) {
       Render.processWindowScrollBackJump(scroller, scrollBeforeRender);
     }
     scroller.logger.stat('after new items render');
@@ -53,15 +53,20 @@ export default class Render {
   }
 
   static processWindowScrollBackJump(scroller: Scroller, scrollBeforeRender: number) {
-    const { state, state: { fetch: { isPrepend }, scrollState: { window } }, viewport, buffer } = scroller;
+    const { state, state: { scrollState: { window } }, viewport } = scroller;
     // if new items have been rendered in the area that is before current scroll position
-    // then this position will be updated (immediately or almost immediately) in case of entire window scrollable
-    // that's why we need to remember the delta and to update scroll position when the nearest scroll event is handled
-    if (isPrepend) {
-      const inc = scrollBeforeRender >= viewport.paddings.backward.size ? 1 : -1;
-      const delta = inc * Math.abs(viewport.getScrollableSize() - state.sizeBeforeRender);
-      window.positionToUpdate = scrollBeforeRender - delta;
+    // then this position will be updated silently in case of entire window scrollable
+    // so we need to remember the delta and to update scroll position manually right after it is changed silently
+    const inc = scrollBeforeRender >= viewport.paddings.backward.size ? 1 : -1;
+    const delta = inc * Math.abs(viewport.getScrollableSize() - state.sizeBeforeRender);
+    const positionToUpdate = scrollBeforeRender - delta;
+    if (delta && positionToUpdate > 0) {
+      window.positionToUpdate = positionToUpdate;
       window.delta = delta;
+      scroller.logger.log(() => {
+        const token = delta < 0 ? 'reduced' : 'increased';
+        return [`next scroll position (if ${positionToUpdate}) should be ${token} by`, Math.abs(delta)];
+      });
     }
   }
 

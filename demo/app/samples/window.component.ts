@@ -24,11 +24,15 @@ export class WindowComponent {
       const data: any[] = [];
       if (start <= end) {
         for (let i = start; i <= end; i++) {
-          data.push({
-            id: i,
-            text: 'item #' + i,
-            isSelected: i % 15 === 0
-          });
+          const item = <any>{
+            text: 'item #' + (i),
+            height: 20 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
+          };
+          if (i % 15 === 0) {
+            item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, (x, j) => '*').join('');
+            item.color = i % 30 === 0 ? 'red' : 'black';
+          }
+          data.push(item);
         }
       }
       // setTimeout(() => success(data), 25);
@@ -37,13 +41,15 @@ export class WindowComponent {
     settings: {
       startIndex: 1,
       padding: 0.25,
+      bufferSize: 1,
       itemSize: 20,
       minIndex: MIN,
       maxIndex: MAX,
       windowViewport: true
     },
     devSettings: {
-      debug: true
+      debug: true,
+      immediateLog: true
     }
   };
 

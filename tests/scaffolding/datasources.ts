@@ -1,5 +1,7 @@
 import { Observable, Observer } from 'rxjs';
+
 import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
+import { getDynamicSizeByIndex } from '../miscellaneous/dynamicSize';
 
 export class DatasourceService implements Datasource {
   get() {
@@ -30,9 +32,7 @@ const datasourceGetInfinite = (index: number, count: number) => {
   return data;
 };
 
-const INITIAL_ITEM_SIZE = 20;
-const MIN_ITEM_SIZE = 1;
-const MAX_ITEM_SIZE = 100;
+
 
 const datasourceGetLimited = (
   index: number, count: number, min: number, max: number, dynamicSize: boolean
@@ -44,7 +44,7 @@ const datasourceGetLimited = (
     for (let i = start; i <= end; i++) {
       const item = <any>{ id: i, text: 'item #' + i };
       if (dynamicSize) {
-        item.size = Math.max(MIN_ITEM_SIZE, Math.min(MAX_ITEM_SIZE, INITIAL_ITEM_SIZE + i));
+        item.size = getDynamicSizeByIndex(i);
       }
       data.push(item);
     }

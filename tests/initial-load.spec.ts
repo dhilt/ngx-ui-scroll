@@ -1,6 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { ItemsCounter, ItemsDirCounter } from './miscellaneous/itemsCounter';
+import { ItemsCounter, ItemsDirCounter, testItemsCounter } from './miscellaneous/itemsCounter';
 
 const fixedItemSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 2, itemSize: 15 },
@@ -141,17 +141,6 @@ const getTunedItemSizeCounter =
     return itemsCounter;
   };
 
-const testItemsCount = (settings: TestBedConfig, misc: Misc, itemsCounter: ItemsCounter) => {
-  const { startIndex } = settings.datasourceSettings;
-  const elements = misc.getElements();
-
-  expect(elements.length).toEqual(itemsCounter.total);
-  expect(misc.scroller.buffer.items.length).toEqual(itemsCounter.total);
-  expect(misc.getElementIndex(elements[0])).toEqual(itemsCounter.backward.index);
-  expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(itemsCounter.forward.index);
-  expect(misc.checkElementContentByIndex(startIndex)).toEqual(true);
-};
-
 const testFixedItemSizeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   expect(misc.workflow.cyclesDone).toEqual(1);
   expect(misc.scroller.state.fetch.callCount).toEqual(2);
@@ -162,7 +151,7 @@ const testFixedItemSizeCase = (settings: TestBedConfig, misc: Misc, done: Functi
 
   const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
   const itemsCounter = getFixedItemSizeCounter(settings, misc, itemSize);
-  testItemsCount(settings, misc, itemsCounter);
+  testItemsCounter(settings, misc, itemsCounter);
   done();
 };
 
@@ -185,7 +174,7 @@ const testTunedItemSize = (settings: TestBedConfig, misc: Misc, done: Function) 
     const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
     itemsCounter = getTunedItemSizeCounter(settings, misc, itemSize, misc.shared.itemsCounter);
   }
-  testItemsCount(settings, misc, itemsCounter);
+  testItemsCounter(settings, misc, itemsCounter);
   misc.shared.itemsCounter = itemsCounter;
 };
 

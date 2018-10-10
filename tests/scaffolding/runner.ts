@@ -81,6 +81,7 @@ export const makeTest = (data: MakeTestConfig) => {
         const templateData = generateTemplate(data.config.templateSettings);
         try {
           const fixture = configureTestBed(datasourceClass, templateData.template);
+          fixture.componentInstance.templateSettings = templateData.settings;
           misc = new Misc(fixture);
         } catch (_error) {
           error = _error;

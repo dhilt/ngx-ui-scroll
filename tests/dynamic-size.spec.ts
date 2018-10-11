@@ -2,12 +2,10 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import {
   getDynamicAverage,
-  getDynamicSizeByIndex,
   getDynamicSizeData,
   getDynamicSumSize
 } from './miscellaneous/dynamicSize';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
-import { configListDestructiveFilter } from './miscellaneous/common';
 import { Direction } from '../src/component/interfaces';
 
 const configList: TestBedConfig[] = [{
@@ -16,7 +14,15 @@ const configList: TestBedConfig[] = [{
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
+  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, minIndex: -20, maxIndex: 10 },
+  templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
+}, {
+  datasourceName: 'limited--50-99-dynamic-size',
   datasourceSettings: { startIndex: -5, padding: 1.2, bufferSize: 1 },
+  templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
+}, {
+  datasourceName: 'limited--50-99-dynamic-size',
+  datasourceSettings: { startIndex: -25, padding: 1.2, bufferSize: 1, minIndex: -50 },
   templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
@@ -32,7 +38,7 @@ const ABS_MIN_INDEX = -50;
 const ABS_MAX_INDEX = 99;
 
 const getInitialItemsCounter = (config: TestBedConfig, misc: Misc): ItemsCounter => {
-  const { bufferSize, startIndex } = misc.scroller.settings;
+  const { bufferSize, startIndex, minIndex, maxIndex } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize(config);
   const firstFetchEndIndex = startIndex + bufferSize - 1;
   const firstFetchData = getDynamicSizeData(startIndex, firstFetchEndIndex);
@@ -52,12 +58,19 @@ const getInitialItemsCounter = (config: TestBedConfig, misc: Misc): ItemsCounter
     padding: 0
   });
 
+  if (isFinite(minIndex)) {
+    result.backward.padding = (startIndex - Math.max(minIndex, ABS_MIN_INDEX)) * result.average;
+  }
+  if (isFinite(maxIndex)) {
+    result.forward.padding = (Math.min(maxIndex, ABS_MAX_INDEX) - result.forward.index) * result.average;
+  }
+
   testItemsCounter(config, misc, result);
   return result;
 };
 
 const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsCounter): ItemsCounter | null => {
-  const { bufferSize, startIndex, padding } = misc.scroller.settings;
+  const { bufferSize, startIndex, padding, minIndex, maxIndex } = misc.scroller.settings;
   const loopCount = misc.scroller.state.innerLoopCount;
   const viewportSize = misc.getViewportSize(config);
   const backwardLimit = viewportSize * padding;
@@ -92,6 +105,15 @@ const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsC
     });
   }
   itemsCounter.average = getDynamicAverage(itemsCounter.backward.index, itemsCounter.forward.index);
+
+  if (isFinite(minIndex)) {
+    const count = itemsCounter.backward.index - Math.max(minIndex, ABS_MIN_INDEX);
+    itemsCounter.backward.padding = count * itemsCounter.average;
+  }
+  if (isFinite(maxIndex)) {
+    const count = Math.min(maxIndex, ABS_MAX_INDEX) - itemsCounter.forward.index;
+    itemsCounter.forward.padding = count * itemsCounter.average;
+  }
 
   testItemsCounter(config, misc, itemsCounter);
 

@@ -32,6 +32,7 @@ export class RecalculateAverage {
 }
 
 export class Cache {
+  averageSizeFloat: number;
   averageSize: number;
   minIndex: number;
   maxIndex: number;
@@ -41,6 +42,7 @@ export class Cache {
   readonly logger: Logger;
 
   constructor(itemSize: number, logger: Logger) {
+    this.averageSizeFloat = itemSize;
     this.averageSize = itemSize;
     this.items = new Map<number, ItemCache>();
     this.recalculateAverage = new RecalculateAverage();
@@ -63,16 +65,16 @@ export class Cache {
     const oldItemsSize = this.recalculateAverage.oldItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
     const newItemsSize = this.recalculateAverage.newItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
     if (oldItemsLength) {
-      const averageSize = this.averageSize || 0;
+      const averageSize = this.averageSizeFloat || 0;
       const averageSizeLength = this.items.size - newItemsLength - oldItemsLength;
-      this.averageSize = (averageSizeLength * averageSize + oldItemsSize) / averageSizeLength;
+      this.averageSizeFloat = (averageSizeLength * averageSize + oldItemsSize) / averageSizeLength;
     }
     if (newItemsLength) {
-      const averageSize = this.averageSize || 0;
+      const averageSize = this.averageSizeFloat || 0;
       const averageSizeLength = this.items.size - newItemsLength;
-      this.averageSize = (averageSizeLength * averageSize + newItemsSize) / this.items.size;
+      this.averageSizeFloat = (averageSizeLength * averageSize + newItemsSize) / this.items.size;
     }
-    this.averageSize = Math.round(this.averageSize);
+    this.averageSize = Math.round(this.averageSizeFloat);
     this.recalculateAverage.reset();
     this.logger.log(() => `average size has been updated: ${this.averageSize}`);
   }

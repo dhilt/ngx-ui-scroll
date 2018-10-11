@@ -5,7 +5,7 @@ export default class Scroll {
 
   static run(scroller: Scroller) {
     scroller.logger.log(scroller.viewport.scrollPosition);
-    if (!scroller.settings.windowViewport && scroller.state.syntheticScroll.position !== null) {
+    if (scroller.state.syntheticScroll.position !== null) {
       if (!Scroll.processSyntheticScroll(scroller)) {
         return;
       }
@@ -29,9 +29,12 @@ export default class Scroll {
       syntheticScroll.position = null;
       syntheticScroll.positionBefore = null;
       logger.log(() => 'reset synthetic scroll params');
-    } else if (settings.windowViewport) { // && !syntheticScroll.readyToReset
-      logger.log(() => 'reset synthetic scroll params (window)');
-      syntheticScroll.reset();
+    }
+    if (settings.windowViewport) {
+      if (!syntheticScroll.readyToReset) {
+        logger.log(() => 'reset synthetic scroll params (window)');
+        syntheticScroll.reset();
+      }
       return true;
     }
 

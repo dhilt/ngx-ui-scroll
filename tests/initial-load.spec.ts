@@ -138,6 +138,9 @@ const getTunedItemSizeCounter =
 
     backward.index = startIndex - backward.count;
     forward.index = startIndex + forward.count - 1;
+    backward.padding = 0;
+    forward.padding = Math.max(0, viewportSize - forward.count * misc.scroller.buffer.averageSize);
+
     return itemsCounter;
   };
 
@@ -161,8 +164,6 @@ const testTunedItemSize = (settings: TestBedConfig, misc: Misc, done: Function) 
     expect(misc.workflow.cyclesDone).toEqual(0);
     expect(misc.scroller.state.fetch.callCount).toEqual(3);
     expect(misc.scroller.state.clipCall).toEqual(0);
-    expect(misc.padding.backward.getSize()).toEqual(0);
-    expect(misc.padding.forward.getSize()).toEqual(0);
     done();
     return;
   }

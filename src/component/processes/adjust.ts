@@ -65,6 +65,12 @@ export default class Adjust {
       const item = buffer.cache.get(index);
       fwdSize += item ? item.size : buffer.cache.averageSize;
     }
+    const fwdPaddingDiff = forwardPadding.size - fwdSize;
+    const viewportSizeDiff = viewport.getSize() - viewport.getScrollableSize() + fwdPaddingDiff;
+    if (viewportSizeDiff > 0) {
+      fwdSize += viewportSizeDiff;
+      scroller.logger.log(`forward padding will be increased by ${viewportSizeDiff} to fill the viewport`);
+    }
 
     forwardPadding.size = fwdSize;
     backwardPadding.size = bwdSize;

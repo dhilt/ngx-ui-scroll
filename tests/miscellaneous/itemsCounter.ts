@@ -25,6 +25,7 @@ export class ItemsCounter {
   direction: Direction | null; // direction per calculations
   backward: ItemsDirCounter;
   forward: ItemsDirCounter;
+  average: number;
 
   get total(): number {
     return this.forward.index - this.backward.index + 1;
@@ -62,15 +63,18 @@ export const testItemsCounter = (settings: TestBedConfig, misc: Misc, itemsCount
   const fwdPadding = itemsCounter.forward.padding;
   const elements = misc.getElements();
 
-  if (!isNaN(Number(bwdSize)) && !isNaN(Number(fwdSize))) {
-    const size = misc.getScrollableSize();
-    expect(bwdSize + fwdSize).toEqual(size);
-  }
+  let sizePaddings = 0;
   if (!isNaN(Number(bwdPadding))) {
     expect(bwdPadding).toEqual(misc.scroller.viewport.paddings.backward.size);
+    sizePaddings += bwdPadding;
   }
   if (!isNaN(Number(fwdPadding))) {
     expect(fwdPadding).toEqual(misc.scroller.viewport.paddings.forward.size);
+    sizePaddings += fwdPadding;
+  }
+  if (!isNaN(Number(bwdSize)) && !isNaN(Number(fwdSize))) {
+    const size = misc.getScrollableSize();
+    expect(bwdSize + fwdSize + sizePaddings).toEqual(size);
   }
   expect(elements.length).toEqual(itemsCounter.total);
   expect(misc.scroller.buffer.items.length).toEqual(itemsCounter.total);

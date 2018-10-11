@@ -19,6 +19,11 @@ export const getDynamicSumSize = (start: number, end: number): number => {
   return sum;
 };
 
+export const getDynamicAverage = (start: number, end: number): number => {
+  const sum = getDynamicSumSize(start, end);
+  return Math.round(sum / (end - start + 1));
+};
+
 export const getDynamicSizeData = (start: number, end: number): DynamicSizeData => {
   const size = getDynamicSumSize(start, end);
   const average = Math.round(size / (end - start + 1));

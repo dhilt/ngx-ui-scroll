@@ -7,16 +7,6 @@ const MAX = 100;
 const MIN = -899;
 const MIN_ROW_HEIGHT = 1;
 
-// (() => {
-//   let sum = 0;
-//   for (let i = -49; i <= 50; i++) {
-//     let size = 20 + i;
-//     size = size < 2 ? 2 : size;
-//     sum += size;
-//   }
-//   console.log(sum);
-// })();
-
 interface MyItem {
   id: number;
   text: string;

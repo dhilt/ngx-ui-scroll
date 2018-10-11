@@ -61,6 +61,7 @@ export const testItemsCounter = (settings: TestBedConfig, misc: Misc, itemsCount
   const fwdSize = itemsCounter.forward.size;
   const bwdPadding = itemsCounter.backward.padding;
   const fwdPadding = itemsCounter.forward.padding;
+  const average = itemsCounter.average;
   const elements = misc.getElements();
 
   let sizePaddings = 0;
@@ -75,6 +76,9 @@ export const testItemsCounter = (settings: TestBedConfig, misc: Misc, itemsCount
   if (!isNaN(Number(bwdSize)) && !isNaN(Number(fwdSize))) {
     const size = misc.getScrollableSize();
     expect(bwdSize + fwdSize + sizePaddings).toEqual(size);
+  }
+  if (!isNaN(Number(average))) {
+    expect(average).toEqual(misc.scroller.buffer.averageSize);
   }
   expect(elements.length).toEqual(itemsCounter.total);
   expect(misc.scroller.buffer.items.length).toEqual(itemsCounter.total);

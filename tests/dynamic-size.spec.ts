@@ -7,6 +7,7 @@ import {
 } from './miscellaneous/dynamicSize';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
 import { Direction } from '../src/component/interfaces';
+import { configListDestructiveFilter } from './miscellaneous/common';
 
 const configList: TestBedConfig[] = [{
   datasourceName: 'limited--50-99-dynamic-size',
@@ -33,6 +34,12 @@ const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 20, padding: 0.75, bufferSize: 15, horizontal: true },
   templateSettings: { viewportWidth: 300, horizontal: true, dynamicSize: 'size' }
 }];
+
+const configListScroll = configList
+  .map(config => ({
+    ...config, datasourceSettings: { ...config.datasourceSettings, adapter: true }
+  }))
+  .filter((config, index) => index !== 2 && index !== 3);
 
 const ABS_MIN_INDEX = -50;
 const ABS_MAX_INDEX = 99;
@@ -136,6 +143,28 @@ const testInitialLoad = (config: TestBedConfig, misc: Misc, done: Function) => {
   }
 };
 
+const testScroll = (config: TestBedConfig, misc: Misc, done: Function) => {
+  const buffer = misc.scroller.buffer;
+  if (buffer.bof) {
+    getDynamicSizeData(misc.scroller.buffer.absMinIndex, misc.scroller.buffer.absMaxIndex);
+    done();
+    return;
+  }
+  if (buffer.eof) {
+    misc.shared.eof = true;
+    misc.scrollMin();
+    return;
+  }
+  if (!misc.shared.eof) {
+    misc.scrollMax();
+    return;
+  }
+  if (misc.shared.eof) {
+    misc.scrollMin();
+    return;
+  }
+};
+
 describe('Dynamic Size Spec', () => {
 
   describe('Initial load', () => {
@@ -146,6 +175,19 @@ describe('Dynamic Size Spec', () => {
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.scroller, 'finalize').and.callFake(() =>
             testInitialLoad(config, misc, done)
+          )
+      })
+    );
+  });
+
+  describe('After scroll', () => {
+    configListScroll.forEach(config =>
+      makeTest({
+        config,
+        title: 'should fill the viewport with paddings',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            testScroll(config, misc, done)
           )
       })
     );

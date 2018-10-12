@@ -40,10 +40,12 @@ export class Cache {
 
   private items: Map<number, ItemCache>;
   readonly logger: Logger;
+  readonly itemSize: number;
 
   constructor(itemSize: number, logger: Logger) {
     this.averageSizeFloat = itemSize;
     this.averageSize = itemSize;
+    this.itemSize = itemSize;
     this.items = new Map<number, ItemCache>();
     this.recalculateAverage = new RecalculateAverage();
     this.reset();
@@ -54,6 +56,8 @@ export class Cache {
     this.minIndex = +Infinity;
     this.maxIndex = -Infinity;
     this.items.clear();
+    this.averageSizeFloat = this.itemSize;
+    this.averageSize = this.itemSize;
     this.recalculateAverage.reset();
   }
 

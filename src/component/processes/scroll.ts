@@ -16,22 +16,20 @@ export default class Scroll {
   static processSyntheticScroll(scroller: Scroller): boolean {
     const { viewport, state: { syntheticScroll }, settings, logger } = scroller;
     const position = viewport.scrollPosition;
-    const syntheticPosition = <number>syntheticScroll.position;
-    const syntheticPositionBefore = <number>syntheticScroll.positionBefore;
+    const synthetic = { ...syntheticScroll };
 
     // synthetic scroll
-    if (position === syntheticPosition) {
+    syntheticScroll.readyToReset = true;
+    if (position === synthetic.position) {
       // let's reset syntheticScroll.position on first change
-      syntheticScroll.readyToReset = true;
       logger.log(() => `skip synthetic scroll (${position})`);
       return false;
-    } else if (syntheticScroll.readyToReset) {
-      syntheticScroll.position = null;
-      syntheticScroll.positionBefore = null;
+    } else if (synthetic.readyToReset) {
+      syntheticScroll.reset();
       logger.log(() => 'reset synthetic scroll params');
     }
     if (settings.windowViewport) {
-      if (!syntheticScroll.readyToReset) {
+      if (!synthetic.readyToReset) {
         logger.log(() => 'reset synthetic scroll params (window)');
         syntheticScroll.reset();
       }
@@ -39,16 +37,16 @@ export default class Scroll {
     }
 
     // inertia scroll over synthetic scroll
-    if (position !== syntheticPosition) {
+    if (position !== synthetic.position) {
       const inertiaDelay = Number(new Date()) - syntheticScroll.time;
-      const inertiaDelta = syntheticPositionBefore - position;
-      const syntheticDelta = syntheticPosition - position;
+      const inertiaDelta = <number>synthetic.positionBefore - position;
+      const syntheticDelta = <number>synthetic.position - position;
       const newPosition = Math.max(0, position + syntheticScroll.delta);
       if (inertiaDelta > 0 && inertiaDelta < syntheticDelta) {
         logger.log(() => 'inertia scroll adjustment' +
           '. Position: ' + position +
-          ', synthetic position: ' + syntheticPosition +
-          ', synthetic position before: ' + syntheticPositionBefore +
+          ', synthetic position: ' + synthetic.position +
+          ', synthetic position before: ' + synthetic.positionBefore +
           ', synthetic delta: ' + syntheticDelta +
           ', inertia delay: ' + inertiaDelay + ', inertia delta: ' + inertiaDelta +
           ', new position: ' + newPosition);
@@ -92,7 +90,7 @@ export default class Scroll {
         !scrollState.keepScroll ? [
           `setting %ckeepScroll%c flag (scrolling while the Workflow is pending)`,
           'color: #006600;', 'color: #000000;'
-        ] : '');
+        ] : undefined);
       scrollState.keepScroll = true;
       return;
     }

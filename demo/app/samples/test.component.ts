@@ -5,7 +5,7 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 100;
 const MIN = -899;
-const MIN_ROW_HEIGHT = 1;
+const MIN_ROW_HEIGHT = 2;
 
 interface MyItem {
   id: number;
@@ -65,7 +65,7 @@ export class TestComponent {
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
-        height: 20 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
+        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
       };
       if (item.isSelected) {
         item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, (x, j) => '*').join('');

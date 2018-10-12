@@ -1,13 +1,12 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { Direction } from '../src/component/interfaces';
 import { Misc } from './miscellaneous/misc';
+import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
 import {
   getDynamicAverage,
   getDynamicSizeData,
   getDynamicSumSize
 } from './miscellaneous/dynamicSize';
-import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
-import { Direction } from '../src/component/interfaces';
-import { configListDestructiveFilter } from './miscellaneous/common';
 
 const configList: TestBedConfig[] = [{
   datasourceName: 'limited--50-99-dynamic-size',
@@ -146,7 +145,10 @@ const testInitialLoad = (config: TestBedConfig, misc: Misc, done: Function) => {
 const testScroll = (config: TestBedConfig, misc: Misc, done: Function) => {
   const buffer = misc.scroller.buffer;
   if (buffer.bof) {
-    getDynamicSizeData(misc.scroller.buffer.absMinIndex, misc.scroller.buffer.absMaxIndex);
+    getDynamicSizeData(
+      Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
+      Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
+    );
     done();
     return;
   }

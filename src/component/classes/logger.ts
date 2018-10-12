@@ -23,11 +23,11 @@ export class Logger {
       const { buffer, viewport } = scroller;
       const first = buffer.getFirstVisibleItem();
       const last = buffer.getLastVisibleItem();
-      return 'top: ' + viewport.scrollPosition + ', ' +
+      return 'pos: ' + viewport.scrollPosition + ', ' +
         'size: ' + viewport.getScrollableSize() + ', ' +
         'bwd_p: ' + viewport.paddings.backward.size + ', ' +
         'fwd_p: ' + viewport.paddings.forward.size + ', ' +
-        'average: ' + (buffer.hasItemSize ? buffer.averageSize : 'no') + ', ' +
+        'aver: ' + (buffer.hasItemSize ? buffer.averageSize : 'no') + ', ' +
         'items: ' + buffer.getVisibleItemsCount() + ', ' +
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };

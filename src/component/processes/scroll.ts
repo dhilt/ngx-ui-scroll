@@ -25,7 +25,8 @@ export default class Scroll {
       logger.log(() => `skip synthetic scroll (${position})`);
       return false;
     } else if (synthetic.readyToReset) {
-      syntheticScroll.reset();
+      syntheticScroll.position = null;
+      syntheticScroll.positionBefore = null;
       logger.log(() => 'reset synthetic scroll params');
     }
     if (settings.windowViewport) {
@@ -41,8 +42,8 @@ export default class Scroll {
       const inertiaDelay = Number(new Date()) - syntheticScroll.time;
       const inertiaDelta = <number>synthetic.positionBefore - position;
       const syntheticDelta = <number>synthetic.position - position;
-      const newPosition = Math.max(0, position + syntheticScroll.delta);
       if (inertiaDelta > 0 && inertiaDelta < syntheticDelta) {
+        const newPosition = Math.max(0, position + syntheticScroll.delta);
         logger.log(() => 'inertia scroll adjustment' +
           '. Position: ' + position +
           ', synthetic position: ' + synthetic.position +
@@ -57,7 +58,13 @@ export default class Scroll {
         } else {
           viewport.scrollPosition = newPosition;
         }
-      }
+      } /* else {
+        logger.log(() => 'inertia scroll adjustment [cancelled]' +
+          '. Position: ' + position +
+          ', synthetic position: ' + synthetic.position +
+          ', synthetic position before: ' + synthetic.positionBefore +
+          ', synthetic delta: ' + syntheticDelta + ', inertia delta: ' + inertiaDelta);
+      } */
     }
     return true;
   }

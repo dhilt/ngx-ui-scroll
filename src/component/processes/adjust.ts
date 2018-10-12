@@ -137,7 +137,7 @@ export default class Adjust {
     const { viewport } = scroller;
     const forwardPadding = viewport.paddings[Direction.forward];
     const oldPosition = viewport.scrollPosition;
-    const newPosition = oldPosition + delta;
+    const newPosition = Math.round(oldPosition + delta);
     for (let i = 0; i < Adjust.MAX_SCROLL_ADJUSTMENTS_COUNT; i++) {
       viewport.scrollPosition = newPosition;
       const positionDiff = newPosition - viewport.scrollPosition;

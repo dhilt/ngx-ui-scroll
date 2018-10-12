@@ -39,7 +39,8 @@ export const generateMockAdapter = (): IAdapter => (
     initialize: () => null,
     reload: () => null,
     showLog: () => null,
-    setMinIndex: () => null
+    setMinIndex: () => null,
+    setScrollPosition: () => null
   }
 );
 
@@ -106,7 +107,7 @@ export class Adapter implements IAdapter {
       return;
     }
     this.scroller = scroller;
-    const { state, buffer } = scroller;
+    const { state, buffer, viewport } = scroller;
     this.isInitialized = true;
     this.callWorkflow = scroller.callWorkflow;
     this.getVersion = (): string | null => scroller.version;
@@ -120,6 +121,7 @@ export class Adapter implements IAdapter {
   }
 
   reload(reloadIndex?: number | string) {
+    this.scroller.logger.log(() => `adapter: reload(${reloadIndex})`);
     this.callWorkflow(<ProcessSubject>{
       process: Process.reload,
       status: ProcessStatus.start,
@@ -131,7 +133,21 @@ export class Adapter implements IAdapter {
     this.scroller.logger.logForce();
   }
 
+  setScrollPosition(value: number) {
+    this.scroller.logger.log(() => `adapter: setScrollPosition(${value})`);
+    const position = Number(value);
+    const parsedValue = parseInt(<any>value, 10);
+    if (position !== parsedValue) {
+      this.scroller.logger.log(() =>
+        `can't set scroll position because ${value} is not an integer`);
+    } else {
+      this.scroller.state.syntheticScroll.reset();
+      this.scroller.viewport.setPosition(value);
+    }
+  }
+
   setMinIndex(value: number) {
+    this.scroller.logger.log(() => `adapter: setMinIndex(${value})`);
     const index = Number(value);
     if (isNaN(index)) {
       this.scroller.logger.log(() =>

@@ -25,6 +25,8 @@ const configList: TestBedConfig[] = [{
   custom: { direction: Direction.forward, count: 1 }
 }];
 
+configList.forEach(config => config.datasourceSettings.adapter = true);
+
 const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);
 
 const singleBackwardMaxScrollConfigList =

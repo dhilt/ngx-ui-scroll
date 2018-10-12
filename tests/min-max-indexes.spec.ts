@@ -1,6 +1,5 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { configListDestructiveFilter } from './miscellaneous/common';
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 0.5, itemSize: 20, minIndex: -49, maxIndex: 100 },

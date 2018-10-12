@@ -59,22 +59,31 @@ export class Viewport {
     this.startDelta = 0;
   }
 
+  setPosition(value: number, oldPosition?: number): number {
+    if (oldPosition === undefined) {
+      oldPosition = this.scrollPosition;
+    }
+    if (oldPosition === value) {
+      this.logger.log(() => ['setting scroll position at', value, '[cancelled]']);
+      return value;
+    }
+    this.routines.setScrollPosition(this.scrollable, value);
+    const position = this.scrollPosition;
+    this.logger.log(() => ['setting scroll position at', position]);
+    return position;
+  }
+
   get scrollPosition(): number {
     return this.routines.getScrollPosition(this.scrollable);
   }
 
   set scrollPosition(value: number) {
     const oldPosition = this.scrollPosition;
-    if (oldPosition === value) {
-      this.logger.log(() => ['setting scroll position at', value, '[cancelled]']);
-      return;
-    }
-    this.logger.log(() => ['setting scroll position at', value]);
-    this.routines.setScrollPosition(this.scrollable, value);
+    const newPosition = this.setPosition(value, oldPosition);
     const synthState = this.state.syntheticScroll;
     synthState.time = Number(Date.now());
-    synthState.position = this.scrollPosition;
-    synthState.delta = synthState.position - oldPosition;
+    synthState.position = newPosition;
+    synthState.delta = newPosition - oldPosition;
     if (synthState.positionBefore === null) {
       // syntheticScroll.positionBefore should be set once per cycle
       synthState.positionBefore = oldPosition;

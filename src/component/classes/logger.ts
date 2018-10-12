@@ -129,7 +129,7 @@ export class Logger {
           args = [args];
         }
       }
-      if (args.every(item => !item)) {
+      if (args.every(item => item === undefined)) {
         return;
       }
       if (this.logTime) {

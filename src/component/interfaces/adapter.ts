@@ -21,4 +21,5 @@ export interface Adapter {
   reload: Function;
   showLog: Function;
   setMinIndex: Function;
+  setScrollPosition: Function;
 }

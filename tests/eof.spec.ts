@@ -9,12 +9,12 @@ describe('EOF/BOF Spec', () => {
   const config = {
     bof: {
       datasourceName: 'limited',
-      datasourceSettings: { startIndex: min, bufferSize: 10, padding: 0.5 },
+      datasourceSettings: { startIndex: min, bufferSize: 10, padding: 0.5, adapter: true },
       templateSettings: { viewportHeight: 200 }
     },
     eof: {
       datasourceName: 'limited',
-      datasourceSettings: { startIndex: max - 10 + 1, bufferSize: 10, padding: 0.5 },
+      datasourceSettings: { startIndex: max - 10 + 1, bufferSize: 10, padding: 0.5, adapter: true },
       templateSettings: { viewportHeight: 200 }
     }
   };

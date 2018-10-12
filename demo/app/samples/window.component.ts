@@ -43,8 +43,8 @@ export class WindowComponent {
       padding: 0.25,
       bufferSize: 1,
       itemSize: 20,
-      minIndex: MIN,
-      maxIndex: MAX,
+      // minIndex: MIN,
+      // maxIndex: MAX,
       windowViewport: true
     },
     devSettings: {

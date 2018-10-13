@@ -40,7 +40,7 @@ export class DemoBasicComponent {
 </div>`,
     styles: `.viewport {
   width: 175px;
-  height: 175px;
+  height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
 }

@@ -5,19 +5,22 @@
 >
   <div description>
     <p>
-      As it follows from the documentation, a special <em>Datasource</em> object needs to be passed to the
-      <em>*uiScroll</em> directive. The basic ngx-ui-scroll example includes primitive callback-based
-      <em>Datasource.get</em> method implementation with no additional settings. The use of the <em>*uiScroll</em>
-      directive at the template layer is very similar to the use of <em>*ngFor</em> directive in the simplest case. In
-      addition to <em>Datasource</em>, a special viewport container is specified at the template. It defines the
-      scrollable area via <em>height</em> and <em>overflow</em> css properties.
+      This is the very basic example.
+      We see 10 items in the visible part of the viewport because of CSS:
+      10 items of 25px each are equal to 250px of the viewport height.
+      <em>Datasource.get</em> log shows us that there were 3 requests
+      of 5, 10 and 5 items on the initial load (before any scrolling).
+      So we have 20 DOM elements initially: 15 downward items with positive indexes and 5 upward negative items.
+      Datasource is unlimited, it produces items with indexes from -Infinity to +Infinity.
+      The number of DOM elements in the viewport is not constant
+      and fluctuates around the initial value during scrolling (20-31).
     </p>
     <p>
-      <em>Datasource.get</em> log shows us that there are 4 requests of 5 items on the initial load (before
-      scrolling). So we have 20 DOM elements (4 * 5) initially. The number of DOM elements is not constant during
-      user scrolling, but it fluctuates around the initial value. Why do we get 5 items per each
-      <em>datasource.get</em> call? It is so because of default. We may change it via settings object and
-      <em>bufferSize</em> property.
+      Why do we have 3 requests initially,
+      why the first one is about only 5 items,
+      why at least 10 items are invisible?
+      This is how the <em>*uiScroll</em> works and further reading should shed light on the details.
+      And we need to know that the default behaviour could be changed via Settings object.
     </p>
   </div>
 </app-demo>

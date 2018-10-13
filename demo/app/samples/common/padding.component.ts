@@ -23,7 +23,7 @@ export class DemoPaddingComponent {
     get: datasourceGetCallbackInfinite(this.demoContext),
     settings: {
       bufferSize: 7,
-      padding: 1.5
+      padding: 1.46
     }
   };
 
@@ -38,7 +38,7 @@ export class DemoPaddingComponent {
   },
   settings: {
     bufferSize: 7,
-    padding: 1.4
+    padding: 1.46
   }
 }`,
     template: `<div class="viewport">
@@ -48,7 +48,7 @@ export class DemoPaddingComponent {
 </div>`,
     styles: `.viewport {
   width: 175px;
-  height: 175px;
+  height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
 }

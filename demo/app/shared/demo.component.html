@@ -10,7 +10,7 @@
   </div>
 
   <div class="work" *ngIf="!context.noWorkView">
-    <div style="float: left">
+    <div class="viewport-wrapper">
       <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId}}">
         <div *uiScroll="let item of datasource">
           <div
@@ -21,13 +21,15 @@
         </div>
       </div>
     </div>
-    <div class="log elements {{context.addClass || ''}}">
-      DOM elements
-      <pre>{{elements(context.viewportId)}}</pre>
-    </div>
-    <div class="log datasource {{context.addClass || ''}}">
-      Datasource.get log
-      <pre>{{context.log}}</pre>
+    <div class="log">
+      <div class="elements {{context.addClass || ''}}">
+        DOM elements count:
+        <span>{{elements(context.viewportId)}}</span>
+      </div>
+      <div class="datasource {{context.addClass || ''}}">
+        Datasource.get log
+        <pre>{{context.log}}</pre>
+      </div>
     </div>
     <div class="clearfix mb-3"></div>
   </div>

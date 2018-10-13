@@ -1,3 +1,26 @@
+<br>
+<br>
+
+<p>
+  The idea of the <em>*uiScroll</em> directive usage is very similar to the use of <em>*ngFor</em> directive
+  in the simplest case, but as it follows from the documentation,
+  a special <em>Datasource</em> object needs to be passed to the <em>*uiScroll</em> directive.
+  The basic ngx-ui-scroll samples include primitive callback-based
+  <em>Datasource.get</em> methods that implement necessary index-count data arrays passing.
+  In addition to the <em>Datasource</em>, a special viewport container is specified in the template.
+  It defines a scrollable area via <em>height</em> and <em>overflow</em> css properties.
+  Each sample has:
+</p>
+
+<ul>
+  <li>working viewport where you may scroll the data;</li>
+  <li>log section where you may see how many items the viewport has at a moment
+    and how many items have been retrieved via Datasource.get;
+  </li>
+  <li>code listing which contains Datasource typescript code, Template html code and CSS;</li>
+  <li>description where you can find some notes and explanations.</li>
+</ul>
+
 <app-demo-basic></app-demo-basic>
 <app-demo-buffer-size></app-demo-buffer-size>
 <app-demo-padding></app-demo-padding>

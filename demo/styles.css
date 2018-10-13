@@ -63,9 +63,14 @@ h3 {
   margin-left: 20px;
 }
 
+.demo .work .viewport-wrapper {
+  float: left;
+  margin-right: 20px;
+}
+
 .demo .work .viewport, .viewport {
   width: 175px;
-  height: 175px;
+  height: 250px;
   overflow-anchor: none;
   overflow-y: auto;
 }
@@ -101,7 +106,7 @@ h3 {
 
 .demo .work .log {
   height: 175px;
-  width: 175px;
+  width: 200px;
   overflow-y: hidden;
   font-size: smaller;
   line-height: 14px;
@@ -112,14 +117,12 @@ h3 {
   height: 100px;
 }
 
-.demo .work .log.elements {
-  padding-left: 20px;
-  width: 115px;
+.demo .work .log .elements {
+  margin-bottom: 2px;
 }
 
-.demo .work .log.datasource {
-  padding-left: 10px;
-  width: 190px;
+.demo .work .log .datasource pre {
+  margin-top: 3px;
 }
 
 .over {

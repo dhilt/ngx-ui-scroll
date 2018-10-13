@@ -5,10 +5,17 @@
 >
   <div description>
     <p>
-      What if I want to start the <em>uiScroll</em> from some specific position? It is possible via <em>startIndex</em>
-      setting which defines what item index the scroller will use to start the load process. The value has to be
-      an integer. It has no range limitations, but it must exist within the datasource boundaries in case the
-      <em>Datasource</em> is limited. The default value of <em>startIndex</em> setting is 1.
+      What if I want to start the <em>uiScroll</em> from some specific position?
+      It is possible via <em>startIndex</em> setting which defines
+      what item index the <em>uiScroll</em> will use to start the load process.
+      It will be the value of the <em>index</em> argument during the first
+      <em>Datasource.get</em> method call.
+    </p>
+    <p>
+      The default <em>startIndex</em> value is 1.
+      It has to be an integer with no range limitations.
+      But real datasource boundaries (in case the <em>Datasource</em> is limited)
+      should be taken into the account.
     </p>
   </div>
 </app-demo>

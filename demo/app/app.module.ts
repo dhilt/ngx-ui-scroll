@@ -15,6 +15,7 @@ import { AdapterComponent } from './samples/adapter.component';
 import { DemoBasicComponent } from './samples/common/basic.component';
 import { DemoBufferSizeComponent } from './samples/common/buffer-size.component';
 import { DemoPaddingComponent } from './samples/common/padding.component';
+import { DemoItemSizeComponent } from './samples/common/item-size.component';
 import { DemoStartIndexComponent } from './samples/common/start-index.component';
 import { DemoInfiniteComponent } from './samples/common/infinite.component';
 import { DemoHorizontalComponent } from './samples/common/horizontal.component';
@@ -37,6 +38,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoBasicComponent,
     DemoBufferSizeComponent,
     DemoPaddingComponent,
+    DemoItemSizeComponent,
     DemoStartIndexComponent,
     DemoInfiniteComponent,
     DemoHorizontalComponent,

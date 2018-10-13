@@ -1,0 +1,40 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      Another setting which has an impact on the viewport's filling procedure is <em>itemSize</em>.
+      After the first fetch is done, the <em>uiScroll</em> gets knowledge on average item's size
+      and can make further requests precisely.
+      Defining <em>settings.itemSize</em> property we are telling the <em>uiScroll</em> that
+      the initial average item's size is determined and could be used right on the first cycle.
+      That's why we have only 2 initial <em>Datasource.get</em> calls in this demo:
+    </p>
+    <ol>
+      <li>250px + 0.5 * 250px = 375px &mdash; downward (positive) size</li>
+      <li>ceil(375px / 25px) = 15 &mdash; items number to fill the area of 375px</li>
+      <li>0.5 * 250px = 125px &mdash; upward (negative) size</li>
+      <li>ceil(125px / 25px) = 5 &mdash; items number to fill the area of 125px</li>
+    </ol>
+    <p>
+      <em>itemSize</em> don't fix item's size on the template layer,
+      it is just an expectation of average item's size.
+      If you set it to, say, 10, then the first <em>Datasource.get</em> call will give you
+      ceil(375 / 10) = 38 items which will occupy 38 * 25 = 950px downward area.
+      The second fetch will be the same as above, because the <em>uiScroll</em>
+      will recalculate average item's size after the first fetch is done.
+      Setting <em>itemSize</em> to, say, 9999 will give us good old 3 fetches:
+      5 (not 1, because 1 < bufferSize that is 5 by default) and 10 items on forward direction
+      and 5 items on backward direction.
+    </p>
+    <p>
+      <em>itemSize</em> has no default value.
+      If set, it has to be a positive integer.
+      The minimum value is 1.
+    </p>
+  </div>
+</app-demo>
+
+

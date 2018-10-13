@@ -10,8 +10,10 @@
       10 items of 25px each are equal to 250px of the viewport height.
       <em>Datasource.get</em> log shows us that there were 3 requests
       of 5, 10 and 5 items on the initial load (before any scrolling).
-      So we have 20 DOM elements initially: 15 downward items with positive indexes and 5 upward negative items.
-      Datasource is unlimited, it produces items with indexes from -Infinity to +Infinity.
+      So we have 20 DOM elements initially:
+      15 downward items with positive indexes and 5 upward negative items.
+      Our <em>Datasource</em> is unlimited,
+      it produces items with indexes from -Infinity to +Infinity.
       The number of DOM elements in the viewport is not constant
       and fluctuates around the initial value during scrolling (20-31).
     </p>

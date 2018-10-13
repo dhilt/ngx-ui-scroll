@@ -16,36 +16,41 @@
       In this demo we have 3 requests on the initial load, let's see what happened:
     </p>
     <ol>
-      <li>250px + 250px * 1.46 = 615px
-        -- total size of area that needs to be filled on downward (positive) direction,
+      <li>250px + 1.46 * 250px = 615px
+        &mdash; total size of area that needs to be filled on downward (positive) direction,
         where 250px is the size of the visible viewport (per CSS)
       </li>
       <li>7 items * 25px = 175px
-        -- the result size of first downward fetch,
+        &mdash; the result size of first downward fetch,
         where <em>bufferSize</em> is 7 and 25px is the item's size (per CSS)
       </li>
       <li>615px - 175px = 440px
-        -- downward space which has to be filled during second downward fetch
+        &mdash; downward space which has to be filled during second downward fetch
       </li>
       <li>ceil(440px / 25px) = 18
-        -- items number that is needed to feel remain 440px area during second downward fetch
+        &mdash; items number that is needed to feel remain 440px area during second downward fetch
       </li>
     </ol>
     <p>
       So we have 2 <em>Datasource.get</em> downward requests for 7 and 18 items.
-      To satisfy 40 DOM elements we need to fetch 40 - (7 + 18) = 15 more items.
       And this is an explanation of the last (initial backward) fetch:
     </p>
     <ol>
       <li>1.46 * 250px = 360px
-        -- upward space which has to be filled on backward (negative) direction
+        &mdash; upward space which has to be filled on backward (negative) direction
       </li>
       <li>ceil(360px / 25px) = 15
-        -- items number that is needed to feel 360px area on backward fetch
+        &mdash; items number that is needed to feel 360px area on backward fetch
       </li>
     </ol>
     <p>
-      The default value of <em>padding</em> property is 0.5. The minimum value is 0.1.
+      So we have satisfied to 40 DOM elements (7 + 18 + 15 = 40).
+      The bigger <em>padding</em> value is, the more DOM elements should be present in the viewport.
+    </p>
+    <p>
+      The default value of <em>padding</em> property is 0.5.
+      It is being treated as floating point number.
+      The minimum value is 0.01.
     </p>
   </div>
 </app-demo>

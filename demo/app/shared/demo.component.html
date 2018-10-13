@@ -23,6 +23,10 @@
     </div>
     <div class="log">
       <div class="elements {{context.addClass || ''}}">
+        Viewport scrollable size:
+        <span>{{viewport(context.viewportId)}}</span>
+      </div>
+      <div class="elements {{context.addClass || ''}}">
         DOM elements count:
         <span>{{elements(context.viewportId)}}</span>
       </div>

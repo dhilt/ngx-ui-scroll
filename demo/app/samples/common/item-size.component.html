@@ -21,7 +21,7 @@
     <p>
       <em>itemSize</em> don't fix item's size on the template layer,
       it is just an expectation of average item's size.
-      If you set it to, say, 10, then the first <em>Datasource.get</em> call will give you
+      If we set it to, say, 10, then the first <em>Datasource.get</em> call will give us
       ceil(375 / 10) = 38 items which will occupy 38 * 25 = 950px downward area.
       The second fetch will be the same as above, because the <em>uiScroll</em>
       will recalculate average item's size after the first fetch is done.

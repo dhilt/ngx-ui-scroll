@@ -13,6 +13,14 @@ export class DemoComponent {
   @Input() context: DemoContext;
   @Input() sources: DemoSources;
 
+  viewport(token: string): string {
+    const element = document.getElementById(token);
+    if (!element) {
+      return '';
+    }
+    return element.scrollHeight.toString();
+  }
+
   elements(token: string): string {
     const element = document.getElementById(token);
     if (!element) {

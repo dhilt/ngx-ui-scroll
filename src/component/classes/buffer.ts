@@ -107,7 +107,7 @@ export class Buffer {
   getFirstVisibleItemIndex(): number {
     const length = this.items.length;
     for (let i = 0; i < length; i++) {
-      if (!this.items[i].invisible && !this.items[i].toRemove) {
+      if (!this.items[i].invisible) {
         return i;
       }
     }
@@ -116,7 +116,7 @@ export class Buffer {
 
   getLastVisibleItemIndex(): number {
     for (let i = this.items.length - 1; i >= 0; i--) {
-      if (!this.items[i].invisible && !this.items[i].toRemove) {
+      if (!this.items[i].invisible) {
         return i;
       }
     }

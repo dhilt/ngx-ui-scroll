@@ -39,7 +39,7 @@ export class Logger {
     this.getInnerLoopCount = (): number => scroller.state.innerLoopCount;
     this.getWorkflowCycleData = (more: boolean): string =>
       `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}` + (more ? '-' : '');
-    this.log(() => `uiScroll Workflow has been started (v${scroller.version})`);
+    this.log(() => `uiScroll Workflow has been started (v${scroller.version}, instance ${settings.instanceIndex})`);
   }
 
   object(str: string, obj: any, stringify?: boolean) {

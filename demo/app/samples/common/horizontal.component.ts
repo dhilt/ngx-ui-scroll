@@ -46,7 +46,7 @@ export class DemoHorizontalComponent {
   </div>
 </div>`,
     styles: `.viewport.horizontal {
-  width: 175px;
+  width: 250px;
   height: 100px;
   overflow-anchor: none;
   overflow-x: scroll;

@@ -18,7 +18,9 @@ export class DemoComponent {
     if (!element) {
       return '';
     }
-    return element.scrollHeight.toString();
+    const sizeToken = this.datasource.settings && this.datasource.settings.horizontal
+      ? 'scrollWidth' : 'scrollHeight';
+    return element[sizeToken].toString();
   }
 
   elements(token: string): string {

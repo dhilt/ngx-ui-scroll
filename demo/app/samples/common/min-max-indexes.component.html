@@ -1,0 +1,46 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      If the boundaries of the data set are known,
+      we may virtualize all the data items right on the <em>uiScroll</em> initialization, in other words
+      the <em>uiScroll</em> will maintain forward and backward padding elements of the viewport
+      in assumption that the data set consists of (maxIndex - minIndex) items.
+      So it will be possible to jump to any position immediately.
+    </p>
+    <p>
+      In this demo we are telling the <em>uiScroll</em>
+      to work with indexes in-between [1..1000] range only.
+      300 items per 25px give us 25000px,
+      it is our viewport scrollable size and it will not be changed.
+      Also, we may reach the bottom item in a single long scroll with just a couple of fetches:
+      3-10 <em>Datasource.get</em> method calls against 70-200 ones in the previous demos.
+    </p>
+    <p>
+      An important note is that <em>minIndex</em> and <em>maxIndex</em>
+      should stay within the real datasource boundaries.
+      All the demos we discussed before have unlimited datasources,
+      so <em>minIndex</em> and <em>maxIndex</em> could accept any values.
+      But in case the datasource is limited, say, by [MIN..MAX] range, then
+      <em>minIndex</em> should be >= <em>MIN</em> and
+      <em>maxIndex</em> should be <= <em>MAX</em>.
+      Here is the example of limited <em>Datasource.get</em> implementation:
+    </p>
+    <pre>{{limitedDatasourceSample}}</pre>
+    <p>
+      The <em>uiScroll</em> can accept only one of min/max indexes settings.
+      For example, if we know that our datasource have no negative values,
+      then we may define <em>minIndex</em> as 1 (or 0) and not define <em>maxIndex</em>.
+      It also seems right idea to set <em>startIndex</em> value to 0 in case
+      <em>minIndex</em> value had been set to 0.
+    </p>
+    <p>
+      Both of <em>minIndex</em> and <em>maxIndex</em> values should be integer.
+      The default <em>minIndex</em> value is <em>-Infinity</em>.
+      The default <em>maxIndex</em> value is <em>+Infinity</em>.
+    </p>
+  </div>
+</app-demo>

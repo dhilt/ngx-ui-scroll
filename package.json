@@ -10,7 +10,7 @@
     "start-package": "npm run install-package && npm start",
     "build-app": "ng build --prod --aot",
     "preinstall": "npm install -g @angular/cli",
-    "postinstall": "npm run build-app && mv dist/* ."
+    "postinstall": "npm run build-app"
   },
   "private": true,
   "dependencies": {

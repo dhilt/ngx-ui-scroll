@@ -9,7 +9,7 @@
     "install-package": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-1.0.0-beta.tgz --no-save",
     "start-package": "npm run install-package && npm start",
     "build-app": "ng build --prod --aot",
-    "preinstall": "npm install -g @angular/cli",
+    "preinstall": "cd server && npm install",
     "postinstall": "npm run build-app"
   },
   "private": true,

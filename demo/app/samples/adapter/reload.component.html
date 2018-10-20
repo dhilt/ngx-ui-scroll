@@ -11,16 +11,24 @@
 
   <div description>
     <p>
-      The <em>uiScroll</em> augments the <em>Datasource</em> object passed from the outside during instantiating
-      to provide an API to manipulate and assess the scroller. This API is accessible via special <em>Adapter</em>
-      object. Currently it has only one method that allows you to reload the scroller:
-      <em>Adapter.reload(index)</em>. It resets the items buffer, resets the viewport params and starts
+      The first <em>Adapter</em> API method is the <em>reload</em> method
+      that allows us to reload the <em>uiScroll</em>: <em>Adapter.reload(index)</em>.
+      It resets the items buffer, resets the viewport params and starts
       fetching items
     </p>
     <ul>
-      <li> from <em>index</em> position (if <em>reload</em> is called with parameter)</li>
-      <li> from <em>settings.startIndex</em> position (if <em>startIndex</em> setting is set)</li>
-      <li> from the default position which is 1 (if neither setting nor parameter is present)</li>
+      <li>
+        from <em>index</em> position
+        (if <em>reload</em> had been called with <em>index</em> parameter);
+      </li>
+      <li>
+        from <em>settings.startIndex</em> position
+        (if no <em>index</em> parameter is present and <em>startIndex</em> setting is set);
+      </li>
+      <li>
+        from the default position which is 1
+        (if neither setting nor parameter is present).
+      </li>
     </ul>
   </div>
 </app-demo>

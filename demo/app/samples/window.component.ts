@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 
 import { IDatasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
-const MAX = 100;
-const MIN = -899;
+const MAX = 1000;
+const MIN = 1;
 
 @Component({
   selector: 'app-samples-window',
@@ -43,7 +43,7 @@ export class WindowComponent {
       padding: 0.25,
       bufferSize: 1,
       itemSize: 20,
-      // minIndex: MIN,
+      minIndex: MIN,
       // maxIndex: MAX,
       windowViewport: true
     },

@@ -20,13 +20,13 @@ export class DemoDifferentHeightsComponent {
   };
 
   datasource: IDatasource = {
-    get: datasourceGetCallbackLimited(this.demoContext, -20, 75)
+    get: datasourceGetCallbackLimited(this.demoContext, -20, 100)
   };
 
   sources: DemoSources = {
     datasource: `datasource: IDatasource = {
   get: (index, count, success) => {
-    const MIN = 1, MAX = 75;
+    const MIN = -20, MAX = 100;
     const data = [];
     const start = Math.max(MIN, index);
     const end = Math.min(index + count - 1, MAX);
@@ -47,13 +47,12 @@ export class DemoDifferentHeightsComponent {
 </div>`,
     styles: `.viewport {
   width: 175px;
-  height: 175px;
+  height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
 }
 .item {
   font-weight: bold;
-  height: 25px;
 }`
   };
 

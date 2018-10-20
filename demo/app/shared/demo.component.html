@@ -39,17 +39,25 @@
   </div>
 
   <div class="sources">
-    <tabset>
-      <tab heading="Component">
-        <pre class="prettyprint">{{sources.datasource}}</pre>
-      </tab>
-      <tab heading="Template">
-        <pre class="prettyprint lang-html">{{sources.template}}</pre>
-      </tab>
-      <tab heading="CSS">
-        <pre class="prettyprint">{{sources.styles}}</pre>
-      </tab>
-    </tabset>
+    <ng-container
+      *ngIf="!context.datasourceTabOnly; then allTabs; else datasourceTab">
+    </ng-container>
+    <ng-template #allTabs>
+      <tabset>
+        <tab heading="Component">
+          <pre class="prettyprint">{{sources.datasource}}</pre>
+        </tab>
+        <tab heading="Template">
+          <pre class="prettyprint lang-html">{{sources.template}}</pre>
+        </tab>
+        <tab heading="CSS">
+          <pre class="prettyprint">{{sources.styles}}</pre>
+        </tab>
+      </tabset>
+    </ng-template>
+    <ng-template #datasourceTab>
+      <pre class="prettyprint">{{sources.datasource}}</pre>
+    </ng-template>
   </div>
 
   <div class="description">

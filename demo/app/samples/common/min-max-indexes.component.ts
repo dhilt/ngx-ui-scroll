@@ -13,7 +13,7 @@ export class DemoMinMaxIndexesComponent {
 
   demoContext: DemoContext = <DemoContext> {
     title: `minIndex / maxIndex settings`,
-    titleId: `min-max-indexes-setting`,
+    titleId: `min-max-indexes-settings`,
     viewportId: `min-max-indexes-viewport`,
     count: 0,
     log: ''

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { DemoContext, DemoSources } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
-import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource, IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-reload',
@@ -35,7 +35,7 @@ export class DemoReloadComponent {
   }
 });
 
-reloadIndex: number = 1;
+reloadIndex: number = 99;
 
 doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
@@ -50,7 +50,7 @@ doReload() {
 </div>`,
     styles: `.viewport {
   width: 175px;
-  height: 175px;
+  height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
 }
@@ -60,7 +60,7 @@ doReload() {
 }`
   };
 
-  reloadIndex = 1;
+  reloadIndex = 99;
 
   onInputChanged(target: HTMLInputElement) {
     let value = parseInt(target.value, 10);

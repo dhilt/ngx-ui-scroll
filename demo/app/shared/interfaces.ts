@@ -12,6 +12,7 @@ export interface DemoContext {
   viewportId: string;
   addClass?: string;
   noWorkView?: boolean;
+  datasourceTabOnly?: boolean;
 
   // dynamic data
   count: number;

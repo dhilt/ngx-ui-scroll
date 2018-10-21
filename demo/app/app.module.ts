@@ -24,6 +24,7 @@ import { DemoDifferentHeightsComponent } from './samples/common/different-height
 import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
+import { DemoItemsCountComponent } from './samples/adapter/items-count.component';
 import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-extended.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
@@ -49,6 +50,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoWindowViewportComponent,
     DemoReloadComponent,
     DemoIsLoadingComponent,
+    DemoItemsCountComponent,
     DemoIsLoadingExtendedComponent,
     WindowComponent,
     TestComponent,

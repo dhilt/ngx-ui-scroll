@@ -41,7 +41,7 @@ doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`,
     template: `<button (click)="doReload()">Reload</button>
-<input [(ngModel)]="reloadIndex">
+by index <input [(ngModel)]="reloadIndex">
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

@@ -33,8 +33,24 @@ export class DemoIsLoadingComponent {
     }
     setTimeout(() => success(data), 125);
   }
-});`,
-    template: `The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
+});
+
+isLoadingCounter = 0;
+
+constructor() {
+  this.datasource.adapter.isLoading$
+    .subscribe(isLoading =>
+      this.isLoadingCounter += !isLoading ? 1 : 0
+    );
+}
+`,
+    template: `The uiScroll is
+{{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
+
+<br>
+
+The value of isLoading counter has been changed
+for {{isLoadingCounter}} times.
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
@@ -43,7 +59,7 @@ export class DemoIsLoadingComponent {
 </div>`,
     styles: `.viewport {
   width: 175px;
-  height: 175px;
+  height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
 }
@@ -53,4 +69,12 @@ export class DemoIsLoadingComponent {
 }`
   };
 
+  isLoadingCounter = 0;
+
+  constructor() {
+    this.datasource.adapter.isLoading$
+      .subscribe(isLoading =>
+        this.isLoadingCounter += !isLoading ? 1 : 0
+      );
+  }
 }

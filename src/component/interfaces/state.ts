@@ -1,5 +1,6 @@
 import { ItemAdapter } from './index';
 import { FetchModel } from '../classes/fetch';
+import { BehaviorSubject } from 'rxjs/index';
 
 export interface WindowScrollState {
   delta: number;
@@ -51,8 +52,15 @@ export interface State {
   scrollState: ScrollState;
   syntheticScroll: SyntheticScroll;
 
-  pending: boolean;
+  loopPendingSource: BehaviorSubject<boolean>;
+  workflowPendingSource: BehaviorSubject<boolean>;
+  firstVisibleSource: BehaviorSubject<ItemAdapter>;
+  lastVisibleSource: BehaviorSubject<ItemAdapter>;
+
+  loopPending: boolean;
   workflowPending: boolean;
   firstVisibleItem: ItemAdapter;
   lastVisibleItem: ItemAdapter;
+
+  time: number;
 }

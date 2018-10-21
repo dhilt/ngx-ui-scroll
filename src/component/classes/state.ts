@@ -96,21 +96,41 @@ export class State implements IState {
   scrollState: IScrollState;
   syntheticScroll: ISyntheticScroll;
 
-  pendingSource: BehaviorSubject<boolean>;
+  loopPendingSource: BehaviorSubject<boolean>;
+  workflowPendingSource: BehaviorSubject<boolean>;
+  isLoadingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
   lastVisibleSource: BehaviorSubject<ItemAdapter>;
 
-  get pending(): boolean {
-    return this.pendingSource.getValue();
+  get loopPending(): boolean {
+    return this.loopPendingSource.getValue();
   }
 
-  set pending(value: boolean) {
-    if (this.pending !== value) {
-      this.pendingSource.next(value);
+  set loopPending(value: boolean) {
+    if (this.loopPending !== value) {
+      this.loopPendingSource.next(value);
     }
   }
 
-  workflowPending: boolean;
+  get workflowPending(): boolean {
+    return this.workflowPendingSource.getValue();
+  }
+
+  set workflowPending(value: boolean) {
+    if (this.workflowPending !== value) {
+      this.workflowPendingSource.next(value);
+    }
+  }
+
+  get isLoading(): boolean {
+    return this.isLoadingSource.getValue();
+  }
+
+  set isLoading(value: boolean) {
+    if (this.isLoading !== value) {
+      this.isLoadingSource.next(value);
+    }
+  }
 
   get firstVisibleItem(): ItemAdapter {
     return this.firstVisibleSource.getValue();
@@ -156,13 +176,15 @@ export class State implements IState {
     this.scrollState = new ScrollState();
     this.syntheticScroll = new SyntheticScroll();
 
-    this.pendingSource = new BehaviorSubject<boolean>(false);
+    this.loopPendingSource = new BehaviorSubject<boolean>(false);
+    this.workflowPendingSource = new BehaviorSubject<boolean>(false);
+    this.isLoadingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
   }
 
   startLoop(options?: ProcessRun) {
-    this.pending = true;
+    this.loopPending = true;
     this.innerLoopCount++;
     this.fetch.reset();
     this.clip = false;
@@ -173,7 +195,7 @@ export class State implements IState {
   }
 
   endLoop() {
-    this.pending = false;
+    this.loopPending = false;
     this.countDone++;
     this.isInitialLoop = false;
   }

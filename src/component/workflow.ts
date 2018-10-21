@@ -169,10 +169,14 @@ export class Workflow {
   }
 
   done() {
+    const { state } = this.scroller;
     this.cyclesDone++;
-    this.scroller.state.workflowCycleCount = this.cyclesDone + 1;
-    this.scroller.state.isInitialWorkflowCycle = false;
-    this.scroller.state.workflowPending = false;
+    state.workflowCycleCount = this.cyclesDone + 1;
+    state.isInitialWorkflowCycle = false;
+    state.workflowPending = false;
+    if (state.scrollState.scrollTimer === null) {
+      state.isLoading = false;
+    }
     this.finalize();
   }
 

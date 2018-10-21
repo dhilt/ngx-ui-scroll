@@ -31,6 +31,10 @@ export const generateMockAdapter = (): IAdapter => (
     init$: observableOf(false),
     isLoading: false,
     isLoading$: new BehaviorSubject<boolean>(false),
+    cyclePending: false,
+    cyclePending$: new BehaviorSubject<boolean>(false),
+    loopPending: false,
+    loopPending$: new BehaviorSubject<boolean>(false),
     firstVisible: {},
     firstVisible$: new BehaviorSubject<ItemAdapter>({}),
     lastVisible: {},
@@ -66,6 +70,22 @@ export class Adapter implements IAdapter {
     return getInitializedSubject(this, () => this.getIsLoading$());
   }
 
+  get loopPending(): boolean {
+    return this.isInitialized ? this.getLoopPending() : false;
+  }
+
+  get loopPending$(): BehaviorSubject<boolean> {
+    return getInitializedSubject(this, () => this.getLoopPending$());
+  }
+
+  get cyclePending(): boolean {
+    return this.isInitialized ? this.getCyclePending() : false;
+  }
+
+  get cyclePending$(): BehaviorSubject<boolean> {
+    return getInitializedSubject(this, () => this.getCyclePending$());
+  }
+
   get firstVisible(): ItemAdapter {
     return this.isInitialized ? this.getFirstVisible() : {};
   }
@@ -92,6 +112,10 @@ export class Adapter implements IAdapter {
   private getVersion: Function;
   private getIsLoading: Function;
   private getIsLoading$: Function;
+  private getCyclePending: Function;
+  private getCyclePending$: Function;
+  private getLoopPending: Function;
+  private getLoopPending$: Function;
   private getFirstVisible: Function;
   private getFirstVisible$: Function;
   private getLastVisible: Function;
@@ -107,12 +131,16 @@ export class Adapter implements IAdapter {
       return;
     }
     this.scroller = scroller;
-    const { state, buffer, viewport } = scroller;
+    const { state, buffer } = scroller;
     this.isInitialized = true;
     this.callWorkflow = scroller.callWorkflow;
     this.getVersion = (): string | null => scroller.version;
-    this.getIsLoading = (): boolean => state.pending;
-    this.getIsLoading$ = (): BehaviorSubject<boolean> => state.pendingSource;
+    this.getIsLoading = (): boolean => state.isLoading;
+    this.getIsLoading$ = (): BehaviorSubject<boolean> => state.isLoadingSource;
+    this.getLoopPending = (): boolean => state.loopPending;
+    this.getLoopPending$ = (): BehaviorSubject<boolean> => state.loopPendingSource;
+    this.getCyclePending = (): boolean => state.workflowPending;
+    this.getCyclePending$ = (): BehaviorSubject<boolean> => state.workflowPendingSource;
     this.getFirstVisible = (): ItemAdapter => state.firstVisibleItem;
     this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => state.firstVisibleSource;
     this.getLastVisible = (): ItemAdapter => state.lastVisibleItem;

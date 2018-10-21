@@ -29,7 +29,7 @@ export default class End {
     });
 
     // if the Workflow isn't finilized, it may freeze for no more than settings.throttle ms
-    if (scroller.state.workflowPending && !scroller.state.pending) {
+    if (scroller.state.workflowPending && !scroller.state.loopPending) {
       // continue the Workflow asynchronously
       End.continueWorkflowByTimer(scroller);
     }
@@ -97,7 +97,7 @@ export default class End {
     scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
     state.scrollState.workflowTimer = <any>setTimeout(() => {
       // if the WF isn't finilized while the old sub-cycle is done and there's no new sub-cycle
-      if (state.workflowPending && !state.pending && innerLoopCount === state.innerLoopCount) {
+      if (state.workflowPending && !state.loopPending && innerLoopCount === state.innerLoopCount) {
         scroller.callWorkflow({
           process: Process.end,
           status: ProcessStatus.next,

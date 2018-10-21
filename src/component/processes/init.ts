@@ -7,6 +7,7 @@ export default class Init {
     scroller.state.isInitialWorkflowCycle = !payload;
     scroller.state.isInitialLoop = !payload;
     scroller.state.workflowPending = true;
+    scroller.state.isLoading = true;
     scroller.callWorkflow({
       process: Process.init,
       status: ProcessStatus.next,

@@ -3,7 +3,6 @@ import { switchMap } from 'rxjs/operators';
 
 import { Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter } from '../interfaces/index';
 import { Scroller } from '../scroller';
-import { Item } from './item';
 
 const getIsInitialized = (adapter: Adapter): Observable<boolean> =>
   Observable.create((observer: Observer<boolean>) => {
@@ -116,11 +115,11 @@ export class Adapter implements IAdapter {
   private getCyclePending$: Function;
   private getLoopPending: Function;
   private getLoopPending$: Function;
+  private getItemsCount: Function;
   private getFirstVisible: Function;
   private getFirstVisible$: Function;
   private getLastVisible: Function;
   private getLastVisible$: Function;
-  private getItemsCount: Function;
 
   constructor() {
     this.isInitialized = false;
@@ -141,11 +140,36 @@ export class Adapter implements IAdapter {
     this.getLoopPending$ = (): BehaviorSubject<boolean> => state.loopPendingSource;
     this.getCyclePending = (): boolean => state.workflowPending;
     this.getCyclePending$ = (): BehaviorSubject<boolean> => state.workflowPendingSource;
-    this.getFirstVisible = (): ItemAdapter => state.firstVisibleItem;
-    this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => state.firstVisibleSource;
-    this.getLastVisible = (): ItemAdapter => state.lastVisibleItem;
-    this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => state.lastVisibleSource;
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
+    this.initializeProtected(scroller);
+  }
+
+  initializeProtected(scroller: Scroller) {
+    const { state } = scroller;
+    let getFirstVisibleProtected = () => {
+      getFirstVisibleProtected = () => state.firstVisibleItem;
+      state.firstVisibleWanted = true;
+      return state.firstVisibleItem;
+    };
+    let getFirstVisible$Protected = () => {
+      getFirstVisible$Protected = () => state.firstVisibleSource;
+      state.firstVisibleWanted = true;
+      return state.firstVisibleSource;
+    };
+    let getLastVisibleProtected = () => {
+      getLastVisibleProtected = () => state.lastVisibleItem;
+      state.lastVisibleWanted = true;
+      return state.lastVisibleItem;
+    };
+    let getLastVisible$Protected = () => {
+      getLastVisible$Protected = () => state.lastVisibleSource;
+      state.lastVisibleWanted = true;
+      return state.lastVisibleSource;
+    };
+    this.getFirstVisible = (): ItemAdapter => getFirstVisibleProtected();
+    this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => getFirstVisible$Protected();
+    this.getLastVisible = (): ItemAdapter => getLastVisibleProtected();
+    this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => getLastVisible$Protected();
   }
 
   reload(reloadIndex?: number | string) {

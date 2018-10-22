@@ -101,6 +101,8 @@ export class State implements IState {
   isLoadingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
   lastVisibleSource: BehaviorSubject<ItemAdapter>;
+  firstVisibleWanted: boolean;
+  lastVisibleWanted: boolean;
 
   get loopPending(): boolean {
     return this.loopPendingSource.getValue();
@@ -181,6 +183,8 @@ export class State implements IState {
     this.isLoadingSource = new BehaviorSubject<boolean>(false);
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
+    this.firstVisibleWanted = false;
+    this.lastVisibleWanted = false;
   }
 
   startLoop(options?: ProcessRun) {

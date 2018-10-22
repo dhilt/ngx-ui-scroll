@@ -61,6 +61,8 @@ export interface State {
   workflowPending: boolean;
   firstVisibleItem: ItemAdapter;
   lastVisibleItem: ItemAdapter;
+  firstVisibleWanted: boolean;
+  lastVisibleWanted: boolean;
 
   time: number;
 }

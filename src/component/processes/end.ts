@@ -43,37 +43,38 @@ export default class End {
   }
 
   static calculateParams(scroller: Scroller) {
-    const items = scroller.buffer.items;
-    const length = items.length;
-    const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
-    const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
-    let index = null;
-    for (let i = 0; i < length; i++) {
-      const edge = scroller.viewport.getElementEdge(items[i].element, Direction.backward, true);
-      if (edge > viewportBackwardEdge) {
-        index = i;
-        break;
-      }
-    }
-    scroller.state.firstVisibleItem = index !== null ? {
-      $index: items[index].$index,
-      data: items[index].data,
-      element: items[index].element
-    } : {};
+    const { items } = scroller.buffer;
 
-    index = null;
-    for (let i = length - 1; i >= 0; i--) {
-      const edge = scroller.viewport.getElementEdge(items[i].element, Direction.forward, true);
-      if (edge < viewportForwardEdge) {
-        index = i;
-        break;
-      }
+    // first visible item
+    if (scroller.state.firstVisibleWanted) {
+      const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
+      const firstItem = items.find(item =>
+        scroller.viewport.getElementEdge(item.element, Direction.forward) > viewportBackwardEdge
+      );
+      scroller.state.firstVisibleItem = firstItem ? {
+        $index: firstItem.$index,
+        data: firstItem.data,
+        element: firstItem.element
+      } : {};
     }
-    scroller.state.lastVisibleItem = index !== null ? {
-      $index: items[index].$index,
-      data: items[index].data,
-      element: items[index].element
-    } : {};
+
+    // last visible item
+    if (scroller.state.lastVisibleWanted) {
+      const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
+      let lastItem = null;
+      for (let i = items.length - 1; i >= 0; i--) {
+        const edge = scroller.viewport.getElementEdge(items[i].element, Direction.backward);
+        if (edge < viewportForwardEdge) {
+          lastItem = items[i];
+          break;
+        }
+      }
+      scroller.state.lastVisibleItem = lastItem ? {
+        $index: lastItem.$index,
+        data: lastItem.data,
+        element: lastItem.element
+      } : {};
+    }
   }
 
   static getNext(scroller: Scroller, error?: any): ProcessRun | null {

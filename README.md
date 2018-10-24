@@ -13,22 +13,23 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 
 ### Motivation
 
-The common way to present a list of data elements of undefined length is to start with a small portion - just enough to fill the space on the page. Additional blocks are added to the list as the user scrolls to the edge of the list. The problem with this approach is that even though blocks at the edge of the list become invisible as they scroll out of the view, they are still a part of the page and still consume resources.
+Large data sets we are going to scroll through may lead to performance issues. Many DOM elements, many data-bindings, many event lesteners... The common way to improve this case is to render only a small portion of the data set which should be visible to the user and simulate (virtualize) other data set elements with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
 
-The \*uiScroll directive dynamically destroys elements as they become invisible and recreating them if they become visible again. This is structural directive that works like \*ngFor and instantiates a template once per item from a collection. The \*uiScroll directive is asking the datasource for data to build and render elements until it has enough elements to fill out the viewport. It will start retrieving new data for new elements again if the user scrolls to the edge of visible element list.
+The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. The \*uiScroll directive asks the external datasource for data to fetch and render elements until the visible part of the viewport is filled out. It will start retrieving new data to render new elements again if the user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreating them if they become visible again.
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
 
 ### Features
 
- - unlimited virtual scroll
- - virtualization settings (you can specify when and how many items need to be requested/rendered by the uiScroll), [demos](https://dhilt.github.io/ngx-ui-scroll/#/#buffer-size-setting)
- - infinite mode (items rendered once are never removed), [demo](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)
+ - unlimited bidirectional virtual scroll
+ - lots of virtualization settings
+ - super easy templating
+ - infinite mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)
  - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)
- - different item heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#different-item-heights)
  - entire window scrollable, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#window-viewport-setting)
- - special Adapter API object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/#/adapter)
+ - items with non-constant heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#different-item-heights)
+ - API Adapter object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/#/adapter)
 
 ### Getting
 

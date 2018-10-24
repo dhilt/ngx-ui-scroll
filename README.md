@@ -15,7 +15,7 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 
 Large data sets we are going to scroll through may lead to performance issues. Many DOM elements, many data-bindings, many event lesteners... The common way to improve this case is to render only a small portion of the data set which should be visible to the user and simulate (virtualize) other data set elements with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
 
-The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. The \*uiScroll directive asks the external datasource for data to fetch and render elements until the visible part of the viewport is filled out. It will start retrieving new data to render new elements again if the user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreating them if they become visible again.
+The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (which implementation is a developer responsibility) the \*uiScroll directive fetches necessary data set items and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if the user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreating them if they become visible again.
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
@@ -107,7 +107,19 @@ _Datasource.get_ must provide an array of _count_ data-items started from _index
   };
 ```
 
-More details could be found on the [DEMO page](https://dhilt.github.io/ngx-ui-scroll/).
+### Settings
+
+|Name|Type|Default|Description|
+|:--|:----:|:----------:|:----------|
+|[bufferSize](https://dhilt.github.io/ngx-ui-scroll/#/#buffer-size-setting)|<sub>number,<br>integer</sub>|5| Fixes minimal size of the pack of the datasource items to be requested per single _Datasource.get_ call. Can't be less than 1. |
+|[padding](https://dhilt.github.io/ngx-ui-scroll/#/#padding-setting)|<sub>number,<br>float</sub>|0.5| Determines viewport outlets relative to the viewport's size that needs to be filled. E.g. 0.5 means that we'll have as many items at a moment as needed to fill out 100% of the visible part of the viewport, + 50% of the viewport size in backward direction and + 50% in forward direction. The value can't be less than 0.01. |
+|[startIndex](https://dhilt.github.io/ngx-ui-scroll/#/#start-index-setting)|<sub>number,<br>integer</sub>|1| Specifies item index to be requested/rendered first. Can be any, but real datasource boundaries should be taken into the account. |
+|[minIndex](https://dhilt.github.io/ngx-ui-scroll/#/#min-max-indexes-settings)|<sub>number,<br>integer</sub>|-Infinity| Fixes absolute minimal index of the data set. The datasource left boundary. |
+|[maxIndex](https://dhilt.github.io/ngx-ui-scroll/#/#min-max-indexes-settings)|<sub>number,<br>integer</sub>|+Infinity| Fixes absolute maximal index of the data set. The datasource right boundary. |
+|[infinite](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)|<sub>boolean</sub>|false| Allows to run "infinite" mode, when items rendered once are never removed. |
+|[horizontal](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)|<sub>boolean</sub>|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
+|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#/#window-viewport-setting)|<sub>boolean</sub>|false| Allows to run "entire window scrollabe" mode, when the entire window becomes the scrollable viewport. |
+
 
 ### Developing
 

@@ -12,7 +12,8 @@
   </div>
   <div description>
     <p>
-      The next read-only <em>Adapter</em> properties are
+      The <em>Adapter</em> has two read-only properties
+      which allow to determine the first and the last visible items:
       <em>firstVisible</em> and <em>lastVisible</em>.
       These are the objects of special <em>ItemAdapter</em> type
     </p>
@@ -24,10 +25,11 @@
       <em>element</em> is the DOM element that is relevant to our item.
     </p>
     <p>
-      There are scalar and Observable versions of these properties:
-      <em>firstVisible$</em> and <em>lastVisible$</em>. Both versions could be
-      used in the template as it is shown in this demo. Also, we may have
-      appropriate subscriptions and here in this sample we are calculating
+      In addition to scalar <em>firstVisible</em> and <em>lastVisible</em> properties
+      there are also Observable versions: <em>firstVisible$</em> and <em>lastVisible$</em>.
+      Both versions could be used in the template as it is shown in this demo.
+      Also, we may have appropriate subscriptions and
+      here in this sample we are calculating
       a number of visible items with the help of <em>combineLatest</em> RxJs method.
     </p>
     <p>

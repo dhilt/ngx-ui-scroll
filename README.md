@@ -129,14 +129,14 @@ Settings are being applied during the uiScroll initialization and have an impact
 
 |Name|Type|Default|Description|
 |:--|:----:|:----------:|:----------|
-|[bufferSize](https://dhilt.github.io/ngx-ui-scroll/#/#buffer-size-setting)|<sub>number,<br>integer</sub>|5| Fixes minimal size of the pack of the datasource items to be requested per single _Datasource.get_ call. Can't be less than 1. |
-|[padding](https://dhilt.github.io/ngx-ui-scroll/#/#padding-setting)|<sub>number,<br>float</sub>|0.5| Determines viewport outlets relative to the viewport's size that needs to be filled. E.g. 0.5 means that we'll have as many items at a moment as needed to fill out 100% of the visible part of the viewport, + 50% of the viewport size in backward direction and + 50% in forward direction. The value can't be less than 0.01. |
-|[startIndex](https://dhilt.github.io/ngx-ui-scroll/#/#start-index-setting)|<sub>number,<br>integer</sub>|1| Specifies item index to be requested/rendered first. Can be any, but real datasource boundaries should be taken into the account. |
-|[minIndex](https://dhilt.github.io/ngx-ui-scroll/#/#min-max-indexes-settings)|<sub>number,<br>integer</sub>|-Infinity| Fixes absolute minimal index of the data set. The datasource left boundary. |
-|[maxIndex](https://dhilt.github.io/ngx-ui-scroll/#/#min-max-indexes-settings)|<sub>number,<br>integer</sub>|+Infinity| Fixes absolute maximal index of the data set. The datasource right boundary. |
-|[infinite](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)|<sub>boolean</sub>|false| Allows to run "infinite" mode, when items rendered once are never removed. |
-|[horizontal](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)|<sub>boolean</sub>|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
-|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#/#window-viewport-setting)|<sub>boolean</sub>|false| Allows to run "entire window scrollabe" mode, when the entire window becomes the scrollable viewport. |
+|[bufferSize](https://dhilt.github.io/ngx-ui-scroll/#/#buffer-size-setting)|number,<br>integer|5| Fixes minimal size of the pack of the datasource items to be requested per single _Datasource.get_ call. Can't be less than 1. |
+|[padding](https://dhilt.github.io/ngx-ui-scroll/#/#padding-setting)|number,<br>float|0.5| Determines viewport outlets relative to the viewport's size that needs to be filled. E.g. 0.5 means that we'll have as many items at a moment as needed to fill out 100% of the visible part of the viewport, + 50% of the viewport size in backward direction and + 50% in forward direction. The value can't be less than 0.01. |
+|[startIndex](https://dhilt.github.io/ngx-ui-scroll/#/#start-index-setting)|number,<br>integer|1| Specifies item index to be requested/rendered first. Can be any, but real datasource boundaries should be taken into the account. |
+|[minIndex](https://dhilt.github.io/ngx-ui-scroll/#/#min-max-indexes-settings)|number,<br>integer|-Infinity| Fixes absolute minimal index of the data set. The datasource left boundary. |
+|[maxIndex](https://dhilt.github.io/ngx-ui-scroll/#/#min-max-indexes-settings)|number,<br>integer|+Infinity| Fixes absolute maximal index of the data set. The datasource right boundary. |
+|[infinite](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)|boolean|false| Allows to run "infinite" mode, when items rendered once are never removed. |
+|[horizontal](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)|boolean|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
+|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#/#window-viewport-setting)|boolean|false| Allows to run "entire window scrollabe" mode, when the entire window becomes the scrollable viewport. |
 
 ### Adapter API
 
@@ -168,7 +168,7 @@ Below is the list of invocable methods of the Adapter API.
 
 |Name|Parameters|Description|
 |:--|:----|:----------|
-|reload|(startIndex?:&nbsp;number)|Resets the items buffer, resets the viewport params and starts fetching items from "startIndex" (if set)|
+|[reload](https://dhilt.github.io/ngx-ui-scroll/#/adapter#reload)|(startIndex?:&nbsp;number)|Resets the items buffer, resets the viewport params and starts fetching items from "startIndex" (if set). |
 
 ### Development
 
@@ -178,6 +178,24 @@ There are some npm scripts available from package.json:
 - `npm test` to run Karma tests
 - `npm run build` to build the ngx-ui-scroll module into the ./dist folder
 - `npm run install-package` to build tar-gzipped version of package and install it locally into ./node_modules
+
+Along with settings object the datasource implementation may include also devSettings object: 
+
+```javascript
+import { Datasource } from 'ngx-ui-scroll';
+...
+  datasource = new Datasource({
+    get: ... ,
+    settings: { ... },
+    devSettings: {
+      debug: true,
+      immediateLog: true,
+      ...
+    }
+  });
+```
+
+We are not going to discuss development settings here, information about it could be obtained directly from the [source code](https://github.com/dhilt/ngx-ui-scroll/blob/master/src/component/classes/settings.ts), but the uiScroll has "debug" mode with powerful logging which could be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might too be many logs and pushing them to the console output immediately could slow down the App.
 
 The work has just begun. We have great plans and any participation is welcome! So, feel free to submit new issues and open Pull Requests.
 

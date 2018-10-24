@@ -9,7 +9,9 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 - [Features](#features)
 - [Getting](#getting)
 - [Usage](#usage)
-- [Developing](#developing)
+- [Settings](#settings)
+- [Adapter API](#adapter-api)
+- [Development](#development)
 
 ### Motivation
 
@@ -85,8 +87,7 @@ where the viewport is a scrollable area of finite height.
 import { IDatasource } from 'ngx-ui-scroll';
 
 export class AppComponent {
-
-  public datasource: IDatasource = {
+  datasource: IDatasource = {
     get: (index, count, success) => {
       const data = [];
       for (let i = index; i <= index + count - 1; i++) {
@@ -101,13 +102,30 @@ export class AppComponent {
 _Datasource.get_ must provide an array of _count_ data-items started from _index_ position. _Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if you want some remote API to be a source of your data, basically it may look like
 
 ```javascript
-  public datasource: IDatasource = {
+  datasource: IDatasource = {
     get: (index, count) =>
       this.http.get(`${myApiUrl}?index=${index}&count=${count}`)
   };
 ```
 
+More details could be found on the [DEMO page](https://dhilt.github.io/ngx-ui-scroll/).
+
 ### Settings
+
+Datasource implementation along with _get_ method property may include _settings_ object property:
+
+```javascript
+  datasource: IDatasource = {
+    get: ...,
+    settings: {
+      minIndex: 0,
+      startIndex: 0,
+      ...
+    }
+  };
+```
+
+Settings are being applied during the uiScroll initialization and have an impact on how the uiScroll behaves. Below is the list of available settings with descriptions, defaults, types and demos.
 
 |Name|Type|Default|Description|
 |:--|:----:|:----------:|:----------|
@@ -120,8 +138,39 @@ _Datasource.get_ must provide an array of _count_ data-items started from _index
 |[horizontal](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)|<sub>boolean</sub>|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
 |[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#/#window-viewport-setting)|<sub>boolean</sub>|false| Allows to run "entire window scrollabe" mode, when the entire window becomes the scrollable viewport. |
 
+### Adapter API
 
-### Developing
+The uiScroll has API to assess its parameters and provide some manipulations run-time. This API is available via special Adapter object. The datasource needs to be instantiated via operator "new" fot the Adapter object to be added to it:
+
+```javascript
+import { Datasource } from 'ngx-ui-scroll';
+...
+  datasource = new Datasource({
+    get: ... ,
+    settings: { ... }
+  });
+```
+
+Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and other Adapter expressions become legal. Below is the list of read-only properties of the Adapter API.
+
+|Name|Type|Description|
+|:--|:----|:----------|
+|version|string|Current version of ngx-ui-scroll library|
+|[isLoading](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|boolean|Indicates whether the uiScroll is working ot not. |
+|[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|BehaviorSubject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
+|[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#/adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|
+|[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index?:&nbsp;number;<br>&nbsp;&nbsp;data?:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the datasource item index value, "data" is exactly the item's content, "element" is a link to DOM element which is relevant to the item. |
+|[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "firstVisible" property. |
+|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter|Object of ItemAdapter type containing information about last visible item. |
+|[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "lastVisible" property. |
+
+Below is the list of invocable methods of the Adapter API.
+
+|Name|Parameters|Description|
+|:--|:----|:----------|
+|reload|(startIndex?:&nbsp;number)|Resets the items buffer, resets the viewport params and starts fetching items from "startIndex" (if set)|
+
+### Development
 
 There are some npm scripts available from package.json:
 

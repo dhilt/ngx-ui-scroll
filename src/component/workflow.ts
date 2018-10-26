@@ -25,7 +25,7 @@ export class Workflow {
       status: Status.start
     });
     this.cyclesDone = 0;
-    this.onScrollHandler = () => Scroll.run(this.scroller);
+    this.onScrollHandler = event => Scroll.run(this.scroller, { event });
 
     if (this.scroller.settings.initializeDelay) {
       setTimeout(() => this.init(), this.scroller.settings.initializeDelay);

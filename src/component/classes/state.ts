@@ -28,6 +28,7 @@ class WindowScrollState implements IWindowScrollState {
 
 class ScrollState implements IScrollState {
   firstScroll: boolean;
+  firstScrollTime: number;
   lastScrollTime: number;
   scrollTimer: number | null;
   workflowTimer: number | null;
@@ -42,6 +43,7 @@ class ScrollState implements IScrollState {
 
   reset() {
     this.firstScroll = false;
+    this.firstScrollTime = 0;
     this.lastScrollTime = 0;
     this.scrollTimer = null;
     this.workflowTimer = null;

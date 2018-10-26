@@ -1,5 +1,3 @@
-import { Direction } from './direction';
-
 export enum Process {
   init = 'init',
   scroll = 'scroll',
@@ -19,6 +17,11 @@ export enum ProcessStatus {
   next = 'next',
   done = 'done',
   error = 'error'
+}
+
+export interface ScrollPayload {
+  event?: Event;
+  byTimer?: boolean;
 }
 
 export interface ProcessRun {

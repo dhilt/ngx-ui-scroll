@@ -18,7 +18,8 @@ export class Logger {
     this.debug = settings.debug;
     this.immediateLog = settings.immediateLog;
     this.logTime = settings.logTime;
-    this.getTime = (): string => ` // time: ${scroller.state.time}`;
+    this.getTime = (): string =>
+      scroller.state && ` // time: ${scroller.state.time}`;
     this.getStat = (): string => {
       const { buffer, viewport } = scroller;
       const first = buffer.getFirstVisibleItem();

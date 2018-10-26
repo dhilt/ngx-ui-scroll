@@ -1,31 +1,31 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { Process, ProcessStatus, ScrollPayload } from '../interfaces/index';
+import { state } from '@angular/animations';
 
 export default class Scroll {
 
-  static run(scroller: Scroller) {
+  static run(scroller: Scroller, payload: ScrollPayload = {}) {
     scroller.logger.log(scroller.viewport.scrollPosition);
     if (scroller.state.syntheticScroll.position !== null) {
       if (!Scroll.processSyntheticScroll(scroller)) {
         return;
       }
     }
-    this.throttledScroll(scroller);
+    this.delayScroll(scroller, payload);
   }
 
   static processSyntheticScroll(scroller: Scroller): boolean {
     const { viewport, state: { syntheticScroll }, settings, logger } = scroller;
     const time = Number(new Date());
-    const synthScrollDelay = time - syntheticScroll.time;
+    const synthetic = { ...syntheticScroll };
+    const position = viewport.scrollPosition;
+    const synthScrollDelay = time - synthetic.time;
 
     if (synthScrollDelay > settings.maxSynthScrollDelay) {
       logger.log(() => `reset synthetic scroll params (${synthScrollDelay} > ${settings.maxSynthScrollDelay})`);
       syntheticScroll.reset();
-      return true;
+      return position !== synthetic.position;
     }
-
-    const position = viewport.scrollPosition;
-    const synthetic = { ...syntheticScroll };
 
     // synthetic scroll
     syntheticScroll.readyToReset = true;
@@ -78,25 +78,33 @@ export default class Scroll {
     return true;
   }
 
-  static throttledScroll(scroller: Scroller) {
-    if (!scroller.settings.throttle) {
+  static delayScroll(scroller: Scroller, payload: ScrollPayload) {
+    if (!scroller.settings.throttle || payload.byTimer) {
       Scroll.doScroll(scroller);
       return;
     }
     const { state: { scrollState } } = scroller;
-    const diff = scrollState.lastScrollTime + scroller.settings.throttle - Date.now();
+    const time = Number(Date.now());
+    const tDiff = scrollState.lastScrollTime + scroller.settings.throttle - time;
+    const dDiff = scroller.settings.throttle + (scrollState.firstScrollTime ? scrollState.firstScrollTime - time : 0);
+    const diff = Math.max(tDiff, dDiff);
+    // scroller.logger.log('tDiff:', tDiff, 'dDiff:', dDiff, 'diff:', diff);
     if (diff <= 0) {
       scroller.purgeScrollTimers(true);
-      scrollState.lastScrollTime = Date.now();
+      scrollState.lastScrollTime = time;
+      scrollState.firstScrollTime = 0;
       Scroll.doScroll(scroller);
-    } else if (!scrollState.scrollTimer) {
-      // scroller.logger.log('%cset timer', 'background-color: green;');
+    } else if (!scrollState.scrollTimer && !scrollState.keepScroll) {
+      scroller.logger.log(() => [`%cset the timer at ${scroller.state.time + diff}`, 'background-color: #dfd']);
+      scrollState.firstScrollTime = time;
       scrollState.scrollTimer = <any>setTimeout(() => {
         scrollState.scrollTimer = null;
-        // scroller.logger.log('%cfire the timer', 'background-color: green;');
-        Scroll.run(scroller);
+        scroller.logger.log(() => [`%cfire the timer at ${scroller.state.time}`, 'background-color: #ffd']);
+        Scroll.run(scroller, { byTimer: true });
       }, diff);
-    }
+    } /* else {
+      scroller.logger.log('MISS TIMER');
+    } */
   }
 
   static doScroll(scroller: Scroller) {

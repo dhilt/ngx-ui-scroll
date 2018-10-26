@@ -11,6 +11,7 @@ export interface WindowScrollState {
 
 export interface ScrollState {
   firstScroll: boolean;
+  firstScrollTime: number;
   lastScrollTime: number;
   scrollTimer: number | null;
   workflowTimer: number | null;

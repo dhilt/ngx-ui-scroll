@@ -15,6 +15,15 @@ export default class Scroll {
 
   static processSyntheticScroll(scroller: Scroller): boolean {
     const { viewport, state: { syntheticScroll }, settings, logger } = scroller;
+    const time = Number(new Date());
+    const synthScrollDelay = time - syntheticScroll.time;
+
+    if (synthScrollDelay > settings.maxSynthScrollDelay) {
+      logger.log(() => `reset synthetic scroll params (${synthScrollDelay} > ${settings.maxSynthScrollDelay})`);
+      syntheticScroll.reset();
+      return true;
+    }
+
     const position = viewport.scrollPosition;
     const synthetic = { ...syntheticScroll };
 
@@ -39,7 +48,6 @@ export default class Scroll {
 
     // inertia scroll over synthetic scroll
     if (position !== synthetic.position) {
-      const inertiaDelay = Number(new Date()) - syntheticScroll.time;
       const inertiaDelta = <number>synthetic.positionBefore - position;
       const syntheticDelta = <number>synthetic.position - position;
       if (inertiaDelta > 0 && inertiaDelta < syntheticDelta) {
@@ -48,11 +56,12 @@ export default class Scroll {
           '. Position: ' + position +
           ', synthetic position: ' + synthetic.position +
           ', synthetic position before: ' + synthetic.positionBefore +
+          ', synthetic delay: ' + synthScrollDelay +
           ', synthetic delta: ' + syntheticDelta +
-          ', inertia delay: ' + inertiaDelay + ', inertia delta: ' + inertiaDelta +
+          ', inertia delta: ' + inertiaDelta +
           ', new position: ' + newPosition);
         if (settings.inertia) { // precise inertia settings
-          if (inertiaDelta <= settings.inertiaScrollDelta && inertiaDelay <= settings.inertiaScrollDelay) {
+          if (inertiaDelta <= settings.inertiaScrollDelta && synthScrollDelay <= settings.inertiaScrollDelay) {
             viewport.scrollPosition = newPosition;
           }
         } else {

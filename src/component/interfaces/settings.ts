@@ -21,4 +21,5 @@ export interface DevSettings {
   inertiaScrollDelta?: number;
   initDelay?: number;
   initWindowDelay?: number;
+  maxSynthScrollDelay?: number;
 }

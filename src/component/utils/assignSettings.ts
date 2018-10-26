@@ -99,4 +99,5 @@ export const assignDevSettings = (
   assignMinimalNumeric(target, devSettings, 'inertiaScrollDelta', defaults, minDevSettings, true);
   assignMinimalNumeric(target, devSettings, 'initDelay', defaults, minDevSettings, true);
   assignMinimalNumeric(target, devSettings, 'initWindowDelay', defaults, minDevSettings, true);
+  assignMinimalNumeric(target, devSettings, 'maxSynthScrollDelay', defaults, minDevSettings, true);
 };

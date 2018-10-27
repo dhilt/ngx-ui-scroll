@@ -30,6 +30,8 @@ import { DemoFirstLastVisibleItemsComponent } from './samples/adapter/first-last
 import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-extended.component';
 import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasource-signatures.component';
 import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
+import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
+import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/positive-limited-datasource.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
 
@@ -60,6 +62,8 @@ import { AppRoutingModule } from './app-routing.module';
     DemoIsLoadingExtendedComponent,
     DemoDatasourceSignaturesComponent,
     DemoBidirectionalUnlimitedDatasourceComponent,
+    DemoLimitedDatasourceComponent,
+    DemoPositiveLimitedDatasourceComponent,
     WindowComponent,
     TestComponent,
     TestInnerComponent

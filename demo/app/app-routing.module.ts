@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'datasource', component: DatasourceComponent },
   { path: 'window', component: WindowComponent },
   { path: 'test', component: TestComponent },
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+  { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 
 @NgModule({

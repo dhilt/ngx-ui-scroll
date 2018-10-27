@@ -25,7 +25,7 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
     }
     success(data);
   }
-}`
+};`
   };
 
 }

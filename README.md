@@ -15,7 +15,7 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 
 ### Motivation
 
-Large data sets we are going to scroll through may lead to performance issues. Many DOM elements, many data-bindings, many event lesteners... The common way to improve this case is to render only a small portion of the data set which should be visible to the user and simulate (virtualize) other data set elements with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
+Large data sets we are going to scroll through may lead to performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve this case is to render only a small portion of the data set which should be visible to the user and simulate (virtualize) other data set elements with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
 
 The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (which implementation is a developer responsibility) the \*uiScroll directive fetches necessary data set items and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if the user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreating them if they become visible again.
 <p align="center">

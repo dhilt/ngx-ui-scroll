@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 
 import { DemoContext, DemoSources } from '../../shared/interfaces';
-import { Observable, Observer } from 'rxjs/index';
 
 @Component({
   selector: 'app-datasource-signatures',

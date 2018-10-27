@@ -1,0 +1,21 @@
+<app-demo
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      If we are not going to deal with negative indexes,
+      we can fix the datasource left boundary at 1 (or 0 depends on your needs).
+      This is a particular case of limited datasource discussed above
+      with only MIN value set up. Also, positive limitation
+      could be alternatively achieved by assigning 1 (or 0) value to
+      <a href="#/#min-max-indexes-settings">minIndex setting</a>.
+    </p>
+    <p>
+      Note that if 0 index is left boundary of the data set,
+      then it seems reasonable to assign 0 value to
+      <a href="#/#start-index-setting">startIndex setting</a> too,
+      because the default <em>startIndex</em> value is 1.
+    </p>
+  </div>
+</app-demo>

@@ -1,0 +1,37 @@
+<br>
+<br>
+
+<p>
+  <em>Datasource</em> is an entry point to the <em>uiScroll</em>,
+  it is a special object of <em>IDatasource</em> type that provides
+  data flow from the host App to the <em>uiScroll</em>.
+  There are two common ways of how the <em>Datasource</em> could be defined:
+</p>
+<ul>
+  <li>
+    as an object literal of <em>IDatasource</em> type
+    <pre>{{datasourceSampleLiteral}}</pre>
+  </li>
+  <li>
+    as an instance of <em>Datasource</em> class
+    <pre>{{datasourceSampleClass}}</pre>
+  </li>
+</ul>
+<p>
+  The constructor argument in the second case should be an <em>IDatasource</em> object.
+  Both of <em>IDatasource</em> and <em>Datasource</em> definitions
+  could be imported from <em>UiScrollModule</em>:
+</p>
+<pre>{{importSample}}</pre>
+<p>
+  The <em>IDatasource</em> object we need to define in both cases
+</p>
+<ul>
+  <li>must contain <em>get</em> method property and</li>
+  <li>may contain <em>settings</em> object property.</li>
+</ul>
+<p>
+  With the help of <em>settings</em> object the scroller could be
+  configured, as it is being described on <a href="#common">Common page</a>.
+  Here we are going to discuss the <em>Datasource.get</em> method implementation.
+</p>

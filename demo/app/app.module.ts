@@ -11,6 +11,7 @@ import { DemoComponent } from './shared/demo.component';
 
 import { CommonComponent } from './samples/common.component';
 import { AdapterComponent } from './samples/adapter.component';
+import { DatasourceComponent } from './samples/datasource.component';
 
 import { DemoBasicComponent } from './samples/common/basic.component';
 import { DemoBufferSizeComponent } from './samples/common/buffer-size.component';
@@ -39,6 +40,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoComponent,
     CommonComponent,
     AdapterComponent,
+    DatasourceComponent,
     DemoBasicComponent,
     DemoBufferSizeComponent,
     DemoPaddingComponent,

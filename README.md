@@ -81,7 +81,7 @@ where the viewport is a scrollable area of finite height.
 }
 ```
 
-\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource) that can be imported to the host component from UiScrollModule. It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
+\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
 
 ```javascript
 import { IDatasource } from 'ngx-ui-scroll';
@@ -108,7 +108,7 @@ _Datasource.get_ must provide an array of _count_ data-items started from _index
   };
 ```
 
-More details could be found on the [DEMO page](https://dhilt.github.io/ngx-ui-scroll/).
+More details could be found on the [Datasource demo page](https://dhilt.github.io/ngx-ui-scroll/#/#datasource).
 
 ### Settings
 

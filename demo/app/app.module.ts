@@ -28,6 +28,7 @@ import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 import { DemoItemsCountComponent } from './samples/adapter/items-count.component';
 import { DemoFirstLastVisibleItemsComponent } from './samples/adapter/first-last-visible-items.component';
 import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-extended.component';
+import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
 
@@ -56,6 +57,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoItemsCountComponent,
     DemoFirstLastVisibleItemsComponent,
     DemoIsLoadingExtendedComponent,
+    DemoBidirectionalUnlimitedDatasourceComponent,
     WindowComponent,
     TestComponent,
     TestInnerComponent

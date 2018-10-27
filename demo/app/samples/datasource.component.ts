@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Datasource } from'../../../public_api';
 
 @Component({
   selector: 'app-datasource',

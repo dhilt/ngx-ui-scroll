@@ -1,7 +1,7 @@
 export interface DemoSources {
   datasource: string;
-  template: string;
-  styles: string;
+  template?: string;
+  styles?: string;
 }
 
 export interface DemoContext {

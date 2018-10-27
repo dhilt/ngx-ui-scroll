@@ -1,3 +1,5 @@
+<h1>Angular UI Scroll Datasource Demos</h1>
+
 <br>
 <br>
 
@@ -19,6 +21,9 @@
 </ul>
 <p>
   The constructor argument in the second case should be an <em>IDatasource</em> object.
+  Instantiating via operator <em>new</em> is needed for
+  the <em>Adapter</em> to be available on the result <em>datasource</em> object
+  (for details see <a href="#adapter">Adapter demo page</a>).
   Both of <em>IDatasource</em> and <em>Datasource</em> definitions
   could be imported from <em>UiScrollModule</em>:
 </p>
@@ -32,6 +37,8 @@
 </ul>
 <p>
   With the help of <em>settings</em> object the scroller could be
-  configured, as it is being described on <a href="#common">Common page</a>.
+  configured, as it is being described on <a href="#common">Common demo page</a>.
   Here we are going to discuss the <em>Datasource.get</em> method implementation.
 </p>
+
+<app-bidirectional-unlimited-datasource></app-bidirectional-unlimited-datasource>

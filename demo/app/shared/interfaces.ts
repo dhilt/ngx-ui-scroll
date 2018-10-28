@@ -12,6 +12,7 @@ export interface DemoContext {
   viewportId: string;
   addClass?: string;
   noWorkView?: boolean;
+  logViewOnly?: boolean;
   datasourceTabOnly?: boolean;
 
   // dynamic data

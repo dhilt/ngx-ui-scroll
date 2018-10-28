@@ -21,19 +21,30 @@
         </div>
       </div>
     </div>
-    <div class="log">
-      <div class="elements {{context.addClass || ''}}">
-        Viewport scrollable size:
-        <span>{{viewport(context.viewportId)}}</span>
-      </div>
-      <div class="elements {{context.addClass || ''}}">
-        DOM elements count:
-        <span>{{elements(context.viewportId)}}</span>
-      </div>
-      <div class="datasource {{context.addClass || ''}}">
-        Datasource.get log
-        <pre>{{context.log}}</pre>
-      </div>
+    <div class="log" *ngIf="init">
+      <ng-container
+        *ngIf="!context.logViewOnly; then allView; else logView">
+      </ng-container>
+      <ng-template #allView>
+        <div class="elements {{context.addClass || ''}}">
+          Viewport scrollable size:
+          <span>{{viewport(context.viewportId)}}</span>
+        </div>
+        <div class="elements {{context.addClass || ''}}">
+          DOM elements count:
+          <span>{{elements(context.viewportId)}}</span>
+        </div>
+        <div class="datasource {{context.addClass || ''}}">
+          Datasource.get log
+          <pre>{{context.log}}</pre>
+        </div>
+      </ng-template>
+      <ng-template #logView>
+        <div class="datasource {{context.addClass || ''}}">
+          Datasource.get log
+          <pre>{{context.log}}</pre>
+        </div>
+      </ng-template>
     </div>
     <div class="clearfix mb-3"></div>
   </div>

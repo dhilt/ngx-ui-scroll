@@ -9,6 +9,8 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoComponent {
 
+  init = false;
+
   @Input() datasource: Datasource;
   @Input() context: DemoContext;
   @Input() sources: DemoSources;
@@ -33,6 +35,7 @@ export class DemoComponent {
   }
 
   constructor() {
+    setTimeout(() => this.init = true);
   }
 
 }

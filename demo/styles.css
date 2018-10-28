@@ -75,10 +75,11 @@ h3 {
 }
 
 .demo .work .viewport, .viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-anchor: none;
   overflow-y: auto;
+  margin-bottom: 15px;
 }
 
 .demo .work .viewport.horizontal {
@@ -113,7 +114,7 @@ h3 {
 
 .demo .work .log {
   height: 250px;
-  width: 200px;
+  width: 250px;
   overflow-y: hidden;
   font-size: smaller;
   line-height: 14px;

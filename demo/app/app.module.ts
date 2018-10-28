@@ -32,6 +32,7 @@ import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasour
 import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
 import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/positive-limited-datasource.component';
+import { DemoInvertedDatasourceComponent } from './samples/datasource/inverted-datasource.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
 
@@ -64,6 +65,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoBidirectionalUnlimitedDatasourceComponent,
     DemoLimitedDatasourceComponent,
     DemoPositiveLimitedDatasourceComponent,
+    DemoInvertedDatasourceComponent,
     WindowComponent,
     TestComponent,
     TestInnerComponent

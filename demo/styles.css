@@ -70,6 +70,27 @@ em {
   }
 }
 
+.main-menu {
+  position: absolute;
+  width: 200px;
+  top: -6px;
+  padding-left: 15px;
+}
+@media (min-width: 1200px) {
+  .main-menu {
+    position: static;
+    width: auto;
+    top: auto;
+    margin-right: auto;
+    margin-top: -10px;
+  }
+}
+
+.navbar {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .navbar-brand {
   font-size: 2rem;
 }
@@ -81,6 +102,7 @@ em {
 .navbar .container {
   height: 4rem;
   color: #fff;
+  padding: 0;
 }
 
 .navbar .container a {
@@ -91,7 +113,14 @@ em {
 .navbar .container .copyrights {
   color: #aaa;
   font-size: small;
-  margin-top: 2rem;
+  position: absolute;
+  right: 80px;
+}
+@media (max-width: 480px) {
+  .navbar .container .copyrights {
+    top: 90px;
+    right: 15px;
+  }
 }
 
 .navbar .container .copyrights a {

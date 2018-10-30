@@ -196,10 +196,14 @@ em {
 .demo .work .log {
   height: 250px;
   width: 250px;
-  overflow-y: hidden;
+  overflow-y: auto;
   font-size: smaller;
   line-height: 14px;
   float: left;
+}
+
+.demo .work .log pre {
+  margin-bottom: 0;
 }
 
 .demo .work .log.horizontal {

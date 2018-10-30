@@ -196,10 +196,17 @@ em {
 .demo .work .log {
   height: 250px;
   width: 250px;
-  overflow-y: auto;
   font-size: smaller;
   line-height: 14px;
   float: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.demo .work .datasource {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .demo .work .log pre {

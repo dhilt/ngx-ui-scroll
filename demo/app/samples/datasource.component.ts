@@ -10,9 +10,7 @@ export class DatasourceComponent {
   }
 
   importSample = `import { Datasource, IDatasource } from 'ngx-ui-scroll';`;
-  datasourceSampleLiteral = `
-datasource: IDatasource = { ... };`;
-  datasourceSampleClass = `
-datasource = new Datasource({ ... });`;
+  datasourceSampleLiteral = `datasource: IDatasource = { ... };`;
+  datasourceSampleClass = `datasource = new Datasource({ ... });`;
 
 }

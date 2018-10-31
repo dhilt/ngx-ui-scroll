@@ -1,5 +1,6 @@
 import { Scroller } from '../scroller';
 import { Process, ProcessStatus, ProcessRun, Direction } from '../interfaces/index';
+import { itemAdapterEmpty } from '../classes/adapter';
 
 export default class End {
 
@@ -55,7 +56,7 @@ export default class End {
         $index: firstItem.$index,
         data: firstItem.data,
         element: firstItem.element
-      } : {};
+      } : itemAdapterEmpty;
     }
 
     // last visible item
@@ -73,7 +74,7 @@ export default class End {
         $index: lastItem.$index,
         data: lastItem.data,
         element: lastItem.element
-      } : {};
+      } : itemAdapterEmpty;
     }
   }
 

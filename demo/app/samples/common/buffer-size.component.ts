@@ -12,8 +12,9 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoBufferSizeComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `bufferSize setting`,
-    titleId: `buffer-size-setting`,
+    titleId: `buffer-size`,
     viewportId: `buffer-size-viewport`,
     count: 0,
     log: ''
@@ -45,7 +46,7 @@ export class DemoBufferSizeComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;

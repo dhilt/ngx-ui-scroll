@@ -12,6 +12,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoDifferentHeightsComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `Different item heights`,
     titleId: `different-item-heights`,
     viewportId: `different-heights-viewport`,
@@ -46,7 +47,7 @@ export class DemoDifferentHeightsComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;

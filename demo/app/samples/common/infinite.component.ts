@@ -12,6 +12,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoInfiniteComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `Infinite mode`,
     titleId: `infinite-mode`,
     viewportId: `infinite-viewport`,
@@ -45,7 +46,7 @@ export class DemoInfiniteComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 175px;
   overflow-y: auto;
   overflow-anchor: none;

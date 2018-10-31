@@ -12,9 +12,10 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoBasicComponent {
 
   demoContext: DemoContext = <DemoContext> {
-    title: `Unlimited bidirectional scrolling`,
-    titleId: `unlimited-bidirectional-scrolling`,
-    viewportId: `basic-viewport`,
+    scope: 'settings',
+    title: `No settings`,
+    titleId: `no-settings`,
+    viewportId: `no-settings-viewport`,
     count: 0,
     log: ''
   };
@@ -39,7 +40,7 @@ export class DemoBasicComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;

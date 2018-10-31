@@ -9,8 +9,9 @@ import { DemoContext, DemoSources } from '../../shared/interfaces';
 export class DemoWindowViewportComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `Entire window scrollable`,
-    titleId: `window-viewport-setting`,
+    titleId: `window-viewport`,
     viewportId: `window-viewport-viewport`,
     noWorkView: true,
     count: 0,

@@ -12,8 +12,9 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoPaddingComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `padding setting`,
-    titleId: `padding-setting`,
+    titleId: `padding`,
     viewportId: `padding-viewport`,
     count: 0,
     log: ''
@@ -47,7 +48,7 @@ export class DemoPaddingComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;

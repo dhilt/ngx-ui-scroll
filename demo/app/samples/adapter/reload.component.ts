@@ -49,7 +49,7 @@ by index <input [(ngModel)]="reloadIndex">
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;

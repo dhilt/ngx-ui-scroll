@@ -12,6 +12,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoHorizontalComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `Horizontal mode`,
     titleId: `horizontal-mode`,
     viewportId: `horizontal-viewport`,

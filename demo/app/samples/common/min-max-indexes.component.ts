@@ -12,8 +12,9 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoMinMaxIndexesComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `minIndex / maxIndex settings`,
-    titleId: `min-max-indexes-settings`,
+    titleId: `min-max-indexes`,
     viewportId: `min-max-indexes-viewport`,
     count: 0,
     log: ''
@@ -47,7 +48,7 @@ export class DemoMinMaxIndexesComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
@@ -57,15 +58,5 @@ export class DemoMinMaxIndexesComponent {
   height: 25px;
 }`
   };
-
-  limitedDatasourceSample = `  get: (index, count, success) => {
-    const data = [];
-    const start = Math.max(MIN, index);
-    const end = Math.min(index + count - 1, MAX);
-    for (let i = start; i <= end; i++) {
-      data.push({ id: i, text: 'item #' + i });
-    }
-    success(data);
-  }`;
 
 }

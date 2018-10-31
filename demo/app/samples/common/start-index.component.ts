@@ -12,8 +12,9 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoStartIndexComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `startIndex setting`,
-    titleId: `start-index-setting`,
+    titleId: `start-index`,
     viewportId: `start-index-viewport`,
     count: 0,
     log: ''
@@ -45,7 +46,7 @@ export class DemoStartIndexComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;

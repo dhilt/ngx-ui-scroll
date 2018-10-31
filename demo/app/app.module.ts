@@ -9,7 +9,8 @@ import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav.component';
 import { DemoComponent } from './shared/demo.component';
 
-import { CommonComponent } from './samples/common.component';
+import { HomeComponent } from './samples/home.component';
+import { SettingsComponent } from './samples/settings.component';
 import { AdapterComponent } from './samples/adapter.component';
 import { DatasourceComponent } from './samples/datasource.component';
 
@@ -44,7 +45,8 @@ import { AppRoutingModule } from './app-routing.module';
     AppComponent,
     NavComponent,
     DemoComponent,
-    CommonComponent,
+    HomeComponent,
+    SettingsComponent,
     AdapterComponent,
     DatasourceComponent,
     DemoBasicComponent,

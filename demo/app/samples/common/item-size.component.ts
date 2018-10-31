@@ -12,8 +12,9 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoItemSizeComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `itemSize setting`,
-    titleId: `item-size-setting`,
+    titleId: `item-size`,
     viewportId: `item-size-viewport`,
     count: 0,
     log: ''
@@ -45,7 +46,7 @@ export class DemoItemSizeComponent {
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;

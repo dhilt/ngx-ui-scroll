@@ -79,7 +79,7 @@ counter: {{innerLoopCounter}}
   </div>
 </div>`,
     styles: `.viewport {
-  width: 175px;
+  width: 150px;
   height: 175px;
   overflow-y: auto;
   overflow-anchor: none;

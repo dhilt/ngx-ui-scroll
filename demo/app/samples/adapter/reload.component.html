@@ -3,7 +3,7 @@
   [context]="demoContext"
   [sources]="sources"
 >
-  <div actions>
+  <div actions style="display: flex">
     <button (click)="doReload()">Reload</button>
     &nbsp; by index &nbsp;
     <input [ngModel]="reloadIndex" (change)="onInputChanged($event.target)" size="2">

@@ -64,6 +64,32 @@ em {
   border-radius: 2px;
 }
 
+input {
+  height: 24px;
+  padding: 2px;
+  font-size: 12px;
+  line-height: 18px;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 2px;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+button {
+  background: rgba(0,0,0,0.15);
+  border: 0;
+  height: 24px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 300ms ease-in-out;
+}
+
+button:hover {
+  background: rgba(0,0,0,0.25);
+}
+
 @media (min-width: 1200px) {
   .container {
     max-width: 740px;

@@ -21,20 +21,26 @@
       </div>
     </div>
     <div class="log">
-      First visible: {{datasource.adapter.firstVisible.data.text}}
-      <br />
-      Last visible: {{(datasource.adapter.lastVisible$ | async)?.data.text}}
-      <br />
-      Items in DOM: {{datasource.adapter.itemsCount}}
-      <br />
-      Is loading: {{datasource.adapter.isLoading}}
-      <br />
-      Datasource delay (ms):
-      <input [(ngModel)]="delay" type="number" style="width: 40px">
-      <br />
-      Index to reload:
-      <input [(ngModel)]="reloadIndex" type="number" style="width: 60px">
-      <button (click)="doReload()" style="width: 60px">Reload</button>
+      <div style="line-height: 25px; margin-bottom: 2px;">
+        First visible: {{datasource.adapter.firstVisible.data.text}}
+        <br />
+        Last visible: {{(datasource.adapter.lastVisible$ | async)?.data.text}}
+        <br />
+        Items in DOM: {{datasource.adapter.itemsCount}}
+        <br />
+        Is loading: {{datasource.adapter.isLoading}}
+        <br />
+      </div>
+      <div style="display: flex; align-items: center; margin-bottom: 2px;">
+        Datasource delay (ms):&nbsp;
+        <input [(ngModel)]="delay" type="number" style="width: 84px">
+      </div>
+      <div style="display: flex; align-items: center">
+        Index to reload:&nbsp;
+        <input [(ngModel)]="reloadIndex" type="number" style="width: 60px">&nbsp;
+        <button (click)="doReload()" style="width: 60px">Reload</button>
+      </div>
+
     </div>
     <div class="clearfix mb-3"></div>
   </div>

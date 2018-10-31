@@ -47,13 +47,6 @@ p {
   margin-top: 29px;
 }
 
-pre {
-  margin-top: -1px;
-  padding: 20px !important;
-  border-radius: 2px;
-  background: rgba(0,0,0,.05);
-}
-
 em {
   font-family: Menlo,Monaco,"Courier New",Courier,monospace;
   font-style: normal;
@@ -228,7 +221,7 @@ button:hover {
   height: 250px;
   width: 250px;
   font-size: smaller;
-  line-height: 14px;
+  line-height: 20px;
   float: left;
   display: flex;
   flex-direction: column;
@@ -253,7 +246,18 @@ button:hover {
 }
 
 .demo .work .log .datasource pre {
-  margin-top: 3px;
+  padding: 0 20px !important;
+  width: 100%;
+  background: #f2f2f2;
+}
+
+.pre-wrapper {
+  margin-top: 5px;
+  padding: 20px 0;
+  border-radius: 2px;
+  background: #f2f2f2;
+  display: flex;
+  width: auto;
 }
 
 .over {

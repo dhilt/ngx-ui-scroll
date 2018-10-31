@@ -76,6 +76,7 @@ em {
   top: -6px;
   padding-left: 15px;
 }
+
 @media (min-width: 1200px) {
   .main-menu {
     position: static;
@@ -84,6 +85,10 @@ em {
     margin-right: auto;
     margin-top: -10px;
   }
+}
+
+.main-menu .active.active {
+  border-bottom: 1px solid;
 }
 
 .navbar {

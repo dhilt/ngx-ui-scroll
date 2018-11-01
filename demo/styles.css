@@ -159,6 +159,12 @@ button:hover {
   margin-top: 29px;
 }
 
+@media all and (max-width: 1000px) {
+  .demo-examples {
+    flex-direction: column;
+  }
+}
+
 .demo .actions {
   margin-bottom: 20px;
 }

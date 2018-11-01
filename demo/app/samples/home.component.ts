@@ -66,10 +66,10 @@ doReload() {
 <!-- adapter props and methods: -->
 
 First visible:
-{{datasource.adapter.firstVisible.data.text}}
+\${{datasource.adapter.firstVisible.$index}}
 
 Last visible:
-{{(datasource.adapter.lastVisible$ | async)?.data.text}}
+\${{(datasource.adapter.lastVisible$ | async)?.$index}}
 
 Items in DOM:
 {{datasource.adapter.itemsCount}}

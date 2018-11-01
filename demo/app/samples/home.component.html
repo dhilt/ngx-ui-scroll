@@ -22,9 +22,9 @@
     </div>
     <div class="log">
       <div style="line-height: 25px; margin-bottom: 2px;">
-        First visible: {{datasource.adapter.firstVisible.data.text}}
+        First visible: #{{datasource.adapter.firstVisible.$index}}
         <br />
-        Last visible: {{(datasource.adapter.lastVisible$ | async)?.data.text}}
+        Last visible: #{{(datasource.adapter.lastVisible$ | async)?.$index}}
         <br />
         Items in DOM: {{datasource.adapter.itemsCount}}
         <br />
@@ -65,8 +65,8 @@
   simplest Datasource implementation with no any settings provided
   and some of Adapter properties and methods usage.
   Other samples with all necessary details and explanations can be found at
-  <a href="#/settings">Settings</a>,
-  <a href="#/adapter">Adapter</a> and
-  <a href="#/datasource">Datasource</a>
+  <a href="#/datasource">Datasource</a>,
+  <a href="#/settings">Settings</a> and
+  <a href="#/adapter">Adapter</a>
   sections.
 </p>

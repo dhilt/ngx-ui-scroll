@@ -1,9 +1,13 @@
 <h1>Angular UI Scroll Datasource Demos</h1>
 
 <p>
-  <em>Datasource</em> is&nbsp;an&nbsp;entry to&nbsp;the <em>uiScroll</em>,
-  it&nbsp;is&nbsp;a&nbsp;special object of&nbsp;<em>IDatasource</em> type that provides
-  data flow from the host App to the <em>uiScroll</em>.
+  The idea of&nbsp;the <em>*uiScroll</em> directive usage is&nbsp;very similar
+  to&nbsp;the&nbsp;use of&nbsp;<em>*ngFor</em> directive
+  in&nbsp;the simplest case, but as&nbsp;it&nbsp;follows from the documentation,
+  a&nbsp;special <em>Datasource</em> object needs to&nbsp;be&nbsp;passed
+  instead of Angular <em>Iterable</em>.
+  <em>Datasource</em> is&nbsp;an&nbsp;entry point to&nbsp;the <em>uiScroll</em>,
+  that provides data flow from the host App to the <em>uiScroll</em>.
   There are two common ways of&nbsp;how the <em>Datasource</em> could be&nbsp;defined:
 </p>
 
@@ -18,7 +22,7 @@
   </li>
 </ul>
 <p>
-  The constructor argument in&nbsp;the second case should be&nbsp;an&nbsp;<em>IDatasource</em> object.
+  The constructor argument in&nbsp;the second case should be&nbsp;an object of <em>IDatasource</em> type.
   Instantiating via operator <em>new</em> is&nbsp;needed for
   the <em>Adapter</em> to&nbsp;be&nbsp;available on&nbsp;the result <em>datasource</em> object
   (for details see <a href="#adapter">Adapter demo page</a>).
@@ -35,7 +39,7 @@
 </ul>
 <p>
   With the help of&nbsp;<em>settings</em> object the scroller could be&nbsp;configured,
-  as&nbsp;it&nbsp;is&nbsp;being described on&nbsp;<a href="#common">Common demo page</a>.
+  as&nbsp;it&nbsp;is&nbsp;being described on&nbsp;<a href="#settings">Settings demo page</a>.
   Here we&nbsp;are going to&nbsp;discuss the <em>Datasource.get</em> method implementation.
 </p>
 

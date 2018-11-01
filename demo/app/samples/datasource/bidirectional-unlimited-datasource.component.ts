@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
 import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { doLog } from '../../shared/datasource-get';
+import { IDatasource } from '../../../../public_api';
 
 @Component({
   selector: 'app-bidirectional-unlimited-datasource',
@@ -12,8 +14,21 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
     scope: 'datasource',
     title: `Unlimited bidirectional datasource`,
     titleId: `unlimited-bidirectional`,
-    noWorkView: true,
+    logViewOnly: true,
+    log: '',
+    count: 0,
     datasourceTabOnly: true
+  };
+
+  datasource: IDatasource = {
+    get: (index, count, success) => {
+      const data = [];
+      for (let i = index; i <= index + count - 1; i++) {
+        data.push({ id: i, text: 'item #' + i });
+      }
+      doLog(this.demoContext, index, count, data.length);
+      success(data);
+    }
   };
 
   sources: DemoSources = {

@@ -10,9 +10,9 @@ const delayedCall = (result: any, callback: Function, delay?: number) => {
   }
 };
 
-const doLog = (demoContext: DemoContext, index: number, count: number, resolved: number) =>
+export const doLog = (demoContext: DemoContext, index: number, count: number, resolved: number) =>
   demoContext.log =
-    `${++demoContext.count}) got ${resolved} items [${index}, ${index + count - 1}]\n`
+    `${++demoContext.count}) got ${resolved} items [${index}..${index + count - 1}]\n`
     + demoContext.log;
 
 export const datasourceGetInfinite =

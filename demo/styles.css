@@ -216,6 +216,10 @@ button:hover {
   height: 25px;
 }
 
+.demo .work .item.even {
+  background-color: #f2f2f2;
+}
+
 .demo .work .item.horizontal {
   border: 1px solid #aaa;
   height: 100px;

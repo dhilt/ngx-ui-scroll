@@ -58,8 +58,10 @@ doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`,
     template: `<div class="viewport">
-  <div *uiScroll="let item of datasource">
-    <div class="item">{{item.text}}</div>
+  <div *uiScroll="let item of datasource; let even = even">
+    <div class="item" [class.even]="even">
+      {{item.text}}
+    </div>
   </div>
 </div>
 
@@ -92,6 +94,9 @@ Index to reload:
 .item {
   font-weight: bold;
   height: 25px;
+}
+.item.even {
+  background-color: #f2f2f2;
 }`
   };
 

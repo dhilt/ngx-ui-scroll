@@ -21,7 +21,9 @@ import { Item } from './component/classes/item';
   [ngTemplateOutlet]="template"
   [ngTemplateOutletContext]="{
     $implicit: item.data,
-    index: item.$index
+    index: item.$index,
+    odd: item.$index % 2,
+    even: !(item.$index % 2)
  }"
 ></ng-template></div><div data-padding-forward></div>`
 })

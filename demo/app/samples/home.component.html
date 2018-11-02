@@ -15,8 +15,10 @@
   <div class="work">
     <div class="viewport-wrapper">
       <div class="viewport">
-        <div *uiScroll="let item of datasource">
-          <div class="item">{{item.text}}</div>
+        <div *uiScroll="let item of datasource; let even = even">
+          <div class="item" [class.even]="even">
+            {{item.text}}
+          </div>
         </div>
       </div>
     </div>

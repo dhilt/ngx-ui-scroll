@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { TabsModule } from 'ngx-bootstrap';
 
 import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
@@ -33,6 +34,7 @@ import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasour
 import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
 import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/positive-limited-datasource.component';
+import { RemoteDataService, DemoRemoteDatasourceComponent } from './samples/datasource/remote-datasource.component';
 import { DemoInvertedDatasourceComponent } from './samples/datasource/inverted-datasource.component';
 import { DemoPagesDatasourceComponent } from './samples/datasource/pages-datasource.component';
 import { WindowComponent } from './samples/window.component';
@@ -68,6 +70,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoBidirectionalUnlimitedDatasourceComponent,
     DemoLimitedDatasourceComponent,
     DemoPositiveLimitedDatasourceComponent,
+    DemoRemoteDatasourceComponent,
     DemoInvertedDatasourceComponent,
     DemoPagesDatasourceComponent,
     WindowComponent,
@@ -77,9 +80,13 @@ import { AppRoutingModule } from './app-routing.module';
   imports: [
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     TabsModule.forRoot(),
     UiScrollModule,
     AppRoutingModule
+  ],
+  providers: [
+    RemoteDataService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,6 +1,16 @@
 <div>
-  <input [(ngModel)]="reloadIndex">
+  <input [(ngModel)]="datasourceDelay" style="width: 50px"> -
+  <small>datasource delay</small>
+  <br>
+  <input [(ngModel)]="reloadIndex" style="width: 50px"> -
+  <small>reload index</small>
+  <br>
   <button (click)="doReload()">Reload</button>
+  <button (click)="doLog()">Show log</button>
+  <br>
+  <button (click)="doScrollHome()">Up</button>
+  <button (click)="doScrollEnd()">Down</button>
+  <button (click)="doScrollSome()">Some</button>
   <br>
   <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
   <br>
@@ -28,9 +38,16 @@
 </div>
 
 <div class="viewport" style="height: 600px">
-  <div *uiScroll="let item of datasource">
+  <div
+    *uiScroll="let item of datasource"
+    (click)="doToggleItem(item)"
+    [style.height]="item.height + 'px'"
+  >
     <app-samples-test-inner>
-      {{item.text}} {{item.id % 10 === 0 ? '**********' : ''}}
+      {{item.text}}
+      <span [style.color]="item.color">
+        {{item.isSelected ? '********' : ''}}
+      </span>
     </app-samples-test-inner>
   </div>
 </div>

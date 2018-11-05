@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -24,8 +24,9 @@ export class DemoIsLoadingComponent {
     get: datasourceGetCallbackInfinite(this.demoContext, 125)
   });
 
-  sources: DemoSources = {
-    datasource: `datasource = new Datasource ({
+  sources: DemoSources = [{
+    name: DemoSourceType.Component,
+    text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -33,17 +34,37 @@ export class DemoIsLoadingComponent {
     }
     setTimeout(() => success(data), 125);
   }
-});`,
-    template: `The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
+});
+
+isLoadingCounter = 0;
+
+constructor() {
+  this.datasource.adapter.isLoading$
+    .subscribe(isLoading =>
+      this.isLoadingCounter += !isLoading ? 1 : 0
+    );
+}
+`
+  }, {
+    name: DemoSourceType.Template,
+    text: `The uiScroll is
+{{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
+
+<br>
+
+The value of isLoading counter has been changed
+for {{isLoadingCounter}} times.
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
-</div>`,
-    styles: `.viewport {
-  width: 175px;
-  height: 175px;
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport {
+  width: 150px;
+  height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
 }
@@ -51,6 +72,14 @@ export class DemoIsLoadingComponent {
   font-weight: bold;
   height: 25px;
 }`
-  };
+  }];
 
+  isLoadingCounter = 0;
+
+  constructor() {
+    this.datasource.adapter.isLoading$
+      .subscribe(isLoading =>
+        this.isLoadingCounter += !isLoading ? 1 : 0
+      );
+  }
 }

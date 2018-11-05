@@ -1,5 +1,7 @@
 import { Observable, Observer } from 'rxjs';
+
 import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
+import { getDynamicSizeByIndex } from '../miscellaneous/dynamicSize';
 
 export class DatasourceService implements Datasource {
   get() {
@@ -30,13 +32,21 @@ const datasourceGetInfinite = (index: number, count: number) => {
   return data;
 };
 
-const datasourceGetLimited = (index: number, count: number, min: number, max: number) => {
+
+
+const datasourceGetLimited = (
+  index: number, count: number, min: number, max: number, dynamicSize: boolean
+) => {
   const data = [];
   const start = Math.max(min, index);
   const end = Math.min(index + count - 1, max);
   if (start <= end) {
     for (let i = start; i <= end; i++) {
-      data.push({ id: i, text: 'item #' + i });
+      const item = <any>{ id: i, text: 'item #' + i };
+      if (dynamicSize) {
+        item.size = getDynamicSizeByIndex(i);
+      }
+      data.push(item);
     }
   }
   return data;
@@ -72,19 +82,25 @@ const infiniteDatasourceGet = (type?: DatasourceType, delay?: number) =>
     }
   };
 
-const limitedDatasourceGet = (min: number, max: number, type?: DatasourceType, delay?: number) =>
+const limitedDatasourceGet = (
+  min: number, max: number, dynamicSize?: boolean, type?: DatasourceType, delay?: number
+) =>
   (index: number, count: number, success?: Function) => {
     switch (type) {
       case DatasourceType.Callback:
-        return delayedRun(() => (<Function>success)(datasourceGetLimited(index, count, min, max)), delay);
+        return delayedRun(() =>
+          (<Function>success)(datasourceGetLimited(index, count, min, max, !!dynamicSize)), delay
+        );
       case DatasourceType.Promise:
         return new Promise(resolve =>
-          delayedRun(() => resolve(datasourceGetLimited(index, count, min, max)), delay)
-        );
+          delayedRun(() => resolve(
+            datasourceGetLimited(index, count, min, max, !!dynamicSize)), delay
+          ));
       default: // DatasourceType.Observable
         return Observable.create((observer: Observer<any>) =>
-          delayedRun(() => observer.next(datasourceGetLimited(index, count, min, max)), delay)
-        );
+          delayedRun(() => observer.next(
+            datasourceGetLimited(index, count, min, max, !!dynamicSize)), delay
+          ));
     }
   };
 
@@ -113,13 +129,13 @@ const datasourceStore = {
     get: infiniteDatasourceGet(DatasourceType.Callback)
   },
   'limited-observable-no-delay': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Observable)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable)
   },
   'limited-promise-no-delay': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Promise)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Promise)
   },
   'limited-callback-no-delay': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Callback)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Callback)
   },
   'infinite-observable-delay-1': <Datasource>{
     get: infiniteDatasourceGet(DatasourceType.Observable, 1)
@@ -131,13 +147,13 @@ const datasourceStore = {
     get: infiniteDatasourceGet(DatasourceType.Callback, 1)
   },
   'limited-observable-delay-1': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Observable, 1)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable, 1)
   },
   'limited-promise-delay-1': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Promise, 1)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Promise, 1)
   },
   'limited-callback-delay-1': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Callback, 1)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Callback, 1)
   },
 
 
@@ -146,15 +162,19 @@ const datasourceStore = {
   },
 
   'limited': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Observable, 1)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable, 1)
   },
 
   'limited-1-100-no-delay': <Datasource>{
-    get: limitedDatasourceGet(1, 100, DatasourceType.Observable)
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable)
   },
 
   'limited-51-200-no-delay': <Datasource>{
-    get: limitedDatasourceGet(51, 200, DatasourceType.Observable)
+    get: limitedDatasourceGet(51, 200, false, DatasourceType.Observable)
+  },
+
+  'limited--50-99-dynamic-size': <Datasource>{
+    get: limitedDatasourceGet(-50, 99, true)
   },
 
   'default-bad-settings': <Datasource>{

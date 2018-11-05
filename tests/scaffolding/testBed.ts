@@ -6,8 +6,8 @@ import { UiScrollModule } from '../../src/ui-scroll.module';
 import { TestComponent } from './testComponent';
 import { DatasourceService } from './datasources';
 
-export const configureTestBed = (datasource: any, template: string) => {
-  return TestBed
+export const configureTestBed = (datasource: any, template: string) =>
+  TestBed
     .configureTestingModule({
       imports: [UiScrollModule],
       declarations: [TestComponent],
@@ -22,4 +22,3 @@ export const configureTestBed = (datasource: any, template: string) => {
     .overrideProvider(DatasourceService, { useValue: new datasource() })
     .overrideComponent(TestComponent, { set: { template } })
     .createComponent(TestComponent);
-};

@@ -9,26 +9,29 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 - [Features](#features)
 - [Getting](#getting)
 - [Usage](#usage)
-- [Developing](#developing)
+- [Settings](#settings)
+- [Adapter API](#adapter-api)
+- [Development](#development)
 
 ### Motivation
 
-The common way to present a list of data elements of undefined length is to start with a small portion - just enough to fill the space on the page. Additional blocks are added to the list as the user scrolls to the edge of the list. The problem with this approach is that even though blocks at the edge of the list become invisible as they scroll out of the view, they are still a part of the page and still consume resources.
+Scrolling large date sets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve this case is to render only a small portion of the data set visible to the user. Other data set elements that are not visible to the user are virtualized with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
 
-The \*uiScroll directive dynamically destroys elements as they become invisible and recreating them if they become visible again. This is structural directive that works like \*ngFor and instantiates a template once per item from a collection. The \*uiScroll directive is asking the datasource for data to build and render elements until it has enough elements to fill out the viewport. It will start retrieving new data for new elements again if the user scrolls to the edge of visible element list.
+The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the data set and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if the user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
 
 ### Features
 
- - unlimited virtual scroll
- - virtualization settings (you can specify when and how many items need to be requested/rendered by the uiScroll), [demos](https://dhilt.github.io/ngx-ui-scroll/#/#buffer-size-setting)
- - infinite mode (items rendered once are never removed), [demo](https://dhilt.github.io/ngx-ui-scroll/#/#infinite-mode)
- - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#horizontal-mode)
- - different item heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#different-item-heights)
- - entire window scrollable, [demo](https://dhilt.github.io/ngx-ui-scroll/#/#window-viewport-setting)
- - special Adapter API object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/#/adapter)
+ - unlimited bidirectional virtual scroll
+ - lots of virtualization settings
+ - super easy templating
+ - infinite mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#settings#infinite-mode)
+ - horizontal mode, [demo](https://dhilt.github.io/ngx-ui-scroll/#settings#horizontal-mode)
+ - entire window scrollable, [demo](https://dhilt.github.io/ngx-ui-scroll/#settings#window-viewport)
+ - items with non-constant heights, [demo](https://dhilt.github.io/ngx-ui-scroll/#settings#different-item-heights)
+ - API Adapter object to manipulate and assess the scroller, [demos](https://dhilt.github.io/ngx-ui-scroll/#/adapter)
 
 ### Getting
 
@@ -78,14 +81,13 @@ where the viewport is a scrollable area of finite height.
 }
 ```
 
-\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource) that can be imported to the host component from UiScrollModule. It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
+\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
 
 ```javascript
 import { IDatasource } from 'ngx-ui-scroll';
 
 export class AppComponent {
-
-  public datasource: IDatasource = {
+  datasource: IDatasource = {
     get: (index, count, success) => {
       const data = [];
       for (let i = index; i <= index + count - 1; i++) {
@@ -97,18 +99,78 @@ export class AppComponent {
 }
 ```
 
-_Datasource.get_ must provide an array of _count_ data-items started from _index_ position. _Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if you want some remote API to be a source of your data, basically it may look like
+_Datasource.get_ must provide an array of _count_ data-items started from _index_ position. _Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if we want some remote API to be a source of our data, basically it may look like
 
 ```javascript
-  public datasource: IDatasource = {
+  datasource: IDatasource = {
     get: (index, count) =>
       this.http.get(`${myApiUrl}?index=${index}&count=${count}`)
   };
 ```
 
-More details could be found on the [DEMO page](https://dhilt.github.io/ngx-ui-scroll/).
+More details could be found on the [Datasource demo page](https://dhilt.github.io/ngx-ui-scroll/#/datasource).
 
-### Developing
+### Settings
+
+Datasource implementation along with _get_ method property may include _settings_ object property:
+
+```javascript
+  datasource: IDatasource = {
+    get: ...,
+    settings: {
+      minIndex: 0,
+      startIndex: 0,
+      ...
+    }
+  };
+```
+
+Settings are being applied during the uiScroll initialization and have an impact on how the uiScroll behaves. Below is the list of available settings with descriptions, defaults, types and demos.
+
+|Name|Type|Default|Description|
+|:--|:----:|:----------:|:----------|
+|[bufferSize](https://dhilt.github.io/ngx-ui-scroll/#settings#buffer-size)|number,<br>integer|5| Fixes minimal size of the pack of the datasource items to be requested per single _Datasource.get_ call. Can't be less than 1. |
+|[padding](https://dhilt.github.io/ngx-ui-scroll/#settings#padding)|number,<br>float|0.5| Determines viewport outlets relative to the viewport's size that need to be filled. For example, 0.5 means that we'll have as many items at a moment as needed to fill out 100% of the visible part of the viewport, + 50% of the viewport size in backward direction and + 50% in forward direction. The value can't be less than 0.01. |
+|[startIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#start-index)|number,<br>integer|1| Specifies item index to be requested/rendered first. Can be any, but real datasource boundaries should be taken into account. |
+|[minIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#min-max-indexess)|number,<br>integer|-Infinity| Fixes absolute minimal index of the data set. The datasource left boundary. |
+|[maxIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#min-max-indexess)|number,<br>integer|+Infinity| Fixes absolute maximal index of the data set. The datasource right boundary. |
+|[infinite](https://dhilt.github.io/ngx-ui-scroll/#settings#infinite-mode)|boolean|false| Allows to run "infinite" mode, when items rendered once are never removed. |
+|[horizontal](https://dhilt.github.io/ngx-ui-scroll/#settings#horizontal-mode)|boolean|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
+|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#settings#window-viewport)|boolean|false| Allows to run "entire window scrollabe" mode, when the entire window becomes the scrollable viewport. |
+
+### Adapter API
+
+The uiScroll has API to assess its parameters and provide some manipulations run-time. This API is available via special Adapter object. The datasource needs to be instantiated via operator "new" fot the Adapter object to be added to it:
+
+```javascript
+import { Datasource } from 'ngx-ui-scroll';
+...
+  datasource = new Datasource({
+    get: ... ,
+    settings: { ... }
+  });
+```
+
+Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and other Adapter expressions become legal. Below is the list of read-only properties of the Adapter API.
+
+|Name|Type|Description|
+|:--|:----|:----------|
+|version|string|Current version of ngx-ui-scroll library|
+|[isLoading](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|boolean|Indicates whether the uiScroll is working ot not. |
+|[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|BehaviorSubject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
+|[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#/adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|
+|[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index?:&nbsp;number;<br>&nbsp;&nbsp;data?:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the datasource item index value, "data" is exactly the item's content, "element" is a link to DOM element which is relevant to the item. |
+|[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "firstVisible" property. |
+|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter|Object of ItemAdapter type containing information about last visible item. |
+|[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "lastVisible" property. |
+
+Below is the list of invocable methods of the Adapter API.
+
+|Name|Parameters|Description|
+|:--|:----|:----------|
+|[reload](https://dhilt.github.io/ngx-ui-scroll/#/adapter#reload)|(startIndex?:&nbsp;number)|Resets the items buffer, resets the viewport params and starts fetching items from "startIndex" (if set). |
+
+### Development
 
 There are some npm scripts available from package.json:
 
@@ -116,6 +178,24 @@ There are some npm scripts available from package.json:
 - `npm test` to run Karma tests
 - `npm run build` to build the ngx-ui-scroll module into the ./dist folder
 - `npm run install-package` to build tar-gzipped version of package and install it locally into ./node_modules
+
+Along with settings object the datasource implementation may include also devSettings object: 
+
+```javascript
+import { Datasource } from 'ngx-ui-scroll';
+...
+  datasource = new Datasource({
+    get: ... ,
+    settings: { ... },
+    devSettings: {
+      debug: true,
+      immediateLog: true,
+      ...
+    }
+  });
+```
+
+We are not going to discuss development settings here, information about it can be obtained directly from the [source code](https://github.com/dhilt/ngx-ui-scroll/blob/master/src/component/classes/settings.ts), but the uiScroll has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
 
 The work has just begun. We have great plans and any participation is welcome! So, feel free to submit new issues and open Pull Requests.
 

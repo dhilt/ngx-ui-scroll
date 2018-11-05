@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -12,6 +12,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoHorizontalComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `Horizontal mode`,
     titleId: `horizontal-mode`,
     viewportId: `horizontal-viewport`,
@@ -27,8 +28,9 @@ export class DemoHorizontalComponent {
     }
   };
 
-  sources: DemoSources = {
-    datasource: `datasource: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -39,14 +41,18 @@ export class DemoHorizontalComponent {
   settings: {
     horizontal: true
   }
-}`,
-    template: `<div class="viewport horizontal">
+}`
+  }, {
+    name: DemoSourceType.Template,
+    text: `<div class="viewport horizontal">
   <div *uiScroll="let item of datasource">
     <div class="item horizontal">{{item.text}}</div>
   </div>
-</div>`,
-    styles: `.viewport.horizontal {
-  width: 175px;
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport.horizontal {
+  width: 250px;
   height: 100px;
   overflow-anchor: none;
   overflow-x: scroll;
@@ -62,6 +68,6 @@ export class DemoHorizontalComponent {
   padding: 0 5px;
   font-weight: bolder;
 }`
-  };
+  }];
 
 }

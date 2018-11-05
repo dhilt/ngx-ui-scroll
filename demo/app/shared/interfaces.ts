@@ -1,8 +1,17 @@
-export interface DemoSources {
-  datasource: string;
-  template: string;
-  styles: string;
+export enum DemoSourceType {
+  Component = 'Component',
+  Template = 'Template',
+  Styles = 'CSS',
+  Datasource = 'Datasource',
+  Server = 'Server'
 }
+
+interface DemoSource {
+  name: DemoSourceType | string;
+  text: string;
+}
+
+export type DemoSources = DemoSource[];
 
 export interface DemoContext {
   // static data
@@ -12,6 +21,7 @@ export interface DemoContext {
   viewportId: string;
   addClass?: string;
   noWorkView?: boolean;
+  logViewOnly?: boolean;
 
   // dynamic data
   count: number;

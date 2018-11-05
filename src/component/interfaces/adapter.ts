@@ -12,10 +12,18 @@ export interface Adapter {
   readonly init$: Observable<boolean>;
   readonly isLoading: boolean;
   readonly isLoading$: BehaviorSubject<boolean>;
+  readonly loopPending: boolean;
+  readonly loopPending$: BehaviorSubject<boolean>;
+  readonly cyclePending: boolean;
+  readonly cyclePending$: BehaviorSubject<boolean>;
   readonly firstVisible: ItemAdapter;
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;
   readonly lastVisible$: BehaviorSubject<ItemAdapter>;
   readonly itemsCount: number;
-  reload: Function;
+  initialize: Function; // not callable outside
+  reload: (reloadIndex?: number | string) => any;
+  showLog: () => any;
+  setMinIndex: (value: number) => any;
+  setScrollPosition: (value: number) => any;
 }

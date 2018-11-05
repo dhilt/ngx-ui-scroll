@@ -5,30 +5,52 @@
 >
   <div description>
     <p>
-      Here the <em>Datasource.get</em> is taken from previous samples, but the settings object is completed with
-      <em>padding</em> property. <em>Padding</em> is an extra space added to the visible part of the viewport for
-      the purpose of determining when the items should be created/destroyed. The value is relative to the visible
-      size of the viewport. <em>1.4</em> means that the <em>uiScroll</em> would request new items until
-      140% of the viewport size (out of the visible part of the viewport) is filled with rendered items. That's why
-      we have 5 requests on the initial load in this case. There are 3 downward requests:
+      Here the <em>Datasource.get</em> method implementation is taken from previous samples,
+      but the <em>Settings</em> object is completed with <em>padding</em> property.
+      This setting defines an extra space added to the visible part of the viewport for
+      the purpose of determining when the items should be created/destroyed.
+      The value is relative to the visible size of the viewport.
+      So <em>1.46</em> means that the <em>uiScroll</em> would request new items
+      until the areas of 146% of the viewport size on both of forward and backward directions
+      are filled with rendered items: 100% + 146% downward and 146% upward.
+      In this demo we have 3 requests on the initial load, let's see what happened:
     </p>
     <ol>
-      <li>175px + 1.4 * 175px = 420px (downward space which has to be filled, when viewport's height = 175px )</li>
-      <li>ceil(420px / 25px) = 17 (items that are needed to feel 420px of the downward space, when item's height =
-        25px )
+      <li>250px + 1.46 * 250px = 615px
+        &mdash; total size of area that needs to be filled on downward (positive) direction,
+        where 250px is the size of the visible viewport (per CSS)
       </li>
-      <li>ceil(17 / 7) = 3 (datasource.get calls that are needed to request 17 items, when bufferSize = 7)</li>
+      <li>7 items * 25px = 175px
+        &mdash; the result size of first downward fetch,
+        where <em>bufferSize</em> is 7 and 25px is the item's size (per CSS)
+      </li>
+      <li>615px - 175px = 440px
+        &mdash; downward space which has to be filled during second downward fetch
+      </li>
+      <li>ceil(440px / 25px) = 18
+        &mdash; items number that is needed to feel remain 440px area during second downward fetch
+      </li>
     </ol>
     <p>
-      And 2 upward requests:
+      So we have 2 <em>Datasource.get</em> downward requests for 7 and 18 items.
+      And this is an explanation of the last (initial backward) fetch:
     </p>
     <ol>
-      <li>1.4 * 175px = 245px (upward space which have to be filled)</li>
-      <li>ceil(245px / 25px) = 10 (items that are needed to feel 245px of the upward space)</li>
-      <li>ceil(10 / 7) = 2 (datasource.get calls that are needed to request 10 items)</li>
+      <li>1.46 * 250px = 360px
+        &mdash; upward space which has to be filled on backward (negative) direction
+      </li>
+      <li>ceil(360px / 25px) = 15
+        &mdash; items number that is needed to feel 360px area on backward fetch
+      </li>
     </ol>
     <p>
-      The default value of <em>padding</em> property is 0.5. The minimum value is 0.1.
+      So we have satisfied to 40 DOM elements (7 + 18 + 15 = 40).
+      The bigger <em>padding</em> value is, the more DOM elements should be present in the viewport.
+    </p>
+    <p>
+      The default value of <em>padding</em> property is 0.5.
+      It is being treated as floating point number.
+      The minimum value is 0.01.
     </p>
   </div>
 </app-demo>

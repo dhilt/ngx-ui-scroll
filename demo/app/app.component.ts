@@ -24,6 +24,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         this.hasLayout = !(event.url === '/window' || event.url === '/test');
       })
     );
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
   }
 
   ngAfterViewInit() {

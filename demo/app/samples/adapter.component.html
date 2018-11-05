@@ -1,2 +1,29 @@
+<h1>Angular UI Scroll Adapter Demos</h1>
+
+<p>
+  <em>Adapter</em> is&nbsp;a&nbsp;special object to&nbsp;assess and manipulate the <em>uiScroll</em>.
+  The API it&nbsp;provides is&nbsp;being discussed on&nbsp;this page.
+  Currently the only way to&nbsp;receive the <em>Adapter</em> is&nbsp;to&nbsp;instantiate
+  the <em>Datasource</em> via operator <em>new</em>:
+</p>
+
+<pre>{{datasourceSample}}</pre>
+
+<p>
+  The constructor argument is&nbsp;an&nbsp;object of&nbsp;<em>IDatasource</em> type which
+  must include <em>get</em> method property and
+  may include <em>settings</em> object property.
+  The <em>uiScroll</em> augments the result <em>Datasource</em> object
+  with the <em>Adapter</em> object property during instantiating.
+  So, after the <em>Datasource</em> object had been instantiated, we&nbsp;may access
+  <em>this.datasource.adapter</em> property object with its API methods and properties.
+  <em>Datasource</em> definition could be&nbsp;imported from the <em>UiScrollModule</em>:
+</p>
+
+<pre>{{importSample}}</pre>
+
 <app-demo-reload></app-demo-reload>
 <app-demo-is-loading></app-demo-is-loading>
+<app-demo-items-count></app-demo-items-count>
+<app-demo-first-last-visible-items></app-demo-first-last-visible-items>
+<app-demo-is-loading-extended></app-demo-is-loading-extended>

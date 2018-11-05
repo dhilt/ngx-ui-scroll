@@ -1,6 +1,6 @@
 import {
   Component, OnInit, OnDestroy,
-  TemplateRef, ElementRef, Renderer2,
+  TemplateRef, ElementRef,
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
@@ -21,7 +21,9 @@ import { Item } from './component/classes/item';
   [ngTemplateOutlet]="template"
   [ngTemplateOutletContext]="{
     $implicit: item.data,
-    index: item.$index
+    index: item.$index,
+    odd: item.$index % 2,
+    even: !(item.$index % 2)
  }"
 ></ng-template></div><div data-padding-forward></div>`
 })
@@ -40,8 +42,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
 
   constructor(
     public changeDetector: ChangeDetectorRef,
-    public elementRef: ElementRef,
-    public renderer: Renderer2
+    public elementRef: ElementRef
   ) {
   }
 

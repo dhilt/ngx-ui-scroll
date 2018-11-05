@@ -1,0 +1,30 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      This sample demonstrates how the <em>uiScroll</em> can be integrated
+      with the datasource which has "pages" API only. The <em>uiScroll</em>
+      deals with "offset-limit" (that is "index-count") API by default, but
+      necessary transition layer could be implemented via <em>datasource.get</em>.
+    </p>
+    <p>
+      The <em>constructor</em> initializes <em>data</em> two-dimensional array,
+      <em>getDataPage</em> method simulates "pages" API. We are assuming that
+      <em>getDataPage</em> is the only entry point to our data. Then
+      each time the <em>datasource.get</em> method is being called, we are
+      converting "index-count" API params to appropriate pages numbers,
+      retrieving these pages, joining pages results and slicing it to
+      resolve the exactly part of the data set the <em>uiScroll</em> needs for.
+    </p>
+    <p>
+      <em>getDataPage</em> could be async, let's imagine that there is
+      <em>remoteDataService</em> which has
+      <em>getDataPageAsync</em> method which returns <em>Promise</em>.
+      Using promise-based signature in this case,
+      x.3, x.4 and x.5 code sections might be rewritten as it is shown in "Component (async)" tab.
+    </p>
+  </div>
+</app-demo>

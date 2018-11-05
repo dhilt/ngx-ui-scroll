@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -12,6 +12,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoInfiniteComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `Infinite mode`,
     titleId: `infinite-mode`,
     viewportId: `infinite-viewport`,
@@ -26,8 +27,9 @@ export class DemoInfiniteComponent {
     }
   };
 
-  sources: DemoSources = {
-    datasource: `datasource: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -38,14 +40,18 @@ export class DemoInfiniteComponent {
   settings: {
     infinite: true
   }
-}`,
-    template: `<div class="viewport">
+}`
+  }, {
+    name: DemoSourceType.Template,
+    text: `<div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
-</div>`,
-    styles: `.viewport {
-  width: 175px;
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport {
+  width: 150px;
   height: 175px;
   overflow-y: auto;
   overflow-anchor: none;
@@ -54,6 +60,6 @@ export class DemoInfiniteComponent {
   font-weight: bold;
   height: 25px;
 }`
-  };
+  }];
 
 }

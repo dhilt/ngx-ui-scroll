@@ -9,9 +9,21 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoComponent {
 
+  init = false;
+
   @Input() datasource: Datasource;
   @Input() context: DemoContext;
   @Input() sources: DemoSources;
+
+  viewport(token: string): string {
+    const element = document.getElementById(token);
+    if (!element) {
+      return '';
+    }
+    const sizeToken = this.datasource.settings && this.datasource.settings.horizontal
+      ? 'scrollWidth' : 'scrollHeight';
+    return element[sizeToken].toString();
+  }
 
   elements(token: string): string {
     const element = document.getElementById(token);
@@ -23,6 +35,7 @@ export class DemoComponent {
   }
 
   constructor() {
+    setTimeout(() => this.init = true);
   }
 
 }

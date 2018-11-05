@@ -14,18 +14,18 @@ module.exports = function (config) {
     ],
     files: [
       'tests/miscellaneous/styles.css',
-      { pattern: './tests/miscellaneous/entry-files.js', watched: false }
+      { pattern: './tests/_index.js', watched: false }
     ],
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     coverageIstanbulReporter: {
-      dir: require('path').join(__dirname, 'coverage'), reports: [ 'html', 'lcovonly' ],
+      dir: require('path').join(__dirname, 'coverage'), reports: ['html', 'lcovonly'],
       fixWebpackSourcePaths: true
     },
 
     preprocessors: {
-      './tests/miscellaneous/entry-files.js': ['webpack', 'sourcemap']
+      './tests/_index.js': ['webpack', 'sourcemap']
     },
     webpack: {
       mode: 'development',

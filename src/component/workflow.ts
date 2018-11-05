@@ -2,11 +2,8 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { ScrollHelper } from './classes/scrollHelper';
-import { Process, ProcessSubject } from './interfaces/index';
-import {
-  Init, Reload, Start, PreFetch, Fetch, PostFetch, Render, PostRender, PreClip, Clip, End
-} from './processes/index';
+import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
+import { Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End } from './processes/index';
 
 export class Workflow {
 
@@ -15,143 +12,180 @@ export class Workflow {
   cyclesDone: number;
 
   readonly context: UiScrollComponent;
-  readonly scrollHelper: ScrollHelper;
-  private onScrollUnsubscribe: Function;
+  readonly onScrollHandler: EventListener;
   private itemsSubscription: Subscription;
   private workflowSubscription: Subscription;
+  private scrollEventOptions: any;
 
   constructor(context: UiScrollComponent) {
     this.context = context;
     this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
-    this.scrollHelper = new ScrollHelper(this);
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
-      status: 'start'
+      status: Status.start
     });
     this.cyclesDone = 0;
-    setTimeout(() => this.initListeners());
-    this.scroller.log(`The uiScroll Workflow has been initialized (${this.context.version})`);
+    this.onScrollHandler = event => Scroll.run(this.scroller, { event });
+
+    if (this.scroller.settings.initializeDelay) {
+      setTimeout(() => this.init(), this.scroller.settings.initializeDelay);
+    } else {
+      this.init();
+    }
+  }
+
+  init() {
+    this.scroller.init();
+    this.scroller.logger.stat('initialization');
+    this.initListeners();
   }
 
   initListeners() {
     const scroller = this.scroller;
+    scroller.logger.log(() => `uiScroll Workflow listeners are being initialized`);
     this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
     this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
-    this.onScrollUnsubscribe = this.context.renderer.listen(
-      scroller.viewport.scrollEventElement, 'scroll', this.scrollHelper.run.bind(this.scrollHelper)
+    this.initScrollEventListener();
+  }
+
+  initScrollEventListener() {
+    let passiveSupported = false;
+    try {
+      window.addEventListener(
+        'test', <EventListenerOrEventListenerObject>{}, Object.defineProperty({}, 'passive', {
+          get: () => passiveSupported = true
+        })
+      );
+    } catch (err) {
+    }
+    this.scrollEventOptions = passiveSupported ? { passive: false } : false;
+    this.scroller.viewport.scrollEventElement.addEventListener(
+      'scroll', this.onScrollHandler, this.scrollEventOptions
     );
   }
 
-  dispose() {
-    this.scrollHelper.purgeProcesses();
-    this.onScrollUnsubscribe();
-    this.process$.complete();
-    this.workflowSubscription.unsubscribe();
-    this.itemsSubscription.unsubscribe();
-    this.scroller.dispose();
-  }
-
-  callWorkflow(processSubject: ProcessSubject) {
-    this.process$.next(processSubject);
+  detachScrollEventListener() {
+    this.scroller.viewport.scrollEventElement.removeEventListener(
+      'scroll', this.onScrollHandler, this.scrollEventOptions
+    );
   }
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
-    const pl = typeof data.payload === 'string' ? ` (${data.payload})` : '';
-    scroller.log(`process ${data.process}, ${data.status + pl}`);
-    if (data.status === 'error') {
-      End.run(scroller, true);
+    const { status, payload } = data;
+    this.scroller.logger.logProcess(data);
+    if (status === Status.error) {
+      End.run(scroller, payload);
       return;
     }
     switch (data.process) {
       case Process.init:
-        if (data.status === 'start') {
+        if (status === Status.start) {
           Init.run(scroller);
         }
-        if (data.status === 'next') {
-          Start.run(scroller, data.payload);
+        if (status === Status.next) {
+          Start.run(scroller, payload);
         }
         break;
       case Process.reload:
-        if (data.status === 'start') {
-          Reload.run(scroller, data.payload);
+        if (status === Status.start) {
+          Reload.run(scroller, payload);
         }
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Init.run(scroller);
         }
         break;
       case Process.scroll:
-        if (data.status === 'next') {
-          Init.run(scroller, true);
+        if (status === Status.next) {
+          if (!(payload && payload.keepScroll)) {
+            Init.run(scroller, payload);
+          } else {
+            Start.run(scroller, payload);
+          }
         }
         break;
       case Process.start:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           PreFetch.run(scroller);
         }
         break;
       case Process.preFetch:
-        if (data.status === 'next') {
-          Fetch.run(scroller);
-        }
-        if (data.status === 'done') {
+        if (status === Status.done) {
           End.run(scroller);
+        }
+        if (status === Status.next) {
+          Fetch.run(scroller);
         }
         break;
       case Process.fetch:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           PostFetch.run(scroller);
         }
         break;
       case Process.postFetch:
-        if (data.status === 'next') {
+        if (status === Status.next) {
           Render.run(scroller);
         }
-        if (data.status === 'done') {
+        if (status === Status.done) {
           End.run(scroller);
         }
         break;
       case Process.render:
-        if (data.status === 'next') {
-          PostRender.run(scroller);
-        }
-        break;
-      case Process.postRender:
-        if (data.status === 'next') {
-          PreClip.run(scroller);
-        }
-        break;
-      case Process.preClip:
-        if (data.status === 'next') {
-          Clip.run(scroller);
-        }
-        if (data.status === 'done') {
-          End.run(scroller);
+        if (status === Status.next) {
+          if (scroller.settings.infinite) {
+            Adjust.run(scroller);
+          } else {
+            Clip.run(scroller);
+          }
         }
         break;
       case Process.clip:
-        if (data.status === 'next') {
+        if (status === Status.next) {
+          Adjust.run(scroller);
+        }
+        break;
+      case Process.adjust:
+        if (status === Status.done) {
           End.run(scroller);
         }
         break;
       case Process.end:
-        if (data.status === 'next') {
-          Start.run(scroller, data.payload);
+        if (status === Status.next) {
+          if (payload && payload.keepScroll) {
+            Scroll.run(scroller);
+          } else {
+            Start.run(scroller, payload);
+          }
         }
-        if (data.status === 'done') {
+        if (status === Status.done) {
           this.done();
         }
         break;
     }
   }
 
+  callWorkflow(processSubject: ProcessSubject) {
+    this.process$.next(processSubject);
+  }
+
   done() {
+    const { state } = this.scroller;
     this.cyclesDone++;
-    this.scroller.state.wfCycleCount = this.cyclesDone + 1;
-    const logData = `${this.scroller.settings.instanceIndex}-${this.cyclesDone}`;
-    const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
-    this.scroller.log(`%c   ~~~ WF Run ${logData} FINALIZED ~~~  `, logStyles);
+    state.workflowCycleCount = this.cyclesDone + 1;
+    state.isInitialWorkflowCycle = false;
+    state.workflowPending = false;
+    if (state.scrollState.scrollTimer === null) {
+      state.isLoading = false;
+    }
     this.finalize();
+  }
+
+  dispose() {
+    this.detachScrollEventListener();
+    this.process$.complete();
+    this.workflowSubscription.unsubscribe();
+    this.itemsSubscription.unsubscribe();
+    this.scroller.dispose();
   }
 
   finalize() {

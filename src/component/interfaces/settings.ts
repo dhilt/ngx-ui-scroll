@@ -1,6 +1,9 @@
 export interface Settings {
   adapter?: boolean;
   startIndex?: number;
+  minIndex?: number;
+  maxIndex?: number;
+  itemSize?: number;
   bufferSize?: number;
   padding?: number;
   infinite?: boolean;
@@ -11,9 +14,12 @@ export interface Settings {
 export interface DevSettings {
   debug?: boolean;
   immediateLog?: boolean;
-  clipAfterFetchOnly?: boolean;
-  clipAfterScrollOnly?: boolean;
-  paddingForwardSize?: number;
-  paddingBackwardSize?: number;
+  logTime?: boolean;
   throttle?: number;
+  inertia?: boolean;
+  inertiaScrollDelay?: number;
+  inertiaScrollDelta?: number;
+  initDelay?: number;
+  initWindowDelay?: number;
+  maxSynthScrollDelay?: number;
 }

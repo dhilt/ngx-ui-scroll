@@ -1,5 +1,3 @@
-import { async } from '@angular/core/testing';
-
 import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
@@ -12,16 +10,17 @@ export interface TestBedConfig {
   datasourceName?: string;
   datasourceSettings?: Settings | any;
   datasourceDevSettings?: DevSettings;
-  templateSettings?: TemplateSettings;
+  templateSettings?: TemplateSettings | any;
   toThrow?: boolean;
   custom?: any;
   timeout?: number;
+  expected?: any;
 }
 
 interface MakeTestConfig {
   title: string;
   config: TestBedConfig;
-  it?: any;
+  it: Function;
   async?: boolean;
 }
 
@@ -34,15 +33,18 @@ const generateMetaTitle = (config: TestBedConfig): string => {
     result.push(`vp width = ${config.templateSettings.viewportWidth}`);
   }
   if (config.datasourceSettings) {
-    const { startIndex, bufferSize, padding, horizontal, windowViewport } = config.datasourceSettings;
+    const { startIndex, bufferSize, padding, itemSize, horizontal, windowViewport } = config.datasourceSettings;
+    if (padding) {
+      result.push(`padding = ${padding}`);
+    }
+    if (itemSize) {
+      result.push(`itemSize = ${itemSize}`);
+    }
     if (startIndex) {
       result.push(`start = ${startIndex}`);
     }
     if (bufferSize) {
       result.push(`buffer = ${bufferSize}`);
-    }
-    if (padding) {
-      result.push(`padding = ${padding}`);
     }
     if (horizontal) {
       result.push(`HORIZONTAL`);
@@ -79,6 +81,7 @@ export const makeTest = (data: MakeTestConfig) => {
         const templateData = generateTemplate(data.config.templateSettings);
         try {
           const fixture = configureTestBed(datasourceClass, templateData.template);
+          fixture.componentInstance.templateSettings = templateData.settings;
           misc = new Misc(fixture);
         } catch (_error) {
           error = _error;
@@ -94,6 +97,6 @@ export const makeTest = (data: MakeTestConfig) => {
     } else {
       _it = data.it;
     }
-    it(data.title, _it, timeout);
+    (<Function>it)(data.title, _it, timeout);
   });
 };

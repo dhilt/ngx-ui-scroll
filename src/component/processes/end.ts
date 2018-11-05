@@ -1,85 +1,112 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject, Run } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessRun, Direction } from '../interfaces/index';
+import { itemAdapterEmpty } from '../classes/adapter';
 
 export default class End {
 
-  static run(scroller: Scroller, isFail?: boolean) {
-    scroller.state.endCycle();
-    if (scroller.datasource.adapter.init) {
-      End.calculateParams(scroller);
+  static run(scroller: Scroller, error?: any) {
+    // finalize current workflow loop
+    End.endWorkflowLoop(scroller);
+
+    // set out params, accessible via Adapter
+    End.calculateParams(scroller);
+
+    // what next? done?
+    const next = End.getNext(scroller, error);
+
+    // need to apply Buffer.items changes if clip
+    if (scroller.state.clip) {
+      scroller.runChangeDetector();
     }
-    scroller.purgeCycleSubscriptions();
+
+    // stub method call
     scroller.finalize();
 
-    let next: Run | null = null;
-    const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}-${scroller.state.cycleCount}`;
-    if (isFail) {
-      scroller.log(`%c---=== Workflow ${logData} fail`, 'color: #006600;');
-    } else {
-      scroller.log(`%c---=== Workflow ${logData} done`, 'color: #006600;');
-      next = End.getNextRun(scroller);
-    }
-
-    scroller.callWorkflow(<ProcessSubject>{
+    // continue the Workflow synchronously; current cycle could be finilized immediately
+    scroller.callWorkflow({
       process: Process.end,
-      status: next ? 'next' : 'done',
-      payload: next
+      status: next ? ProcessStatus.next : ProcessStatus.done,
+      payload: next || { empty: true }
     });
+
+    // if the Workflow isn't finilized, it may freeze for no more than settings.throttle ms
+    if (scroller.state.workflowPending && !scroller.state.loopPending) {
+      // continue the Workflow asynchronously
+      End.continueWorkflowByTimer(scroller);
+    }
+  }
+
+  static endWorkflowLoop(scroller: Scroller) {
+    const { state } = scroller;
+    state.endLoop();
+    state.lastPosition = scroller.viewport.scrollPosition;
+    scroller.purgeInnerLoopSubscriptions();
   }
 
   static calculateParams(scroller: Scroller) {
-    const items = scroller.buffer.items;
-    const length = items.length;
-    const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
-    const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
-    let index = null;
-    for (let i = 0; i < length; i++) {
-      const edge = scroller.viewport.getElementEdge(items[i].element, Direction.backward, true);
-      if (edge > viewportBackwardEdge) {
-        index = i;
-        break;
-      }
-    }
-    scroller.state.firstVisibleItem = index !== null ? {
-      $index: items[index].$index,
-      data: items[index].data,
-      element: items[index].element
-    } : {};
+    const { items } = scroller.buffer;
 
-    index = null;
-    for (let i = length - 1; i >= 0; i--) {
-      const edge = scroller.viewport.getElementEdge(items[i].element, Direction.forward, true);
-      if (edge < viewportForwardEdge) {
-        index = i;
-        break;
-      }
+    // first visible item
+    if (scroller.state.firstVisibleWanted) {
+      const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
+      const firstItem = items.find(item =>
+        scroller.viewport.getElementEdge(item.element, Direction.forward) > viewportBackwardEdge
+      );
+      scroller.state.firstVisibleItem = firstItem ? {
+        $index: firstItem.$index,
+        data: firstItem.data,
+        element: firstItem.element
+      } : itemAdapterEmpty;
     }
-    scroller.state.lastVisibleItem = index !== null ? {
-      $index: items[index].$index,
-      data: items[index].data,
-      element: items[index].element
-    } : {};
+
+    // last visible item
+    if (scroller.state.lastVisibleWanted) {
+      const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
+      let lastItem = null;
+      for (let i = items.length - 1; i >= 0; i--) {
+        const edge = scroller.viewport.getElementEdge(items[i].element, Direction.backward);
+        if (edge < viewportForwardEdge) {
+          lastItem = items[i];
+          break;
+        }
+      }
+      scroller.state.lastVisibleItem = lastItem ? {
+        $index: lastItem.$index,
+        data: lastItem.data,
+        element: lastItem.element
+      } : itemAdapterEmpty;
+    }
   }
 
-  static getNextRun(scroller: Scroller): Run | null {
-    let nextRun: Run | null = null;
-    if (scroller.state.fetch.hasNewItems || scroller.state.clip.shouldClip) {
-      nextRun = {
-        direction: scroller.state.direction,
-        scroll: scroller.state.scroll
-      };
-    } else if (!scroller.buffer.size && scroller.state.fetch.shouldFetch && !scroller.state.fetch.hasNewItems) {
-      nextRun = {
-        direction: scroller.state.direction === Direction.forward ? Direction.backward : Direction.forward,
-        scroll: false
-      };
-    } else if (scroller.state.isInitial) {
-      scroller.state.isInitial = false;
-      nextRun = {
-        direction: Direction.backward,
-        scroll: scroller.state.scroll || false
-      };
+  static getNext(scroller: Scroller, error?: any): ProcessRun | null {
+    const { state: { fetch, scrollState } } = scroller;
+    let next: ProcessRun | null = null;
+    if (!error) {
+      if (fetch.hasNewItems) {
+        next = { scroll: false };
+      } else if (fetch.hasAnotherPack) {
+        next = { scroll: false };
+      }
+      if (scrollState.keepScroll) {
+        next = { scroll: true, keepScroll: true };
+      }
     }
-    return nextRun;
+    return next;
   }
+
+  static continueWorkflowByTimer(scroller: Scroller) {
+    const { state, state: { workflowCycleCount, innerLoopCount } } = scroller;
+    scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
+    state.scrollState.workflowTimer = <any>setTimeout(() => {
+      // if the WF isn't finilized while the old sub-cycle is done and there's no new sub-cycle
+      if (state.workflowPending && !state.loopPending && innerLoopCount === state.innerLoopCount) {
+        scroller.callWorkflow({
+          process: Process.end,
+          status: ProcessStatus.next,
+          payload: { scroll: true, byTimer: true }
+        });
+      }
+    }, scroller.settings.throttle);
+  }
+
 }

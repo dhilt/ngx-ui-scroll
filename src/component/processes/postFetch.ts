@@ -1,49 +1,66 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject } from '../interfaces/index';
 import { Item } from '../classes/item';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class PostFetch {
 
   static run(scroller: Scroller) {
-    scroller.state.process = Process.postFetch;
-
-    PostFetch.setEOF(scroller);
-    const hasItems = PostFetch.setItems(scroller);
-    scroller.callWorkflow(<ProcessSubject>{
-      process: Process.postFetch,
-      status: hasItems ? 'next' : 'done'
-    });
-  }
-
-  static setEOF(scroller: Scroller) {
-    const direction = scroller.state.direction;
-    const fetch = scroller.state.fetch[direction];
-    const eof = direction === Direction.forward ? 'eof' : 'bof';
-    const items = <Array<Item>>fetch.newItemsData;
-    scroller.buffer[eof] = items.length !== scroller.settings.bufferSize;
-    if (direction === Direction.backward && scroller.buffer.bof) {
-      fetch.startIndex = <number>fetch.startIndex + scroller.settings.bufferSize - items.length;
-    }
-  }
-
-  static setItems(scroller: Scroller) {
-    const direction = scroller.state.direction;
-    const fetch = scroller.state.fetch[direction];
-    const items = <Array<Item>>fetch.newItemsData;
-    if (!items.length) { // empty result
-      return false;
-    }
-    fetch.items = items.map((item, index) => {
-      const $index = <number>fetch.startIndex + index;
-      const nodeId = String($index);
-      return new Item($index, item, nodeId, scroller.routines);
-    });
-    if (direction === Direction.forward) {
-      scroller.buffer.items = [...scroller.buffer.items, ...fetch.items];
+    if (PostFetch.setItems(scroller)) {
+      PostFetch.setBufferLimits(scroller);
+      scroller.callWorkflow({
+        process: Process.postFetch,
+        status: scroller.state.fetch.hasNewItems ? ProcessStatus.next : ProcessStatus.done
+      });
     } else {
-      scroller.buffer.items = [...fetch.items, ...scroller.buffer.items];
+      scroller.callWorkflow({
+        process: Process.postFetch,
+        status: ProcessStatus.error,
+        payload: { error: 'Can\'t set buffer items' }
+      });
     }
-    return true;
+  }
+
+  static setBufferLimits(scroller: Scroller) {
+    const { buffer, state: { fetch: { firstIndex, lastIndex, items } } } = scroller;
+    if (!items.length) {
+      if (<number>lastIndex < buffer.minIndex) {
+        buffer.absMinIndex = buffer.minIndex;
+      }
+      if (<number>firstIndex > buffer.maxIndex) {
+        buffer.absMaxIndex = buffer.maxIndex;
+      }
+    } else {
+      const last = items.length - 1;
+      if (<number>firstIndex < items[0].$index) {
+        buffer.absMinIndex = items[0].$index;
+      }
+      if (<number>lastIndex > items[last].$index) {
+        buffer.absMaxIndex = items[last].$index;
+      }
+    }
+  }
+
+  static setItems(scroller: Scroller): boolean {
+    const { buffer, state: { fetch } } = scroller;
+    const items = fetch.newItemsData;
+    if (!items || !items.length) { // empty result
+      return true;
+    }
+    // eof/bof case, need to shift fetch index if bof
+    let fetchIndex = <number>fetch.index;
+    if (items.length < fetch.count) {
+      if (scroller.state.isInitialLoop) {
+        // let's treat initial poor fetch as startIndex-bof
+        fetchIndex = scroller.state.startIndex;
+      } else if (<number>fetch.firstIndex < buffer.minIndex) { // normal bof
+        fetchIndex = buffer.minIndex - items.length;
+      }
+    }
+    fetch.items = items.map((item, index: number) =>
+      new Item(fetchIndex + index, item, scroller.routines)
+    );
+    fetch.isPrepend = !!buffer.items.length && buffer.items[0].$index > fetch.items[fetch.items.length - 1].$index;
+    return buffer.setItems(fetch.items);
   }
 
 }

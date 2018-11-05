@@ -1,0 +1,56 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}},
+    counter {{loadingCounter}}
+    <br>
+    Outer cycle is {{datasource.adapter.cyclePending ? 'pending': 'stopped'}},
+    counter: {{outerCycleCounter}}
+    <br>
+    Inner loop is {{datasource.adapter.loopPending ? 'pending': 'stopped'}},
+    counter: {{innerLoopCounter}}
+  </div>
+  <div description>
+    <p>
+      Speaking of <em>isLoading</em>, we know exactly
+      when the <em>Datasource</em> being busy or not because its implementation is in our hands.
+      Despite calling the <em>Datasource.get</em> method is the most important part of
+      the <em>uiScroll</em> internal processes,
+      there are some different process layers that wrap our <em>Datasource</em> handling
+      and that have theirs own metrics. Currently the <em>uiScroll</em> has 2 process layers:
+      "inner loop" and "outer cycle".
+    </p>
+    <p>
+      Inner loop is responsible for single fetch-clip-render chain.
+      It can be empty and non-empty.
+      Non-empty inner loop corresponds to 1 <em>Datasource.get</em> call
+      and following viewport updates (clipping old items, inserting new ones and render).
+      <em>Adapter.loopPending</em> (and <em>Adapter.loopPending$</em>) will tell us
+      whether the "inner loop" is working or not.
+    </p>
+    <p>
+      Outer cycle could handle 1 and more inner loops clued for example
+      by different scroll events following one after another quite fast.
+      <em>Adapter.cyclePending</em> (and <em>Adapter.cyclePending$</em>) will tell us
+      whether the "outer cycle" is working or not.
+    </p>
+    <p>
+      In this demo we are counting inner loops and outer cycles with the help of
+      <em>Adapter.loopPending$</em> and <em>Adapter.cyclePending$</em> subscriptions.
+      Initial values for these counters are -1 to skip initial BehaviorSubject <em>false</em>s.
+      For example, we see that there are 4 inner loops done
+      after the <em>uiScroll</em> is initialized and the first outer cycle is finished.
+      Practically it means that we have 3 <em>Datasource.get</em> calls and 1 more empty loop
+      to ensure that the <em>uiScroll</em> could relax.
+    </p>
+    <p>
+      <em>Adapter.isLoading</em> and <em>Adapter.isLoading$</em> are majorize
+      <em>cyclePending</em> and <em>loopPending</em>.
+      That's why <em>isLoading</em> counter is always <= <em>cyclePending</em>
+      which is always <= <em>loopPending</em>.
+    </p>
+  </div>
+</app-demo>

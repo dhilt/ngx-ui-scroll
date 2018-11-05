@@ -1,32 +1,139 @@
 import { BehaviorSubject } from 'rxjs';
 
-import { Direction, State as IState, Process, PreviousClip, Run, ItemAdapter } from '../interfaces/index';
+import {
+  State as IState,
+  ProcessRun,
+  ItemAdapter,
+  WindowScrollState as IWindowScrollState,
+  ScrollState as IScrollState,
+  SyntheticScroll as ISyntheticScroll
+} from '../interfaces/index';
 import { FetchModel } from './fetch';
-import { ClipModel } from './clip';
+import { Settings } from './settings';
+import { Logger } from './logger';
+import { itemAdapterEmpty } from './adapter';
 
-export class State implements IState {
-  process: Process;
-  wfCycleCount: number;
-  cycleCount: number;
-  countDone: number;
-  direction: Direction;
-  scroll: boolean;
-  fetch: FetchModel;
-  clip: ClipModel;
-  previousClip: PreviousClip;
-  isInitial: boolean;
+class WindowScrollState implements IWindowScrollState {
+  positionToUpdate: number;
+  delta: number;
 
-  pendingSource: BehaviorSubject<boolean>;
-  firstVisibleSource: BehaviorSubject<ItemAdapter>;
-  lastVisibleSource: BehaviorSubject<ItemAdapter>;
-
-  get pending(): boolean {
-    return this.pendingSource.getValue();
+  constructor() {
+    this.reset();
   }
 
-  set pending(value: boolean) {
-    if (this.pending !== value) {
-      this.pendingSource.next(value);
+  reset() {
+    this.delta = 0;
+    this.positionToUpdate = 0;
+  }
+}
+
+class ScrollState implements IScrollState {
+  firstScroll: boolean;
+  firstScrollTime: number;
+  lastScrollTime: number;
+  scrollTimer: number | null;
+  workflowTimer: number | null;
+  scroll: boolean;
+  keepScroll: boolean;
+  window: IWindowScrollState;
+
+  constructor() {
+    this.window = new WindowScrollState();
+    this.reset();
+  }
+
+  reset() {
+    this.firstScroll = false;
+    this.firstScrollTime = 0;
+    this.lastScrollTime = 0;
+    this.scrollTimer = null;
+    this.workflowTimer = null;
+    this.scroll = false;
+    this.keepScroll = false;
+    this.window.reset();
+  }
+}
+
+class SyntheticScroll implements ISyntheticScroll {
+  position: number | null;
+  positionBefore: number | null;
+  delta: number;
+  time: number;
+  readyToReset: boolean;
+
+  constructor() {
+    this.reset(null);
+  }
+
+  reset(position: number | null = null) {
+    this.position = position;
+    this.positionBefore = null;
+    this.delta = 0;
+    this.time = 0;
+    this.readyToReset = false;
+  }
+}
+
+export class State implements IState {
+
+  protected settings: Settings;
+  protected logger: Logger;
+
+  initTime: number;
+  innerLoopCount: number;
+  isInitialLoop: boolean;
+  workflowCycleCount: number;
+  isInitialWorkflowCycle: boolean;
+  countDone: number;
+
+  startIndex: number;
+  fetch: FetchModel;
+  clip: boolean;
+  clipCall: number;
+  lastPosition: number;
+  preFetchPosition: number;
+  preAdjustPosition: number;
+  sizeBeforeRender: number;
+  bwdPaddingAverageSizeItemsCount: number;
+
+  scrollState: IScrollState;
+  syntheticScroll: ISyntheticScroll;
+
+  loopPendingSource: BehaviorSubject<boolean>;
+  workflowPendingSource: BehaviorSubject<boolean>;
+  isLoadingSource: BehaviorSubject<boolean>;
+  firstVisibleSource: BehaviorSubject<ItemAdapter>;
+  lastVisibleSource: BehaviorSubject<ItemAdapter>;
+  firstVisibleWanted: boolean;
+  lastVisibleWanted: boolean;
+
+  get loopPending(): boolean {
+    return this.loopPendingSource.getValue();
+  }
+
+  set loopPending(value: boolean) {
+    if (this.loopPending !== value) {
+      this.loopPendingSource.next(value);
+    }
+  }
+
+  get workflowPending(): boolean {
+    return this.workflowPendingSource.getValue();
+  }
+
+  set workflowPending(value: boolean) {
+    if (this.workflowPending !== value) {
+      this.workflowPendingSource.next(value);
+    }
+  }
+
+  get isLoading(): boolean {
+    return this.isLoadingSource.getValue();
+  }
+
+  set isLoading(value: boolean) {
+    if (this.isLoading !== value) {
+      this.isLoadingSource.next(value);
     }
   }
 
@@ -50,48 +157,73 @@ export class State implements IState {
     }
   }
 
-  constructor() {
-    this.isInitial = false;
-    this.wfCycleCount = 1;
-    this.cycleCount = 0;
+  get time(): number {
+    return Number(new Date()) - this.initTime;
+  }
+
+  constructor(settings: Settings, logger: Logger) {
+    this.settings = settings;
+    this.logger = logger;
+    this.initTime = Number(new Date());
+    this.innerLoopCount = 0;
+    this.isInitialLoop = false;
+    this.workflowCycleCount = 1;
+    this.isInitialWorkflowCycle = false;
     this.countDone = 0;
+
+    this.setCurrentStartIndex(settings.startIndex);
     this.fetch = new FetchModel();
-    this.clip = new ClipModel();
-    this.setPreviousClip(true);
-    this.pendingSource = new BehaviorSubject<boolean>(false);
-    this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
-    this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
+    this.clip = false;
+    this.clipCall = 0;
+    this.sizeBeforeRender = 0;
+    this.bwdPaddingAverageSizeItemsCount = 0;
+
+    this.scrollState = new ScrollState();
+    this.syntheticScroll = new SyntheticScroll();
+
+    this.loopPendingSource = new BehaviorSubject<boolean>(false);
+    this.workflowPendingSource = new BehaviorSubject<boolean>(false);
+    this.isLoadingSource = new BehaviorSubject<boolean>(false);
+    this.firstVisibleSource = new BehaviorSubject<ItemAdapter>(itemAdapterEmpty);
+    this.lastVisibleSource = new BehaviorSubject<ItemAdapter>(itemAdapterEmpty);
+    this.firstVisibleWanted = false;
+    this.lastVisibleWanted = false;
   }
 
-  startCycle(options: Run = {}) {
-    this.pending = true;
-    this.cycleCount++;
-
-    this.process = Process.start;
-    this.direction = options.direction || Direction.forward;
-    this.scroll = options.scroll || false;
+  startLoop(options?: ProcessRun) {
+    this.loopPending = true;
+    this.innerLoopCount++;
     this.fetch.reset();
-    this.clip.reset();
+    this.clip = false;
+    if (options) {
+      this.scrollState.scroll = options.scroll || false;
+    }
+    this.scrollState.keepScroll = false;
   }
 
-  endCycle() {
-    this.pending = false;
+  endLoop() {
+    this.loopPending = false;
     this.countDone++;
+    this.isInitialLoop = false;
   }
 
-  setPreviousClip(reset?: boolean) {
-    this.previousClip = {
-      isSet: !reset,
-      backwardSize: this.clip.backward.size,
-      forwardSize: this.clip.forward.size,
-      backwardItems: this.clip.backward.items,
-      forwardItems: this.clip.forward.items,
-      direction: this.direction
-    };
-  }
-
-  getStartIndex(): number | null {
-    return this.fetch[this.direction].startIndex;
+  setCurrentStartIndex(newStartIndex: any) {
+    const { startIndex, minIndex, maxIndex } = this.settings;
+    let index = Number(newStartIndex);
+    if (isNaN(index)) {
+      this.logger.log(() =>
+        `fallback startIndex to settings.startIndex (${startIndex}) because ${newStartIndex} is not a number`);
+      index = startIndex;
+    }
+    if (index < minIndex) {
+      this.logger.log(() => `setting startIndex to settings.minIndex (${minIndex}) because ${index} < ${minIndex}`);
+      index = minIndex;
+    }
+    if (index > maxIndex) {
+      this.logger.log(() => `setting startIndex to settings.maxIndex (${maxIndex}) because ${index} > ${maxIndex}`);
+      index = maxIndex;
+    }
+    this.startIndex = index;
   }
 
 }

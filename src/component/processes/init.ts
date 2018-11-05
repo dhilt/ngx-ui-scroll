@@ -1,20 +1,20 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessSubject, Run } from '../interfaces/index';
+import { Process, ProcessStatus, ProcessRun } from '../interfaces/index';
 
 export default class Init {
 
-  static run(scroller: Scroller, isScroll?: boolean) {
-    const logData = `${scroller.settings.instanceIndex}-${scroller.state.wfCycleCount}`;
-    const logStyles = 'color: #0000aa; border: solid black 1px; border-width: 1px 0 0 1px; margin-left: -2px';
-    scroller.log(`%c   ~~~ WF Run ${logData} STARTED ~~~  `, logStyles);
-    scroller.state.isInitial = true;
-    scroller.callWorkflow(<ProcessSubject>{
+  static run(scroller: Scroller, payload?: ProcessRun) {
+    scroller.state.isInitialWorkflowCycle = !payload;
+    scroller.state.isInitialLoop = !payload;
+    scroller.state.workflowPending = true;
+    scroller.state.isLoading = true;
+    scroller.callWorkflow({
       process: Process.init,
-      status: 'next',
-      payload: <Run>{
-        direction: Direction.forward,
-        scroll: !!isScroll
+      status: ProcessStatus.next,
+      payload: {
+        scroll: payload && payload.scroll || false
       }
     });
   }
+
 }

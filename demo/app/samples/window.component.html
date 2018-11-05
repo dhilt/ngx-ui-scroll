@@ -4,7 +4,10 @@
 </div>
 
 <div *ngIf="init">
-  <div *uiScroll="let item of datasource">
+  <div *uiScroll="let item of datasource" style="height: 20px;">
     <b>{{item.text}}</b>
+    <span [style.color]="item.color">
+      {{item.data}}
+    </span>
   </div>
 </div>

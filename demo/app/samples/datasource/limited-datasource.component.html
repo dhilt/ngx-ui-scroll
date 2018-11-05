@@ -1,0 +1,22 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      The datasource could be limited. In this sample we have only 1000 items in the data set:
+      from -99 to 900 including 0. If at some point the <em>uiScroll</em> will request
+      this datasource for, say, 10 items started from -105 index, then
+      the result will consist of only 4 items: -99, -98, -97, -96.
+      It is also important to return empty array if we are out of range.
+    </p>
+    <p>
+      Another option of how to limit the datasource is to use
+      <a href="#/#min-max-indexes">minIndex and maxIndex settings</a>;
+      this way the implementation of the datasource get could remain unlimited
+      as the <em>uiScroll</em> will not request for iterms that are out of
+      <em>minIndex</em>-<em>maxIndex</em> boundaries.
+    </p>
+  </div>
+</app-demo>

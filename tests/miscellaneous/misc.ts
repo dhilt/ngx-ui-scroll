@@ -49,7 +49,7 @@ export class Misc {
 
   itemHeight = 20;
   itemWidth = 90;
-  shared = {};
+  shared: any = {};
 
   constructor(fixture: ComponentFixture<any>) {
     this.fixture = fixture;
@@ -90,16 +90,16 @@ export class Misc {
     return element ? element.innerText.trim() : null;
   }
 
+  checkElementContentByIndex(index: number): boolean {
+    return this.getElementText(index) === `${index} : item #${index}`;
+  }
+
   checkElementId(element: HTMLElement, index: number): boolean {
     return element.getAttribute('data-sid') === `${index}`;
   }
 
-  getElementIndex(element: HTMLElement): number | null {
-    const id = element.getAttribute('data-sid');
-    if (!id) {
-      return null;
-    }
-    return parseInt(id, 10) || null;
+  getElementIndex(element: HTMLElement): number {
+    return Number(element.getAttribute('data-sid'));
   }
 
   getScrollableSize(): number {
@@ -117,7 +117,8 @@ export class Misc {
   }
 
   scrollTo(value: number) {
-    this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
+    this.datasource.adapter.setScrollPosition(value);
+    // this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
   scrollMin() {

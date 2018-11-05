@@ -7,14 +7,35 @@ export enum Process {
   fetch = 'fetch',
   postFetch = 'postFetch',
   render = 'render',
-  postRender = 'postRender',
-  preClip = 'preClip',
   clip = 'clip',
+  adjust = 'adjust',
   end = 'end'
+}
+
+export enum ProcessStatus {
+  start = 'start',
+  next = 'next',
+  done = 'done',
+  error = 'error'
+}
+
+export interface ScrollPayload {
+  event?: Event;
+  byTimer?: boolean;
+}
+
+export interface ProcessRun {
+  empty?: boolean;
+  scroll?: boolean;
+  keepScroll?: boolean;
+  byTimer?: boolean;
+  error?: string;
 }
 
 export interface ProcessSubject {
   process: Process;
-  status: string;
-  payload?: string | any;
+  status: ProcessStatus;
+  payload?: ProcessRun;
 }
+
+export type CallWorkflow = (processSubject: ProcessSubject) => undefined;

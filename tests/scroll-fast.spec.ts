@@ -7,28 +7,28 @@ describe('Fast Scroll Spec', () => {
   const configList = [{
     datasourceName: 'limited-1-100-no-delay',
     datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
-    datasourceDevSettings: { paddingForwardSize: 2000 },
+    // datasourceDevSettings: { paddingForwardSize: 2000 },
     templateSettings: { viewportHeight: 100 },
     custom: { items: 100, bounce: 5, start: 'top' },
     timeout: 5000
   }, {
     datasourceName: 'limited-1-100-no-delay',
     datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 0.3 },
-    datasourceDevSettings: { paddingForwardSize: 2000 },
+    // datasourceDevSettings: { paddingForwardSize: 2000 },
     templateSettings: { viewportHeight: 110 },
     custom: { items: 100, bounce: 10, start: 'top' },
     timeout: 5000
   }, {
     datasourceName: 'limited-51-200-no-delay',
     datasourceSettings: { startIndex: 51, bufferSize: 7, padding: 1.1 },
-    datasourceDevSettings: { paddingForwardSize: 3000 },
+    // datasourceDevSettings: { paddingForwardSize: 3000 },
     templateSettings: { viewportHeight: 69 },
     custom: { items: 150, bounce: 6, start: 'top' },
     timeout: 5000
   }, {
     datasourceName: 'limited-51-200-no-delay',
     datasourceSettings: { startIndex: 51, bufferSize: 20, padding: 0.2, windowViewport: true },
-    datasourceDevSettings: { paddingForwardSize: 3000 },
+    // datasourceDevSettings: { paddingForwardSize: 3000 },
     templateSettings: { noViewportClass: true, viewportHeight: 0 },
     custom: { items: 150, bounce: 5, start: 'top' },
     timeout: 7000
@@ -98,7 +98,7 @@ describe('Fast Scroll Spec', () => {
         misc[position === 0 ? 'scrollMax' : 'scrollMin']();
       }
     };
-    if (!misc.scroller.state.pending && buffer.size && buffer.items[index] && buffer.items[index].element) {
+    if (!misc.scroller.state.loopPending && buffer.size && buffer.items[index] && buffer.items[index].element) {
       runExpectations();
     } else {
       expectationsTimer = <any>setTimeout(() => preExpectations(config, misc, done), 25);

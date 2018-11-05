@@ -1,5 +1,5 @@
-import { Direction } from '../interfaces/direction';
 import { Routines } from './domRoutines';
+import { Direction } from '../interfaces/index';
 
 export class Item {
   $index: number;
@@ -8,27 +8,26 @@ export class Item {
   routines: Routines;
 
   element: HTMLElement;
+  size: number;
   invisible: boolean;
   toRemove: boolean;
+  removeDirection: Direction;
 
-  constructor($index: number, data: any, nodeId: string, routines: Routines) {
+  constructor($index: number, data: any, routines: Routines) {
     this.$index = $index;
     this.data = data;
-    this.nodeId = nodeId;
+    this.nodeId = String($index);
     this.routines = routines;
     this.invisible = true;
   }
 
-  getParams() {
-    return this.routines.getParams(this.element);
-  }
-
-  getEdge(direction: Direction): number {
-    return this.routines.getEdge(this.element, direction, false);
+  setSize() {
+    this.size = this.routines.getSize(this.element);
   }
 
   hide() {
-    this.routines.hideElement(this.element);
+    if (this.element) {
+      this.routines.hideElement(this.element);
+    }
   }
-
 }

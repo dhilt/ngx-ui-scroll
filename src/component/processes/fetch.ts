@@ -1,13 +1,11 @@
 import { Observable, Observer } from 'rxjs';
 
 import { Scroller } from '../scroller';
-import { Process, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Fetch {
 
   static run(scroller: Scroller) {
-    scroller.state.process = Process.fetch;
-
     const result = Fetch.get(scroller);
     if (typeof result.subscribe !== 'function') {
       if (!result.isError) {
@@ -16,7 +14,7 @@ export default class Fetch {
         Fetch.fail(result.error, scroller);
       }
     } else {
-      scroller.cycleSubscriptions.push(
+      scroller.innerLoopSubscriptions.push(
         result.subscribe(
           (data: Array<any>) => Fetch.success(data, scroller),
           (error: any) => Fetch.fail(error, scroller)
@@ -26,22 +24,21 @@ export default class Fetch {
   }
 
   static success(data: Array<any>, scroller: Scroller) {
-    const direction = scroller.state.direction;
-    scroller.log(`resolved ${data.length} ${direction} items ` +
-      `(index = ${scroller.state.fetch[direction].startIndex}, count = ${scroller.settings.bufferSize})`);
-    scroller.state.fetch[direction].newItemsData = data;
+    scroller.logger.log(() => `resolved ${data.length} items ` +
+      `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
+    scroller.state.fetch.newItemsData = data;
 
-    scroller.callWorkflow(<ProcessSubject>{
+    scroller.callWorkflow({
       process: Process.fetch,
-      status: 'next'
+      status: ProcessStatus.next
     });
   }
 
-  static fail(error: any, scroller: Scroller) {
-    scroller.callWorkflow(<ProcessSubject>{
+  static fail(error: string, scroller: Scroller) {
+    scroller.callWorkflow({
       process: Process.fetch,
-      status: 'error',
-      payload: error
+      status: ProcessStatus.error,
+      payload: { error }
     });
   }
 
@@ -66,7 +63,7 @@ export default class Fetch {
       observer.error(error);
     };
 
-    const result = _get(scroller.state.getStartIndex(), scroller.settings.bufferSize, success, reject);
+    const result = _get(scroller.state.fetch.index, scroller.state.fetch.count, success, reject);
     if (result && typeof result.then === 'function') { // DatasourceGetPromise
       result.then(success, reject);
     } else if (result && typeof result.subscribe === 'function') { // DatasourceGetObservable

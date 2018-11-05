@@ -1,0 +1,20 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      The datasource implemented here has no boundaries.
+      The result <em>data</em> array will consist of <em>count</em> items
+      started from <em>index</em> position regardless of
+      <em>count</em> and <em>index</em> values.
+      They could be any finite integers.
+    </p>
+    <p>
+      This sample as well as following ones include <em>Datasource.get</em> log
+      which tells us how many items are being fetched by the <em>uiScroll</em>
+      via <em>Datasource</em>.
+    </p>
+  </div>
+</app-demo>

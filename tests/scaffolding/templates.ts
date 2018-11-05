@@ -5,6 +5,7 @@ export interface TemplateSettings {
   itemHeight?: number;
   itemWidth?: number | null;
   horizontal?: boolean;
+  dynamicSize?: string | null;
 }
 
 const defaultTemplateSettings: TemplateSettings = {
@@ -13,25 +14,30 @@ const defaultTemplateSettings: TemplateSettings = {
   viewportWidth: null,
   itemHeight: 20,
   itemWidth: null,
-  horizontal: false
+  horizontal: false,
+  dynamicSize: null
 };
 
-export const generateTemplate = (templateSettings?: TemplateSettings) => {
+export interface TemplateData {
+  settings: TemplateSettings;
+  template: string;
+}
+
+export const generateTemplate = (templateSettings?: TemplateSettings): TemplateData => {
   const settings = Object.assign({}, defaultTemplateSettings, templateSettings || {});
   const viewportClass = `${settings.noViewportClass ? '' :
     'viewport' + (settings.horizontal ? '-horizontal' : '')}`;
   const viewportStyle = `${settings.viewportHeight ? 'height:' + settings.viewportHeight + 'px;' : ''}` +
     `${settings.viewportWidth ? 'width:' + settings.viewportWidth + 'px;' : ''}`;
-  const itemStyle = `${settings.itemHeight ? 'height:' + settings.itemHeight + 'px; overflow-y: hidden;' : ''}`
-    + `${settings.itemWidth ? 'width:' + settings.itemWidth + 'px; overflow-x: hidden;' : ''}`;
-  return {
+  const hasItemStyle = settings.dynamicSize || settings.itemHeight || settings.itemWidth;
+  return <TemplateData>{
     settings,
     template: `<div
   class="${viewportClass}"
   style="${viewportStyle}"
 ><div
   *uiScroll="let item of datasource"
-  style="${itemStyle}"
+  [style]="${hasItemStyle ? 'getItemStyle(item)' : ''}"
 ><span>{{item.id}}</span> : <b>{{item.text}}</b></div></div>`
   };
 };

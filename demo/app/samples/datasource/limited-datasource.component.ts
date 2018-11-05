@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { IDatasource } from '../../../../public_api';
 import { doLog } from '../../shared/datasource-get';
 
@@ -16,8 +16,7 @@ export class DemoLimitedDatasourceComponent {
     titleId: `limited`,
     logViewOnly: true,
     log: '',
-    count: 0,
-    datasourceTabOnly: true
+    count: 0
   };
 
   MIN = -99;
@@ -38,8 +37,9 @@ export class DemoLimitedDatasourceComponent {
     }
   };
 
-  sources: DemoSources = {
-    datasource: `MIN = -99;
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `MIN = -99;
 MAX = 900;
 
 datasource: IDatasource = {
@@ -55,6 +55,6 @@ datasource: IDatasource = {
     success(data);
   }
 };`
-  };
+  }];
 
 }

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { combineLatest } from 'rxjs';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -39,8 +39,9 @@ export class DemoFirstLastVisibleItemsComponent {
       });
   }
 
-  sources: DemoSources = {
-    datasource: `datasource = new Datasource ({
+  sources: DemoSources = [{
+    name: DemoSourceType.Component,
+    text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -59,8 +60,10 @@ constructor() {
       this.visibleCount =
         isNaN(first) || isNaN(last) ? 0 : last - first + 1;
     });
-}`,
-    template: `First visible item's index:
+}`
+  }, {
+    name: DemoSourceType.Template,
+    text: `First visible item's index:
 {{datasource.adapter.firstVisible.$index}}
 <br>
 Last visible item's index:
@@ -72,8 +75,10 @@ Visible items counter: {{visibleCount}}
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
-</div>`,
-    styles: `.viewport {
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -83,7 +88,7 @@ Visible items counter: {{visibleCount}}
   font-weight: bold;
   height: 25px;
 }`
-  };
+  }];
 
   itemAdapterDescription = `  ItemAdapter {
     $index?: number;

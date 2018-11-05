@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -24,8 +24,9 @@ export class DemoIsLoadingComponent {
     get: datasourceGetCallbackInfinite(this.demoContext, 125)
   });
 
-  sources: DemoSources = {
-    datasource: `datasource = new Datasource ({
+  sources: DemoSources = [{
+    name: DemoSourceType.Component,
+    text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -43,8 +44,10 @@ constructor() {
       this.isLoadingCounter += !isLoading ? 1 : 0
     );
 }
-`,
-    template: `The uiScroll is
+`
+  }, {
+    name: DemoSourceType.Template,
+    text: `The uiScroll is
 {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
 
 <br>
@@ -56,8 +59,10 @@ for {{isLoadingCounter}} times.
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
-</div>`,
-    styles: `.viewport {
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -67,7 +72,7 @@ for {{isLoadingCounter}} times.
   font-weight: bold;
   height: 25px;
 }`
-  };
+  }];
 
   isLoadingCounter = 0;
 

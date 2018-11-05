@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackLimited } from '../../shared/datasource-get';
 
 import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -24,8 +24,9 @@ export class DemoDifferentHeightsComponent {
     get: datasourceGetCallbackLimited(this.demoContext, -20, 100)
   };
 
-  sources: DemoSources = {
-    datasource: `datasource: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const MIN = -20, MAX = 100;
     const data = [];
@@ -38,15 +39,19 @@ export class DemoDifferentHeightsComponent {
     }
     success(data);
   }
-}`,
-    template: `<div class="viewport">
+}`
+  }, {
+    name: DemoSourceType.Template,
+    text: `<div class="viewport">
   <div *uiScroll="let item of datasource">
      <div class="item" [style.height]="item.height + 'px'">
       {{item.text}}
      </div>
   </div>
-</div>`,
-    styles: `.viewport {
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -55,6 +60,6 @@ export class DemoDifferentHeightsComponent {
 .item {
   font-weight: bold;
 }`
-  };
+  }];
 
 }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-datasource-signatures',
@@ -12,12 +12,12 @@ export class DemoDatasourceSignaturesComponent {
     scope: 'datasource',
     title: `Datasource get-method signatures`,
     titleId: `datasource-get-signatures`,
-    noWorkView: true,
-    datasourceTabOnly: true
+    noWorkView: true
   };
 
-  sources: DemoSources = {
-    datasource: `datasourceCallback: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `datasourceCallback: IDatasource = {
   get: (index, count, success) =>
     success(this.getData(index, count))
 };
@@ -42,6 +42,6 @@ datasourceObservable2: IDatasource = {
   get: (index, count) =>
     this.getDataObservable(index, count)
 };`
-  };
+  }];
 
 }

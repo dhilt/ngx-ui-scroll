@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { IDatasource } from '../../../../public_api';
 import { doLog } from '../../shared/datasource-get';
 
@@ -16,8 +16,7 @@ export class DemoPositiveLimitedDatasourceComponent {
     titleId: `positive-limited-indexes`,
     logViewOnly: true,
     log: '',
-    count: 0,
-    datasourceTabOnly: true
+    count: 0
   };
 
   datasource: IDatasource = {
@@ -35,8 +34,9 @@ export class DemoPositiveLimitedDatasourceComponent {
     }
   };
 
-  sources: DemoSources = {
-    datasource: `datasource: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     const start = Math.max(1, index); // or 0
@@ -49,6 +49,6 @@ export class DemoPositiveLimitedDatasourceComponent {
     success(data);
   }
 };`
-  };
+  }];
 
 }

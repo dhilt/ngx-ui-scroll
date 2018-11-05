@@ -108,7 +108,7 @@ _Datasource.get_ must provide an array of _count_ data-items started from _index
   };
 ```
 
-More details could be found on the [Datasource demo page](https://dhilt.github.io/ngx-ui-scroll/#/#datasource).
+More details could be found on the [Datasource demo page](https://dhilt.github.io/ngx-ui-scroll/#/datasource).
 
 ### Settings
 

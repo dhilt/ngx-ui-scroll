@@ -36,39 +36,36 @@
         </div>
         <div class="datasource {{context.addClass || ''}}">
           Datasource.get log
-          <div class="pre-wrapper"><pre>{{context.log}}</pre></div>
+          <div class="pre-wrapper">
+            <pre>{{context.log}}</pre>
+          </div>
         </div>
       </ng-template>
       <ng-template #logView>
         <div class="datasource {{context.addClass || ''}}">
           Datasource.get log
-          <div class="pre-wrapper"><pre>{{context.log}}</pre></div>
+          <div class="pre-wrapper">
+            <pre>{{context.log}}</pre>
+          </div>
         </div>
       </ng-template>
     </div>
     <div class="clearfix mb-3"></div>
   </div>
 
-  <div class="sources">
-    <ng-container
-      *ngIf="!context.datasourceTabOnly; then allTabs; else datasourceTab">
-    </ng-container>
-    <ng-template #allTabs>
-      <tabset>
-        <tab heading="Component">
-          <pre class="prettyprint">{{sources.datasource}}</pre>
-        </tab>
-        <tab heading="Template">
-          <pre class="prettyprint lang-html">{{sources.template}}</pre>
-        </tab>
-        <tab heading="CSS">
-          <pre class="prettyprint">{{sources.styles}}</pre>
-        </tab>
-      </tabset>
-    </ng-template>
-    <ng-template #datasourceTab>
-      <pre class="prettyprint">{{sources.datasource}}</pre>
-    </ng-template>
+  <div *ngIf="sources && sources.length" class="sources">
+    <tabset *ngIf="sources.length > 1">
+      <tab
+        *ngFor="let tab of sources; let index = index"
+        heading="{{sources[index].name}}"
+      >
+        <pre class="prettyprint">{{sources[index].text}}</pre>
+      </tab>
+    </tabset>
+    <pre
+      *ngIf="sources.length === 1"
+      class="prettyprint"
+    >{{sources[0].text}}</pre>
   </div>
 
   <div class="description">

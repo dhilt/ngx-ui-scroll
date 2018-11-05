@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
@@ -13,8 +13,7 @@ export class DemoInvertedDatasourceComponent {
     scope: 'datasource',
     title: `Inverted datasource`,
     titleId: `inverted-indexes`,
-    noWorkView: true,
-    datasourceTabOnly: true
+    noWorkView: true
   };
 
   MIN = 1;
@@ -35,8 +34,9 @@ export class DemoInvertedDatasourceComponent {
     }
   };
 
-  sources: DemoSources = {
-    datasource: `MIN = 1;
+  sources: DemoSources = [{
+    name: DemoSourceType.Component,
+    text: `MIN = 1;
 
 datasourceCommon: IDatasource = {
   get: (index, count, success) =>
@@ -65,7 +65,7 @@ getData(index: number, count: number) {
   }
   return data;
 }`
-  };
+  }];
 
   getData(index: number, count: number) {
     const data = [];

@@ -11,6 +11,7 @@ import {
 import { FetchModel } from './fetch';
 import { Settings } from './settings';
 import { Logger } from './logger';
+import { itemAdapterEmpty } from './adapter';
 
 class WindowScrollState implements IWindowScrollState {
   positionToUpdate: number;
@@ -183,8 +184,8 @@ export class State implements IState {
     this.loopPendingSource = new BehaviorSubject<boolean>(false);
     this.workflowPendingSource = new BehaviorSubject<boolean>(false);
     this.isLoadingSource = new BehaviorSubject<boolean>(false);
-    this.firstVisibleSource = new BehaviorSubject<ItemAdapter>({});
-    this.lastVisibleSource = new BehaviorSubject<ItemAdapter>({});
+    this.firstVisibleSource = new BehaviorSubject<ItemAdapter>(itemAdapterEmpty);
+    this.lastVisibleSource = new BehaviorSubject<ItemAdapter>(itemAdapterEmpty);
     this.firstVisibleWanted = false;
     this.lastVisibleWanted = false;
   }

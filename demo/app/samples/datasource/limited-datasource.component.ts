@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { IDatasource } from '../../../../public_api';
+import { doLog } from '../../shared/datasource-get';
 
 @Component({
   selector: 'app-limited-datasource',
@@ -12,19 +14,39 @@ export class DemoLimitedDatasourceComponent {
     scope: 'datasource',
     title: `Limited datasource`,
     titleId: `limited`,
-    noWorkView: true,
-    datasourceTabOnly: true
+    logViewOnly: true,
+    log: '',
+    count: 0
   };
 
-  sources: DemoSources = {
-    datasource: `MIN = -99;
+  MIN = -99;
+  MAX = 900;
+
+  datasource: IDatasource = {
+    get: (index, count, success) => {
+      const data = [];
+      const start = Math.max(this.MIN, index);
+      const end = Math.min(index + count - 1, this.MAX);
+      if (start <= end) {
+        for (let i = start; i <= end; i++) {
+          data.push({ id: i, text: 'item #' + i });
+        }
+      }
+      doLog(this.demoContext, index, count, data.length);
+      success(data);
+    }
+  };
+
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `MIN = -99;
 MAX = 900;
 
 datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
-    const start = Math.max(MIN, index);
-    const end = Math.min(index + count - 1, MAX);
+    const start = Math.max(this.MIN, index);
+    const end = Math.min(index + count - 1, this.MAX);
     if (start <= end) {
       for (let i = start; i <= end; i++) {
         data.push({ id: i, text: 'item #' + i });
@@ -33,6 +55,6 @@ datasource: IDatasource = {
     success(data);
   }
 };`
-  };
+  }];
 
 }

@@ -23,6 +23,11 @@ const getInitializedSubject = (adapter: Adapter, method: Function): BehaviorSubj
       ));
 };
 
+export const itemAdapterEmpty = <ItemAdapter> {
+  data: {},
+  element: {}
+};
+
 export const generateMockAdapter = (): IAdapter => (
   <IAdapter> {
     version: null,
@@ -34,10 +39,10 @@ export const generateMockAdapter = (): IAdapter => (
     cyclePending$: new BehaviorSubject<boolean>(false),
     loopPending: false,
     loopPending$: new BehaviorSubject<boolean>(false),
-    firstVisible: {},
-    firstVisible$: new BehaviorSubject<ItemAdapter>({}),
-    lastVisible: {},
-    lastVisible$: new BehaviorSubject<ItemAdapter>({}),
+    firstVisible: itemAdapterEmpty,
+    firstVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
+    lastVisible: itemAdapterEmpty,
+    lastVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
     itemsCount: 0,
     initialize: () => null,
     reload: () => null,

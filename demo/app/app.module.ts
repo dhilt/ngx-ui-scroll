@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 import { TabsModule } from 'ngx-bootstrap';
 
 import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
@@ -9,7 +10,8 @@ import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav.component';
 import { DemoComponent } from './shared/demo.component';
 
-import { CommonComponent } from './samples/common.component';
+import { HomeComponent } from './samples/home.component';
+import { SettingsComponent } from './samples/settings.component';
 import { AdapterComponent } from './samples/adapter.component';
 import { DatasourceComponent } from './samples/datasource.component';
 
@@ -32,6 +34,7 @@ import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasour
 import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
 import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/positive-limited-datasource.component';
+import { RemoteDataService, DemoRemoteDatasourceComponent } from './samples/datasource/remote-datasource.component';
 import { DemoInvertedDatasourceComponent } from './samples/datasource/inverted-datasource.component';
 import { DemoPagesDatasourceComponent } from './samples/datasource/pages-datasource.component';
 import { WindowComponent } from './samples/window.component';
@@ -44,7 +47,8 @@ import { AppRoutingModule } from './app-routing.module';
     AppComponent,
     NavComponent,
     DemoComponent,
-    CommonComponent,
+    HomeComponent,
+    SettingsComponent,
     AdapterComponent,
     DatasourceComponent,
     DemoBasicComponent,
@@ -66,6 +70,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoBidirectionalUnlimitedDatasourceComponent,
     DemoLimitedDatasourceComponent,
     DemoPositiveLimitedDatasourceComponent,
+    DemoRemoteDatasourceComponent,
     DemoInvertedDatasourceComponent,
     DemoPagesDatasourceComponent,
     WindowComponent,
@@ -75,9 +80,13 @@ import { AppRoutingModule } from './app-routing.module';
   imports: [
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     TabsModule.forRoot(),
     UiScrollModule,
     AppRoutingModule
+  ],
+  providers: [
+    RemoteDataService
   ],
   bootstrap: [AppComponent]
 })

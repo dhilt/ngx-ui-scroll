@@ -5,7 +5,12 @@
 >
   <div description>
     <p>
-      This is the very basic example.
+      Speaking of what impact could <em>Settings</em> have on the scroller behaviour,
+      we are going to dig into it's behaviour details before any settings applied.
+      And this is the very basic example where settings are not defined.
+    </p>
+    <p>
+      Let's first investigate the sample's log.
       The visible part of the viewport contains 10 items in accordance with CSS:
       10 items of 25px each are equal to 250px of the viewport height.
       <em>Datasource.get</em> log shows us that there were 3 requests
@@ -15,7 +20,7 @@
       20 items give us 500px and this is the initial viewport scrollable size.
     </p>
     <p>
-      The viewport scrollable size value could increase only;
+      The viewport scrollable size value can increase only;
       as we do scroll more and more items are being passed through the <em>Datasource.get</em>.
       Our <em>Datasource</em> is unlimited,
       it produces items with indexes from -Infinity to +Infinity.
@@ -28,7 +33,7 @@
       Why do we have 3 requests initially,
       why the first one is about only 5 items,
       why at least 10 items are invisible?
-      This is how the <em>*uiScroll</em> works and further reading should shed light on the details.
+      This is how the <em>*uiScroll</em> works and further reading should shed more light on the details.
       And we need to know that the default behaviour could be changed via Settings object.
     </p>
   </div>

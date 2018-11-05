@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -12,9 +12,10 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoBasicComponent {
 
   demoContext: DemoContext = <DemoContext> {
-    title: `Unlimited bidirectional scrolling`,
-    titleId: `unlimited-bidirectional-scrolling`,
-    viewportId: `basic-viewport`,
+    scope: 'settings',
+    title: `No settings`,
+    titleId: `no-settings`,
+    viewportId: `no-settings-viewport`,
     count: 0,
     log: ''
   };
@@ -23,8 +24,9 @@ export class DemoBasicComponent {
     get: datasourceGetCallbackInfinite(this.demoContext)
   };
 
-  sources: DemoSources = {
-    datasource: `datasource: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -32,14 +34,18 @@ export class DemoBasicComponent {
     }
     success(data);
   }
-}`,
-    template: `<div class="viewport">
+}`
+  }, {
+    name: DemoSourceType.Template,
+    text: `<div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
-</div>`,
-    styles: `.viewport {
-  width: 175px;
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport {
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
@@ -48,6 +54,6 @@ export class DemoBasicComponent {
   font-weight: bold;
   height: 25px;
 }`
-  };
+  }];
 
 }

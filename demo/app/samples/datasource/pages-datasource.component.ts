@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { IDatasource } from '../../../../public_api';
 
 @Component({
@@ -14,8 +14,7 @@ export class DemoPagesDatasourceComponent {
     title: `Pages datasource`,
     titleId: `pages`,
     logViewOnly: true,
-    log: '',
-    datasourceTabOnly: true
+    log: ''
   };
 
   private getCount = 0;
@@ -84,8 +83,9 @@ export class DemoPagesDatasourceComponent {
     }
   };
 
-  sources: DemoSources = {
-    datasource: `datasource: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Component,
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     // items to request (x.2)
     const startIndex = Math.max(index, 0);
@@ -141,24 +141,46 @@ getDataPage(page: number) {
   }
   return this.data[page];
 }`
-  };
+  },
+    {
+      name: DemoSourceType.Component + ' (async)',
+      text: `datasource: IDatasource = {
+  get: (index, count, success) => {
+    const startIndex = Math.max(index, 0);
+    const endIndex = index + count - 1;
+    if (startIndex > endIndex) {
+      success([]); // empty result
+      return;
+    }
 
-  getDataPageAsyncSample = `  // requesting pages (x.3)
-  const pagesRequest: any[] = [];
-  for (let i = startPage; i <= endPage; i++) {
-    pagesRequest.push(this.getDataPageAsync(i));
+    const startPage = Math.floor(startIndex / this.pageSize);
+    const endPage = Math.floor(endIndex / this.pageSize);
+
+    const pagesRequest: any[] = [];
+    for (let i = startPage; i <= endPage; i++) {
+      pagesRequest.push(
+        this.remoteDataService.getDataPageAsync(i)
+      );
+    }
+    return Promise.all(pagesRequest).then(pagesResult => {
+      pagesResult = pagesResult.reduce((acc, result) =>
+        [...acc, ...result]
+      , []);
+      const start = startIndex - startPage * this.pageSize;
+      const end = start + endIndex - startIndex + 1;
+      return pagesResult.slice(start, end);
+    });
+  },
+  settings: {
+    startIndex: 0
   }
-  return Promise.all(pagesRequest).then(pagesResult => {
-    // pages result (x.4)
-    pagesResult = pagesResult.reduce((acc, result) =>
-      [...acc, ...result]
-    , []);
-    // sliced result (x.5)
-    const start = startIndex - startPage * this.pageSize;
-    const end = start + endIndex - startIndex + 1;
-    return pagesResult.slice(start, end);
-  });
-`;
+};
+
+constructor(
+  private remoteDataService: RemoteDataService
+) {
+}`
+    }];
 
   getDataPage(page: number) {
     if (page < 0 || page >= this.pagesCount) {

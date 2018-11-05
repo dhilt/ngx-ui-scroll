@@ -1,4 +1,5 @@
 <app-demo
+  [datasource]="datasource"
   [context]="demoContext"
   [sources]="sources"
 >
@@ -12,7 +13,7 @@
     </p>
     <p>
       Another option of how to limit the datasource is to use
-      <a href="#/#min-max-indexes-settings">minIndex and maxIndex settings</a>;
+      <a href="#/#min-max-indexes">minIndex and maxIndex settings</a>;
       this way the implementation of the datasource get could remain unlimited
       as the <em>uiScroll</em> will not request for iterms that are out of
       <em>minIndex</em>-<em>maxIndex</em> boundaries.

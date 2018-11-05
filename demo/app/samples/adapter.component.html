@@ -1,26 +1,23 @@
 <h1>Angular UI Scroll Adapter Demos</h1>
 
-<br>
-<br>
-
 <p>
-  <em>Adapter</em> is a special object to assess and manipulate the <em>uiScroll</em>.
-  The API it provides is being discussed on this page.
-  Currently the only way to receive the <em>Adapter</em> is
-  to instantiate the <em>Datasource</em> via operator <em>new</em>:
+  <em>Adapter</em> is&nbsp;a&nbsp;special object to&nbsp;assess and manipulate the <em>uiScroll</em>.
+  The API it&nbsp;provides is&nbsp;being discussed on&nbsp;this page.
+  Currently the only way to&nbsp;receive the <em>Adapter</em> is&nbsp;to&nbsp;instantiate
+  the <em>Datasource</em> via operator <em>new</em>:
 </p>
 
 <pre>{{datasourceSample}}</pre>
 
 <p>
-  The constructor argument is an object of <em>IDatasource</em> type which
+  The constructor argument is&nbsp;an&nbsp;object of&nbsp;<em>IDatasource</em> type which
   must include <em>get</em> method property and
   may include <em>settings</em> object property.
   The <em>uiScroll</em> augments the result <em>Datasource</em> object
   with the <em>Adapter</em> object property during instantiating.
-  So after the <em>Datasource</em> object had been instantiated, we may access
+  So, after the <em>Datasource</em> object had been instantiated, we&nbsp;may access
   <em>this.datasource.adapter</em> property object with its API methods and properties.
-  <em>Datasource</em> definition could be imported from the <em>UiScrollModule</em>:
+  <em>Datasource</em> definition could be&nbsp;imported from the <em>UiScrollModule</em>:
 </p>
 
 <pre>{{importSample}}</pre>

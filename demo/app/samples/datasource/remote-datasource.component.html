@@ -1,0 +1,16 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      In case the source of data is accessible via some remote API,
+      the <em>Datasource.get</em> could be implemented using Observable signature.
+      In this demo handling <em>/api/data</em> GET requests is a part of
+      node.js application ("Server" tab). Again and again, the only requirement is
+      that our API handler must return an array of index-count items
+      or empty array if we are out of range.
+    </p>
+  </div>
+</app-demo>

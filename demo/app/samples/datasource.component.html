@@ -1,14 +1,16 @@
 <h1>Angular UI Scroll Datasource Demos</h1>
 
-<br>
-<br>
-
 <p>
-  <em>Datasource</em> is an entry point to the <em>uiScroll</em>,
-  it is a special object of <em>IDatasource</em> type that provides
-  data flow from the host App to the <em>uiScroll</em>.
-  There are two common ways of how the <em>Datasource</em> could be defined:
+  The idea of&nbsp;the <em>*uiScroll</em> directive usage is&nbsp;very similar
+  to&nbsp;the&nbsp;use of&nbsp;<em>*ngFor</em> directive
+  in&nbsp;the simplest case, but as&nbsp;it&nbsp;follows from the documentation,
+  a&nbsp;special <em>Datasource</em> object needs to&nbsp;be&nbsp;passed
+  instead of Angular <em>Iterable</em>.
+  <em>Datasource</em> is&nbsp;an&nbsp;entry point to&nbsp;the <em>uiScroll</em>,
+  that provides data flow from the host App to the <em>uiScroll</em>.
+  There are two common ways of&nbsp;how the <em>Datasource</em> could be&nbsp;defined:
 </p>
+
 <ul>
   <li>
     as an object literal of <em>IDatasource</em> type
@@ -20,12 +22,12 @@
   </li>
 </ul>
 <p>
-  The constructor argument in the second case should be an <em>IDatasource</em> object.
-  Instantiating via operator <em>new</em> is needed for
-  the <em>Adapter</em> to be available on the result <em>datasource</em> object
+  The constructor argument in&nbsp;the second case should be&nbsp;an object of <em>IDatasource</em> type.
+  Instantiating via operator <em>new</em> is&nbsp;needed for
+  the <em>Adapter</em> to&nbsp;be&nbsp;available on&nbsp;the result <em>datasource</em> object
   (for details see <a href="#adapter">Adapter demo page</a>).
-  Both of <em>IDatasource</em> and <em>Datasource</em> definitions
-  could be imported from <em>UiScrollModule</em>:
+  Both of&nbsp;<em>IDatasource</em> and <em>Datasource</em> definitions
+  could be&nbsp;imported from <em>UiScrollModule</em>:
 </p>
 <pre>{{importSample}}</pre>
 <p>
@@ -36,14 +38,15 @@
   <li>may contain <em>settings</em> object property.</li>
 </ul>
 <p>
-  With the help of <em>settings</em> object the scroller could be
-  configured, as it is being described on <a href="#common">Common demo page</a>.
-  Here we are going to discuss the <em>Datasource.get</em> method implementation.
+  With the help of&nbsp;<em>settings</em> object the scroller could be&nbsp;configured,
+  as&nbsp;it&nbsp;is&nbsp;being described on&nbsp;<a href="#settings">Settings demo page</a>.
+  Here we&nbsp;are going to&nbsp;discuss the <em>Datasource.get</em> method implementation.
 </p>
 
 <app-datasource-signatures></app-datasource-signatures>
 <app-bidirectional-unlimited-datasource></app-bidirectional-unlimited-datasource>
 <app-limited-datasource></app-limited-datasource>
 <app-positive-limited-datasource></app-positive-limited-datasource>
+<app-remote-datasource></app-remote-datasource>
 <app-inverted-datasource></app-inverted-datasource>
 <app-pages-datasource></app-pages-datasource>

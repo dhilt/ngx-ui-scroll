@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -12,8 +12,9 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoMinMaxIndexesComponent {
 
   demoContext: DemoContext = <DemoContext> {
+    scope: 'settings',
     title: `minIndex / maxIndex settings`,
-    titleId: `min-max-indexes-settings`,
+    titleId: `min-max-indexes`,
     viewportId: `min-max-indexes-viewport`,
     count: 0,
     log: ''
@@ -27,8 +28,9 @@ export class DemoMinMaxIndexesComponent {
     }
   };
 
-  sources: DemoSources = {
-    datasource: `datasource: IDatasource = {
+  sources: DemoSources = [{
+    name: DemoSourceType.Datasource,
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -40,14 +42,18 @@ export class DemoMinMaxIndexesComponent {
     minIndex: 1,
     maxIndex: 1000
   }
-}`,
-    template: `<div class="viewport">
+}`
+  }, {
+    name: DemoSourceType.Template,
+    text: `<div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
-</div>`,
-    styles: `.viewport {
-  width: 175px;
+</div>`
+  }, {
+    name: DemoSourceType.Styles,
+    text: `.viewport {
+  width: 150px;
   height: 250px;
   overflow-y: auto;
   overflow-anchor: none;
@@ -56,16 +62,6 @@ export class DemoMinMaxIndexesComponent {
   font-weight: bold;
   height: 25px;
 }`
-  };
-
-  limitedDatasourceSample = `  get: (index, count, success) => {
-    const data = [];
-    const start = Math.max(MIN, index);
-    const end = Math.min(index + count - 1, MAX);
-    for (let i = start; i <= end; i++) {
-      data.push({ id: i, text: 'item #' + i });
-    }
-    success(data);
-  }`;
+  }];
 
 }

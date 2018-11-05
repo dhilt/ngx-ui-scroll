@@ -49,14 +49,14 @@
 
   <div class="sources">
     <tabset>
-      <tab heading="Template">
-        <pre class="prettyprint lang-html">{{sources.template}}</pre>
+      <tab heading="{{sources[1].name}}">
+        <pre class="prettyprint lang-html">{{sources[1].text}}</pre>
       </tab>
-      <tab heading="Component">
-        <pre class="prettyprint">{{sources.datasource}}</pre>
+      <tab heading="{{sources[0].name}}">
+        <pre class="prettyprint">{{sources[0].text}}</pre>
       </tab>
-      <tab heading="CSS">
-        <pre class="prettyprint">{{sources.styles}}</pre>
+      <tab heading="{{sources[2].name}}">
+        <pre class="prettyprint">{{sources[2].text}}</pre>
       </tab>
     </tabset>
   </div>

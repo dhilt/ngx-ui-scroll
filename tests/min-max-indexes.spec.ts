@@ -61,6 +61,10 @@ const noMinIndexConfigList: TestBedConfig[] = configList.map(
   ({ datasourceSettings: { minIndex, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
 );
 
+const forwardGapConfigList: TestBedConfig[] = startIndexAroundMaxIndexConfigList.map(
+  ({ datasourceSettings: { minIndex, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
+);
+
 const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const { maxIndex, minIndex, itemSize: _itemSize, startIndex, padding } = settings.datasourceSettings;
   const { bufferSize } = misc.scroller.settings;
@@ -149,6 +153,26 @@ const _testStartIndexEdgeCase = (settings: TestBedConfig, misc: Misc, done: Func
   done();
 };
 
+const _testForwardGapCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+  const { maxIndex, minIndex, itemSize, startIndex } = settings.datasourceSettings;
+  const viewportSize = misc.getViewportSize(settings);
+  let _startIndex = Math.max(minIndex, startIndex); // startIndex < minIndex
+  _startIndex = isNaN(_startIndex) ? startIndex : _startIndex; // no minIndex
+  _startIndex = Math.min(maxIndex, _startIndex); // startIndex > maxIndex
+  const _items = maxIndex - _startIndex + 1; // total fwd items
+  const _itemsSize = _items * itemSize; // total fwd items size
+  let _gapSize = viewportSize - _itemsSize;
+  _gapSize = Math.max(0, _gapSize);
+
+  const viewportChildren = misc.scroller.viewport.element.children;
+  const lastChild = viewportChildren[viewportChildren.length - 2];
+  const lastChildBottom = lastChild.getBoundingClientRect().bottom;
+  let gapSize = viewportSize - lastChildBottom;
+  gapSize = Math.max(0, gapSize);
+  expect(gapSize).toEqual(_gapSize);
+  done();
+};
+
 describe('Min/max Indexes Spec', () => {
 
   describe('Common cases', () => {
@@ -224,6 +248,19 @@ describe('Min/max Indexes Spec', () => {
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
             _testStartIndexEdgeCase(config, misc, done)
+          )
+      })
+    );
+  });
+
+  describe('startIndex\'s around maxIndex and no minIndex', () => {
+    forwardGapConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should leave forward padding gap',
+        it: (misc: Misc) => (done: Function) =>
+          spyOn(misc.workflow, 'finalize').and.callFake(() =>
+            _testForwardGapCase(config, misc, done)
           )
       })
     );

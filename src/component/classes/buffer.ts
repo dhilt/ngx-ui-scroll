@@ -22,13 +22,13 @@ export class Buffer {
   readonly minBufferSize: number;
   readonly logger: Logger;
 
-  constructor(settings: Settings, logger: Logger) {
+  constructor(settings: Settings, startIndex: number, logger: Logger) {
     this.$items = new BehaviorSubject<Array<Item>>([]);
     this.cache = new Cache(settings.itemSize, logger);
     this.minIndexUser = settings.minIndex;
     this.maxIndexUser = settings.maxIndex;
     this.reset();
-    this.startIndex = settings.startIndex;
+    this.startIndex = startIndex;
     this.minBufferSize = settings.bufferSize;
     this.logger = logger;
   }

@@ -115,8 +115,9 @@ export default class Adjust {
       state.bwdPaddingAverageSizeItemsCount = bwdPaddingAverageSizeItemsCount;
     }
 
-    // if scrollable area size has not been changed during this cycle
-    if (state.sizeBeforeRender === viewport.getScrollableSize()) {
+    // if scrollable area size padding forward size have not been changed during this cycle
+    if (state.sizeBeforeRender === viewport.getScrollableSize() &&
+      viewport.paddings.forward.size === state.fwdPaddingBeforeRender) {
       return;
     }
     // no negative area items

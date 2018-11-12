@@ -45,7 +45,7 @@ export class TestComponent {
       // minIndex: MIN,
       maxIndex: MAX,
       itemSize: 25,
-      startIndex: MAX
+      startIndex: 99999
     },
     devSettings: {
       debug: true,

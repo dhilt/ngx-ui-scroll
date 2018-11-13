@@ -1,10 +1,14 @@
 {
   "name": "ngx-ui-scroll",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Infinite/virtual scroll for Angular",
   "main": "./bundles/ngx-ui-scroll.umd.js",
-  "module": "./esm5/ngx-ui-scroll.js",
-  "es2015": "./esm2015/ngx-ui-scroll.js",
+  "module": "./fesm5/ngx-ui-scroll.js",
+  "es2015": "./fesm2015/ngx-ui-scroll.js",
+  "esm5": "./esm5/ngx-ui-scroll.js",
+  "esm2015": "./esm2015/ngx-ui-scroll.js",
+  "fesm5": "./fesm5/ngx-ui-scroll.js",
+  "fesm2015": "./fesm2015/ngx-ui-scroll.js",
   "typings": "./ngx-ui-scroll.d.ts",
   "author": {
     "name": "dhilt",
@@ -13,17 +17,22 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dhilt/ngx-ui-scroll.git"
+    "url": "https://github.com/dhilt/ngx-ui-scroll.git"
   },
   "homepage": "https://github.com/dhilt/ngx-ui-scroll",
   "bugs": {
     "url": "https://github.com/dhilt/ngx-ui-scroll/issues"
   },
   "deprecated": false,
+  "sideEffects": false,
   "bundleDependencies": false,
   "peerDependencies": {
-    "@angular/core": ">= 5.0.0",
-    "@angular/common": ">= 5.0.0"
+    "rxjs": ">= 6.0.0",
+    "@angular/common": ">= 7.0.0",
+    "@angular/core": ">= 7.0.0"
+  },
+  "dependencies": {
+    "tslib": "^1.9.0"
   },
   "keywords": [
     "angular",

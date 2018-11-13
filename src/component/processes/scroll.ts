@@ -1,6 +1,5 @@
 import { Scroller } from '../scroller';
 import { Process, ProcessStatus, ScrollPayload } from '../interfaces/index';
-import { state } from '@angular/animations';
 
 export default class Scroll {
 
@@ -95,11 +94,11 @@ export default class Scroll {
       scrollState.firstScrollTime = 0;
       Scroll.doScroll(scroller);
     } else if (!scrollState.scrollTimer && !scrollState.keepScroll) {
-      scroller.logger.log(() => [`%cset the timer at ${scroller.state.time + diff}`, 'background-color: #dfd']);
+      scroller.logger.log(() => `setting the timer at ${scroller.state.time + diff}`);
       scrollState.firstScrollTime = time;
       scrollState.scrollTimer = <any>setTimeout(() => {
         scrollState.scrollTimer = null;
-        scroller.logger.log(() => [`%cfire the timer at ${scroller.state.time}`, 'background-color: #ffd']);
+        scroller.logger.log(() => `fire the timer (${scroller.state.time})`);
         Scroll.run(scroller, { byTimer: true });
       }, diff);
     } /* else {

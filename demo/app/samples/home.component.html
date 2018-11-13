@@ -24,6 +24,8 @@
     </div>
     <div class="log">
       <div style="line-height: 25px; margin-bottom: 2px;">
+        Version of ngx-ui-scroll: {{datasource.adapter.version}}
+        <br />
         First visible: #{{datasource.adapter.firstVisible.$index}}
         <br />
         Last visible: #{{(datasource.adapter.lastVisible$ | async)?.$index}}

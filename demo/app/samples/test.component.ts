@@ -41,11 +41,11 @@ export class TestComponent {
     ,
     settings: {
       padding: 0.5,
-      bufferSize: 15,
+      bufferSize: 10,
       // minIndex: MIN,
-      // maxIndex: MAX,
+      maxIndex: MAX,
       itemSize: 25,
-      startIndex: 1
+      startIndex: 99999
     },
     devSettings: {
       debug: true,
@@ -59,6 +59,11 @@ export class TestComponent {
   });
 
   constructor() {
+    this.generateData();
+    this.autoscroll();
+  }
+
+  generateData() {
     this.data = [];
     for (let i = 0; i <= MAX - MIN; i++) {
       const item = <MyItem>{
@@ -73,12 +78,6 @@ export class TestComponent {
       }
       this.data.push(item);
     }
-    this.datasource.adapter.firstVisible$
-      .subscribe((result) => {
-        if (result.data) {
-          console.log('...first visible item:', result.data);
-        }
-      });
   }
 
   fetchData(index: number, count: number): Observable<Array<MyItem>> {
@@ -148,5 +147,26 @@ export class TestComponent {
 
   doToggleItem(item: MyItem) {
     item.isSelected = !item.isSelected;
+  }
+
+  autoscroll() {
+    const { adapter } = this.datasource;
+    const isLoadingSubscription = adapter.isLoading$.subscribe(isLoading => {
+      const viewportElement = document.getElementById('my-viewport');
+      if (!isLoading && viewportElement && adapter.lastVisible.element) {
+        const lastElementBottom = adapter.lastVisible.element.getBoundingClientRect().bottom;
+        const viewportBottom = viewportElement.getBoundingClientRect().bottom;
+        const toScroll = viewportBottom - lastElementBottom;
+        const diff = viewportElement.scrollTop - toScroll;
+        if (viewportElement.scrollTop === diff) {
+          isLoadingSubscription.unsubscribe();
+        } else {
+          adapter.setScrollPosition(diff);
+          if (viewportElement.scrollTop === diff) {
+            isLoadingSubscription.unsubscribe();
+          }
+        }
+      }
+    });
   }
 }

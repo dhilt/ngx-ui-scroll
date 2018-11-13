@@ -94,6 +94,7 @@ export class State implements IState {
   preFetchPosition: number;
   preAdjustPosition: number;
   sizeBeforeRender: number;
+  fwdPaddingBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
@@ -176,6 +177,7 @@ export class State implements IState {
     this.clip = false;
     this.clipCall = 0;
     this.sizeBeforeRender = 0;
+    this.fwdPaddingBeforeRender = 0;
     this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();

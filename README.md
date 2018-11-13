@@ -177,7 +177,7 @@ There are some npm scripts available from package.json:
 - `npm start` to run demo App on port 4200
 - `npm test` to run Karma tests
 - `npm run build` to build the ngx-ui-scroll module into the ./dist folder
-- `npm run install-package` to build tar-gzipped version of package and install it locally into ./node_modules
+- `npm run pack:install` to build tar-gzipped version of package and install it locally into ./node_modules
 
 Along with settings object the datasource implementation may include also devSettings object: 
 

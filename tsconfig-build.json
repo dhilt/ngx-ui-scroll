@@ -10,7 +10,7 @@
         "../../node_modules/rxjs/*"
       ]
     },
-    "outDir": "dist",
+    "outDir": "../",
     "declaration": true,
     "strict": true,
     "strictPropertyInitialization": false,
@@ -31,7 +31,7 @@
   },
   "files": [
     "public_api.ts",
-    "node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
     "enableResourceInlining": true,

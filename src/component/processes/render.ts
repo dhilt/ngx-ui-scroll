@@ -28,6 +28,7 @@ export default class Render {
     const itemsLength = items.length;
     const scrollBeforeRender = scroller.settings.windowViewport ? scroller.viewport.scrollPosition : 0;
     state.sizeBeforeRender = viewport.getScrollableSize();
+    state.fwdPaddingBeforeRender = viewport.paddings.forward.size;
     for (let j = 0; j < itemsLength; j++) {
       const item = items[j];
       const element = viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);

@@ -3,7 +3,9 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
-import { Init, Scroll, Reload, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End } from './processes/index';
+import {
+  Init, Scroll, Reload, Prepend, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
+} from './processes/index';
 
 export class Workflow {
 
@@ -102,6 +104,14 @@ export class Workflow {
           } else {
             Start.run(scroller, payload);
           }
+        }
+        break;
+      case Process.prepend:
+        if (status === Status.start) {
+          Prepend.run(scroller, payload);
+        }
+        if (status === Status.next) {
+          Render.run(scroller);
         }
         break;
       case Process.start:

@@ -24,10 +24,8 @@ export class FetchModel {
   reset() {
     this._newItemsData = null;
     this.items = [];
-    this.firstIndexBuffer = null;
-    this.lastIndexBuffer = null;
-    this.firstIndex = null;
-    this.lastIndex = null;
+    this.firstIndex = this.firstIndexBuffer = null;
+    this.lastIndex = this.lastIndexBuffer = null;
     this.hasAnotherPack = false;
     this.negativeSize = 0;
     this.direction = null;
@@ -57,5 +55,16 @@ export class FetchModel {
 
   get count(): number {
     return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
+  }
+
+  prepend(item: Item) {
+    this._newItemsData = [item.data];
+    this.items = [item];
+    this.firstIndex = item.$index;
+    this.lastIndex = item.$index;
+    this.hasAnotherPack = false;
+    this.negativeSize = 0;
+    this.direction = Direction.backward;
+    this.isPrepend = true;
   }
 }

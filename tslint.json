@@ -12,5 +12,6 @@
       ],
       "kebab-case"
     ]
-  }
+  },
+  "max-classes-per-file": [false]
 }

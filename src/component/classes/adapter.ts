@@ -46,6 +46,7 @@ export const generateMockAdapter = (): IAdapter => (
     itemsCount: 0,
     initialize: () => null,
     reload: () => null,
+    prepend: () => null,
     showLog: () => null,
     setMinIndex: () => null,
     setScrollPosition: () => null
@@ -183,6 +184,15 @@ export class Adapter implements IAdapter {
       process: Process.reload,
       status: ProcessStatus.start,
       payload: reloadIndex
+    });
+  }
+
+  prepend(item: any) {
+    this.scroller.logger.log(() => `adapter: prepend()`);
+    this.callWorkflow(<ProcessSubject>{
+      process: Process.prepend,
+      status: ProcessStatus.start,
+      payload: item
     });
   }
 

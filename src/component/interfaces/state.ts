@@ -42,7 +42,8 @@ export interface State {
 
   startIndex: number;
   fetch: FetchModel;
-  clip: boolean;
+  canClip: boolean;
+  doClip: boolean;
   clipCall: number;
   lastPosition: number;
   preFetchPosition: number;

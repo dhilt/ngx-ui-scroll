@@ -132,10 +132,10 @@ export class Workflow {
         break;
       case Process.render:
         if (status === Status.next) {
-          if (scroller.settings.infinite) {
-            Adjust.run(scroller);
-          } else {
+          if (scroller.state.canClip) {
             Clip.run(scroller);
+          } else {
+            Adjust.run(scroller);
           }
         }
         break;

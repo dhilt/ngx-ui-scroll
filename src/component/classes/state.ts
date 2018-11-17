@@ -88,7 +88,8 @@ export class State implements IState {
 
   startIndex: number;
   fetch: FetchModel;
-  clip: boolean;
+  canClip: boolean;
+  doClip: boolean;
   clipCall: number;
   lastPosition: number;
   preFetchPosition: number;
@@ -174,7 +175,8 @@ export class State implements IState {
 
     this.setCurrentStartIndex(settings.startIndex);
     this.fetch = new FetchModel();
-    this.clip = false;
+    this.canClip = !settings.infinite;
+    this.doClip = false;
     this.clipCall = 0;
     this.sizeBeforeRender = 0;
     this.fwdPaddingBeforeRender = 0;
@@ -196,7 +198,7 @@ export class State implements IState {
     this.loopPending = true;
     this.innerLoopCount++;
     this.fetch.reset();
-    this.clip = false;
+    this.doClip = false;
     if (options) {
       this.scrollState.scroll = options.scroll || false;
     }

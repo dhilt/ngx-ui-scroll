@@ -15,7 +15,7 @@ export default class End {
     const next = End.getNext(scroller, error);
 
     // need to apply Buffer.items changes if clip
-    if (scroller.state.clip) {
+    if (scroller.state.doClip) {
       scroller.runChangeDetector();
     }
 

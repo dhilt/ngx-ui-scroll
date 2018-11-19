@@ -27,7 +27,7 @@ export class Workflow {
       status: Status.start
     });
     this.cyclesDone = 0;
-    this.onScrollHandler = event => Scroll.run(this.scroller, { event });
+    this.onScrollHandler = event => Scroll.run(this.scroller, event);
 
     if (this.scroller.settings.initializeDelay) {
       setTimeout(() => this.init(), this.scroller.settings.initializeDelay);
@@ -75,18 +75,28 @@ export class Workflow {
   process(data: ProcessSubject) {
     const scroller = this.scroller;
     const { status, payload } = data;
+    const options = scroller.state.workflowOptions;
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
-      End.run(scroller, payload);
+      End.run(scroller, payload && payload.error);
       return;
     }
     switch (data.process) {
       case Process.init:
         if (status === Status.start) {
-          Init.run(scroller);
+          Init.run(scroller, true);
         }
         if (status === Status.next) {
-          Start.run(scroller, payload);
+          Start.run(scroller);
+        }
+        break;
+      case Process.scroll:
+        if (status === Status.next) {
+          if (!options.keepScroll) {
+            Init.run(scroller);
+          } else {
+            Start.run(scroller);
+          }
         }
         break;
       case Process.reload:
@@ -94,16 +104,7 @@ export class Workflow {
           Reload.run(scroller, payload);
         }
         if (status === Status.next) {
-          Init.run(scroller);
-        }
-        break;
-      case Process.scroll:
-        if (status === Status.next) {
-          if (!(payload && payload.keepScroll)) {
-            Init.run(scroller, payload);
-          } else {
-            Start.run(scroller, payload);
-          }
+          Init.run(scroller, true);
         }
         break;
       case Process.prepend:
@@ -111,12 +112,16 @@ export class Workflow {
           Prepend.run(scroller, payload);
         }
         if (status === Status.next) {
-          Render.run(scroller);
+          Init.run(scroller);
         }
         break;
       case Process.start:
         if (status === Status.next) {
-          PreFetch.run(scroller);
+          if (!scroller.state.fetch.simulate) {
+            PreFetch.run(scroller);
+          } else {
+            Render.run(scroller);
+          }
         }
         break;
       case Process.preFetch:
@@ -142,7 +147,7 @@ export class Workflow {
         break;
       case Process.render:
         if (status === Status.next) {
-          if (scroller.state.canClip) {
+          if (!scroller.state.noClip) {
             Clip.run(scroller);
           } else {
             Adjust.run(scroller);
@@ -161,10 +166,10 @@ export class Workflow {
         break;
       case Process.end:
         if (status === Status.next) {
-          if (payload && payload.keepScroll) {
+          if (options.keepScroll) {
             Scroll.run(scroller);
           } else {
-            Start.run(scroller, payload);
+            Start.run(scroller);
           }
         }
         if (status === Status.done) {

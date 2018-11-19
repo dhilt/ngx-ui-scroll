@@ -32,6 +32,13 @@ export interface SyntheticScroll {
   reset: Function;
 }
 
+export interface WorkflowOptions {
+  empty: boolean;
+  scroll: boolean;
+  keepScroll: boolean;
+  byTimer: boolean;
+}
+
 export interface State {
   initTime: number;
   innerLoopCount: number;
@@ -39,10 +46,11 @@ export interface State {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  workflowOptions: WorkflowOptions;
 
   startIndex: number;
   fetch: FetchModel;
-  canClip: boolean;
+  noClip: boolean;
   doClip: boolean;
   clipCall: number;
   lastPosition: number;

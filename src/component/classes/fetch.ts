@@ -3,6 +3,7 @@ import { Direction } from '../interfaces/index';
 
 export class FetchModel {
   private _newItemsData: Array<any> | null;
+  simulate: boolean;
   items: Array<Item>;
   firstIndexBuffer: number | null;
   lastIndexBuffer: number | null;
@@ -16,6 +17,7 @@ export class FetchModel {
   direction: Direction | null;
   isPrepend: boolean;
 
+
   constructor() {
     this.callCount = 0;
     this.reset();
@@ -23,6 +25,7 @@ export class FetchModel {
 
   reset() {
     this._newItemsData = null;
+    this.simulate = false;
     this.items = [];
     this.firstIndex = this.firstIndexBuffer = null;
     this.lastIndex = this.lastIndexBuffer = null;
@@ -58,6 +61,7 @@ export class FetchModel {
   }
 
   prepend(item: Item) {
+    this.simulate = true;
     this._newItemsData = [item.data];
     this.items = [item];
     this.firstIndex = item.$index;

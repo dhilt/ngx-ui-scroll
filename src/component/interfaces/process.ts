@@ -25,18 +25,10 @@ export interface ScrollPayload {
   byTimer?: boolean;
 }
 
-export interface ProcessRun {
-  empty?: boolean;
-  scroll?: boolean;
-  keepScroll?: boolean;
-  byTimer?: boolean;
-  error?: string;
-}
-
 export interface ProcessSubject {
   process: Process;
   status: ProcessStatus;
-  payload?: ProcessRun;
+  payload?: any;
 }
 
 export type CallWorkflow = (processSubject: ProcessSubject) => undefined;

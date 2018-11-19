@@ -3,14 +3,14 @@ import { Process, ProcessStatus, ScrollPayload } from '../interfaces/index';
 
 export default class Scroll {
 
-  static run(scroller: Scroller, payload: ScrollPayload = {}) {
+  static run(scroller: Scroller, event?: Event) {
     scroller.logger.log(scroller.viewport.scrollPosition);
     if (scroller.state.syntheticScroll.position !== null) {
       if (!Scroll.processSyntheticScroll(scroller)) {
         return;
       }
     }
-    this.delayScroll(scroller, payload);
+    this.delayScroll(scroller);
   }
 
   static processSyntheticScroll(scroller: Scroller): boolean {
@@ -77,12 +77,12 @@ export default class Scroll {
     return true;
   }
 
-  static delayScroll(scroller: Scroller, payload: ScrollPayload) {
-    if (!scroller.settings.throttle || payload.byTimer) {
+  static delayScroll(scroller: Scroller) {
+    if (!scroller.settings.throttle || scroller.state.workflowOptions.byTimer) {
       Scroll.doScroll(scroller);
       return;
     }
-    const { state: { scrollState } } = scroller;
+    const { state: { scrollState, workflowOptions } } = scroller;
     const time = Number(Date.now());
     const tDiff = scrollState.lastScrollTime + scroller.settings.throttle - time;
     const dDiff = scroller.settings.throttle + (scrollState.firstScrollTime ? scrollState.firstScrollTime - time : 0);
@@ -99,7 +99,8 @@ export default class Scroll {
       scrollState.scrollTimer = <any>setTimeout(() => {
         scrollState.scrollTimer = null;
         scroller.logger.log(() => `fire the timer (${scroller.state.time})`);
-        Scroll.run(scroller, { byTimer: true });
+        workflowOptions.byTimer = true;
+        Scroll.run(scroller);
       }, diff);
     } /* else {
       scroller.logger.log('MISS TIMER');
@@ -107,7 +108,7 @@ export default class Scroll {
   }
 
   static doScroll(scroller: Scroller) {
-    const { state, state: { scrollState } } = scroller;
+    const { state, state: { scrollState, workflowOptions } } = scroller;
     if (state.workflowPending) {
       scroller.logger.log(() =>
         !scrollState.keepScroll ? [
@@ -117,13 +118,11 @@ export default class Scroll {
       scrollState.keepScroll = true;
       return;
     }
+    workflowOptions.scroll = true;
+    workflowOptions.keepScroll = scrollState.keepScroll;
     scroller.callWorkflow({
       process: Process.scroll,
-      status: ProcessStatus.next,
-      payload: {
-        scroll: true,
-        ...(scrollState.keepScroll ? { keepScroll: scrollState.keepScroll } : {})
-      }
+      status: ProcessStatus.next
     });
   }
 

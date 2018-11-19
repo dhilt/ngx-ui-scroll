@@ -188,7 +188,7 @@ export class Adapter implements IAdapter {
   }
 
   prepend(item: any) {
-    this.scroller.logger.log(() => `adapter: prepend()`);
+    this.scroller.logger.log(() => `adapter: prepend(${item})`);
     this.callWorkflow(<ProcessSubject>{
       process: Process.prepend,
       status: ProcessStatus.start,

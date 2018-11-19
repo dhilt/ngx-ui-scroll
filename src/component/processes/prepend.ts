@@ -14,11 +14,11 @@ export default class Prepend {
     if (isFinite(buffer.absMinIndex) && indexToPrepend < buffer.absMinIndex) {
       buffer.absMinIndex--;
     }
-    state.canClip = false;
     fetch.prepend(itemToPrepend);
     buffer.prepend(itemToPrepend);
     fetch.firstIndexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToPrepend;
     fetch.lastIndexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToPrepend;
+    state.noClip = true;
 
     scroller.callWorkflow({
       process: Process.prepend,

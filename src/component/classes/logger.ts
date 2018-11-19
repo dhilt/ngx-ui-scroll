@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessRun, ProcessStatus as Status, ProcessSubject } from '../interfaces/index';
+import { Process, ProcessStatus as Status, ProcessSubject } from '../interfaces/index';
 
 export class Logger {
 
@@ -11,6 +11,7 @@ export class Logger {
   readonly getFetchRange: Function;
   readonly getInnerLoopCount: Function;
   readonly getWorkflowCycleData: Function;
+  readonly getWorkflowOptions: Function;
   private logs: Array<any> = [];
 
   constructor(scroller: Scroller) {
@@ -40,6 +41,7 @@ export class Logger {
     this.getInnerLoopCount = (): number => scroller.state.innerLoopCount;
     this.getWorkflowCycleData = (more: boolean): string =>
       `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}` + (more ? '-' : '');
+    this.getWorkflowOptions = () => scroller.state.workflowOptions;
     this.log(() => `uiScroll Workflow has been started (v${scroller.version}, instance ${settings.instanceIndex})`);
   }
 
@@ -74,12 +76,12 @@ export class Logger {
       return;
     }
     const { process, status } = data;
-    const payload: ProcessRun = data.payload || { empty: true };
+    const options = this.getWorkflowOptions();
 
     // standard process log
-    const processLog = `process ${process}, %c${status}%c` + (!payload.empty ? ',' : '');
+    const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
     const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
-    this.log(() => [processLog, ...styles, ...(!payload.empty ? [payload] : [])]);
+    this.log(() => [processLog, ...styles, ...(!options.empty ? [options] : [])]);
 
     // inner loop start-end log
     const workflowCycleData = this.getWorkflowCycleData(true);
@@ -87,15 +89,15 @@ export class Logger {
     const loopLog: string[] = [];
     if (
       process === Process.init && status === Status.next ||
-      process === Process.scroll && status === Status.next && payload.keepScroll ||
-      process === Process.end && status === Status.next && payload.byTimer
+      process === Process.scroll && status === Status.next && options.keepScroll ||
+      process === Process.end && status === Status.next && options.byTimer
     ) {
       loopLog.push(`%c---=== loop ${workflowCycleData + (loopCount + 1)} start`);
     } else if (
-      process === Process.end && !payload.byTimer
+      process === Process.end && !options.byTimer
     ) {
       loopLog.push(`%c---=== loop ${workflowCycleData + loopCount} done`);
-      if (status === Status.next && !(payload.keepScroll)) {
+      if (status === Status.next && !(options.keepScroll)) {
         loopLog[0] += `, loop ${workflowCycleData + (loopCount + 1)} start`;
       }
     }
@@ -107,7 +109,8 @@ export class Logger {
     if (
       process === Process.init && status === Status.start ||
       process === Process.reload && status === Status.next ||
-      process === Process.scroll && status === Status.next && !(payload.keepScroll)
+      process === Process.prepend && status === Status.next ||
+      process === Process.scroll && status === Status.next && !(options.keepScroll)
     ) {
       const logData = this.getWorkflowCycleData(false);
       const logStyles = 'color: #0000aa; border: solid black 1px; border-width: 1px 0 0 1px; margin-left: -2px';

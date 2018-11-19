@@ -74,11 +74,11 @@ export class Workflow {
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
-    const { status, payload } = data;
+    const { status, payload = {} }  = data;
     const options = scroller.state.workflowOptions;
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
-      End.run(scroller, payload && payload.error);
+      End.run(scroller, payload.error);
       return;
     }
     switch (data.process) {
@@ -117,10 +117,10 @@ export class Workflow {
         break;
       case Process.start:
         if (status === Status.next) {
-          if (!scroller.state.fetch.simulate) {
-            PreFetch.run(scroller);
-          } else {
+          if (payload.noFetch) {
             Render.run(scroller);
+          } else {
+            PreFetch.run(scroller);
           }
         }
         break;
@@ -147,10 +147,10 @@ export class Workflow {
         break;
       case Process.render:
         if (status === Status.next) {
-          if (!scroller.state.noClip) {
-            Clip.run(scroller);
-          } else {
+          if (payload.noClip) {
             Adjust.run(scroller);
+          } else {
+            Clip.run(scroller);
           }
         }
         break;

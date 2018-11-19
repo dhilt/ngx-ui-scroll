@@ -10,7 +10,8 @@ export default class Render {
         if (Render.processElements(scroller)) {
           scroller.callWorkflow({
             process: Process.render,
-            status: ProcessStatus.next
+            status: ProcessStatus.next,
+            payload: { noClip: scroller.state.noClip }
           });
         } else {
           scroller.callWorkflow({

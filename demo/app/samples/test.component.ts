@@ -4,7 +4,7 @@ import { Observable, Observer } from 'rxjs';
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 100;
-const MIN = -899;
+let MIN = -99;
 const MIN_ROW_HEIGHT = 2;
 
 interface MyItem {
@@ -42,14 +42,14 @@ export class TestComponent {
     settings: {
       padding: 0.5,
       bufferSize: 10,
-      // minIndex: MIN,
+      minIndex: MIN,
       maxIndex: MAX,
       itemSize: 25,
-      startIndex: 99999
+      startIndex: MIN
     },
     devSettings: {
       debug: true,
-      immediateLog: false,
+      immediateLog: true,
       logTime: false,
       throttle: 40,
       inertia: false,
@@ -60,7 +60,7 @@ export class TestComponent {
 
   constructor() {
     this.generateData();
-    this.autoscroll();
+    // this.autoscroll();
   }
 
   generateData() {
@@ -70,7 +70,7 @@ export class TestComponent {
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
-        height: 25 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
+        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
       };
       if (item.isSelected) {
         item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, (x, j) => '*').join('');
@@ -128,6 +128,18 @@ export class TestComponent {
     this.datasource.adapter.reload(this.reloadIndex);
   }
 
+  doPrepend() {
+    MIN--;
+    const item = <MyItem>{
+      id: MIN,
+      text: 'item #' + MIN,
+      isSelected: false,
+      height: 25
+    };
+    this.data.unshift(item);
+    this.datasource.adapter.prepend(item);
+  }
+
   doScrollHome() {
     this.getViewportElement().scrollTop = 0;
   }
@@ -153,8 +165,9 @@ export class TestComponent {
     const { adapter } = this.datasource;
     const isLoadingSubscription = adapter.isLoading$.subscribe(isLoading => {
       const viewportElement = document.getElementById('my-viewport');
-      if (!isLoading && viewportElement && adapter.lastVisible.element) {
-        const lastElementBottom = adapter.lastVisible.element.getBoundingClientRect().bottom;
+      const lastVisible = adapter.lastVisible.element;
+      if (!isLoading && viewportElement && lastVisible && lastVisible.getBoundingClientRect) {
+        const lastElementBottom = lastVisible.getBoundingClientRect().bottom;
         const viewportBottom = viewportElement.getBoundingClientRect().bottom;
         const toScroll = viewportBottom - lastElementBottom;
         const diff = viewportElement.scrollTop - toScroll;

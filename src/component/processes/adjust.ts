@@ -115,18 +115,21 @@ export default class Adjust {
       state.bwdPaddingAverageSizeItemsCount = bwdPaddingAverageSizeItemsCount;
     }
 
-    // if scrollable area size padding forward size have not been changed during this cycle
-    if (state.sizeBeforeRender === viewport.getScrollableSize() &&
-      viewport.paddings.forward.size === state.fwdPaddingBeforeRender) {
-      return;
-    }
     // no negative area items
     if (items[0].$index >= fetch.minIndex) {
       return;
     }
 
+    // if scrollable area size padding forward size have not been changed during this cycle
+    if (viewport.getScrollableSize() === state.sizeBeforeRender) {
+      return;
+    }
+
     if (negativeSize > 0) {
-      Adjust.setScroll(scroller, negativeSize);
+      const fwdPaddingSizeDiff = state.fwdPaddingBeforeRender - viewport.paddings.forward.size;
+      const diff = negativeSize - fwdPaddingSizeDiff;
+      const _negativeSize = diff < 0 ? negativeSize : Math.min(negativeSize, diff);
+      Adjust.setScroll(scroller, _negativeSize);
     } else if (negativeSize < 0) {
       viewport.paddings.forward.size -= negativeSize;
       viewport.scrollPosition -= negativeSize;

@@ -81,7 +81,7 @@ export class Logger {
     // standard process log
     const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
     const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
-    this.log(() => [processLog, ...styles, ...(!options.empty ? [options] : [])]);
+    // this.log(() => [processLog, ...styles, ...(!options.empty ? [options] : [])]);
 
     // inner loop start-end log
     const workflowCycleData = this.getWorkflowCycleData(true);

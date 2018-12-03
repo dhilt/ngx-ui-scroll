@@ -1,5 +1,5 @@
 import { Direction } from '../src/component/interfaces';
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, MakeTestConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter } from './miscellaneous/itemsCounter';
 
@@ -219,11 +219,16 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
   });
 };
 
+const _makeTest = (data: MakeTestConfig) => makeTest({
+  ...data,
+  meta: `count: ${data.config.custom.count}`
+});
+
 describe('Basic Scroll Spec', () => {
 
   describe('Single max fwd scroll event', () =>
     configList.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process 1 forward max scroll',
         it: shouldScroll(config)
@@ -233,7 +238,7 @@ describe('Basic Scroll Spec', () => {
 
   describe('Single max bwd scroll event', () =>
     singleBackwardMaxScrollConfigList.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process 1 backward max scroll',
         it: shouldScroll(config)
@@ -243,7 +248,7 @@ describe('Basic Scroll Spec', () => {
 
   describe('Mass max fwd scroll events', () =>
     massForwardScrollsConfigList.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process some forward scrolls',
         it: shouldScroll(config)
@@ -253,7 +258,7 @@ describe('Basic Scroll Spec', () => {
 
   describe('Mass max bwd scroll events', () =>
     massBackwardScrollsConfigList.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process some backward scrolls',
         it: shouldScroll(config)
@@ -263,7 +268,7 @@ describe('Basic Scroll Spec', () => {
 
   describe('Bouncing max two-directional scroll events (fwd started)', () =>
     massBouncingScrollsConfigList_fwd.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process some bouncing scrolls',
         it: shouldScroll(config)
@@ -273,7 +278,7 @@ describe('Basic Scroll Spec', () => {
 
   describe('Bouncing max two-directional scroll events (bwd started)', () =>
     massBouncingScrollsConfigList_bwd.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process some bouncing scrolls',
         it: shouldScroll(config)
@@ -283,7 +288,7 @@ describe('Basic Scroll Spec', () => {
 
   describe('Mass max two-directional scroll events (fwd started)', () =>
     massTwoDirectionalScrollsConfigList_fwd.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process some two-directional scrolls',
         it: shouldScroll(config)
@@ -293,7 +298,7 @@ describe('Basic Scroll Spec', () => {
 
   describe('Mass max two-directional scroll events (bwd started)', () =>
     massTwoDirectionalScrollsConfigList_bwd.forEach(config =>
-      makeTest({
+      _makeTest({
         config,
         title: 'should process some two-directional scrolls',
         it: shouldScroll(config)

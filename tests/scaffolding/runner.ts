@@ -17,14 +17,15 @@ export interface TestBedConfig {
   expected?: any;
 }
 
-interface MakeTestConfig {
+export interface MakeTestConfig {
   title: string;
+  meta?: string;
   config: TestBedConfig;
   it: Function;
-  async?: boolean;
 }
 
-const generateMetaTitle = (config: TestBedConfig): string => {
+const generateMetaTitle = (data: MakeTestConfig): string => {
+  const { config } = data;
   const result = [];
   if (config.templateSettings && config.templateSettings.viewportHeight) {
     result.push(`vp height = ${config.templateSettings.viewportHeight}`);
@@ -53,11 +54,8 @@ const generateMetaTitle = (config: TestBedConfig): string => {
       result.push(`ENTIRE WINDOW`);
     }
   }
-  if (config.custom) {
-    const { count } = config.custom;
-    if (count) {
-      result.push(`count = ${count}`);
-    }
+  if (data.meta) {
+    result.push(data.meta);
   }
   let title = result.join(', ');
   title = title ? '⤷ ' + title : '';
@@ -65,7 +63,7 @@ const generateMetaTitle = (config: TestBedConfig): string => {
 };
 
 export const makeTest = (data: MakeTestConfig) => {
-  describe(generateMetaTitle(data.config), () => {
+  describe(generateMetaTitle(data), () => {
     let _it, timeout = 2000;
     if (data.config) {
       let misc: Misc;

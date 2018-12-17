@@ -163,8 +163,8 @@ export class Buffer {
     return item ? item.size : this.averageSize;
   }
 
-  checkAverageSize() {
-    this.cache.recalculateAverageSize();
+  checkAverageSize(): boolean {
+    return this.cache.recalculateAverageSize();
   }
 
   getIndexToPrepend(): number {

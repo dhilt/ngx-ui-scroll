@@ -5,6 +5,12 @@ export default class Render {
 
   static run(scroller: Scroller) {
     scroller.logger.stat('before new items render');
+    const { fetch } = scroller.state;
+    fetch.items.forEach(item => {
+      if (item.$index < fetch.minIndex) {
+        fetch.negativeSizeBeforeRender += scroller.buffer.getSizeByIndex(item.$index);
+      }
+    });
     scroller.innerLoopSubscriptions.push(
       scroller.bindData().subscribe(() => {
         if (Render.processElements(scroller)) {
@@ -30,6 +36,7 @@ export default class Render {
     const scrollBeforeRender = scroller.settings.windowViewport ? scroller.viewport.scrollPosition : 0;
     state.sizeBeforeRender = viewport.getScrollableSize();
     state.fwdPaddingBeforeRender = viewport.paddings.forward.size;
+    state.bwdPaddingBeforeRender = viewport.paddings.backward.size;
     for (let j = 0; j < itemsLength; j++) {
       const item = items[j];
       const element = viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);
@@ -46,7 +53,8 @@ export default class Render {
         fetch.negativeSize += item.size;
       }
     }
-    buffer.checkAverageSize();
+    fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
+    state.sizeAfterRender = viewport.getScrollableSize();
     if (scroller.settings.windowViewport && fetch.isPrepend) {
       Render.processWindowScrollBackJump(scroller, scrollBeforeRender);
     }
@@ -60,7 +68,7 @@ export default class Render {
     // then this position will be updated silently in case of entire window scrollable
     // so we need to remember the delta and to update scroll position manually right after it is changed silently
     const inc = scrollBeforeRender >= viewport.paddings.backward.size ? 1 : -1;
-    const delta = inc * Math.abs(viewport.getScrollableSize() - state.sizeBeforeRender);
+    const delta = inc * Math.abs(state.sizeAfterRender - state.sizeBeforeRender);
     const positionToUpdate = scrollBeforeRender - delta;
     if (delta && positionToUpdate > 0) {
       window.positionToUpdate = positionToUpdate;

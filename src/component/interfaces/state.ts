@@ -57,7 +57,9 @@ export interface State {
   preFetchPosition: number;
   preAdjustPosition: number;
   sizeBeforeRender: number;
+  sizeAfterRender: number;
   fwdPaddingBeforeRender: number;
+  bwdPaddingBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: ScrollState;

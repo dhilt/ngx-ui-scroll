@@ -1,0 +1,31 @@
+<app-demo
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      All the datasources listed above are valid. The first version
+      (<em>datasourceCallback</em>) introduces simplest callback-based signature
+      when we need to pass third function argument and call it explicitly
+      with the items array argument.
+      We assume that <em>this.getData(index, count)</em> returns
+      an appropriate part of the data set we want to virtualize, which is
+      an array of <em>count</em> items started from <em>index</em> position.
+    </p>
+    <p>
+      <em>datasourcePromise</em> and <em>datasourcePromise2</em> introduce promise-based
+      signature when an object of <em>Promise</em> type needs to be returned.
+      Resolving this promise is our responsibility, and we assume that
+      <em>this.getDataPromise</em> method resolves necessary part of the data set
+      based on <em>index</em> and <em>count</em> parameters.
+    </p>
+    <p>
+      <em>datasourceObservable</em> and <em>datasourceObservable2</em> introduce observable-based
+      signature when an object of <em>Observable</em> type needs to be returned.
+      Similar to promise case we need to be sure that the <em>next</em> method
+      is being called in appropriate time, and we assume that
+      <em>this.getDataObservable</em> method that delivers necessary part of the data set
+      based on <em>index</em> and <em>count</em> parameters.
+    </p>
+  </div>
+</app-demo>

@@ -1,0 +1,53 @@
+<div>
+  <input [(ngModel)]="datasourceDelay" style="width: 50px"> -
+  <small>datasource delay</small>
+  <br>
+  <input [(ngModel)]="reloadIndex" style="width: 50px"> -
+  <small>reload index</small>
+  <br>
+  <button (click)="doReload()">Reload</button>
+  <button (click)="doLog()">Show log</button>
+  <br>
+  <button (click)="doScrollHome()">Up</button>
+  <button (click)="doScrollEnd()">Down</button>
+  <button (click)="doScrollSome()">Some</button>
+  <br>
+  <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
+  <br>
+  <small>isLoading:
+    {{datasource.adapter.isLoading}}
+    ({{(datasource.adapter.isLoading$ | async)}})
+  </small>
+  <br>
+  <small>first visible:
+    {{datasource.adapter.firstVisible.$index}}
+    ({{(datasource.adapter.firstVisible$ | async)?.$index}})
+  </small>
+  <br>
+  <small>last visible:
+    {{datasource.adapter.lastVisible.$index}}
+    ({{(datasource.adapter.lastVisible$ | async)?.$index}})
+  </small>
+  <br>
+  <small>total:
+    {{datasource.adapter.itemsCount}},
+    visible:
+    {{getVisibleItemsCount()}}
+  </small>
+  <br><br>
+</div>
+
+<div class="viewport" style="height: 600px" id="my-viewport">
+  <div
+    *uiScroll="let item of datasource"
+    (click)="doToggleItem(item)"
+    [style.height]="item.height + 'px'"
+  >
+    <app-samples-test-inner>
+      {{item.text}}
+      <span [style.color]="item.color">
+        {{item.isSelected ? '********' : ''}}
+      </span>
+    </app-samples-test-inner>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { async } from '@angular/core/testing';
 
 import { Settings, Direction } from '../src/component/interfaces';
-import { defaultSettings } from '../src/component/classes/settings';
+import { defaultSettings, minSettings } from '../src/component/classes/settings';
 
 import { configureTestBed } from './scaffolding/testBed';
 import { defaultDatasourceClass } from './scaffolding/datasources';
@@ -10,10 +10,10 @@ import { Misc } from './miscellaneous/misc';
 import { makeTest } from './scaffolding/runner';
 
 describe('Common Spec', () => {
-  let misc: Misc;
 
   describe('Initialization', () => {
 
+    let misc: Misc;
     let reconfigure = true;
 
     beforeEach(async(() => {
@@ -50,13 +50,14 @@ describe('Common Spec', () => {
 
     const _settings1 = { startIndex: 90 };
     const _settings2 = { bufferSize: 15 };
-    const _settings3 = { startIndex: 99, bufferSize: 11 };
+    const _settings3 = { infinite: true };
+    const _settings4 = { startIndex: 99, bufferSize: 11, infinite: true };
 
-    const checkSettings = (_settings) => (misc) => (done) => {
-      expect(misc.workflow.settings).toEqual(jasmine.any(Object));
+    const checkSettings = (_settings: any) => (misc: Misc) => (done: Function) => {
+      expect(misc.scroller.settings).toEqual(jasmine.any(Object));
       const mergedSettings = { ...defaultSettings, ..._settings };
       Object.keys(defaultSettings).forEach(key => {
-        expect(misc.workflow.settings[key]).toEqual(mergedSettings[key]);
+        expect((<any>misc.scroller.settings)[key]).toEqual((<any>mergedSettings)[key]);
       });
       done();
     };
@@ -75,14 +76,92 @@ describe('Common Spec', () => {
 
     makeTest({
       config: { datasourceSettings: _settings3 },
-      title: 'should override startIndex and bufferSize',
+      title: 'should override infinite',
       it: checkSettings(_settings3)
     });
 
     makeTest({
+      config: { datasourceSettings: _settings4 },
+      title: 'should override startIndex, bufferSize, infinite',
+      it: checkSettings(_settings4)
+    });
+
+    makeTest({
       config: { datasourceName: 'default-bad-settings' },
-      title: 'should fallback to default',
+      title: 'should fallback to the defaults',
       it: checkSettings({})
+    });
+
+    makeTest({
+      config: { datasourceSettings: { startIndex: false } },
+      title: 'should fallback startIndex to the default',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.startIndex).toEqual(defaultSettings.startIndex);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { datasourceSettings: { bufferSize: { weird: true } } },
+      title: 'should fallback bufferSize to the default',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.bufferSize).toEqual(defaultSettings.bufferSize);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { datasourceSettings: { bufferSize: 5.5 } },
+      title: 'should fallback bufferSize to the default',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.bufferSize).toEqual(defaultSettings.bufferSize);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { datasourceSettings: { bufferSize: -1 } },
+      title: 'should fallback bufferSize to the minimum',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.bufferSize).toEqual(minSettings.bufferSize);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { datasourceSettings: { padding: 'something' } },
+      title: 'should fallback padding to the default',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.padding).toEqual(defaultSettings.padding);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { datasourceSettings: { padding: -0.1 } },
+      title: 'should fallback padding to the minimum',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.padding).toEqual(minSettings.padding);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { datasourceSettings: { infinite: 'something' } },
+      title: 'should fallback infinite to the default',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.infinite).toEqual(defaultSettings.infinite);
+        done();
+      }
+    });
+
+    makeTest({
+      config: { datasourceSettings: { horizontal: null } },
+      title: 'should fallback horizontal to the default',
+      it: (misc: Misc) => (done: Function) => {
+        expect(misc.scroller.settings.horizontal).toEqual(defaultSettings.horizontal);
+        done();
+      }
     });
 
   });
@@ -94,10 +173,10 @@ describe('Bad datasource', () => {
   makeTest({
     config: {
       datasourceClass: 'invalid',
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (datasource is not a constructor)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('datasource is not a constructor');
       done();
     }
@@ -107,14 +186,15 @@ describe('Bad datasource', () => {
     config: {
       datasourceClass: class {
         settings: Settings;
+
         constructor() {
-          this.settings = { };
+          this.settings = {};
         }
       },
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (no get)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('Datasource get method is not implemented');
       done();
     }
@@ -125,15 +205,16 @@ describe('Bad datasource', () => {
       datasourceClass: class {
         settings: Settings;
         get: boolean;
+
         constructor() {
           this.settings = {};
           this.get = true;
         }
       },
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (get is not a function)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('Datasource get is not a function');
       done();
     }
@@ -143,15 +224,19 @@ describe('Bad datasource', () => {
     config: {
       datasourceClass: class {
         settings: Settings;
+
         constructor() {
           this.settings = {};
         }
-        get(offset) {};
+
+        get(offset: number) {
+          return ++offset;
+        }
       },
-      throw: true
+      toThrow: true
     },
     title: 'should throw exception (get has less than 2 arguments)',
-    it: (error) => (done) => {
+    it: (error: any) => (done: Function) => {
       expect(error).toBe('Datasource get method invalid signature');
       done();
     }

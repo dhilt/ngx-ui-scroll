@@ -1,5 +1,7 @@
 * {
   font: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 html {
@@ -12,4 +14,17 @@ html {
   overflow-anchor: none;
   overflow-y: auto;
   display: block;
+}
+
+.viewport-horizontal {
+  width: 200px;
+  height: 100px;
+  overflow-anchor: none;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.viewport-horizontal div {
+  display: inline-block;
 }

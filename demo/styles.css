@@ -1,8 +1,295 @@
-html {
-  line-height: 20px;
+body {
+  line-height: 1.4;
 }
 
-body {
+h1 {
+  font-size: 42px;
+  letter-spacing: -.015em;
+  margin: 3rem 0 0 0;
+}
+
+.no-layout h1 {
   margin: 0;
   padding: 0;
+}
+
+.no-layout .header {
+  margin-bottom: 80px;
+}
+
+h3 {
+  cursor: pointer;
+  border-bottom: 1px solid #efefef;
+  padding-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+h3 a {
+  float: right;
+  color: rgba(0,0,0,.3);
+  transition: color 300ms ease-in-out;
+  position: relative;
+  top: 3px;
+}
+
+h3 a:hover {
+  text-decoration: none;
+  color: #007bff;
+}
+
+p, li {
+  font-size: 21px;
+  line-height: 1.58;
+  letter-spacing: -.003em;
+}
+
+p {
+  margin-top: 29px;
+}
+
+em {
+  font-family: Menlo,Monaco,"Courier New",Courier,monospace;
+  font-style: normal;
+  font-size: 16px;
+  background: rgba(0,0,0,.05);
+  padding: 3px 4px;
+  margin: 0 2px;
+  border-radius: 2px;
+}
+
+input {
+  height: 24px;
+  padding: 2px;
+  font-size: 12px;
+  line-height: 18px;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 2px;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+button {
+  background: rgba(0,0,0,0.15);
+  border: 0;
+  height: 24px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 300ms ease-in-out;
+}
+
+button:hover {
+  background: rgba(0,0,0,0.25);
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 740px;
+  }
+}
+
+.main-menu {
+  position: absolute;
+  width: 200px;
+  top: -6px;
+  padding-left: 15px;
+}
+
+@media (min-width: 1200px) {
+  .main-menu {
+    position: static;
+    width: auto;
+    top: auto;
+    margin-right: auto;
+    margin-top: -10px;
+  }
+}
+
+.main-menu .active.active {
+  border-bottom: 1px solid;
+}
+
+.navbar {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.navbar-brand {
+  font-size: 2rem;
+}
+
+.navbar-link {
+  margin-right: 0.5rem;
+}
+
+.navbar .container {
+  height: 4rem;
+  color: #fff;
+  padding: 0;
+}
+
+.navbar .container a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar .container .copyrights {
+  color: #aaa;
+  font-size: small;
+  position: absolute;
+  right: 80px;
+}
+@media (max-width: 480px) {
+  .navbar .container .copyrights {
+    top: 90px;
+    right: 15px;
+  }
+}
+
+.navbar .container .copyrights a {
+  color: #aaa;
+}
+
+.navbar .container .copyrights a:hover {
+  color: #fff;
+}
+
+.sources {
+  margin-top: 29px;
+}
+
+@media all and (max-width: 1000px) {
+  .demo-examples {
+    flex-direction: column;
+  }
+}
+
+.demo .actions {
+  margin-bottom: 20px;
+}
+
+.demo .work {
+  margin-left: 20px;
+}
+
+.demo .work .viewport-wrapper {
+  float: left;
+  margin-right: 20px;
+}
+
+.demo .work .viewport-wrapper .viewport-label {
+  margin-top: -15px;
+  margin-bottom: 10px;
+  color: #777777;
+  font-style: italic;
+}
+
+.demo .work .viewport, .viewport {
+  width: 150px;
+  height: 250px;
+  overflow-anchor: none;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.demo .work .viewport.horizontal {
+  width: 250px;
+  height: 100px;
+  overflow-anchor: none;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  margin-top: 30px;
+}
+
+.demo .work .viewport.horizontal div {
+  display: inline-block;
+}
+
+.demo .work .viewport ui-scroll > div:nth-child(odd) {
+  background-color: #e6e6e6;
+}
+
+.demo .work .item {
+  font-weight: bolder;
+  height: 25px;
+}
+
+.demo .work .item.even {
+  background-color: #f2f2f2;
+}
+
+.demo .work .item.horizontal {
+  border: 1px solid #aaa;
+  height: 100px;
+  padding: 0 5px;
+  font-weight: bolder;
+}
+
+.demo .work .log {
+  height: 250px;
+  width: 250px;
+  font-size: smaller;
+  line-height: 20px;
+  float: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.demo .work .datasource {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.demo .work .log pre {
+  margin-bottom: 0;
+}
+
+.demo .work .log.horizontal {
+  height: 100px;
+}
+
+.demo .work .log .elements {
+  margin-bottom: 2px;
+}
+
+.demo .work .log .datasource pre {
+  padding: 0 20px !important;
+  width: 100%;
+  background: #f2f2f2;
+}
+
+.pre-wrapper {
+  margin-top: 5px;
+  padding: 20px 0;
+  border-radius: 2px;
+  background: #f2f2f2;
+  display: flex;
+  width: auto;
+}
+
+.over {
+  position: fixed;
+  left: 150px;
+}
+
+/* code styles */
+
+pre.prettyprint {
+  font-size: 87.5%;
+  line-height: 125%;
+  border: 0;
+}
+pre .kwd { font-weight: bold; color: #204a87; }
+pre .tag { font-weight: bold; color: #204a87; }
+pre .atn { font-weight: bold }
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+li.L1,li.L3,li.L5,li.L7,li.L9 { }
+@media print {
+  pre .kwd, code .kwd { font-weight: bold; color: #204a87; }
+  pre .com, code .com { font-style: italic }
+  pre .typ, code .typ { font-weight: bold }
+  pre .tag, code .tag { font-weight: bold; color: #204a87; }
 }

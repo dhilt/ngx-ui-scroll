@@ -1,0 +1,30 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
+    <br>
+    The value of isLoading counter has been changed for {{isLoadingCounter}} times.
+    {{datasource.adapter.itemsCount}}
+  </div>
+  <div description>
+    <p>
+      The first <em>Adapter</em> read-only property we want to use is called <em>isLoading</em>.
+      It is a boolean value indicating whether there are any pending processes running by the <em>uiScroll</em>.
+      So when <em>datasource.adapter.isLoading</em> is <em>true</em>, it means that
+      the <em>uiScroll</em> is working right now and the viewport might be updated soon.
+      125ms delay was added to the <em>Datasource.get</em> implementation in this sample.
+    </p>
+    <p>
+      In addition to read-only scalar <em>isLoading</em> property there is also
+      <em>isLoading$</em> property which is Observable. BehaviorSubject, to be exact.
+      In this demo we have a subscription and <em>isLoadingCounter</em>
+      incrementing each time the <em>isLoading</em> becomes <em>false</em>.
+      We see that the initial value of this counter (before any scrolling) is 2:
+      first for <em>isLoading$</em> BehaviorSubject <em>false</em> initialization and
+      second for 3 initial fetches we see at <em>Datasource.get</em> log initially.
+    </p>
+  </div>
+</app-demo>

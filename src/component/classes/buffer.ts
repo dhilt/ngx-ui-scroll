@@ -1,36 +1,55 @@
+import { BehaviorSubject } from 'rxjs';
+
 import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
-export class Index {
-  forward: number = null;
-  backward: number = null;
-}
+import { Settings } from './settings';
+import { Logger } from './logger';
 
 export class Buffer {
 
   private _items: Array<Item>;
-  public $items = new BehaviorSubject(null);
+  $items: BehaviorSubject<Array<Item>>;
 
-  bof: boolean;
-  eof: boolean;
-  lastIndex: Index;
+  pristine: boolean;
   cache: Cache;
+  minIndexUser: number;
+  maxIndexUser: number;
+  absMinIndex: number;
+  absMaxIndex: number;
 
-  constructor() {
+  private startIndex: number;
+  readonly minBufferSize: number;
+  readonly logger: Logger;
+
+  constructor(settings: Settings, startIndex: number, logger: Logger) {
+    this.$items = new BehaviorSubject<Array<Item>>([]);
+    this.cache = new Cache(settings.itemSize, logger);
+    this.minIndexUser = settings.minIndex;
+    this.maxIndexUser = settings.maxIndex;
+    this.reset();
+    this.startIndex = startIndex;
+    this.minBufferSize = settings.bufferSize;
+    this.logger = logger;
+  }
+
+  reset(reload?: boolean, startIndex?: number) {
+    if (reload) {
+      this.items.forEach(item => item.hide());
+    }
     this.items = [];
-    this.bof = false;
-    this.eof = false;
-    this.lastIndex = new Index();
-    this.cache = new Cache();
+    this.pristine = true;
+    this.cache.reset();
+    this.absMinIndex = this.minIndexUser;
+    this.absMaxIndex = this.maxIndexUser;
+    if (typeof startIndex !== 'undefined') {
+      this.startIndex = startIndex;
+    }
   }
 
   set items(items: Array<Item>) {
+    this.pristine = false;
     this._items = items;
-    if (items.length) {
-      this.setLastIndices();
-    }
     this.$items.next(items);
   }
 
@@ -38,9 +57,51 @@ export class Buffer {
     return this._items;
   }
 
-  setLastIndices() {
-    this.lastIndex[Direction.backward] = this.items[0].$index;
-    this.lastIndex[Direction.forward] = this.items[this.items.length - 1].$index;
+  get size(): number {
+    return this._items.length;
+  }
+
+  get averageSize(): number {
+    return this.cache.averageSize;
+  }
+
+  get hasItemSize(): boolean {
+    return this.averageSize !== undefined;
+  }
+
+  get minIndex(): number {
+    return isFinite(this.cache.minIndex) ? this.cache.minIndex : this.startIndex;
+  }
+
+  get maxIndex(): number {
+    return isFinite(this.cache.maxIndex) ? this.cache.maxIndex : this.startIndex;
+  }
+
+  get bof(): boolean {
+    return this.items.length ? (this.items[0].$index === this.absMinIndex) :
+      isFinite(this.absMinIndex);
+  }
+
+  get eof(): boolean {
+    return this.items.length ? (this.items[this.items.length - 1].$index === this.absMaxIndex) :
+      isFinite(this.absMaxIndex);
+  }
+
+  get($index: number): Item | undefined {
+    return this.items.find((item: Item) => item.$index === $index);
+  }
+
+  setItems(items: Array<Item>): boolean {
+    if (!this.items.length) {
+      this.items = items;
+    } else if (this.items[0].$index > items[items.length - 1].$index) {
+      this.items = [...items, ...this.items];
+    } else if (items[0].$index > this.items[this.items.length - 1].$index) {
+      this.items = [...this.items, ...items];
+    } else {
+      return false;
+    }
+    return true;
   }
 
   getFirstVisibleItemIndex(): number {
@@ -62,28 +123,36 @@ export class Buffer {
     return -1;
   }
 
-  getEdgeVisibleItemIndex(direction: Direction, opposite?: boolean): number {
-    return direction === (!opposite ? Direction.forward : Direction.backward) ?
-      this.getLastVisibleItemIndex() : this.getFirstVisibleItemIndex();
-  }
-
-  getFirstVisibleItem(): Item {
+  getFirstVisibleItem(): Item | undefined {
     const index = this.getFirstVisibleItemIndex();
     if (index >= 0) {
       return this.items[index];
     }
   }
 
-  getLastVisibleItem(): Item {
+  getLastVisibleItem(): Item | undefined {
     const index = this.getLastVisibleItemIndex();
     if (index >= 0) {
       return this.items[index];
     }
   }
 
-  getEdgeVisibleItem(direction: Direction, opposite?: boolean): Item {
+  getEdgeVisibleItem(direction: Direction, opposite?: boolean): Item | undefined {
     return direction === (!opposite ? Direction.forward : Direction.backward) ?
       this.getLastVisibleItem() : this.getFirstVisibleItem();
+  }
+
+  getVisibleItemsCount(): number {
+    return this.items.reduce((acc: number, item: Item) => acc + (item.invisible ? 0 : 1), 0);
+  }
+
+  getSizeByIndex(index: number): number {
+    const item = this.cache.get(index);
+    return item ? item.size : this.averageSize;
+  }
+
+  checkAverageSize() {
+    this.cache.recalculateAverageSize();
   }
 
 }

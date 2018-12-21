@@ -1,55 +1,64 @@
-import { async } from '@angular/core/testing';
-
-import { Settings } from '../../src/component/interfaces';
+import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources';
 
-interface TestBedConfig {
+export interface TestBedConfig {
   datasourceClass?: any;
   datasourceName?: string;
-  datasourceSettings?: Settings;
-  templateSettings?: TemplateSettings;
+  datasourceSettings?: Settings | any;
+  datasourceDevSettings?: DevSettings;
+  templateSettings?: TemplateSettings | any;
+  toThrow?: boolean;
   custom?: any;
-  throw?: boolean;
+  timeout?: number;
+  expected?: any;
 }
 
 interface MakeTestConfig {
   title: string;
-  config?: TestBedConfig;
-  it?: any;
+  config: TestBedConfig;
+  it: Function;
   async?: boolean;
 }
 
-const generateMetaTitle = (config): string => {
+const generateMetaTitle = (config: TestBedConfig): string => {
   const result = [];
-
   if (config.templateSettings && config.templateSettings.viewportHeight) {
-    result.push(`viewport height = ${config.templateSettings.viewportHeight}`);
+    result.push(`vp height = ${config.templateSettings.viewportHeight}`);
   }
-
+  if (config.templateSettings && config.templateSettings.viewportWidth) {
+    result.push(`vp width = ${config.templateSettings.viewportWidth}`);
+  }
   if (config.datasourceSettings) {
-    const { startIndex, bufferSize, padding } = config.datasourceSettings;
-    if (startIndex) {
-      result.push(`start index = ${startIndex}`);
-    }
-    if (bufferSize) {
-      result.push(`buffer size = ${bufferSize}`);
-    }
+    const { startIndex, bufferSize, padding, itemSize, horizontal, windowViewport } = config.datasourceSettings;
     if (padding) {
       result.push(`padding = ${padding}`);
     }
+    if (itemSize) {
+      result.push(`itemSize = ${itemSize}`);
+    }
+    if (startIndex) {
+      result.push(`start = ${startIndex}`);
+    }
+    if (bufferSize) {
+      result.push(`buffer = ${bufferSize}`);
+    }
+    if (horizontal) {
+      result.push(`HORIZONTAL`);
+    }
+    if (windowViewport) {
+      result.push(`ENTIRE WINDOW`);
+    }
   }
-
   if (config.custom) {
     const { count } = config.custom;
     if (count) {
       result.push(`count = ${count}`);
     }
   }
-
   let title = result.join(', ');
   title = title ? '⤷ ' + title : '';
   return title;
@@ -57,28 +66,37 @@ const generateMetaTitle = (config): string => {
 
 export const makeTest = (data: MakeTestConfig) => {
   describe(generateMetaTitle(data.config), () => {
+    let _it, timeout = 2000;
     if (data.config) {
       let misc: Misc;
-      let error;
-      beforeEach(async(() => {
-        const datasourceClass = data.config.datasourceClass ? data.config.datasourceClass :
-          generateDatasourceClass(data.config.datasourceName || 'default', data.config.datasourceSettings);
+      let error: any;
+      beforeEach(() => {
+        const datasourceClass = data.config.datasourceClass ?
+          data.config.datasourceClass :
+          generateDatasourceClass(
+            data.config.datasourceName || 'default',
+            data.config.datasourceSettings,
+            data.config.datasourceDevSettings
+          );
         const templateData = generateTemplate(data.config.templateSettings);
-        if (data.config.throw) {
-          try {
-            const fixture = configureTestBed(datasourceClass, templateData.template);
-            misc = new Misc(fixture);
-          } catch (_error) {
-            error = _error && _error.message;
-          }
-        } else {
+        try {
           const fixture = configureTestBed(datasourceClass, templateData.template);
+          fixture.componentInstance.templateSettings = templateData.settings;
           misc = new Misc(fixture);
+        } catch (_error) {
+          error = _error;
         }
-      }));
-      it(data.title, (done) => data.it(data.config.throw ? error : misc)(done));
+      });
+      _it = (done: Function) => {
+        if (!data.config.toThrow && error) {
+          throw error;
+        }
+        return data.it(data.config.toThrow ? error.message : misc)(done);
+      };
+      timeout = data.config.timeout || timeout;
     } else {
-      it(data.title, data.it);
+      _it = data.it;
     }
+    (<Function>it)(data.title, _it, timeout);
   });
 };

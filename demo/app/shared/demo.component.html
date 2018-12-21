@@ -1,0 +1,75 @@
+<div class="demo">
+
+  <h3 id="{{context.titleId}}">
+    {{context.title}}
+    <a href="#/{{context.scope}}#{{context.titleId}}">#</a>
+  </h3>
+
+  <div class="actions">
+    <ng-content select="[actions]"></ng-content>
+  </div>
+
+  <div class="work" *ngIf="!context.noWorkView">
+    <div class="viewport-wrapper">
+      <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId}}">
+        <div *uiScroll="let item of datasource">
+          <div
+            class="item {{context.addClass || ''}}"
+            [style.height]="item.height !== undefined ? item.height + 'px' : null"
+          >{{item.text}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="log" *ngIf="init">
+      <ng-container
+        *ngIf="!context.logViewOnly; then allView; else logView">
+      </ng-container>
+      <ng-template #allView>
+        <div class="elements {{context.addClass || ''}}">
+          Viewport scrollable size:
+          <span>{{viewport(context.viewportId)}}</span>
+        </div>
+        <div class="elements {{context.addClass || ''}}">
+          DOM elements count:
+          <span>{{elements(context.viewportId)}}</span>
+        </div>
+        <div class="datasource {{context.addClass || ''}}">
+          Datasource.get log
+          <div class="pre-wrapper">
+            <pre>{{context.log}}</pre>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #logView>
+        <div class="datasource {{context.addClass || ''}}">
+          Datasource.get log
+          <div class="pre-wrapper">
+            <pre>{{context.log}}</pre>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+    <div class="clearfix mb-3"></div>
+  </div>
+
+  <div *ngIf="sources && sources.length" class="sources">
+    <tabset *ngIf="sources.length > 1">
+      <tab
+        *ngFor="let tab of sources; let index = index"
+        heading="{{sources[index].name}}"
+      >
+        <pre class="prettyprint">{{sources[index].text}}</pre>
+      </tab>
+    </tabset>
+    <pre
+      *ngIf="sources.length === 1"
+      class="prettyprint"
+    >{{sources[0].text}}</pre>
+  </div>
+
+  <div class="description">
+    <ng-content select="[description]"></ng-content>
+  </div>
+
+</div>

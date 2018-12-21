@@ -1,0 +1,53 @@
+<div class="demo">
+
+  <h3 id="{{context.titleId}}">
+    {{context.title}}
+    <a href="#/{{context.scope}}#{{context.titleId}}">#</a>
+  </h3>
+
+  <div class="work">
+    <div class="viewport-wrapper">
+      <div class="viewport-label">common &darr;</div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasourceCommon">
+          <div class="item">{{item.text}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="viewport-wrapper">
+      <div class="viewport-label">inverted &uarr;</div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasourceInverted">
+          <div class="item">{{item.text}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix mb-3"></div>
+  </div>
+
+  <pre class="prettyprint">{{sources[0].text}}</pre>
+
+  <p>
+    <em>Datasource.get</em> method implementation could be quite complex and flexible.
+    This piece demonstrates how the data set we want to virtualize could be
+    processed to provide "inverted" viewport logic when
+    new positive items are being retrieved by scrolling up.
+  </p>
+  <p>
+    <em>getData</em> method implements positive limited datasource
+    as it was done in the previous sample with only change: left data set boundary
+    is parametrised by <em>MIN</em> property.
+    So <em>datasourceCommon.get</em> just passes <em>getData</em> result
+    to its <em>success</em> callback.
+  </p>
+  <p>
+    But <em>datasourceInverted.get</em> does the simple math:
+    it inverts and shifts the <em>index</em> and reverses the result array.
+    So the <em>uiScroll</em> gets some specifically processed portion of our data set
+    that reflects our needs. By settings <em>startIndex</em> value to -10 in this case
+    we are telling that we want 10 items to be fetched in rendered
+    in forward direction initially. And it does not depend on <em>MIN</em>,
+    it does depend on the viewport and single item size: 10 items are visible.
+  </p>
+</div>
+

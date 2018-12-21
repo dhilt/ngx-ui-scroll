@@ -14,9 +14,9 @@ export default {
       sourceMap: true,
       banner: {
         file: path.join(__dirname, 'license-banner.txt'),
-        encoding: 'utf-8',
+        encoding: 'utf-8'
       }
     })
   ],
-  onwarn: () => { return }
-}
+  onwarn: () => null
+};

@@ -1,67 +1,61 @@
 import { Item } from './item';
-import { Direction } from '../interfaces/direction';
+import { Direction } from '../interfaces/index';
 
-export class FetchByDirection {
-  shouldFetch: boolean;
-  startIndex: number;
-  private _newItemsData: Array<any>;
+export class FetchModel {
+  private _newItemsData: Array<any> | null;
   items: Array<Item>;
-  count: number;
+  firstIndexBuffer: number | null;
+  lastIndexBuffer: number | null;
+  firstIndex: number | null;
+  lastIndex: number | null;
+  hasAnotherPack: boolean;
+  callCount: number;
+  minIndex: number;
+  negativeSize: number;
+  averageItemSize: number;
+  direction: Direction | null;
+  isPrepend: boolean;
 
   constructor() {
-    this.count = 0;
+    this.callCount = 0;
     this.reset();
   }
 
   reset() {
-    const count = this.count;
-    this.shouldFetch = false;
-    this.startIndex = null;
     this._newItemsData = null;
-    this.items = null;
-    this.count = count;
+    this.items = [];
+    this.firstIndexBuffer = null;
+    this.lastIndexBuffer = null;
+    this.firstIndex = null;
+    this.lastIndex = null;
+    this.hasAnotherPack = false;
+    this.negativeSize = 0;
+    this.direction = null;
+    this.isPrepend = false;
   }
 
-  set newItemsData(items: Array<Item>) {
-    this._newItemsData = items;
-    this.count++;
-  }
-
-  get newItemsData(): Array<Item> {
+  get newItemsData(): Array<Item> | null {
     return this._newItemsData;
   }
-}
 
-export class FetchModel {
-  forward: FetchByDirection;
-  backward: FetchByDirection;
-
-  constructor() {
-    this.forward = new FetchByDirection();
-    this.backward = new FetchByDirection();
-  }
-
-  reset() {
-    this[Direction.forward].reset();
-    this[Direction.backward].reset();
-  }
-
-  get count(): number {
-    return this[Direction.backward].count + this[Direction.forward].count;
-  }
-
-  get items(): Array<Item> {
-    return [
-      ...this[Direction.backward].items ? this[Direction.backward].items : [],
-      ...this[Direction.forward].items ? this[Direction.forward].items : [],
-    ];
+  set newItemsData(items: Array<Item> | null) {
+    this._newItemsData = items;
+    this.callCount++;
   }
 
   get shouldFetch(): boolean {
-    return this[Direction.forward].shouldFetch || this[Direction.backward].shouldFetch;
+    return !!this.count;
   }
 
   get hasNewItems(): boolean {
-    return !!(this[Direction.forward].newItemsData || this[Direction.backward].newItemsData);
+    return !!((this._newItemsData && this._newItemsData.length));
+  }
+
+  get index(): number | null {
+    return this.firstIndex;
+  }
+
+  get count(): number {
+    return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
   }
 }

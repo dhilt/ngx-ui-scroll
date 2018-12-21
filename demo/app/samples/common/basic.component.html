@@ -1,0 +1,40 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div description>
+    <p>
+      Speaking of what impact could <em>Settings</em> have on the scroller behaviour,
+      we are going to dig into it's behaviour details before any settings applied.
+      And this is the very basic example where settings are not defined.
+    </p>
+    <p>
+      Let's first investigate the sample's log.
+      The visible part of the viewport contains 10 items in accordance with CSS:
+      10 items of 25px each are equal to 250px of the viewport height.
+      <em>Datasource.get</em> log shows us that there were 3 requests
+      of 5, 10 and 5 items on the initial load (before any scrolling).
+      So we have 20 DOM elements initially:
+      15 downward items with positive indexes and 5 upward negative items.
+      20 items give us 500px and this is the initial viewport scrollable size.
+    </p>
+    <p>
+      The viewport scrollable size value can increase only;
+      as we do scroll more and more items are being passed through the <em>Datasource.get</em>.
+      Our <em>Datasource</em> is unlimited,
+      it produces items with indexes from -Infinity to +Infinity.
+      The number of DOM elements in the viewport is not constant,
+      but it fluctuates around the initial value during scrolling (20-31).
+      The core concept of the virtualization is to keep as small number of real items as needed
+      while the scrollable size of the viewport can grow.
+    </p>
+    <p>
+      Why do we have 3 requests initially,
+      why the first one is about only 5 items,
+      why at least 10 items are invisible?
+      This is how the <em>*uiScroll</em> works and further reading should shed more light on the details.
+      And we need to know that the default behaviour could be changed via Settings object.
+    </p>
+  </div>
+</app-demo>

@@ -1,64 +1,101 @@
 import { ElementRef } from '@angular/core';
-import { Padding } from './padding';
-import { Direction } from '../interfaces/direction';
-import { Routines } from '../utils/domRoutines';
+
+import { Direction } from '../interfaces/index';
+import { Paddings } from './paddings';
 import { Settings } from './settings';
-
-export class ViewportPadding {
-  forward: Padding;
-  backward: Padding;
-
-  constructor(element) {
-    this.forward = new Padding(element, Direction.forward);
-    this.backward = new Padding(element, Direction.backward);
-  }
-}
+import { Routines } from './domRoutines';
+import { State } from './state';
+import { Logger } from './logger';
 
 export class Viewport {
 
-  private settings: Settings;
-  private host;
-  scrollable;
-  padding: ViewportPadding;
-  syntheticScrollPosition: number;
+  paddings: Paddings;
+  startDelta: number;
 
-  private lastPosition: number;
+  readonly element: HTMLElement;
+  readonly host: HTMLElement;
+  readonly scrollEventElement: HTMLElement | Document;
+  readonly scrollable: HTMLElement;
+  readonly settings: Settings;
+  readonly routines: Routines;
+  readonly state: State;
+  readonly logger: Logger;
 
-  constructor(elementRef: ElementRef, settings: Settings) {
+  constructor(elementRef: ElementRef, settings: Settings, routines: Routines, state: State, logger: Logger) {
     this.settings = settings;
-    this.host = elementRef.nativeElement;
-    this.scrollable = elementRef.nativeElement.parentElement;
-    this.padding = new ViewportPadding(this.host);
-    this.syntheticScrollPosition = null;
+    this.routines = routines;
+    this.state = state;
+    this.logger = logger;
+    this.element = elementRef.nativeElement;
+
+    if (settings.windowViewport) {
+      this.host = (<Document>this.element.ownerDocument).body;
+      this.scrollEventElement = <Document>(this.element.ownerDocument);
+      this.scrollable = <HTMLElement>this.scrollEventElement.scrollingElement;
+    } else {
+      this.host = <HTMLElement>this.element.parentElement;
+      this.scrollEventElement = this.host;
+      this.scrollable = <HTMLElement>this.element.parentElement;
+    }
+
+    this.paddings = new Paddings(this.element, this.routines, settings);
+
+    if (settings.windowViewport && 'scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
   }
 
-  get children(): HTMLCollection {
-    return this.host.children;
+  reset(scrollPosition: number) {
+    let newPosition = 0;
+    this.paddings.reset(this.getSize(), this.state.startIndex);
+    const negativeSize = this.paddings.backward.size;
+    if (negativeSize) {
+      newPosition = negativeSize;
+      this.state.bwdPaddingAverageSizeItemsCount = negativeSize / this.settings.itemSize;
+    }
+    this.scrollPosition = newPosition;
+    this.state.scrollState.reset();
+    this.state.syntheticScroll.reset(scrollPosition !== newPosition ? newPosition : null);
+    this.startDelta = 0;
+  }
+
+  setPosition(value: number, oldPosition?: number): number {
+    if (oldPosition === undefined) {
+      oldPosition = this.scrollPosition;
+    }
+    if (oldPosition === value) {
+      this.logger.log(() => ['setting scroll position at', value, '[cancelled]']);
+      return value;
+    }
+    this.routines.setScrollPosition(this.scrollable, value);
+    const position = this.scrollPosition;
+    this.logger.log(() => ['setting scroll position at', position]);
+    return position;
   }
 
   get scrollPosition(): number {
-    return Routines.getScrollPosition(this.scrollable);
+    return this.routines.getScrollPosition(this.scrollable);
   }
 
   set scrollPosition(value: number) {
-    Routines.setScrollPosition(this.scrollable, value);
-    this.syntheticScrollPosition = this.scrollPosition;
-  }
-
-  saveScrollPosition() {
-    this.lastPosition = this.scrollPosition;
-  }
-
-  getLastPosition(): number {
-    return this.lastPosition;
+    const oldPosition = this.scrollPosition;
+    const newPosition = this.setPosition(value, oldPosition);
+    const synthState = this.state.syntheticScroll;
+    synthState.time = Number(Date.now());
+    synthState.position = newPosition;
+    synthState.delta = newPosition - oldPosition;
+    if (synthState.positionBefore === null) {
+      // syntheticScroll.positionBefore should be set once per cycle
+      synthState.positionBefore = oldPosition;
+    }
   }
 
   getSize(): number {
-    return Routines.getSize(this.scrollable);
+    return this.routines.getSize(this.host);
   }
 
   getScrollableSize(): number {
-    return Routines.getScrollableSize(this.scrollable);
+    return this.routines.getSize(this.element);
   }
 
   getBufferPadding(): number {
@@ -66,12 +103,15 @@ export class Viewport {
   }
 
   getEdge(direction: Direction, opposite?: boolean): number {
-    return Routines.getEdge(this.scrollable, direction, opposite);
+    return this.routines.getEdge(this.host, direction, opposite);
   }
 
-  getLimit(direction: Direction, opposite?: boolean): number {
-    return this.getEdge(direction, opposite) +
-      (direction === (!opposite ? Direction.forward : Direction.backward) ? 1 : -1) * this.getBufferPadding();
+  getElementEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
+    return this.routines.getEdge(element, direction, opposite);
+  }
+
+  getOffset(): number {
+    return this.routines.getOffset(this.element);
   }
 
 }

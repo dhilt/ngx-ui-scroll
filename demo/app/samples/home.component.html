@@ -1,0 +1,114 @@
+<h1>Angular UI Scroll Demo App</h1>
+
+<p>
+  <em>ngx-ui-scroll</em> is the Angular library for large data sets virtualization.
+  The idea, core principles and terminology are inherited from its AngularJS direct predecessor:
+  <a href="https://github.com/angular-ui/ui-scroll">angular-ui-scroll</a>,
+  a pioneer in the virtual scrolling developing, since 2013.
+  More information of a general nature concerning motivation, infrastructure, features, developing
+  can be found on <a href="https://github.com/dhilt/ngx-ui-scroll">GitHub</a>.
+  This site is dedicated to practical examples of the <em>uiScroll</em> usage.
+</p>
+
+<div class="demo">
+  <h3>Common demo</h3>
+  <div class="work">
+    <div class="viewport-wrapper">
+      <div class="viewport">
+        <div *uiScroll="let item of datasource; let even = even">
+          <div class="item" [class.even]="even">
+            {{item.text}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="log">
+      <div style="line-height: 25px; margin-bottom: 2px;">
+        Version of ngx-ui-scroll: {{datasource.adapter.version}}
+        <br />
+        First visible: #{{datasource.adapter.firstVisible.$index}}
+        <br />
+        Last visible: #{{(datasource.adapter.lastVisible$ | async)?.$index}}
+        <br />
+        Items in DOM: {{datasource.adapter.itemsCount}}
+        <br />
+        Is loading: {{datasource.adapter.isLoading}}
+        <br />
+      </div>
+      <div style="display: flex; align-items: center; margin-bottom: 2px;">
+        Datasource delay (ms):&nbsp;
+        <input [(ngModel)]="delay" type="number" style="width: 84px">
+      </div>
+      <div style="display: flex; align-items: center">
+        Index to reload:&nbsp;
+        <input [(ngModel)]="reloadIndex" type="number" style="width: 60px">&nbsp;
+        <button (click)="doReload()" style="width: 60px">Reload</button>
+      </div>
+
+    </div>
+    <div class="clearfix mb-3"></div>
+  </div>
+
+  <div class="sources">
+    <tabset>
+      <tab heading="{{sources[1].name}}">
+        <pre class="prettyprint lang-html">{{sources[1].text}}</pre>
+      </tab>
+      <tab heading="{{sources[0].name}}">
+        <pre class="prettyprint">{{sources[0].text}}</pre>
+      </tab>
+      <tab heading="{{sources[2].name}}">
+        <pre class="prettyprint">{{sources[2].text}}</pre>
+      </tab>
+    </tabset>
+  </div>
+</div>
+
+<p>
+  It's just a little demo including simplest template,
+  simplest Datasource implementation with no any settings provided
+  and some of Adapter properties and methods usage.
+  Other samples with all necessary details and explanations can be found at
+  <a href="#/datasource">Datasource</a>,
+  <a href="#/settings">Settings</a> and
+  <a href="#/adapter">Adapter</a>
+  sections. Below is the list of all examples available per these sections.
+</p>
+
+
+<h3>
+  Example list
+</h3>
+<div style="display: flex" class="demo-examples">
+  <div style="margin: 0 20px 33px 0;">
+    <h5>Datasource</h5>
+    <a href="#/datasource#datasource-get-signatures">Datasource get-method signatures</a><br/>
+    <a href="#/datasource#unlimited-bidirectional">Unlimited bidirectional datasource</a><br/>
+    <a href="#/datasource#limited">Limited datasource</a><br/>
+    <a href="#/datasource#positive-limited-indexes">Positive limited datasource</a><br/>
+    <a href="#/datasource#remote">Remote datasource</a><br/>
+    <a href="#/datasource#inverted-indexes">Inverted datasource</a><br/>
+    <a href="#/datasource#pages">Pages datasource</a><br/>
+  </div>
+  <div style="margin: 0 20px 33px 0;">
+    <h5>Settings</h5>
+    <a href="#/settings#no-settings">No settings</a><br/>
+    <a href="#/settings#buffer-size">BufferSize setting</a><br/>
+    <a href="#/settings#padding">padding setting</a><br/>
+    <a href="#/settings#item-size">itemSize setting</a><br/>
+    <a href="#/settings#start-index">startIndex setting</a><br/>
+    <a href="#/settings#min-max-indexes">minIndex / maxIndex settings</a><br/>
+    <a href="#/settings#infinite-mode">Infinite mode</a><br/>
+    <a href="#/settings#horizontal-mode">Horizontal mode</a><br/>
+    <a href="#/settings#different-item-heights">Different item heights</a><br/>
+    <a href="#/settings#window-viewport">Entire window scrollable</a><br/>
+  </div>
+  <div style="margin: 0 0 33px 0;">
+    <h5>Adapter</h5>
+    <a href="#/adapter#reload">Reload</a><br/>
+    <a href="#/adapter#is-loading">Is loading?</a><br/>
+    <a href="#/adapter#items-count">Buffer items counter</a><br/>
+    <a href="#/adapter#first-last-visible-items">First and last visible items</a><br/>
+    <a href="#/adapter#is-loading-extended">Is loading, advanced</a><br/>
+  </div>
+</div>

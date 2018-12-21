@@ -1,5 +1,14 @@
-<div class="viewport">
-  <div *uiScroll="let item of datasource">
-    <span>{{item.id}}</span> : <b>{{item.text}}</b>
+<div *ngIf="hasLayout">
+  <app-nav></app-nav>
+
+  <div class="container mb-5">
+
+    <router-outlet></router-outlet>
+
   </div>
 </div>
+
+<div *ngIf="!hasLayout" class="no-layout">
+  <router-outlet></router-outlet>
+</div>
+

@@ -1,0 +1,52 @@
+<h1>Angular UI Scroll Datasource Demos</h1>
+
+<p>
+  The idea of&nbsp;the <em>*uiScroll</em> directive usage is&nbsp;very similar
+  to&nbsp;the&nbsp;use of&nbsp;<em>*ngFor</em> directive
+  in&nbsp;the simplest case, but as&nbsp;it&nbsp;follows from the documentation,
+  a&nbsp;special <em>Datasource</em> object needs to&nbsp;be&nbsp;passed
+  instead of Angular <em>Iterable</em>.
+  <em>Datasource</em> is&nbsp;an&nbsp;entry point to&nbsp;the <em>uiScroll</em>,
+  that provides data flow from the host App to the <em>uiScroll</em>.
+  There are two common ways of&nbsp;how the <em>Datasource</em> could be&nbsp;defined:
+</p>
+
+<ul>
+  <li>
+    as an object literal of <em>IDatasource</em> type
+    <pre>{{datasourceSampleLiteral}}</pre>
+  </li>
+  <li>
+    as an instance of <em>Datasource</em> class
+    <pre>{{datasourceSampleClass}}</pre>
+  </li>
+</ul>
+<p>
+  The constructor argument in&nbsp;the second case should be&nbsp;an object of <em>IDatasource</em> type.
+  Instantiating via operator <em>new</em> is&nbsp;needed for
+  the <em>Adapter</em> to&nbsp;be&nbsp;available on&nbsp;the result <em>datasource</em> object
+  (for details see <a href="#adapter">Adapter demo page</a>).
+  Both of&nbsp;<em>IDatasource</em> and <em>Datasource</em> definitions
+  could be&nbsp;imported from <em>UiScrollModule</em>:
+</p>
+<pre>{{importSample}}</pre>
+<p>
+  The <em>IDatasource</em> object we need to define in both cases
+</p>
+<ul>
+  <li>must contain <em>get</em> method property and</li>
+  <li>may contain <em>settings</em> object property.</li>
+</ul>
+<p>
+  With the help of&nbsp;<em>settings</em> object the scroller could be&nbsp;configured,
+  as&nbsp;it&nbsp;is&nbsp;being described on&nbsp;<a href="#settings">Settings demo page</a>.
+  Here we&nbsp;are going to&nbsp;discuss the <em>Datasource.get</em> method implementation.
+</p>
+
+<app-datasource-signatures></app-datasource-signatures>
+<app-bidirectional-unlimited-datasource></app-bidirectional-unlimited-datasource>
+<app-limited-datasource></app-limited-datasource>
+<app-positive-limited-datasource></app-positive-limited-datasource>
+<app-remote-datasource></app-remote-datasource>
+<app-inverted-datasource></app-inverted-datasource>
+<app-pages-datasource></app-pages-datasource>

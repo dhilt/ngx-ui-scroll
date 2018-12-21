@@ -1,6 +1,4 @@
-import { debouncedRound } from './debouncedRound';
 import { checkDatasource } from './checkDatasource';
-import { Routines } from './domRoutines';
-import { calculateFlowDirection } from './flowDirection';
+import { assignSettings, assignDevSettings } from './assignSettings';
 
-export { debouncedRound, checkDatasource, Routines, calculateFlowDirection };
+export { checkDatasource, assignSettings, assignDevSettings };

@@ -3,6 +3,8 @@ language: node_js
 node_js:
 - "stable"
 
+cache: npm
+
 addons:
   firefox: latest
 
@@ -17,6 +19,7 @@ script:
 
 deploy:
   provider: script
+  skip_cleanup: true
   script: npm run build-app
   on:
     branch: travis-deploy

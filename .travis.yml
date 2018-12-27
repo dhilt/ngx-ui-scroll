@@ -14,9 +14,12 @@ before_script:
 script:
 - npm run build
 - npm test
-- npm run build-app
 
 deploy:
+  provider: script
+  script: npm run build-app
+  on:
+    branch: travis-deploy
   provider: pages
   skip_cleanup: true
   github_token: $github_token

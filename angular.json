@@ -11,7 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist",
+            "outputPath": "dist-app",
             "index": "demo/index.html",
             "main": "demo/main.ts",
             "tsConfig": "demo/tsconfig.app.json",
@@ -48,7 +48,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "project-name:build"
+            "browserTarget": "project-name:build",
+            "outputPath": "dist"
           },
           "configurations": {
             "production": {

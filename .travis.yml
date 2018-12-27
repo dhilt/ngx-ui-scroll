@@ -18,14 +18,9 @@ script:
 - npm test
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  script: npm run build-app
-  on:
-    branch: travis-deploy
   provider: pages
   skip_cleanup: true
   github_token: $github_token
-  local_dir: dist
+  local_dir: dist-app
   on:
     branch: travis-deploy

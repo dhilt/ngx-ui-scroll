@@ -18,7 +18,7 @@ if (env === 'production') {
 }
 
 // Serve static files
-app.use(express.static(__dirname + '/../dist'));
+app.use(express.static(__dirname + '/../dist-app'));
 
 const data = [];
 for (let i = 1; i < 1000; i++) {
@@ -51,7 +51,7 @@ app.get('/api/data', (req, res) => {
 
 // Send all requests to index.html
 app.get('/*', (req, res) =>
-  res.sendFile(path.join(__dirname + '/../dist/index.html'))
+  res.sendFile(path.join(__dirname + '/../dist-app/index.html'))
 );
 // default Heroku port
 const port = process.env.PORT || 5000;

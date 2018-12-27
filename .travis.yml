@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-- "8"
+- "stable"
 
 addons:
   firefox: latest
@@ -14,3 +14,11 @@ before_script:
 script:
 - npm run build
 - npm test
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $github_token
+  local_dir: dist
+  on:
+    branch: travis-deploy

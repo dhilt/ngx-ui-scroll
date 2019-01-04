@@ -249,7 +249,7 @@ describe('Min/max Indexes Spec', () => {
     forwardGapConfigList.forEach(config =>
       makeTest({
         config,
-        title: 'should leave forward padding gap',
+        title: 'should fill forward padding gap',
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
             _testForwardGapCase(config, misc, done)

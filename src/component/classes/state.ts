@@ -116,7 +116,6 @@ export class State implements IState {
   sizeBeforeRender: number;
   sizeAfterRender: number;
   fwdPaddingBeforeRender: number;
-  bwdPaddingBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
@@ -203,7 +202,6 @@ export class State implements IState {
     this.sizeBeforeRender = 0;
     this.sizeAfterRender = 0;
     this.fwdPaddingBeforeRender = 0;
-    this.bwdPaddingBeforeRender = 0;
     this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();

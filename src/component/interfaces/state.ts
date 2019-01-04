@@ -59,7 +59,6 @@ export interface State {
   sizeBeforeRender: number;
   sizeAfterRender: number;
   fwdPaddingBeforeRender: number;
-  bwdPaddingBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: ScrollState;

@@ -4,7 +4,7 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Init {
 
   static run(scroller: Scroller, isInitial = false) {
-    const {state} = scroller;
+    const { state } = scroller;
     state.isInitialWorkflowCycle = isInitial;
     state.isInitialLoop = isInitial;
     state.workflowPending = true;

@@ -5,12 +5,6 @@ export default class Render {
 
   static run(scroller: Scroller) {
     scroller.logger.stat('before new items render');
-    const { fetch } = scroller.state;
-    fetch.items.forEach(item => {
-      if (item.$index < fetch.minIndex) {
-        fetch.negativeSizeBeforeRender += scroller.buffer.getSizeByIndex(item.$index);
-      }
-    });
     scroller.innerLoopSubscriptions.push(
       scroller.bindData().subscribe(() => {
         if (Render.processElements(scroller)) {
@@ -36,7 +30,6 @@ export default class Render {
     const scrollBeforeRender = scroller.settings.windowViewport ? scroller.viewport.scrollPosition : 0;
     state.sizeBeforeRender = viewport.getScrollableSize();
     state.fwdPaddingBeforeRender = viewport.paddings.forward.size;
-    state.bwdPaddingBeforeRender = viewport.paddings.backward.size;
     for (let j = 0; j < itemsLength; j++) {
       const item = items[j];
       const element = viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);

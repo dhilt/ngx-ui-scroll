@@ -107,9 +107,10 @@ export default class Adjust {
       const bwdPaddingAverageSize = bwdPaddingAverageSizeItemsCount * fetch.averageItemSize;
       const bwdPaddingAverageSizeDiff = _bwdPaddingAverageSize - bwdPaddingAverageSize;
       const bwdAverageItemsSizeDiff = bwdAverageItemsCountDiff * fetch.averageItemSize;
-      const positionDiff = bwdPaddingAverageSizeDiff - bwdAverageItemsSizeDiff;
+      const bwdDiff = bwdPaddingAverageSizeDiff - bwdAverageItemsSizeDiff;
+      const positionDiff = posDiff + bwdDiff;
       if (positionDiff) {
-        Adjust.setScroll(scroller, posDiff + positionDiff);
+        Adjust.setScroll(scroller, positionDiff);
         scroller.logger.stat('after scroll position adjustment (average)');
       }
       state.bwdPaddingAverageSizeItemsCount = bwdPaddingAverageSizeItemsCount;

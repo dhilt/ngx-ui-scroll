@@ -23,7 +23,7 @@ export interface Adapter {
   readonly itemsCount: number;
   initialize: Function; // not callable outside
   reload: (reloadIndex?: number | string) => any;
-  prepend: (item: any) => any;
+  prepend: (items: any) => any;
   showLog: () => any;
   setMinIndex: (value: number) => any;
   setScrollPosition: (value: number) => any;

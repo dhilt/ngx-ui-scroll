@@ -167,8 +167,8 @@ export class Buffer {
     return this.cache.recalculateAverageSize();
   }
 
-  getIndexToPrepend(): number {
-    return this.items.length ? this.items[0].$index - 1 : this.minIndex - 1;
+  getIndexToPrepend(bof: boolean): number {
+    return (!bof ? (this.items.length ? this.items[0].$index : this.minIndex) : this.absMinIndex) - 1;
   }
 
 }

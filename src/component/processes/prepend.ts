@@ -4,7 +4,8 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Prepend {
 
-  static run(scroller: Scroller, items: any) {
+  static run(scroller: Scroller, payload: { items: any, bof?: any }) {
+    let { items, bof } = payload;
     if (!Array.isArray(items)) {
       items = [items];
     }
@@ -16,36 +17,47 @@ export default class Prepend {
       });
       return;
     }
+    bof = !!bof;
 
-    Prepend.simulateFetch(scroller, items);
+    const next = Prepend.simulateFetch(scroller, items, bof);
+    scroller.logger.log(() => `buffer.absMinIndex value is set to ${scroller.buffer.absMinIndex}`);
 
     scroller.callWorkflow({
       process: Process.prepend,
-      status: ProcessStatus.next
+      status: next ? ProcessStatus.next : ProcessStatus.done
     });
   }
 
-  static simulateFetch(scroller: Scroller, items: any) {
+  static simulateFetch(scroller: Scroller, items: Array<any>, bof: boolean): boolean {
     const { buffer, state, state: { fetch } } = scroller;
-    const newItems = [];
-    let indexToPrepend = buffer.getIndexToPrepend();
+    let indexToPrepend = buffer.getIndexToPrepend(bof);
 
+    // virtual prepend case
+    if (bof && !buffer.bof) {
+      for (let i = 0; i < items.length; i++) {
+        if (isFinite(buffer.absMinIndex) && indexToPrepend-- < buffer.absMinIndex) {
+          buffer.absMinIndex--;
+        }
+      }
+      return false;
+    }
+
+    const newItems = [];
     for (let i = 0; i < items.length; i++) {
       const itemToPrepend = new Item(indexToPrepend, items[i], scroller.routines);
-      if (isFinite(buffer.absMinIndex) && indexToPrepend < buffer.absMinIndex) {
+      if (isFinite(buffer.absMinIndex) && indexToPrepend-- < buffer.absMinIndex) {
         buffer.absMinIndex--;
       }
       newItems.unshift(itemToPrepend);
-      indexToPrepend--;
     }
 
     fetch.prepend(newItems);
     buffer.prepend(newItems);
-
     fetch.firstIndexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToPrepend;
     fetch.lastIndexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToPrepend;
 
     state.noClip = true;
+    return true;
   }
 
 }

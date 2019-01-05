@@ -61,12 +61,12 @@ export class FetchModel {
     return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
   }
 
-  prepend(item: Item) {
+  prepend(items: Array<Item>) {
     this.simulate = true;
-    this._newItemsData = [item.data];
-    this.items = [item];
-    this.firstIndex = item.$index;
-    this.lastIndex = item.$index;
+    this._newItemsData = items.map(item => item.data);
+    this.items = items;
+    this.lastIndex = items[0].$index;
+    this.firstIndex = items[items.length - 1].$index;
     this.hasAnotherPack = false;
     this.negativeSize = 0;
     this.direction = Direction.backward;

@@ -112,8 +112,8 @@ export class Buffer {
     return true;
   }
 
-  prepend(item: Item) {
-    this.items = [item, ...this.items];
+  prepend(items: Array<Item>) {
+    this.items = [...items, ...this.items];
   }
 
   getFirstVisibleItemIndex(): number {

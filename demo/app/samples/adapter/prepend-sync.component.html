@@ -1,0 +1,37 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions style="display: flex">
+    <button (click)="doPrepend()">Prepend</button>
+    <input [ngModel]="inputValue" (change)="onInputChanged($event.target)" size="3">
+  </div>
+
+  <div description>
+    <p>
+      <em>Adapter.prepend</em> method has second argument which is optional and which determines
+      whether new items should extend known dataset range boundaries or not.
+      This argument is being called <em>bof</em> which means begin-of-file, so
+      if it is set to <em>true</em> and BOF is reached
+      (and no more items can be fetched in backward direction), then
+      new items will be injected immediately.
+      Otherwise new items will not appear, they will be virtualized:
+      viewport padding element size will be increased in accordance with
+      the number of new items multiplied by the average item size.
+    </p>
+    <p>
+      In this demo we want the datasource to be consistent with the dataset changes made during prepend.
+      A limited dataset is being initialized on the constructor and
+      <em>Datasource.get</em> takes items by <em>id</em>.
+      We are going to update our dataset per each <em>doPrepend</em> call
+      and it's indexes will be shifted destructively (by the <em>unshift</em>).
+      This will guarantee stable data flow from the App component to <em>uiScroll</em>.
+    </p>
+    <p>
+      Practical use of this feature could be versatile, but
+      the main idea is to synchronize, say, remote dataset changes with
+      the <em>uiScroll</em> state visible to the end user.
+    </p>
+  </div>
+</app-demo>

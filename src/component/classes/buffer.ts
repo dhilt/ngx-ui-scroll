@@ -167,7 +167,7 @@ export class Buffer {
     return this.cache.recalculateAverageSize();
   }
 
-  getIndexToPrepend(bof: boolean): number {
+  getIndexToPrepend(bof?: boolean): number {
     return (!bof ? (this.items.length ? this.items[0].$index : this.minIndex) : this.absMinIndex) - 1;
   }
 

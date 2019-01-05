@@ -202,7 +202,10 @@ export class Adapter implements IAdapter {
   }
 
   prepend(items: any, bof?: boolean) {
-    this.scroller.logger.log(() => `adapter: prepend(${items}, ${bof})`);
+    this.scroller.logger.log(() => {
+      const count = Array.isArray(items) ? items.length : 1;
+      return `adapter: prepend([${count}], ${bof})`;
+    });
     this.callWorkflow(<ProcessSubject>{
       process: Process.prepend,
       status: ProcessStatus.start,

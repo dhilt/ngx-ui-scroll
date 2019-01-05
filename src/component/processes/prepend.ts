@@ -19,37 +19,49 @@ export default class Prepend {
     }
     bof = !!bof;
 
-    const next = Prepend.simulateFetch(scroller, items, bof);
-    scroller.logger.log(() => `buffer.absMinIndex value is set to ${scroller.buffer.absMinIndex}`);
+    // virtual prepend case: shift abs min index and update viewport params
+    if (bof && !scroller.buffer.bof) {
+      Prepend.doVirtualize(scroller, items);
+      scroller.callWorkflow({
+        process: Process.prepend,
+        status: ProcessStatus.done
+      });
+      return;
+    }
 
+    Prepend.simulateFetch(scroller, items, bof);
     scroller.callWorkflow({
       process: Process.prepend,
-      status: next ? ProcessStatus.next : ProcessStatus.done
+      status: ProcessStatus.next
     });
+  }
+
+  static doVirtualize(scroller: Scroller, items: Array<any>) {
+    const { buffer, viewport } = scroller;
+    if (isFinite(buffer.absMinIndex)) {
+      buffer.absMinIndex -= items.length;
+      const size = items.length * buffer.averageSize;
+      viewport.paddings.backward.size += size;
+      viewport.scrollPosition += size;
+      scroller.logger.log(() => `buffer.absMinIndex value is set to ${buffer.absMinIndex}`);
+      scroller.logger.stat('after virtual prepend');
+    }
   }
 
   static simulateFetch(scroller: Scroller, items: Array<any>, bof: boolean): boolean {
     const { buffer, state, state: { fetch } } = scroller;
     let indexToPrepend = buffer.getIndexToPrepend(bof);
-
-    // virtual prepend case
-    if (bof && !buffer.bof) {
-      for (let i = 0; i < items.length; i++) {
-        if (isFinite(buffer.absMinIndex) && indexToPrepend-- < buffer.absMinIndex) {
-          buffer.absMinIndex--;
-        }
-      }
-      return false;
-    }
-
     const newItems = [];
+
     for (let i = 0; i < items.length; i++) {
       const itemToPrepend = new Item(indexToPrepend, items[i], scroller.routines);
-      if (isFinite(buffer.absMinIndex) && indexToPrepend-- < buffer.absMinIndex) {
+      if (isFinite(buffer.absMinIndex) && indexToPrepend < buffer.absMinIndex) {
         buffer.absMinIndex--;
       }
       newItems.unshift(itemToPrepend);
+      indexToPrepend--;
     }
+    scroller.logger.log(() => `buffer.absMinIndex value is set to ${scroller.buffer.absMinIndex}`);
 
     fetch.prepend(newItems);
     buffer.prepend(newItems);

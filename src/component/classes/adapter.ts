@@ -44,6 +44,8 @@ export const generateMockAdapter = (): IAdapter => (
     lastVisible: itemAdapterEmpty,
     lastVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
     itemsCount: 0,
+    BOF: false,
+    EOF: false,
     initialize: () => null,
     reload: () => null,
     prepend: () => null,
@@ -111,6 +113,14 @@ export class Adapter implements IAdapter {
     return this.isInitialized ? this.getItemsCount() : 0;
   }
 
+  get BOF(): boolean {
+    return this.isInitialized ? this.getBOF() : false;
+  }
+
+  get EOF(): boolean {
+    return this.isInitialized ? this.getEOF() : false;
+  }
+
   private scroller: Scroller;
   private isInitialized: boolean;
   private callWorkflow: Function;
@@ -122,6 +132,8 @@ export class Adapter implements IAdapter {
   private getLoopPending: Function;
   private getLoopPending$: Function;
   private getItemsCount: Function;
+  private getBOF: Function;
+  private getEOF: Function;
   private getFirstVisible: Function;
   private getFirstVisible$: Function;
   private getLastVisible: Function;
@@ -147,6 +159,8 @@ export class Adapter implements IAdapter {
     this.getCyclePending = (): boolean => state.workflowPending;
     this.getCyclePending$ = (): BehaviorSubject<boolean> => state.workflowPendingSource;
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
+    this.getBOF = (): boolean => buffer.bof;
+    this.getEOF = (): boolean => buffer.eof;
     this.initializeProtected(scroller);
   }
 

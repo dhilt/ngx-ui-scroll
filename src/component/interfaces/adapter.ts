@@ -21,6 +21,8 @@ export interface Adapter {
   readonly lastVisible: ItemAdapter;
   readonly lastVisible$: BehaviorSubject<ItemAdapter>;
   readonly itemsCount: number;
+  readonly BOF: boolean;
+  readonly EOF: boolean;
   initialize: Function; // not callable outside
   reload: (reloadIndex?: number | string) => any;
   prepend: (items: any) => any;

@@ -6,7 +6,7 @@ export default class Clip {
   static run(scroller: Scroller) {
     Clip.prepareClip(scroller);
 
-    if (scroller.state.clip) {
+    if (scroller.state.doClip) {
       Clip.doClip(scroller);
     }
 
@@ -52,7 +52,7 @@ export default class Clip {
       ) {
         item.toRemove = true;
         item.removeDirection = direction;
-        scroller.state.clip = true;
+        scroller.state.doClip = true;
       }
     });
   }

@@ -3,6 +3,7 @@ import { Direction } from '../interfaces/index';
 
 export class FetchModel {
   private _newItemsData: Array<any> | null;
+  simulate: boolean;
   items: Array<Item>;
   firstIndexBuffer: number | null;
   lastIndexBuffer: number | null;
@@ -13,6 +14,7 @@ export class FetchModel {
   minIndex: number;
   negativeSize: number;
   averageItemSize: number;
+  hasAverageItemSizeChanged: boolean;
   direction: Direction | null;
   isPrepend: boolean;
 
@@ -23,13 +25,13 @@ export class FetchModel {
 
   reset() {
     this._newItemsData = null;
+    this.simulate = false;
     this.items = [];
-    this.firstIndexBuffer = null;
-    this.lastIndexBuffer = null;
-    this.firstIndex = null;
-    this.lastIndex = null;
+    this.firstIndex = this.firstIndexBuffer = null;
+    this.lastIndex = this.lastIndexBuffer = null;
     this.hasAnotherPack = false;
     this.negativeSize = 0;
+    this.hasAverageItemSizeChanged = false;
     this.direction = null;
     this.isPrepend = false;
   }
@@ -57,5 +59,17 @@ export class FetchModel {
 
   get count(): number {
     return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
+  }
+
+  prepend(items: Array<Item>) {
+    this.simulate = true;
+    this._newItemsData = items.map(item => item.data);
+    this.items = items;
+    this.lastIndex = items[0].$index;
+    this.firstIndex = items[items.length - 1].$index;
+    this.hasAnotherPack = false;
+    this.negativeSize = 0;
+    this.direction = Direction.backward;
+    this.isPrepend = true;
   }
 }

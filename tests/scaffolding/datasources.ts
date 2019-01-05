@@ -33,7 +33,6 @@ const datasourceGetInfinite = (index: number, count: number) => {
 };
 
 
-
 const datasourceGetLimited = (
   index: number, count: number, min: number, max: number, dynamicSize: boolean
 ) => {
@@ -175,6 +174,10 @@ const datasourceStore = {
 
   'limited--50-99-dynamic-size': <Datasource>{
     get: limitedDatasourceGet(-50, 99, true)
+  },
+
+  'limited--99-100-dynamic-size': <Datasource>{
+    get: limitedDatasourceGet(-99, 100, true)
   },
 
   'default-bad-settings': <Datasource>{

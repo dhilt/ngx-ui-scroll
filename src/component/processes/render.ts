@@ -10,7 +10,8 @@ export default class Render {
         if (Render.processElements(scroller)) {
           scroller.callWorkflow({
             process: Process.render,
-            status: ProcessStatus.next
+            status: ProcessStatus.next,
+            payload: { noClip: scroller.state.noClip }
           });
         } else {
           scroller.callWorkflow({
@@ -45,7 +46,8 @@ export default class Render {
         fetch.negativeSize += item.size;
       }
     }
-    buffer.checkAverageSize();
+    fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
+    state.sizeAfterRender = viewport.getScrollableSize();
     if (scroller.settings.windowViewport && fetch.isPrepend) {
       Render.processWindowScrollBackJump(scroller, scrollBeforeRender);
     }
@@ -59,7 +61,7 @@ export default class Render {
     // then this position will be updated silently in case of entire window scrollable
     // so we need to remember the delta and to update scroll position manually right after it is changed silently
     const inc = scrollBeforeRender >= viewport.paddings.backward.size ? 1 : -1;
-    const delta = inc * Math.abs(viewport.getScrollableSize() - state.sizeBeforeRender);
+    const delta = inc * Math.abs(state.sizeAfterRender - state.sizeBeforeRender);
     const positionToUpdate = scrollBeforeRender - delta;
     if (delta && positionToUpdate > 0) {
       window.positionToUpdate = positionToUpdate;

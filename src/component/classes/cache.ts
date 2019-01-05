@@ -61,10 +61,10 @@ export class Cache {
     this.recalculateAverage.reset();
   }
 
-  recalculateAverageSize() {
+  recalculateAverageSize(): boolean {
     const { oldItems: { length: oldItemsLength }, newItems: { length: newItemsLength } } = this.recalculateAverage;
     if (!oldItemsLength && !newItemsLength) {
-      return;
+      return false;
     }
     const oldItemsSize = this.recalculateAverage.oldItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
     const newItemsSize = this.recalculateAverage.newItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
@@ -81,6 +81,7 @@ export class Cache {
     this.averageSize = Math.round(this.averageSizeFloat);
     this.recalculateAverage.reset();
     this.logger.log(() => `average size has been updated: ${this.averageSize}`);
+    return true;
   }
 
   add(item: Item): ItemCache {

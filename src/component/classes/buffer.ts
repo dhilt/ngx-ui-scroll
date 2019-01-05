@@ -87,6 +87,14 @@ export class Buffer {
       isFinite(this.absMaxIndex);
   }
 
+  get firstIndex(): number | null {
+    return this.items.length ? this.items[0].$index : null;
+  }
+
+  get lastIndex(): number | null {
+    return this.items.length ? this.items[this.items.length - 1].$index : null;
+  }
+
   get($index: number): Item | undefined {
     return this.items.find((item: Item) => item.$index === $index);
   }
@@ -102,6 +110,10 @@ export class Buffer {
       return false;
     }
     return true;
+  }
+
+  prepend(items: Array<Item>) {
+    this.items = [...items, ...this.items];
   }
 
   getFirstVisibleItemIndex(): number {
@@ -151,8 +163,12 @@ export class Buffer {
     return item ? item.size : this.averageSize;
   }
 
-  checkAverageSize() {
-    this.cache.recalculateAverageSize();
+  checkAverageSize(): boolean {
+    return this.cache.recalculateAverageSize();
+  }
+
+  getIndexToPrepend(bof?: boolean): number {
+    return (!bof ? (this.items.length ? this.items[0].$index : this.minIndex) : this.absMinIndex) - 1;
   }
 
 }

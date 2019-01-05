@@ -2,11 +2,11 @@ import { BehaviorSubject } from 'rxjs';
 
 import {
   State as IState,
-  ProcessRun,
   ItemAdapter,
   WindowScrollState as IWindowScrollState,
   ScrollState as IScrollState,
-  SyntheticScroll as ISyntheticScroll
+  SyntheticScroll as ISyntheticScroll,
+  WorkflowOptions as IWorkflowOptions
 } from '../interfaces/index';
 import { FetchModel } from './fetch';
 import { Settings } from './settings';
@@ -74,6 +74,24 @@ class SyntheticScroll implements ISyntheticScroll {
   }
 }
 
+class WorkflowOptions implements IWorkflowOptions {
+  empty: boolean;
+  scroll: boolean;
+  keepScroll: boolean;
+  byTimer: boolean;
+
+  constructor(settings: Settings) {
+    this.reset();
+  }
+
+  reset() {
+    this.empty = false;
+    this.scroll = false;
+    this.keepScroll = false;
+    this.byTimer = false;
+  }
+}
+
 export class State implements IState {
 
   protected settings: Settings;
@@ -85,15 +103,18 @@ export class State implements IState {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  workflowOptions: WorkflowOptions;
 
   startIndex: number;
   fetch: FetchModel;
-  clip: boolean;
+  noClip: boolean;
+  doClip: boolean;
   clipCall: number;
   lastPosition: number;
   preFetchPosition: number;
   preAdjustPosition: number;
   sizeBeforeRender: number;
+  sizeAfterRender: number;
   fwdPaddingBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
@@ -171,12 +192,15 @@ export class State implements IState {
     this.workflowCycleCount = 1;
     this.isInitialWorkflowCycle = false;
     this.countDone = 0;
+    this.workflowOptions = new WorkflowOptions(settings);
 
     this.setCurrentStartIndex(settings.startIndex);
     this.fetch = new FetchModel();
-    this.clip = false;
+    this.noClip = settings.infinite;
+    this.doClip = false;
     this.clipCall = 0;
     this.sizeBeforeRender = 0;
+    this.sizeAfterRender = 0;
     this.fwdPaddingBeforeRender = 0;
     this.bwdPaddingAverageSizeItemsCount = 0;
 
@@ -190,23 +214,6 @@ export class State implements IState {
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>(itemAdapterEmpty);
     this.firstVisibleWanted = false;
     this.lastVisibleWanted = false;
-  }
-
-  startLoop(options?: ProcessRun) {
-    this.loopPending = true;
-    this.innerLoopCount++;
-    this.fetch.reset();
-    this.clip = false;
-    if (options) {
-      this.scrollState.scroll = options.scroll || false;
-    }
-    this.scrollState.keepScroll = false;
-  }
-
-  endLoop() {
-    this.loopPending = false;
-    this.countDone++;
-    this.isInitialLoop = false;
   }
 
   setCurrentStartIndex(newStartIndex: any) {

@@ -2,8 +2,8 @@ import { Datasource, DatasourceGet } from './datasource';
 import { ItemAdapter, Adapter } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
-import { WindowScrollState, ScrollState, SyntheticScroll, State } from './state';
-import { Process, ProcessStatus, ScrollPayload, ProcessSubject, ProcessRun, CallWorkflow } from './process';
+import { WindowScrollState, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
+import { Process, ProcessStatus, ScrollPayload, ProcessSubject, CallWorkflow } from './process';
 
 export {
   Datasource,
@@ -15,11 +15,11 @@ export {
   ProcessStatus,
   ScrollPayload,
   ProcessSubject,
-  ProcessRun,
   CallWorkflow,
   WindowScrollState,
   ScrollState,
   SyntheticScroll,
+  WorkflowOptions,
   State,
   ItemAdapter,
   Adapter

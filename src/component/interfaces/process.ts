@@ -1,7 +1,7 @@
 export enum Process {
   init = 'init',
   scroll = 'scroll',
-  reload = 'reload',
+  reload = 'adapter.reload',
   start = 'start',
   preFetch = 'preFetch',
   fetch = 'fetch',
@@ -9,7 +9,8 @@ export enum Process {
   render = 'render',
   clip = 'clip',
   adjust = 'adjust',
-  end = 'end'
+  end = 'end',
+  prepend = 'adapter.prepend'
 }
 
 export enum ProcessStatus {
@@ -24,18 +25,10 @@ export interface ScrollPayload {
   byTimer?: boolean;
 }
 
-export interface ProcessRun {
-  empty?: boolean;
-  scroll?: boolean;
-  keepScroll?: boolean;
-  byTimer?: boolean;
-  error?: string;
-}
-
 export interface ProcessSubject {
   process: Process;
   status: ProcessStatus;
-  payload?: ProcessRun;
+  payload?: any;
 }
 
 export type CallWorkflow = (processSubject: ProcessSubject) => undefined;

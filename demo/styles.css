@@ -169,6 +169,10 @@ button:hover {
   margin-bottom: 20px;
 }
 
+.demo .actions button {
+  margin: 0 5px;
+}
+
 .demo .work {
   margin-left: 20px;
 }

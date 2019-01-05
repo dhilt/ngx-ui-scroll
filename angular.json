@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "project-name": {
+    "ngx-ui-scroll-demo-app": {
       "root": "",
       "sourceRoot": "./",
       "projectType": "application",
@@ -48,19 +48,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "project-name:build",
-            "outputPath": "dist"
+            "browserTarget": "ngx-ui-scroll-demo-app:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "project-name:build:production"
+              "browserTarget": "ngx-ui-scroll-demo-app:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "project-name:build"
+            "browserTarget": "ngx-ui-scroll-demo-app:build"
           }
         },
         "test": {
@@ -93,13 +92,13 @@
         }
       }
     },
-    "project-name-e2e": {
+    "ngx-ui-scroll-demo-app-e2e": {
       "root": "",
       "sourceRoot": "",
       "projectType": "application"
     }
   },
-  "defaultProject": "project-name",
+  "defaultProject": "ngx-ui-scroll-demo-app",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

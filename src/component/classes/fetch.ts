@@ -61,14 +61,25 @@ export class FetchModel {
     return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
   }
 
-  prepend(items: Array<Item>) {
+  doSimulate(items: Array<Item>) {
     this.simulate = true;
     this._newItemsData = items.map(item => item.data);
     this.items = items;
-    this.lastIndex = items[0].$index;
-    this.firstIndex = items[items.length - 1].$index;
     this.hasAnotherPack = false;
     this.negativeSize = 0;
+  }
+
+  append(items: Array<Item>) {
+    this.doSimulate(items);
+    this.lastIndex = items[items.length - 1].$index;
+    this.firstIndex = items[0].$index;
+    this.direction = Direction.forward;
+  }
+
+  prepend(items: Array<Item>) {
+    this.doSimulate(items);
+    this.lastIndex = items[0].$index;
+    this.firstIndex = items[items.length - 1].$index;
     this.direction = Direction.backward;
     this.isPrepend = true;
   }

@@ -10,6 +10,7 @@ export enum Process {
   clip = 'clip',
   adjust = 'adjust',
   end = 'end',
+  append = 'adapter.append',
   prepend = 'adapter.prepend'
 }
 

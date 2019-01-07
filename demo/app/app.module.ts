@@ -28,6 +28,7 @@ import { DemoWindowViewportComponent } from './samples/common/window-viewport.co
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 import { DemoItemsCountComponent } from './samples/adapter/items-count.component';
+import { DemoBofEofComponent } from './samples/adapter/bof-eof.component';
 import { DemoFirstLastVisibleItemsComponent } from './samples/adapter/first-last-visible-items.component';
 import { DemoPrependComponent } from './samples/adapter/prepend.component';
 import { DemoPrependSyncComponent } from './samples/adapter/prepend-sync.component';
@@ -66,6 +67,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoReloadComponent,
     DemoIsLoadingComponent,
     DemoItemsCountComponent,
+    DemoBofEofComponent,
     DemoFirstLastVisibleItemsComponent,
     DemoPrependComponent,
     DemoPrependSyncComponent,

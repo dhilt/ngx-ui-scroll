@@ -1,0 +1,23 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached.
+    <br>
+    End of file is {{datasource.adapter.eof ? '' : 'not'}} reached.
+  </div>
+  <div description>
+    <p>
+      <em>Adapter.bof</em> and <em>Adapter.eof</em> are read-only boolean properties
+      indicating that the dataset beginning (bof) or the dataset end (eof) is reached.
+    </p>
+    <p>
+      In this demo we have limited datasource consisting of 100 items starting from index 1.
+      So initially we are at the left position of the available dataset, and that's why we see
+      "Begin of file is reached" message. After some scrolling down <em>bof</em> is
+      being turned to <em>false</em>. The first item is destroyed and can be retrieved again.
+    </p>
+  </div>
+</app-demo>

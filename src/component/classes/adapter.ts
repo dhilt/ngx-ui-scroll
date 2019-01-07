@@ -44,8 +44,8 @@ export const generateMockAdapter = (): IAdapter => (
     lastVisible: itemAdapterEmpty,
     lastVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
     itemsCount: 0,
-    BOF: false,
-    EOF: false,
+    bof: false,
+    eof: false,
     initialize: () => null,
     reload: () => null,
     prepend: () => null,
@@ -113,11 +113,11 @@ export class Adapter implements IAdapter {
     return this.isInitialized ? this.getItemsCount() : 0;
   }
 
-  get BOF(): boolean {
+  get bof(): boolean {
     return this.isInitialized ? this.getBOF() : false;
   }
 
-  get EOF(): boolean {
+  get eof(): boolean {
     return this.isInitialized ? this.getEOF() : false;
   }
 

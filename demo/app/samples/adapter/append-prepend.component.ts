@@ -6,16 +6,16 @@ import { doLog } from '../../shared/datasource-get';
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
-  selector: 'app-demo-prepend',
-  templateUrl: './prepend.component.html'
+  selector: 'app-demo-append-prepend',
+  templateUrl: './append-prepend.component.html'
 })
-export class DemoPrependComponent {
+export class DemoAppendPrependComponent {
 
   demoContext: DemoContext = <DemoContext> {
     scope: 'adapter',
-    title: `Prepend`,
-    titleId: `prepend`,
-    viewportId: `prepend-viewport`,
+    title: `Append / prepend`,
+    titleId: `append-prepend`,
+    viewportId: `append-prepend-viewport`,
     count: 0,
     log: ''
   };
@@ -58,7 +58,7 @@ datasource = new Datasource({
   }
 });
 
-doPrepend() {
+generateItems() {
   const items = [];
   for (let i = 0; i < this.inputValue; i++) {
     this.newIndex++;
@@ -67,11 +67,20 @@ doPrepend() {
       text: 'new item #' + this.newIndex + '*'
     });
   }
-  this.datasource.adapter.prepend(items);
+  return items;
+}
+
+doPrepend() {
+  this.datasource.adapter.prepend(this.generateItems());
+}
+
+doAppend() {
+  this.datasource.adapter.append(this.generateItems());
 }`
   }, {
     name: DemoSourceType.Template,
-    text: `<button (click)="doPrepend()">Prepend</button>
+    text: `<button (click)="doAppend()">Append</button> /
+<button (click)="doPrepend()">Prepend</button>
 <input [(ngModel)]="inputValue" size="2">
 
 <div class="viewport">
@@ -99,7 +108,7 @@ doPrepend() {
     this.inputValue = value;
   }
 
-  doPrepend() {
+  generateItems() {
     const items = [];
     for (let i = 0; i < this.inputValue; i++) {
       this.newIndex++;
@@ -108,7 +117,15 @@ doPrepend() {
         text: 'new item #' + this.newIndex + '*'
       });
     }
-    this.datasource.adapter.prepend(items);
+    return items;
+  }
+
+  doPrepend() {
+    this.datasource.adapter.prepend(this.generateItems());
+  }
+
+  doAppend() {
+    this.datasource.adapter.append(this.generateItems());
   }
 
 }

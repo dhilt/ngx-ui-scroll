@@ -31,7 +31,7 @@ import { DemoItemsCountComponent } from './samples/adapter/items-count.component
 import { DemoBofEofComponent } from './samples/adapter/bof-eof.component';
 import { DemoFirstLastVisibleItemsComponent } from './samples/adapter/first-last-visible-items.component';
 import { DemoAppendPrependComponent } from './samples/adapter/append-prepend.component';
-import { DemoPrependSyncComponent } from './samples/adapter/prepend-sync.component';
+import { DemoAppendPrependSyncComponent } from './samples/adapter/append-prepend-sync.component';
 import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-extended.component';
 import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasource-signatures.component';
 import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
@@ -70,7 +70,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoBofEofComponent,
     DemoFirstLastVisibleItemsComponent,
     DemoAppendPrependComponent,
-    DemoPrependSyncComponent,
+    DemoAppendPrependSyncComponent,
     DemoIsLoadingExtendedComponent,
     DemoDatasourceSignaturesComponent,
     DemoBidirectionalUnlimitedDatasourceComponent,

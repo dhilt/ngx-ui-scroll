@@ -4,68 +4,82 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Append {
 
-  static run(scroller: Scroller, payload: { items: any, eof?: any }) {
-    let { items, eof } = payload;
-    if (!Array.isArray(items)) {
-      items = [items];
-    }
+  static run(scroller: Scroller, payload: { items: any, eof?: any, bof?: any, prepend?: any }) {
+    let { items } = payload;
+    items = !Array.isArray(items) ? [items] : items;
+    const prepend = !!payload.prepend;
+    const eof = !!(prepend ? payload.bof : payload.eof);
+    const process = prepend ? Process.prepend : Process.append;
+
     if (!items.length) {
       scroller.callWorkflow({
-        process: Process.append,
+        process,
         status: ProcessStatus.error,
-        payload: { error: 'Wrong argument of the "append" method call' }
+        payload: { error: `Wrong argument of the "${prepend ? 'prepend' : 'append'}" method call` }
       });
       return;
     }
-    eof = !!eof;
 
     // virtual prepend case: shift abs min index and update viewport params
-    if (eof && !scroller.buffer.eof) {
-      Append.doVirtualize(scroller, items);
+    if (
+      (prepend && eof && !scroller.buffer.bof) ||
+      (!prepend && eof && !scroller.buffer.eof)
+    ) {
+      Append.doVirtualize(scroller, items, prepend);
       scroller.callWorkflow({
-        process: Process.append,
+        process,
         status: ProcessStatus.done
       });
       return;
     }
 
-    Append.simulateFetch(scroller, items, eof);
+    Append.simulateFetch(scroller, items, eof, prepend);
     scroller.callWorkflow({
-      process: Process.append,
+      process,
       status: ProcessStatus.next
     });
   }
 
-  static doVirtualize(scroller: Scroller, items: Array<any>) {
-    const { buffer, viewport } = scroller;
-    if (isFinite(buffer.absMaxIndex)) {
-      buffer.absMaxIndex += items.length;
+  static doVirtualize(scroller: Scroller, items: Array<any>, prepend: boolean) {
+    const { buffer, viewport: { paddings } } = scroller;
+    const bufferToken = prepend ? 'absMinIndex' : 'absMaxIndex';
+    if (isFinite(buffer[bufferToken])) {
       const size = items.length * buffer.averageSize;
-      viewport.paddings.forward.size += size;
-      scroller.logger.log(() => `buffer.absMaxIndex value is set to ${buffer.absMaxIndex}`);
-      scroller.logger.stat('after virtual append');
+      const padding = prepend ? paddings.backward : paddings.forward;
+      buffer[bufferToken] += (prepend ? -1 : 1) * items.length;
+      padding.size += size;
+      if (prepend) {
+        scroller.viewport.scrollPosition += size;
+      }
+      scroller.logger.log(() => `buffer.${[bufferToken]} value is set to ${buffer[bufferToken]}`);
+      scroller.logger.stat(`after virtual ${prepend ? 'prepend' : 'append'}`);
     }
   }
 
-  static simulateFetch(scroller: Scroller, items: Array<any>, eof: boolean): boolean {
+  static simulateFetch(scroller: Scroller, items: Array<any>, eof: boolean, prepend: boolean): boolean {
     const { buffer, state, state: { fetch } } = scroller;
-    let indexToAppend = buffer.getIndexToAppend(eof);
-    const newItems = [];
+    const bufferToken = prepend ? 'absMinIndex' : 'absMaxIndex';
+    let indexToAdd = buffer.getIndexToAdd(eof, prepend);
+    const newItems: any[] = [];
 
     for (let i = 0; i < items.length; i++) {
-      const itemToAppend = new Item(indexToAppend, items[i], scroller.routines);
-      if (isFinite(buffer.absMaxIndex) && indexToAppend > buffer.absMaxIndex) {
-        buffer.absMaxIndex++;
+      const itemToAdd = new Item(indexToAdd, items[i], scroller.routines);
+      if (isFinite(buffer[bufferToken]) && (
+        (prepend && indexToAdd < buffer[bufferToken]) ||
+        (!prepend && indexToAdd > buffer[bufferToken])
+      )) {
+        buffer[bufferToken] += (prepend ? -1 : 1);
       }
-      newItems.push(itemToAppend);
-      indexToAppend++;
+      (prepend ? Array.prototype.unshift : Array.prototype.push).apply(newItems, [itemToAdd]);
+      // (prepend ? newItems.unshift : newItems.push)(itemToAdd);
+      indexToAdd += (prepend ? -1 : 1);
     }
-    scroller.logger.log(() => `buffer.absMaxIndex value is set to ${scroller.buffer.absMaxIndex}`);
+    scroller.logger.log(() => `buffer.${bufferToken} value is set to ${buffer[bufferToken]}`);
 
-    fetch.append(newItems);
-    buffer.append(newItems);
-    fetch.firstIndexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToAppend;
-    fetch.lastIndexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToAppend;
+    (prepend ? fetch.prepend : fetch.append).call(fetch, newItems);
+    (prepend ? buffer.prepend : buffer.append).call(buffer, newItems);
+    fetch.firstIndexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToAdd;
+    fetch.lastIndexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToAdd;
 
     state.noClip = true;
     return true;

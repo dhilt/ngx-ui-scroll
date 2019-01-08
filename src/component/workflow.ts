@@ -117,7 +117,7 @@ export class Workflow {
         break;
       case Process.prepend:
         if (status === Status.start) {
-          Prepend.run(scroller, payload);
+          Append.run(scroller, { ...payload, prepend: true });
         }
         if (status === Status.next) {
           Init.run(scroller);

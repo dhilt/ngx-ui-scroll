@@ -140,7 +140,7 @@ Settings are being applied during the uiScroll initialization and have an impact
 
 ### Adapter API
 
-The uiScroll has API to assess its parameters and provide some manipulations run-time. This API is available via special Adapter object. The datasource needs to be instantiated via operator "new" fot the Adapter object to be added to it:
+The uiScroll has API to assess its parameters and provide some manipulations run-time. This API is available via special Adapter object. The datasource needs to be instantiated via operator "new" for the Adapter object to be added to it:
 
 ```javascript
 import { Datasource } from 'ngx-ui-scroll';

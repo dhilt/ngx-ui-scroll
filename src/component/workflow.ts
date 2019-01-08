@@ -4,7 +4,7 @@ import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
 import {
-  Init, Scroll, Reload, Append, Prepend, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
+  Init, Scroll, Reload, Append, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
 } from './processes/index';
 
 export class Workflow {

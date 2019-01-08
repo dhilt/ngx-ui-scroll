@@ -6,22 +6,22 @@ import { doLog } from '../../shared/datasource-get';
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
-  selector: 'app-demo-prepend-sync',
-  templateUrl: './prepend-sync.component.html'
+  selector: 'app-demo-append-prepend-sync',
+  templateUrl: './append-prepend-sync.component.html'
 })
-export class DemoPrependSyncComponent {
+export class DemoAppendPrependSyncComponent {
 
   demoContext: DemoContext = <DemoContext> {
     scope: 'adapter',
-    title: `Prepend sync`,
-    titleId: `prepend-sync`,
-    viewportId: `prepend-sync-viewport`,
+    title: `Append / prepend sync`,
+    titleId: `append-prepend-sync`,
+    viewportId: `append-prepend-sync-viewport`,
     count: 0,
     log: ''
   };
 
   MIN = 100;
-  MAX = 900;
+  MAX = 200;
   data: Array<any>;
 
   constructor() {
@@ -54,7 +54,7 @@ export class DemoPrependSyncComponent {
   sources: DemoSources = [{
     name: DemoSourceType.Component,
     text: `MIN = 100;
-MAX = 900;
+MAX = 200;
 inputValue = 1;
 data: Array<any>;
 
@@ -81,6 +81,20 @@ datasource = new Datasource({
   }
 });
 
+doAppend() {
+  const items = [];
+  for (let i = 0; i < this.inputValue; i++) {
+    this.MAX++;
+    const newItem = {
+      id: this.MAX,
+      text: 'item #' + this.MAX + '*'
+    };
+    this.data.push(newItem);
+    items.push(newItem);
+  }
+  this.datasource.adapter.append(items, true);
+}
+
 doPrepend() {
   const items = [];
   for (let i = 0; i < this.inputValue; i++) {
@@ -96,7 +110,8 @@ doPrepend() {
 }`
   }, {
     name: DemoSourceType.Template,
-    text: `<button (click)="doPrepend()">Prepend</button>
+    text: `<button (click)="doAppend()">Append</button> /
+<button (click)="doPrepend()">Prepend</button>
 <input [(ngModel)]="inputValue" size="2">
 
 <div class="viewport">
@@ -124,6 +139,20 @@ doPrepend() {
     const value = parseInt(target.value.trim(), 10);
     target.value = value.toString();
     this.inputValue = value;
+  }
+
+  doAppend() {
+    const items = [];
+    for (let i = 0; i < this.inputValue; i++) {
+      this.MAX++;
+      const newItem = {
+        id: this.MAX,
+        text: 'item #' + this.MAX + '*'
+      };
+      this.data.push(newItem);
+      items.push(newItem);
+    }
+    this.datasource.adapter.append(items, true);
   }
 
   doPrepend() {

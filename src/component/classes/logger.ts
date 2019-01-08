@@ -109,6 +109,7 @@ export class Logger {
     if (
       process === Process.init && status === Status.start ||
       process === Process.reload && status === Status.next ||
+      process === Process.append && status === Status.next ||
       process === Process.prepend && status === Status.next ||
       process === Process.scroll && status === Status.next && !(options.keepScroll)
     ) {

@@ -25,6 +25,7 @@ export interface Adapter {
   readonly eof: boolean;
   initialize: Function; // not callable outside
   reload: (reloadIndex?: number | string) => any;
+  append: (items: any, bof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;
   showLog: () => any;
   setMinIndex: (value: number) => any;

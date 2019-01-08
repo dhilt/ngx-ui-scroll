@@ -112,6 +112,10 @@ export class Buffer {
     return true;
   }
 
+  append(items: Array<Item>) {
+    this.items = [...this.items, ...items];
+  }
+
   prepend(items: Array<Item>) {
     this.items = [...items, ...this.items];
   }
@@ -165,6 +169,10 @@ export class Buffer {
 
   checkAverageSize(): boolean {
     return this.cache.recalculateAverageSize();
+  }
+
+  getIndexToAppend(eof?: boolean): number {
+    return (!eof ? (this.items.length ? this.items[this.items.length - 1].$index : this.maxIndex) : this.absMaxIndex) + 1;
   }
 
   getIndexToPrepend(bof?: boolean): number {

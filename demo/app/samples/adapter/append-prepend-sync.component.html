@@ -1,0 +1,46 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions style="display: flex">
+    <button (click)="doAppend()">Append</button> /
+    <button (click)="doPrepend()">Prepend</button>
+    <input [ngModel]="inputValue" (change)="onInputChanged($event.target)" size="3">
+  </div>
+
+  <div description>
+    <p>
+      Both <em>Adapter.append</em> and <em>Adapter.prepend</em> methods have second argument
+      which is optional and which allows to prevent rendering of new items in the Viewport when
+      the end of the dataset (if we are speaking of <em>append</em>) or
+      beginning of the dataset (<em>prepend</em> case) is not reached.
+      The <em>append</em> second argument is being called <em>eof</em> (end-of-file),
+      the <em>prepend</em> second argument is being called <em>bof</em> (begin-of-file).
+    </p>
+    <p>
+      Let's discuss <em>Adapter.prepend(items, bof)</em> case.
+      So if <em>bof</em> is set to <em>true</em> and the beginning of the dataset is reached
+      (and no more items can be fetched in backward direction), then
+      new items will be injected immediately.
+      Otherwise new items will not appear, they will be virtualized:
+      viewport backward padding element size will be increased in accordance with
+      the number of new items multiplied by the average item size.
+      The same is true for <em>Adapter.append(items, eof)</em>
+      adjusted for forward direction and forward padding element.
+    </p>
+    <p>
+      In this demo we want the datasource to be consistent with the dataset changes made during append/prepend.
+      For this purpose a limited dataset is being initialized on the constructor and
+      <em>Datasource.get</em> takes items by <em>id</em>, not by index. We can't rely on index because
+      we are going to update our dataset per each <em>doAppend</em> / <em>doPrepend</em> call
+      destructively by <em>unshift</em> and <em>push</em>.
+      This will guarantee stable data flow from the App component to the <em>uiScroll</em>.
+    </p>
+    <p>
+      Practical use of this feature could be versatile, but
+      the main idea is to synchronize, say, remote dataset changes with
+      the <em>uiScroll</em> state visible to the end user.
+    </p>
+  </div>
+</app-demo>

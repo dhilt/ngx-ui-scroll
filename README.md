@@ -171,6 +171,8 @@ Below is the list of invocable methods of the Adapter API.
 |Name|Parameters|Description|
 |:--|:----|:----------|
 |[reload](https://dhilt.github.io/ngx-ui-scroll/#/adapter#reload)|(startIndex?:&nbsp;number)|Resets the items buffer, resets the viewport params and starts fetching items from "startIndex" (if set). |
+|[append](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], eof?:&nbsp;boolean)|Adds items or single item to the end of the uiScroll dataset. If eof parameter is not set, items will be added and rendered immediately, they will be placed right after the last item in the uiScroll buffer. If eof parameter is set to true, items will be added and rendered only if the end of the dataset is reached; otherwise, these items will be virtualized. |
+|[prepend](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], bof?:&nbsp;boolean)|Adds items or single item to the beginning of the uiScroll dataset. If bof parameter is not set, items will be added and rendered immediately, they will be placed right before the first item in the uiScroll buffer. If bof parameter is set to true, items will be added and rendered only if the beginning of the dataset is reached; otherwise, these items will be virtualized. |
 
 ### Development
 

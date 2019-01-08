@@ -48,6 +48,7 @@ export const generateMockAdapter = (): IAdapter => (
     eof: false,
     initialize: () => null,
     reload: () => null,
+    append: () => null,
     prepend: () => null,
     showLog: () => null,
     setMinIndex: () => null,
@@ -198,6 +199,18 @@ export class Adapter implements IAdapter {
       process: Process.reload,
       status: ProcessStatus.start,
       payload: reloadIndex
+    });
+  }
+
+  append(items: any, eof?: boolean) {
+    this.scroller.logger.log(() => {
+      const count = Array.isArray(items) ? items.length : 1;
+      return `adapter: append([${count}], ${eof})`;
+    });
+    this.callWorkflow(<ProcessSubject>{
+      process: Process.append,
+      status: ProcessStatus.start,
+      payload: { items, eof }
     });
   }
 

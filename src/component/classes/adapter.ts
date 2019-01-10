@@ -3,6 +3,7 @@ import { switchMap } from 'rxjs/operators';
 
 import { Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter } from '../interfaces/index';
 import { Scroller } from '../scroller';
+import { Logger } from './logger';
 
 const getIsInitialized = (adapter: Adapter): Observable<boolean> =>
   Observable.create((observer: Observer<boolean>) => {
@@ -123,6 +124,7 @@ export class Adapter implements IAdapter {
   }
 
   private scroller: Scroller;
+  private logger: Logger;
   private isInitialized: boolean;
   private callWorkflow: Function;
   private getVersion: Function;
@@ -149,6 +151,7 @@ export class Adapter implements IAdapter {
       return;
     }
     this.scroller = scroller;
+    this.logger = scroller.logger;
     const { state, buffer } = scroller;
     this.isInitialized = true;
     this.callWorkflow = scroller.callWorkflow;
@@ -194,7 +197,7 @@ export class Adapter implements IAdapter {
   }
 
   reload(reloadIndex?: number | string) {
-    this.scroller.logger.log(() => `adapter: reload(${reloadIndex})`);
+    this.logger.log(() => `adapter: reload(${reloadIndex})`);
     this.callWorkflow(<ProcessSubject>{
       process: Process.reload,
       status: ProcessStatus.start,
@@ -203,7 +206,7 @@ export class Adapter implements IAdapter {
   }
 
   append(items: any, eof?: boolean) {
-    this.scroller.logger.log(() => {
+    this.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
       return `adapter: append([${count}], ${eof})`;
     });
@@ -215,7 +218,7 @@ export class Adapter implements IAdapter {
   }
 
   prepend(items: any, bof?: boolean) {
-    this.scroller.logger.log(() => {
+    this.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
       return `adapter: prepend([${count}], ${bof})`;
     });
@@ -227,15 +230,15 @@ export class Adapter implements IAdapter {
   }
 
   showLog() {
-    this.scroller.logger.logForce();
+    this.logger.logForce();
   }
 
   setScrollPosition(value: number) {
-    this.scroller.logger.log(() => `adapter: setScrollPosition(${value})`);
+    this.logger.log(() => `adapter: setScrollPosition(${value})`);
     const position = Number(value);
     const parsedValue = parseInt(<any>value, 10);
     if (position !== parsedValue) {
-      this.scroller.logger.log(() =>
+      this.logger.log(() =>
         `can't set scroll position because ${value} is not an integer`);
     } else {
       this.scroller.state.syntheticScroll.reset();
@@ -244,10 +247,10 @@ export class Adapter implements IAdapter {
   }
 
   setMinIndex(value: number) {
-    this.scroller.logger.log(() => `adapter: setMinIndex(${value})`);
+    this.logger.log(() => `adapter: setMinIndex(${value})`);
     const index = Number(value);
     if (isNaN(index)) {
-      this.scroller.logger.log(() =>
+      this.logger.log(() =>
         `can't set minIndex because ${value} is not a number`);
     } else {
       this.scroller.buffer.minIndexUser = index;

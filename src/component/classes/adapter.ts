@@ -48,11 +48,11 @@ export const generateMockAdapter = (): IAdapter => (
     bof: false,
     eof: false,
     initialize: () => null,
+    _setScrollPosition: () => null,
     reload: () => null,
     append: () => null,
     prepend: () => null,
     showLog: () => null,
-    setMinIndex: () => null,
     setScrollPosition: () => null
   }
 );
@@ -123,7 +123,6 @@ export class Adapter implements IAdapter {
     return this.isInitialized ? this.getEOF() : false;
   }
 
-  private scroller: Scroller;
   private logger: Logger;
   private isInitialized: boolean;
   private callWorkflow: Function;
@@ -141,6 +140,7 @@ export class Adapter implements IAdapter {
   private getFirstVisible$: Function;
   private getLastVisible: Function;
   private getLastVisible$: Function;
+  private _setScrollPosition: Function;
 
   constructor() {
     this.isInitialized = false;
@@ -150,7 +150,6 @@ export class Adapter implements IAdapter {
     if (this.isInitialized) {
       return;
     }
-    this.scroller = scroller;
     this.logger = scroller.logger;
     const { state, buffer } = scroller;
     this.isInitialized = true;
@@ -166,6 +165,12 @@ export class Adapter implements IAdapter {
     this.getBOF = (): boolean => buffer.bof;
     this.getEOF = (): boolean => buffer.eof;
     this.initializeProtected(scroller);
+
+    // undocumented
+    this._setScrollPosition = (value: number) => {
+      state.syntheticScroll.reset();
+      scroller.viewport.setPosition(value);
+    };
   }
 
   initializeProtected(scroller: Scroller) {
@@ -241,19 +246,18 @@ export class Adapter implements IAdapter {
       this.logger.log(() =>
         `can't set scroll position because ${value} is not an integer`);
     } else {
-      this.scroller.state.syntheticScroll.reset();
-      this.scroller.viewport.setPosition(value);
+      this._setScrollPosition(value);
     }
   }
 
-  setMinIndex(value: number) {
-    this.logger.log(() => `adapter: setMinIndex(${value})`);
-    const index = Number(value);
-    if (isNaN(index)) {
-      this.logger.log(() =>
-        `can't set minIndex because ${value} is not a number`);
-    } else {
-      this.scroller.buffer.minIndexUser = index;
-    }
-  }
+  // setMinIndex(value: number) {
+  //   this.logger.log(() => `adapter: setMinIndex(${value})`);
+  //   const index = Number(value);
+  //   if (isNaN(index)) {
+  //     this.logger.log(() =>
+  //       `can't set minIndex because ${value} is not a number`);
+  //   } else {
+  //     this.scroller.buffer.minIndexUser = index;
+  //   }
+  // }
 }

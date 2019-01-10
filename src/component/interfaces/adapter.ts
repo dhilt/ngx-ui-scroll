@@ -28,6 +28,5 @@ export interface Adapter {
   append: (items: any, bof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;
   showLog: () => any;
-  setMinIndex: (value: number) => any;
   setScrollPosition: (value: number) => any;
 }

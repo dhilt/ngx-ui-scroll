@@ -27,6 +27,7 @@ export interface Adapter {
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, bof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;
+  check: () => any;
   showLog: () => any;
   setScrollPosition: (value: number) => any;
 }

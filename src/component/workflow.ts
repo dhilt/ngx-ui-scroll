@@ -4,7 +4,8 @@ import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
 import {
-  Init, Scroll, Reload, Append, Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
+  Init, Scroll, Reload, Append, Check,
+  Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
 } from './processes/index';
 
 export class Workflow {
@@ -74,7 +75,7 @@ export class Workflow {
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
-    const { status, payload = {} }  = data;
+    const { status, payload = {} } = data;
     const options = scroller.state.workflowOptions;
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
@@ -118,6 +119,14 @@ export class Workflow {
       case Process.prepend:
         if (status === Status.start) {
           Append.run(scroller, { ...payload, prepend: true });
+        }
+        if (status === Status.next) {
+          Init.run(scroller);
+        }
+        break;
+      case Process.check:
+        if (status === Status.start) {
+          Check.run(scroller);
         }
         if (status === Status.next) {
           Init.run(scroller);

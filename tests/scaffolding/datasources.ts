@@ -21,8 +21,8 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings, _de
       this.settings = _datasource.settings || _settings || {};
       this.devSettings = _datasource.devSettings || _devSettings || {};
       const self = this;
-      this.get = function(a, b) {
-        _datasource.get.apply(self, [...Array.prototype.slice.call(arguments), self.processGet]);
+      this.get = function (a, b) {
+        return _datasource.get.apply(self, [...Array.prototype.slice.call(arguments), self.processGet]);
       };
     }
 

@@ -100,7 +100,8 @@ export default class Adjust {
     }
 
     // if backward padding has been changed due to average item size change
-    const bwdAverageItemsCountDiff = state.bwdPaddingAverageSizeItemsCount - bwdPaddingAverageSizeItemsCount;
+    const bwdAverageItemsCountDiff = fetch.isReplace ? 0 :
+      state.bwdPaddingAverageSizeItemsCount - bwdPaddingAverageSizeItemsCount;
     const hasBwdParamsChanged = bwdPaddingAverageSizeItemsCount > 0 || bwdAverageItemsCountDiff > 0;
     if (fetch.hasAverageItemSizeChanged && hasBwdParamsChanged) {
       const _bwdPaddingAverageSize = bwdPaddingAverageSizeItemsCount * buffer.averageSize;

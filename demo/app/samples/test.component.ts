@@ -32,6 +32,8 @@ export class TestInnerComponent {
 export class TestComponent {
 
   reloadIndex = 1;
+  sizeIndex = 1;
+  sizeValue = 10;
   datasourceDelay = 0;
   data: Array<MyItem>;
 
@@ -44,8 +46,8 @@ export class TestComponent {
       bufferSize: 10,
       minIndex: MIN,
       maxIndex: MAX,
-      itemSize: 25,
-      startIndex: MIN
+      itemSize: 100,
+      startIndex: 1
     },
     devSettings: {
       debug: true,
@@ -70,7 +72,7 @@ export class TestComponent {
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
-        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
+        height: 100 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
       };
       if (item.isSelected) {
         item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, (x, j) => '*').join('');
@@ -151,6 +153,24 @@ export class TestComponent {
   doScrollSome() {
     // this.doScroll(400, 25, 1);
     this.getViewportElement().scrollTop += 100;
+  }
+
+  doChangeSize() {
+    const viewportElement = document.getElementById('my-viewport');
+    const index = Number(this.sizeIndex);
+    if (!isNaN(index) && viewportElement) {
+      for (let i = index; i < index + 5; i++) {
+        const element = viewportElement.querySelector(`[data-sid="${i}"]`);
+        if (element) {
+          (<HTMLElement>element).style.height = this.sizeValue + 'px';
+          const item = this.data.find(_item => _item.id === i);
+          if (item) {
+            item.height = this.sizeValue;
+          }
+        }
+      }
+      this.datasource.adapter.check();
+    }
   }
 
   doLog() {

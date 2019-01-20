@@ -17,9 +17,15 @@ export class ItemCache {
   }
 }
 
+interface ItemSize {
+  $index: number;
+  size: number;
+  newSize?: number;
+}
+
 export class RecalculateAverage {
-  newItems: Array<number>;
-  oldItems: Array<number>;
+  newItems: Array<ItemSize>;
+  oldItems: Array<ItemSize>;
 
   constructor() {
     this.reset();
@@ -66,14 +72,14 @@ export class Cache {
     if (!oldItemsLength && !newItemsLength) {
       return false;
     }
-    const oldItemsSize = this.recalculateAverage.oldItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
-    const newItemsSize = this.recalculateAverage.newItems.reduce((acc, index) => acc + this.getItemSize(index), 0);
     if (oldItemsLength) {
+      const oldItemsSize = this.recalculateAverage.oldItems.reduce((acc, item) => acc + item.size, 0);
+      const newItemsSize = this.recalculateAverage.oldItems.reduce((acc, item) => acc + <number>item.newSize, 0);
       const averageSize = this.averageSizeFloat || 0;
-      const averageSizeLength = this.items.size - newItemsLength - oldItemsLength;
-      this.averageSizeFloat = (averageSizeLength * averageSize + oldItemsSize) / averageSizeLength;
+      this.averageSizeFloat = averageSize - (oldItemsSize + newItemsSize) / (this.items.size - newItemsLength);
     }
     if (newItemsLength) {
+      const newItemsSize = this.recalculateAverage.newItems.reduce((acc, item) => acc + item.size, 0);
       const averageSize = this.averageSizeFloat || 0;
       const averageSizeLength = this.items.size - newItemsLength;
       this.averageSizeFloat = (averageSizeLength * averageSize + newItemsSize) / this.items.size;
@@ -89,14 +95,18 @@ export class Cache {
     if (itemCache) {
       itemCache.data = item.data;
       if (itemCache.size !== item.size) {
+        this.recalculateAverage.oldItems.push({
+          $index: item.$index,
+          size: itemCache.size,
+          newSize: item.size
+        });
         itemCache.size = item.size;
-        this.recalculateAverage.oldItems.push(item.$index);
       }
     } else {
       itemCache = new ItemCache(item);
       this.items.set(item.$index, itemCache);
       if (this.averageSize !== itemCache.size) {
-        this.recalculateAverage.newItems.push(item.$index);
+        this.recalculateAverage.newItems.push({ $index: item.$index, size: itemCache.size });
       }
     }
     if (item.$index < this.minIndex) {

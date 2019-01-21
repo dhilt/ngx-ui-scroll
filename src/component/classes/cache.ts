@@ -126,4 +126,8 @@ export class Cache {
   get(index: number): ItemCache | undefined {
     return this.items.get(index);
   }
+
+  get size(): number {
+    return this.items.size;
+  }
 }

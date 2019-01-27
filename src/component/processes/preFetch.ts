@@ -74,23 +74,32 @@ export default class PreFetch {
       let position = firstIndexPosition;
       let index = firstIndex;
       while (1) {
-        index += inc;
-        if (index < buffer.absMinIndex) {
-          break;
+        if (startPosition >= 0) {
+          const size = buffer.getSizeByIndex(index);
+          const diff = (position + size) - startPosition;
+          if (diff > 0) {
+            firstIndex = index;
+            firstIndexPosition = position;
+            break;
+          }
+          position += size;
+          index++;
+          if (index < buffer.absMinIndex) {
+            break;
+          }
         }
-        position += inc * buffer.getSizeByIndex(index);
-        if (inc < 0) {
-          firstIndex = index;
-          firstIndexPosition = position;
-          if (position <= startPosition) {
+        if (startPosition < 0) {
+          index--;
+          if (index < buffer.absMinIndex) {
             break;
           }
-        } else {
-          if (position > startPosition) {
-            break;
-          }
+          position -= buffer.getSizeByIndex(index);
+          const diff = position - startPosition;
           firstIndex = index;
           firstIndexPosition = position;
+          if (diff <= 0) {
+            break;
+          }
         }
       }
     }
@@ -112,13 +121,12 @@ export default class PreFetch {
       lastIndex = index;
       while (1) {
         lastIndex = index;
-        index++;
         position += buffer.getSizeByIndex(index);
         lastIndexPosition = position;
         if (position >= endPosition) {
           break;
         }
-        if (index > buffer.absMaxIndex) {
+        if (index++ > buffer.absMaxIndex) {
           break;
         }
       }

@@ -117,8 +117,8 @@ export class Misc {
   }
 
   scrollTo(value: number) {
-    this.datasource.adapter.setScrollPosition(value);
-    // this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
+    // this.datasource.adapter.setScrollPosition(value);
+    this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
   scrollMin() {

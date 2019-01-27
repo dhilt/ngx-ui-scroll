@@ -9,7 +9,6 @@ const baseConfig: TestBedConfig = {
   datasourceSettings: {
     startIndex: 1, padding: 0.5, bufferSize: 10, minIndex: MIN_INDEX, maxIndex: MAX_INDEX, itemSize: 100, adapter: true
   },
-  datasourceDevSettings: { debug: true },
   templateSettings: { viewportHeight: 600, dynamicSize: 'size' },
   custom: {
     min: 1,

@@ -116,6 +116,26 @@ const limitedDatasourceGet = (
     }
   };
 
+const limitedDatasourceSpecialGet = (
+  index: number, count: number, success: (data: any) => any
+) => {
+  const min = 1;
+  const max = 20;
+  const data = [];
+  const start = Math.max(min, index);
+  const end = Math.min(index + count - 1, max);
+  if (start <= end) {
+    for (let i = start; i <= end; i++) {
+      const item = <any>{ id: i, text: 'item #' + i, size: 20 };
+      if (i === 1) {
+        item.size = 200;
+      }
+      data.push(item);
+    }
+  }
+  success(data);
+};
+
 const datasourceStore = {
 
   'initial': <Datasource>{
@@ -191,6 +211,10 @@ const datasourceStore = {
 
   'limited--99-100-dynamic-size': <Datasource>{
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0)
+  },
+
+  'limited-1-20-dynamic-size-special': <Datasource>{
+    get: limitedDatasourceSpecialGet
   },
 
   'limited--99-100-dynamic-size-processor': <Datasource>{

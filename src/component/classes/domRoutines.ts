@@ -14,6 +14,7 @@ export class Routines {
   }
 
   setScrollPosition(element: HTMLElement, value: number) {
+    value = Math.max(0, value);
     element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
@@ -42,6 +43,7 @@ export class Routines {
   }
 
   setSizeStyle(element: HTMLElement, value: number) {
+    value = Math.max(0, value);
     element.style[this.horizontal ? 'width' : 'height'] = `${value}px`;
   }
 

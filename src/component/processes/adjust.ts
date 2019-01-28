@@ -145,14 +145,17 @@ export default class Adjust {
 
   static setScroll(scroller: Scroller, delta: number) {
     const { viewport } = scroller;
+    const viewportSize = scroller.viewport.getSize();
     const forwardPadding = viewport.paddings[Direction.forward];
     const oldPosition = viewport.scrollPosition;
     const newPosition = Math.round(oldPosition + delta);
     for (let i = 0; i < Adjust.MAX_SCROLL_ADJUSTMENTS_COUNT; i++) {
       viewport.scrollPosition = newPosition;
       const positionDiff = newPosition - viewport.scrollPosition;
-      if (positionDiff > 0) {
-        forwardPadding.size += positionDiff;
+      const viewportDiff = viewportSize - newPosition;
+      const diff = Math.min(viewportDiff, positionDiff);
+      if (diff > 0) {
+        forwardPadding.size += diff;
       } else {
         break;
       }

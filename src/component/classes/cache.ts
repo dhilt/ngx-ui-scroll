@@ -76,7 +76,7 @@ export class Cache {
       const oldItemsSize = this.recalculateAverage.oldItems.reduce((acc, item) => acc + item.size, 0);
       const newItemsSize = this.recalculateAverage.oldItems.reduce((acc, item) => acc + <number>item.newSize, 0);
       const averageSize = this.averageSizeFloat || 0;
-      this.averageSizeFloat = averageSize - (oldItemsSize + newItemsSize) / (this.items.size - newItemsLength);
+      this.averageSizeFloat = averageSize - (oldItemsSize - newItemsSize) / (this.items.size - newItemsLength);
     }
     if (newItemsLength) {
       const newItemsSize = this.recalculateAverage.newItems.reduce((acc, item) => acc + item.size, 0);

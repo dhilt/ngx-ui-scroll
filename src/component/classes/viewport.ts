@@ -21,12 +21,15 @@ export class Viewport {
   readonly state: State;
   readonly logger: Logger;
 
+  private disabled: boolean;
+
   constructor(elementRef: ElementRef, settings: Settings, routines: Routines, state: State, logger: Logger) {
     this.settings = settings;
     this.routines = routines;
     this.state = state;
     this.logger = logger;
     this.element = elementRef.nativeElement;
+    this.disabled = false;
 
     if (settings.windowViewport) {
       this.host = (<Document>this.element.ownerDocument).body;
@@ -88,7 +91,25 @@ export class Viewport {
     if (synthState.positionBefore === null) {
       // syntheticScroll.positionBefore should be set once per cycle
       synthState.positionBefore = oldPosition;
+      synthState.timeBefore = Number(Date.now());
     }
+  }
+
+  disableScrollForOneLoop() {
+    if (this.disabled) {
+      return;
+    }
+    const { style } = this.scrollable;
+    if (style.overflowY === 'hidden') {
+      return;
+    }
+    this.disabled = true;
+    const overflow = style.overflowY;
+    setTimeout(() => {
+      this.disabled = false;
+      style.overflowY = overflow;
+    });
+    style.overflowY = 'hidden';
   }
 
   getSize(): number {

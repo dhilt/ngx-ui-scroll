@@ -28,6 +28,7 @@ export interface SyntheticScroll {
   delta: number;
   time: number;
   readyToReset: boolean;
+  timeBefore: number;
 
   reset: Function;
 }

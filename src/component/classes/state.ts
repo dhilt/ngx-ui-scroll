@@ -60,6 +60,7 @@ class SyntheticScroll implements ISyntheticScroll {
   delta: number;
   time: number;
   readyToReset: boolean;
+  timeBefore: number;
 
   constructor() {
     this.reset(null);
@@ -71,6 +72,7 @@ class SyntheticScroll implements ISyntheticScroll {
     this.delta = 0;
     this.time = 0;
     this.readyToReset = false;
+    this.timeBefore = 0;
   }
 }
 

@@ -111,6 +111,9 @@ export default class Adjust {
       const bwdDiff = bwdPaddingAverageSizeDiff - bwdAverageItemsSizeDiff;
       const positionDiff = posDiff + bwdDiff;
       if (positionDiff) {
+        if (scroller.settings.changeOverflow) {
+          viewport.disableScrollForOneLoop();
+        }
         Adjust.setScroll(scroller, positionDiff);
         scroller.logger.stat('after scroll position adjustment (average)');
       }

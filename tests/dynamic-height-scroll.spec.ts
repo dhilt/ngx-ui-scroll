@@ -44,7 +44,7 @@ const testConfig2 = (config: TestBedConfig, misc: Misc, done: Function) => {
     if (cycle === 2) {
       shared.stat = new Stat(scroller);
       initialFetchCount = scroller.state.fetch.callCount;
-      misc.scrollTo(100);
+      misc.scrollTo(100, true);
     } else {
       (new Stat(scroller)).expect(shared.stat);
       done();

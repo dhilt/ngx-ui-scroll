@@ -159,7 +159,7 @@ export default class Scroll {
     // }
   }
 
-  static logInertia(...args: any) {
+  static logInertia(...args: any[]) {
     const list = [
       'position',
       'synthetic',

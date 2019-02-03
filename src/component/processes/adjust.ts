@@ -90,7 +90,6 @@ export default class Adjust {
         const winState = state.scrollState.window;
         if (newPosition === winState.positionToUpdate) {
           winState.reset();
-          state.syntheticScroll.readyToReset = false;
           scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
           Adjust.setScroll(scroller, posDiff);
           scroller.logger.stat('after scroll position adjustment (window)');

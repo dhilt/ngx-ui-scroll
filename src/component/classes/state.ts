@@ -4,6 +4,7 @@ import {
   State as IState,
   ItemAdapter,
   WindowScrollState as IWindowScrollState,
+  ScrollEventData as IScrollEventData,
   ScrollState as IScrollState,
   SyntheticScroll as ISyntheticScroll,
   WorkflowOptions as IWorkflowOptions
@@ -37,6 +38,11 @@ class ScrollState implements IScrollState {
   keepScroll: boolean;
   window: IWindowScrollState;
 
+  position: number;
+  time: number;
+  positionBefore: number;
+  timeBefore: number;
+
   constructor() {
     this.window = new WindowScrollState();
     this.reset();
@@ -50,29 +56,148 @@ class ScrollState implements IScrollState {
     this.workflowTimer = null;
     this.scroll = false;
     this.keepScroll = false;
+    this.position = 0;
+    this.time = Number(new Date());
     this.window.reset();
   }
 }
 
-class SyntheticScroll implements ISyntheticScroll {
-  position: number | null;
-  positionBefore: number | null;
-  delta: number;
+class ScrollEventData implements IScrollEventData {
   time: number;
-  readyToReset: boolean;
-  timeBefore: number;
+  position: number;
+  positionBefore: number | null;
+  handled: boolean;
 
-  constructor() {
-    this.reset(null);
+  constructor(position: number, positionBefore: number | null, time?: number) {
+    this.time = time || Number(new Date());
+    this.position = position;
+    this.positionBefore = positionBefore;
+    this.handled = false;
+  }
+}
+
+class SyntheticScroll implements ISyntheticScroll {
+  before: IScrollEventData | null;
+  list: Array<IScrollEventData>;
+
+  get isSet(): boolean {
+    return !!this.list.length;
   }
 
-  reset(position: number | null = null) {
-    this.position = position;
-    this.positionBefore = null;
-    this.delta = 0;
-    this.time = 0;
-    this.readyToReset = false;
-    this.timeBefore = 0;
+  get isDone(): boolean {
+    return this.list.some(i => i.handled);
+  }
+
+  get position(): number | null {
+    return this.getLast('position');
+  }
+
+  get time(): number | null {
+    return this.getLast('time');
+  }
+
+  get handledPosition(): number | null {
+    const found = this.getHandled();
+    return found ? found.position : null;
+  }
+
+  get handledTime(): number | null {
+    const found = this.getHandled();
+    return found ? found.time : null;
+  }
+
+  get registeredTime(): number | null {
+    return this.before ? this.before.time : null;
+  }
+
+  get registeredPosition(): number | null {
+    return this.before ? this.before.position : null;
+  }
+
+  constructor() {
+    this.reset();
+  }
+
+  private getHandled(): IScrollEventData | null {
+    return this.list.find(i => i.handled) || null;
+  }
+
+  private getLast(token: string): any {
+    const { length } = this.list;
+    if (!length) {
+      return null;
+    }
+    const last = this.list[length - 1];
+    switch (token) {
+      case 'position':
+        return last.position;
+      case 'time':
+        return last.time;
+      default:
+        return null;
+    }
+  }
+
+  reset() {
+    this.before = null;
+    this.list = [];
+  }
+
+  register(position: number, time: number) {
+    this.before = new ScrollEventData(position, null, time);
+  }
+
+  push(position: number, positionBefore: number, posReg: number, timeReg: number) {
+    const evtData = new ScrollEventData(position, positionBefore);
+    if (this.registeredTime !== timeReg) {
+      this.reset();
+      this.register(posReg, timeReg);
+    }
+    this.list.push(evtData);
+  }
+
+  done() {
+    const handled = this.getHandled();
+    if (handled) { // equivalent to if (this.isDone)
+      this.register(handled.position, handled.time);
+      this.list = this.list.filter(i => i.time > handled.time);
+    }
+    const last = this.list.length ? this.list[this.list.length - 1] : null;
+    if (last) {
+      last.handled = true;
+    }
+  }
+
+  nearest(position: number): IScrollEventData | null {
+    const last = this.before;
+    if (!last) {
+      return null;
+    }
+    const nearest = this.list.reduce(
+      (acc: IScrollEventData | null, item: IScrollEventData) => {
+        const delta = position - item.position;
+        if (!acc) {
+          return delta < 0 ? item : null;
+        }
+        const accDelta = position - acc.position;
+        if (delta < 0 && delta > accDelta) {
+          return item;
+        }
+        return acc;
+      }
+      , null);
+    if (!nearest) {
+      return last;
+    }
+    const synthDelta = position - nearest.position;
+    const beforeDelta = position - last.position;
+    if (beforeDelta < 0 && beforeDelta > synthDelta) {
+      return last;
+    }
+    if (synthDelta < 0) {
+      return nearest;
+    }
+    return null;
   }
 }
 
@@ -235,6 +360,14 @@ export class State implements IState {
       index = maxIndex;
     }
     this.startIndex = index;
+  }
+
+  logSynth() {
+    const synth = this.syntheticScroll;
+    this.logger.log(() => [
+      'registered', synth.registeredPosition,
+      '/ synthetic', synth.list.map(i => i.position)
+    ]);
   }
 
 }

@@ -84,8 +84,8 @@ export class Viewport {
   set scrollPosition(value: number) {
     const oldPosition = this.scrollPosition;
     const newPosition = this.setPosition(value, oldPosition);
-    const { syntheticScroll, scrollState: { position, time } } = this.state;
-    syntheticScroll.push(newPosition, oldPosition, position, time);
+    const { syntheticScroll, scrollState } = this.state;
+    syntheticScroll.push(newPosition, oldPosition, scrollState.getData());
   }
 
   disableScrollForOneLoop() {

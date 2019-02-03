@@ -1,8 +1,9 @@
 import { BehaviorSubject } from 'rxjs';
 
 import {
-  State as IState,
+  Direction,
   ItemAdapter,
+  State as IState,
   WindowScrollState as IWindowScrollState,
   ScrollEventData as IScrollEventData,
   ScrollState as IScrollState,
@@ -40,8 +41,8 @@ class ScrollState implements IScrollState {
 
   position: number;
   time: number;
+  direction: Direction;
   positionBefore: number;
-  timeBefore: number;
 
   constructor() {
     this.window = new WindowScrollState();
@@ -58,20 +59,33 @@ class ScrollState implements IScrollState {
     this.keepScroll = false;
     this.position = 0;
     this.time = Number(new Date());
+    this.direction = Direction.forward;
     this.window.reset();
+  }
+
+  getData(): IScrollEventData {
+    return new ScrollEventData(this.position, this.positionBefore, this.time, this.direction);
+  }
+
+  setData({ position, time, direction }: IScrollEventData) {
+    this.position = position;
+    this.time = time;
+    this.direction = direction;
   }
 }
 
 class ScrollEventData implements IScrollEventData {
   time: number;
   position: number;
+  direction: Direction;
   positionBefore: number | null;
   handled: boolean;
 
-  constructor(position: number, positionBefore: number | null, time?: number) {
+  constructor(position: number, positionBefore: number | null, time?: number, direction?: Direction) {
     this.time = time || Number(new Date());
     this.position = position;
     this.positionBefore = positionBefore;
+    this.direction = direction || Direction.forward;
     this.handled = false;
   }
 }
@@ -143,15 +157,15 @@ class SyntheticScroll implements ISyntheticScroll {
     this.list = [];
   }
 
-  register(position: number, time: number) {
-    this.before = new ScrollEventData(position, null, time);
+  register({ position, time, direction }: IScrollEventData) {
+    this.before = new ScrollEventData(position, null, time, direction);
   }
 
-  push(position: number, positionBefore: number, posReg: number, timeReg: number) {
+  push(position: number, positionBefore: number, regData: IScrollEventData) {
     const evtData = new ScrollEventData(position, positionBefore);
-    if (this.registeredTime !== timeReg) {
+    if (this.registeredTime !== regData.time) {
       this.reset();
-      this.register(posReg, timeReg);
+      this.register(regData);
     }
     this.list.push(evtData);
   }
@@ -159,7 +173,7 @@ class SyntheticScroll implements ISyntheticScroll {
   done() {
     const handled = this.getHandled();
     if (handled) { // equivalent to if (this.isDone)
-      this.register(handled.position, handled.time);
+      this.register(handled);
       this.list = this.list.filter(i => i.time > handled.time);
     }
     const last = this.list.length ? this.list[this.list.length - 1] : null;
@@ -173,9 +187,10 @@ class SyntheticScroll implements ISyntheticScroll {
     if (!last) {
       return null;
     }
+    const inc = last.direction === Direction.forward ? -1 : 1;
     const nearest = this.list.reduce(
       (acc: IScrollEventData | null, item: IScrollEventData) => {
-        const delta = position - item.position;
+        const delta = inc * (position - item.position);
         if (!acc) {
           return delta < 0 ? item : null;
         }
@@ -189,8 +204,8 @@ class SyntheticScroll implements ISyntheticScroll {
     if (!nearest) {
       return last;
     }
-    const synthDelta = position - nearest.position;
-    const beforeDelta = position - last.position;
+    const synthDelta = inc * (position - nearest.position);
+    const beforeDelta = inc * (position - last.position);
     if (beforeDelta < 0 && beforeDelta > synthDelta) {
       return last;
     }

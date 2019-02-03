@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, SyntheticScroll } from '../interfaces/index';
+import { Direction, Process, ProcessStatus, ScrollEventData } from '../interfaces/index';
 
 enum ScrollProcess {
   stop = -1,
@@ -16,24 +16,24 @@ export default class Scroll {
     const { syntheticScroll: synth, scrollState } = scroller.state;
     const position = scroller.viewport.scrollPosition;
     const time = Number(new Date());
+    const direction = position === scrollState.position ? scrollState.direction :
+      (position > scrollState.position ? Direction.forward : Direction.backward);
+    const data = <ScrollEventData>{ position, time, direction };
 
     scroller.logger.log(() => [
-      position - scrollState.position >= 0 ? '\u2934' : '\u2935',
+      direction === Direction.backward ? '\u2934' : '\u2935',
       position, (time - scrollState.time) + 'ms',
       ...(synth.position === position ? ['- done synthetic'] : [])
     ]);
 
-    let next = Scroll.processSyntheticScroll(scroller, position, time);
+    let next = Scroll.processSyntheticScroll(scroller, data);
 
     if (!synth.isSet || synth.position !== position) {
-      scrollState.position = position;
-      scrollState.time = time;
+      scrollState.setData(data);
     }
 
     if (next === ScrollProcess.inertia) {
-      next = this.processInertiaScroll(scroller, position, time)
-        ? ScrollProcess.delay // continue processing
-        : ScrollProcess.stop; // wait for new event trigger
+      next = this.processInertiaScroll(scroller, data);
     }
 
     if (next === ScrollProcess.delay) {
@@ -41,7 +41,9 @@ export default class Scroll {
     }
   }
 
-  static processSyntheticScroll(scroller: Scroller, position: number, time: number): ScrollProcess {
+  static processSyntheticScroll(
+    scroller: Scroller, { position, time }: ScrollEventData
+  ): ScrollProcess {
     const { syntheticScroll: synth, scrollState } = scroller.state;
 
     if (synth.isSet) {
@@ -84,14 +86,17 @@ export default class Scroll {
     return ScrollProcess.inertia;
   }
 
-  static processInertiaScroll(scroller: Scroller, position: number, time: number): boolean {
-    const { viewport, settings, logger, state: { scrollState, syntheticScroll: synth } } = scroller;
+  static processInertiaScroll(
+    scroller: Scroller, { position, time, direction }: ScrollEventData
+  ): ScrollProcess {
+    const { viewport, logger, state: { syntheticScroll: synth } } = scroller;
     const nearest = synth.nearest(position);
     if (nearest === null) {
       logger.log('skip, no inertia');
-      return true;
+      return ScrollProcess.delay;
     }
 
+    const inc = direction === Direction.forward ? -1 : 1;
     const delta = position - <number>synth.position;
     const delay = time - <number>synth.time;
     const inertiaDelta = position - nearest.position;
@@ -106,7 +111,7 @@ export default class Scroll {
     if (inertiaDelta === delta) {
       synth.reset();
       logger.log('skip, proper inertia');
-      return true;
+      return ScrollProcess.delay;
     }
 
     // if ( // precise inertia settings
@@ -120,7 +125,7 @@ export default class Scroll {
     // }
 
     viewport.scrollPosition = newPosition;
-    return false;
+    return ScrollProcess.stop;
   }
 
   static delayScroll(scroller: Scroller) {

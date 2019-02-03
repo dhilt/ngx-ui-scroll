@@ -1,4 +1,4 @@
-import { ItemAdapter, ScrollEventData as IScrollEventData } from './index';
+import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/fetch';
 import { BehaviorSubject } from 'rxjs/index';
 
@@ -13,6 +13,7 @@ export interface ScrollEventData {
   time: number;
   position: number;
   positionBefore: number | null;
+  direction: Direction;
   handled: boolean;
 }
 
@@ -28,8 +29,11 @@ export interface ScrollState {
 
   position: number;
   time: number;
+  direction: Direction;
 
   reset: Function;
+  getData: Function;
+  setData: Function;
 }
 
 export interface SyntheticScroll {

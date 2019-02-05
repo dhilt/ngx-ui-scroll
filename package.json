@@ -46,7 +46,7 @@
     "@angular/core": ">= 7.0.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.12.4",
+    "@angular-devkit/build-angular": "^0.13.0",
     "@angular/cli": "^7.3.0",
     "@angular/compiler": "^7.2.3",
     "@angular/compiler-cli": "^7.2.3",
@@ -86,7 +86,7 @@
     "tslint-angular": "1.1.2",
     "typescript": "~3.1.6",
     "uglify-js": "3.4.9",
-    "webpack": "4.21.0",
+    "webpack": "4.29.1",
     "webpack-filter-warnings-plugin": "1.2.0"
   }
 }

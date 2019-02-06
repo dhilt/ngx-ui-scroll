@@ -44,8 +44,8 @@ export class TestComponent {
     settings: {
       padding: 0.1,
       bufferSize: 10,
-      minIndex: MIN,
-      maxIndex: MAX,
+      // minIndex: MIN,
+      // maxIndex: MAX,
       itemSize: 100,
       startIndex: 1
     },

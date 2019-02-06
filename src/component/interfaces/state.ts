@@ -39,10 +39,12 @@ export interface ScrollState {
 export interface SyntheticScroll {
   list: Array<ScrollEventData>;
   before: ScrollEventData | null;
+
   isSet: boolean;
   isDone: boolean;
   position: number | null;
   time: number | null;
+  direction: Direction | null;
   handledPosition: number | null;
   handledTime: number | null;
   registeredPosition: number | null;

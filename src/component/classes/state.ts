@@ -110,6 +110,10 @@ class SyntheticScroll implements ISyntheticScroll {
     return this.getLast('time');
   }
 
+  get direction(): Direction | null {
+    return this.getLast('direction');
+  }
+
   get handledPosition(): number | null {
     const found = this.getHandled();
     return found ? found.position : null;
@@ -147,6 +151,8 @@ class SyntheticScroll implements ISyntheticScroll {
         return last.position;
       case 'time':
         return last.time;
+      case 'direction':
+        return last.direction;
       default:
         return null;
     }
@@ -179,6 +185,8 @@ class SyntheticScroll implements ISyntheticScroll {
     const last = this.list.length ? this.list[this.list.length - 1] : null;
     if (last) {
       last.handled = true;
+    } else {
+      this.reset();
     }
   }
 

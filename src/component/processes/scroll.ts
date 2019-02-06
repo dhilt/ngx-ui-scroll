@@ -16,8 +16,7 @@ export default class Scroll {
     const { syntheticScroll: synth, scrollState } = scroller.state;
     const position = scroller.viewport.scrollPosition;
     const time = Number(new Date());
-    const direction = position === scrollState.position ? scrollState.direction :
-      (position > scrollState.position ? Direction.forward : Direction.backward);
+    const direction = Scroll.getDirection(scroller, position);
     const data = <ScrollEventData>{ position, time, direction };
 
     scroller.logger.log(() => [
@@ -39,6 +38,20 @@ export default class Scroll {
     if (next === ScrollProcess.delay) {
       this.delayScroll(scroller);
     }
+  }
+
+  static getDirection(scroller: Scroller, position: number): Direction {
+    const { syntheticScroll: synth, scrollState } = scroller.state;
+    let _direction = scrollState.direction;
+    let _position = scrollState.position;
+    if (synth.isDone) {
+      _direction = <Direction>synth.direction;
+      _position = <number>synth.position;
+    }
+    if (position === _position) {
+      return _direction;
+    }
+    return position > _position ? Direction.forward : Direction.backward;
   }
 
   static processSyntheticScroll(
@@ -96,7 +109,6 @@ export default class Scroll {
       return ScrollProcess.delay;
     }
 
-    const inc = direction === Direction.forward ? -1 : 1;
     const delta = position - <number>synth.position;
     const delay = time - <number>synth.time;
     const inertiaDelta = position - nearest.position;
@@ -124,6 +136,7 @@ export default class Scroll {
     //   return true;
     // }
 
+    // viewport.scrollPosition = <number>synth.position;
     viewport.scrollPosition = newPosition;
     return ScrollProcess.stop;
   }

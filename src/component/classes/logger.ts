@@ -54,6 +54,7 @@ export class Logger {
         ? JSON.stringify(obj)
           .replace(/"/g, '')
           .replace(/(\{|\:|\,)/g, '$1 ')
+          .replace(/(\})/g, ' $1')
         : obj
     ]);
   }

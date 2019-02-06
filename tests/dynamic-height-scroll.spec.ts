@@ -34,7 +34,6 @@ const config2: TestBedConfig = {
   datasourceSettings: {
     startIndex: 1, padding: 0.5, bufferSize: 5, minIndex: 1, maxIndex: 20, itemSize: 20, adapter: true
   },
-  datasourceDevSettings: { debug: true },
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 };
 

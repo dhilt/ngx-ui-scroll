@@ -12,6 +12,7 @@ export class Logger {
   readonly getInnerLoopCount: Function;
   readonly getWorkflowCycleData: Function;
   readonly getWorkflowOptions: Function;
+  readonly getSynthScrollState: Function;
   private logs: Array<any> = [];
 
   constructor(scroller: Scroller) {
@@ -42,6 +43,7 @@ export class Logger {
     this.getWorkflowCycleData = (more: boolean): string =>
       `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}` + (more ? '-' : '');
     this.getWorkflowOptions = () => scroller.state.workflowOptions;
+    this.getSynthScrollState = () => scroller.state.syntheticScroll;
     this.log(() => `uiScroll Workflow has been started (v${scroller.version}, instance ${settings.instanceIndex})`);
   }
 
@@ -69,6 +71,17 @@ export class Logger {
       const logStyles = ['color: #888', 'color: #000'];
       this.log(() => [`%c${_text}: %c${this.getFetchRange()}`, ...logStyles]);
     }
+  }
+
+  synth(token?: string) {
+    this.log(() => {
+      const synth = this.getSynthScrollState();
+      return [
+        ...(token ? [token + ';'] : []),
+        'registered', synth.registeredPosition,
+        '/ queued', synth.list.map((i: any) => i.position)
+      ];
+    });
   }
 
   logProcess(data: ProcessSubject) {

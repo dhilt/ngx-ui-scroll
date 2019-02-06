@@ -60,7 +60,7 @@ export default class Scroll {
     const { syntheticScroll: synth, scrollState } = scroller.state;
 
     if (synth.isSet) {
-      scroller.state.logSynth();
+      scroller.logger.synth('synthetic proc');
     }
 
     // H1 -- no synthetic position changes
@@ -90,7 +90,7 @@ export default class Scroll {
           scrollState.time = <number>synth.handledTime;
         }
         synth.done();
-        scroller.state.logSynth();
+        scroller.logger.synth('synthetic done');
       }
       return ScrollProcess.stop;
     }

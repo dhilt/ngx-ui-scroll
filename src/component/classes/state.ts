@@ -175,12 +175,4 @@ export class State implements IState {
     this.startIndex = index;
   }
 
-  logSynth() {
-    const synth = this.syntheticScroll;
-    this.logger.log(() => [
-      'registered', synth.registeredPosition,
-      '/ synthetic', synth.list.map(i => i.position)
-    ]);
-  }
-
 }

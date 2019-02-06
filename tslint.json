@@ -11,7 +11,7 @@
         "app"
       ],
       "kebab-case"
-    ]
-  },
-  "max-classes-per-file": [false]
+    ],
+    "max-classes-per-file": [false]
+  }
 }

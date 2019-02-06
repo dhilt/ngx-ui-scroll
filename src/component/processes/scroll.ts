@@ -96,7 +96,7 @@ export default class Scroll {
     }
 
     // H4 -- here we have inertia over synthetic position change
-    return ScrollProcess.inertia;
+    return scroller.settings.inertia ? ScrollProcess.inertia : ScrollProcess.delay;
   }
 
   static processInertiaScroll(
@@ -127,13 +127,13 @@ export default class Scroll {
     }
 
     // if ( // precise inertia settings
-    //   settings.inertia &&
-    //   // -inertiaDelta > settings.inertiaScrollDelta &&
-    //   inertiaDelay > settings.inertiaScrollDelay
+    //   scroller.settings.inertia &&
+    //   -inertiaDelta > scroller.settings.inertiaScrollDelta &&
+    //   inertiaDelay > scroller.settings.inertiaScrollDelay
     // ) {
     //   synth.reset();
     //   logger.log('skip, out of settings');
-    //   return true;
+    //   return ScrollProcess.delay;
     // }
 
     // viewport.scrollPosition = <number>synth.position;

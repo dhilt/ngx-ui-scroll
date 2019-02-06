@@ -11,8 +11,7 @@ const config1: TestBedConfig = {
   datasourceSettings: {
     startIndex: 1, padding: 0.1, bufferSize: 10, minIndex: -99, maxIndex: 100, itemSize: 20, adapter: true
   },
-  datasourceDevSettings: { debug: true },
-  timeout: 15000,
+  timeout: 10000,
   templateSettings: { viewportHeight: 600, dynamicSize: 'size' }
 };
 
@@ -32,7 +31,10 @@ const testConfig1 = (config: TestBedConfig, misc: Misc, done: Function) => {
 
 const config2: TestBedConfig = {
   datasourceName: 'limited-1-20-dynamic-size-special',
-  datasourceSettings: { startIndex: 1, padding: 0.5, bufferSize: 5, minIndex: 1, maxIndex: 20, itemSize: 20 },
+  datasourceSettings: {
+    startIndex: 1, padding: 0.5, bufferSize: 5, minIndex: 1, maxIndex: 20, itemSize: 20, adapter: true
+  },
+  datasourceDevSettings: { debug: true },
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 };
 
@@ -44,7 +46,7 @@ const testConfig2 = (config: TestBedConfig, misc: Misc, done: Function) => {
     if (cycle === 2) {
       shared.stat = new Stat(scroller);
       initialFetchCount = scroller.state.fetch.callCount;
-      misc.scrollTo(100, true);
+      misc.scrollTo(100);
     } else {
       (new Stat(scroller)).expect(shared.stat);
       done();

@@ -173,6 +173,10 @@ button:hover {
   margin: 0 5px;
 }
 
+input[type=checkbox], input[type=radio] {
+  height: 13px;
+}
+
 .demo .work {
   margin-left: 20px;
 }
@@ -218,6 +222,7 @@ button:hover {
 .demo .work .item {
   font-weight: bolder;
   height: 25px;
+  overflow-y: hidden;
 }
 
 .demo .work .item.even {

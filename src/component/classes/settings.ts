@@ -24,7 +24,7 @@ export const defaultDevSettings: IDevSettings = {
   immediateLog: true, // if false, logging is not immediate and could be done via Workflow.logForce call
   logTime: false, // if true, time differences are being logged
   throttle: 40, // if > 0, scroll event handling is throttled (ms)
-  inertia: false, // if true, inertia scroll delay (ms) and delta (px) are taken into the account
+  inertia: true, // if true, inertia scroll delay (ms) and delta (px) are taken into the account
   inertiaScrollDelay: 125,
   inertiaScrollDelta: 35,
   initDelay: 1, // if set, the Workflow initialization will be postponed (ms)

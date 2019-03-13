@@ -9,6 +9,7 @@ export enum DemoSourceType {
 interface DemoSource {
   name: DemoSourceType | string;
   text: string;
+  active?: boolean;
 }
 
 export type DemoSources = DemoSource[];

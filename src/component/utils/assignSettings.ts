@@ -100,4 +100,5 @@ export const assignDevSettings = (
   assignMinimalNumeric(target, devSettings, 'initDelay', defaults, minDevSettings, true);
   assignMinimalNumeric(target, devSettings, 'initWindowDelay', defaults, minDevSettings, true);
   assignMinimalNumeric(target, devSettings, 'maxSynthScrollDelay', defaults, minDevSettings, true);
+  assignBoolean(target, devSettings, 'changeOverflow', defaults);
 };

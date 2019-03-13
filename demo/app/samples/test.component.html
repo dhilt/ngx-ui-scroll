@@ -13,6 +13,9 @@
   <button (click)="doScrollEnd()">Down</button>
   <button (click)="doScrollSome()">Some</button>
   <br>
+  <input [(ngModel)]="sizeIndex" style="width: 50px">
+  <button (click)="doChangeSize()">Size</button>
+  <br>
   <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
   <br>
   <small>isLoading:

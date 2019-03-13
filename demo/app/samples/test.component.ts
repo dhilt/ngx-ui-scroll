@@ -3,9 +3,9 @@ import { Observable, Observer } from 'rxjs';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
-const MAX = 100;
-let MIN = -99;
-const MIN_ROW_HEIGHT = 2;
+const MAX = 50;
+let MIN = -199;
+const MIN_ROW_HEIGHT = 5;
 
 interface MyItem {
   id: number;
@@ -32,6 +32,8 @@ export class TestInnerComponent {
 export class TestComponent {
 
   reloadIndex = 1;
+  sizeIndex = 1;
+  sizeValue = 10;
   datasourceDelay = 0;
   data: Array<MyItem>;
 
@@ -40,21 +42,22 @@ export class TestComponent {
       this.fetchData(index, count)
     ,
     settings: {
-      padding: 0.5,
+      padding: 0.1,
       bufferSize: 10,
-      minIndex: MIN,
-      maxIndex: MAX,
-      itemSize: 25,
-      startIndex: MIN
+      // minIndex: MIN,
+      // maxIndex: MAX,
+      itemSize: 100,
+      startIndex: 1
     },
     devSettings: {
       debug: true,
       immediateLog: true,
       logTime: false,
       throttle: 40,
-      inertia: false,
-      inertiaScrollDelay: 125,
-      inertiaScrollDelta: 35
+      inertia: true,
+      inertiaScrollDelay: 55,
+      inertiaScrollDelta: 135,
+      changeOverflow: false
     }
   });
 
@@ -70,7 +73,7 @@ export class TestComponent {
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
-        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
+        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN) // 100
       };
       if (item.isSelected) {
         item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, (x, j) => '*').join('');
@@ -87,6 +90,9 @@ export class TestComponent {
     if (start <= end) {
       for (let i = start; i <= end; i++) {
         data.push(this.data[i - MIN]);
+        // if (i > 0) {
+        //   this.data[i - MIN].height = 25;
+        // }
       }
       if (start === MIN) {
         // this.datasource.adapter.setMinIndex(MIN);
@@ -149,8 +155,28 @@ export class TestComponent {
   }
 
   doScrollSome() {
+    const current = this.getViewportElement().scrollTop;
     // this.doScroll(400, 25, 1);
-    this.getViewportElement().scrollTop += 100;
+    this.getViewportElement().scrollTop = current + 300;
+    // this.datasource.adapter.setScrollPosition(current + 300);
+  }
+
+  doChangeSize() {
+    const viewportElement = document.getElementById('my-viewport');
+    const index = Number(this.sizeIndex);
+    if (!isNaN(index) && viewportElement) {
+      for (let i = index; i < index + 5; i++) {
+        const element = viewportElement.querySelector(`[data-sid="${i}"]`);
+        if (element) {
+          (<HTMLElement>element).style.height = this.sizeValue + 'px';
+          const item = this.data.find(_item => _item.id === i);
+          if (item) {
+            item.height = this.sizeValue;
+          }
+        }
+      }
+      this.datasource.adapter.check();
+    }
   }
 
   doLog() {

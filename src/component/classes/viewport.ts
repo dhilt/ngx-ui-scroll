@@ -21,12 +21,15 @@ export class Viewport {
   readonly state: State;
   readonly logger: Logger;
 
+  private disabled: boolean;
+
   constructor(elementRef: ElementRef, settings: Settings, routines: Routines, state: State, logger: Logger) {
     this.settings = settings;
     this.routines = routines;
     this.state = state;
     this.logger = logger;
     this.element = elementRef.nativeElement;
+    this.disabled = false;
 
     if (settings.windowViewport) {
       this.host = (<Document>this.element.ownerDocument).body;
@@ -56,7 +59,7 @@ export class Viewport {
     }
     this.scrollPosition = newPosition;
     this.state.scrollState.reset();
-    this.state.syntheticScroll.reset(scrollPosition !== newPosition ? newPosition : null);
+    // this.state.syntheticScroll.reset(scrollPosition !== newPosition ? newPosition : null);
     this.startDelta = 0;
   }
 
@@ -81,14 +84,25 @@ export class Viewport {
   set scrollPosition(value: number) {
     const oldPosition = this.scrollPosition;
     const newPosition = this.setPosition(value, oldPosition);
-    const synthState = this.state.syntheticScroll;
-    synthState.time = Number(Date.now());
-    synthState.position = newPosition;
-    synthState.delta = newPosition - oldPosition;
-    if (synthState.positionBefore === null) {
-      // syntheticScroll.positionBefore should be set once per cycle
-      synthState.positionBefore = oldPosition;
+    const { syntheticScroll, scrollState } = this.state;
+    syntheticScroll.push(newPosition, oldPosition, scrollState.getData());
+  }
+
+  disableScrollForOneLoop() {
+    if (this.disabled) {
+      return;
     }
+    const { style } = this.scrollable;
+    if (style.overflowY === 'hidden') {
+      return;
+    }
+    this.disabled = true;
+    const overflow = style.overflowY;
+    setTimeout(() => {
+      this.disabled = false;
+      style.overflowY = overflow;
+    });
+    style.overflowY = 'hidden';
   }
 
   getSize(): number {

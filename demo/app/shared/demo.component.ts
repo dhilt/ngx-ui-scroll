@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+
 import { DemoContext, DemoSources } from './interfaces';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
@@ -35,7 +36,12 @@ export class DemoComponent {
   }
 
   constructor() {
-    setTimeout(() => this.init = true);
+    setTimeout(() => {
+      if (this.sources.every(s => !s.active)) {
+        this.sources[0].active = true;
+      }
+      this.init = true;
+    });
   }
 
 }

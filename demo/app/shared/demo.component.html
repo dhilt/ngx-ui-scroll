@@ -58,6 +58,7 @@
       <tab
         *ngFor="let tab of sources; let index = index"
         heading="{{sources[index].name}}"
+        [active]="sources[index].active"
       >
         <pre class="prettyprint">{{sources[index].text}}</pre>
       </tab>

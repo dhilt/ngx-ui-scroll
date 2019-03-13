@@ -1,78 +1,18 @@
 import { BehaviorSubject } from 'rxjs';
 
 import {
-  State as IState,
   ItemAdapter,
-  WindowScrollState as IWindowScrollState,
+  State as IState,
   ScrollState as IScrollState,
   SyntheticScroll as ISyntheticScroll,
   WorkflowOptions as IWorkflowOptions
 } from '../interfaces/index';
+
 import { FetchModel } from './fetch';
 import { Settings } from './settings';
 import { Logger } from './logger';
 import { itemAdapterEmpty } from './adapter';
-
-class WindowScrollState implements IWindowScrollState {
-  positionToUpdate: number;
-  delta: number;
-
-  constructor() {
-    this.reset();
-  }
-
-  reset() {
-    this.delta = 0;
-    this.positionToUpdate = 0;
-  }
-}
-
-class ScrollState implements IScrollState {
-  firstScroll: boolean;
-  firstScrollTime: number;
-  lastScrollTime: number;
-  scrollTimer: number | null;
-  workflowTimer: number | null;
-  scroll: boolean;
-  keepScroll: boolean;
-  window: IWindowScrollState;
-
-  constructor() {
-    this.window = new WindowScrollState();
-    this.reset();
-  }
-
-  reset() {
-    this.firstScroll = false;
-    this.firstScrollTime = 0;
-    this.lastScrollTime = 0;
-    this.scrollTimer = null;
-    this.workflowTimer = null;
-    this.scroll = false;
-    this.keepScroll = false;
-    this.window.reset();
-  }
-}
-
-class SyntheticScroll implements ISyntheticScroll {
-  position: number | null;
-  positionBefore: number | null;
-  delta: number;
-  time: number;
-  readyToReset: boolean;
-
-  constructor() {
-    this.reset(null);
-  }
-
-  reset(position: number | null = null) {
-    this.position = position;
-    this.positionBefore = null;
-    this.delta = 0;
-    this.time = 0;
-    this.readyToReset = false;
-  }
-}
+import { ScrollState, SyntheticScroll } from './scroll';
 
 class WorkflowOptions implements IWorkflowOptions {
   empty: boolean;

@@ -2,6 +2,9 @@ export enum Process {
   init = 'init',
   scroll = 'scroll',
   reload = 'adapter.reload',
+  append = 'adapter.append',
+  prepend = 'adapter.prepend',
+  check = 'adapter.check',
   start = 'start',
   preFetch = 'preFetch',
   fetch = 'fetch',
@@ -9,9 +12,7 @@ export enum Process {
   render = 'render',
   clip = 'clip',
   adjust = 'adjust',
-  end = 'end',
-  append = 'adapter.append',
-  prepend = 'adapter.prepend'
+  end = 'end'
 }
 
 export enum ProcessStatus {

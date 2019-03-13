@@ -1,4 +1,4 @@
-import { ItemAdapter } from './index';
+import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/fetch';
 import { BehaviorSubject } from 'rxjs/index';
 
@@ -7,6 +7,14 @@ export interface WindowScrollState {
   positionToUpdate: number;
 
   reset: Function;
+}
+
+export interface ScrollEventData {
+  time: number;
+  position: number;
+  positionBefore: number | null;
+  direction: Direction;
+  handled: boolean;
 }
 
 export interface ScrollState {
@@ -19,17 +27,34 @@ export interface ScrollState {
   keepScroll: boolean;
   window: WindowScrollState;
 
+  position: number;
+  time: number;
+  direction: Direction;
+
   reset: Function;
+  getData: Function;
+  setData: Function;
 }
 
 export interface SyntheticScroll {
+  list: Array<ScrollEventData>;
+  before: ScrollEventData | null;
+
+  isSet: boolean;
+  isDone: boolean;
   position: number | null;
-  positionBefore: number | null;
-  delta: number;
-  time: number;
-  readyToReset: boolean;
+  time: number | null;
+  direction: Direction | null;
+  handledPosition: number | null;
+  handledTime: number | null;
+  registeredPosition: number | null;
+  registeredTime: number | null;
 
   reset: Function;
+  register: Function;
+  push: Function;
+  done: Function;
+  nearest: Function;
 }
 
 export interface WorkflowOptions {

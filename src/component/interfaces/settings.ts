@@ -22,4 +22,5 @@ export interface DevSettings {
   initDelay?: number;
   initWindowDelay?: number;
   maxSynthScrollDelay?: number;
+  changeOverflow?: boolean;
 }

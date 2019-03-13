@@ -1,5 +1,6 @@
 import { Scroller } from '../scroller';
 import { Process, ProcessStatus } from '../interfaces/index';
+import { Item } from '../classes/item';
 
 export default class Render {
 
@@ -24,34 +25,42 @@ export default class Render {
     );
   }
 
-  static processElements(scroller: Scroller) {
+  static processElements(scroller: Scroller): boolean {
     const { state, state: { fetch, fetch: { items } }, viewport, buffer } = scroller;
-    const itemsLength = items.length;
-    const scrollBeforeRender = scroller.settings.windowViewport ? scroller.viewport.scrollPosition : 0;
-    state.sizeBeforeRender = viewport.getScrollableSize();
-    state.fwdPaddingBeforeRender = viewport.paddings.forward.size;
-    for (let j = 0; j < itemsLength; j++) {
-      const item = items[j];
-      const element = viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);
-      if (!element) {
+    const scrollBeforeRender = scroller.settings.windowViewport && fetch.isPrepend
+      ? scroller.viewport.scrollPosition
+      : null;
+    if (!fetch.isReplace) {
+      state.sizeBeforeRender = viewport.getScrollableSize();
+      state.fwdPaddingBeforeRender = viewport.paddings.forward.size;
+      if (!items.reduce((acc, item) => acc && Render.processElement(scroller, item), true)) {
         return false;
-      }
-      item.element = <HTMLElement>element;
-      item.element.style.left = '';
-      item.element.style.position = '';
-      item.invisible = false;
-      item.setSize();
-      buffer.cache.add(item);
-      if (item.$index < fetch.minIndex) {
-        fetch.negativeSize += item.size;
       }
     }
     fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
     state.sizeAfterRender = viewport.getScrollableSize();
-    if (scroller.settings.windowViewport && fetch.isPrepend) {
+    if (scrollBeforeRender !== null) {
       Render.processWindowScrollBackJump(scroller, scrollBeforeRender);
     }
     scroller.logger.stat('after new items render');
+    return true;
+  }
+
+  static processElement(scroller: Scroller, item: Item): boolean {
+    const { state: { fetch }, viewport, buffer } = scroller;
+    const element = viewport.element.querySelector(`[data-sid="${item.nodeId}"]`);
+    if (!element) {
+      return false;
+    }
+    item.element = <HTMLElement>element;
+    item.element.style.left = '';
+    item.element.style.position = '';
+    item.invisible = false;
+    item.setSize();
+    buffer.cache.add(item);
+    if (item.$index < fetch.minIndex) {
+      fetch.negativeSize += item.size;
+    }
     return true;
   }
 

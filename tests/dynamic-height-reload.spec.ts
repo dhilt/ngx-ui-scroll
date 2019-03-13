@@ -1,6 +1,5 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { configListDestructiveFilter } from './miscellaneous/common';
 
 const MIN_INDEX = -99;
 const MAX_INDEX = 100;

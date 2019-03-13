@@ -1,0 +1,28 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    <button (click)="doCheck()">Resize and Check</button>
+    <br />
+    Autoscroll: <input type="checkbox" [(ngModel)]="needAutoscroll"/>
+    <br />
+    First visible item's index: {{datasource.adapter.firstVisible.$index}}
+  </div>
+  <div description>
+    <p>
+      <em>Adapter.check</em> method could be useful when rows heights can change after rendering.
+      By invoking <em>Adapter.check()</em> we ask the <em>uiScroll</em> to check
+      if any of items that are in current viewport's buffer changed their size.
+    </p>
+    <p>
+      In this demo method <em>doCheck</em> is implemented to
+    </p>
+    <ul>
+      <li>change real size of items (from 15 to 25) in DOM;</li>
+      <li>run <em>Adapter.check()</em>;</li>
+      <li>autoscroll to first visible item before change (optionally).</li>
+    </ul>
+  </div>
+</app-demo>

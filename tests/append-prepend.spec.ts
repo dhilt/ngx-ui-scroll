@@ -60,8 +60,6 @@ describe('Append-Prepend Spec', () => {
     const isAppend = token === 'append';
     const direction = isAppend ? Direction.forward : Direction.backward;
     const oppositeDirection = isAppend ? Direction.backward : Direction.forward;
-    const oppositeToken = isAppend ? 'prepend' : 'append';
-
 
     makeTest({
       config: (<any>config)[token],

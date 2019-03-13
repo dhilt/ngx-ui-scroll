@@ -3,7 +3,6 @@ import { Direction } from '../interfaces/index';
 
 export class FetchModel {
   private _newItemsData: Array<any> | null;
-  simulate: boolean;
   items: Array<Item>;
   firstIndexBuffer: number | null;
   lastIndexBuffer: number | null;
@@ -16,7 +15,9 @@ export class FetchModel {
   averageItemSize: number;
   hasAverageItemSizeChanged: boolean;
   direction: Direction | null;
+  simulate: boolean;
   isPrepend: boolean;
+  isReplace: boolean;
 
   constructor() {
     this.callCount = 0;
@@ -34,6 +35,7 @@ export class FetchModel {
     this.hasAverageItemSizeChanged = false;
     this.direction = null;
     this.isPrepend = false;
+    this.isReplace = false;
   }
 
   get newItemsData(): Array<Item> | null {
@@ -82,5 +84,12 @@ export class FetchModel {
     this.firstIndex = items[items.length - 1].$index;
     this.direction = Direction.backward;
     this.isPrepend = true;
+  }
+
+  replace(items: Array<Item>) {
+    this.doSimulate(items);
+    this.lastIndex = items[0].$index;
+    this.firstIndex = items[items.length - 1].$index;
+    this.isReplace = true;
   }
 }

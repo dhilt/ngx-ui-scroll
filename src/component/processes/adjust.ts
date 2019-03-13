@@ -43,7 +43,7 @@ export default class Adjust {
     const lastIndex = lastItem.$index;
     const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
     const maxIndex = isFinite(buffer.absMaxIndex) ? buffer.absMaxIndex : buffer.maxIndex;
-    const hasAverageItemSizeChanged = buffer.averageSize !== fetch.averageItemSize;
+    const hasAverageItemSizeChanged = fetch.hasAverageItemSizeChanged;
     let index, bwdSize = 0, fwdSize = 0, bwdPaddingAverageSizeItemsCount = 0;
 
     // new backward padding
@@ -90,7 +90,6 @@ export default class Adjust {
         const winState = state.scrollState.window;
         if (newPosition === winState.positionToUpdate) {
           winState.reset();
-          state.syntheticScroll.readyToReset = false;
           scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
           Adjust.setScroll(scroller, posDiff);
           scroller.logger.stat('after scroll position adjustment (window)');
@@ -100,7 +99,8 @@ export default class Adjust {
     }
 
     // if backward padding has been changed due to average item size change
-    const bwdAverageItemsCountDiff = state.bwdPaddingAverageSizeItemsCount - bwdPaddingAverageSizeItemsCount;
+    const bwdAverageItemsCountDiff = fetch.isReplace ? 0 :
+      state.bwdPaddingAverageSizeItemsCount - bwdPaddingAverageSizeItemsCount;
     const hasBwdParamsChanged = bwdPaddingAverageSizeItemsCount > 0 || bwdAverageItemsCountDiff > 0;
     if (fetch.hasAverageItemSizeChanged && hasBwdParamsChanged) {
       const _bwdPaddingAverageSize = bwdPaddingAverageSizeItemsCount * buffer.averageSize;
@@ -110,6 +110,9 @@ export default class Adjust {
       const bwdDiff = bwdPaddingAverageSizeDiff - bwdAverageItemsSizeDiff;
       const positionDiff = posDiff + bwdDiff;
       if (positionDiff) {
+        if (scroller.settings.changeOverflow) {
+          viewport.disableScrollForOneLoop();
+        }
         Adjust.setScroll(scroller, positionDiff);
         scroller.logger.stat('after scroll position adjustment (average)');
       }
@@ -144,14 +147,17 @@ export default class Adjust {
 
   static setScroll(scroller: Scroller, delta: number) {
     const { viewport } = scroller;
+    const viewportSize = scroller.viewport.getSize();
     const forwardPadding = viewport.paddings[Direction.forward];
     const oldPosition = viewport.scrollPosition;
     const newPosition = Math.round(oldPosition + delta);
     for (let i = 0; i < Adjust.MAX_SCROLL_ADJUSTMENTS_COUNT; i++) {
       viewport.scrollPosition = newPosition;
       const positionDiff = newPosition - viewport.scrollPosition;
-      if (positionDiff > 0) {
-        forwardPadding.size += positionDiff;
+      const viewportDiff = viewportSize - newPosition;
+      const diff = Math.min(viewportDiff, positionDiff);
+      if (diff > 0) {
+        forwardPadding.size += diff;
       } else {
         break;
       }

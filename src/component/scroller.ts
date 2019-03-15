@@ -64,7 +64,7 @@ export class Scroller {
 
   bindData(): Observable<any> {
     this.runChangeDetector();
-    return Observable.create((observer: Observer<any>) => {
+    return new Observable((observer: Observer<any>) => {
         setTimeout(() => {
           observer.next(true);
           observer.complete();

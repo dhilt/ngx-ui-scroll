@@ -2,7 +2,6 @@ import { Observable, Observer } from 'rxjs';
 
 import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
 import { getDynamicSizeByIndex } from '../miscellaneous/dynamicSize';
-import { Function } from 'estree';
 
 export class DatasourceService implements Datasource {
   get() {
@@ -88,7 +87,7 @@ const infiniteDatasourceGet = (type?: DatasourceType, delay?: number) =>
           delayedRun(() => resolve(datasourceGetInfinite(index, count)), delay)
         );
       default: // DatasourceType.Observable
-        return Observable.create((observer: Observer<any>) =>
+        return new Observable((observer: Observer<any>) =>
           delayedRun(() => observer.next(datasourceGetInfinite(index, count)), delay)
         );
     }
@@ -109,7 +108,7 @@ const limitedDatasourceGet = (
             datasourceGetLimited(index, count, min, max, dynamicSize, process && processor)), delay
           ));
       default: // DatasourceType.Observable
-        return Observable.create((observer: Observer<any>) =>
+        return new Observable((observer: Observer<any>) =>
           delayedRun(() => observer.next(
             datasourceGetLimited(index, count, min, max, dynamicSize, process && processor)), delay
           ));

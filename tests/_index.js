@@ -27,7 +27,7 @@ const testContext = require.context(
   './',
   false,
   /(common|datasource\-get|initial\-load|scroll\-basic|min\-max\-indexes|eof|dynamic\-size|prepend|dynamic\-height\-reload|dynamic\-height\-scroll|append\-prepend|check)\.spec\.ts/
-  //(dynamic-height-scroll)\.spec\.ts/
+  //(remove)\.spec\.ts/
 );
 
 function requireAll(requireContext) {

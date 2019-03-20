@@ -14,3 +14,5 @@ export const configListDestructiveFilter = (configList: TestBedConfig[], filterI
     !!(item.timeout = 9000) &&
     index !== filterIndex
   );
+
+export const getMin = (list: number[]) => list.sort((a: number, b: number) => a - b)[0];

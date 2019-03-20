@@ -53,6 +53,7 @@ export const generateMockAdapter = (): IAdapter => (
     append: () => null,
     prepend: () => null,
     check: () => null,
+    remove: () => null,
     showLog: () => null,
     setScrollPosition: () => null
   }
@@ -241,6 +242,14 @@ export class Adapter implements IAdapter {
       process: Process.check,
       status: ProcessStatus.start
     });
+  }
+
+  remove() {
+    this.logger.log(() => `adapter: remove()`);
+    // this.callWorkflow(<ProcessSubject>{
+    //   process: Process.remove,
+    //   status: ProcessStatus.start
+    // });
   }
 
   showLog() {

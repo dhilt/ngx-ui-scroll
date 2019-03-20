@@ -6,6 +6,8 @@ export interface ItemAdapter {
   element?: HTMLElement;
 }
 
+type ItemsPredicate = (item: ItemAdapter) => boolean;
+
 export interface Adapter {
   readonly version: string | null;
   readonly init: boolean;
@@ -27,6 +29,7 @@ export interface Adapter {
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, bof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;
+  remove: (predicate: ItemsPredicate) => any;
   check: () => any;
   showLog: () => any;
   setScrollPosition: (value: number) => any;

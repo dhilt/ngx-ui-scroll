@@ -6,7 +6,7 @@ export interface ItemAdapter {
   element?: HTMLElement;
 }
 
-type ItemsPredicate = (item: ItemAdapter) => boolean;
+export type ItemsPredicate = (item: ItemAdapter) => boolean;
 
 export interface Adapter {
   readonly version: string | null;

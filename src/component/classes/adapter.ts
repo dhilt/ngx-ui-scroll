@@ -1,9 +1,11 @@
 import { BehaviorSubject, Observable, Observer, of as observableOf } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
-import { Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter } from '../interfaces/index';
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
+import {
+  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate
+} from '../interfaces/index';
 
 const getIsInitialized = (adapter: Adapter): Observable<boolean> =>
   Observable.create((observer: Observer<boolean>) => {
@@ -244,12 +246,13 @@ export class Adapter implements IAdapter {
     });
   }
 
-  remove() {
+  remove(predicate: ItemsPredicate) {
     this.logger.log(() => `adapter: remove()`);
-    // this.callWorkflow(<ProcessSubject>{
-    //   process: Process.remove,
-    //   status: ProcessStatus.start
-    // });
+    this.callWorkflow(<ProcessSubject>{
+      process: Process.remove,
+      status: ProcessStatus.start,
+      payload: predicate
+    });
   }
 
   showLog() {

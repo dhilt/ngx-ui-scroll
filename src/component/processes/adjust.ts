@@ -120,7 +120,7 @@ export default class Adjust {
     }
 
     // no negative area items
-    if (items[0].$index >= fetch.minIndex) {
+    if (!items.length || items[0].$index >= fetch.minIndex) {
       return;
     }
 

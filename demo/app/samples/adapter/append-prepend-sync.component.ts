@@ -45,9 +45,6 @@ export class DemoAppendPrependSyncComponent {
     },
     settings: {
       startIndex: this.MIN
-    },
-    devSettings: {
-      debug: true
     }
   });
 

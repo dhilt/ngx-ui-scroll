@@ -1,0 +1,17 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions style="display: flex">
+    <button (click)="doRemove()">Remove</button>
+    &nbsp; by index &nbsp;
+    <input [ngModel]="removeIndex" (change)="onInputChanged($event.target)" size="2">
+  </div>
+
+  <div description>
+    <p>
+      <em>Adapter.remove</em>...
+    </p>
+  </div>
+</app-demo>

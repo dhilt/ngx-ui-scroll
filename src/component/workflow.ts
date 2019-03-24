@@ -75,14 +75,14 @@ export class Workflow {
 
   process(data: ProcessSubject) {
     const scroller = this.scroller;
-    const { status, payload = {} } = data;
+    const { status, process, payload = {} } = data;
     const options = scroller.state.workflowOptions;
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
       End.run(scroller, payload.error);
       return;
     }
-    switch (data.process) {
+    switch (process) {
       case Process.init:
         if (status === Status.start) {
           Init.run(scroller);
@@ -94,9 +94,9 @@ export class Workflow {
       case Process.scroll:
         if (status === Status.next) {
           if (!options.keepScroll) {
-            Init.run(scroller, Process.scroll);
+            Init.run(scroller, process);
           } else {
-            Start.run(scroller, Process.scroll);
+            Start.run(scroller, process);
           }
         }
         break;
@@ -105,7 +105,7 @@ export class Workflow {
           Reload.run(scroller, payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, Process.reload);
+          Init.run(scroller, process);
         }
         break;
       case Process.append:
@@ -113,7 +113,7 @@ export class Workflow {
           Append.run(scroller, payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, Process.append);
+          Init.run(scroller, process);
         }
         break;
       case Process.prepend:
@@ -121,7 +121,7 @@ export class Workflow {
           Append.run(scroller, { ...payload, prepend: true });
         }
         if (status === Status.next) {
-          Init.run(scroller, Process.prepend);
+          Init.run(scroller, process);
         }
         break;
       case Process.check:
@@ -129,7 +129,7 @@ export class Workflow {
           Check.run(scroller);
         }
         if (status === Status.next) {
-          Init.run(scroller, Process.check);
+          Init.run(scroller, process);
         }
         break;
       case Process.remove:
@@ -137,7 +137,7 @@ export class Workflow {
           Remove.run(scroller, payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, Process.remove);
+          Init.run(scroller, process);
         }
         break;
       case Process.start:
@@ -210,7 +210,7 @@ export class Workflow {
           if (options.keepScroll) {
             Scroll.run(scroller);
           } else {
-            Start.run(scroller, Process.end);
+            Start.run(scroller, process);
           }
         }
         if (status === Status.done) {

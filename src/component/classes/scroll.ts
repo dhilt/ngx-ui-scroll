@@ -6,7 +6,6 @@ import {
   WindowScrollState as IWindowScrollState
 } from '../interfaces/index';
 import { Logger } from './logger';
-import { Function } from 'estree';
 
 class WindowScrollState implements IWindowScrollState {
   positionToUpdate: number;

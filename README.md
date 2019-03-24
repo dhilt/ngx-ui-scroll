@@ -207,4 +207,4 @@ The work has just begun. We have great plans and any participation is welcome! S
 
 __________
 
-2018 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)
+2019 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)

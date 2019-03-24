@@ -85,18 +85,18 @@ export class Workflow {
     switch (data.process) {
       case Process.init:
         if (status === Status.start) {
-          Init.run(scroller, true);
+          Init.run(scroller);
         }
         if (status === Status.next) {
-          Start.run(scroller);
+          Start.run(scroller, payload);
         }
         break;
       case Process.scroll:
         if (status === Status.next) {
           if (!options.keepScroll) {
-            Init.run(scroller);
+            Init.run(scroller, Process.scroll);
           } else {
-            Start.run(scroller);
+            Start.run(scroller, Process.scroll);
           }
         }
         break;
@@ -105,7 +105,7 @@ export class Workflow {
           Reload.run(scroller, payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, true);
+          Init.run(scroller, Process.reload);
         }
         break;
       case Process.append:
@@ -113,7 +113,7 @@ export class Workflow {
           Append.run(scroller, payload);
         }
         if (status === Status.next) {
-          Init.run(scroller);
+          Init.run(scroller, Process.append);
         }
         break;
       case Process.prepend:
@@ -121,7 +121,7 @@ export class Workflow {
           Append.run(scroller, { ...payload, prepend: true });
         }
         if (status === Status.next) {
-          Init.run(scroller);
+          Init.run(scroller, Process.prepend);
         }
         break;
       case Process.check:
@@ -129,7 +129,7 @@ export class Workflow {
           Check.run(scroller);
         }
         if (status === Status.next) {
-          Init.run(scroller);
+          Init.run(scroller, Process.check);
         }
         break;
       case Process.remove:
@@ -137,15 +137,22 @@ export class Workflow {
           Remove.run(scroller, payload);
         }
         if (status === Status.next) {
-          Clip.run(scroller);
+          Init.run(scroller, Process.remove);
         }
         break;
       case Process.start:
         if (status === Status.next) {
-          if (payload.noFetch) {
-            Render.run(scroller);
-          } else {
-            PreFetch.run(scroller);
+          switch (payload) {
+            case Process.append:
+            case Process.prepend:
+            case Process.check:
+              Render.run(scroller);
+              break;
+            case Process.remove:
+              Clip.run(scroller);
+              break;
+            default:
+              PreFetch.run(scroller);
           }
         }
         break;
@@ -181,7 +188,11 @@ export class Workflow {
         break;
       case Process.preClip:
         if (status === Status.next) {
-          Clip.run(scroller);
+          if (payload.doClip) {
+            Clip.run(scroller);
+          } else {
+            Adjust.run(scroller);
+          }
         }
         break;
       case Process.clip:
@@ -199,7 +210,7 @@ export class Workflow {
           if (options.keepScroll) {
             Scroll.run(scroller);
           } else {
-            Start.run(scroller);
+            Start.run(scroller, Process.end);
           }
         }
         if (status === Status.done) {

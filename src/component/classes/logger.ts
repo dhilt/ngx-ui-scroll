@@ -126,6 +126,7 @@ export class Logger {
       process === Process.append && status === Status.next ||
       process === Process.prepend && status === Status.next ||
       process === Process.check && status === Status.next ||
+      process === Process.remove && status === Status.next ||
       process === Process.scroll && status === Status.next && !(options.keepScroll)
     ) {
       const logData = this.getWorkflowCycleData(false);

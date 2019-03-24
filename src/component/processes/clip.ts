@@ -6,6 +6,8 @@ export default class Clip {
   static run(scroller: Scroller) {
     if (scroller.state.doClip) {
       Clip.doClip(scroller);
+    } else {
+      scroller.logger.log(() => 'no clip');
     }
 
     scroller.callWorkflow({

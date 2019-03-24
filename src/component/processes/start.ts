@@ -3,7 +3,7 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Start {
 
-  static run(scroller: Scroller) {
+  static run(scroller: Scroller, process: Process) {
     const { state, state: { workflowOptions, scrollState, fetch } } = scroller;
 
     state.loopPending = true;
@@ -18,7 +18,7 @@ export default class Start {
     scroller.callWorkflow({
       process: Process.start,
       status: ProcessStatus.next,
-      payload: { noFetch: fetch.simulate }
+      payload: process
     });
   }
 

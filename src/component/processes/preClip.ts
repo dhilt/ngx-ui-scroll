@@ -8,7 +8,8 @@ export default class PreClip {
 
     scroller.callWorkflow({
       process: Process.preClip,
-      status: ProcessStatus.next
+      status: ProcessStatus.next,
+      payload: { doClip: scroller.state.doClip }
     });
   }
 
@@ -35,6 +36,9 @@ export default class PreClip {
       if (lastIndex + 1 <= buffer.absMaxIndex) {
         PreClip.prepareClipByDirection(scroller, Direction.backward, lastIndex);
       }
+    }
+    if (!scroller.state.doClip) {
+      scroller.logger.log(`skipping clip [no items to clip]`);
     }
     return;
   }

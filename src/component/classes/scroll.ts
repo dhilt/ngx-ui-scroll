@@ -5,6 +5,8 @@ import {
   SyntheticScroll as ISyntheticScroll,
   WindowScrollState as IWindowScrollState
 } from '../interfaces/index';
+import { Logger } from './logger';
+import { Function } from 'estree';
 
 class WindowScrollState implements IWindowScrollState {
   positionToUpdate: number;
@@ -84,6 +86,7 @@ class ScrollEventData implements IScrollEventData {
 export class SyntheticScroll implements ISyntheticScroll {
   before: IScrollEventData | null;
   list: Array<IScrollEventData>;
+  logger: Logger;
 
   get isSet(): boolean {
     return !!this.list.length;
@@ -123,7 +126,8 @@ export class SyntheticScroll implements ISyntheticScroll {
     return this.before ? this.before.position : null;
   }
 
-  constructor() {
+  constructor(logger: Logger) {
+    this.logger = logger;
     this.reset();
   }
 
@@ -181,34 +185,52 @@ export class SyntheticScroll implements ISyntheticScroll {
     }
   }
 
-  nearest(position: number): IScrollEventData | null {
+  nearest(scrollEvent: IScrollEventData): IScrollEventData | null {
     const last = this.before;
-    if (!last) {
+    if (!last || !this.list.length) {
       return null;
     }
-    const inc = last.direction === Direction.forward ? -1 : 1;
-    const nearest = this.list.reduce(
+
+    const { position, time, direction } = scrollEvent;
+    const log = (getHead: () => string) => this.logger.log(() => [
+      `${getHead()}`,
+      `position: ${position}`,
+      `prev pos: ${this.registeredPosition}`,
+      `synth pos: ${this.position}`,
+      `delta synth: ${position - <number>this.position}`,
+      `delta inertia: ${position - nearest.position}`,
+      `delta synth: ${time - <number>this.time}`,
+      `delta inertia: ${time - nearest.time}`,
+    ].join(', '));
+
+    const nearest = <IScrollEventData>this.list.reduce(
       (acc: IScrollEventData | null, item: IScrollEventData) => {
-        const delta = inc * (position - item.position);
+        const delta = Math.abs(position - item.position);
         if (!acc) {
-          return delta < 0 ? item : null;
+          return item;
         }
-        const accDelta = position - acc.position;
-        if (delta < 0 && delta > accDelta) {
+        const accDelta = Math.abs(position - acc.position);
+        if (accDelta < delta) {
           return item;
         }
         return acc;
       }
       , null);
-    if (!nearest) {
-      return last;
-    }
+
+    const inc = last.direction === Direction.forward ? -1 : 1;
     const synthDelta = inc * (position - nearest.position);
     const beforeDelta = inc * (position - last.position);
+
+    if (direction === Direction.forward && synthDelta < 0 && beforeDelta > 0 && beforeDelta > -synthDelta) {
+      log(() => `return nearest ${nearest.position}`);
+      return nearest;
+    }
     if (beforeDelta < 0 && beforeDelta > synthDelta) {
+      log(() => `return last ${last.position}`);
       return last;
     }
     if (synthDelta < 0) {
+      log(() => `return nearest ${nearest.position}`);
       return nearest;
     }
     return null;

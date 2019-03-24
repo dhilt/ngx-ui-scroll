@@ -145,7 +145,7 @@ export class State implements IState {
     this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
-    this.syntheticScroll = new SyntheticScroll();
+    this.syntheticScroll = new SyntheticScroll(logger);
 
     this.loopPendingSource = new BehaviorSubject<boolean>(false);
     this.workflowPendingSource = new BehaviorSubject<boolean>(false);

@@ -46,10 +46,6 @@ export class WindowComponent {
       minIndex: MIN,
       // maxIndex: MAX,
       windowViewport: true
-    },
-    devSettings: {
-      debug: true,
-      immediateLog: true
     }
   };
 

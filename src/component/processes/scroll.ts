@@ -99,25 +99,17 @@ export default class Scroll {
     return scroller.settings.inertia ? ScrollProcess.inertia : ScrollProcess.delay;
   }
 
-  static processInertiaScroll(
-    scroller: Scroller, { position, time, direction }: ScrollEventData
-  ): ScrollProcess {
+  static processInertiaScroll(scroller: Scroller, scrollEvent: ScrollEventData): ScrollProcess {
     const { viewport, logger, state: { syntheticScroll: synth } } = scroller;
-    const nearest = synth.nearest(position);
+    const nearest = synth.nearest(scrollEvent);
     if (nearest === null) {
       logger.log('skip, no inertia');
       return ScrollProcess.delay;
     }
 
+    const { position } = scrollEvent;
     const delta = position - <number>synth.position;
-    const delay = time - <number>synth.time;
     const inertiaDelta = position - nearest.position;
-    const inertiaDelay = time - nearest.time;
-    const newPosition = <number>synth.position + inertiaDelta;
-
-    logger.log(() => Scroll.logInertia(
-      position, synth.position, nearest.position, delta, inertiaDelta, delay, inertiaDelay, newPosition
-    ));
 
     // current inertia does continue last synthetic position
     if (inertiaDelta === delta) {
@@ -136,8 +128,8 @@ export default class Scroll {
     //   return ScrollProcess.delay;
     // }
 
-    // viewport.scrollPosition = <number>synth.position;
-    viewport.scrollPosition = newPosition;
+    // make new synthetic scroll to fix inertia issue
+    viewport.scrollPosition = <number>synth.position + inertiaDelta;
     return ScrollProcess.stop;
   }
 
@@ -170,21 +162,6 @@ export default class Scroll {
     // else {
     //   scroller.logger.log('MISS TIMER');
     // }
-  }
-
-  static logInertia(...args: any[]) {
-    const list = [
-      'position',
-      'synthetic',
-      'nearest',
-      'delta synth',
-      'delta inertia',
-      'delay synth',
-      'delay inertia',
-      'new position'
-    ];
-    return 'inertia scroll; ' +
-      list.reduce((acc: any[], str, ind) => [...acc, `${str}: ${args[ind]}`], []).join(', ');
   }
 
   static logPendingWorkflow(scroller: Scroller) {

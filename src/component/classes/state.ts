@@ -49,6 +49,7 @@ export class State implements IState {
   fetch: FetchModel;
   noClip: boolean;
   doClip: boolean;
+  simulateClip: boolean;
   clipCall: number;
   lastPosition: number;
   preFetchPosition: number;
@@ -138,6 +139,7 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.noClip = settings.infinite;
     this.doClip = false;
+    this.simulateClip = false;
     this.clipCall = 0;
     this.sizeBeforeRender = 0;
     this.sizeAfterRender = 0;

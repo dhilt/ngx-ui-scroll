@@ -11,7 +11,9 @@ export default class Start {
     if (!fetch.simulate) {
       fetch.reset();
     }
-    state.doClip = false;
+    if (!state.simulateClip) {
+      state.doClip = false;
+    }
     scrollState.scroll = workflowOptions.scroll || false;
     scrollState.keepScroll = false;
 

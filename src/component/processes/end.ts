@@ -41,6 +41,7 @@ export default class End {
     state.countDone++;
     state.isInitialLoop = false;
     state.fetch.simulate = false;
+    state.simulateClip = false;
     state.noClip = scroller.settings.infinite;
     state.lastPosition = scroller.viewport.scrollPosition;
     state.workflowOptions.reset();

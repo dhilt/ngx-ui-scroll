@@ -1,5 +1,4 @@
 import { Scroller } from '../scroller';
-import { Item } from '../classes/item';
 import { Direction, ItemsPredicate, Process, ProcessStatus } from '../interfaces/index';
 
 export default class Remove {
@@ -19,6 +18,7 @@ export default class Remove {
         item.toRemove = true;
         item.removeDirection = Direction.backward;
         scroller.state.doClip = true;
+        scroller.state.simulateClip = true;
       }
     });
 

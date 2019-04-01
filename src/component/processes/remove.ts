@@ -17,12 +17,12 @@ export default class Remove {
       if (predicate(item)) {
         item.toRemove = true;
         item.removeDirection = Direction.backward;
-        scroller.state.doClip = true;
-        scroller.state.simulateClip = true;
+        scroller.state.clip.doClip = true;
+        scroller.state.clip.simulate = true;
       }
     });
 
-    if (!scroller.state.doClip) {
+    if (!scroller.state.clip.doClip) {
       scroller.callWorkflow({
         process: Process.remove,
         status: ProcessStatus.done

@@ -18,7 +18,7 @@ export default class Check {
     });
 
     if (Number.isFinite(min)) {
-      scroller.state.noClip = true;
+      scroller.state.clip.noClip = true;
       fetch.firstIndexBuffer = buffer.firstIndex;
       fetch.lastIndexBuffer = buffer.lastIndex;
       fetch.replace(

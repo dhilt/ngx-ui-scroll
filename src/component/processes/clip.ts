@@ -4,7 +4,7 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Clip {
 
   static run(scroller: Scroller) {
-    if (scroller.state.doClip) {
+    if (scroller.state.clip.doClip) {
       Clip.doClip(scroller);
     } else {
       scroller.logger.log(() => 'no clip');
@@ -20,8 +20,8 @@ export default class Clip {
     const { buffer, viewport: { paddings }, logger } = scroller;
     const clipped: Array<number> = [];
     const size = { backward: 0, forward: 0 };
-    scroller.state.clipCall++;
-    logger.stat(`before clip (${scroller.state.clipCall})`);
+    scroller.state.clip.callCount++;
+    logger.stat(`before clip (${scroller.state.clip.callCount})`);
     buffer.items = buffer.items.filter(item => {
       if (item.toRemove) {
         size[item.removeDirection] += item.size;

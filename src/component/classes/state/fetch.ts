@@ -1,5 +1,5 @@
-import { Item } from './item';
-import { Direction } from '../interfaces/index';
+import { Direction } from '../../interfaces/index';
+import { Item } from '../item';
 
 export class FetchModel {
   private _newItemsData: Array<any> | null;

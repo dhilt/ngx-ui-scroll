@@ -15,7 +15,7 @@ export default class End {
     const next = End.getNext(scroller, error);
 
     // need to apply Buffer.items changes if clip
-    if (scroller.state.doClip) {
+    if (scroller.state.clip.doClip) {
       scroller.runChangeDetector();
     }
 
@@ -41,8 +41,8 @@ export default class End {
     state.countDone++;
     state.isInitialLoop = false;
     state.fetch.simulate = false;
-    state.simulateClip = false;
-    state.noClip = scroller.settings.infinite;
+    state.clip.simulate = false;
+    state.clip.noClip = scroller.settings.infinite;
     state.lastPosition = scroller.viewport.scrollPosition;
     state.workflowOptions.reset();
     scroller.purgeInnerLoopSubscriptions();

@@ -4,15 +4,15 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Start {
 
   static run(scroller: Scroller, process: Process) {
-    const { state, state: { workflowOptions, scrollState, fetch } } = scroller;
+    const { state, state: { workflowOptions, scrollState, fetch, clip } } = scroller;
 
     state.loopPending = true;
     state.innerLoopCount++;
     if (!fetch.simulate) {
       fetch.reset();
     }
-    if (!state.simulateClip) {
-      state.doClip = false;
+    if (!clip.simulate) {
+      clip.reset();
     }
     scrollState.scroll = workflowOptions.scroll || false;
     scrollState.keepScroll = false;

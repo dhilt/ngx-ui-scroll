@@ -9,7 +9,7 @@ export default class PreClip {
     scroller.callWorkflow({
       process: Process.preClip,
       status: ProcessStatus.next,
-      payload: { doClip: scroller.state.doClip }
+      payload: { doClip: scroller.state.clip.doClip }
     });
   }
 
@@ -37,7 +37,7 @@ export default class PreClip {
         PreClip.prepareClipByDirection(scroller, Direction.backward, lastIndex);
       }
     }
-    if (!scroller.state.doClip) {
+    if (!scroller.state.clip.doClip) {
       scroller.logger.log(`skipping clip [no items to clip]`);
     }
     return;
@@ -52,7 +52,7 @@ export default class PreClip {
       ) {
         item.toRemove = true;
         item.removeDirection = direction;
-        scroller.state.doClip = true;
+        scroller.state.clip.doClip = true;
       }
     });
   }

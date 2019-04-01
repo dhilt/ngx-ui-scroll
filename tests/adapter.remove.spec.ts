@@ -34,6 +34,7 @@ const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function)
         config.custom.remove.some((i: number) => i === item.data.id)
       );
     } else {
+      misc.fixture.detectChanges();
       const first = <number>buffer.firstIndex;
       for (let i = first; i < buffer.size; i++) {
         if (i < minIndexToRemove) {

@@ -2,11 +2,22 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
+import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
 import {
   Init, Scroll, Reload, Append, Check, Remove,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 } from './processes/index';
+
+function runProcess(this: Scroller, data: ProcessSubject) {
+  return (_process: any) => {
+    return (...args: any[]) => {
+      // const { process, status, payload } = data;
+      // this.logger.log(() => ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]);
+      // this.logger.log(() => ['run', _process.name, ...args]);
+      _process.run(this, ...args);
+    }
+  }
+}
 
 export class Workflow {
 
@@ -22,7 +33,7 @@ export class Workflow {
 
   constructor(context: UiScrollComponent) {
     this.context = context;
-    this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
+    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
@@ -74,70 +85,74 @@ export class Workflow {
   }
 
   process(data: ProcessSubject) {
-    const scroller = this.scroller;
     const { status, process, payload = {} } = data;
-    const options = scroller.state.workflowOptions;
+    const options = this.scroller.state.workflowOptions;
+    const run = runProcess.bind(this.scroller)(data);
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
-      End.run(scroller, payload.error);
+      run(End)(process, payload.error);
       return;
     }
     switch (process) {
       case Process.init:
         if (status === Status.start) {
-          Init.run(scroller);
+          run(Init)();
         }
         if (status === Status.next) {
-          Start.run(scroller, payload);
+          run(Start)(payload);
         }
         break;
       case Process.scroll:
         if (status === Status.next) {
           if (!options.keepScroll) {
-            Init.run(scroller, process);
+            run(Init)(process);
           } else {
-            Start.run(scroller, process);
+            run(Start)(process);
           }
         }
         break;
       case Process.reload:
         if (status === Status.start) {
-          Reload.run(scroller, payload);
+          run(Reload)(payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, process);
+          if (payload.finalize) {
+            run(End)(process);
+          } else {
+            run(Init)(process);
+          }
         }
         break;
       case Process.append:
         if (status === Status.start) {
-          Append.run(scroller, payload);
+          run(Append)(payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, process);
+          run(Init)(process);
         }
         break;
       case Process.prepend:
         if (status === Status.start) {
-          Append.run(scroller, { ...payload, prepend: true });
+          run(Append)({ ...payload, prepend: true });
         }
         if (status === Status.next) {
-          Init.run(scroller, process);
+          run(Init)(process);
         }
         break;
       case Process.check:
         if (status === Status.start) {
-          Check.run(scroller);
+          run(Check)();
         }
         if (status === Status.next) {
-          Init.run(scroller, process);
+          run(Init)(process);
         }
         break;
       case Process.remove:
         if (status === Status.start) {
-          Remove.run(scroller, payload);
+          run(Remove)(payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, process);
+          run(Init)(process);
         }
         break;
       case Process.start:
@@ -146,74 +161,81 @@ export class Workflow {
             case Process.append:
             case Process.prepend:
             case Process.check:
-              Render.run(scroller);
+              run(Render)();
               break;
             case Process.remove:
-              Clip.run(scroller);
+              run(Clip)();
               break;
             default:
-              PreFetch.run(scroller);
+              run(PreFetch)();
           }
         }
         break;
       case Process.preFetch:
         if (status === Status.done) {
-          End.run(scroller);
+          run(End)(process);
         }
         if (status === Status.next) {
-          Fetch.run(scroller);
+          run(Fetch)();
         }
         break;
       case Process.fetch:
         if (status === Status.next) {
-          PostFetch.run(scroller);
+          run(PostFetch)();
         }
         break;
       case Process.postFetch:
         if (status === Status.next) {
-          Render.run(scroller);
+          run(Render)();
         }
         if (status === Status.done) {
-          End.run(scroller);
+          run(End)(process);
         }
         break;
       case Process.render:
         if (status === Status.next) {
           if (payload.noClip) {
-            Adjust.run(scroller);
+            run(Adjust)();
           } else {
-            PreClip.run(scroller);
+            run(PreClip)();
           }
         }
         break;
       case Process.preClip:
         if (status === Status.next) {
           if (payload.doClip) {
-            Clip.run(scroller);
+            run(Clip)();
           } else {
-            Adjust.run(scroller);
+            run(Adjust)();
           }
         }
         break;
       case Process.clip:
         if (status === Status.next) {
-          Adjust.run(scroller);
+          run(Adjust)();
         }
         break;
       case Process.adjust:
         if (status === Status.done) {
-          End.run(scroller);
+          run(End)(process);
         }
         break;
       case Process.end:
+        this.scroller.finalize();
         if (status === Status.next) {
-          if (options.keepScroll) {
-            Scroll.run(scroller);
-          } else {
-            Start.run(scroller, process);
+          switch (payload) {
+            case Process.reload:
+              this.done();
+              run(Init)(payload);
+              break;
+            default:
+              if (options.keepScroll) {
+                run(Scroll)();
+              } else {
+                run(Start)(process);
+              }
           }
-        }
-        if (status === Status.done) {
+        } else if (status === Status.done) {
           this.done();
         }
         break;

@@ -52,6 +52,7 @@ export class Scroller {
       this.datasource = new Datasource(datasource, !this.settings.adapter);
       if (this.settings.adapter) {
         this.datasource.adapter.initialize(this);
+        datasource.adapter = this.datasource.adapter;
       }
     } else {
       this.datasource.adapter.initialize(this);

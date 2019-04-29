@@ -7,7 +7,6 @@ export default class Start {
     const { state, state: { workflowOptions, scrollState, fetch, clip } } = scroller;
 
     state.loopPending = true;
-    state.innerLoopCount++;
     if (!fetch.simulate) {
       fetch.reset();
     }

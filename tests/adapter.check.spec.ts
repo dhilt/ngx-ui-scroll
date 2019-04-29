@@ -138,7 +138,7 @@ const testIt = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   });
 };
 
-describe('Check Size Spec', () => {
+describe('Adapter Check Size Spec', () => {
 
   configList.forEach(config =>
     makeTest({

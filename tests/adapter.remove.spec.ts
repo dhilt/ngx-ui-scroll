@@ -51,7 +51,7 @@ const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function)
   });
 };
 
-describe('Remove Spec', () => {
+describe('Adapter Remove Spec', () => {
 
   configList.forEach(config =>
     makeTest({

@@ -1,6 +1,8 @@
 import { Scroller } from '../scroller';
 import { Process, ProcessStatus as Status, ProcessSubject } from '../interfaces/index';
 
+type LogType = [any?, ...any[]];
+
 export class Logger {
 
   readonly debug: boolean;
@@ -95,7 +97,7 @@ export class Logger {
     // standard process log
     const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
     const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
-    // this.log(() => [processLog, ...styles, ...(!options.empty ? [options] : [])]);
+    // this.log(() => [processLog, ...styles, data.payload, ...(!options.empty ? [options] : [])]);
 
     // inner loop start-end log
     const workflowCycleData = this.getWorkflowCycleData(true);
@@ -118,31 +120,16 @@ export class Logger {
     if (loopLog.length) {
       this.log(() => [...loopLog, 'color: #006600;']);
     }
-
-    // workflow cycle start log
-    if (
-      process === Process.init && status === Status.start ||
-      process === Process.reload && status === Status.next ||
-      process === Process.append && status === Status.next ||
-      process === Process.prepend && status === Status.next ||
-      process === Process.check && status === Status.next ||
-      process === Process.remove && status === Status.next ||
-      process === Process.scroll && status === Status.next && !(options.keepScroll)
-    ) {
-      const logData = this.getWorkflowCycleData(false);
-      const logStyles = 'color: #0000aa; border: solid black 1px; border-width: 1px 0 0 1px; margin-left: -2px';
-      this.log(() => [`%c   ~~~ WF Cycle ${logData} STARTED ~~~  `, logStyles]);
-    }
-
-    // workflow run end log
-    if (process === Process.end && status === Status.done) {
-      const logData = this.getWorkflowCycleData(false);
-      const logStyles = 'color: #0000aa; border: solid #555 1px; border-width: 0 0 1px 1px; margin-left: -2px';
-      this.log(() => [`%c   ~~~ WF Cycle ${logData} FINALIZED ~~~  `, logStyles]);
-    }
   }
 
-  log(...args: Array<any>) {
+  logCycle(start = true) {
+    const logData = this.getWorkflowCycleData(false);
+    const border = start ? '1px 0 0 1px' : '0 0 1px 1px';
+    const logStyles = `color: #0000aa; border: solid #555 1px; border-width: ${border}; margin-left: -2px`;
+    this.log(() => [`%c   ~~~ WF Cycle ${logData} ${start ? "STARTED" : "FINALIZED"} ~~~  `, logStyles]);
+  }
+
+  log(...args: any[]) {
     if (this.debug) {
       if (typeof args[0] === 'function') {
         args = args[0]();
@@ -157,21 +144,21 @@ export class Logger {
         args = [...args, this.getTime()];
       }
       if (this.immediateLog) {
-        console.log.apply(this, args);
+        console.log.apply(this, <LogType>args);
       } else {
         this.logs.push(args);
       }
     }
   }
 
-  logForce(...args: Array<any>) {
+  logForce(...args: any[]) {
     if (this.debug) {
       if (!this.immediateLog && this.logs.length) {
         this.logs.forEach(logArgs => console.log.apply(this, logArgs));
         this.logs = [];
       }
       if (args.length) {
-        console.log.apply(this, args);
+        console.log.apply(this, <LogType>args);
       }
     }
   }

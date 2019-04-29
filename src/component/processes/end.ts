@@ -4,28 +4,32 @@ import { itemAdapterEmpty } from '../classes/adapter';
 
 export default class End {
 
-  static run(scroller: Scroller, error?: any) {
+  static run(scroller: Scroller, process: Process, payload: any = {}) {
+    const { error } = payload;
+
     // finalize current workflow loop
     End.endWorkflowLoop(scroller);
 
-    // set out params, accessible via Adapter
-    End.calculateParams(scroller);
+    if (!error && process !== Process.reload) {
+      // set out params, accessible via Adapter
+      End.calculateParams(scroller);
+    }
 
     // what next? done?
-    const next = End.getNext(scroller, error);
+    const next = End.getNext(scroller, process, error);
 
     // need to apply Buffer.items changes if clip
     if (scroller.state.clip.doClip) {
       scroller.runChangeDetector();
     }
 
-    // stub method call
-    scroller.finalize();
+    scroller.state.innerLoopCount++;
 
     // continue the Workflow synchronously; current cycle could be finilized immediately
     scroller.callWorkflow({
       process: Process.end,
-      status: next ? ProcessStatus.next : ProcessStatus.done
+      status: next ? ProcessStatus.next : ProcessStatus.done,
+      payload: process
     });
 
     // if the Workflow isn't finilized, it may freeze for no more than settings.throttle ms
@@ -83,11 +87,14 @@ export default class End {
     }
   }
 
-  static getNext(scroller: Scroller, error?: any): boolean {
+  static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
     const { state: { fetch, scrollState, workflowOptions } } = scroller;
     if (error) {
       workflowOptions.empty = true;
       return false;
+    }
+    if (process === Process.reload) {
+      return true;
     }
     let result = false;
     if (!fetch.simulate) {

@@ -9,14 +9,13 @@ import {
 } from './processes/index';
 
 function runProcess(this: Scroller, data: ProcessSubject) {
-  return (_process: any) => {
-    return (...args: any[]) => {
+  return (_process: any) =>
+    (...args: any[]) => {
       // const { process, status, payload } = data;
       // this.logger.log(() => ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]);
       // this.logger.log(() => ['run', _process.name, ...args]);
       _process.run(this, ...args);
-    }
-  }
+    };
 }
 
 export class Workflow {
@@ -89,8 +88,9 @@ export class Workflow {
     const options = this.scroller.state.workflowOptions;
     const run = runProcess.bind(this.scroller)(data);
     this.scroller.logger.logProcess(data);
+    (<any>window)['dhilt'] = true;
     if (status === Status.error) {
-      run(End)(process, payload.error);
+      run(End)(process, payload);
       return;
     }
     switch (process) {
@@ -243,12 +243,17 @@ export class Workflow {
   }
 
   callWorkflow(processSubject: ProcessSubject) {
+    // this.scroller.logger.log(() => {
+    //   const { process, status, payload } = processSubject;
+    //   return ['%ccall%c', ...['color: #77cc77;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])];
+    // });
     this.process$.next(processSubject);
   }
 
   done() {
     const { state } = this.scroller;
     this.cyclesDone++;
+    this.scroller.logger.logCycle(false);
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
     state.workflowPending = false;

@@ -6,6 +6,7 @@ export default class Init {
   static run(scroller: Scroller, process?: Process) {
     const { state } = scroller;
     const isInitial = !process || process === Process.reload;
+    scroller.logger.logCycle(true);
     state.isInitialWorkflowCycle = isInitial;
     state.isInitialLoop = isInitial;
     state.workflowPending = true;

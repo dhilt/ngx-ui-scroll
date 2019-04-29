@@ -98,13 +98,13 @@ const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function)
 const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
-    if (misc.workflow.cyclesDone === 1) {
+    if (misc.workflow.cyclesDone === 2) {
       checkExpectation(config, misc);
       done();
     }
   });
   spyOn(misc.scroller, 'finalize').and.callFake(() => {
-    if (misc.scroller.state.innerLoopCount === 2) {
+    if (misc.scroller.state.innerLoopCount === 1) {
       setTimeout(() => doReload(config, misc));
     }
   });
@@ -113,7 +113,7 @@ const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done:
 const shouldReloadInterruption = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
-    if (misc.workflow.cyclesDone === 1) {
+    if (misc.workflow.cyclesDone === 2) {
       checkExpectation(config, misc);
       done();
     }

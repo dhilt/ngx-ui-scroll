@@ -37,7 +37,7 @@ const shouldPrepend = (config: TestBedConfig) => (misc: Misc) => (done: Function
   });
 };
 
-describe('Prepend Spec', () => {
+describe('Adapter Prepend Spec', () => {
 
   configList.forEach(config =>
     makeTest({

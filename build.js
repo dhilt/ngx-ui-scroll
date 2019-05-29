@@ -45,15 +45,6 @@ shell.echo(chalk.green(`TSLint completed`));
 
 shell.cp(`-Rf`, [`src`, `*.ts`, `*.json`], `${OUT_DIR}`);
 
-/* Try to process scss files  */
-shell.echo(`Try to process scss files`);
-if (shell.exec(`node-sass -r ${OUT_DIR} -o ${OUT_DIR}`).code === 0) {
-  shell.rm(`-Rf`, `${OUT_DIR}/**/*.scss`);
-  shell.ls(`${OUT_DIR}/**/*.css`).forEach(function (file) {
-    shell.mv(file, file.replace('.css', '.scss'));
-  });
-}
-
 /* AoT compilation */
 shell.echo(`Start AoT compilation`);
 if (shell.exec(`ngc -p ${OUT_DIR}/tsconfig-build.json`).code !== 0) {

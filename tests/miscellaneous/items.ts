@@ -15,20 +15,10 @@ export const generateItem = (index: number, dynamicSize = false): Item => ({
 
 export const removeItems = (items: Item[], idListToRemove: Array<number>) =>
   items.forEach((item: Item) => {
-    let id = item.id;
+    const id = item.id;
     if (id < getMin(idListToRemove)) {
       return;
     }
-    let offset = 0;
-    id = item.id - 1;
-    while (idListToRemove.includes(id)) {
-      id--;
-      offset++;
-    }
-    id = item.id;
-    while (idListToRemove.some((i: number) => i === id)) {
-      id++;
-      offset++;
-    }
+    const offset = idListToRemove.length;
     Object.assign(item, generateItem(item.id + offset));
   });

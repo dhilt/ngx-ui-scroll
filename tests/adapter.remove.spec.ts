@@ -11,19 +11,24 @@ const configList: TestBedConfig[] = [{
   custom: {
     remove: [3, 4, 5]
   }
+}, {
+  datasourceName: 'limited--99-100-dynamic-size-processor',
+  datasourceSettings: { startIndex: 55, bufferSize: 8, padding: 1, itemSize: 20 },
+  templateSettings: { viewportHeight: 100 },
+  datasourceDevSettings: { debug: true },
+  custom: {
+    remove: [54, 55, 56, 57, 58]
+  }
 }];
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
 const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  let firstIndex, lastIndex;
   const { buffer } = misc.scroller;
   const minIndexToRemove = getMin(config.custom.remove);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
-      firstIndex = buffer.firstIndex;
-      lastIndex = buffer.lastIndex;
       // remove item from the original datasource
       const { datasource } = <any>misc.fixture.componentInstance;
       datasource.setProcessGet((result: Array<any>) =>
@@ -33,18 +38,16 @@ const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function)
       misc.datasource.adapter.remove(item =>
         config.custom.remove.some((i: number) => i === item.data.id)
       );
-    } else {
+    } else if (cycles === 2) {
       misc.fixture.detectChanges();
       const first = <number>buffer.firstIndex;
+      const offset = config.custom.remove.length;
       for (let i = first; i < buffer.size; i++) {
         if (i < minIndexToRemove) {
           expect(misc.checkElementContentByIndex(i)).toEqual(true);
           continue;
         }
-        const offset = config.custom.remove.reduce(
-          (acc: number, r: number) => r <= i ? acc + 1 : acc, 0
-        );
-        expect(misc.getElementText(i)).toEqual(generateItem(i + offset).text);
+        expect(misc.getElementText(i)).toEqual(`${i} : item #${i + offset}`);
       }
       done();
     }

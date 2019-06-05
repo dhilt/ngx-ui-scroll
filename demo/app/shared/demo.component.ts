@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { DemoContext, DemoSources } from './interfaces';
 
@@ -8,7 +8,7 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
   selector: 'app-demo',
   templateUrl: './demo.component.html'
 })
-export class DemoComponent {
+export class DemoComponent implements OnInit {
 
   init = false;
 
@@ -35,13 +35,11 @@ export class DemoComponent {
     return (count - 2).toString(10);
   }
 
-  constructor() {
-    setTimeout(() => {
-      if (this.sources.every(s => !s.active)) {
-        this.sources[0].active = true;
-      }
-      this.init = true;
-    });
+  ngOnInit() {
+    if (this.sources.every(s => !s.active)) {
+      this.sources[0].active = true;
+    }
+    this.init = true;
   }
 
 }

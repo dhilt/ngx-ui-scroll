@@ -1,5 +1,4 @@
 import { Item } from './item';
-import { Settings } from '../classes/settings';
 import { Logger } from './logger';
 
 export class ItemCache {
@@ -129,5 +128,18 @@ export class Cache {
 
   get size(): number {
     return this.items.size;
+  }
+
+  removeItem($index: number) {
+    // decrement indexes that are greater than $index
+    const _items = new Map<number, ItemCache>();
+    this.items.forEach((item: ItemCache, index: number) => {
+      if (index > $index) {
+        _items.set(index - 1, item);
+      }
+    });
+    this.items = new Map([...this.items, ..._items]);
+    this.items.delete(this.maxIndex);
+    this.maxIndex--;
   }
 }

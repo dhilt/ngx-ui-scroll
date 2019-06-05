@@ -1,10 +1,11 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { Process, ProcessStatus, Direction } from '../interfaces/index';
 
 export default class Clip {
 
   static run(scroller: Scroller) {
-    if (scroller.state.clip.doClip) {
+    const { clip } = scroller.state;
+    if (clip.doClip) {
       Clip.doClip(scroller);
     } else {
       scroller.logger.log(() => 'no clip');
@@ -12,31 +13,41 @@ export default class Clip {
 
     scroller.callWorkflow({
       process: Process.clip,
-      status: ProcessStatus.next
+      status: ProcessStatus.next,
+      ...(clip.simulate ? { payload: Process.end } : {})
     });
   }
 
   static doClip(scroller: Scroller) {
-    const { buffer, viewport: { paddings }, logger } = scroller;
+    const { buffer, viewport: { paddings }, logger, state: { clip } } = scroller;
     const clipped: Array<number> = [];
     const size = { backward: 0, forward: 0 };
-    scroller.state.clip.callCount++;
-    logger.stat(`before clip (${scroller.state.clip.callCount})`);
+    clip.callCount++;
+    logger.stat(`before clip (${clip.callCount})`);
     buffer.items = buffer.items.filter(item => {
       if (item.toRemove) {
-        size[item.removeDirection] += item.size;
         item.hide();
+        size[item.removeDirection] += item.size;
+        if (item.removeDirection === Direction.backward) {
+          paddings.forward.size += item.size;
+        }
+        if (item.removeDirection === Direction.forward) {
+          paddings.backward.size += item.size;
+        }
         clipped.push(item.$index);
+        if (clip.simulate) {
+          buffer.removeItem(item);
+        }
         return false;
       }
       return true;
     });
-    if (size.backward) {
-      paddings.forward.size += size.backward;
-    }
-    if (size.forward) {
-      paddings.backward.size += size.forward;
-    }
+    // if (size.backward) {
+    //   paddings.forward.size += size.backward;
+    // }
+    // if (size.forward) {
+    //   paddings.backward.size += size.forward;
+    // }
     logger.log(() => [
       `clipped ${clipped.length} items` +
       (size.backward ? `, +${size.backward} fwd px,` : '') +

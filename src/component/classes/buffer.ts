@@ -120,6 +120,18 @@ export class Buffer {
     this.items = [...items, ...this.items];
   }
 
+  removeItem(item: Item) {
+    this.items = this.items.filter((_item: Item) => _item.$index !== item.$index);
+    this.items.forEach((_item: Item) => {
+      if (_item.$index > item.$index) {
+        _item.$index--;
+        _item.nodeId = String(_item.$index);
+      }
+    });
+    this.absMaxIndex--;
+    this.cache.removeItem(item.$index);
+  }
+
   getFirstVisibleItemIndex(): number {
     const length = this.items.length;
     for (let i = 0; i < length; i++) {

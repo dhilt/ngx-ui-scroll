@@ -106,7 +106,7 @@ by index <input [(ngModel)]="removeIndex">
   doRemove() {
     this.demoContext.count = 0;
     this.demoContext.log = '';
-    this.data = this.data.filter(item => item.$index === this.removeIndex);
+    this.data = this.data.filter(item => item.id !== this.removeIndex);
     this.datasource.adapter.remove(item => item.$index === this.removeIndex);
   }
 

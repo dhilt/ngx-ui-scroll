@@ -36,10 +36,12 @@ export class DemoComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.sources.every(s => !s.active)) {
-      this.sources[0].active = true;
-    }
-    this.init = true;
+    setTimeout(() => {
+      if (this.sources.every(s => !s.active)) {
+        this.sources[0].active = true;
+      }
+      this.init = true;
+    });
   }
 
 }

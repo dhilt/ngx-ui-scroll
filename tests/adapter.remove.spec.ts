@@ -1,6 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { generateItem, removeItems } from './miscellaneous/items';
+import { removeItems } from './miscellaneous/items';
 import { getMin } from './miscellaneous/common';
 
 const configList: TestBedConfig[] = [{
@@ -41,14 +41,17 @@ const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function)
     } else if (cycles === 2) {
       misc.fixture.detectChanges();
       const first = <number>buffer.firstIndex;
+      const last = <number>buffer.lastIndex;
       const offset = config.custom.remove.length;
-      for (let i = first; i < buffer.size; i++) {
+      for (let i = first; i <= last; i++) {
         if (i < minIndexToRemove) {
           expect(misc.checkElementContentByIndex(i)).toEqual(true);
           continue;
         }
         expect(misc.getElementText(i)).toEqual(`${i} : item #${i + offset}`);
       }
+      // no clip before/after remove
+      expect(misc.scroller.state.clip.callCount).toEqual(1);
       done();
     }
   });

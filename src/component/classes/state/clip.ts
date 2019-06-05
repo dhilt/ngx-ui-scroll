@@ -8,13 +8,13 @@ export class ClipModel {
 
   constructor() {
     this.infinite = false;
+    this.noClip = this.infinite;
+    this.callCount = 0;
     this.reset();
   }
 
   reset() {
-    this.noClip = this.infinite;
     this.doClip = false;
     this.simulate = false;
-    this.callCount = 0;
   }
 }

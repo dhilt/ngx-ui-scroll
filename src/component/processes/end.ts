@@ -7,8 +7,7 @@ export default class End {
   static run(scroller: Scroller, process: Process, payload: any = {}) {
     const { error } = payload;
 
-    // finalize current workflow loop
-    End.endWorkflowLoop(scroller);
+    scroller.state.workflowOptions.reset();
 
     if (!error && process !== Process.reload) {
       // set out params, accessible via Adapter
@@ -23,6 +22,8 @@ export default class End {
       scroller.runChangeDetector();
     }
 
+    // finalize current workflow loop
+    End.endWorkflowLoop(scroller, next);
     scroller.state.innerLoopCount++;
 
     // continue the Workflow synchronously; current cycle could be finilized immediately
@@ -39,16 +40,15 @@ export default class End {
     }
   }
 
-  static endWorkflowLoop(scroller: Scroller) {
-    const { state } = scroller;
+  static endWorkflowLoop(scroller: Scroller, next: boolean) {
+    const { state, state: { clip } } = scroller;
     state.loopPending = false;
     state.countDone++;
     state.isInitialLoop = false;
     state.fetch.simulate = false;
-    state.clip.simulate = false;
-    state.clip.noClip = scroller.settings.infinite;
+    clip.noClip = scroller.settings.infinite || (next && clip.simulate);
+    clip.simulate = false;
     state.lastPosition = scroller.viewport.scrollPosition;
-    state.workflowOptions.reset();
     scroller.purgeInnerLoopSubscriptions();
   }
 
@@ -88,12 +88,15 @@ export default class End {
   }
 
   static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
-    const { state: { fetch, scrollState, workflowOptions } } = scroller;
+    const { state: { clip, fetch, scrollState, workflowOptions } } = scroller;
     if (error) {
       workflowOptions.empty = true;
       return false;
     }
     if (process === Process.reload) {
+      return true;
+    }
+    if (clip.simulate) {
       return true;
     }
     let result = false;

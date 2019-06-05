@@ -212,7 +212,11 @@ export class Workflow {
         break;
       case Process.clip:
         if (status === Status.next) {
-          run(Adjust)();
+          if (payload === Process.end) {
+            run(End)();
+          } else {
+            run(Adjust)();
+          }
         }
         break;
       case Process.adjust:

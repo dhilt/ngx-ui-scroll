@@ -16,6 +16,7 @@ export default class PreClip {
   static prepareClip(scroller: Scroller) {
     const { buffer, state, state: { fetch, fetch: { direction } } } = scroller;
     if (!buffer.size) {
+      scroller.logger.log(`skipping clip [empty buffer]`);
       return;
     }
     if (state.isInitialWorkflowCycle && !state.scrollState.scroll) {

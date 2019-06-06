@@ -10,7 +10,8 @@
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
-    "target": "es6",
+    "target": "es5",
+    "downlevelIteration": true,
     "skipLibCheck": true,
     "lib": [
       "es2015",

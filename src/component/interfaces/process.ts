@@ -35,4 +35,11 @@ export interface ProcessSubject {
   payload?: any;
 }
 
+export interface WorkflowError {
+  loop: string;
+  time: number;
+  message: string;
+  process: Process;
+}
+
 export type CallWorkflow = (processSubject: ProcessSubject) => undefined;

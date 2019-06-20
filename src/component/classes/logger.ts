@@ -11,8 +11,9 @@ export class Logger {
   readonly getTime: Function;
   readonly getStat: Function;
   readonly getFetchRange: Function;
-  readonly getInnerLoopCount: Function;
   readonly getWorkflowCycleData: Function;
+  readonly getLoop: Function;
+  readonly getLoopNext: Function;
   readonly getWorkflowOptions: Function;
   readonly getSynthScrollState: Function;
   private logs: Array<any> = [];
@@ -41,9 +42,10 @@ export class Logger {
       const hasInterval = firstIndex !== null && lastIndex !== null && !isNaN(firstIndex) && !isNaN(lastIndex);
       return hasInterval ? `[${firstIndex}..${lastIndex}]` : 'no';
     };
-    this.getInnerLoopCount = (): number => scroller.state.innerLoopCount;
-    this.getWorkflowCycleData = (more: boolean): string =>
-      `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}` + (more ? '-' : '');
+    this.getLoop = (): string => scroller.state.loop;
+    this.getLoopNext = (): string => scroller.state.loopNext;
+    this.getWorkflowCycleData = (): string =>
+      `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
     this.getWorkflowOptions = () => scroller.state.workflowOptions;
     this.getSynthScrollState = () => scroller.state.syntheticScroll;
     this.log(() => `uiScroll Workflow has been started (v${scroller.version}, instance ${settings.instanceIndex})`);
@@ -95,26 +97,24 @@ export class Logger {
     const options = this.getWorkflowOptions();
 
     // standard process log
-    const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
-    const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
+    // const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
+    // const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
     // this.log(() => [processLog, ...styles, data.payload, ...(!options.empty ? [options] : [])]);
 
     // inner loop start-end log
-    const workflowCycleData = this.getWorkflowCycleData(true);
-    const loopCount = this.getInnerLoopCount();
     const loopLog: string[] = [];
     if (
       process === Process.init && status === Status.next ||
       process === Process.scroll && status === Status.next && options.keepScroll ||
       process === Process.end && status === Status.next && options.byTimer
     ) {
-      loopLog.push(`%c---=== loop ${workflowCycleData + (loopCount + 1)} start`);
+      loopLog.push(`%c---=== loop ${this.getLoopNext()} start`);
     } else if (
       process === Process.end && !options.byTimer
     ) {
-      loopLog.push(`%c---=== loop ${workflowCycleData + loopCount} done`);
+      loopLog.push(`%c---=== loop ${this.getLoop()} done`);
       if (status === Status.next && !(options.keepScroll)) {
-        loopLog[0] += `, loop ${workflowCycleData + (loopCount + 1)} start`;
+        loopLog[0] += `, loop ${this.getLoopNext()} start`;
       }
     }
     if (loopLog.length) {
@@ -123,10 +123,17 @@ export class Logger {
   }
 
   logCycle(start = true) {
-    const logData = this.getWorkflowCycleData(false);
+    const logData = this.getWorkflowCycleData();
     const border = start ? '1px 0 0 1px' : '0 0 1px 1px';
     const logStyles = `color: #0000aa; border: solid #555 1px; border-width: ${border}; margin-left: -2px`;
     this.log(() => [`%c   ~~~ WF Cycle ${logData} ${start ? "STARTED" : "FINALIZED"} ~~~  `, logStyles]);
+  }
+
+  logError(str: string) {
+    if (this.debug) {
+      const logStyles = ['color: #a00;', 'color: #000'];
+      this.log(() => ['error:%c' + (str ? ` ${str}` : '') + `%c (loop ${this.getLoopNext()})`, ...logStyles]);
+    }
   }
 
   log(...args: any[]) {

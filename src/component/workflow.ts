@@ -2,7 +2,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
+import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject, WorkflowError } from './interfaces/index';
 import {
   Init, Scroll, Reload, Append, Check, Remove,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
@@ -23,6 +23,7 @@ export class Workflow {
   scroller: Scroller;
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
+  errors: Array<WorkflowError>;
 
   readonly context: UiScrollComponent;
   readonly onScrollHandler: EventListener;
@@ -38,6 +39,7 @@ export class Workflow {
       status: Status.start
     });
     this.cyclesDone = 0;
+    this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);
 
     if (this.scroller.settings.initializeDelay) {
@@ -83,13 +85,23 @@ export class Workflow {
     );
   }
 
+  processError(process: Process, message: string) {
+    this.errors.push({
+      process,
+      message,
+      time: this.scroller.state.time,
+      loop: this.scroller.state.loopNext
+    });
+    this.scroller.logger.logError(message);
+  }
+
   process(data: ProcessSubject) {
     const { status, process, payload = {} } = data;
     const options = this.scroller.state.workflowOptions;
     const run = runProcess.bind(this.scroller)(data);
     this.scroller.logger.logProcess(data);
-    (<any>window)['dhilt'] = true;
     if (status === Status.error) {
+      this.processError(process, payload.error || '');
       run(End)(process, payload);
       return;
     }

@@ -105,6 +105,14 @@ export class State implements IState {
     return Number(new Date()) - this.initTime;
   }
 
+  get loop(): string {
+    return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount}`;
+  }
+
+  get loopNext(): string {
+    return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount + 1}`;
+  }
+
   constructor(settings: Settings, logger: Logger) {
     this.settings = settings;
     this.logger = logger;

@@ -103,4 +103,6 @@ export interface State {
   lastVisibleWanted: boolean;
 
   time: number;
+  loop: string;
+  loopNext: string;
 }

@@ -2,12 +2,12 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { removeItems } from './miscellaneous/items';
 import { getMin } from './miscellaneous/common';
+import { Process } from '../src/component/interfaces/index';
 
 const configList: TestBedConfig[] = [{
   datasourceName: 'limited--99-100-dynamic-size-processor',
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
   templateSettings: { viewportHeight: 100 },
-  datasourceDevSettings: { debug: true },
   custom: {
     remove: [3, 4, 5]
   }
@@ -15,7 +15,6 @@ const configList: TestBedConfig[] = [{
   datasourceName: 'limited--99-100-dynamic-size-processor',
   datasourceSettings: { startIndex: 55, bufferSize: 8, padding: 1, itemSize: 20 },
   templateSettings: { viewportHeight: 100 },
-  datasourceDevSettings: { debug: true },
   custom: {
     remove: [54, 55, 56, 57, 58]
   }
@@ -57,6 +56,20 @@ const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function)
   });
 };
 
+const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    const cycles = misc.workflow.cyclesDone;
+    if (cycles === 1) {
+      // call remove with wrong predicate
+      misc.datasource.adapter.remove(<any>null);
+    } else if (cycles === 2) {
+      expect(misc.workflow.errors.length).toEqual(1);
+      expect(misc.workflow.errors[0].process).toEqual(Process.remove);
+      done();
+    }
+  });
+};
+
 describe('Adapter Remove Spec', () => {
 
   configList.forEach(config =>
@@ -64,6 +77,14 @@ describe('Adapter Remove Spec', () => {
       config,
       title: 'should remove',
       it: shouldRemove(config)
+    })
+  );
+
+  configList.forEach(config =>
+    makeTest({
+      config,
+      title: 'should break due to wrong predicate',
+      it: shouldBreak(config)
     })
   );
 

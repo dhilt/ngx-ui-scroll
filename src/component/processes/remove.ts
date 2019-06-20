@@ -37,6 +37,9 @@ export default class Remove {
   }
 
   static checkPredicate(predicate: ItemsPredicate) {
+    if (typeof predicate !== 'function') {
+      return false;
+    }
     return true;
   }
 

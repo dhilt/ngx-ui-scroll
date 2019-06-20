@@ -67,11 +67,10 @@ export class Scroller {
     this.runChangeDetector();
     return new Observable((observer: Observer<any>) => {
       setTimeout(() => {
-          observer.next(true);
-          observer.complete();
-        });
-      }
-    );
+        observer.next(true);
+        observer.complete();
+      });
+    });
   }
 
   purgeInnerLoopSubscriptions() {

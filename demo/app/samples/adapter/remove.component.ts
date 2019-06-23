@@ -42,31 +42,52 @@ export class DemoRemoveComponent {
       }
       doLog(this.demoContext, index, count, data.length);
       success(data);
-    },
-    settings: {
-      startIndex: 1
-    },
-    devSettings: {
-      debug: true
     }
   });
 
   sources: DemoSources = [{
     name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+    text: `MIN = -50;
+MAX = 50;
+data: Array<any>;
+removeIndex: number = 5;
+
+constructor() {
+  this.data = [];
+  for (let i = this.MIN; i <= this.MAX; i++) {
+    this.data.push({ id: i, text: 'item #' + i });
+  }
+}
+
+datasource = new Datasource({
   get: (index, count, success) => {
     const data = [];
-    for (let i = index; i <= index + count - 1; i++) {
-      data.push({ id: i, text: 'item #' + i });
+    for (let i = index; i < index + count; i++) {
+      const found = this.data.find(item => item.id === i);
+      if (found) {
+        data.push(found);
+      }
     }
-    success(data);
+    doLog(this.demoContext, index, count, data.length);
   }
 });
 
-removeIndex: number = 99;
+doRemoveDatasource(index: number) {
+  this.data = this.data.reduce((acc, item) => {
+    if (item.id !== index) {
+      if (item.id > index) {
+        item.id--;
+      }
+      acc.push(item);
+    }
+    return acc;
+  }, []);
+  this.MAX = this.data[this.data.length - 1].id;
+}
 
 doRemove() {
-  this.datasource.adapter.remove(this.removeIndex);
+  this.doRemoveDatasource(this.removeIndex);
+  this.datasource.adapter.remove(item => item.$index === this.removeIndex);
 }`
   }, {
     name: DemoSourceType.Template,
@@ -103,10 +124,21 @@ by index <input [(ngModel)]="removeIndex">
     this.removeIndex = value;
   }
 
+  doRemoveDatasource(index: number) {
+    this.data = this.data.reduce((acc, item) => {
+      if (item.id !== index) {
+        if (item.id > index) {
+          item.id--;
+        }
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+    this.MAX = this.data[this.data.length - 1].id;
+  }
+
   doRemove() {
-    this.demoContext.count = 0;
-    this.demoContext.log = '';
-    this.data = this.data.filter(item => item.id !== this.removeIndex);
+    this.doRemoveDatasource(this.removeIndex);
     this.datasource.adapter.remove(item => item.$index === this.removeIndex);
   }
 

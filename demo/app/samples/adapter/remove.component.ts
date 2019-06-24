@@ -50,7 +50,6 @@ export class DemoRemoveComponent {
     text: `MIN = -50;
 MAX = 50;
 data: Array<any>;
-removeIndex: number = 5;
 
 constructor() {
   this.data = [];
@@ -68,7 +67,7 @@ datasource = new Datasource({
         data.push(found);
       }
     }
-    doLog(this.demoContext, index, count, data.length);
+    success(data);
   }
 });
 
@@ -85,18 +84,18 @@ doRemoveDatasource(index: number) {
   this.MAX = this.data[this.data.length - 1].id;
 }
 
-doRemove() {
-  this.doRemoveDatasource(this.removeIndex);
-  this.datasource.adapter.remove(item => item.$index === this.removeIndex);
+doRemove(index: number) {
+  this.doRemoveDatasource(index);
+  this.datasource.adapter.remove(item => item.$index === index);
 }`
   }, {
     name: DemoSourceType.Template,
-    text: `<button (click)="doRemove()">Remove</button>
-by index <input [(ngModel)]="removeIndex">
-
-<div class="viewport">
+    text: `<div class="viewport">
   <div *uiScroll="let item of datasource">
-    <div class="item">{{item.text}}</div>
+    <div class="item">
+      {{item.text}}
+      <span class="remove" (click)="doRemove(item.id)">[remove]</span>
+    </div>
   </div>
 </div>`
   }, {
@@ -110,19 +109,16 @@ by index <input [(ngModel)]="removeIndex">
 .item {
   font-weight: bold;
   height: 25px;
+}
+.remove {
+  font-weight: normal;
+  font-size: smaller;
+  cursor: pointer;
+}
+.remove:hover {
+  color: rgb(158, 0, 0);
 }`
   }];
-
-  removeIndex = 5;
-
-  onInputChanged(target: HTMLInputElement) {
-    let value = parseInt(target.value, 10);
-    if (isNaN(value)) {
-      value = 1;
-    }
-    target.value = value.toString();
-    this.removeIndex = value;
-  }
 
   doRemoveDatasource(index: number) {
     this.data = this.data.reduce((acc, item) => {
@@ -137,9 +133,9 @@ by index <input [(ngModel)]="removeIndex">
     this.MAX = this.data[this.data.length - 1].id;
   }
 
-  doRemove() {
-    this.doRemoveDatasource(this.removeIndex);
-    this.datasource.adapter.remove(item => item.$index === this.removeIndex);
+  doRemove(index: number) {
+    this.doRemoveDatasource(index);
+    this.datasource.adapter.remove(item => item.$index === index);
   }
 
 }

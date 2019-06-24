@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 
 import { DemoContext, DemoSources } from './interfaces';
 
@@ -14,7 +14,8 @@ export class DemoComponent implements OnInit {
 
   @Input() datasource: Datasource;
   @Input() context: DemoContext;
-  @Input() sources: DemoSources;
+  @Input() sources: DemoSources; 
+  @Input() itemTemplate: TemplateRef<any>;
 
   viewport(token: string): string {
     const element = document.getElementById(token);

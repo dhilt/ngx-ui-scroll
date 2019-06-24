@@ -1,14 +1,14 @@
+<ng-template #itemTemplate let-item="item">
+  {{item.text}} 
+  <span class="remove" (click)="doRemove(item.id)">[remove]</span>
+</ng-template>
+
 <app-demo
   [datasource]="datasource"
   [context]="demoContext"
   [sources]="sources"
+  [itemTemplate]="itemTemplate"
 >
-  <div actions style="display: flex">
-    <button (click)="doRemove()">Remove</button>
-    &nbsp; by index &nbsp;
-    <input [ngModel]="removeIndex" (change)="onInputChanged($event.target)" size="2">
-  </div>
-
   <div description>
     <p>
       <em>Adapter.remove</em>...

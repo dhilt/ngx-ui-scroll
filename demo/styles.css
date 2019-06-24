@@ -225,6 +225,17 @@ input[type=checkbox], input[type=radio] {
   overflow-y: hidden;
 }
 
+.demo .work .item .remove {
+  margin-left: 10px;
+  font-weight: normal;
+  font-size: smaller;
+  cursor: pointer;
+}
+
+.demo .work .item .remove:hover {
+  color: rgb(158, 0, 0);
+}
+
 .demo .work .item.even {
   background-color: #f2f2f2;
 }

@@ -1,3 +1,5 @@
+<ng-template #defaultItemTemplate let-item="item">{{item.text}}</ng-template>
+
 <div class="demo">
 
   <h3 id="{{context.titleId}}">
@@ -16,7 +18,11 @@
           <div
             class="item {{context.addClass || ''}}"
             [style.height]="item.height !== undefined ? item.height + 'px' : null"
-          >{{item.text}}
+          >
+            <ng-template
+              [ngTemplateOutlet]="itemTemplate || defaultItemTemplate"
+              [ngTemplateOutletContext]="{item: item}"
+            ></ng-template>
           </div>
         </div>
       </div>

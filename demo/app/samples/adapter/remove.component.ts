@@ -16,6 +16,7 @@ export class DemoRemoveComponent {
     title: `Remove`,
     titleId: `remove`,
     viewportId: `remove-viewport`,
+    addClass: `remove`,
     count: 0,
     log: ''
   };

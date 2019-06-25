@@ -225,6 +225,10 @@ input[type=checkbox], input[type=radio] {
   overflow-y: hidden;
 }
 
+.demo .work .viewport.remove {
+  width: 200px;
+}
+
 .demo .work .item .remove {
   margin-left: 10px;
   font-weight: normal;

@@ -62,6 +62,7 @@ constructor() {
     });
 }`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `First visible item's index:
 {{datasource.adapter.firstVisible.$index}}

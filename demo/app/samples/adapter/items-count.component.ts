@@ -36,6 +36,7 @@ export class DemoItemsCountComponent {
   }
 });`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `The uiScroll buffer has
 {{datasource.adapter.itemsCount}} items.

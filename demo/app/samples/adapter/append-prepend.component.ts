@@ -78,6 +78,7 @@ doAppend() {
   this.datasource.adapter.append(this.generateItems(false));
 }`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `<button (click)="doAppend()">Append</button> /
 <button (click)="doPrepend()">Prepend</button>

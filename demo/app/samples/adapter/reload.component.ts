@@ -42,6 +42,7 @@ doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `<button (click)="doReload()">Reload</button>
 by index <input [(ngModel)]="reloadIndex">

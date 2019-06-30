@@ -11,7 +11,24 @@
 >
   <div description>
     <p>
-      <em>Adapter.remove</em>...
+      <em>Adapter.remove</em> method allows to remove items
+      from current <em>uiScroll</em> buffer. This method accepts 1 argument
+      which is a predicate function applying to each item in the current buffer.
+      If the return value is true, the item will be removed.
+      In this demo we have pretty simple predicate:
+    </p>
+    <pre>{{predicateDescription}}</pre>
+    <p>
+      Here <em>id</em> is being received from the template
+      as the <em>id</em> of the item the user ckicked on.
+    </p>
+    <p>
+      The very important thing is to syncronize our datasource with the changes
+      we are making over the <em>uiScroll</em> buffer via <em>Adapter.remove</em>.
+      Generally this is the App component responsibility,
+      and in this demo it is being provided via <em>doRemoveDatasource(id)</em> method.
+      It removes item with given <em>id</em> from the initial dataset,
+      and decrements <em>id</em> of all items which ids are more than given one.
     </p>
   </div>
 </app-demo>

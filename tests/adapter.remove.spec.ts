@@ -22,7 +22,7 @@ const configList: TestBedConfig[] = [{
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
-const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (done: Function) => {
   const { buffer } = misc.scroller;
   const minIndexToRemove = getMin(config.custom.remove);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -35,7 +35,7 @@ const shouldRemove = (config: TestBedConfig) => (misc: Misc) => (done: Function)
       );
       // remove items from the UiScroll
       misc.datasource.adapter.remove(item =>
-        config.custom.remove.some((i: number) => i === item.data.id)
+        config.custom.remove.some((i: number) => i === (byId ? item.data.id : item.$index))
       );
     } else if (cycles === 2) {
       misc.fixture.detectChanges();
@@ -75,8 +75,16 @@ describe('Adapter Remove Spec', () => {
   configList.forEach(config =>
     makeTest({
       config,
-      title: 'should remove',
+      title: 'should remove by index',
       it: shouldRemove(config)
+    })
+  );
+
+  configList.forEach(config =>
+    makeTest({
+      config,
+      title: 'should remove by id',
+      it: shouldRemove(config, true)
     })
   );
 

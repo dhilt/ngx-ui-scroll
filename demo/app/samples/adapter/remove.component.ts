@@ -72,10 +72,10 @@ datasource = new Datasource({
   }
 });
 
-doRemoveDatasource(index: number) {
+doRemoveDatasource(id: number) {
   this.data = this.data.reduce((acc, item) => {
-    if (item.id !== index) {
-      if (item.id > index) {
+    if (item.id !== id) {
+      if (item.id > id) {
         item.id--;
       }
       acc.push(item);
@@ -85,11 +85,12 @@ doRemoveDatasource(index: number) {
   this.MAX = this.data[this.data.length - 1].id;
 }
 
-doRemove(index: number) {
-  this.doRemoveDatasource(index);
-  this.datasource.adapter.remove(item => item.$index === index);
+doRemove(id: number) {
+  this.datasource.adapter.remove(item => item.data.id === id);
+  this.doRemoveDatasource(id);
 }`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `<div class="viewport">
   <div *uiScroll="let item of datasource">
@@ -121,10 +122,10 @@ doRemove(index: number) {
 }`
   }];
 
-  doRemoveDatasource(index: number) {
+  doRemoveDatasource(id: number) {
     this.data = this.data.reduce((acc, item) => {
-      if (item.id !== index) {
-        if (item.id > index) {
+      if (item.id !== id) {
+        if (item.id > id) {
           item.id--;
         }
         acc.push(item);
@@ -134,9 +135,11 @@ doRemove(index: number) {
     this.MAX = this.data[this.data.length - 1].id;
   }
 
-  doRemove(index: number) {
-    this.doRemoveDatasource(index);
-    this.datasource.adapter.remove(item => item.$index === index);
+  doRemove(id: number) {
+    this.datasource.adapter.remove(item => item.data.id === id);
+    this.doRemoveDatasource(id);
   }
+
+  predicateDescription = `  this.datasource.adapter.remove(item => item.data.id === id);`;
 
 }

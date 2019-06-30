@@ -8,16 +8,6 @@ import {
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 } from './processes/index';
 
-function runProcess(this: Scroller, data: ProcessSubject) {
-  return (_process: any) =>
-    (...args: any[]) => {
-      // const { process, status, payload } = data;
-      // this.logger.log(() => ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]);
-      // this.logger.log(() => ['run', _process.name, ...args]);
-      _process.run(this, ...args);
-    };
-}
-
 export class Workflow {
 
   scroller: Scroller;
@@ -85,6 +75,16 @@ export class Workflow {
     );
   }
 
+  runProcess(data: ProcessSubject) {
+    return (_process: any) =>
+      (...args: any[]) => {
+        // const { process, status, payload } = data;
+        // this.logger.log(() => ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]);
+        // this.logger.log(() => ['run', _process.name, ...args]);
+        _process.run(this.scroller, ...args);
+      };
+  }
+
   processError(process: Process, message: string) {
     this.errors.push({
       process,
@@ -98,7 +98,7 @@ export class Workflow {
   process(data: ProcessSubject) {
     const { status, process, payload = {} } = data;
     const options = this.scroller.state.workflowOptions;
-    const run = runProcess.bind(this.scroller)(data);
+    const run = this.runProcess(data);
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
       this.processError(process, payload.error || '');

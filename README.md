@@ -163,7 +163,7 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |[eof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the end of the dataset is reached or not.|
 |[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index?:&nbsp;number;<br>&nbsp;&nbsp;data?:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the datasource item index value, "data" is exactly the item's content, "element" is a link to DOM element which is relevant to the item. |
 |[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "firstVisible" property. |
-|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter|Object of ItemAdapter type containing information about last visible item. |
+|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index?:&nbsp;number;<br>&nbsp;&nbsp;data?:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
 |[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "lastVisible" property. |
 
 Below is the list of invocable methods of the Adapter API.
@@ -174,6 +174,7 @@ Below is the list of invocable methods of the Adapter API.
 |[append](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], eof?:&nbsp;boolean)|Adds items or single item to the end of the uiScroll dataset. If eof parameter is not set, items will be added and rendered immediately, they will be placed right after the last item in the uiScroll buffer. If eof parameter is set to true, items will be added and rendered only if the end of the dataset is reached; otherwise, these items will be virtualized. |
 |[prepend](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], bof?:&nbsp;boolean)|Adds items or single item to the beginning of the uiScroll dataset. If bof parameter is not set, items will be added and rendered immediately, they will be placed right before the first item in the uiScroll buffer. If bof parameter is set to true, items will be added and rendered only if the beginning of the dataset is reached; otherwise, these items will be virtualized. |
 |[check](https://dhilt.github.io/ngx-ui-scroll/#/adapter#check-size)| |Checks if any of current items changed it's size and runs a procedure to provide internal consistency and new items fetching if needed. |
+|[remove](https://dhilt.github.io/ngx-ui-scroll/#/adapter#remove)|(predicate: (item: ItemAdapter) => boolean)|Removes items from current buffer. Predicate is a function to be applied to every item currently in the buffer. Predicate must return boolean value. If predicate's return value is true, the item will be removed. |
 
 ### Development
 

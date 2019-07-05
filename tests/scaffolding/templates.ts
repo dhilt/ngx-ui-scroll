@@ -36,9 +36,9 @@ export const generateTemplate = (templateSettings?: TemplateSettings): TemplateD
   class="${viewportClass}"
   style="${viewportStyle}"
 ><div
-  *uiScroll="let item of datasource"
+  *uiScroll="let item of datasource; let index = index"
   [style]="${hasItemStyle ? 'getItemStyle(item)' : ''}"
-><span>{{item.id}}</span> : <b>{{item.text}}</b></div></div>`
+><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`
   };
 };
 

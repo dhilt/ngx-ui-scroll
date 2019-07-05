@@ -1,8 +1,7 @@
 import { Observable, Observer } from 'rxjs';
 
 import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
-import { getDynamicSizeByIndex } from '../miscellaneous/dynamicSize';
-import { Function } from 'estree';
+import { generateItem } from '../miscellaneous/items';
 
 export class DatasourceService implements Datasource {
   get() {
@@ -37,11 +36,10 @@ export const defaultDatasourceClass = generateDatasourceClass('initial');
 const datasourceGetInfinite = (index: number, count: number) => {
   const data = [];
   for (let i = index; i <= index + count - 1; i++) {
-    data.push({ id: i, text: 'item #' + i });
+    data.push(generateItem(i));
   }
   return data;
 };
-
 
 const datasourceGetLimited = (
   index: number, count: number, min: number, max: number, dynamicSize: boolean, processor?: any
@@ -51,11 +49,7 @@ const datasourceGetLimited = (
   const end = Math.min(index + count - 1, max);
   if (start <= end) {
     for (let i = start; i <= end; i++) {
-      const item = <any>{ id: i, text: 'item #' + i };
-      if (dynamicSize) {
-        item.size = getDynamicSizeByIndex(i);
-      }
-      data.push(item);
+      data.push(generateItem(i, dynamicSize));
     }
   }
   if (processor) {
@@ -88,7 +82,7 @@ const infiniteDatasourceGet = (type?: DatasourceType, delay?: number) =>
           delayedRun(() => resolve(datasourceGetInfinite(index, count)), delay)
         );
       default: // DatasourceType.Observable
-        return Observable.create((observer: Observer<any>) =>
+        return new Observable((observer: Observer<any>) =>
           delayedRun(() => observer.next(datasourceGetInfinite(index, count)), delay)
         );
     }
@@ -109,7 +103,7 @@ const limitedDatasourceGet = (
             datasourceGetLimited(index, count, min, max, dynamicSize, process && processor)), delay
           ));
       default: // DatasourceType.Observable
-        return Observable.create((observer: Observer<any>) =>
+        return new Observable((observer: Observer<any>) =>
           delayedRun(() => observer.next(
             datasourceGetLimited(index, count, min, max, dynamicSize, process && processor)), delay
           ));
@@ -126,7 +120,8 @@ const limitedDatasourceSpecialGet = (
   const end = Math.min(index + count - 1, max);
   if (start <= end) {
     for (let i = start; i <= end; i++) {
-      const item = <any>{ id: i, text: 'item #' + i, size: 20 };
+      const item = <any>generateItem(i);
+      item.size = 20;
       if (i === 1) {
         item.size = 200;
       }

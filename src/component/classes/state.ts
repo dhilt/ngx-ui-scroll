@@ -8,29 +8,13 @@ import {
   WorkflowOptions as IWorkflowOptions
 } from '../interfaces/index';
 
-import { FetchModel } from './fetch';
 import { Settings } from './settings';
 import { Logger } from './logger';
 import { itemAdapterEmpty } from './adapter';
-import { ScrollState, SyntheticScroll } from './scroll';
-
-class WorkflowOptions implements IWorkflowOptions {
-  empty: boolean;
-  scroll: boolean;
-  keepScroll: boolean;
-  byTimer: boolean;
-
-  constructor(settings: Settings) {
-    this.reset();
-  }
-
-  reset() {
-    this.empty = false;
-    this.scroll = false;
-    this.keepScroll = false;
-    this.byTimer = false;
-  }
-}
+import { FetchModel } from './state/fetch';
+import { ClipModel } from './state/clip';
+import { WorkflowOptions } from './state/workflowOptions';
+import { ScrollState, SyntheticScroll } from './state/scroll';
 
 export class State implements IState {
 
@@ -43,13 +27,11 @@ export class State implements IState {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
-  workflowOptions: WorkflowOptions;
+  workflowOptions: IWorkflowOptions;
 
-  startIndex: number;
   fetch: FetchModel;
-  noClip: boolean;
-  doClip: boolean;
-  clipCall: number;
+  clip: ClipModel;
+  startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
   preAdjustPosition: number;
@@ -123,6 +105,14 @@ export class State implements IState {
     return Number(new Date()) - this.initTime;
   }
 
+  get loop(): string {
+    return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount}`;
+  }
+
+  get loopNext(): string {
+    return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount + 1}`;
+  }
+
   constructor(settings: Settings, logger: Logger) {
     this.settings = settings;
     this.logger = logger;
@@ -136,9 +126,7 @@ export class State implements IState {
 
     this.setCurrentStartIndex(settings.startIndex);
     this.fetch = new FetchModel();
-    this.noClip = settings.infinite;
-    this.doClip = false;
-    this.clipCall = 0;
+    this.clip = new ClipModel();
     this.sizeBeforeRender = 0;
     this.sizeAfterRender = 0;
     this.fwdPaddingBeforeRender = 0;

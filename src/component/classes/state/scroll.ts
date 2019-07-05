@@ -4,8 +4,9 @@ import {
   ScrollState as IScrollState,
   SyntheticScroll as ISyntheticScroll,
   WindowScrollState as IWindowScrollState
-} from '../interfaces/index';
-import { Logger } from './logger';
+} from '../../interfaces/index';
+
+import { Logger } from '../logger';
 
 class WindowScrollState implements IWindowScrollState {
   positionToUpdate: number;

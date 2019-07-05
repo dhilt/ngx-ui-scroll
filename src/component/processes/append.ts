@@ -81,7 +81,7 @@ export default class Append {
     fetch.firstIndexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToAdd;
     fetch.lastIndexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToAdd;
 
-    state.noClip = true;
+    state.clip.noClip = true;
     return true;
   }
 

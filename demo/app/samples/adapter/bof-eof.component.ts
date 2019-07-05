@@ -53,6 +53,7 @@ export class DemoBofEofComponent {
   }
 });`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached.
 <br>

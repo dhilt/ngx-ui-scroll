@@ -50,7 +50,6 @@ datasource = new Datasource({
     for (let i = index; i < index + count; i++) {
       data.push({ id: i, text: 'item #' + i });
     }
-    doLog(this.demoContext, index, count, data.length);
     success(data);
   },
   settings: {
@@ -58,26 +57,28 @@ datasource = new Datasource({
   }
 });
 
-generateItems() {
-  const items = [];
-  for (let i = 0; i < this.inputValue; i++) {
-    this.newIndex++;
-    items.push({
-      id: this.newIndex,
-      text: 'new item #' + this.newIndex + '*'
-    });
-  }
-  return items;
+generateItems(isPrepend: boolean) {
+    const items: any[] = [];
+    for (let i = 0; i < this.inputValue; i++) {
+      this.newIndex++;
+      const item = {
+        id: this.newIndex,
+        text: 'new item #' + this.newIndex + '*'
+      };
+      isPrepend ? items.unshift(item) : items.push(item);
+    }
+    return items;
 }
 
 doPrepend() {
-  this.datasource.adapter.prepend(this.generateItems());
+  this.datasource.adapter.prepend(this.generateItems(true));
 }
 
 doAppend() {
-  this.datasource.adapter.append(this.generateItems());
+  this.datasource.adapter.append(this.generateItems(false));
 }`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `<button (click)="doAppend()">Append</button> /
 <button (click)="doPrepend()">Prepend</button>
@@ -108,24 +109,25 @@ doAppend() {
     this.inputValue = value;
   }
 
-  generateItems() {
-    const items = [];
+  generateItems(isPrepend: boolean) {
+    const items: any[] = [];
     for (let i = 0; i < this.inputValue; i++) {
       this.newIndex++;
-      items.push({
+      const item = {
         id: this.newIndex,
         text: 'new item #' + this.newIndex + '*'
-      });
+      };
+      isPrepend ? items.unshift(item) : items.push(item);
     }
     return items;
   }
 
   doPrepend() {
-    this.datasource.adapter.prepend(this.generateItems());
+    this.datasource.adapter.prepend(this.generateItems(true));
   }
 
   doAppend() {
-    this.datasource.adapter.append(this.generateItems());
+    this.datasource.adapter.append(this.generateItems(false));
   }
 
 }

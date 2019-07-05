@@ -8,12 +8,15 @@ export default class Reload {
     scroller.state.setCurrentStartIndex(reloadIndex);
     scroller.buffer.reset(true, scroller.state.startIndex);
     scroller.viewport.reset(scrollPosition);
-    scroller.purgeInnerLoopSubscriptions();
-    scroller.purgeScrollTimers();
-    // todo: do we need to have Process.end before?
+    let payload: any = {};
+    if (scroller.state.isLoading) {
+      scroller.purgeScrollTimers();
+      payload.finalize = true;
+    }
     scroller.callWorkflow({
       process: Process.reload,
-      status: ProcessStatus.next
+      status: ProcessStatus.next,
+      payload
     });
   }
 

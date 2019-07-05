@@ -1,5 +1,6 @@
 import { Direction, ItemAdapter } from './index';
-import { FetchModel } from '../classes/fetch';
+import { FetchModel } from '../classes/state/fetch';
+import { ClipModel } from '../classes/state/clip';
 import { BehaviorSubject } from 'rxjs/index';
 
 export interface WindowScrollState {
@@ -62,6 +63,8 @@ export interface WorkflowOptions {
   scroll: boolean;
   keepScroll: boolean;
   byTimer: boolean;
+
+  reset: Function;
 }
 
 export interface State {
@@ -73,11 +76,9 @@ export interface State {
   countDone: number;
   workflowOptions: WorkflowOptions;
 
-  startIndex: number;
   fetch: FetchModel;
-  noClip: boolean;
-  doClip: boolean;
-  clipCall: number;
+  clip: ClipModel;
+  startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
   preAdjustPosition: number;
@@ -102,4 +103,6 @@ export interface State {
   lastVisibleWanted: boolean;
 
   time: number;
+  loop: string;
+  loopNext: string;
 }

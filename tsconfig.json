@@ -11,10 +11,12 @@
     "sourceMap": true,
     "inlineSources": true,
     "target": "es5",
+    "downlevelIteration": true,
     "skipLibCheck": true,
     "lib": [
       "es2015",
-      "dom"
+      "dom",
+      "es2017"
     ],
     "typeRoots": [
       "node_modules/@types/"

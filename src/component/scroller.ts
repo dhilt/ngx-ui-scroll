@@ -52,6 +52,7 @@ export class Scroller {
       this.datasource = new Datasource(datasource, !this.settings.adapter);
       if (this.settings.adapter) {
         this.datasource.adapter.initialize(this);
+        datasource.adapter = this.datasource.adapter;
       }
     } else {
       this.datasource.adapter.initialize(this);
@@ -65,12 +66,11 @@ export class Scroller {
   bindData(): Observable<any> {
     this.runChangeDetector();
     return new Observable((observer: Observer<any>) => {
-        setTimeout(() => {
-          observer.next(true);
-          observer.complete();
-        });
-      }
-    );
+      setTimeout(() => {
+        observer.next(true);
+        observer.complete();
+      });
+    });
   }
 
   purgeInnerLoopSubscriptions() {

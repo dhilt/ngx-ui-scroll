@@ -33,7 +33,7 @@
       In this demo we want the datasource to be consistent with the dataset changes made during append/prepend.
       For this purpose a limited dataset is being initialized on the constructor and
       <em>Datasource.get</em> takes items by <em>id</em>, not by index. We can't rely on index because
-      we are going to update our dataset per each <em>doAppend</em> / <em>doPrepend</em> call
+      we are going to update our dataset per each <em>doAppend</em> / <em>doPrepend</em> calls
       destructively by <em>unshift</em> and <em>push</em>.
       This will guarantee stable data flow from the App component to the <em>uiScroll</em>.
     </p>

@@ -5,11 +5,13 @@ export enum Process {
   append = 'adapter.append',
   prepend = 'adapter.prepend',
   check = 'adapter.check',
+  remove = 'adapter.remove',
   start = 'start',
   preFetch = 'preFetch',
   fetch = 'fetch',
   postFetch = 'postFetch',
   render = 'render',
+  preClip = 'preClip',
   clip = 'clip',
   adjust = 'adjust',
   end = 'end'
@@ -31,6 +33,13 @@ export interface ProcessSubject {
   process: Process;
   status: ProcessStatus;
   payload?: any;
+}
+
+export interface WorkflowError {
+  loop: string;
+  time: number;
+  message: string;
+  process: Process;
 }
 
 export type CallWorkflow = (processSubject: ProcessSubject) => undefined;

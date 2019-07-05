@@ -45,9 +45,6 @@ export class DemoAppendPrependSyncComponent {
     },
     settings: {
       startIndex: this.MIN
-    },
-    devSettings: {
-      debug: true
     }
   });
 
@@ -109,6 +106,7 @@ doPrepend() {
   this.datasource.adapter.prepend(items, true);
 }`
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `<button (click)="doAppend()">Append</button> /
 <button (click)="doPrepend()">Prepend</button>

@@ -46,6 +46,7 @@ constructor() {
 }
 `
   }, {
+    active: true,
     name: DemoSourceType.Template,
     text: `The uiScroll is
 {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.

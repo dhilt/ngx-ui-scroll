@@ -1,9 +1,18 @@
 import { TestBedConfig } from '../scaffolding/runner';
 
+type Item = any;
+
+export const destructiveFilter = (list: Item[], predicate: (item: Item, index?: number) => any) =>
+  Array.from(Array(list.length).keys()).reverse().forEach(index =>
+    predicate(list[index], index) && list.splice(index, 1)
+  );
+
 // remove all non-filterIndex items in-place
 export const configListDestructiveFilter = (configList: TestBedConfig[], filterIndex: number) =>
-  Array.from(Array(configList.length).keys()).reverse().forEach(index =>
-    !!(configList[index].datasourceDevSettings = { debug: true, immediateLog: true }) &&
-    !!(configList[index].timeout = 9000) &&
-    index !== filterIndex && configList.splice(index, 1)
+  destructiveFilter(configList, (item, index) =>
+    !!(item.datasourceDevSettings = { debug: true, immediateLog: true }) &&
+    !!(item.timeout = 9000) &&
+    index !== filterIndex
   );
+
+export const getMin = (list: number[]) => list.sort((a: number, b: number) => a - b)[0];

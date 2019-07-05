@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 
 import { DemoContext, DemoSources } from './interfaces';
 
@@ -8,13 +8,14 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
   selector: 'app-demo',
   templateUrl: './demo.component.html'
 })
-export class DemoComponent {
+export class DemoComponent implements OnInit {
 
   init = false;
 
   @Input() datasource: Datasource;
   @Input() context: DemoContext;
-  @Input() sources: DemoSources;
+  @Input() sources: DemoSources; 
+  @Input() itemTemplate: TemplateRef<any>;
 
   viewport(token: string): string {
     const element = document.getElementById(token);
@@ -35,7 +36,7 @@ export class DemoComponent {
     return (count - 2).toString(10);
   }
 
-  constructor() {
+  ngOnInit() {
     setTimeout(() => {
       if (this.sources.every(s => !s.active)) {
         this.sources[0].active = true;

@@ -2,10 +2,10 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
+import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject, WorkflowError } from './interfaces/index';
 import {
-  Init, Scroll, Reload, Append, Check,
-  Start, PreFetch, Fetch, PostFetch, Render, Clip, Adjust, End
+  Init, Scroll, Reload, Append, Check, Remove,
+  Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 } from './processes/index';
 
 export class Workflow {
@@ -13,6 +13,7 @@ export class Workflow {
   scroller: Scroller;
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
+  errors: Array<WorkflowError>;
 
   readonly context: UiScrollComponent;
   readonly onScrollHandler: EventListener;
@@ -22,12 +23,13 @@ export class Workflow {
 
   constructor(context: UiScrollComponent) {
     this.context = context;
-    this.scroller = new Scroller(this.context, this.callWorkflow.bind(this));
+    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
     });
     this.cyclesDone = 0;
+    this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);
 
     if (this.scroller.settings.initializeDelay) {
@@ -73,123 +75,183 @@ export class Workflow {
     );
   }
 
+  runProcess(data: ProcessSubject) {
+    return (_process: any) =>
+      (...args: any[]) => {
+        // const { process, status, payload } = data;
+        // this.logger.log(() => ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]);
+        // this.logger.log(() => ['run', _process.name, ...args]);
+        _process.run(this.scroller, ...args);
+      };
+  }
+
+  processError(process: Process, message: string) {
+    this.errors.push({
+      process,
+      message,
+      time: this.scroller.state.time,
+      loop: this.scroller.state.loopNext
+    });
+    this.scroller.logger.logError(message);
+  }
+
   process(data: ProcessSubject) {
-    const scroller = this.scroller;
-    const { status, payload = {} } = data;
-    const options = scroller.state.workflowOptions;
+    const { status, process, payload = {} } = data;
+    const options = this.scroller.state.workflowOptions;
+    const run = this.runProcess(data);
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
-      End.run(scroller, payload.error);
+      this.processError(process, payload.error || '');
+      run(End)(process, payload);
       return;
     }
-    switch (data.process) {
+    switch (process) {
       case Process.init:
         if (status === Status.start) {
-          Init.run(scroller, true);
+          run(Init)();
         }
         if (status === Status.next) {
-          Start.run(scroller);
+          run(Start)(payload);
         }
         break;
       case Process.scroll:
         if (status === Status.next) {
           if (!options.keepScroll) {
-            Init.run(scroller);
+            run(Init)(process);
           } else {
-            Start.run(scroller);
+            run(Start)(process);
           }
         }
         break;
       case Process.reload:
         if (status === Status.start) {
-          Reload.run(scroller, payload);
+          run(Reload)(payload);
         }
         if (status === Status.next) {
-          Init.run(scroller, true);
+          if (payload.finalize) {
+            run(End)(process);
+          } else {
+            run(Init)(process);
+          }
         }
         break;
       case Process.append:
         if (status === Status.start) {
-          Append.run(scroller, payload);
+          run(Append)(payload);
         }
         if (status === Status.next) {
-          Init.run(scroller);
+          run(Init)(process);
         }
         break;
       case Process.prepend:
         if (status === Status.start) {
-          Append.run(scroller, { ...payload, prepend: true });
+          run(Append)({ ...payload, prepend: true });
         }
         if (status === Status.next) {
-          Init.run(scroller);
+          run(Init)(process);
         }
         break;
       case Process.check:
         if (status === Status.start) {
-          Check.run(scroller);
+          run(Check)();
         }
         if (status === Status.next) {
-          Init.run(scroller);
+          run(Init)(process);
+        }
+        break;
+      case Process.remove:
+        if (status === Status.start) {
+          run(Remove)(payload);
+        }
+        if (status === Status.next) {
+          run(Init)(process);
         }
         break;
       case Process.start:
         if (status === Status.next) {
-          if (payload.noFetch) {
-            Render.run(scroller);
-          } else {
-            PreFetch.run(scroller);
+          switch (payload) {
+            case Process.append:
+            case Process.prepend:
+            case Process.check:
+              run(Render)();
+              break;
+            case Process.remove:
+              run(Clip)();
+              break;
+            default:
+              run(PreFetch)();
           }
         }
         break;
       case Process.preFetch:
         if (status === Status.done) {
-          End.run(scroller);
+          run(End)(process);
         }
         if (status === Status.next) {
-          Fetch.run(scroller);
+          run(Fetch)();
         }
         break;
       case Process.fetch:
         if (status === Status.next) {
-          PostFetch.run(scroller);
+          run(PostFetch)();
         }
         break;
       case Process.postFetch:
         if (status === Status.next) {
-          Render.run(scroller);
+          run(Render)();
         }
         if (status === Status.done) {
-          End.run(scroller);
+          run(End)(process);
         }
         break;
       case Process.render:
         if (status === Status.next) {
           if (payload.noClip) {
-            Adjust.run(scroller);
+            run(Adjust)();
           } else {
-            Clip.run(scroller);
+            run(PreClip)();
+          }
+        }
+        break;
+      case Process.preClip:
+        if (status === Status.next) {
+          if (payload.doClip) {
+            run(Clip)();
+          } else {
+            run(Adjust)();
           }
         }
         break;
       case Process.clip:
         if (status === Status.next) {
-          Adjust.run(scroller);
+          if (payload === Process.end) {
+            run(End)();
+          } else {
+            run(Adjust)();
+          }
         }
         break;
       case Process.adjust:
         if (status === Status.done) {
-          End.run(scroller);
+          run(End)(process);
         }
         break;
       case Process.end:
+        this.scroller.finalize();
         if (status === Status.next) {
-          if (options.keepScroll) {
-            Scroll.run(scroller);
-          } else {
-            Start.run(scroller);
+          switch (payload) {
+            case Process.reload:
+              this.done();
+              run(Init)(payload);
+              break;
+            default:
+              if (options.keepScroll) {
+                run(Scroll)();
+              } else {
+                run(Start)(process);
+              }
           }
-        }
-        if (status === Status.done) {
+        } else if (status === Status.done) {
           this.done();
         }
         break;
@@ -197,12 +259,17 @@ export class Workflow {
   }
 
   callWorkflow(processSubject: ProcessSubject) {
+    // this.scroller.logger.log(() => {
+    //   const { process, status, payload } = processSubject;
+    //   return ['%ccall%c', ...['color: #77cc77;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])];
+    // });
     this.process$.next(processSubject);
   }
 
   done() {
     const { state } = this.scroller;
     this.cyclesDone++;
+    this.scroller.logger.logCycle(false);
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
     state.workflowPending = false;

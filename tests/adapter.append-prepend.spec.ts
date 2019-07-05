@@ -4,7 +4,7 @@ import { Misc } from './miscellaneous/misc';
 
 const min = 1, max = 100;
 
-describe('Append-Prepend Spec', () => {
+describe('Adapter Append-Prepend Spec', () => {
 
   const config = {
     prepend: {

@@ -70,7 +70,6 @@ export default class PreFetch {
     if (scroller.state.isInitialLoop) {
       scroller.logger.log(`skipping fetch backward direction [initial loop]`);
     } else {
-      const inc = startPosition < 0 ? -1 : 1;
       let position = firstIndexPosition;
       let index = firstIndex;
       while (1) {
@@ -117,12 +116,10 @@ export default class PreFetch {
     } else {
       let index = <number>state.fetch.firstIndexBuffer;
       let position = startPosition;
-      let lastIndexPosition;
       lastIndex = index;
       while (1) {
         lastIndex = index;
         position += buffer.getSizeByIndex(index);
-        lastIndexPosition = position;
         if (position >= endPosition) {
           break;
         }

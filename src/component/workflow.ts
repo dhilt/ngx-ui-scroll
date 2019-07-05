@@ -79,7 +79,9 @@ export class Workflow {
     return (_process: any) =>
       (...args: any[]) => {
         // const { process, status, payload } = data;
-        // this.logger.log(() => ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]);
+        // this.logger.log(() =>
+        //   ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]
+        // );
         // this.logger.log(() => ['run', _process.name, ...args]);
         _process.run(this.scroller, ...args);
       };

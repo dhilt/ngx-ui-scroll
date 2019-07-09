@@ -50,9 +50,6 @@ export class DemoCheckSizeComponent {
     },
     settings: {
       startIndex: this.startIndex
-    },
-    devSettings: {
-      debug: true
     }
   });
 
@@ -82,6 +79,9 @@ datasource = new Datasource ({
       }
     }
     success(data);
+  },
+  settings: {
+    startIndex: this.startIndex
   }
 });
 

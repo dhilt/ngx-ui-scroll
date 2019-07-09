@@ -36,7 +36,7 @@ export class DemoIsLoadingComponent {
   }
 });
 
-isLoadingCounter = 0;
+isLoadingCounter = -1;
 
 constructor() {
   this.datasource.adapter.isLoading$
@@ -75,12 +75,10 @@ for {{isLoadingCounter}} times.
 }`
   }];
 
-  isLoadingCounter = 0;
+  isLoadingCounter = -1;
 
   constructor() {
     this.datasource.adapter.isLoading$
-      .subscribe(isLoading =>
-        this.isLoadingCounter += !isLoading ? 1 : 0
-      );
+      .subscribe(isLoading => this.isLoadingCounter += !isLoading ? 1 : 0);
   }
 }

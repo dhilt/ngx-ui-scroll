@@ -6,7 +6,7 @@ import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
-  selector: 'app-demo-is-loading-extended',
+  selector: 'app-demo-is-loading-advanced',
   templateUrl: './is-loading-extended.component.html'
 })
 export class DemoIsLoadingExtendedComponent {
@@ -14,8 +14,8 @@ export class DemoIsLoadingExtendedComponent {
   demoContext: DemoContext = <DemoContext> {
     scope: 'adapter',
     title: `Is loading, advanced`,
-    titleId: `is-loading-extended`,
-    viewportId: `is-loading-extended-viewport`,
+    titleId: `is-loading-advanced`,
+    viewportId: `is-loading-advanced-viewport`,
     count: 0,
     log: ''
   };
@@ -41,17 +41,12 @@ export class DemoIsLoadingExtendedComponent {
 });
 
 loadingCounter = -1;
-outerCycleCounter = -1;
 innerLoopCounter = -1;
 
 constructor() {
   this.datasource.adapter.isLoading$
     .subscribe(result =>
       this.loadingCounter += !result ? 1 : 0
-    );
-  this.datasource.adapter.cyclePending$
-    .subscribe(result =>
-      this.outerCycleCounter += !result ? 1 : 0
     );
   this.datasource.adapter.loopPending$
     .subscribe(result =>
@@ -64,12 +59,6 @@ constructor() {
     text: `The uiScroll is
 {{datasource.adapter.isLoading ? 'loading': 'relaxing'}},
 counter {{loadingCounter}}
-
-<br>
-
-Outer cycle is
-{{datasource.adapter.cyclePending ? 'pending': 'stopped'}},
-counter: {{outerCycleCounter}}
 
 <br>
 
@@ -97,17 +86,12 @@ counter: {{innerLoopCounter}}
   }];
 
   loadingCounter = -1;
-  outerCycleCounter = -1;
   innerLoopCounter = -1;
 
   constructor() {
     this.datasource.adapter.isLoading$
       .subscribe(result =>
         this.loadingCounter += !result ? 1 : 0
-      );
-    this.datasource.adapter.cyclePending$
-      .subscribe(result =>
-        this.outerCycleCounter += !result ? 1 : 0
       );
     this.datasource.adapter.loopPending$
       .subscribe(result =>

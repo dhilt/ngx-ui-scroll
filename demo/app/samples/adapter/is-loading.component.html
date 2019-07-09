@@ -21,9 +21,10 @@
       <em>isLoading$</em> property which is Observable. BehaviorSubject, to be exact.
       In this demo we have a subscription and <em>isLoadingCounter</em>
       incrementing each time the <em>isLoading</em> becomes <em>false</em>.
-      We see that the initial value of this counter (before any scrolling) is 2:
-      first for <em>isLoading$</em> BehaviorSubject <em>false</em> initialization and
-      second for 3 initial fetches we see at <em>Datasource.get</em> log initially.
+      We see that the initial value of this counter on th UI (before any scrolling) is 1,
+      while the initial code value is -1. So it had been increased twice.
+      First for <em>isLoading$</em> BehaviorSubject <em>false</em> initialization and
+      second for 3 initial fetches we see at <em>Datasource.get</em> log on start.
     </p>
   </div>
 </app-demo>

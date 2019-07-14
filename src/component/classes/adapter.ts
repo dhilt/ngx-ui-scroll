@@ -55,6 +55,7 @@ export const generateMockAdapter = (): IAdapter => (
     append: () => null,
     prepend: () => null,
     check: () => null,
+    cache: () => null,
     remove: () => null,
     showLog: () => null,
     setScrollPosition: () => null
@@ -140,6 +141,8 @@ export class Adapter implements IAdapter {
   private getItemsCount: Function;
   private getBOF: Function;
   private getEOF: Function;
+  private enableCache: Function;
+  private disableCache: Function;
   private getFirstVisible: Function;
   private getFirstVisible$: Function;
   private getLastVisible: Function;
@@ -168,6 +171,8 @@ export class Adapter implements IAdapter {
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
     this.getBOF = (): boolean => buffer.bof;
     this.getEOF = (): boolean => buffer.eof;
+    this.enableCache = (): void => buffer.setCacheEnabled(true);
+    this.disableCache = (): void => buffer.setCacheEnabled(false);
     this.initializeProtected(scroller);
 
     // undocumented
@@ -244,6 +249,15 @@ export class Adapter implements IAdapter {
       process: Process.check,
       status: ProcessStatus.start
     });
+  }
+
+  cache(enabled: boolean) {
+    this.logger.log(() => `adapter: cache(${enabled})`);
+    if (!!enabled) {
+      this.enableCache();
+    } else {
+      this.disableCache();
+    }
   }
 
   remove(predicate: ItemsPredicate) {

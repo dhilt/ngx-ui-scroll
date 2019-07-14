@@ -44,8 +44,18 @@ export class Cache {
   recalculateAverage: RecalculateAverage;
 
   private items: Map<number, ItemCache>;
+  private _enabled: boolean;
   readonly logger: Logger;
   readonly itemSize: number;
+
+  set enabled(value: boolean) {
+    this._enabled = value;
+    this.logger.log(() => `cache is ${value ? 'enabled' : 'disabled'}`);
+  }
+
+  get enabled(): boolean {
+    return this._enabled;
+  }
 
   constructor(itemSize: number, logger: Logger) {
     this.averageSizeFloat = itemSize;
@@ -55,6 +65,7 @@ export class Cache {
     this.recalculateAverage = new RecalculateAverage();
     this.reset();
     this.logger = logger;
+    this.enabled = false;
   }
 
   reset() {

@@ -132,6 +132,10 @@ export class Buffer {
     this.cache.removeItem(item.$index);
   }
 
+  setCacheEnabled(enabled: boolean) {
+    this.cache.enabled = enabled;
+  }
+
   getFirstVisibleItemIndex(): number {
     const length = this.items.length;
     for (let i = 0; i < length; i++) {

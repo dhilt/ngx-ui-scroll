@@ -27,10 +27,11 @@ export interface Adapter {
   readonly eof: boolean;
   initialize: Function; // not callable outside
   reload: (reloadIndex?: number | string) => any;
-  append: (items: any, bof?: boolean) => any;
+  append: (items: any, eof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;
   remove: (predicate: ItemsPredicate) => any;
   check: () => any;
+  cache: (enabled: boolean) => any;
   showLog: () => any;
   setScrollPosition: (value: number) => any;
 }

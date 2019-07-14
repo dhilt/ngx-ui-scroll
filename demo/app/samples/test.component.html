@@ -16,6 +16,8 @@
   <input [(ngModel)]="sizeIndex" style="width: 50px">
   <button (click)="doChangeSize()">Size</button>
   <br>
+  <button (click)="doToggleCache()">{{cache ? 'Disable' : 'Enable'}} cache</button>
+  <br>
   <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
   <br>
   <small>isLoading:

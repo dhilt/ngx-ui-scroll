@@ -36,6 +36,7 @@ export class TestComponent {
   sizeValue = 10;
   datasourceDelay = 0;
   data: Array<MyItem>;
+  cache = false;
 
   datasource = new Datasource({
     get: (index: number, count: number) =>
@@ -207,5 +208,10 @@ export class TestComponent {
         }
       }
     });
+  }
+
+  doToggleCache() {
+    this.cache = !this.cache;
+    this.datasource.adapter.cache(this.cache);
   }
 }

@@ -69,6 +69,9 @@ export class Cache {
   }
 
   reset() {
+    if (this.enabled) {
+      return;
+    }
     this.minIndex = +Infinity;
     this.maxIndex = -Infinity;
     this.items.clear();

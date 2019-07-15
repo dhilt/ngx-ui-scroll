@@ -74,4 +74,46 @@ describe('Adapter Cache Spec', () => {
     }
   });
 
+  makeTest({
+    config,
+    title: 'should switch cache before load, after load and after reload',
+    it: (misc: Misc) => (done: Function) => {
+      misc.scroller.datasource.adapter.cache(true);
+      isCahceEnabled(misc);
+      spyOn(misc.workflow, 'finalize').and.callFake(() => {
+        if (misc.workflow.cyclesDone === 1) {
+          isCahceEnabled(misc);
+          misc.scroller.datasource.adapter.cache(false);
+          isCahceDisabled(misc);
+          misc.scroller.datasource.adapter.reload();
+        } else {
+          isCahceDisabled(misc);
+          misc.scroller.datasource.adapter.cache(true);
+          isCahceEnabled(misc);
+          done();
+        }
+      });
+    }
+  });
+
+  makeTest({
+    config,
+    title: 'should reload at the same index when cache is enabled',
+    it: (misc: Misc) => (done: Function) => {
+      let top = misc.getTopItem();
+      misc.scroller.datasource.adapter.firstVisible;
+      spyOn(misc.workflow, 'finalize').and.callFake(() => {
+        if (misc.workflow.cyclesDone === 1) {
+          top = misc.getTopItem();
+          misc.scroller.datasource.adapter.cache(true);
+          misc.scroller.datasource.adapter.reload();
+        } else {
+          const _top = misc.getTopItem();
+          expect(top.$index).toEqual(_top.$index);
+          done();
+        }
+      });
+    }
+  });
+
 });

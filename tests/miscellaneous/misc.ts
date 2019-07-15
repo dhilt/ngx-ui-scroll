@@ -6,7 +6,7 @@ import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
 import { generateItem } from './items';
 
-import { Direction } from '../../src/component/interfaces';
+import { Direction, ItemAdapter } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { Scroller } from '../../src/component/scroller';
 import { Workflow } from '../../src/component/workflow';
@@ -101,6 +101,10 @@ export class Misc {
 
   getElementIndex(element: HTMLElement): number {
     return Number(element.getAttribute('data-sid'));
+  }
+  
+  getTopItem(): ItemAdapter {
+    return this.scroller.datasource.adapter.firstVisible;
   }
 
   getScrollableSize(): number {

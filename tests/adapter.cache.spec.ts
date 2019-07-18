@@ -3,7 +3,8 @@ import { Misc } from './miscellaneous/misc';
 
 const configList = [{
   datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
-  templateSettings: { viewportHeight: 100 }
+  templateSettings: { viewportHeight: 100 },
+  // datasourceDevSettings: { debug: true }
 }];
 const config = configList[0];
 
@@ -90,6 +91,23 @@ describe('Adapter Cache Spec', () => {
           isCahceDisabled(misc);
           misc.scroller.datasource.adapter.cache(true);
           isCahceEnabled(misc);
+          done();
+        }
+      });
+    }
+  });
+
+  makeTest({
+    config,
+    title: 'should not change viewport size after reload with cache enabled',
+    it: (misc: Misc) => (done: Function) => {
+      spyOn(misc.workflow, 'finalize').and.callFake(() => {
+        if (misc.workflow.cyclesDone === 1) {
+          const size = misc.getScrollableSize();
+          misc.scroller.datasource.adapter.cache(true);
+          misc.scroller.datasource.adapter.reload();
+          const _size = misc.getScrollableSize();
+          expect(size).toEqual(_size);
           done();
         }
       });

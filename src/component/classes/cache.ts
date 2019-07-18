@@ -49,8 +49,10 @@ export class Cache {
   readonly itemSize: number;
 
   set enabled(value: boolean) {
+    if (!!this._enabled !== this._enabled) { // skip initialization
+      this.logger.log(() => `cache is ${value ? 'enabled' : 'disabled'}`);
+    }
     this._enabled = value;
-    this.logger.log(() => `cache is ${value ? 'enabled' : 'disabled'}`);
   }
 
   get enabled(): boolean {

@@ -53,19 +53,41 @@ export class Paddings {
   }
 
   getPositiveSize(startIndex: number, viewportSize: number) {
-    const { settings } = this;
+    const { settings, buffer } = this;
     let positiveSize = viewportSize;
-    if (isFinite(settings.maxIndex)) {
-      positiveSize = (settings.maxIndex - startIndex + 1) * settings.itemSize;
+    let max = -Infinity;
+    if (buffer.cache.enabled && buffer.maxIndex !== startIndex) {
+      max = buffer.maxIndex;
+    }
+    if (isFinite(settings.maxIndex) && settings.maxIndex > max) {
+      max = settings.maxIndex;
+    }
+    let size = settings.itemSize;
+    if (buffer.cache.enabled) {
+      size = buffer.averageSize;
+    }
+    if (isFinite(max)) {
+      positiveSize = (max - startIndex + 1) * size;
     }
     return positiveSize;
   }
 
   getNegativeSize(startIndex: number) {
-    const { settings } = this;
+    const { settings, buffer } = this;
     let negativeSize = 0;
-    if (isFinite(settings.minIndex)) {
-      negativeSize = (startIndex - settings.minIndex) * settings.itemSize;
+    let min = +Infinity;
+    if (buffer.cache.enabled && buffer.minIndex !== startIndex) {
+      min = buffer.minIndex;
+    }
+    if (isFinite(settings.minIndex) && settings.minIndex < min) {
+      min = settings.minIndex;
+    }
+    let size = settings.itemSize;
+    if (buffer.cache.enabled) {
+      size = buffer.averageSize;
+    }
+    if (isFinite(min)) {
+      negativeSize = (startIndex - min) * size;
     }
     return negativeSize;
   }

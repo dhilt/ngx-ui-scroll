@@ -5,6 +5,7 @@ import { Paddings } from './paddings';
 import { Settings } from './settings';
 import { Routines } from './domRoutines';
 import { State } from './state';
+import { Buffer } from './buffer';
 import { Logger } from './logger';
 
 export class Viewport {
@@ -19,14 +20,16 @@ export class Viewport {
   readonly settings: Settings;
   readonly routines: Routines;
   readonly state: State;
+  readonly buffer: Buffer;
   readonly logger: Logger;
 
   private disabled: boolean;
 
-  constructor(elementRef: ElementRef, settings: Settings, routines: Routines, state: State, logger: Logger) {
+  constructor(elementRef: ElementRef, settings: Settings, routines: Routines, state: State, buffer: Buffer, logger: Logger) {
     this.settings = settings;
     this.routines = routines;
     this.state = state;
+    this.buffer = buffer;
     this.logger = logger;
     this.element = elementRef.nativeElement;
     this.disabled = false;
@@ -41,7 +44,7 @@ export class Viewport {
       this.scrollable = <HTMLElement>this.element.parentElement;
     }
 
-    this.paddings = new Paddings(this.element, this.routines, settings);
+    this.paddings = new Paddings(this.element, routines, settings, buffer);
 
     if (settings.windowViewport && 'scrollRestoration' in history) {
       history.scrollRestoration = 'manual';

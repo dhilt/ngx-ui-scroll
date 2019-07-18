@@ -1,6 +1,7 @@
 import { Direction } from '../interfaces/direction';
 import { Routines } from './domRoutines';
 import { Settings } from './settings';
+import { Buffer } from './buffer';
 
 export class Padding {
 
@@ -30,11 +31,13 @@ export class Padding {
 
 export class Paddings {
   settings: Settings;
+  buffer: Buffer;
   forward: Padding;
   backward: Padding;
 
-  constructor(element: HTMLElement, routines: Routines, settings: Settings) {
+  constructor(element: HTMLElement, routines: Routines, settings: Settings, buffer: Buffer) {
     this.settings = settings;
+    this.buffer = buffer;
     this.forward = new Padding(element, Direction.forward, routines);
     this.backward = new Padding(element, Direction.backward, routines);
   }

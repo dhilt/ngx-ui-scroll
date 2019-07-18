@@ -44,7 +44,7 @@ export class Scroller {
     this.routines = new Routines(this.settings);
     this.state = new State(this.settings, this.logger);
     this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger);
-    this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.state, this.logger);
+    this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.state, this.buffer, this.logger);
 
     this.logger.object('uiScroll settings object', this.settings, true);
 

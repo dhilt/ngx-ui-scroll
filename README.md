@@ -15,9 +15,9 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 
 ### Motivation
 
-Scrolling large date sets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve this case is to render only a small portion of the data set visible to the user. Other data set elements that are not visible to the user are virtualized with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
+Scrolling large date sets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve this case is to render only a small portion of the data set visible to a user. Other data set elements that are not visible to a user are virtualized with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
 
-The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the data set and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if the user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
+The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the data set and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if a user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
@@ -81,7 +81,7 @@ where the viewport is a scrollable area of finite height.
 }
 ```
 
-\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
+\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters. The directive calls `Datasource.get` method each time a user scrolls to the edge of visible element list. That's the API provided by the \*uiScroll.
 
 ```javascript
 import { IDatasource } from 'ngx-ui-scroll';
@@ -99,14 +99,16 @@ export class AppComponent {
 }
 ```
 
-_Datasource.get_ must provide an array of _count_ data-items started from _index_ position. _Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if we want some remote API to be a source of our data, basically it may look like
+_Datasource.get_ method must provide an array of _count_ data-items started from _index_ position. If there are no items within given range _[index; index + count - 1]_, an empty array has to be passed. Empty result is treated as reaching the edge of the dataset (eof/bof), and \*uiScroll will place no further data requests.
+
+_Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if we want some remote API to be a source of our data, basically it may look like
 
 ```javascript
   datasource: IDatasource = {
     get: (index, count) =>
       this.http.get(`${myApiUrl}?index=${index}&count=${count}`)
   };
-```
+``` 
 
 More details could be found on the [Datasource demo page](https://dhilt.github.io/ngx-ui-scroll/#/datasource).
 

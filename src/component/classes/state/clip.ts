@@ -1,8 +1,12 @@
+import { Direction } from '../../interfaces/index';
+
 export class ClipModel {
   noClip: boolean;
   doClip: boolean;
   simulate: boolean;
   callCount: number;
+  forceForward: boolean;
+  forceBackward: boolean;
 
   private infinite: boolean
 
@@ -16,5 +20,7 @@ export class ClipModel {
   reset() {
     this.doClip = false;
     this.simulate = false;
+    this.forceForward = false;
+    this.forceBackward = false;
   }
 }

@@ -256,8 +256,8 @@ export class Adapter implements IAdapter {
     });
   }
 
-  clip(options: ClipOptions) {
-    this.logger.log(() => `adapter: clip(${options})`);
+  clip(options?: ClipOptions) {
+    this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
     this.callWorkflow(<ProcessSubject>{
       process: Process.userClip,
       status: ProcessStatus.start,

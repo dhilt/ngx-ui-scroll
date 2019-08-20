@@ -36,7 +36,7 @@ export interface Adapter {
   prepend: (items: any, bof?: boolean) => any;
   check: () => any;
   remove: (predicate: ItemsPredicate) => any;
-  clip: (options: ClipOptions) => any;
+  clip: (options?: ClipOptions) => any;
   showLog: () => any;
   setScrollPosition: (value: number) => any;
 }

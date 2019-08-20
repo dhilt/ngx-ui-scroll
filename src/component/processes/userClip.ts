@@ -3,12 +3,13 @@ import { ClipOptions, Process, ProcessStatus } from '../interfaces/index';
 
 export default class UserClip {
 
-  static run(scroller: Scroller, options: ClipOptions) {
-    options = UserClip.checkOptions(options);
+  static run(scroller: Scroller, options?: ClipOptions) {
+    const _options = UserClip.checkOptions(options);
 
+    scroller.state.clip.simulate = true;
     scroller.state.clip.doClip = true;
-    scroller.state.clip.forceForward = !options.backwardOnly;
-    scroller.state.clip.forceBackward = !options.forwardOnly;
+    scroller.state.clip.forceForward = !_options.backwardOnly;
+    scroller.state.clip.forceBackward = !_options.forwardOnly;
 
     scroller.callWorkflow({
       process: Process.userClip,
@@ -16,7 +17,7 @@ export default class UserClip {
     });
   }
 
-  static checkOptions(options: ClipOptions): ClipOptions {
+  static checkOptions(options?: ClipOptions): ClipOptions {
     const result: ClipOptions = {
       forwardOnly: false,
       backwardOnly: false

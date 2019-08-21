@@ -6,8 +6,6 @@ export default class UserClip {
   static run(scroller: Scroller, options?: ClipOptions) {
     const _options = UserClip.checkOptions(options);
 
-    scroller.state.clip.simulate = true;
-    scroller.state.clip.doClip = true;
     scroller.state.clip.forceForward = !_options.backwardOnly;
     scroller.state.clip.forceBackward = !_options.forwardOnly;
 

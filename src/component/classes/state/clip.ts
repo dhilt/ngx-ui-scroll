@@ -8,6 +8,10 @@ export class ClipModel {
   forceForward: boolean;
   forceBackward: boolean;
 
+  get force(): boolean {
+    return this.forceForward || this.forceBackward;
+  }
+
   private infinite: boolean
 
   constructor() {
@@ -19,6 +23,10 @@ export class ClipModel {
 
   reset() {
     this.doClip = false;
+    this.forceReset();
+  }
+
+  forceReset() {
     this.simulate = false;
     this.forceForward = false;
     this.forceBackward = false;

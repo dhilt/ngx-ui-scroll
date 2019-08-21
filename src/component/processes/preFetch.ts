@@ -3,7 +3,7 @@ import { Process, ProcessStatus, Direction } from '../interfaces/index';
 
 export default class PreFetch {
 
-  static run(scroller: Scroller) {
+  static run(scroller: Scroller, process: Process) {
     const { fetch } = scroller.state;
     scroller.state.preFetchPosition = scroller.viewport.scrollPosition;
     fetch.minIndex = scroller.buffer.minIndex;
@@ -30,7 +30,8 @@ export default class PreFetch {
 
     scroller.callWorkflow({
       process: Process.preFetch,
-      status: scroller.state.fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done
+      status: scroller.state.fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
+      payload: process
     });
   }
 

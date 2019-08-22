@@ -53,6 +53,7 @@ export class TestComponent {
       debug: true,
       immediateLog: true,
       logTime: false,
+      logProcessRun: true,
       throttle: 40,
       inertia: true,
       inertiaScrollDelay: 55,

@@ -1,28 +1,31 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { testItemsCounter, ItemsCounter } from './miscellaneous/itemsCounter';
+import { ClipOptions } from 'src/component/interfaces';
 
 const configList: TestBedConfig[] = [{
-  datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22, itemSize: 20 },
-  templateSettings: { viewportHeight: 71, itemHeight: 20 }
-}, {
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
   templateSettings: { viewportHeight: 100 }
 }, {
-  datasourceSettings: { startIndex: -15, bufferSize: 12, padding: 0.98, itemSize: 20 },
-  templateSettings: { viewportHeight: 66, itemHeight: 20 }
+  datasourceSettings: { startIndex: -158, bufferSize: 11, padding: 0.68, itemSize: 20 },
+  templateSettings: { viewportHeight: 77, itemHeight: 20 }
 }, {
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 1, horizontal: true, itemSize: 90 },
   templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
 }, {
-  datasourceSettings: { startIndex: -74, bufferSize: 4, padding: 0.72, horizontal: true, itemSize: 75 },
-  templateSettings: { viewportWidth: 300, itemWidth: 75, horizontal: true }
+  datasourceSettings: { startIndex: -274, bufferSize: 3, padding: 1.22, horizontal: true, itemSize: 75 },
+  templateSettings: { viewportWidth: 320, itemWidth: 75, horizontal: true }
 }];
+
+const configByDirectionList = configList.map((config: TestBedConfig, index: number) => ({
+  ...config,
+  custom: { forward: index % 2 === 0, backward: index % 2 !== 0 }
+}));
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
 export const getItemsCounter = (
-  settings: TestBedConfig, misc: Misc, itemSize: number, firstIndex: number, lastIndex: number
+  settings: TestBedConfig, misc: Misc, itemSize: number, firstIndex: number, lastIndex: number, clipOptions: ClipOptions
 ): ItemsCounter => {
   const { startIndex, padding } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize(settings);
@@ -40,7 +43,16 @@ export const getItemsCounter = (
 
   itemsCounter.backward.padding = (backward.index - firstIndex) * itemSize;
   itemsCounter.forward.padding = (lastIndex - forward.index) * itemSize;
-
+  
+  if (clipOptions) {
+    if (clipOptions.forwardOnly) {
+      backward.padding = 0;
+      backward.index = firstIndex;
+    } else {
+      forward.padding = 0;
+      forward.index = lastIndex;
+    }
+  }
   return itemsCounter;
 };
 
@@ -49,6 +61,7 @@ const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => (done: 
   const NEW_ITEMS_COUNT = 50;
   const { itemSize } = config.datasourceSettings;
   let firstIndex: number, lastIndex: number;
+  const clipSettings = getClipArgument(config);
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
@@ -64,11 +77,11 @@ const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => (done: 
       lastIndex = <number>misc.scroller.buffer.lastIndex;
       expect(lastIndex).toEqual(indexToAppend + NEW_ITEMS_COUNT - 1);
       expect(misc.padding.backward.getSize()).toEqual(0);
-      misc.datasource.adapter.clip();
+      misc.datasource.adapter.clip(clipSettings);
     } else {
       // user clip requires additional reflow to remove DOM elements
       setTimeout(() => {
-        const itemsCounter = getItemsCounter(config, misc, itemSize, firstIndex, lastIndex);
+        const itemsCounter = getItemsCounter(config, misc, itemSize, firstIndex, lastIndex, clipSettings);
         testItemsCounter(config, misc, itemsCounter);
         done();
       });
@@ -76,12 +89,47 @@ const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => (done: 
   });
 };
 
+const getClipArgument = ({ custom }: TestBedConfig): any => {
+  let argument;
+  if (custom && custom.forward) {
+    argument = { forwardOnly: true };
+  }
+  if (custom && custom.backward) {
+    argument = { backwardOnly: true };
+  }
+  return argument;
+};
+
+const getClipDirection = (config: TestBedConfig): string => {
+  if (!config.custom) {
+    return '';
+  }
+  if (config.custom.forward && config.custom.backward) {
+    return 'forward and backward';
+  }
+  if (config.custom.forward) {
+    return 'forward';
+  }
+  if (config.custom.backward) {
+    return 'backward';
+  }
+  return '';
+}
+
 describe('Adapter Clip Spec', () => {
 
   configList.forEach(config =>
     makeTest({
       config,
       title: 'should clip after append many',
+      it: shouldClipAfterAppend(config)
+    })
+  );
+
+  configByDirectionList.forEach(config =>
+    makeTest({
+      config,
+      title: `should clip ${getClipDirection(config)} after append many`,
       it: shouldClipAfterAppend(config)
     })
   );

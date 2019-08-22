@@ -1,5 +1,3 @@
-import { Direction } from '../../interfaces/index';
-
 export class ClipModel {
   noClip: boolean;
   doClip: boolean;

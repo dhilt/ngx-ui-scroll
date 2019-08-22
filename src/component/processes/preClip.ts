@@ -14,13 +14,8 @@ export default class PreClip {
   }
 
   static prepareClip(scroller: Scroller) {
-    const { buffer, state, state: { fetch, fetch: { direction } } } = scroller;
-    if (!buffer.size) {
-      scroller.logger.log(`skipping clip [empty buffer]`);
-      return;
-    }
-    if (state.isInitialWorkflowCycle && !state.scrollState.scroll) {
-      scroller.logger.log(`skipping clip [initial cycle, no scroll]`);
+    const { state: { fetch, fetch: { direction } } } = scroller;
+    if (PreClip.shouldNotClip(scroller)) {
       return;
     }
     const firstIndex = <number>fetch.firstIndexBuffer;
@@ -28,15 +23,11 @@ export default class PreClip {
     scroller.logger.log(() =>
       `looking for ${direction ? 'anti-' + direction + ' ' : ''}items ` +
       `that are out of [${firstIndex}..${lastIndex}] range`);
-    if (!direction || direction === Direction.forward) {
-      if (firstIndex - 1 >= buffer.absMinIndex) {
-        PreClip.prepareClipByDirection(scroller, Direction.forward, firstIndex);
-      }
+    if (PreClip.isBackward(scroller, firstIndex)) {
+      PreClip.prepareClipByDirection(scroller, Direction.backward, firstIndex);
     }
-    if (!direction || direction === Direction.backward) {
-      if (lastIndex + 1 <= buffer.absMaxIndex) {
-        PreClip.prepareClipByDirection(scroller, Direction.backward, lastIndex);
-      }
+    if (PreClip.isForward(scroller, lastIndex)) {
+      PreClip.prepareClipByDirection(scroller, Direction.forward, lastIndex);
     }
     if (!scroller.state.clip.doClip) {
       scroller.logger.log(`skipping clip [no items to clip]`);
@@ -44,12 +35,51 @@ export default class PreClip {
     return;
   }
 
+  static shouldNotClip(scroller: Scroller): boolean {
+    const { buffer, state } = scroller;
+    if (!buffer.size) {
+      scroller.logger.log(`skipping clip [empty buffer]`);
+      return true;
+    }
+    if (state.isInitialWorkflowCycle && !state.scrollState.scroll) {
+      scroller.logger.log(`skipping clip [initial cycle, no scroll]`);
+      return true;
+    }
+    return false;
+  }
+
+  static isBackward(scroller: Scroller, firstIndex: number): boolean {
+    const { buffer, state: { clip, fetch } } = scroller;
+    if (clip.force) {
+      return clip.forceBackward;
+    }
+    if (fetch.direction !== Direction.backward) {
+      if (firstIndex - 1 >= buffer.absMinIndex) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static isForward(scroller: Scroller, lastIndex: number): boolean {
+    const { buffer, state: { clip, fetch } } = scroller;
+    if (clip.force) {
+      return clip.forceForward;
+    }
+    if (fetch.direction !== Direction.forward) {
+      if (lastIndex + 1 <= buffer.absMaxIndex) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   static prepareClipByDirection(scroller: Scroller, direction: Direction, edgeIndex: number) {
     const forward = direction === Direction.forward;
     scroller.buffer.items.forEach(item => {
       if (
-        (forward && item.$index < edgeIndex) ||
-        (!forward && item.$index > edgeIndex)
+        (!forward && item.$index < edgeIndex) ||
+        (forward && item.$index > edgeIndex)
       ) {
         item.toRemove = true;
         item.removeDirection = direction;

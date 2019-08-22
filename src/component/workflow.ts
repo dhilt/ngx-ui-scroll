@@ -190,6 +190,7 @@ export class Workflow {
               break;
             case Process.userClip:
               run(PreFetch)(payload);
+              break;
             default:
               run(PreFetch)();
           }

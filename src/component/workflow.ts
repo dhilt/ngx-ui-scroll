@@ -199,15 +199,15 @@ export class Workflow {
         }
         break;
       case Process.preFetch:
-        if (payload === Process.userClip) {
+        const userClip = payload === Process.userClip;
+        if (status === Status.done && !userClip) {
+          run(End)(process);
+        }
+        if (status === Status.next && !userClip) {
+          run(Fetch)();
+        }
+        if (userClip) {
           run(PreClip)();
-        } else {
-          if (status === Status.done) {
-            run(End)(process);
-          }
-          if (status === Status.next) {
-            run(Fetch)();
-          }
         }
         break;
       case Process.fetch:

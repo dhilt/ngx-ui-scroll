@@ -4,10 +4,10 @@ import { Process, ProcessStatus, Direction } from '../interfaces/index';
 export default class PreFetch {
 
   static run(scroller: Scroller, process: Process) {
-    const { fetch } = scroller.state;
+    const { buffer, state: { fetch } } = scroller;
     scroller.state.preFetchPosition = scroller.viewport.scrollPosition;
-    fetch.minIndex = scroller.buffer.minIndex;
-    fetch.averageItemSize = scroller.buffer.averageSize || 0;
+    fetch.minIndex = buffer.minIndex;
+    fetch.averageItemSize = buffer.averageSize || 0;
 
     // calculate size before start index
     PreFetch.setStartDelta(scroller);
@@ -17,6 +17,11 @@ export default class PreFetch {
 
     // skip indexes that are in buffer
     PreFetch.skipBufferedItems(scroller);
+
+    if (scroller.settings.infinite) {
+      // fill indexes to include buffer if no clip
+      PreFetch.checkBufferGaps(scroller);
+    }
 
     // add indexes if there are too few items to fetch (clip padding)
     PreFetch.checkFetchPackSize(scroller);
@@ -30,7 +35,7 @@ export default class PreFetch {
 
     scroller.callWorkflow({
       process: Process.preFetch,
-      status: scroller.state.fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
+      status: fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
       payload: process
     });
   }
@@ -108,14 +113,14 @@ export default class PreFetch {
   }
 
   static setLastIndexBuffer(scroller: Scroller, startPosition: number, endPosition: number) {
-    const { state, buffer, settings } = scroller;
+    const { state, buffer, settings, state: { fetch } } = scroller;
     let lastIndex;
     if (!buffer.hasItemSize) {
       // just to fetch forward bufferSize items if neither averageItemSize nor itemSize are present
       lastIndex = state.startIndex + settings.bufferSize - 1;
       scroller.logger.log(`forcing fetch forward direction [no item size]`);
     } else {
-      let index = <number>state.fetch.firstIndexBuffer;
+      let index = <number>fetch.firstIndexBuffer;
       let position = startPosition;
       lastIndex = index;
       while (1) {
@@ -129,11 +134,11 @@ export default class PreFetch {
         }
       }
     }
-    state.fetch.lastIndex = state.fetch.lastIndexBuffer = Math.min(lastIndex, buffer.absMaxIndex);
+    fetch.lastIndex = fetch.lastIndexBuffer = Math.min(lastIndex, buffer.absMaxIndex);
   }
 
   static skipBufferedItems(scroller: Scroller) {
-    const buffer = scroller.buffer;
+    const { buffer } = scroller;
     if (!buffer.size) {
       return;
     }
@@ -162,6 +167,26 @@ export default class PreFetch {
     fetch.lastIndex = Math.min(pack[pack.length - 1], buffer.absMaxIndex);
     if (fetch.firstIndex !== firstIndex || fetch.lastIndex !== lastIndex) {
       scroller.logger.fetch('after Buffer flushing');
+    }
+  }
+
+  static checkBufferGaps(scroller: Scroller) {
+    const { buffer, state: { fetch } } = scroller;
+    if (!buffer.size) {
+      return;
+    }
+    const fetchFirst = <number>fetch.firstIndex;
+    const bufferLast = <number>buffer.lastIndex;
+    if (fetchFirst > bufferLast) {
+      fetch.firstIndex = fetch.firstIndexBuffer = bufferLast + 1;
+    }
+    const bufferFirst = <number>buffer.firstIndex;
+    const fetchLast = <number>fetch.lastIndex;
+    if (fetchLast < bufferFirst) {
+      fetch.lastIndex = fetch.lastIndexBuffer = bufferFirst - 1;
+    }
+    if (fetch.firstIndex !== fetchFirst || fetch.lastIndex !== fetchLast) {
+      scroller.logger.fetch('after Buffer filling (no clip case)');
     }
   }
 

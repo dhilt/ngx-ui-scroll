@@ -4,6 +4,7 @@ import Reload from './reload';
 import Append from './append';
 import Check from './check';
 import Remove from './remove';
+import UserClip from './userClip';
 import Start from './start';
 import PreFetch from './preFetch';
 import Fetch from './fetch';
@@ -15,6 +16,6 @@ import Clip from './clip';
 import End from './end';
 
 export {
-  Init, Scroll, Reload, Append, Check, Remove,
+  Init, Scroll, Reload, Append, Check, Remove, UserClip,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 };

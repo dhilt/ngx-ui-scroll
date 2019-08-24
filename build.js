@@ -19,9 +19,9 @@ const OUT_DIR_ESM5 = `${NPM_DIR}/package/esm5`;
 shell.echo(`Setup package version`);
 let version = config.version;
 const versionContent = `export default '${version}';`;
-const versionFilePath = './src/ui-scroll.version.ts'
-shell.touch(versionFilePath)
-shell.echo(versionContent).to(versionFilePath)
+const versionFilePath = './src/ui-scroll.version.ts';
+shell.touch(versionFilePath);
+shell.echo(versionContent).to(versionFilePath);
 shell.echo(chalk.green(`${PACKAGE} v${version}`));
 
 shell.echo(`Start building...`);

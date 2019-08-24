@@ -4,7 +4,7 @@ import { switchMap } from 'rxjs/operators';
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
 import {
-  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate
+  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions
 } from '../interfaces/index';
 
 const getIsInitialized = (adapter: Adapter): Observable<boolean> =>
@@ -56,6 +56,7 @@ export const generateMockAdapter = (): IAdapter => (
     prepend: () => null,
     check: () => null,
     remove: () => null,
+    clip: () => null,
     showLog: () => null,
     setScrollPosition: () => null
   }
@@ -217,7 +218,7 @@ export class Adapter implements IAdapter {
   append(items: any, eof?: boolean) {
     this.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
-      return `adapter: append([${count}], ${eof})`;
+      return `adapter: append([${count}], ${!!eof})`;
     });
     this.callWorkflow(<ProcessSubject>{
       process: Process.append,
@@ -229,7 +230,7 @@ export class Adapter implements IAdapter {
   prepend(items: any, bof?: boolean) {
     this.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
-      return `adapter: prepend([${count}], ${bof})`;
+      return `adapter: prepend([${count}], ${!!bof})`;
     });
     this.callWorkflow(<ProcessSubject>{
       process: Process.prepend,
@@ -252,6 +253,15 @@ export class Adapter implements IAdapter {
       process: Process.remove,
       status: ProcessStatus.start,
       payload: predicate
+    });
+  }
+
+  clip(options?: ClipOptions) {
+    this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
+    this.callWorkflow(<ProcessSubject>{
+      process: Process.userClip,
+      status: ProcessStatus.start,
+      payload: options
     });
   }
 

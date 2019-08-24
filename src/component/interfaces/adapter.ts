@@ -8,6 +8,11 @@ export interface ItemAdapter {
 
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
 
+export interface ClipOptions {
+  forwardOnly?: boolean;
+  backwardOnly?: boolean;
+}
+
 export interface Adapter {
   readonly version: string | null;
   readonly init: boolean;
@@ -29,8 +34,9 @@ export interface Adapter {
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, bof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;
-  remove: (predicate: ItemsPredicate) => any;
   check: () => any;
+  remove: (predicate: ItemsPredicate) => any;
+  clip: (options?: ClipOptions) => any;
   showLog: () => any;
   setScrollPosition: (value: number) => any;
 }

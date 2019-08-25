@@ -23,11 +23,11 @@ export class Workflow {
 
   constructor(context: UiScrollComponent) {
     this.context = context;
-    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
     });
+    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.cyclesDone = 0;
     this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);

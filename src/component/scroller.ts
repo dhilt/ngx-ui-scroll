@@ -48,19 +48,24 @@ export class Scroller {
 
     this.logger.object('uiScroll settings object', this.settings, true);
 
+    this.datasourceInit();
+  }
+
+  init() {
+    this.viewport.reset(0);
+  }
+
+  datasourceInit() {
+    const { datasource, settings } = this;
     if (!datasource.constructed) {
-      this.datasource = new Datasource(datasource, !this.settings.adapter);
-      if (this.settings.adapter) {
+      this.datasource = new Datasource(datasource, !settings.adapter);
+      if (settings.adapter) {
         this.datasource.adapter.initialize(this);
         datasource.adapter = this.datasource.adapter;
       }
     } else {
       this.datasource.adapter.initialize(this);
     }
-  }
-
-  init() {
-    this.viewport.reset(0);
   }
 
   bindData(): Observable<any> {

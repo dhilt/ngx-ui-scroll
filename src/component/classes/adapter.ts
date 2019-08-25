@@ -42,6 +42,27 @@ export const generateMockAdapter = (): IAdapter => (
   }
 );
 
+const protectPublicMethod = (context: any, token: string) => {
+  const func: any = context[token];
+  if (typeof func !== 'function') {
+    return;
+  }
+  context[token] = (...args: any) => {
+    if (context.init) {
+      context[token] = func;
+      func.apply(context, args);
+      return;
+    }
+    const sub = context.init$.subscribe((init: any) => {
+      if (init) {
+        context[token] = func;
+        func.apply(context, args);
+        sub.unsubscribe();
+      }
+    });
+  };
+};
+
 export class Adapter implements IAdapter {
 
   private context: AdapterContext;
@@ -106,13 +127,16 @@ export class Adapter implements IAdapter {
   get lastVisible$(): BehaviorSubject<ItemAdapter> {
     return this.context.lastVisible$;
   }
-
+ 
   constructor() {
     this.init$ = new BehaviorSubject<boolean>(false);
     this.context = new AdapterContext(this.init$);
     // const publichMethods = Object.keys(Adapter.prototype).filter(prop => 
     //   prop !== 'initialize' && (typeof (<any>this)[prop] === "function")
     // )
+    ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'setScrollPosition']
+      .forEach(token => protectPublicMethod(this, token));
+    
   }
 
   initialize(scroller: Scroller) {
@@ -179,6 +203,7 @@ export class Adapter implements IAdapter {
   }
 
   showLog() {
+    this.context.logger.log(() => `adapter: showLog()`);
     this.context.logger.logForce();
   }
 

@@ -2,11 +2,10 @@ import { BehaviorSubject, of as observableOf } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
-import { Logger } from './logger';
 import {
-  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions,
-  State as IState
+  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions
 } from '../interfaces/index';
+import { AdapterContext } from './adapterContext';
 
 const getInitializedSubject = (adapter: Adapter, method: Function): BehaviorSubject<any> =>
   adapter.init ? method() :
@@ -22,6 +21,7 @@ export const itemAdapterEmpty = <ItemAdapter> {
 
 export const generateMockAdapter = (): IAdapter => (
   <IAdapter> {
+    context: <any>{},
     version: null,
     init: false,
     init$: new BehaviorSubject<boolean>(false),
@@ -38,7 +38,7 @@ export const generateMockAdapter = (): IAdapter => (
     itemsCount: 0,
     bof: false,
     eof: false,
-    initialize: () => null,
+    initializeContext: () => null,
     _setScrollPosition: () => null,
     reload: () => null,
     append: () => null,
@@ -60,146 +60,81 @@ export class Adapter implements IAdapter {
   }
 
   get version(): string | null {
-    return this.isInitialized ? this.getVersion() : null;
+    return this.isInitialized ? this.context.getVersion() : null;
   }
 
   get isLoading(): boolean {
-    return this.isInitialized ? this.getIsLoading() : false;
+    return this.isInitialized ? this.context.getIsLoading() : false;
   }
 
   get isLoading$(): BehaviorSubject<boolean> {
-    return getInitializedSubject(this, () => this.getIsLoading$());
+    return getInitializedSubject(this, () => this.context.getIsLoading$());
   }
 
   get loopPending(): boolean {
-    return this.isInitialized ? this.getLoopPending() : false;
+    return this.isInitialized ? this.context.getLoopPending() : false;
   }
 
   get loopPending$(): BehaviorSubject<boolean> {
-    return getInitializedSubject(this, () => this.getLoopPending$());
+    return getInitializedSubject(this, () => this.context.getLoopPending$());
   }
 
   get cyclePending(): boolean {
-    return this.isInitialized ? this.getCyclePending() : false;
+    return this.isInitialized ? this.context.getCyclePending() : false;
   }
 
   get cyclePending$(): BehaviorSubject<boolean> {
-    return getInitializedSubject(this, () => this.getCyclePending$());
+    return getInitializedSubject(this, () => this.context.getCyclePending$());
   }
 
   get firstVisible(): ItemAdapter {
-    return this.isInitialized ? this.getFirstVisible() : {};
+    return this.isInitialized ? this.context.getFirstVisible() : {};
   }
 
   get firstVisible$(): BehaviorSubject<ItemAdapter> {
-    return getInitializedSubject(this, () => this.getFirstVisible$());
+    return getInitializedSubject(this, () => this.context.getFirstVisible$());
   }
 
   get lastVisible(): ItemAdapter {
-    return this.isInitialized ? this.getLastVisible() : {};
+    return this.isInitialized ? this.context.getLastVisible() : {};
   }
 
   get lastVisible$(): BehaviorSubject<ItemAdapter> {
-    return getInitializedSubject(this, () => this.getLastVisible$());
+    return getInitializedSubject(this, () => this.context.getLastVisible$());
   }
 
   get itemsCount(): number {
-    return this.isInitialized ? this.getItemsCount() : 0;
+    return this.isInitialized ? this.context.getItemsCount() : 0;
   }
 
   get bof(): boolean {
-    return this.isInitialized ? this.getBOF() : false;
+    return this.isInitialized ? this.context.getBOF() : false;
   }
 
   get eof(): boolean {
-    return this.isInitialized ? this.getEOF() : false;
+    return this.isInitialized ? this.context.getEOF() : false;
   }
 
-  private logger: Logger;
   private isInitialized: boolean;
-  private callWorkflow: Function;
-  private getVersion: Function;
-  private getIsLoading: Function;
-  private getIsLoading$: Function;
-  private getCyclePending: Function;
-  private getCyclePending$: Function;
-  private getLoopPending: Function;
-  private getLoopPending$: Function;
-  private getItemsCount: Function;
-  private getBOF: Function;
-  private getEOF: Function;
-  private getFirstVisible: Function;
-  private getFirstVisible$: Function;
-  private getLastVisible: Function;
-  private getLastVisible$: Function;
-  private _setScrollPosition: Function;
+  private context: AdapterContext;
 
   constructor() {
     this.isInitialized = false;
     this.init$ = new BehaviorSubject<boolean>(false);
+    this.context = new AdapterContext(() => {
+      this.isInitialized = true;
+      this.init$.next(true);
+      this.init$.complete();
+    });
   }
 
-  initialize(scroller: Scroller) {
-    if (this.isInitialized) {
-      return;
-    }
-    this.logger = scroller.logger;
-    const { state, buffer } = scroller;
-    this.callWorkflow = scroller.callWorkflow;
-    this.getVersion = (): string | null => scroller.version;
-    this.getIsLoading = (): boolean => state.isLoading;
-    this.getIsLoading$ = (): BehaviorSubject<boolean> => state.isLoadingSource;
-    this.getLoopPending = (): boolean => state.loopPending;
-    this.getLoopPending$ = (): BehaviorSubject<boolean> => state.loopPendingSource;
-    this.getCyclePending = (): boolean => state.workflowPending;
-    this.getCyclePending$ = (): BehaviorSubject<boolean> => state.workflowPendingSource;
-    this.getItemsCount = (): number => buffer.getVisibleItemsCount();
-    this.getBOF = (): boolean => buffer.bof;
-    this.getEOF = (): boolean => buffer.eof;
-    this.initializeProtected(state);
-
-    // undocumented
-    this._setScrollPosition = (value: number) => {
-      state.syntheticScroll.reset();
-      scroller.viewport.setPosition(value);
-    };
-
-    // run the subscriptions
-    this.isInitialized = true;
-    this.init$.next(true);
-    this.init$.complete();
-  }
-
-  initializeProtected(state: IState) {
-    let getFirstVisibleProtected = () => {
-      getFirstVisibleProtected = () => state.firstVisibleItem;
-      state.firstVisibleWanted = true;
-      return state.firstVisibleItem;
-    };
-    let getFirstVisible$Protected = () => {
-      getFirstVisible$Protected = () => state.firstVisibleSource;
-      state.firstVisibleWanted = true;
-      return state.firstVisibleSource;
-    };
-    let getLastVisibleProtected = () => {
-      getLastVisibleProtected = () => state.lastVisibleItem;
-      state.lastVisibleWanted = true;
-      return state.lastVisibleItem;
-    };
-    let getLastVisible$Protected = () => {
-      getLastVisible$Protected = () => state.lastVisibleSource;
-      state.lastVisibleWanted = true;
-      return state.lastVisibleSource;
-    };
-    this.getFirstVisible = (): ItemAdapter => getFirstVisibleProtected();
-    this.getFirstVisible$ = (): BehaviorSubject<ItemAdapter> => getFirstVisible$Protected();
-    this.getLastVisible = (): ItemAdapter => getLastVisibleProtected();
-    this.getLastVisible$ = (): BehaviorSubject<ItemAdapter> => getLastVisible$Protected();
+  initializeContext(scroller: Scroller) {
+    this.context.initialize(scroller);
   }
 
   reload(reloadIndex?: number | string) {
-    this.logger.log(() => `adapter: reload(${reloadIndex})`);
-    this.callWorkflow(<ProcessSubject>{
+    this.context.logger.log(() => `adapter: reload(${reloadIndex})`);
+    this.context.callWorkflow(<ProcessSubject>{
       process: Process.reload,
       status: ProcessStatus.start,
       payload: reloadIndex
@@ -207,11 +142,11 @@ export class Adapter implements IAdapter {
   }
 
   append(items: any, eof?: boolean) {
-    this.logger.log(() => {
+    this.context.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
       return `adapter: append([${count}], ${!!eof})`;
     });
-    this.callWorkflow(<ProcessSubject>{
+    this.context.callWorkflow(<ProcessSubject>{
       process: Process.append,
       status: ProcessStatus.start,
       payload: { items, eof }
@@ -219,11 +154,11 @@ export class Adapter implements IAdapter {
   }
 
   prepend(items: any, bof?: boolean) {
-    this.logger.log(() => {
+    this.context.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
       return `adapter: prepend([${count}], ${!!bof})`;
     });
-    this.callWorkflow(<ProcessSubject>{
+    this.context.callWorkflow(<ProcessSubject>{
       process: Process.prepend,
       status: ProcessStatus.start,
       payload: { items, bof }
@@ -231,16 +166,16 @@ export class Adapter implements IAdapter {
   }
 
   check() {
-    this.logger.log(() => `adapter: check()`);
-    this.callWorkflow(<ProcessSubject>{
+    this.context.logger.log(() => `adapter: check()`);
+    this.context.callWorkflow(<ProcessSubject>{
       process: Process.check,
       status: ProcessStatus.start
     });
   }
 
   remove(predicate: ItemsPredicate) {
-    this.logger.log(() => `adapter: remove()`);
-    this.callWorkflow(<ProcessSubject>{
+    this.context.logger.log(() => `adapter: remove()`);
+    this.context.callWorkflow(<ProcessSubject>{
       process: Process.remove,
       status: ProcessStatus.start,
       payload: predicate
@@ -248,8 +183,8 @@ export class Adapter implements IAdapter {
   }
 
   clip(options?: ClipOptions) {
-    this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
-    this.callWorkflow(<ProcessSubject>{
+    this.context.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
+    this.context.callWorkflow(<ProcessSubject>{
       process: Process.userClip,
       status: ProcessStatus.start,
       payload: options
@@ -257,26 +192,26 @@ export class Adapter implements IAdapter {
   }
 
   showLog() {
-    this.logger.logForce();
+    this.context.logger.logForce();
   }
 
   setScrollPosition(value: number) {
-    this.logger.log(() => `adapter: setScrollPosition(${value})`);
+    this.context.logger.log(() => `adapter: setScrollPosition(${value})`);
     const position = Number(value);
     const parsedValue = parseInt(<any>value, 10);
     if (position !== parsedValue) {
-      this.logger.log(() =>
+      this.context.logger.log(() =>
         `can't set scroll position because ${value} is not an integer`);
     } else {
-      this._setScrollPosition(value);
+      this.context._setScrollPosition(value);
     }
   }
 
   // setMinIndex(value: number) {
-  //   this.logger.log(() => `adapter: setMinIndex(${value})`);
+  //   this.context.logger.log(() => `adapter: setMinIndex(${value})`);
   //   const index = Number(value);
   //   if (isNaN(index)) {
-  //     this.logger.log(() =>
+  //     this.context.logger.log(() =>
   //       `can't set minIndex because ${value} is not a number`);
   //   } else {
   //     this.scroller.buffer.minIndexUser = index;

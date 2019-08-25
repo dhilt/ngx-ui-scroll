@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
 import { Process, ProcessStatus, Direction } from '../interfaces/index';
-import { itemAdapterEmpty } from '../classes/adapter';
+import { itemAdapterEmpty } from '../utils/adapter';
 
 export default class End {
 

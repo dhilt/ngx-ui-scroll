@@ -10,11 +10,11 @@ import {
 
 import { Settings } from './settings';
 import { Logger } from './logger';
-import { itemAdapterEmpty } from './adapter';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { WorkflowOptions } from './state/workflowOptions';
 import { ScrollState, SyntheticScroll } from './state/scroll';
+import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
 

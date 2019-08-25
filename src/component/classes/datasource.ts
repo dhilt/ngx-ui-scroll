@@ -1,7 +1,8 @@
 import {
   Datasource as IDatasource, DatasourceGet, DevSettings, Settings, Adapter as IAdapter
 } from '../interfaces/index';
-import { Adapter, generateMockAdapter } from './adapter';
+import { Adapter } from './adapter';
+import { generateMockAdapter } from '../utils/index';
 
 export class Datasource implements IDatasource {
   readonly constructed: boolean;

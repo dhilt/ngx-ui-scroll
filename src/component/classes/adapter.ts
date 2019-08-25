@@ -1,67 +1,11 @@
 import { BehaviorSubject } from 'rxjs';
 
 import { Scroller } from '../scroller';
+import { AdapterContext } from './adapterContext';
+import { protectAdapterPublicMethod } from '../utils/index';
 import {
   Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions
 } from '../interfaces/index';
-import { AdapterContext } from './adapterContext';
-
-export const itemAdapterEmpty = <ItemAdapter> {
-  data: {},
-  element: {}
-};
-
-export const generateMockAdapter = (): IAdapter => (
-  <IAdapter> {
-    context: <any>{},
-    init$: new BehaviorSubject<boolean>(false),
-    version: null,
-    init: false,
-    isLoading: false,
-    isLoading$: new BehaviorSubject<boolean>(false),
-    cyclePending: false,
-    cyclePending$: new BehaviorSubject<boolean>(false),
-    loopPending: false,
-    loopPending$: new BehaviorSubject<boolean>(false),
-    firstVisible: itemAdapterEmpty,
-    firstVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
-    lastVisible: itemAdapterEmpty,
-    lastVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
-    itemsCount: 0,
-    bof: false,
-    eof: false,
-    initialize: () => null,
-    reload: () => null,
-    append: () => null,
-    prepend: () => null,
-    check: () => null,
-    remove: () => null,
-    clip: () => null,
-    showLog: () => null,
-    setScrollPosition: () => null
-  }
-);
-
-const protectPublicMethod = (context: any, token: string) => {
-  const func: any = context[token];
-  if (typeof func !== 'function') {
-    return;
-  }
-  context[token] = (...args: any) => {
-    if (context.init) {
-      context[token] = func;
-      func.apply(context, args);
-      return;
-    }
-    const sub = context.init$.subscribe((init: any) => {
-      if (init) {
-        context[token] = func;
-        func.apply(context, args);
-        sub.unsubscribe();
-      }
-    });
-  };
-};
 
 export class Adapter implements IAdapter {
 
@@ -131,12 +75,9 @@ export class Adapter implements IAdapter {
   constructor() {
     this.init$ = new BehaviorSubject<boolean>(false);
     this.context = new AdapterContext(this.init$);
-    // const publichMethods = Object.keys(Adapter.prototype).filter(prop => 
-    //   prop !== 'initialize' && (typeof (<any>this)[prop] === "function")
-    // )
+
     ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'setScrollPosition']
-      .forEach(token => protectPublicMethod(this, token));
-    
+      .forEach(token => protectAdapterPublicMethod(this, token));
   }
 
   initialize(scroller: Scroller) {

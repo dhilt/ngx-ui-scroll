@@ -1,4 +1,5 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of as observableOf } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
@@ -6,39 +7,107 @@ import { Logger } from './logger';
 import { AdapterContext as IAdapterContext, ItemAdapter, State as IState } from '../interfaces/index';
 
 export class AdapterContext implements IAdapterContext {
-
-  init: Function;
-  logger: Logger;
   callWorkflow: Function;
+  logger: Logger;
+  setScrollPosition: Function;
+  
+  private init$: BehaviorSubject<boolean>;
+  private isInitialized: boolean;
+  private getVersion: Function;
+  private getIsLoading: Function;
+  private getIsLoading$: Function;
+  private getCyclePending: Function;
+  private getCyclePending$: Function;
+  private getLoopPending: Function;
+  private getLoopPending$: Function;
+  private getItemsCount: Function;
+  private getBOF: Function;
+  private getEOF: Function;
+  private getFirstVisible: Function;
+  private getFirstVisible$: Function;
+  private getLastVisible: Function;
+  private getLastVisible$: Function;
 
-  getVersion: Function;
-  getIsLoading: Function;
-  getIsLoading$: Function;
-  getCyclePending: Function;
-  getCyclePending$: Function;
-  getLoopPending: Function;
-  getLoopPending$: Function;
-  getItemsCount: Function;
-  getBOF: Function;
-  getEOF: Function;
-  getFirstVisible: Function;
-  getFirstVisible$: Function;
-  getLastVisible: Function;
-  getLastVisible$: Function;
-  _setScrollPosition: Function;
+  private getInitializedSubj(method: Function) {
+    return this.isInitialized ? method() :
+      this.init$.pipe(switchMap(isInitialized =>
+        isInitialized ? method() : observableOf()
+      ));
+  }
 
-  constructor(init: Function) {
-    this.init = init;
+  get init(): boolean {
+    return this.isInitialized;
+  }
+
+  get version(): string | null {
+    return this.isInitialized ? this.getVersion() : null;
+  }
+
+  get isLoading(): boolean {
+    return this.isInitialized ? this.getIsLoading() : false;
+  }
+
+  get isLoading$(): BehaviorSubject<boolean> {
+    return this.getInitializedSubj(() => this.getIsLoading$());
+  }
+
+  get loopPending(): boolean {
+    return this.isInitialized ? this.getLoopPending() : false;
+  }
+
+  get loopPending$(): BehaviorSubject<boolean> {
+    return this.getInitializedSubj(() => this.getLoopPending$());
+  }
+
+  get cyclePending(): boolean {
+    return this.isInitialized ? this.getCyclePending() : false;
+  }
+
+  get cyclePending$(): BehaviorSubject<boolean> {
+    return this.getInitializedSubj(() => this.getCyclePending$());
+  }
+
+  get itemsCount(): number {
+    return this.isInitialized ? this.getItemsCount() : 0;
+  }
+
+  get bof(): boolean {
+    return this.isInitialized ? this.getBOF() : false;
+  }
+
+  get eof(): boolean {
+    return this.isInitialized ? this.getEOF() : false;
+  }
+
+  get firstVisible(): ItemAdapter {
+    return this.isInitialized ? this.getFirstVisible() : {};
+  }
+
+  get firstVisible$(): BehaviorSubject<ItemAdapter> {
+    return this.getInitializedSubj(() => this.getFirstVisible$());
+  }
+
+  get lastVisible(): ItemAdapter {
+    return this.isInitialized ? this.getLastVisible() : {};
+  }
+
+  get lastVisible$(): BehaviorSubject<ItemAdapter> {
+    return this.getInitializedSubj(() => this.getLastVisible$());
+  }
+
+  constructor(init$: BehaviorSubject<boolean>) {
+    this.isInitialized = false;
+    this.init$ = init$;
   }
 
   initialize(scroller: Scroller) {
-    const { adapter } = scroller.datasource;
-    if (adapter.init) {
+    if (this.isInitialized) {
       return;
     }
-    this.logger = scroller.logger;
-    const { state, buffer } = scroller;
-    this.callWorkflow = scroller.callWorkflow;
+    const { state, buffer, logger, callWorkflow } = scroller;
+    this.callWorkflow = callWorkflow;
+    this.logger = logger;
+
     this.getVersion = (): string | null => scroller.version;
     this.getIsLoading = (): boolean => state.isLoading;
     this.getIsLoading$ = (): BehaviorSubject<boolean> => state.isLoadingSource;
@@ -49,19 +118,22 @@ export class AdapterContext implements IAdapterContext {
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
     this.getBOF = (): boolean => buffer.bof;
     this.getEOF = (): boolean => buffer.eof;
+
     this.initializeProtected(state);
 
     // undocumented
-    this._setScrollPosition = (value: number) => {
+    this.setScrollPosition = (value: number) => {
       state.syntheticScroll.reset();
       scroller.viewport.setPosition(value);
     };
 
     // run the subscriptions
-    this.init();
+    this.isInitialized = true;
+    this.init$.next(true);
+    this.init$.complete();
   }
 
-  initializeProtected(state: IState) {
+  private initializeProtected(state: IState) {
     let getFirstVisibleProtected = () => {
       getFirstVisibleProtected = () => state.firstVisibleItem;
       state.firstVisibleWanted = true;

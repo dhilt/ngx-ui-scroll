@@ -13,29 +13,8 @@ export interface ClipOptions {
   backwardOnly?: boolean;
 }
 
-export interface AdapterContext {
-  initialize: Function;
-  readonly init: boolean;
-  readonly version: string | null;
-  readonly isLoading: boolean;
-  readonly isLoading$: BehaviorSubject<boolean>;
-  readonly loopPending: boolean;
-  readonly loopPending$: BehaviorSubject<boolean>;
-  readonly cyclePending: boolean;
-  readonly cyclePending$: BehaviorSubject<boolean>;
-  readonly firstVisible: ItemAdapter;
-  readonly firstVisible$: BehaviorSubject<ItemAdapter>;
-  readonly lastVisible: ItemAdapter;
-  readonly lastVisible$: BehaviorSubject<ItemAdapter>;
-  readonly itemsCount: number;
-  readonly bof: boolean;
-  readonly eof: boolean;
-  setScrollPosition: Function;
-}
-
 export interface Adapter {
   init$: BehaviorSubject<boolean>;
-  // context: AdapterContext;
   readonly version: string | null;
   readonly init: boolean;
   readonly isLoading: boolean;

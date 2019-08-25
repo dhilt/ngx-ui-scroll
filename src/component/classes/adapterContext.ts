@@ -3,10 +3,9 @@ import { switchMap } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
+import { ItemAdapter, State as IState } from '../interfaces/index';
 
-import { AdapterContext as IAdapterContext, ItemAdapter, State as IState } from '../interfaces/index';
-
-export class AdapterContext implements IAdapterContext {
+export class AdapterContext {
   callWorkflow: Function;
   logger: Logger;
   setScrollPosition: Function;

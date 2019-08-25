@@ -1,30 +1,19 @@
-import { BehaviorSubject, Observable, Observer, of as observableOf } from 'rxjs';
+import { BehaviorSubject, of as observableOf } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
 import {
-  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions
+  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions,
+  State as IState
 } from '../interfaces/index';
 
-const getIsInitialized = (adapter: Adapter): Observable<boolean> =>
-  Observable.create((observer: Observer<boolean>) => {
-    const intervalId = setInterval(() => {
-      if (adapter && adapter.init) {
-        clearInterval(intervalId);
-        observer.next(true);
-        observer.complete();
-      }
-    }, 25);
-  });
-
-const getInitializedSubject = (adapter: Adapter, method: Function): BehaviorSubject<any> => {
-  return adapter.init ? method() :
+const getInitializedSubject = (adapter: Adapter, method: Function): BehaviorSubject<any> =>
+  adapter.init ? method() :
     adapter.init$
-      .pipe(switchMap(() =>
-        method()
-      ));
-};
+    .pipe(switchMap(init =>
+      init ? method() : observableOf()
+    ));
 
 export const itemAdapterEmpty = <ItemAdapter> {
   data: {},
@@ -35,7 +24,7 @@ export const generateMockAdapter = (): IAdapter => (
   <IAdapter> {
     version: null,
     init: false,
-    init$: observableOf(false),
+    init$: new BehaviorSubject<boolean>(false),
     isLoading: false,
     isLoading$: new BehaviorSubject<boolean>(false),
     cyclePending: false,
@@ -64,12 +53,10 @@ export const generateMockAdapter = (): IAdapter => (
 
 export class Adapter implements IAdapter {
 
+  init$: BehaviorSubject<boolean>;
+
   get init(): boolean {
     return this.isInitialized;
-  }
-
-  get init$(): Observable<boolean> {
-    return getIsInitialized(this);
   }
 
   get version(): string | null {
@@ -149,6 +136,7 @@ export class Adapter implements IAdapter {
 
   constructor() {
     this.isInitialized = false;
+    this.init$ = new BehaviorSubject<boolean>(false);
   }
 
   initialize(scroller: Scroller) {
@@ -157,7 +145,6 @@ export class Adapter implements IAdapter {
     }
     this.logger = scroller.logger;
     const { state, buffer } = scroller;
-    this.isInitialized = true;
     this.callWorkflow = scroller.callWorkflow;
     this.getVersion = (): string | null => scroller.version;
     this.getIsLoading = (): boolean => state.isLoading;
@@ -169,17 +156,21 @@ export class Adapter implements IAdapter {
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
     this.getBOF = (): boolean => buffer.bof;
     this.getEOF = (): boolean => buffer.eof;
-    this.initializeProtected(scroller);
+    this.initializeProtected(state);
 
     // undocumented
     this._setScrollPosition = (value: number) => {
       state.syntheticScroll.reset();
       scroller.viewport.setPosition(value);
     };
+
+    // run the subscriptions
+    this.isInitialized = true;
+    this.init$.next(true);
+    this.init$.complete();
   }
 
-  initializeProtected(scroller: Scroller) {
-    const { state } = scroller;
+  initializeProtected(state: IState) {
     let getFirstVisibleProtected = () => {
       getFirstVisibleProtected = () => state.firstVisibleItem;
       state.firstVisibleWanted = true;

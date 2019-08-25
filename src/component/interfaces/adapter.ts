@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export interface ItemAdapter {
   $index?: number;
@@ -14,9 +14,9 @@ export interface ClipOptions {
 }
 
 export interface Adapter {
+  init$: BehaviorSubject<boolean>;
   readonly version: string | null;
   readonly init: boolean;
-  readonly init$: Observable<boolean>;
   readonly isLoading: boolean;
   readonly isLoading$: BehaviorSubject<boolean>;
   readonly loopPending: boolean;

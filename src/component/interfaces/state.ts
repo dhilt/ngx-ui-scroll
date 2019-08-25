@@ -92,11 +92,13 @@ export interface State {
 
   loopPendingSource: BehaviorSubject<boolean>;
   workflowPendingSource: BehaviorSubject<boolean>;
+  isLoadingSource: BehaviorSubject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
   lastVisibleSource: BehaviorSubject<ItemAdapter>;
 
   loopPending: boolean;
   workflowPending: boolean;
+  isLoading: boolean;
   firstVisibleItem: ItemAdapter;
   lastVisibleItem: ItemAdapter;
   firstVisibleWanted: boolean;

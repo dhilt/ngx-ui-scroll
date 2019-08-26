@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { Adapter as IAdapter, ItemAdapter } from '../interfaces/index';
 
@@ -14,11 +14,11 @@ export const generateMockAdapter = (): IAdapter => (
     version: null,
     init: false,
     isLoading: false,
-    isLoading$: new BehaviorSubject<boolean>(false),
-    cyclePending: false,
-    cyclePending$: new BehaviorSubject<boolean>(false),
+    isLoading$: new Subject<boolean>(),
     loopPending: false,
-    loopPending$: new BehaviorSubject<boolean>(false),
+    loopPending$: new Subject<boolean>(),
+    cyclePending: false,
+    cyclePending$: new Subject<boolean>(),
     firstVisible: itemAdapterEmpty,
     firstVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
     lastVisible: itemAdapterEmpty,

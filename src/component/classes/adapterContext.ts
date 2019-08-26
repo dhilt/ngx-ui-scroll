@@ -1,5 +1,5 @@
-import { BehaviorSubject, of as observableOf } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { BehaviorSubject, Subject, of as observableOf } from 'rxjs';
+import { switchMap, filter } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
@@ -28,9 +28,14 @@ export class AdapterContext {
   private getLastVisible$: Function;
 
   private getInitializedSubj(method: Function) {
-    return this.isInitialized ? method() :
+    return this.init ? method() :
+      this.init$.pipe(
+        filter(init => !!init),
+        switchMap(() => method())
+      );
+    return this.init ? method() :
       this.init$.pipe(switchMap(isInitialized =>
-        isInitialized ? method() : observableOf()
+        isInitialized ? method() : observableOf(null)
       ));
   }
 
@@ -46,7 +51,7 @@ export class AdapterContext {
     return this.isInitialized ? this.getIsLoading() : false;
   }
 
-  get isLoading$(): BehaviorSubject<boolean> {
+  get isLoading$(): Subject<boolean> {
     return this.getInitializedSubj(() => this.getIsLoading$());
   }
 
@@ -54,7 +59,7 @@ export class AdapterContext {
     return this.isInitialized ? this.getLoopPending() : false;
   }
 
-  get loopPending$(): BehaviorSubject<boolean> {
+  get loopPending$(): Subject<boolean> {
     return this.getInitializedSubj(() => this.getLoopPending$());
   }
 
@@ -62,7 +67,7 @@ export class AdapterContext {
     return this.isInitialized ? this.getCyclePending() : false;
   }
 
-  get cyclePending$(): BehaviorSubject<boolean> {
+  get cyclePending$(): Subject<boolean> {
     return this.getInitializedSubj(() => this.getCyclePending$());
   }
 
@@ -109,11 +114,11 @@ export class AdapterContext {
 
     this.getVersion = (): string | null => scroller.version;
     this.getIsLoading = (): boolean => state.isLoading;
-    this.getIsLoading$ = (): BehaviorSubject<boolean> => state.isLoadingSource;
+    this.getIsLoading$ = (): Subject<boolean> => state.isLoadingSource;
     this.getLoopPending = (): boolean => state.loopPending;
-    this.getLoopPending$ = (): BehaviorSubject<boolean> => state.loopPendingSource;
+    this.getLoopPending$ = (): Subject<boolean> => state.loopPendingSource;
     this.getCyclePending = (): boolean => state.workflowPending;
-    this.getCyclePending$ = (): BehaviorSubject<boolean> => state.workflowPendingSource;
+    this.getCyclePending$ = (): Subject<boolean> => state.workflowPendingSource;
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
     this.getBOF = (): boolean => buffer.bof;
     this.getEOF = (): boolean => buffer.eof;

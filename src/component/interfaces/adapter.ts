@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface ItemAdapter {
   $index?: number;
@@ -18,11 +18,11 @@ export interface Adapter {
   readonly version: string | null;
   readonly init: boolean;
   readonly isLoading: boolean;
-  readonly isLoading$: BehaviorSubject<boolean>;
+  readonly isLoading$: Subject<boolean>;
   readonly loopPending: boolean;
-  readonly loopPending$: BehaviorSubject<boolean>;
+  readonly loopPending$: Subject<boolean>;
   readonly cyclePending: boolean;
-  readonly cyclePending$: BehaviorSubject<boolean>;
+  readonly cyclePending$: Subject<boolean>;
   readonly firstVisible: ItemAdapter;
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;

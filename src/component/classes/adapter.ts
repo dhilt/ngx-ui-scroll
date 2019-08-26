@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { Scroller } from '../scroller';
 import { AdapterContext } from './adapterContext';
@@ -24,7 +24,7 @@ export class Adapter implements IAdapter {
     return this.context.isLoading;
   }
 
-  get isLoading$(): BehaviorSubject<boolean> {
+  get isLoading$(): Subject<boolean> {
     return this.context.isLoading$;
   }
 
@@ -32,7 +32,7 @@ export class Adapter implements IAdapter {
     return this.context.loopPending;
   }
 
-  get loopPending$(): BehaviorSubject<boolean> {
+  get loopPending$(): Subject<boolean> {
     return this.context.loopPending$;
   }
 
@@ -40,7 +40,7 @@ export class Adapter implements IAdapter {
     return this.context.cyclePending;
   }
 
-  get cyclePending$(): BehaviorSubject<boolean> {
+  get cyclePending$(): Subject<boolean> {
     return this.context.cyclePending$;
   }
 

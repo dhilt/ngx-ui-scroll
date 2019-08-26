@@ -99,7 +99,7 @@ export class TestComponent {
         // this.datasource.adapter.setMinIndex(MIN);
       }
     }
-    return Observable.create((observer: Observer<any>) => {
+    return new Observable((observer: Observer<any>) => {
       if (!this.datasourceDelay) {
         observer.next(data);
       } else {

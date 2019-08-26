@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject, of as observableOf } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { switchMap, filter } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
@@ -9,7 +9,7 @@ export class AdapterContext {
   callWorkflow: Function;
   logger: Logger;
   setScrollPosition: Function;
-  
+
   private init$: BehaviorSubject<boolean>;
   private isInitialized: boolean;
   private getVersion: Function;
@@ -33,10 +33,6 @@ export class AdapterContext {
         filter(init => !!init),
         switchMap(() => method())
       );
-    return this.init ? method() :
-      this.init$.pipe(switchMap(isInitialized =>
-        isInitialized ? method() : observableOf(null)
-      ));
   }
 
   get init(): boolean {

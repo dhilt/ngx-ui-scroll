@@ -27,7 +27,6 @@
       majorizes <em>loopPending</em> property, and this demo shows how they correlate.
       Here we are counting loadings and inner loops within the
       <em>Adapter.isLoading$</em> and <em>Adapter.loopPending$</em> subscription handlers respectively.
-      Start values for these counters are -1, to skip initial Subject <em>false</em>s.
       After the <em>uiScroll</em> is initialized and started relaxing,
       we see that there are 4 inner loops done, while <em>isLoading</em> counter is 1.
       Practically it means that we have 3 <em>Datasource.get</em> calls and 1 more empty loop

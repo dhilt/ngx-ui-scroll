@@ -45,8 +45,8 @@ const shouldPrependMany = (config: TestBedConfig) => (misc: Misc) => (done: Func
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
       indexToPrepend = misc.scroller.buffer.getIndexToPrepend();
-      const itemsToPrepend = Array.from(Array(NEW_ITEMS_COUNT), (_, x) => ({ 
-        id: indexToPrepend - x, 
+      const itemsToPrepend = Array.from(Array(NEW_ITEMS_COUNT), (_, x) => ({
+        id: indexToPrepend - x,
         text: `!item #${indexToPrepend - x}`
       }));
       misc.datasource.adapter.prepend(itemsToPrepend);

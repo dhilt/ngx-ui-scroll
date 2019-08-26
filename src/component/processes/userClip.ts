@@ -19,7 +19,7 @@ export default class UserClip {
     const result: ClipOptions = {
       forwardOnly: false,
       backwardOnly: false
-    }
+    };
     if (options !== null && typeof options === 'object') {
       result.backwardOnly = !!options.backwardOnly;
       result.forwardOnly = !!options.forwardOnly;

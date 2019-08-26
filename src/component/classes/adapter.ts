@@ -71,7 +71,7 @@ export class Adapter implements IAdapter {
   get lastVisible$(): BehaviorSubject<ItemAdapter> {
     return this.context.lastVisible$;
   }
- 
+
   constructor() {
     this.init$ = new BehaviorSubject<boolean>(false);
     this.context = new AdapterContext(this.init$);

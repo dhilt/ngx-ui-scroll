@@ -9,6 +9,7 @@ import { Datasource as IDatasource } from './component/interfaces/index';
 import { Datasource } from './component/classes/datasource';
 import { Item } from './component/classes/item';
 
+/* tslint:disable:component-selector */
 @Component({
   selector: '[ui-scroll]',
   changeDetection: ChangeDetectionStrategy.OnPush,

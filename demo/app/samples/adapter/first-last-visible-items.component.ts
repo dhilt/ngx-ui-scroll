@@ -31,7 +31,7 @@ export class DemoFirstLastVisibleItemsComponent {
   constructor() {
     setTimeout(() => this.init = true);
     const { firstVisible$, lastVisible$ } = this.datasource.adapter;
-    combineLatest(firstVisible$, lastVisible$)
+    combineLatest([firstVisible$, lastVisible$])
       .subscribe(result => {
         const first = Number(result[0].$index);
         const last = Number(result[1].$index);

@@ -43,7 +43,7 @@ export const getItemsCounter = (
 
   itemsCounter.backward.padding = (backward.index - firstIndex) * itemSize;
   itemsCounter.forward.padding = (lastIndex - forward.index) * itemSize;
-  
+
   if (clipOptions) {
     if (clipOptions.forwardOnly) {
       backward.padding = 0;
@@ -114,7 +114,7 @@ const getClipDirection = (config: TestBedConfig): string => {
     return 'backward';
   }
   return '';
-}
+};
 
 describe('Adapter Clip Spec', () => {
 

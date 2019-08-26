@@ -36,7 +36,7 @@ export class DemoIsLoadingComponent {
   }
 });
 
-isLoadingCounter = -1;
+isLoadingCounter = 0;
 
 constructor() {
   this.datasource.adapter.isLoading$
@@ -75,7 +75,7 @@ for {{isLoadingCounter}} times.
 }`
   }];
 
-  isLoadingCounter = -1;
+  isLoadingCounter = 0;
 
   constructor() {
     this.datasource.adapter.isLoading$

@@ -159,7 +159,7 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |:--|:----|:----------|
 |version|string|Current version of ngx-ui-scroll library|
 |[isLoading](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|boolean|Indicates whether the uiScroll is working ot not. |
-|[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|BehaviorSubject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
+|[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|Subject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
 |[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#/adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|
 |[bof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the beginning of the dataset is reached or not.|
 |[eof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the end of the dataset is reached or not.|

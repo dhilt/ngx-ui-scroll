@@ -27,7 +27,7 @@
       majorizes <em>loopPending</em> property, and this demo shows how they correlate.
       Here we are counting loadings and inner loops within the
       <em>Adapter.isLoading$</em> and <em>Adapter.loopPending$</em> subscription handlers respectively.
-      Start values for these counters are -1, to skip initial BehaviorSubject <em>false</em>s.
+      Start values for these counters are -1, to skip initial Subject <em>false</em>s.
       After the <em>uiScroll</em> is initialized and started relaxing,
       we see that there are 4 inner loops done, while <em>isLoading</em> counter is 1.
       Practically it means that we have 3 <em>Datasource.get</em> calls and 1 more empty loop
@@ -35,7 +35,7 @@
       And these 4 inner loops are being packed into 1 "isLoading" session.
     </p>
     <p>
-      So we might have 3 levels of pendings:
+      So we might have 3 levels of pending:
     </p>
     <ul>
       <li>
@@ -43,14 +43,15 @@
         the implementation of the <em>Datasource</em> is in our hands;
       </li>
       <li>
-        <em>inner loop</em> pending, which inlvolves
-        some internal <em>uiScroll</em> subprocesses (clip, render)
-        that can take additional time;
+        <em>inner loop</em> pending, which is <em>loopPending</em> and which includes
+        some internal <em>uiScroll</em> subprocesses (fetch, clip, render)
+        that can take some time in addition to <em>Datasource.get</em> work
+        (which is a part of "fetch" sbprocess);
       </li>
       <li>
         <em>continuous work session</em> pending, which is <em>isLoading</em>
-        and which consists of 1 and more inner loops
-        triggered after the first one automatically.
+        and which consists of 1 and more inner loops that contain
+        a single session of the internal <em>uiScroll</em> Workflow run.
       </li>
     </ul>
   </div>

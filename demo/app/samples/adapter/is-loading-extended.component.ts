@@ -21,11 +21,7 @@ export class DemoIsLoadingExtendedComponent {
   };
 
   datasource = new Datasource({
-    get: datasourceGetCallbackInfinite(this.demoContext, 125),
-    devSettings: {
-      debug: true,
-      immediateLog: false
-    }
+    get: datasourceGetCallbackInfinite(this.demoContext, 125)
   });
 
   sources: DemoSources = [{
@@ -40,8 +36,8 @@ export class DemoIsLoadingExtendedComponent {
   }
 });
 
-loadingCounter = -1;
-innerLoopCounter = -1;
+loadingCounter = 0;
+innerLoopCounter = 0;
 
 constructor() {
   this.datasource.adapter.isLoading$
@@ -85,8 +81,8 @@ counter: {{innerLoopCounter}}
 }`
   }];
 
-  loadingCounter = -1;
-  innerLoopCounter = -1;
+  loadingCounter = 0;
+  innerLoopCounter = 0;
 
   constructor() {
     this.datasource.adapter.isLoading$

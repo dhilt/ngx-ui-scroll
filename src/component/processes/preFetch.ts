@@ -75,6 +75,8 @@ export default class PreFetch {
     let firstIndexPosition = 0;
     if (scroller.state.isInitialLoop) {
       scroller.logger.log(`skipping fetch backward direction [initial loop]`);
+    } else if (!buffer.hasItemSize) {
+      scroller.logger.log(`skipping fetch backward direction [no item size]`);
     } else {
       let position = firstIndexPosition;
       let index = firstIndex;

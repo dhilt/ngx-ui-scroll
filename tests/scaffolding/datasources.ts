@@ -223,6 +223,10 @@ const datasourceStore = {
 
   'infinite-callback-delay-150': <Datasource>{
     get: infiniteDatasourceGet(DatasourceType.Callback, 150)
+  },
+
+  'empty-callback': <Datasource>{
+    get: (index, count, success) => success([])
   }
 
 };

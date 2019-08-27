@@ -85,4 +85,20 @@ describe('Datasource Get', () => {
     });
   });
 
+  describe('empty', () => {
+    makeTest({
+      title: 'should not fetch',
+      config: { datasourceName: 'empty-callback' },
+      it: (misc: Misc) => (done: Function) =>
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          const { buffer, state } = misc.scroller;
+          expect(state.innerLoopCount).toEqual(1);
+          expect(state.fetch.callCount).toEqual(0);
+          expect(buffer.bof).toEqual(true);
+          expect(buffer.eof).toEqual(true);
+          done();
+        })
+    });
+  });
+
 });

@@ -7,11 +7,7 @@ describe('Bug Spec', () => {
     const config: TestBedConfig = {
       datasourceName: 'empty-callback',
       templateSettings: { viewportPadding: 200 },
-      datasourceSettings: { adapter: true },
-      datasourceDevSettings: {
-        debug: true,
-        logProcessRun: true
-      }
+      datasourceSettings: { adapter: true }
     };
 
     makeTest({

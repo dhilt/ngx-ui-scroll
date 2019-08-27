@@ -44,7 +44,9 @@ export class FetchModel {
 
   set newItemsData(items: Array<Item> | null) {
     this._newItemsData = items;
-    this.callCount++;
+    if (items && items.length) {
+      this.callCount++;
+    }
   }
 
   get shouldFetch(): boolean {

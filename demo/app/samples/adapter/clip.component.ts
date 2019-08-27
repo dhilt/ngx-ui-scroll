@@ -24,10 +24,6 @@ export class DemoClipComponent {
     get: datasourceGetCallbackInfinite(this.demoContext),
     settings: {
       infinite: true
-    },
-    devSettings: {
-      debug: true,
-      logProcessRun: true
     }
   });
 

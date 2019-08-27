@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface ItemAdapter {
   $index?: number;
@@ -14,15 +14,15 @@ export interface ClipOptions {
 }
 
 export interface Adapter {
+  init$: BehaviorSubject<boolean>;
   readonly version: string | null;
   readonly init: boolean;
-  readonly init$: Observable<boolean>;
   readonly isLoading: boolean;
-  readonly isLoading$: BehaviorSubject<boolean>;
+  readonly isLoading$: Subject<boolean>;
   readonly loopPending: boolean;
-  readonly loopPending$: BehaviorSubject<boolean>;
+  readonly loopPending$: Subject<boolean>;
   readonly cyclePending: boolean;
-  readonly cyclePending$: BehaviorSubject<boolean>;
+  readonly cyclePending$: Subject<boolean>;
   readonly firstVisible: ItemAdapter;
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;
@@ -30,7 +30,7 @@ export interface Adapter {
   readonly itemsCount: number;
   readonly bof: boolean;
   readonly eof: boolean;
-  initialize: Function; // not callable outside
+  initialize: Function; // internal use only
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, bof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;

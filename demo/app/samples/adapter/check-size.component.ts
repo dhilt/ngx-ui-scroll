@@ -45,7 +45,6 @@ export class DemoCheckSizeComponent {
         }
       }
       doLog(this.demoContext, index, count, data.length);
-      this.datasource.adapter.firstVisible;
       success(data);
     },
     settings: {

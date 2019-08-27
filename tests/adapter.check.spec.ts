@@ -120,15 +120,15 @@ const testIt = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   datasource.setProcessGet((result: Array<any>) =>
     result.forEach(item => item.size = initialSize)
   );
-  adapter.firstVisible;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycle = misc.scroller.state.workflowCycleCount;
+    const { firstVisible } = adapter; // need to have a pre-call
     if (cycle === 2) {
       updateDOM(misc, { min, max, size, initialSize });
       firstVisibleIndex = getFirstVisibleIndex(misc);
       adapter.check();
     } else if (cycle === 3) {
-      expect(adapter.firstVisible.$index).toEqual(firstVisibleIndex);
+      expect(firstVisible.$index).toEqual(firstVisibleIndex);
       const cacheAmount = buffer.cache.size;
       const virtualSize = (settings.maxIndex - settings.minIndex + 1 - cacheAmount) * buffer.averageSize;
       const realSize = changedCount * size + (cacheAmount - changedCount) * initialSize;

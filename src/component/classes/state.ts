@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import {
   ItemAdapter,
@@ -10,11 +10,11 @@ import {
 
 import { Settings } from './settings';
 import { Logger } from './logger';
-import { itemAdapterEmpty } from './adapter';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { WorkflowOptions } from './state/workflowOptions';
 import { ScrollState, SyntheticScroll } from './state/scroll';
+import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
 
@@ -43,41 +43,48 @@ export class State implements IState {
   scrollState: IScrollState;
   syntheticScroll: ISyntheticScroll;
 
-  loopPendingSource: BehaviorSubject<boolean>;
-  workflowPendingSource: BehaviorSubject<boolean>;
-  isLoadingSource: BehaviorSubject<boolean>;
+  isLoadingSource: Subject<boolean>;
+  loopPendingSource: Subject<boolean>;
+  workflowPendingSource: Subject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
   lastVisibleSource: BehaviorSubject<ItemAdapter>;
   firstVisibleWanted: boolean;
   lastVisibleWanted: boolean;
 
+  private _isLoading: boolean;
+  private _loopPending: boolean;
+  private _workflowPending: boolean;
+
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
+
+  set isLoading(value: boolean) {
+    if (this._isLoading !== value) {
+      this._isLoading = value;
+      this.isLoadingSource.next(value);
+    }
+  }
+
   get loopPending(): boolean {
-    return this.loopPendingSource.getValue();
+    return this._loopPending;
   }
 
   set loopPending(value: boolean) {
-    if (this.loopPending !== value) {
+    if (this._loopPending !== value) {
+      this._loopPending = value;
       this.loopPendingSource.next(value);
     }
   }
 
   get workflowPending(): boolean {
-    return this.workflowPendingSource.getValue();
+    return this._workflowPending;
   }
 
   set workflowPending(value: boolean) {
-    if (this.workflowPending !== value) {
+    if (this._workflowPending !== value) {
+      this._workflowPending = value;
       this.workflowPendingSource.next(value);
-    }
-  }
-
-  get isLoading(): boolean {
-    return this.isLoadingSource.getValue();
-  }
-
-  set isLoading(value: boolean) {
-    if (this.isLoading !== value) {
-      this.isLoadingSource.next(value);
     }
   }
 
@@ -135,9 +142,12 @@ export class State implements IState {
     this.scrollState = new ScrollState();
     this.syntheticScroll = new SyntheticScroll(logger);
 
-    this.loopPendingSource = new BehaviorSubject<boolean>(false);
-    this.workflowPendingSource = new BehaviorSubject<boolean>(false);
-    this.isLoadingSource = new BehaviorSubject<boolean>(false);
+    this._isLoading = false;
+    this._loopPending = false;
+    this._workflowPending = false;
+    this.isLoadingSource = new Subject<boolean>();
+    this.loopPendingSource = new Subject<boolean>();
+    this.workflowPendingSource = new Subject<boolean>();
     this.firstVisibleSource = new BehaviorSubject<ItemAdapter>(itemAdapterEmpty);
     this.lastVisibleSource = new BehaviorSubject<ItemAdapter>(itemAdapterEmpty);
     this.firstVisibleWanted = false;

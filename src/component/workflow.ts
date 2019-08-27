@@ -23,11 +23,11 @@ export class Workflow {
 
   constructor(context: UiScrollComponent) {
     this.context = context;
-    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
     });
+    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.cyclesDone = 0;
     this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);
@@ -75,17 +75,13 @@ export class Workflow {
     );
   }
 
-  runProcess(data: ProcessSubject) {
-    return (_process: any) =>
+  runProcess() {
+    return (process: any) =>
       (...args: any[]) => {
         if (this.scroller.settings.logProcessRun) {
-          const { process, status, payload } = data;
-          this.scroller.logger.log(() => [
-            '%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])
-          ]);
-          this.scroller.logger.log(() => ['run', _process.name, ...args]);
+          this.scroller.logger.log(() => ['run', process.name, ...args]);
         }
-        _process.run(this.scroller, ...args);
+        process.run(this.scroller, ...args);
       };
   }
 
@@ -100,9 +96,15 @@ export class Workflow {
   }
 
   process(data: ProcessSubject) {
-    const { status, process, payload = {} } = data;
+    const { status, process, payload: pay } = data;
+    if (this.scroller.settings.logProcessRun) {
+      this.scroller.logger.log(() => [
+        '%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(pay ? [pay] : [])
+      ]);
+    }
+    const { payload = {} } = data;
     const options = this.scroller.state.workflowOptions;
-    const run = this.runProcess(data);
+    const run = this.runProcess();
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
       this.processError(process, payload.error || '');

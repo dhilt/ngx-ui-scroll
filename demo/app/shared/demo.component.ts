@@ -14,7 +14,7 @@ export class DemoComponent implements OnInit {
 
   @Input() datasource: Datasource;
   @Input() context: DemoContext;
-  @Input() sources: DemoSources; 
+  @Input() sources: DemoSources;
   @Input() itemTemplate: TemplateRef<any>;
 
   viewport(token: string): string {

@@ -10,7 +10,7 @@ export class ClipModel {
     return this.forceForward || this.forceBackward;
   }
 
-  private infinite: boolean
+  private infinite: boolean;
 
   constructor() {
     this.infinite = false;

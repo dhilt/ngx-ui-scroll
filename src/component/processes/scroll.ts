@@ -173,17 +173,18 @@ export default class Scroll {
   }
 
   static doScroll(scroller: Scroller) {
-    const { state, state: { scrollState, workflowOptions } } = scroller;
-    if (state.workflowPending) {
+    const { state: { workflowPending, scrollState, workflowOptions } } = scroller;
+    if (workflowPending) {
       Scroll.logPendingWorkflow(scroller);
       scrollState.keepScroll = true;
       return;
     }
+    const skip = scroller.buffer.bof && scroller.buffer.eof;
     workflowOptions.scroll = true;
     workflowOptions.keepScroll = scrollState.keepScroll;
     scroller.callWorkflow({
       process: Process.scroll,
-      status: ProcessStatus.next
+      status: skip ? ProcessStatus.done : ProcessStatus.next
     });
   }
 

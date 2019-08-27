@@ -126,7 +126,7 @@ export class Logger {
     const logData = this.getWorkflowCycleData();
     const border = start ? '1px 0 0 1px' : '0 0 1px 1px';
     const logStyles = `color: #0000aa; border: solid #555 1px; border-width: ${border}; margin-left: -2px`;
-    this.log(() => [`%c   ~~~ WF Cycle ${logData} ${start ? "STARTED" : "FINALIZED"} ~~~  `, logStyles]);
+    this.log(() => [`%c   ~~~ WF Cycle ${logData} ${start ? 'STARTED' : 'FINALIZED'} ~~~  `, logStyles]);
   }
 
   logError(str: string) {

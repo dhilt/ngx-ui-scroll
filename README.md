@@ -15,9 +15,9 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 
 ### Motivation
 
-Scrolling large date sets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve this case is to render only a small portion of the data set visible to the user. Other data set elements that are not visible to the user are virtualized with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
+Scrolling large date sets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve this case is to render only a small portion of the data set visible to a user. Other data set elements that are not visible to a user are virtualized with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
 
-The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the data set and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if the user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
+The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the data set and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if a user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
@@ -81,7 +81,7 @@ where the viewport is a scrollable area of finite height.
 }
 ```
 
-\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters.
+\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters. The directive calls `Datasource.get` method each time a user scrolls to the edge of visible element list. That's the API provided by the \*uiScroll.
 
 ```javascript
 import { IDatasource } from 'ngx-ui-scroll';
@@ -99,14 +99,16 @@ export class AppComponent {
 }
 ```
 
-_Datasource.get_ must provide an array of _count_ data-items started from _index_ position. _Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if we want some remote API to be a source of our data, basically it may look like
+_Datasource.get_ method must provide an array of _count_ data-items started from _index_ position. If there are no items within given range _[index; index + count - 1]_, an empty array has to be passed. Empty result is treated as reaching the edge of the dataset (eof/bof), and \*uiScroll will place no further data requests.
+
+_Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if we want some remote API to be a source of our data, basically it may look like
 
 ```javascript
   datasource: IDatasource = {
     get: (index, count) =>
       this.http.get(`${myApiUrl}?index=${index}&count=${count}`)
   };
-```
+``` 
 
 More details could be found on the [Datasource demo page](https://dhilt.github.io/ngx-ui-scroll/#/datasource).
 
@@ -157,7 +159,7 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |:--|:----|:----------|
 |version|string|Current version of ngx-ui-scroll library|
 |[isLoading](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|boolean|Indicates whether the uiScroll is working ot not. |
-|[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|BehaviorSubject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
+|[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|Subject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
 |[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#/adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|
 |[bof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the beginning of the dataset is reached or not.|
 |[eof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the end of the dataset is reached or not.|
@@ -174,7 +176,8 @@ Below is the list of invocable methods of the Adapter API.
 |[append](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], eof?:&nbsp;boolean)|Adds items or single item to the end of the uiScroll dataset. If eof parameter is not set, items will be added and rendered immediately, they will be placed right after the last item in the uiScroll buffer. If eof parameter is set to true, items will be added and rendered only if the end of the dataset is reached; otherwise, these items will be virtualized. |
 |[prepend](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], bof?:&nbsp;boolean)|Adds items or single item to the beginning of the uiScroll dataset. If bof parameter is not set, items will be added and rendered immediately, they will be placed right before the first item in the uiScroll buffer. If bof parameter is set to true, items will be added and rendered only if the beginning of the dataset is reached; otherwise, these items will be virtualized. |
 |[check](https://dhilt.github.io/ngx-ui-scroll/#/adapter#check-size)| |Checks if any of current items changed it's size and runs a procedure to provide internal consistency and new items fetching if needed. |
-|[remove](https://dhilt.github.io/ngx-ui-scroll/#/adapter#remove)|(predicate: (item: ItemAdapter) => boolean)|Removes items from current buffer. Predicate is a function to be applied to every item currently in the buffer. Predicate must return boolean value. If predicate's return value is true, the item will be removed. |
+|[remove](https://dhilt.github.io/ngx-ui-scroll/#/adapter#remove)|(predicate: (item: ItemAdapter) => boolean)|Removes items from current buffer. Predicate is a function to be applied to every item presently in the buffer. Predicate must return boolean value. If predicate's return value is true, the item will be removed. _Note!_ Current implementation allows to remove only a continuous series of items per call. If you want to remove, say, 5 and 7 items, you should call the remove method twice. Removing a series of items from 5 to 7 could be done in a single call.|
+|[clip](https://dhilt.github.io/ngx-ui-scroll/#/adapter#clip)|(options?: {<br>&nbsp;&nbsp;forwardOnly?:&nbsp;boolean,<br>&nbsp;&nbsp;backwardOnly?:&nbsp;boolean<br>})|Removes out-of-viewport items on demand. Passing an options object, the direction in which inveisible items will be clipped could be specified. If no options is passed, clipping will affect both forward and backward directions. |
 
 ### Development
 

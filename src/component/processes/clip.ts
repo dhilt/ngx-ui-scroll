@@ -35,24 +35,18 @@ export default class Clip {
           paddings.backward.size += item.size;
         }
         clipped.push(item.$index);
-        if (clip.simulate) {
+        if (clip.simulate && !clip.force) {
           buffer.removeItem(item);
         }
         return false;
       }
       return true;
     });
-    // if (size.backward) {
-    //   paddings.forward.size += size.backward;
-    // }
-    // if (size.forward) {
-    //   paddings.backward.size += size.forward;
-    // }
     logger.log(() => [
       `clipped ${clipped.length} items` +
-      (size.backward ? `, +${size.backward} fwd px,` : '') +
-      (size.forward ? `, +${size.forward} bwd px,` : ''),
-      `range: [${clipped[0]}..${clipped[clipped.length - 1]}]`
+      (size.backward ? `, +${size.backward} fwd px` : '') +
+      (size.forward ? `, +${size.forward} bwd px` : '') +
+      `, range: [${clipped[0]}..${clipped[clipped.length - 1]}]`
     ]);
     logger.stat('after clip');
   }

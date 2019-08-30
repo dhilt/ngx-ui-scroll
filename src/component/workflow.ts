@@ -4,7 +4,7 @@ import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject, WorkflowError } from './interfaces/index';
 import {
-  Init, Scroll, Reload, Append, Check, Remove,
+  Init, Scroll, Reload, Append, Check, Remove, UserClip,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 } from './processes/index';
 
@@ -23,11 +23,11 @@ export class Workflow {
 
   constructor(context: UiScrollComponent) {
     this.context = context;
-    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
     });
+    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
     this.cyclesDone = 0;
     this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);
@@ -75,15 +75,13 @@ export class Workflow {
     );
   }
 
-  runProcess(data: ProcessSubject) {
-    return (_process: any) =>
+  runProcess() {
+    return (process: any) =>
       (...args: any[]) => {
-        // const { process, status, payload } = data;
-        // this.logger.log(() =>
-        //   ['%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])]
-        // );
-        // this.logger.log(() => ['run', _process.name, ...args]);
-        _process.run(this.scroller, ...args);
+        if (this.scroller.settings.logProcessRun) {
+          this.scroller.logger.log(() => ['run', process.name, ...args]);
+        }
+        process.run(this.scroller, ...args);
       };
   }
 
@@ -98,9 +96,15 @@ export class Workflow {
   }
 
   process(data: ProcessSubject) {
-    const { status, process, payload = {} } = data;
+    const { status, process, payload: pay } = data;
+    if (this.scroller.settings.logProcessRun) {
+      this.scroller.logger.log(() => [
+        '%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(pay ? [pay] : [])
+      ]);
+    }
+    const { payload = {} } = data;
     const options = this.scroller.state.workflowOptions;
-    const run = this.runProcess(data);
+    const run = this.runProcess();
     this.scroller.logger.logProcess(data);
     if (status === Status.error) {
       this.processError(process, payload.error || '');
@@ -169,6 +173,14 @@ export class Workflow {
           run(Init)(process);
         }
         break;
+      case Process.userClip:
+        if (status === Status.start) {
+          run(UserClip)(payload);
+        }
+        if (status === Status.next) {
+          run(Init)(process);
+        }
+        break;
       case Process.start:
         if (status === Status.next) {
           switch (payload) {
@@ -180,17 +192,24 @@ export class Workflow {
             case Process.remove:
               run(Clip)();
               break;
+            case Process.userClip:
+              run(PreFetch)(payload);
+              break;
             default:
               run(PreFetch)();
           }
         }
         break;
       case Process.preFetch:
-        if (status === Status.done) {
+        const userClip = payload === Process.userClip;
+        if (status === Status.done && !userClip) {
           run(End)(process);
         }
-        if (status === Status.next) {
+        if (status === Status.next && !userClip) {
           run(Fetch)();
+        }
+        if (userClip) {
+          run(PreClip)();
         }
         break;
       case Process.fetch:

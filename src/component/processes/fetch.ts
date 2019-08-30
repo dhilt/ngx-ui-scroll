@@ -78,7 +78,7 @@ export default class Fetch {
       };
     }
 
-    return Observable.create((_observer: Observer<any>) => {
+    return new Observable((_observer: Observer<any>) => {
       observer = _observer;
     });
   }

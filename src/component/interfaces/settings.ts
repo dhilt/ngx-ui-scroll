@@ -14,6 +14,7 @@ export interface Settings {
 export interface DevSettings {
   debug?: boolean;
   immediateLog?: boolean;
+  logProcessRun?: boolean;
   logTime?: boolean;
   throttle?: number;
   inertia?: boolean;

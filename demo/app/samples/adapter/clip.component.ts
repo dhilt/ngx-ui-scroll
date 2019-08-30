@@ -6,22 +6,25 @@ import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
-  selector: 'app-demo-is-loading',
-  templateUrl: './is-loading.component.html'
+  selector: 'app-demo-clip',
+  templateUrl: './clip.component.html'
 })
-export class DemoIsLoadingComponent {
+export class DemoClipComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = <DemoContext>{
     scope: 'adapter',
-    title: `Is loading?`,
-    titleId: `is-loading`,
-    viewportId: `is-loading-viewport`,
+    title: `Clip`,
+    titleId: `clip`,
+    viewportId: `clip-viewport`,
     count: 0,
     log: ''
   };
 
   datasource = new Datasource({
-    get: datasourceGetCallbackInfinite(this.demoContext, 125)
+    get: datasourceGetCallbackInfinite(this.demoContext),
+    settings: {
+      infinite: true
+    }
   });
 
   sources: DemoSources = [{
@@ -32,29 +35,20 @@ export class DemoIsLoadingComponent {
     for (let i = index; i <= index + count - 1; i++) {
       data.push({ id: i, text: 'item #' + i });
     }
-    setTimeout(() => success(data), 125);
+    success(data);
+  },
+  settings: {
+    infinite: true
   }
 });
 
-isLoadingCounter = 0;
-
-constructor() {
-  this.datasource.adapter.isLoading$
-    .subscribe(isLoading =>
-      this.isLoadingCounter += !isLoading ? 1 : 0
-    );
-}
-`
+doClip() {
+  this.datasource.adapter.clip();
+}`
   }, {
     active: true,
     name: DemoSourceType.Template,
-    text: `The uiScroll is
-{{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
-
-<br>
-
-The value of isLoading counter has been changed
-for {{isLoadingCounter}} times.
+    text: `<button (click)="doClip()">Clip</button>
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
@@ -75,10 +69,15 @@ for {{isLoadingCounter}} times.
 }`
   }];
 
-  isLoadingCounter = 0;
+  clipOptionsDescription = `  ClipOptions {
+    forwardOnly?: boolean;
+    backwardOnly?: boolean;
+  }`;
 
-  constructor() {
-    this.datasource.adapter.isLoading$
-      .subscribe(isLoading => this.isLoadingCounter += !isLoading ? 1 : 0);
+  clipOptionsSample = `{ forwardOnly: true }`;
+
+  doClip() {
+    this.datasource.adapter.clip();
   }
+
 }

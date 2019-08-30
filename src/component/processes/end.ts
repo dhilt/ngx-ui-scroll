@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
 import { Process, ProcessStatus, Direction } from '../interfaces/index';
-import { itemAdapterEmpty } from '../classes/adapter';
+import { itemAdapterEmpty } from '../utils/adapter';
 
 export default class End {
 
@@ -47,7 +47,7 @@ export default class End {
     state.isInitialLoop = false;
     state.fetch.simulate = false;
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
-    clip.simulate = false;
+    clip.forceReset();
     state.lastPosition = scroller.viewport.scrollPosition;
     scroller.purgeInnerLoopSubscriptions();
   }

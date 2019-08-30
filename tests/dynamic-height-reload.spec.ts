@@ -21,11 +21,11 @@ const testIt = (config: TestBedConfig, misc: Misc, done: Function) => {
   const cycle = misc.scroller.state.workflowCycleCount;
   const adapter = misc.scroller.datasource.adapter;
   const reloadIndex = config.custom.reloadIndex;
+  const { firstVisible } = adapter; // need to have a pre-call
   if (cycle === 2) {
     adapter.reload(reloadIndex);
-    adapter.firstVisible.$index;
   } else {
-    expect(adapter.firstVisible.$index).toEqual(reloadIndex);
+    expect(firstVisible.$index).toEqual(reloadIndex);
     done();
   }
 };

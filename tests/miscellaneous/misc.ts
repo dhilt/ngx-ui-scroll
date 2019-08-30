@@ -102,7 +102,7 @@ export class Misc {
   getElementIndex(element: HTMLElement): number {
     return Number(element.getAttribute('data-sid'));
   }
-  
+
   getTopItem(): ItemAdapter {
     return this.scroller.datasource.adapter.firstVisible;
   }

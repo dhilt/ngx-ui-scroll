@@ -54,6 +54,7 @@ export class TestComponent {
       debug: true,
       immediateLog: true,
       logTime: false,
+      logProcessRun: true,
       throttle: 40,
       inertia: true,
       inertiaScrollDelay: 55,
@@ -99,7 +100,7 @@ export class TestComponent {
         // this.datasource.adapter.setMinIndex(MIN);
       }
     }
-    return Observable.create((observer: Observer<any>) => {
+    return new Observable((observer: Observer<any>) => {
       if (!this.datasourceDelay) {
         observer.next(data);
       } else {

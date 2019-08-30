@@ -122,6 +122,8 @@ doRemove(id: number) {
 }`
   }];
 
+  predicateDescription = `  this.datasource.adapter.remove(item => item.data.id === id);`;
+
   doRemoveDatasource(id: number) {
     this.data = this.data.reduce((acc, item) => {
       if (item.id !== id) {
@@ -139,7 +141,5 @@ doRemove(id: number) {
     this.datasource.adapter.remove(item => item.data.id === id);
     this.doRemoveDatasource(id);
   }
-
-  predicateDescription = `  this.datasource.adapter.remove(item => item.data.id === id);`;
 
 }

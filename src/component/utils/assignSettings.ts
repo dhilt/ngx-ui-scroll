@@ -93,6 +93,7 @@ export const assignDevSettings = (
   assignBoolean(target, devSettings, 'debug', defaults);
   assignBoolean(target, devSettings, 'immediateLog', defaults);
   assignBoolean(target, devSettings, 'logTime', defaults);
+  assignBoolean(target, devSettings, 'logProcessRun', defaults);
   assignMinimalNumeric(target, devSettings, 'throttle', defaults, minDevSettings, true);
   assignBoolean(target, devSettings, 'inertia', defaults);
   assignMinimalNumeric(target, devSettings, 'inertiaScrollDelay', defaults, minDevSettings, true);

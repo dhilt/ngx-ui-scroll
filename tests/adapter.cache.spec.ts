@@ -119,7 +119,6 @@ describe('Adapter Cache Spec', () => {
     title: 'should reload at the same index when cache is enabled',
     it: (misc: Misc) => (done: Function) => {
       let top = misc.getTopItem();
-      misc.scroller.datasource.adapter.firstVisible;
       spyOn(misc.workflow, 'finalize').and.callFake(() => {
         if (misc.workflow.cyclesDone === 1) {
           top = misc.getTopItem();

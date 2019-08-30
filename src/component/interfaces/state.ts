@@ -1,7 +1,8 @@
+import { BehaviorSubject, Subject } from 'rxjs/index';
+
 import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/state/fetch';
 import { ClipModel } from '../classes/state/clip';
-import { BehaviorSubject } from 'rxjs/index';
 
 export interface WindowScrollState {
   delta: number;
@@ -90,11 +91,13 @@ export interface State {
   scrollState: ScrollState;
   syntheticScroll: SyntheticScroll;
 
-  loopPendingSource: BehaviorSubject<boolean>;
-  workflowPendingSource: BehaviorSubject<boolean>;
+  isLoadingSource: Subject<boolean>;
+  loopPendingSource: Subject<boolean>;
+  workflowPendingSource: Subject<boolean>;
   firstVisibleSource: BehaviorSubject<ItemAdapter>;
   lastVisibleSource: BehaviorSubject<ItemAdapter>;
 
+  isLoading: boolean;
   loopPending: boolean;
   workflowPending: boolean;
   firstVisibleItem: ItemAdapter;

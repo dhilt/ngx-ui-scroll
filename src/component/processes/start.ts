@@ -10,7 +10,7 @@ export default class Start {
     if (!fetch.simulate) {
       fetch.reset();
     }
-    if (!clip.simulate) {
+    if (!clip.simulate && !clip.force) {
       clip.reset();
     }
     scrollState.scroll = workflowOptions.scroll || false;

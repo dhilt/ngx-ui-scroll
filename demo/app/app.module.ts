@@ -35,6 +35,7 @@ import { DemoAppendPrependSyncComponent } from './samples/adapter/append-prepend
 import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-extended.component';
 import { DemoCheckSizeComponent } from './samples/adapter/check-size.component';
 import { DemoRemoveComponent } from './samples/adapter/remove.component';
+import { DemoClipComponent } from './samples/adapter/clip.component';
 import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasource-signatures.component';
 import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
@@ -76,6 +77,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoIsLoadingExtendedComponent,
     DemoCheckSizeComponent,
     DemoRemoveComponent,
+    DemoClipComponent,
     DemoDatasourceSignaturesComponent,
     DemoBidirectionalUnlimitedDatasourceComponent,
     DemoLimitedDatasourceComponent,

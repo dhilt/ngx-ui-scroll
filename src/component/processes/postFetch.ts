@@ -21,12 +21,12 @@ export default class PostFetch {
   }
 
   static setBufferLimits(scroller: Scroller) {
-    const { buffer, state: { fetch: { firstIndex, lastIndex, items } } } = scroller;
+    const { buffer, state: { fetch: { firstIndex, lastIndex, items }, isInitialLoop } } = scroller;
     if (!items.length) {
-      if (<number>lastIndex < buffer.minIndex) {
+      if (<number>lastIndex < buffer.minIndex || isInitialLoop) {
         buffer.absMinIndex = buffer.minIndex;
       }
-      if (<number>firstIndex > buffer.maxIndex) {
+      if (<number>firstIndex > buffer.maxIndex || isInitialLoop) {
         buffer.absMaxIndex = buffer.maxIndex;
       }
     } else {

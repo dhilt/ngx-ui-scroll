@@ -6,11 +6,11 @@ export class WorkflowOptions implements IWorkflowOptions {
     scroll: boolean;
     keepScroll: boolean;
     byTimer: boolean;
-  
+
     constructor(settings: Settings) {
       this.reset();
     }
-  
+
     reset() {
       this.empty = false;
       this.scroll = false;

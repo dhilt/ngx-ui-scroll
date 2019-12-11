@@ -318,3 +318,20 @@ li.L1,li.L3,li.L5,li.L7,li.L9 { }
   pre .typ, code .typ { font-weight: bold }
   pre .tag, code .tag { font-weight: bold; color: #204a87; }
 }
+
+table tr.temp {
+  color: red;
+  position: fixed;
+  left: -99999px;
+}
+
+table, caption, tbody, tfoot, thead, tr, th, td {
+  padding: 0;
+}
+
+.tableFixHead          { overflow-y: auto; height: 100px; }
+.tableFixHead thead th { position: sticky; top: 0; }
+
+/* Just common table stuff. Really. */
+table  { border-collapse: collapse; }
+th     { background:#eee; }

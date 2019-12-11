@@ -8,13 +8,18 @@ export default class Render {
     scroller.logger.stat('before new items render');
     scroller.innerLoopSubscriptions.push(
       scroller.bindData().subscribe(() => {
+        const elts = scroller.viewport.element.querySelectorAll(`tr:not([data-sid])`);
+        if (elts && elts.length && elts.length === scroller.state.fetch.items.length) {
+          elts.forEach((elt, index) => {
+            (<any>elt).dataset['sid'] = scroller.state.fetch.items[index].nodeId;
+          });
         if (Render.processElements(scroller)) {
           scroller.callWorkflow({
             process: Process.render,
             status: ProcessStatus.next,
             payload: { noClip: scroller.state.clip.noClip }
           });
-        } else {
+        } } else {
           scroller.callWorkflow({
             process: Process.render,
             status: ProcessStatus.error,
@@ -55,6 +60,7 @@ export default class Render {
     item.element = <HTMLElement>element;
     item.element.style.left = '';
     item.element.style.position = '';
+    item.element.classList.remove('temp');
     item.invisible = false;
     item.setSize();
     buffer.cache.add(item);

@@ -9,11 +9,20 @@ import { Datasource as IDatasource } from './component/interfaces/index';
 import { Datasource } from './component/classes/datasource';
 import { Item } from './component/classes/item';
 
-/* tslint:disable:component-selector */
-@Component({
-  selector: '[ui-scroll]',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<div data-padding-backward></div><div
+const template = `<ng-container *ngIf="isTable"><tr data-sid="backward">
+  <td><div data-padding-backward></div></td>
+</tr><ng-template
+  *ngFor="let item of items"
+  [ngTemplateOutlet]="template"
+  [ngTemplateOutletContext]="{
+    $implicit: item.data,
+    index: item.$index,
+    odd: item.$index % 2,
+    even: !(item.$index % 2)
+ }"
+></ng-template><tr data-sid="forward">
+  <td><div data-padding-forward></div></td>
+</tr></ng-container><ng-container *ngIf="!isTable"><div data-padding-backward></div><div
   *ngFor="let item of items"
   [attr.data-sid]="item.nodeId"
   [style.position]="item.invisible ? 'fixed' : null"
@@ -26,7 +35,13 @@ import { Item } from './component/classes/item';
     odd: item.$index % 2,
     even: !(item.$index % 2)
  }"
-></ng-template></div><div data-padding-forward></div>`
+></ng-template></div><div data-padding-forward></div></ng-container>`
+
+/* tslint:disable:component-selector */
+@Component({
+  selector: 'tbody [ui-scroll]',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 
@@ -34,6 +49,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public version: string;
   public template: TemplateRef<any>;
   public datasource: IDatasource | Datasource;
+  public isTable: boolean;
 
   // use in the template
   public items: Array<Item>;

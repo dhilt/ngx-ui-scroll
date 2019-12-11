@@ -8,6 +8,7 @@ import { Datasource } from './component/interfaces/datasource';
 export class UiScrollDirective implements OnInit {
   private version: string;
   private datasource: Datasource;
+  private isTable: boolean;
 
   constructor(
     private templateRef: TemplateRef<any>,
@@ -20,6 +21,10 @@ export class UiScrollDirective implements OnInit {
     this.datasource = datasource;
   }
 
+  @Input() set uiScrollTable(value: any) {
+    this.isTable = !!value;
+  }
+
   ngOnInit() {
     const templateView = this.templateRef.createEmbeddedView({});
     const compFactory = this.resolver.resolveComponentFactory(UiScrollComponent);
@@ -28,6 +33,7 @@ export class UiScrollDirective implements OnInit {
     );
     componentRef.instance.datasource = this.datasource;
     componentRef.instance.template = this.templateRef;
+    componentRef.instance.isTable = this.isTable;
     componentRef.instance.version = version;
   }
 }

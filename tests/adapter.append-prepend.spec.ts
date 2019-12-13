@@ -52,8 +52,8 @@ describe('Adapter Append-Prepend Spec', () => {
     prepend: {
       datasourceName: 'empty-callback',
       datasourceSettings: {
-        startIndex: min + emptyAmount,
-        minIndex: min + emptyAmount,
+        startIndex: min + emptyAmount - 1,
+        minIndex: min + emptyAmount - 1,
         bufferSize: emptyAmount, padding, adapter: true
       },
       templateSettings,
@@ -63,7 +63,7 @@ describe('Adapter Append-Prepend Spec', () => {
       datasourceName: 'empty-callback',
       datasourceSettings: {
         startIndex: max - emptyAmount + 1,
-        minIndex: max - emptyAmount + 1,
+        maxIndex: max - emptyAmount + 1,
         bufferSize: emptyAmount, padding, adapter: true
       },
       templateSettings,
@@ -122,14 +122,12 @@ describe('Adapter Append-Prepend Spec', () => {
           const items = (<any>getNewItems(_amount))[token];
           const itemSize = misc.getItemSize();
           if (misc.workflow.cyclesDone === 1) {
-
             expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
             expect(paddings[oppositeDirection].size).toEqual(0);
             const paddingSize = paddings[direction].size;
             (<any>misc.scroller.datasource.adapter)[token](items, true);
             expect(viewport.getScrollableSize()).toEqual(max * itemSize);
             expect(paddings[direction].size).toEqual(paddingSize + (items.length * itemSize));
-
             if (isAppend) {
               misc.scrollMax();
             } else {
@@ -160,12 +158,15 @@ describe('Adapter Append-Prepend Spec', () => {
             (<any>misc.scroller.datasource.adapter)[token](items);
           } else {
             const viewportSize = Math.max(_config.amount * itemSize, templateSize);
+            const scrollPosition = isAppend ? 0 : Math.min(_config.amount * itemSize, templateSize);
             const first = <number>buffer.firstIndex;
             const last = <number>buffer.lastIndex;
+            const _first = isAppend ? max - _config.amount + 1 : min;
+            const _last = isAppend ? max : min + _config.amount - 1;
             expect(misc.getScrollableSize()).toEqual(viewportSize);
-            expect(misc.getScrollPosition()).toEqual(0);
-            expect(first).toEqual(max - _config.amount + 1);
-            expect(last).toEqual(max);
+            expect(misc.getScrollPosition()).toEqual(scrollPosition);
+            expect(first).toEqual(_first);
+            expect(last).toEqual(_last);
             expect(misc.checkElementContentByIndex(first)).toEqual(true);
             expect(misc.checkElementContentByIndex(last)).toEqual(true);
             done();
@@ -177,6 +178,6 @@ describe('Adapter Append-Prepend Spec', () => {
   };
 
   runAppendPrependSuite('append');
-  // runAppendPrependSuite('prepend');
+  runAppendPrependSuite('prepend');
 
 });

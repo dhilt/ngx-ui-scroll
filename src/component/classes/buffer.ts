@@ -188,7 +188,7 @@ export class Buffer {
   }
 
   getIndexToPrepend(bof?: boolean): number {
-    return (!bof ? (this.items.length ? this.items[0].$index : this.minIndex) : this.absMinIndex) - 1;
+    return (!bof ? (this.items.length ? this.items[0].$index : this.minIndex + 1) : this.absMinIndex) - 1;
   }
 
   getIndexToAdd(eof: boolean, prepend: boolean): number {

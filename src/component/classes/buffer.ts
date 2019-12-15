@@ -184,11 +184,11 @@ export class Buffer {
   }
 
   getIndexToAppend(eof?: boolean): number {
-    return (!eof ? (this.items.length ? this.items[this.items.length - 1].$index : this.maxIndex - 1) : this.absMaxIndex) + 1;
+    return (!eof ? (this.size ? this.items[this.size - 1].$index : this.maxIndex) : this.absMaxIndex) + (this.size ? 1 : 0);
   }
 
   getIndexToPrepend(bof?: boolean): number {
-    return (!bof ? (this.items.length ? this.items[0].$index : this.minIndex + 1) : this.absMinIndex) - 1;
+    return (!bof ? (this.size ? this.items[0].$index : this.minIndex) : this.absMinIndex) - (this.size ? 1 : 0);
   }
 
   getIndexToAdd(eof: boolean, prepend: boolean): number {

@@ -141,39 +141,43 @@ describe('Adapter Append-Prepend Spec', () => {
         })
     });
 
-    makeTest({
-      config: (<any>configEmpty)[token],
-      title: `should ${token} to empty datasource`,
-      it: (misc: Misc) => (done: any) => {
-        const { viewport, buffer } = misc.scroller;
-        const { paddings } = viewport;
-        const _config = (<any>configEmpty)[token];
-        const templateSize = _config.templateSettings.viewportHeight;
-        const items = (<any>getNewItems(_config.amount))[token];
+    const shouldDealWithEmptyDatasource = (virtualize: boolean) =>
+      makeTest({
+        config: (<any>configEmpty)[token],
+        title: `should ${token} to empty datasource` + virtualize ? ' (virtualization)' : '',
+        it: (misc: Misc) => (done: any) => {
+          const { viewport, buffer } = misc.scroller;
+          const { paddings } = viewport;
+          const _config = (<any>configEmpty)[token];
+          const templateSize = _config.templateSettings.viewportHeight;
+          const items = (<any>getNewItems(_config.amount))[token];
 
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const itemSize = misc.getItemSize();
-          if (misc.workflow.cyclesDone === 1) {
-            expect(viewport.getScrollableSize()).toEqual(templateSize);
-            (<any>misc.scroller.datasource.adapter)[token](items);
-          } else {
-            const viewportSize = Math.max(_config.amount * itemSize, templateSize);
-            const scrollPosition = isAppend ? 0 : Math.min(_config.amount * itemSize, templateSize);
-            const first = <number>buffer.firstIndex;
-            const last = <number>buffer.lastIndex;
-            const _first = isAppend ? max - _config.amount + 1 : min;
-            const _last = isAppend ? max : min + _config.amount - 1;
-            expect(misc.getScrollableSize()).toEqual(viewportSize);
-            expect(misc.getScrollPosition()).toEqual(scrollPosition);
-            expect(first).toEqual(_first);
-            expect(last).toEqual(_last);
-            expect(misc.checkElementContentByIndex(first)).toEqual(true);
-            expect(misc.checkElementContentByIndex(last)).toEqual(true);
-            done();
-          }
-        });
-      }
-    });
+          spyOn(misc.workflow, 'finalize').and.callFake(() => {
+            const itemSize = misc.getItemSize();
+            if (misc.workflow.cyclesDone === 1) {
+              expect(viewport.getScrollableSize()).toEqual(templateSize);
+              (<any>misc.scroller.datasource.adapter)[token](items, virtualize);
+            } else {
+              const viewportSize = Math.max(_config.amount * itemSize, templateSize);
+              const scrollPosition = isAppend ? 0 : Math.min(_config.amount * itemSize, templateSize);
+              const first = <number>buffer.firstIndex;
+              const last = <number>buffer.lastIndex;
+              const _first = isAppend ? max - _config.amount + 1 : min;
+              const _last = isAppend ? max : min + _config.amount - 1;
+              expect(misc.getScrollableSize()).toEqual(viewportSize);
+              expect(misc.getScrollPosition()).toEqual(scrollPosition);
+              expect(first).toEqual(_first);
+              expect(last).toEqual(_last);
+              expect(misc.checkElementContentByIndex(first)).toEqual(true);
+              expect(misc.checkElementContentByIndex(last)).toEqual(true);
+              done();
+            }
+          });
+        }
+      });
+
+    shouldDealWithEmptyDatasource(false);
+    shouldDealWithEmptyDatasource(true);
 
   };
 

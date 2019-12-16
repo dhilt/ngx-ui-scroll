@@ -71,7 +71,7 @@ Basic usage template may look like
 </div>
 ```
 
-where the viewport is a scrollable area of finite height.
+where the viewport is a scrollable area of finite height (if the viewport's height is not constrained, it will pull the entire content of the datasource and no scrollbar will appear):
 
 ```css
 .viewport {

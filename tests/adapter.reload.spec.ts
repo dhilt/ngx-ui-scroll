@@ -3,7 +3,7 @@ import { Misc } from './miscellaneous/misc';
 
 const customDefault = { startIndex: null, scrollCount: 0, preLoad: false };
 
-const configList = [{
+const configList: List<TestBedConfig> = [{
   datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
   templateSettings: { viewportHeight: 100 },
   custom: { ...customDefault }
@@ -125,6 +125,17 @@ const shouldReloadInterruption = (config: TestBedConfig) => (misc: Misc) => (don
   });
 };
 
+const shouldReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  doReload(config, misc);
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
+    if (misc.workflow.cyclesDone === 1) {
+      checkExpectation(config, misc);
+      done();
+    }
+  });
+};
+
 describe('Adapter Reload Spec', () => {
 
   describe('simple reload', () =>
@@ -173,6 +184,16 @@ describe('Adapter Reload Spec', () => {
         config,
         title: 'should reload before second datasource.get done',
         it: shouldReloadInterruption(config)
+      })
+    )
+  );
+
+  describe('reload on init', () =>
+    configList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload before workflow start',
+        it: shouldReloadBeforeWorkflowStart(config)
       })
     )
   );

@@ -3,7 +3,7 @@ import { Misc } from './miscellaneous/misc';
 
 const customDefault = { startIndex: null, scrollCount: 0, preLoad: false };
 
-const configList: List<TestBedConfig> = [{
+const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
   templateSettings: { viewportHeight: 100 },
   custom: { ...customDefault }
@@ -52,6 +52,28 @@ const interruptConfigList = configList.map((config, i) => ({
   }
 }));
 
+const doubleReloadConfigList: TestBedConfig[] = configList.map((config, i) => ({
+  ...config,
+  custom: {
+    ...config.custom,
+    startIndex: [10, 365, -14][i]
+  }
+}));
+
+doubleReloadConfigList.push(<TestBedConfig>{
+  ...configList[0],
+  datasourceSettings: {
+    ...configList[0].datasourceSettings,
+    startIndex: 1,
+    itemSize: 100,
+    bufferSize: 10,
+    padding: 0.1,
+    adapter: true
+  },
+  templateSettings: { viewportHeight: 600 },
+  custom: { startIndex: 999 }
+});
+
 const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   const startIndex = config.custom.startIndex === null ?
     config.datasourceSettings.startIndex : config.custom.startIndex;
@@ -59,10 +81,19 @@ const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   const firstIndex = startIndex - bufferSize;
   const nextIndex = firstIndex + bufferSize + 1;
   const firstItem = misc.scroller.buffer.getFirstVisibleItem();
+  const { firstVisible, lastVisible } = misc.datasource.adapter;
+  const itemsPerViewport = Math.ceil(misc.scroller.viewport.getSize() / misc.scroller.buffer.averageSize);
 
   expect(firstItem ? firstItem.$index : null).toEqual(firstIndex);
   expect(misc.getElementText(firstIndex)).toEqual(`${firstIndex} : item #${firstIndex}`);
   expect(misc.getElementText(nextIndex)).toEqual(`${nextIndex} : item #${nextIndex}`);
+  expect(firstVisible.$index).toEqual(startIndex);
+  expect(lastVisible.$index).toEqual(startIndex + itemsPerViewport - 1);
+};
+
+const accessFirstLastVisibleItems = (misc: Misc) => {
+  // need to have a pre-call
+  const { firstVisible, lastVisible } = misc.datasource.adapter;
 };
 
 const doReload = (config: TestBedConfig, misc: Misc) => {
@@ -75,6 +106,7 @@ const doReload = (config: TestBedConfig, misc: Misc) => {
 
 const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const startWFCount = config.custom.preLoad ? 0 : 1;
+  accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     if (misc.workflow.cyclesDone < startWFCount + config.custom.scrollCount) {
       misc.scrollMax();
@@ -96,6 +128,7 @@ const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function)
 };
 
 const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
     if (misc.workflow.cyclesDone === 2) {
@@ -111,6 +144,7 @@ const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done:
 };
 
 const shouldReloadInterruption = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
     if (misc.workflow.cyclesDone === 2) {
@@ -126,10 +160,29 @@ const shouldReloadInterruption = (config: TestBedConfig) => (misc: Misc) => (don
 };
 
 const shouldReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  accessFirstLastVisibleItems(misc);
   doReload(config, misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
     if (misc.workflow.cyclesDone === 1) {
+      checkExpectation(config, misc);
+      done();
+    }
+  });
+};
+
+const shouldReloadAdjust = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  accessFirstLastVisibleItems(misc);
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    if (misc.workflow.cyclesDone === 1) {
+      misc.datasource.adapter.reload(10);
+      const sub = misc.datasource.adapter.loopPending$.subscribe(pending => {
+        if (!pending) {
+          sub.unsubscribe();
+          doReload(config, misc);
+        }
+      });
+    } else if (misc.workflow.cyclesDone === 3) {
       checkExpectation(config, misc);
       done();
     }
@@ -194,6 +247,16 @@ describe('Adapter Reload Spec', () => {
         config,
         title: 'should reload before workflow start',
         it: shouldReloadBeforeWorkflowStart(config)
+      })
+    )
+  );
+
+  describe('double reload', () =>
+    doubleReloadConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload second time after adjustment',
+        it: shouldReloadAdjust(config)
       })
     )
   );

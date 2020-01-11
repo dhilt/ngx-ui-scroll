@@ -4,7 +4,7 @@ import { Process, ProcessStatus, Direction } from '../interfaces/index';
 export default class PreFetch {
 
   static run(scroller: Scroller, process: Process) {
-    const { buffer, state: { fetch } } = scroller;
+    const { workflow, buffer, state: { fetch } } = scroller;
     scroller.state.preFetchPosition = scroller.viewport.scrollPosition;
     fetch.minIndex = buffer.minIndex;
     fetch.averageItemSize = buffer.averageSize || 0;
@@ -33,7 +33,7 @@ export default class PreFetch {
       scroller.logger.log(() => `going to fetch ${fetch.count} items started from index ${fetch.index}`);
     }
 
-    scroller.callWorkflow({
+    workflow.call({
       process: Process.preFetch,
       status: fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
       payload: process

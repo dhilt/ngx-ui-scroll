@@ -9,14 +9,14 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
-import { CallWorkflow } from './interfaces/index';
+import { CallWorkflow, ScrollerWorkflow } from './interfaces/index';
 
 let instanceCount = 0;
 
 export class Scroller {
 
   readonly runChangeDetector: Function;
-  readonly callWorkflow: CallWorkflow;
+  public workflow: ScrollerWorkflow;
 
   public version: string;
   public datasource: Datasource;
@@ -36,7 +36,7 @@ export class Scroller {
 
     this.runChangeDetector = () => context.changeDetector.markForCheck();
     // this.runChangeDetector = () => context.changeDetector.detectChanges();
-    this.callWorkflow = callWorkflow;
+    this.workflow = { call: callWorkflow };
     this.innerLoopSubscriptions = [];
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);

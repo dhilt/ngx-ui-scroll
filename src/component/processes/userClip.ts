@@ -9,7 +9,7 @@ export default class UserClip {
     scroller.state.clip.forceForward = !_options.backwardOnly;
     scroller.state.clip.forceBackward = !_options.forwardOnly;
 
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.userClip,
       status: ProcessStatus.next
     });

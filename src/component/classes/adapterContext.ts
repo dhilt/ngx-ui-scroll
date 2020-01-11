@@ -104,8 +104,8 @@ export class AdapterContext {
     if (this.isInitialized) {
       return;
     }
-    const { state, buffer, logger, callWorkflow } = scroller;
-    this.callWorkflow = callWorkflow;
+    const { state, buffer, logger, workflow } = scroller;
+    this.callWorkflow = workflow.call;
     this.logger = logger;
 
     this.getVersion = (): string | null => scroller.version;

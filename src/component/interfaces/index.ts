@@ -3,28 +3,29 @@ import { ItemAdapter, ItemsPredicate, ClipOptions, Adapter } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { WindowScrollState, ScrollEventData, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
-import { Process, ProcessStatus, ScrollPayload, ProcessSubject, CallWorkflow, WorkflowError } from './process';
+import { Process, ProcessStatus, ScrollPayload, ProcessSubject, WorkflowError, CallWorkflow, ScrollerWorkflow } from './process';
 
 export {
   Datasource,
   DatasourceGet,
-  Direction,
+  ItemAdapter,
+  ItemsPredicate,
+  ClipOptions,
+  Adapter,
   Settings,
   DevSettings,
-  Process,
-  ProcessStatus,
-  ScrollPayload,
-  ProcessSubject,
-  CallWorkflow,
-  WorkflowError,
+  Direction,
   WindowScrollState,
   ScrollEventData,
   ScrollState,
   SyntheticScroll,
   WorkflowOptions,
   State,
-  ItemAdapter,
-  ItemsPredicate,
-  ClipOptions,
-  Adapter
+  Process,
+  ProcessStatus,
+  ScrollPayload,
+  ProcessSubject,
+  WorkflowError,
+  CallWorkflow,
+  ScrollerWorkflow
 };

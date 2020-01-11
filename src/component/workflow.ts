@@ -27,7 +27,8 @@ export class Workflow {
       process: Process.init,
       status: Status.start
     });
-    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
+    this.callWorkflow = <CallWorkflow>this.callWorkflow.bind(this);
+    this.scroller = new Scroller(this.context, this.callWorkflow);
     this.cyclesDone = 0;
     this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);

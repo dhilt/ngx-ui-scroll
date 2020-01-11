@@ -5,9 +5,10 @@ import { itemAdapterEmpty } from '../utils/adapter';
 export default class End {
 
   static run(scroller: Scroller, process: Process, payload: any = {}) {
+    const { workflow, state } = scroller;
     const { error } = payload;
 
-    scroller.state.workflowOptions.reset();
+    state.workflowOptions.reset();
 
     if (!error && process !== Process.reload) {
       // set out params, accessible via Adapter
@@ -18,23 +19,23 @@ export default class End {
     const next = End.getNext(scroller, process, error);
 
     // need to apply Buffer.items changes if clip
-    if (scroller.state.clip.doClip) {
+    if (state.clip.doClip) {
       scroller.runChangeDetector();
     }
 
     // finalize current workflow loop
     End.endWorkflowLoop(scroller, next);
-    scroller.state.innerLoopCount++;
+    state.innerLoopCount++;
 
-    // continue the Workflow synchronously; current cycle could be finilized immediately
-    scroller.callWorkflow({
+    // continue the Workflow synchronously; current cycle could be finalized immediately
+    workflow.call({
       process: Process.end,
       status: next ? ProcessStatus.next : ProcessStatus.done,
       payload: process
     });
 
-    // if the Workflow isn't finilized, it may freeze for no more than settings.throttle ms
-    if (scroller.state.workflowPending && !scroller.state.loopPending) {
+    // if the Workflow isn't finalized, it may freeze for no more than settings.throttle ms
+    if (state.workflowPending && !state.loopPending) {
       // continue the Workflow asynchronously
       End.continueWorkflowByTimer(scroller);
     }
@@ -121,12 +122,12 @@ export default class End {
     const { state, state: { workflowCycleCount, innerLoopCount, workflowOptions } } = scroller;
     scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
     state.scrollState.workflowTimer = <any>setTimeout(() => {
-      // if the WF isn't finilized while the old sub-cycle is done and there's no new sub-cycle
+      // if the WF isn't finalized while the old sub-cycle is done and there's no new sub-cycle
       if (state.workflowPending && !state.loopPending && innerLoopCount === state.innerLoopCount) {
         workflowOptions.scroll = true;
         workflowOptions.byTimer = true;
         workflowOptions.keepScroll = false;
-        scroller.callWorkflow({
+        scroller.workflow.call({
           process: Process.end,
           status: ProcessStatus.next
         });

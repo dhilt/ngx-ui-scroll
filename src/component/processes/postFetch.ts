@@ -7,15 +7,17 @@ export default class PostFetch {
   static run(scroller: Scroller) {
     if (PostFetch.setItems(scroller)) {
       PostFetch.setBufferLimits(scroller);
-      scroller.callWorkflow({
+      scroller.workflow.call({
         process: Process.postFetch,
-        status: scroller.state.fetch.hasNewItems ? ProcessStatus.next : ProcessStatus.done
+        status: scroller.state.fetch.hasNewItems
+          ? ProcessStatus.next
+          : ProcessStatus.done
       });
     } else {
-      scroller.callWorkflow({
+      scroller.workflow.call({
         process: Process.postFetch,
         status: ProcessStatus.error,
-        payload: { error: 'Can\'t set buffer items' }
+        payload: { error: `Can't set buffer items` }
       });
     }
   }

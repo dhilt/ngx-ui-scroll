@@ -5,6 +5,7 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Append {
 
   static run(scroller: Scroller, payload: { items: any, eof?: any, bof?: any, prepend?: any }) {
+    const { workflow } = scroller;
     let { items } = payload;
     items = !Array.isArray(items) ? [items] : items;
     const prepend = !!payload.prepend;
@@ -12,7 +13,7 @@ export default class Append {
     const process = prepend ? Process.prepend : Process.append;
 
     if (!items.length) {
-      scroller.callWorkflow({
+      workflow.call({
         process,
         status: ProcessStatus.error,
         payload: { error: `Wrong argument of the "${prepend ? 'prepend' : 'append'}" method call` }
@@ -26,7 +27,7 @@ export default class Append {
       (!prepend && eof && !scroller.buffer.eof)
     ) {
       Append.doVirtualize(scroller, items, prepend);
-      scroller.callWorkflow({
+      workflow.call({
         process,
         status: ProcessStatus.done
       });
@@ -34,7 +35,7 @@ export default class Append {
     }
 
     Append.simulateFetch(scroller, items, eof, prepend);
-    scroller.callWorkflow({
+    workflow.call({
       process,
       status: ProcessStatus.next
     });

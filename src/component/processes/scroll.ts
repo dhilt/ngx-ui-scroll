@@ -182,7 +182,7 @@ export default class Scroll {
     const skip = scroller.buffer.bof && scroller.buffer.eof;
     workflowOptions.scroll = true;
     workflowOptions.keepScroll = scrollState.keepScroll;
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.scroll,
       status: skip ? ProcessStatus.done : ProcessStatus.next
     });

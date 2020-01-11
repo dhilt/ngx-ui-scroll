@@ -6,7 +6,7 @@ export default class PreClip {
   static run(scroller: Scroller) {
     PreClip.prepareClip(scroller);
 
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.preClip,
       status: ProcessStatus.next,
       payload: { doClip: scroller.state.clip.doClip }

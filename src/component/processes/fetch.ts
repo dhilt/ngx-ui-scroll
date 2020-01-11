@@ -28,14 +28,14 @@ export default class Fetch {
       `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
     scroller.state.fetch.newItemsData = data;
 
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.fetch,
       status: ProcessStatus.next
     });
   }
 
   static fail(error: string, scroller: Scroller) {
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.fetch,
       status: ProcessStatus.error,
       payload: { error }

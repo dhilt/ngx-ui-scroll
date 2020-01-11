@@ -4,7 +4,7 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Check {
 
   static run(scroller: Scroller) {
-    const { buffer, state: { fetch } } = scroller;
+    const { workflow, buffer, state: { fetch } } = scroller;
     let min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;
 
     buffer.items.forEach(item => {
@@ -28,7 +28,7 @@ export default class Check {
 
     scroller.logger.stat('check');
 
-    scroller.callWorkflow({
+    workflow.call({
       process: Process.check,
       status: Number.isFinite(min) ? ProcessStatus.next : ProcessStatus.done
     });

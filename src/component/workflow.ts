@@ -13,6 +13,7 @@ export class Workflow {
   scroller: Scroller;
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
+  interruptionCount: number;
   errors: Array<WorkflowError>;
 
   readonly context: UiScrollComponent;
@@ -30,6 +31,7 @@ export class Workflow {
     this.callWorkflow = <CallWorkflow>this.callWorkflow.bind(this);
     this.scroller = new Scroller(this.context, this.callWorkflow);
     this.cyclesDone = 0;
+    this.interruptionCount = 0;
     this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);
 
@@ -135,7 +137,7 @@ export class Workflow {
           run(Reload)(payload);
         }
         if (status === Status.next) {
-          this.interrupt();
+          this.interrupt(process);
           if (payload.finalize) {
             run(End)(process);
           } else {
@@ -289,9 +291,16 @@ export class Workflow {
     this.process$.next(processSubject);
   }
 
-  interrupt() {
-    this.scroller.workflow.call = () => null;
-    this.scroller.workflow = { call: this.callWorkflow };
+  interrupt(process: Process) {
+    const { scroller } = this;
+    if (scroller.state.isLoading) {
+      scroller.workflow.call = () => null;
+      scroller.workflow = { call: this.callWorkflow };
+      this.interruptionCount++;
+      scroller.logger.log(() =>
+        `workflow had been interrupted by the ${process} process (${this.interruptionCount})`
+      );
+    }
   }
 
   done() {

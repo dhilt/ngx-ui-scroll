@@ -135,6 +135,7 @@ export class Workflow {
           run(Reload)(payload);
         }
         if (status === Status.next) {
+          this.interrupt();
           if (payload.finalize) {
             run(End)(process);
           } else {
@@ -286,6 +287,11 @@ export class Workflow {
     //   return ['%ccall%c', ...['color: #77cc77;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])];
     // });
     this.process$.next(processSubject);
+  }
+
+  interrupt() {
+    this.scroller.workflow.call = () => null;
+    this.scroller.workflow = { call: this.callWorkflow };
   }
 
   done() {

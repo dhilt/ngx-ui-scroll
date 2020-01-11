@@ -43,7 +43,6 @@ export default class End {
 
   static endWorkflowLoop(scroller: Scroller, next: boolean) {
     const { state, state: { clip } } = scroller;
-    state.loopPending = false;
     state.countDone++;
     state.isInitialLoop = false;
     state.fetch.simulate = false;
@@ -51,6 +50,7 @@ export default class End {
     clip.forceReset();
     state.lastPosition = scroller.viewport.scrollPosition;
     scroller.purgeInnerLoopSubscriptions();
+    state.loopPending = false;
   }
 
   static calculateParams(scroller: Scroller) {

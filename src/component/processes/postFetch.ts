@@ -5,16 +5,17 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class PostFetch {
 
   static run(scroller: Scroller) {
+    const { workflow } = scroller;
     if (PostFetch.setItems(scroller)) {
       PostFetch.setBufferLimits(scroller);
-      scroller.workflow.call({
+      workflow.call({
         process: Process.postFetch,
         status: scroller.state.fetch.hasNewItems
           ? ProcessStatus.next
           : ProcessStatus.done
       });
     } else {
-      scroller.workflow.call({
+      workflow.call({
         process: Process.postFetch,
         status: ProcessStatus.error,
         payload: { error: `Can't set buffer items` }

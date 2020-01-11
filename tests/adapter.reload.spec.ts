@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
-const customDefault = { startIndex: null, scrollCount: 0, preLoad: false };
+const customDefault = { startIndex: null, scrollCount: 0, preLoad: false, interruptionCount: 0 };
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
@@ -38,6 +38,7 @@ const preLoadConfigList = configList.map((config, i) => ({
   ...config,
   custom: {
     ...config.custom,
+    interruptionCount: 1,
     startIndex: [-30, null, 12][i],
     preLoad: true
   }
@@ -48,6 +49,7 @@ const interruptConfigList = configList.map((config, i) => ({
   datasourceName: 'infinite-callback-delay-150',
   custom: {
     ...config.custom,
+    interruptionCount: 1,
     startIndex: [null, 1025, -40][i]
   }
 }));
@@ -56,6 +58,7 @@ const doubleReloadConfigList: TestBedConfig[] = configList.map((config, i) => ({
   ...config,
   custom: {
     ...config.custom,
+    interruptionCount: 1,
     startIndex: [10, 365, -14][i]
   }
 }));
@@ -71,8 +74,20 @@ doubleReloadConfigList.push(<TestBedConfig>{
     adapter: true
   },
   templateSettings: { viewportHeight: 600 },
-  custom: { startIndex: 999 }
+  custom: {
+    interruptionCount: 1,
+    startIndex: 999
+  }
 });
+
+const onRenderReloadConfigList = configList.map((config, i) => ({
+  ...config,
+  custom: {
+    ...config.custom,
+    interruptionCount: 1,
+    startIndex: [500, -25, null][i]
+  }
+}));
 
 const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   const startIndex = config.custom.startIndex === null ?
@@ -89,6 +104,7 @@ const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   expect(misc.getElementText(nextIndex)).toEqual(`${nextIndex} : item #${nextIndex}`);
   expect(firstVisible.$index).toEqual(startIndex);
   expect(lastVisible.$index).toEqual(startIndex + itemsPerViewport - 1);
+  expect(misc.workflow.interruptionCount).toEqual(config.custom.interruptionCount);
 };
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
@@ -143,7 +159,7 @@ const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done:
   });
 };
 
-const shouldReloadInterruption = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadInFetchAsync = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
@@ -171,17 +187,31 @@ const shouldReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Misc) 
   });
 };
 
-const shouldReloadAdjust = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadAfterAdjust = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     if (misc.workflow.cyclesDone === 1) {
       misc.datasource.adapter.reload(10);
+      // a reload will occur in-between the Adjust and End processes
       const sub = misc.datasource.adapter.loopPending$.subscribe(pending => {
         if (!pending) {
           sub.unsubscribe();
           doReload(config, misc);
         }
       });
+    } else if (misc.workflow.cyclesDone === 3) {
+      checkExpectation(config, misc);
+      done();
+    }
+  });
+};
+
+const shouldReloadOnRender = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  accessFirstLastVisibleItems(misc);
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    if (misc.workflow.cyclesDone === 1) {
+      misc.datasource.adapter.reload(10);
+      setTimeout(() => doReload(config, misc));
     } else if (misc.workflow.cyclesDone === 3) {
       checkExpectation(config, misc);
       done();
@@ -231,12 +261,12 @@ describe('Adapter Reload Spec', () => {
     )
   );
 
-  describe('reload interruption', () =>
+  describe('reload on fetch (async)', () =>
     interruptConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should reload before second datasource.get done',
-        it: shouldReloadInterruption(config)
+        it: shouldReloadInFetchAsync(config)
       })
     )
   );
@@ -251,12 +281,22 @@ describe('Adapter Reload Spec', () => {
     )
   );
 
-  describe('double reload', () =>
+  describe('double reload (after adjust)', () =>
     doubleReloadConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should reload second time after adjustment',
-        it: shouldReloadAdjust(config)
+        it: shouldReloadAfterAdjust(config)
+      })
+    )
+  );
+
+  describe('double reload (on render)', () =>
+    onRenderReloadConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload second time during render',
+        it: shouldReloadOnRender(config)
       })
     )
   );

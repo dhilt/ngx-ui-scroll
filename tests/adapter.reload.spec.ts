@@ -44,7 +44,7 @@ const preLoadConfigList = configList.map((config, i) => ({
   }
 }));
 
-const interruptConfigList = configList.map((config, i) => ({
+const onFetchReloadConfigList = configList.map((config, i) => ({
   ...config,
   datasourceName: 'infinite-callback-delay-150',
   custom: {
@@ -89,6 +89,16 @@ const onRenderReloadConfigList = configList.map((config, i) => ({
   }
 }));
 
+const onFetchReloadSyncConfigList = configList.map((config, i) => ({
+  ...config,
+  datasourceName: 'limited--99-100-dynamic-size-processor',
+  custom: {
+    ...config.custom,
+    interruptionCount: 1,
+    startIndex: [1, 2, 3][i]
+  }
+}));
+
 const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   const startIndex = config.custom.startIndex === null ?
     config.datasourceSettings.startIndex : config.custom.startIndex;
@@ -118,6 +128,17 @@ const doReload = (config: TestBedConfig, misc: Misc) => {
   } else {
     misc.datasource.adapter.reload();
   }
+};
+
+const doReloadOnFirstDatasourceGetCall = (config: TestBedConfig, misc: Misc) => {
+  const { datasource } = <any>misc.fixture.componentInstance;
+  let reloaded = false;
+  datasource.setProcessGet((result: Array<any>) => {
+    if (!reloaded) {
+      reloaded = true;
+      doReload(config, misc);
+    }
+  });
 };
 
 const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
@@ -159,7 +180,7 @@ const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done:
   });
 };
 
-const shouldReloadInFetchAsync = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadOnFetchAsync = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.innerLoopSubscriptions.length).toEqual(0);
@@ -219,6 +240,17 @@ const shouldReloadOnRender = (config: TestBedConfig) => (misc: Misc) => (done: F
   });
 };
 
+const shouldReloadOnFetchSync = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  accessFirstLastVisibleItems(misc);
+  doReloadOnFirstDatasourceGetCall(config, misc);
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    if (misc.workflow.cyclesDone === 2) {
+      checkExpectation(config, misc);
+      done();
+    }
+  });
+};
+
 describe('Adapter Reload Spec', () => {
 
   describe('simple reload', () =>
@@ -262,11 +294,11 @@ describe('Adapter Reload Spec', () => {
   );
 
   describe('reload on fetch (async)', () =>
-    interruptConfigList.forEach(config =>
+    onFetchReloadConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should reload before second datasource.get done',
-        it: shouldReloadInFetchAsync(config)
+        it: shouldReloadOnFetchAsync(config)
       })
     )
   );
@@ -297,6 +329,16 @@ describe('Adapter Reload Spec', () => {
         config,
         title: 'should reload second time during render',
         it: shouldReloadOnRender(config)
+      })
+    )
+  );
+
+  describe('reload on fetch (sync)', () =>
+    onFetchReloadSyncConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reload before first datasource.get done',
+        it: shouldReloadOnFetchSync(config)
       })
     )
   );

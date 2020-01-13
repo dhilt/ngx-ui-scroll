@@ -186,7 +186,7 @@ export class Workflow {
           run(Fix)(payload);
         }
         if (status === Status.next) {
-          // run(Init)(process);
+          run(Init)(process);
         }
         break;
       case Process.start:

@@ -201,7 +201,7 @@ export class TestComponent {
         if (viewportElement.scrollTop === diff) {
           isLoadingSubscription.unsubscribe();
         } else {
-          adapter.setScrollPosition(diff);
+          adapter.fix({ scrollPosition: diff });
           if (viewportElement.scrollTop === diff) {
             isLoadingSubscription.unsubscribe();
           }

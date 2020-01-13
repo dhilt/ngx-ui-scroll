@@ -4,7 +4,7 @@ import { Scroller } from '../scroller';
 import { AdapterContext } from './adapterContext';
 import { protectAdapterPublicMethod } from '../utils/index';
 import {
-  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions
+  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions, FixOptions
 } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
@@ -76,7 +76,7 @@ export class Adapter implements IAdapter {
     this.init$ = new BehaviorSubject<boolean>(false);
     this.context = new AdapterContext(this.init$);
 
-    ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'setScrollPosition']
+    ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix']
       .forEach(token => protectAdapterPublicMethod(this, token));
   }
 
@@ -148,26 +148,13 @@ export class Adapter implements IAdapter {
     this.context.logger.logForce();
   }
 
-  setScrollPosition(value: number) {
-    this.context.logger.log(() => `adapter: setScrollPosition(${value})`);
-    const position = Number(value);
-    const parsedValue = parseInt(<any>value, 10);
-    if (position !== parsedValue) {
-      this.context.logger.log(() =>
-        `can't set scroll position because ${value} is not an integer`);
-    } else {
-      this.context.setScrollPosition(value);
-    }
+  // undocumented
+  fix(options: FixOptions) {
+    this.context.logger.log(() => `adapter: fix(${JSON.stringify(options)})`);
+    this.context.callWorkflow(<ProcessSubject>{
+      process: Process.fix,
+      status: ProcessStatus.start,
+      payload: options
+    });
   }
-
-  // setMinIndex(value: number) {
-  //   this.context.logger.log(() => `adapter: setMinIndex(${value})`);
-  //   const index = Number(value);
-  //   if (isNaN(index)) {
-  //     this.context.logger.log(() =>
-  //       `can't set minIndex because ${value} is not a number`);
-  //   } else {
-  //     this.scroller.buffer.minIndexUser = index;
-  //   }
-  // }
 }

@@ -8,7 +8,6 @@ import { ItemAdapter, State as IState } from '../interfaces/index';
 export class AdapterContext {
   callWorkflow: Function;
   logger: Logger;
-  setScrollPosition: Function;
 
   private init$: BehaviorSubject<boolean>;
   private isInitialized: boolean;
@@ -120,12 +119,6 @@ export class AdapterContext {
     this.getEOF = (): boolean => buffer.eof;
 
     this.initializeProtected(state);
-
-    // undocumented
-    this.setScrollPosition = (value: number) => {
-      state.syntheticScroll.reset();
-      scroller.viewport.setPosition(value);
-    };
 
     // run the subscriptions
     this.isInitialized = true;

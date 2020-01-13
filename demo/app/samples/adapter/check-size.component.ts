@@ -128,7 +128,7 @@ autoscroll(index: number) {
     if (viewportElement.scrollTop === diff) {
       done();
     } else {
-      adapter.setScrollPosition(diff);
+      adapter.fix({ scrollPosition: diff });
       if (viewportElement.scrollTop === diff) {
         done();
       }
@@ -220,7 +220,7 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
       if (viewportElement.scrollTop === diff) {
         done();
       } else {
-        adapter.setScrollPosition(diff);
+        adapter.fix({ scrollPosition: diff });
         if (viewportElement.scrollTop === diff) {
           done();
         }

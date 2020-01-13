@@ -7,6 +7,7 @@ export enum Process {
   check = 'adapter.check',
   remove = 'adapter.remove',
   userClip = 'adapter.clip',
+  fix = 'adapter.fix',
   start = 'start',
   preFetch = 'preFetch',
   fetch = 'fetch',

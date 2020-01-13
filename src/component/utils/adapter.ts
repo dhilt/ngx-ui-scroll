@@ -34,7 +34,7 @@ export const generateMockAdapter = (): IAdapter => (
     remove: () => null,
     clip: () => null,
     showLog: () => null,
-    setScrollPosition: () => null
+    fix: () => null // undocumented
   }
 );
 

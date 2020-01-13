@@ -76,7 +76,7 @@ export class Adapter implements IAdapter {
     this.init$ = new BehaviorSubject<boolean>(false);
     this.context = new AdapterContext(this.init$);
 
-    ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'setScrollPosition']
+    ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix']
       .forEach(token => protectAdapterPublicMethod(this, token));
   }
 
@@ -148,26 +148,23 @@ export class Adapter implements IAdapter {
     this.context.logger.logForce();
   }
 
-  setScrollPosition(value: number) {
-    this.context.logger.log(() => `adapter: setScrollPosition(${value})`);
-    const position = Number(value);
-    const parsedValue = parseInt(<any>value, 10);
-    if (position !== parsedValue) {
-      this.context.logger.log(() =>
-        `can't set scroll position because ${value} is not an integer`);
-    } else {
-      this.context.setScrollPosition(value);
+  // undocumented
+  fix(params: any) {
+    this.context.logger.log(() => `adapter: fix(${JSON.stringify(params)})`);
+    if (!params || typeof params !== 'object') {
+      this.context.logger.log(() => `can't set params; argument must be a valid object`);
+      return;
     }
+    ['scrollPosition', 'minIndex', 'maxIndex'].forEach((token: string) => {
+      if (params.hasOwnProperty(token)) {
+        const value = Number(params[token]);
+        const parsedValue = parseInt(<any>params[token], 10);
+        if (value !== parsedValue) {
+          this.context.logger.log(() => `can't set ${token}; argument must be an integer`);
+        } else {
+          (<any>this.context.fix)[token](value);
+        }
+      }
+    });
   }
-
-  // setMinIndex(value: number) {
-  //   this.context.logger.log(() => `adapter: setMinIndex(${value})`);
-  //   const index = Number(value);
-  //   if (isNaN(index)) {
-  //     this.context.logger.log(() =>
-  //       `can't set minIndex because ${value} is not a number`);
-  //   } else {
-  //     this.scroller.buffer.minIndexUser = index;
-  //   }
-  // }
 }

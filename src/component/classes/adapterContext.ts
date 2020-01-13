@@ -5,10 +5,34 @@ import { Scroller } from '../scroller';
 import { Logger } from './logger';
 import { ItemAdapter, State as IState } from '../interfaces/index';
 
+interface Fix {
+  scrollPosition: (value: number) => void;
+  minIndex: (value: number) => void;
+  maxIndex: (value: number) => void;
+}
+
+function setFix(scroller: Scroller): Fix {
+  const { state, buffer, viewport, settings } = scroller;
+  return <Fix>{
+    scrollPosition: (value: number) => {
+      state.syntheticScroll.reset();
+      viewport.setPosition(value);
+    },
+    minIndex: (value: number) => {
+      settings.minIndex = value;
+      buffer.absMinIndex = value;
+    },
+    maxIndex: (value: number) => {
+      settings.maxIndex = value;
+      buffer.absMaxIndex = value;
+    }
+  };
+}
+
 export class AdapterContext {
   callWorkflow: Function;
   logger: Logger;
-  setScrollPosition: Function;
+  fix: Fix;
 
   private init$: BehaviorSubject<boolean>;
   private isInitialized: boolean;
@@ -122,10 +146,7 @@ export class AdapterContext {
     this.initializeProtected(state);
 
     // undocumented
-    this.setScrollPosition = (value: number) => {
-      state.syntheticScroll.reset();
-      scroller.viewport.setPosition(value);
-    };
+    this.fix = setFix(scroller);
 
     // run the subscriptions
     this.isInitialized = true;

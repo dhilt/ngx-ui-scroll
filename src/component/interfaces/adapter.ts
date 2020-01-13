@@ -38,5 +38,5 @@ export interface Adapter {
   remove: (predicate: ItemsPredicate) => any;
   clip: (options?: ClipOptions) => any;
   showLog: () => any;
-  setScrollPosition: (value: number) => any;
+  fix: (params: any) => any; // undocumented
 }

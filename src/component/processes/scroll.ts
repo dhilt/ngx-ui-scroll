@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessStatus, ScrollEventData } from '../interfaces/index';
+import { Direction, Process, ProcessStatus, ScrollEventData, ScrollerWorkflow } from '../interfaces/index';
 
 enum ScrollProcess {
   stop = -1,
@@ -13,6 +13,7 @@ enum ScrollProcess {
 export default class Scroll {
 
   static run(scroller: Scroller, event?: Event) {
+    const { workflow } = scroller;
     const { syntheticScroll: synth, scrollState } = scroller.state;
     const position = scroller.viewport.scrollPosition;
     const time = Number(new Date());
@@ -36,7 +37,7 @@ export default class Scroll {
     }
 
     if (next === ScrollProcess.delay) {
-      this.delayScroll(scroller);
+      this.delayScroll(scroller, workflow);
     }
   }
 
@@ -133,10 +134,10 @@ export default class Scroll {
     return ScrollProcess.stop;
   }
 
-  static delayScroll(scroller: Scroller) {
+  static delayScroll(scroller: Scroller, workflow: ScrollerWorkflow) {
     const { workflowOptions, scrollState: state } = scroller.state;
     if (!scroller.settings.throttle || workflowOptions.byTimer) {
-      Scroll.doScroll(scroller);
+      Scroll.doScroll(scroller, workflow);
       return;
     }
     const time = Number(Date.now());
@@ -148,7 +149,7 @@ export default class Scroll {
       scroller.purgeScrollTimers(true);
       state.lastScrollTime = time;
       state.firstScrollTime = 0;
-      Scroll.doScroll(scroller);
+      Scroll.doScroll(scroller, workflow);
     } else if (!state.scrollTimer && !state.keepScroll) {
       scroller.logger.log(() => `setting the timer at ${scroller.state.time + diff}`);
       state.firstScrollTime = time;
@@ -172,7 +173,7 @@ export default class Scroll {
       ] : undefined);
   }
 
-  static doScroll(scroller: Scroller) {
+  static doScroll(scroller: Scroller, workflow: ScrollerWorkflow) {
     const { state: { workflowPending, scrollState, workflowOptions } } = scroller;
     if (workflowPending) {
       Scroll.logPendingWorkflow(scroller);
@@ -182,7 +183,7 @@ export default class Scroll {
     const skip = scroller.buffer.bof && scroller.buffer.eof;
     workflowOptions.scroll = true;
     workflowOptions.keepScroll = scrollState.keepScroll;
-    scroller.workflow.call({
+    workflow.call({
       process: Process.scroll,
       status: skip ? ProcessStatus.done : ProcessStatus.next
     });

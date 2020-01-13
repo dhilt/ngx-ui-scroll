@@ -13,6 +13,12 @@ export interface ClipOptions {
   backwardOnly?: boolean;
 }
 
+export interface FixOptions {
+  scrollPosition?: number;
+  minIndex?: number;
+  maxIndex?: number;
+}
+
 export interface Adapter {
   init$: BehaviorSubject<boolean>;
   readonly version: string | null;
@@ -37,6 +43,6 @@ export interface Adapter {
   check: () => any;
   remove: (predicate: ItemsPredicate) => any;
   clip: (options?: ClipOptions) => any;
+  fix: (options: FixOptions) => any; // undocumented
   showLog: () => any;
-  fix: (params: any) => any; // undocumented
 }

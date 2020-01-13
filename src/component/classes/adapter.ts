@@ -4,7 +4,7 @@ import { Scroller } from '../scroller';
 import { AdapterContext } from './adapterContext';
 import { protectAdapterPublicMethod } from '../utils/index';
 import {
-  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions
+  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions, FixOptions
 } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
@@ -149,22 +149,12 @@ export class Adapter implements IAdapter {
   }
 
   // undocumented
-  fix(params: any) {
-    this.context.logger.log(() => `adapter: fix(${JSON.stringify(params)})`);
-    if (!params || typeof params !== 'object') {
-      this.context.logger.log(() => `can't set params; argument must be a valid object`);
-      return;
-    }
-    ['scrollPosition', 'minIndex', 'maxIndex'].forEach((token: string) => {
-      if (params.hasOwnProperty(token)) {
-        const value = Number(params[token]);
-        const parsedValue = parseInt(<any>params[token], 10);
-        if (value !== parsedValue) {
-          this.context.logger.log(() => `can't set ${token}; argument must be an integer`);
-        } else {
-          (<any>this.context.fix)[token](value);
-        }
-      }
+  fix(options: FixOptions) {
+    this.context.logger.log(() => `adapter: fix(${JSON.stringify(options)})`);
+    this.context.callWorkflow(<ProcessSubject>{
+      process: Process.fix,
+      status: ProcessStatus.start,
+      payload: options
     });
   }
 }

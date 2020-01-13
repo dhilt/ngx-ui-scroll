@@ -4,7 +4,7 @@ import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject, WorkflowError } from './interfaces/index';
 import {
-  Init, Scroll, Reload, Append, Check, Remove, UserClip,
+  Init, Scroll, Reload, Append, Check, Remove, UserClip, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 } from './processes/index';
 
@@ -179,6 +179,14 @@ export class Workflow {
         }
         if (status === Status.next) {
           run(Init)(process);
+        }
+        break;
+      case Process.fix:
+        if (status === Status.start) {
+          run(Fix)(payload);
+        }
+        if (status === Status.next) {
+          // run(Init)(process);
         }
         break;
       case Process.start:

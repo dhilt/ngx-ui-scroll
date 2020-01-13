@@ -2,7 +2,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject, WorkflowError } from './interfaces/index';
+import { Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow } from './interfaces/index';
 import {
   Init, Scroll, Reload, Append, Check, Remove, UserClip,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
@@ -28,7 +28,7 @@ export class Workflow {
       process: Process.init,
       status: Status.start
     });
-    this.callWorkflow = <CallWorkflow>this.callWorkflow.bind(this);
+    this.callWorkflow = <any>this.callWorkflow.bind(this);
     this.scroller = new Scroller(this.context, this.callWorkflow);
     this.cyclesDone = 0;
     this.interruptionCount = 0;
@@ -291,11 +291,12 @@ export class Workflow {
     this.process$.next(processSubject);
   }
 
-  interrupt(process: Process) {
+  interrupt(process?: Process) {
     const { scroller } = this;
     if (scroller.state.isLoading) {
-      scroller.workflow.call = () => null;
-      scroller.workflow = { call: this.callWorkflow };
+      scroller.workflow.call = (p?: ProcessSubject) => scroller.logger.log('[skip wf call]');
+      (<any>scroller.workflow.call).interrupted = true;
+      scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
       this.interruptionCount++;
       scroller.logger.log(() =>
         `workflow had been interrupted by the ${process} process (${this.interruptionCount})`

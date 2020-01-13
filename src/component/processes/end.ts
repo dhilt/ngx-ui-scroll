@@ -15,6 +15,11 @@ export default class End {
       End.calculateParams(scroller);
     }
 
+    // explicit interruption for we don't want go through the workflow loop finalizing
+    if ((<any>workflow.call).interrupted) {
+      return workflow.call();
+    }
+
     // what next? done?
     const next = End.getNext(scroller, process, error);
 

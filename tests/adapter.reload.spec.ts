@@ -1,5 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
+import { configListDestructiveFilter } from './miscellaneous/common';
 
 const customDefault = { startIndex: null, scrollCount: 0, preLoad: false, interruptionCount: 0 };
 
@@ -96,6 +97,16 @@ const onFetchReloadSyncConfigList = configList.map((config, i) => ({
     ...config.custom,
     interruptionCount: 1,
     startIndex: [1, 2, 3][i]
+  }
+}));
+
+const onFirstVisibleChangeReloadConfigList = configList.map((config, i) => ({
+  ...config,
+  custom: {
+    ...config.custom,
+    interruptionCount: 1,
+    startIndex: [1, -50, -99][i],
+    firstVisible: [50, -60, -55][i]
   }
 }));
 
@@ -251,6 +262,28 @@ const shouldReloadOnFetchSync = (config: TestBedConfig) => (misc: Misc) => (done
   });
 };
 
+const shouldReloadOnFirstVisibleChange = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  accessFirstLastVisibleItems(misc);
+  let stopScroll = false;
+  let lastCycle: number;
+  const sub = misc.scroller.datasource.adapter.firstVisible$.subscribe(firstVisible => {
+    if (firstVisible && <any>firstVisible.$index <= config.custom.firstVisible) {
+      sub.unsubscribe();
+      stopScroll = true;
+      doReload(config, misc);
+      lastCycle = misc.workflow.cyclesDone + 1;
+    }
+  });
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    if (!stopScroll) {
+      misc.scrollMin();
+    } else if (misc.workflow.cyclesDone === lastCycle) {
+      checkExpectation(config, misc);
+      done();
+    }
+  });
+};
+
 describe('Adapter Reload Spec', () => {
 
   describe('simple reload', () =>
@@ -339,6 +372,16 @@ describe('Adapter Reload Spec', () => {
         config,
         title: 'should reload before first datasource.get done',
         it: shouldReloadOnFetchSync(config)
+      })
+    )
+  );
+
+  describe('reload on firstVisible change', () =>
+    onFirstVisibleChangeReloadConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should intercept the workflow properly',
+        it: shouldReloadOnFirstVisibleChange(config)
       })
     )
   );

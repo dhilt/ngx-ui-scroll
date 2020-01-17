@@ -2,6 +2,7 @@ import { async } from '@angular/core/testing';
 
 import { Settings, Direction } from '../src/component/interfaces';
 import { defaultSettings, minSettings } from '../src/component/classes/settings';
+import { InputValue, validate } from '../src/component/utils/validation';
 
 import { configureTestBed } from './scaffolding/testBed';
 import { defaultDatasourceClass } from './scaffolding/datasources';
@@ -242,4 +243,92 @@ describe('Bad datasource', () => {
     }
   });
 
+});
+
+
+describe('Input Params Validation', () => {
+  describe('[Integer]', () => {
+
+    const integerPassInputs = [
+      { value: 23, parsed: 23 },
+      { value: '23', parsed: 23 },
+      { value: 0, parsed: 0 },
+      { value: '0', parsed: 0 },
+      { value: '-23', parsed: -23 },
+      { value: -23, parsed: -23 },
+      { value: '1e1', parsed: 10 },
+      { value: 1e1, parsed: 10 },
+      { value: 1.1e1, parsed: 11 },
+    ];
+
+    const integerBlockInputs = [
+      { value: NaN, parsed: NaN },
+      { value: '', parsed: NaN },
+      { value: '-', parsed: NaN },
+      { value: 'no', parsed: NaN },
+      { value: '23no', parsed: NaN },
+      { value: 23.78, parsed: 23 },
+      { value: '23.78', parsed: 23 },
+      { value: 1.11e1, parsed: 11 },
+    ];
+
+    it('should pass limited integer', (done: Function) => {
+      integerPassInputs.forEach(input => {
+        const parsed = validate(input.value, InputValue.integer);
+        expect(parsed.value).toEqual(input.parsed);
+        expect(parsed.isValid).toEqual(true);
+      });
+      done();
+    });
+
+    it('should block non limited integer', (done: Function) => {
+      const inputs = [
+        ...integerBlockInputs,
+        { value: Infinity, parsed: NaN },
+        { value: -Infinity, parsed: NaN },
+        { value: 'Infinity', parsed: NaN },
+        { value: '-Infinity', parsed: NaN },
+      ];
+      inputs.forEach(input => {
+        const parsed = validate(input.value, InputValue.integer);
+        expect(parsed).toEqual({
+          value: input.parsed,
+          type: InputValue.integer,
+          isValid: false,
+          error: 'it must be an integer'
+        });
+      });
+      done();
+    });
+
+    it('should pass unlimited integer', (done: Function) => {
+      const inputs = [
+        ...integerPassInputs,
+        { value: Infinity, parsed: Infinity },
+        { value: -Infinity, parsed: -Infinity },
+        { value: 'Infinity', parsed: Infinity },
+        { value: '-Infinity', parsed: -Infinity },
+      ];
+      inputs.forEach(input => {
+        const parsed = validate(input.value, InputValue.integerUnlimited);
+        expect(parsed.value).toEqual(input.parsed);
+        expect(parsed.isValid).toEqual(true);
+      });
+      done();
+    });
+
+    it('should block non unlimited integer', (done: Function) => {
+      integerBlockInputs.forEach(input => {
+        const parsed = validate(input.value, InputValue.integerUnlimited);
+        expect(parsed).toEqual({
+          value: input.parsed,
+          type: InputValue.integerUnlimited,
+          isValid: false,
+          error: 'it must be an integer or +/- Infinity'
+        });
+      });
+      done();
+    });
+
+  });
 });

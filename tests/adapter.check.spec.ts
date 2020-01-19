@@ -79,17 +79,21 @@ const configList: TestBedConfig[] = [
   }
 ];
 
+const updateDOMElement = (misc: Misc, index: number, size: number) => {
+  const element = misc.getElement(index);
+  if (element) {
+    if (misc.scroller.settings.horizontal) {
+      (<HTMLElement>element).style.width = size + 'px';
+    } else {
+      (<HTMLElement>element).style.height = size + 'px';
+    }
+  }
+};
+
 const updateDOM = (misc: Misc, { min, max, size, initialSize }: any) => {
   const { datasource } = <any>misc.fixture.componentInstance;
   for (let i = min; i <= max; i++) {
-    const element = misc.getElement(i);
-    if (element) {
-      if (misc.scroller.settings.horizontal) {
-        (<HTMLElement>element).style.width = size + 'px';
-      } else {
-        (<HTMLElement>element).style.height = size + 'px';
-      }
-    }
+    updateDOMElement(misc, i, size);
     // persist new sizes on the datasource level
     datasource.setProcessGet((result: Array<any>) =>
       result.forEach(item => item.size = item.id >= min && item.id <= max ? size : initialSize)
@@ -110,7 +114,7 @@ const getFirstVisibleIndex = (misc: Misc): number => {
   return NaN;
 };
 
-const testIt = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const { datasource } = <any>misc.fixture.componentInstance;
   const { datasource: { adapter }, settings, buffer } = misc.scroller;
   const initialSize = config.datasourceSettings.itemSize;
@@ -138,13 +142,68 @@ const testIt = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   });
 };
 
+const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    const { state, datasource: { adapter } } = misc.scroller;
+    switch (state.workflowCycleCount) {
+      case 2:
+        updateDOMElement(misc, <number>config.datasourceSettings.startIndex, 50);
+        adapter.check();
+        break;
+      case 3:
+        expect(state.fetch.isReplace).toEqual(false);
+        misc.scrollMax();
+        break;
+      case 4:
+        done();
+    }
+  });
+
+const shouldDoubleCheckAfterAppend = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  const { state, datasource: { adapter } } = misc.scroller;
+  const { itemSize, startIndex } = config.datasourceSettings;
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    switch (state.workflowCycleCount) {
+      case 2:
+        updateDOMElement(misc, <number>startIndex, 50);
+        adapter.check();
+        break;
+      case 3:
+        adapter.append({ id: MAX_INDEX + 1, text: 'new item', size: itemSize });
+        break;
+      case 4:
+        updateDOMElement(misc, <number>startIndex, itemSize);
+        adapter.check();
+        break;
+      case 5:
+        done();
+    }
+  });
+};
+
 describe('Adapter Check Size Spec', () => {
 
   configList.forEach(config =>
     makeTest({
       config,
       title: 'should check properly',
-      it: testIt(config)
+      it: shouldCheck(config)
+    })
+  );
+
+  configList.filter((c, i) => i%2 !== 0).forEach(config =>
+    makeTest({
+      config,
+      title: 'should fetch after check',
+      it: shouldFetchAfterCheck(config)
+    })
+  );
+
+  configList.filter((c, i) => i%2 === 0).forEach(config =>
+    makeTest({
+      config,
+      title: 'should check after check and append',
+      it: shouldDoubleCheckAfterAppend(config)
     })
   );
 

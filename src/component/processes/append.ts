@@ -61,21 +61,26 @@ export default class Append {
     const { buffer, state, state: { fetch } } = scroller;
     const bufferToken = prepend ? 'absMinIndex' : 'absMaxIndex';
     let indexToAdd = buffer.getIndexToAdd(eof, prepend);
+    let bufferLimit = buffer[bufferToken];
     const newItems: any[] = [];
 
     for (let i = 0; i < items.length; i++) {
       const itemToAdd = new Item(indexToAdd, items[i], scroller.routines);
-      if (isFinite(buffer[bufferToken]) && (
-        (prepend && indexToAdd < buffer[bufferToken]) ||
-        (!prepend && indexToAdd > buffer[bufferToken])
+      if (isFinite(bufferLimit) && (
+        (prepend && indexToAdd < bufferLimit) ||
+        (!prepend && indexToAdd > bufferLimit)
       )) {
-        buffer[bufferToken] += (prepend ? -1 : 1);
+        bufferLimit += (prepend ? -1 : 1);
       }
       (prepend ? Array.prototype.unshift : Array.prototype.push).apply(newItems, [itemToAdd]);
       // (prepend ? newItems.unshift : newItems.push)(itemToAdd);
       indexToAdd += (prepend ? -1 : 1);
     }
-    scroller.logger.log(() => `buffer.${bufferToken} value is set to ${buffer[bufferToken]}`);
+
+    if (bufferLimit !== buffer[bufferToken]) {
+      buffer[bufferToken] = bufferLimit;
+      scroller.logger.log(() => `buffer.${bufferToken} value is set to ${buffer[bufferToken]}`);
+    }
 
     (prepend ? fetch.prepend : fetch.append).call(fetch, newItems);
     (prepend ? buffer.prepend : buffer.append).call(buffer, newItems);

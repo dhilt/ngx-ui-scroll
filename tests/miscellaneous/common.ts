@@ -10,7 +10,7 @@ export const destructiveFilter = (list: Item[], predicate: (item: Item, index?: 
 // remove all non-filterIndex items in-place
 export const configListDestructiveFilter = (configList: TestBedConfig[], filterIndex: number) =>
   destructiveFilter(configList, (item, index) =>
-    !!(item.datasourceDevSettings = { debug: true, immediateLog: true }) &&
+    !!(item.datasourceDevSettings = { debug: true, logProcessRun: true, immediateLog: true }) &&
     !!(item.timeout = 9000) &&
     index !== filterIndex
   );

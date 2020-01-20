@@ -50,7 +50,7 @@ export default class End {
     const { state, state: { clip } } = scroller;
     state.countDone++;
     state.isInitialLoop = false;
-    state.fetch.simulate = false;
+    state.fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
     state.lastPosition = scroller.viewport.scrollPosition;

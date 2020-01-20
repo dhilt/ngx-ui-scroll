@@ -1,11 +1,6 @@
 import { Scroller } from '../scroller';
 import { Direction, ItemsPredicate, Process, ProcessStatus, FixOptions } from '../interfaces/index';
-
-interface IFix {
-  scrollPosition: (value: number) => void;
-  minIndex: (value: number) => void;
-  maxIndex: (value: number) => void;
-}
+import { InputValue, ValidatedValue, validate } from '../utils/index';
 
 enum FixParamToken {
   scrollPosition = 'scrollPosition',
@@ -13,13 +8,9 @@ enum FixParamToken {
   maxIndex = 'maxIndex'
 }
 
-enum FixParamType {
-  integer = 'integer'
-}
-
 interface FixParam {
   token: FixParamToken;
-  type: FixParamType;
+  type: InputValue;
   call: Function;
   value?: any;
 }
@@ -29,17 +20,17 @@ export default class Fix {
   static params: FixParam[] = [
     {
       token: FixParamToken.scrollPosition,
-      type: FixParamType.integer,
+      type: InputValue.integer,
       call: Fix.setScrollPosition
     },
     {
       token: FixParamToken.minIndex,
-      type: FixParamType.integer,
+      type: InputValue.integerUnlimited,
       call: Fix.setMinIndex
     },
     {
       token: FixParamToken.maxIndex,
-      type: FixParamType.integer,
+      type: InputValue.integerUnlimited,
       call: Fix.setMaxIndex
     }
   ];
@@ -92,20 +83,11 @@ export default class Fix {
     return Fix.params.reduce((acc: FixParam[], param: FixParam) => {
       const { token, type } = param;
       if (options.hasOwnProperty(token)) {
-        let value = (<any>options)[token];
-        let parsedValue = value;
-        let warning = '';
-        if (type === FixParamType.integer) {
-          value = Number(value);
-          parsedValue = parseInt(value, 10);
-          if (value !== parsedValue) {
-            warning = 'it must be an integer';
-          }
+        const parsed = validate((<any>options)[token], type);
+        if (parsed.isValid) {
+          return [...acc, { ...param, value: parsed.value }];
         }
-        if (!warning) {
-          return [...acc, { ...param, value }];
-        }
-        scroller.logger.log(() => `can't set ${token}, ${warning}`);
+        scroller.logger.log(() => `can't set ${token}, ${parsed.error}`);
       }
       return acc;
     }, []);

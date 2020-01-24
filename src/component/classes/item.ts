@@ -1,21 +1,42 @@
 import { Routines } from './domRoutines';
-import { Direction } from '../interfaces/index';
+import { Direction, ItemAdapter } from '../interfaces/index';
 
 export class Item {
-  $index: number;
-  data: any;
   nodeId: string;
   routines: Routines;
-
-  element: HTMLElement;
   size: number;
   invisible: boolean;
   toRemove: boolean;
   removeDirection: Direction;
 
+  private container: ItemAdapter;
+
+  get $index(): number {
+    return this.container.$index;
+  }
+  set $index(value: number) {
+    this.container.$index = value;
+  }
+
+  get data(): any {
+    return this.container.data;
+  }
+  set data(value: any) {
+    this.container.data = value;
+  }
+
+  get element(): HTMLElement {
+    return <HTMLElement>this.container.element;
+  }
+  set element(value: HTMLElement) {
+    this.container.element = value;
+  }
+
   constructor($index: number, data: any, routines: Routines) {
-    this.$index = $index;
-    this.data = data;
+    this.container = {
+      $index,
+      data
+    };
     this.nodeId = String($index);
     this.routines = routines;
     this.invisible = true;
@@ -29,5 +50,9 @@ export class Item {
     if (this.element) {
       this.routines.hideElement(this.element);
     }
+  }
+
+  get(): ItemAdapter {
+    return this.container;
   }
 }

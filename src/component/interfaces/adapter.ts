@@ -1,8 +1,8 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface ItemAdapter {
-  $index?: number;
-  data?: any;
+  $index: number;
+  data: any;
   element?: HTMLElement;
 }
 

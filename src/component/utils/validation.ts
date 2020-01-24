@@ -1,6 +1,7 @@
 export enum InputValue {
   integer = 'integer',
-  integerUnlimited = 'integer or infinity'
+  integerUnlimited = 'integer or infinity',
+  iteratorCallback = 'iterator callback'
 }
 
 export interface ValidatedValue {
@@ -30,6 +31,12 @@ export const validate = (value: any, type: InputValue): ValidatedValue => {
     if (value !== parsedValue) {
       error = 'it must be an integer or +/- Infinity';
     }
+  }
+  if (type === InputValue.iteratorCallback) {
+    if (typeof value !== 'function') {
+      error = 'it must be an iterator callback function';
+    }
+    parsedValue = value;
   }
   return {
     value: parsedValue,

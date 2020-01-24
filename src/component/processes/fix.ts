@@ -1,11 +1,14 @@
 import { Scroller } from '../scroller';
-import { Direction, ItemsPredicate, Process, ProcessStatus, FixOptions } from '../interfaces/index';
+import {
+  Direction, ItemsPredicate, ItemsIteratorCallBack, Process, ProcessStatus, FixOptions, ItemAdapter
+} from '../interfaces/index';
 import { InputValue, ValidatedValue, validate } from '../utils/index';
 
 enum FixParamToken {
   scrollPosition = 'scrollPosition',
   minIndex = 'minIndex',
-  maxIndex = 'maxIndex'
+  maxIndex = 'maxIndex',
+  updater = 'updater'
 }
 
 interface FixParam {
@@ -32,6 +35,11 @@ export default class Fix {
       token: FixParamToken.maxIndex,
       type: InputValue.integerUnlimited,
       call: Fix.setMaxIndex
+    },
+    {
+      token: FixParamToken.updater,
+      type: InputValue.iteratorCallback,
+      call: Fix.updateItems
     }
   ];
 
@@ -74,6 +82,10 @@ export default class Fix {
     const { buffer, settings } = scroller;
     settings.maxIndex = value;
     buffer.absMaxIndex = value;
+  }
+
+  static updateItems(scroller: Scroller, iteratorCallback: ItemsIteratorCallBack) {
+    scroller.buffer.items.forEach(item => iteratorCallback(item.get()));
   }
 
   static checkOptions(scroller: Scroller, options: FixOptions): FixParam[] {

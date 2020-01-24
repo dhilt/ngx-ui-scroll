@@ -270,6 +270,10 @@ describe('Input Params Validation', () => {
       { value: 23.78, parsed: 23 },
       { value: '23.78', parsed: 23 },
       { value: 1.11e1, parsed: 11 },
+      { value: () => null, parsed: NaN },
+      { value: {}, parsed: NaN },
+      { value: undefined, parsed: NaN },
+      { value: null, parsed: NaN },
     ];
 
     it('should pass limited integer', (done: Function) => {
@@ -329,6 +333,19 @@ describe('Input Params Validation', () => {
       });
       done();
     });
+  });
 
+  describe('[Iterator callback]', () => {
+    it('should pass only one-argument function', (done: Function) => {
+      const type = InputValue.iteratorCallback;
+      expect(validate(1, type).isValid).toEqual(false);
+      expect(validate(true, type).isValid).toEqual(false);
+      expect(validate({}, type).isValid).toEqual(false);
+      expect(validate('test', type).isValid).toEqual(false);
+      expect(validate(() => null, type).isValid).toEqual(false);
+      expect(validate((a: any, b: any) => null, type).isValid).toEqual(false);
+      expect(validate((item: any) => null, type).isValid).toEqual(true);
+      done();
+    });
   });
 });

@@ -47,7 +47,7 @@ export default class Fix {
     const { workflow } = scroller;
     const params = Fix.checkOptions(scroller, options);
 
-    if (!params.length) {
+    if (params.length !== Object.keys(options).length) {
       workflow.call({
         process: Process.fix,
         status: ProcessStatus.error,
@@ -99,7 +99,7 @@ export default class Fix {
         if (parsed.isValid) {
           return [...acc, { ...param, value: parsed.value }];
         }
-        scroller.logger.log(() => `can't set ${token}, ${parsed.error}`);
+        scroller.logger.log(() => `failed: can't set ${token}, ${parsed.error}`);
       }
       return acc;
     }, []);

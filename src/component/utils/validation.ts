@@ -11,18 +11,21 @@ export interface ValidatedValue {
   error: string;
 }
 
+const getNumber = (value: any): number =>
+  value === '' || value === null ? NaN : Number(value);
+
 export const validate = (value: any, type: InputValue): ValidatedValue => {
   let parsedValue = value;
   let error = '';
   if (type === InputValue.integer) {
-    value = value === '' ? NaN : Number(value);
+    value = getNumber(value);
     parsedValue = parseInt(value, 10);
     if (value !== parsedValue) {
       error = 'it must be an integer';
     }
   }
   if (type === InputValue.integerUnlimited) {
-    value = value === '' ? NaN : Number(value);
+    value = getNumber(value);
     if (value === Infinity || value === -Infinity) {
       parsedValue = value;
     } else {
@@ -35,6 +38,9 @@ export const validate = (value: any, type: InputValue): ValidatedValue => {
   if (type === InputValue.iteratorCallback) {
     if (typeof value !== 'function') {
       error = 'it must be an iterator callback function';
+    }
+    if ((<Function>value).length !== 1) {
+      error = 'it must have 1 argument';
     }
     parsedValue = value;
   }

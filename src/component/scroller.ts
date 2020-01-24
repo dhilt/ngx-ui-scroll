@@ -9,14 +9,14 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
-import { CallWorkflow } from './interfaces/index';
+import { ScrollerWorkflow } from './interfaces/index';
 
 let instanceCount = 0;
 
 export class Scroller {
 
   readonly runChangeDetector: Function;
-  readonly callWorkflow: CallWorkflow;
+  public workflow: ScrollerWorkflow;
 
   public version: string;
   public datasource: Datasource;
@@ -29,14 +29,14 @@ export class Scroller {
 
   public innerLoopSubscriptions: Array<Subscription>;
 
-  constructor(context: UiScrollComponent, callWorkflow: CallWorkflow) {
+  constructor(context: UiScrollComponent, callWorkflow: Function) {
     const datasource = <Datasource>checkDatasource(context.datasource);
     this.datasource = datasource;
     this.version = context.version;
 
     this.runChangeDetector = () => context.changeDetector.markForCheck();
     // this.runChangeDetector = () => context.changeDetector.detectChanges();
-    this.callWorkflow = callWorkflow;
+    this.workflow = <ScrollerWorkflow>{ call: callWorkflow };
     this.innerLoopSubscriptions = [];
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);

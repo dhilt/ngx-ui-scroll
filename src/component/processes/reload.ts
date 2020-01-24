@@ -13,7 +13,7 @@ export default class Reload {
       scroller.purgeScrollTimers();
       payload.finalize = true;
     }
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.reload,
       status: ProcessStatus.next,
       payload

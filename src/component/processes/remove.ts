@@ -5,7 +5,7 @@ export default class Remove {
 
   static run(scroller: Scroller, predicate: ItemsPredicate) {
     if (!Remove.checkPredicate(predicate)) {
-      scroller.callWorkflow({
+      scroller.workflow.call({
         process: Process.remove,
         status: ProcessStatus.error,
         payload: { error: `Wrong argument of the "Adapter.remove" method call` }
@@ -23,14 +23,14 @@ export default class Remove {
     });
 
     if (!scroller.state.clip.doClip) {
-      scroller.callWorkflow({
+      scroller.workflow.call({
         process: Process.remove,
         status: ProcessStatus.done
       });
       return;
     }
 
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.remove,
       status: ProcessStatus.next
     });

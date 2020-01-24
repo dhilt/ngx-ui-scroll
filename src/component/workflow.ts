@@ -2,7 +2,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { CallWorkflow, Process, ProcessStatus as Status, ProcessSubject, WorkflowError } from './interfaces/index';
+import { Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow } from './interfaces/index';
 import {
   Init, Scroll, Reload, Append, Check, Remove, UserClip, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
@@ -13,6 +13,7 @@ export class Workflow {
   scroller: Scroller;
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
+  interruptionCount: number;
   errors: Array<WorkflowError>;
 
   readonly context: UiScrollComponent;
@@ -27,8 +28,10 @@ export class Workflow {
       process: Process.init,
       status: Status.start
     });
-    this.scroller = new Scroller(this.context, <CallWorkflow>this.callWorkflow.bind(this));
+    this.callWorkflow = <any>this.callWorkflow.bind(this);
+    this.scroller = new Scroller(this.context, this.callWorkflow);
     this.cyclesDone = 0;
+    this.interruptionCount = 0;
     this.errors = [];
     this.onScrollHandler = event => Scroll.run(this.scroller, event);
 
@@ -134,6 +137,7 @@ export class Workflow {
           run(Reload)(payload);
         }
         if (status === Status.next) {
+          this.interrupt(process);
           if (payload.finalize) {
             run(End)(process);
           } else {
@@ -293,6 +297,19 @@ export class Workflow {
     //   return ['%ccall%c', ...['color: #77cc77;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])];
     // });
     this.process$.next(processSubject);
+  }
+
+  interrupt(process?: Process) {
+    const { scroller } = this;
+    if (scroller.state.isLoading) {
+      scroller.workflow.call = (p?: ProcessSubject) => scroller.logger.log('[skip wf call]');
+      (<any>scroller.workflow.call).interrupted = true;
+      scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
+      this.interruptionCount++;
+      scroller.logger.log(() =>
+        `workflow had been interrupted by the ${process} process (${this.interruptionCount})`
+      );
+    }
   }
 
   done() {

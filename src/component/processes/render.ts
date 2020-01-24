@@ -9,16 +9,16 @@ export default class Render {
     scroller.innerLoopSubscriptions.push(
       scroller.bindData().subscribe(() => {
         if (Render.processElements(scroller)) {
-          scroller.callWorkflow({
+          scroller.workflow.call({
             process: Process.render,
             status: ProcessStatus.next,
             payload: { noClip: scroller.state.clip.noClip }
           });
         } else {
-          scroller.callWorkflow({
+          scroller.workflow.call({
             process: Process.render,
             status: ProcessStatus.error,
-            payload: { error: 'Can\'t associate item with element' }
+            payload: { error: `Can't associate item with element` }
           });
         }
       })

@@ -44,4 +44,6 @@ export interface WorkflowError {
   process: Process;
 }
 
-export type CallWorkflow = (processSubject: ProcessSubject) => undefined;
+export interface ScrollerWorkflow {
+  call: Function;
+}

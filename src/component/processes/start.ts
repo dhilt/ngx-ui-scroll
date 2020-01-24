@@ -16,7 +16,7 @@ export default class Start {
     scrollState.scroll = workflowOptions.scroll || false;
     scrollState.keepScroll = false;
 
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.start,
       status: ProcessStatus.next,
       payload: process

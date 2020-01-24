@@ -6,17 +6,18 @@ export default class Adjust {
   static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {
-    scroller.state.preAdjustPosition = scroller.viewport.scrollPosition;
+    const { workflow, state, viewport } = scroller;
+    state.preAdjustPosition = viewport.scrollPosition;
 
     // padding-elements adjustments
     const setPaddingsResult =
       Adjust.setPaddings(scroller);
 
     if (setPaddingsResult === false) {
-      scroller.callWorkflow({
+      workflow.call({
         process: Process.adjust,
         status: ProcessStatus.error,
-        payload: { error: 'Can\'t get visible item' }
+        payload: { error: `Can't get visible item` }
       });
       return;
     }
@@ -24,7 +25,7 @@ export default class Adjust {
     // scroll position adjustments
     Adjust.fixScrollPosition(scroller, <number>setPaddingsResult);
 
-    scroller.callWorkflow({
+    workflow.call({
       process: Process.adjust,
       status: ProcessStatus.done
     });

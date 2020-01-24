@@ -36,10 +36,11 @@ export default class Fix {
   ];
 
   static run(scroller: Scroller, options: FixOptions) {
+    const { workflow } = scroller;
     const params = Fix.checkOptions(scroller, options);
 
     if (!params.length) {
-      scroller.callWorkflow({
+      workflow.call({
         process: Process.fix,
         status: ProcessStatus.error,
         payload: { error: `Wrong argument of the "Adapter.fix" method call` }
@@ -51,7 +52,7 @@ export default class Fix {
       param.call(scroller, param.value);
     });
 
-    scroller.callWorkflow({
+    workflow.call({
       process: Process.fix,
       status: ProcessStatus.done
     });

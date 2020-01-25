@@ -28,8 +28,12 @@ describe('EOF/BOF Spec', () => {
       expect(misc.padding[_forward ? Direction.backward : Direction.forward].getSize()).toBeGreaterThan(0);
     }
     expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
-    expect(misc.scroller.buffer.bof).toEqual(!_forward);
-    expect(misc.scroller.buffer.eof).toEqual(_forward);
+
+    const { datasource: { adapter: { eof$, bof$ } }, buffer: { eof, bof } } = misc.scroller;
+    expect(bof).toEqual(!_forward);
+    expect(bof).toEqual(bof$.getValue());
+    expect(eof).toEqual(_forward);
+    expect(eof).toEqual(eof$.getValue());
   };
 
   const runLimitSuite = (eof = 'bof') => {
@@ -59,13 +63,19 @@ describe('EOF/BOF Spec', () => {
         title: `should reset ${eof} after scroll`,
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
-            const buffer = (<any>misc.scroller.buffer);
+            const buffer = <any>misc.scroller.buffer;
+            const adapter = <any>misc.scroller.datasource.adapter;
+            const eof$ = `${eof}$`;
+            const _eof$ = `${_eof}$`;
             if (misc.workflow.cyclesDone === 1) {
               expect(buffer[eof]).toEqual(true);
+              expect(adapter[eof$].getValue()).toEqual(true);
               doScroll(misc);
             } else {
               expect(buffer[eof]).toEqual(false);
+              expect(adapter[eof$].getValue()).toEqual(false);
               expect(buffer[_eof]).toEqual(false);
+              expect(adapter[_eof$].getValue()).toEqual(false);
               done();
             }
           })

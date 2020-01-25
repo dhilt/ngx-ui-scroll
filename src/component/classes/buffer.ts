@@ -9,14 +9,17 @@ import { Logger } from './logger';
 export class Buffer {
 
   private _items: Array<Item>;
+  private _absMinIndex: number;
+  private _absMaxIndex: number;
+
   $items: BehaviorSubject<Array<Item>>;
+  bofSource: BehaviorSubject<boolean>;
+  eofSource: BehaviorSubject<boolean>;
 
   pristine: boolean;
   cache: Cache;
   minIndexUser: number;
   maxIndexUser: number;
-  absMinIndex: number;
-  absMaxIndex: number;
 
   private startIndex: number;
   readonly minBufferSize: number;
@@ -24,6 +27,8 @@ export class Buffer {
 
   constructor(settings: Settings, startIndex: number, logger: Logger) {
     this.$items = new BehaviorSubject<Array<Item>>([]);
+    this.eofSource = new BehaviorSubject<boolean>(false);
+    this.bofSource = new BehaviorSubject<boolean>(false);
     this.cache = new Cache(settings.itemSize, logger);
     this.minIndexUser = settings.minIndex;
     this.maxIndexUser = settings.maxIndex;
@@ -47,14 +52,42 @@ export class Buffer {
     }
   }
 
+  private emitEOF() {
+    this.bofSource.next(this.bof);
+    this.eofSource.next(this.eof);
+  }
+
   set items(items: Array<Item>) {
     this.pristine = false;
     this._items = items;
     this.$items.next(items);
+    this.emitEOF();
   }
 
   get items(): Array<Item> {
     return this._items;
+  }
+
+  set absMinIndex(value: number) {
+    if (this._absMinIndex !== value) {
+      this._absMinIndex = value;
+      this.emitEOF();
+    }
+  }
+
+  get absMinIndex(): number {
+    return this._absMinIndex;
+  }
+
+  set absMaxIndex(value: number) {
+    if (this._absMaxIndex !== value) {
+      this._absMaxIndex = value;
+      this.emitEOF();
+    }
+  }
+
+  get absMaxIndex(): number {
+    return this._absMaxIndex;
   }
 
   get size(): number {
@@ -78,11 +111,13 @@ export class Buffer {
   }
 
   get bof(): boolean {
+    // since bof has no setter, need to emit bofSource on items and absMinIndex change
     return this.items.length ? (this.items[0].$index === this.absMinIndex) :
       isFinite(this.absMinIndex);
   }
 
   get eof(): boolean {
+    // since eof has no setter, need to emit eofSource on items and absMaxIndex change
     return this.items.length ? (this.items[this.items.length - 1].$index === this.absMaxIndex) :
       isFinite(this.absMaxIndex);
   }

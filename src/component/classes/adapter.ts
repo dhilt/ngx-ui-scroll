@@ -44,16 +44,20 @@ export class Adapter implements IAdapter {
     return this.context.cyclePending$;
   }
 
-  get itemsCount(): number {
-    return this.context.itemsCount;
-  }
-
   get bof(): boolean {
     return this.context.bof;
   }
 
+  get bof$(): BehaviorSubject<boolean> {
+    return this.context.bof$;
+  }
+
   get eof(): boolean {
     return this.context.eof;
+  }
+
+  get eof$(): BehaviorSubject<boolean> {
+    return this.context.eof$;
   }
 
   get firstVisible(): ItemAdapter {
@@ -70,6 +74,10 @@ export class Adapter implements IAdapter {
 
   get lastVisible$(): BehaviorSubject<ItemAdapter> {
     return this.context.lastVisible$;
+  }
+
+  get itemsCount(): number {
+    return this.context.itemsCount;
   }
 
   constructor() {

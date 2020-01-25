@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
 import {
-  Direction, ItemsPredicate, ItemsIteratorCallBack, Process, ProcessStatus, FixOptions, ItemAdapter
+  Direction, ItemsPredicate, ItemsLooper, Process, ProcessStatus, FixOptions, ItemAdapter
 } from '../interfaces/index';
 import { InputValue, ValidatedValue, validate } from '../utils/index';
 
@@ -84,8 +84,8 @@ export default class Fix {
     buffer.absMaxIndex = value;
   }
 
-  static updateItems(scroller: Scroller, iteratorCallback: ItemsIteratorCallBack) {
-    scroller.buffer.items.forEach(item => iteratorCallback(item.get()));
+  static updateItems(scroller: Scroller, callback: ItemsLooper) {
+    scroller.buffer.items.forEach(item => callback(item.get()));
   }
 
   static checkOptions(scroller: Scroller, options: FixOptions): FixParam[] {

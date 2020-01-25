@@ -7,7 +7,7 @@ export interface ItemAdapter {
 }
 
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
-export type ItemsIteratorCallBack = (item: ItemAdapter) => any;
+export type ItemsLooper = (item: ItemAdapter) => any;
 
 export interface ClipOptions {
   forwardOnly?: boolean;
@@ -18,7 +18,7 @@ export interface FixOptions {
   scrollPosition?: number;
   minIndex?: number;
   maxIndex?: number;
-  updater?: ItemsIteratorCallBack;
+  updater?: ItemsLooper;
 }
 
 export interface Adapter {

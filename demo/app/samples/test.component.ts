@@ -185,7 +185,14 @@ export class TestComponent {
   }
 
   doToggleItem(item: MyItem) {
-    item.isSelected = !item.isSelected;
+    this.datasource.adapter.fix({
+      updater: (_item) => {
+        if (item.id === _item.data.id) {
+          _item.data.isSelected = !_item.data.isSelected;
+        }
+      }
+    });
+    // item.isSelected = !item.isSelected;
   }
 
   autoscroll() {

@@ -4,9 +4,11 @@
   [sources]="sources"
 >
   <div actions>
-    Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached.
+    Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached
     <br>
-    End of file is {{datasource.adapter.eof ? '' : 'not'}} reached.
+    End of file is {{datasource.adapter.eof ? '' : 'not'}} reached
+    <br>
+    BOF / EOF changes counter: {{edgeCounter}}
   </div>
   <div description>
     <p>

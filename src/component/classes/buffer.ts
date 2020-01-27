@@ -53,8 +53,14 @@ export class Buffer {
   }
 
   private emitEOF() {
-    this.bofSource.next(this.bof);
-    this.eofSource.next(this.eof);
+    if (this.bof !== this.bofSource.getValue()) {
+      console.log('b', this.bof)
+      this.bofSource.next(this.bof);
+    }
+    if (this.eof !== this.eofSource.getValue()) {
+      console.log('e', this.eof)
+      this.eofSource.next(this.eof);
+    }
   }
 
   set items(items: Array<Item>) {

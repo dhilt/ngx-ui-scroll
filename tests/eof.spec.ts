@@ -1,5 +1,5 @@
 import { Direction } from '../src/component/interfaces';
-import { makeTest, MakeTestConfig } from './scaffolding/runner';
+import { makeTest, MakeTestConfig, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
 const min = 1, max = 100, scrollCount = 10;
@@ -7,15 +7,24 @@ const min = 1, max = 100, scrollCount = 10;
 describe('EOF/BOF Spec', () => {
 
   const config = {
-    bof: {
+    bof: <TestBedConfig>{
       datasourceName: 'limited',
       datasourceSettings: { startIndex: min, bufferSize: 10, padding: 0.5, adapter: true },
       templateSettings: { viewportHeight: 200 }
     },
-    eof: {
+    eof: <TestBedConfig>{
       datasourceName: 'limited',
       datasourceSettings: { startIndex: max - 10 + 1, bufferSize: 10, padding: 0.5, adapter: true },
       templateSettings: { viewportHeight: 200 }
+    }
+  };
+
+  const observableCountConfig: TestBedConfig = {
+    ...config.bof,
+    datasourceSettings: {
+      ...config.bof.datasourceSettings,
+      minIndex: min,
+      maxIndex: max
     }
   };
 
@@ -148,5 +157,29 @@ describe('EOF/BOF Spec', () => {
 
   runLimitSuite('bof');
   runLimitSuite('eof');
+
+  _makeTest({
+    config: observableCountConfig,
+    title: `should reach bof/eof multiple times`,
+    it: (misc: Misc) => (done: Function) =>
+      spyOn(misc.workflow, 'finalize').and.callFake(() => {
+        const COUNT = 10;
+        const { cyclesDone } = misc.workflow;
+        if (cyclesDone === 1) {
+          misc.scrollMax();
+        } else if (cyclesDone > 1 && cyclesDone < COUNT) {
+          if (cyclesDone % 2 === 0) {
+            misc.scrollMin();
+          } else {
+            misc.scrollMax();
+          }
+        } else {
+          const { bof, eof } = misc.shared.bofEofContainer;
+          expect(bof.count).toEqual(COUNT - 1); // because we are at BOF initially (startIndex = min)
+          expect(eof.count).toEqual(COUNT);
+          done();
+        }
+      })
+  });
 
 });

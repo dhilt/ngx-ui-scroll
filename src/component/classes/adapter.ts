@@ -48,7 +48,7 @@ export class Adapter implements IAdapter {
     return this.context.bof;
   }
 
-  get bof$(): BehaviorSubject<boolean> {
+  get bof$(): Subject<boolean> {
     return this.context.bof$;
   }
 
@@ -56,7 +56,7 @@ export class Adapter implements IAdapter {
     return this.context.eof;
   }
 
-  get eof$(): BehaviorSubject<boolean> {
+  get eof$(): Subject<boolean> {
     return this.context.eof$;
   }
 

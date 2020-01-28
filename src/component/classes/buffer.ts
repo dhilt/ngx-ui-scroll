@@ -58,8 +58,8 @@ export class Buffer {
     this.pristine = false;
     this._items = items;
     this.$items.next(items);
-    this.setBOF();
-    this.setEOF();
+    this.checkBOF();
+    this.checkEOF();
   }
 
   get items(): Array<Item> {
@@ -69,7 +69,7 @@ export class Buffer {
   set absMinIndex(value: number) {
     if (this._absMinIndex !== value) {
       this._absMinIndex = value;
-      this.setBOF();
+      this.checkBOF();
     }
   }
 
@@ -80,7 +80,7 @@ export class Buffer {
   set absMaxIndex(value: number) {
     if (this._absMaxIndex !== value) {
       this._absMaxIndex = value;
-      this.setEOF();
+      this.checkEOF();
     }
   }
 
@@ -96,7 +96,7 @@ export class Buffer {
     return this._eof;
   }
 
-  private setBOF() {
+  private checkBOF() {
     // since bof has no setter, need to call setBOF() on items and absMinIndex change
     const bof = this.items.length
       ? (this.items[0].$index === this.absMinIndex)
@@ -108,7 +108,7 @@ export class Buffer {
     }
   }
 
-  private setEOF() {
+  private checkEOF() {
     // since eof has no setter, need to call etEOF() on items and absMaxIndex change
     const eof = this.items.length
       ? (this.items[this.items.length - 1].$index === this.absMaxIndex)

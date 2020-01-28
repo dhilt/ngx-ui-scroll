@@ -35,9 +35,9 @@ export interface Adapter {
   readonly lastVisible$: BehaviorSubject<ItemAdapter>;
   readonly itemsCount: number;
   readonly bof: boolean;
-  readonly bof$: BehaviorSubject<boolean>;
+  readonly bof$: Subject<boolean>;
   readonly eof: boolean;
-  readonly eof$: BehaviorSubject<boolean>;
+  readonly eof$: Subject<boolean>;
   initialize: Function; // internal use only
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, bof?: boolean) => any;

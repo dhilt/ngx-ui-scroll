@@ -52,9 +52,11 @@ describe('EOF/BOF Spec', () => {
     }
     expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
 
-    const { buffer: { eof, bof } } = misc.scroller;
+    const { datasource: { adapter }, buffer: { eof, bof } } = misc.scroller;
     expect(bof).toEqual(!_forward);
+    expect(bof).toEqual(adapter.bof);
     expect(bof).toEqual(misc.shared.bofEofContainer.bof.value);
+    expect(eof).toEqual(adapter.eof);
     expect(eof).toEqual(_forward);
     expect(eof).toEqual(misc.shared.bofEofContainer.eof.value);
   };
@@ -97,12 +99,15 @@ describe('EOF/BOF Spec', () => {
             const { bofEofContainer } = misc.shared;
             if (misc.workflow.cyclesDone === 1) {
               expect(buffer[eof]).toEqual(true);
+              expect(adapter[eof]).toEqual(true);
               expect(bofEofContainer[eof].value).toEqual(true);
               doScroll(misc);
             } else {
               expect(buffer[eof]).toEqual(false);
+              expect(adapter[eof]).toEqual(false);
               expect(bofEofContainer[eof].value).toEqual(false);
               expect(buffer[_eof]).toEqual(false);
+              expect(adapter[_eof]).toEqual(false);
               expect(bofEofContainer[_eof].value).toEqual(false);
               done();
             }

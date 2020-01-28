@@ -39,7 +39,7 @@ export class DemoBofEofComponent  {
 
   edgeCounter = 0;
 
-  constructor () {
+  constructor() {
     const { eof$, bof$ } = this.datasource.adapter;
     merge(bof$, eof$).subscribe(() => this.edgeCounter++);
   }

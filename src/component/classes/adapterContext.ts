@@ -72,7 +72,7 @@ export class AdapterContext {
     return this.isInitialized ? this.getBOF() : false;
   }
 
-  get bof$(): BehaviorSubject<boolean> {
+  get bof$(): Subject<boolean> {
     return this.getInitializedSubj(() => this.getBOF$());
   }
 
@@ -80,7 +80,7 @@ export class AdapterContext {
     return this.isInitialized ? this.getEOF() : false;
   }
 
-  get eof$(): BehaviorSubject<boolean> {
+  get eof$(): Subject<boolean> {
     return this.getInitializedSubj(() => this.getEOF$());
   }
 

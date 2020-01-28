@@ -126,9 +126,9 @@ export class AdapterContext {
     this.getCyclePending$ = (): Subject<boolean> => state.workflowPendingSource;
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
     this.getBOF = (): boolean => buffer.bof;
-    this.getBOF$ = (): BehaviorSubject<boolean> => buffer.bofSource;
+    this.getBOF$ = (): Subject<boolean> => buffer.bofSource;
     this.getEOF = (): boolean => buffer.eof;
-    this.getEOF$ = (): BehaviorSubject<boolean> => buffer.eofSource;
+    this.getEOF$ = (): Subject<boolean> => buffer.eofSource;
 
     this.initializeProtected(state);
 

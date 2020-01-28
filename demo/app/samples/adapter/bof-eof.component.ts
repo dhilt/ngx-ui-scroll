@@ -1,5 +1,5 @@
-import { Component, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subject, combineLatest, Subscription } from "rxjs";
+import { Component } from '@angular/core';
+import { BehaviorSubject, Subject, merge, Subscription } from 'rxjs';
 
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
@@ -10,7 +10,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
   selector: 'app-demo-bof-eof',
   templateUrl: './bof-eof.component.html'
 })
-export class DemoBofEofComponent implements OnDestroy  {
+export class DemoBofEofComponent  {
 
   demoContext: DemoContext = <DemoContext> {
     scope: 'adapter',
@@ -38,18 +38,10 @@ export class DemoBofEofComponent implements OnDestroy  {
   });
 
   edgeCounter = 0;
-  edgeCounterSubscription: Subscription;
 
   constructor () {
-    let fired = false;
     const { eof$, bof$ } = this.datasource.adapter;
-    this.edgeCounterSubscription = combineLatest([bof$, eof$]).subscribe(
-      ([bof, eof]) => !fired ? fired = true : this.edgeCounter++
-    );
-  }
-
-  ngOnDestroy() {
-    this.edgeCounterSubscription.unsubscribe();
+    merge(bof$, eof$).subscribe(() => this.edgeCounter++);
   }
 
   sources: DemoSources = [{

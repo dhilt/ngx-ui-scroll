@@ -164,7 +164,9 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|Subject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
 |[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#/adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|
 |[bof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the beginning of the dataset is reached or not.|
+|[bof$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|Subject<br>&lt;boolean&gt;|An Observable version of "bof" property.|
 |[eof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the end of the dataset is reached or not.|
+|[eof$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|Subject<br>&lt;boolean&gt;|An Observable version of "eof" property.|
 |[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the datasource item index value, "data" is exactly the item's content, "element" is a link to DOM element which is relevant to the item. |
 |[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "firstVisible" property. |
 |[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |

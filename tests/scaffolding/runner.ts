@@ -22,6 +22,8 @@ export interface MakeTestConfig {
   meta?: string;
   config: TestBedConfig;
   it: Function;
+  before?: Function;
+  after?: Function;
 }
 
 const generateMetaTitle = (data: MakeTestConfig): string => {
@@ -84,7 +86,13 @@ export const makeTest = (data: MakeTestConfig) => {
         } catch (_error) {
           error = _error;
         }
+        if (typeof data.before === 'function') {
+          (<Function>data.before)(misc);
+        }
       });
+      if (typeof data.after === 'function') {
+        afterEach(() => (<Function>data.after)(misc));
+      }
       _it = (done: Function) => {
         if (!data.config.toThrow && error) {
           throw error;

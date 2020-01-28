@@ -18,13 +18,15 @@ export class AdapterContext {
   private getCyclePending$: Function;
   private getLoopPending: Function;
   private getLoopPending$: Function;
-  private getItemsCount: Function;
   private getBOF: Function;
+  private getBOF$: Function;
   private getEOF: Function;
+  private getEOF$: Function;
   private getFirstVisible: Function;
   private getFirstVisible$: Function;
   private getLastVisible: Function;
   private getLastVisible$: Function;
+  private getItemsCount: Function;
 
   private getInitializedSubj(method: Function) {
     return this.init ? method() :
@@ -66,16 +68,20 @@ export class AdapterContext {
     return this.getInitializedSubj(() => this.getCyclePending$());
   }
 
-  get itemsCount(): number {
-    return this.isInitialized ? this.getItemsCount() : 0;
-  }
-
   get bof(): boolean {
     return this.isInitialized ? this.getBOF() : false;
   }
 
+  get bof$(): Subject<boolean> {
+    return this.getInitializedSubj(() => this.getBOF$());
+  }
+
   get eof(): boolean {
     return this.isInitialized ? this.getEOF() : false;
+  }
+
+  get eof$(): Subject<boolean> {
+    return this.getInitializedSubj(() => this.getEOF$());
   }
 
   get firstVisible(): ItemAdapter {
@@ -92,6 +98,10 @@ export class AdapterContext {
 
   get lastVisible$(): BehaviorSubject<ItemAdapter> {
     return this.getInitializedSubj(() => this.getLastVisible$());
+  }
+
+  get itemsCount(): number {
+    return this.isInitialized ? this.getItemsCount() : 0;
   }
 
   constructor(init$: BehaviorSubject<boolean>) {
@@ -116,7 +126,9 @@ export class AdapterContext {
     this.getCyclePending$ = (): Subject<boolean> => state.workflowPendingSource;
     this.getItemsCount = (): number => buffer.getVisibleItemsCount();
     this.getBOF = (): boolean => buffer.bof;
+    this.getBOF$ = (): Subject<boolean> => buffer.bofSource;
     this.getEOF = (): boolean => buffer.eof;
+    this.getEOF$ = (): Subject<boolean> => buffer.eofSource;
 
     this.initializeProtected(state);
 

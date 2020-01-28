@@ -1,12 +1,13 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
 export interface ItemAdapter {
-  $index?: number;
-  data?: any;
+  $index: number;
+  data: any;
   element?: HTMLElement;
 }
 
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
+export type ItemsLooper = (item: ItemAdapter) => any;
 
 export interface ClipOptions {
   forwardOnly?: boolean;
@@ -17,6 +18,7 @@ export interface FixOptions {
   scrollPosition?: number;
   minIndex?: number;
   maxIndex?: number;
+  updater?: ItemsLooper;
 }
 
 export interface Adapter {

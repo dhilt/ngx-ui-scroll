@@ -13,13 +13,22 @@
   <div description>
     <p>
       <em>Adapter.bof</em> and <em>Adapter.eof</em> are read-only boolean properties
-      indicating that the dataset beginning (bof) or the dataset end (eof) is reached.
+      that indicate whether the dataset beginning (bof) or the dataset end (eof) is reached or not.
+    </p>
+    <p>
+      Along with scalar properties there are also two Observable ones:
+      <em>Adapter.bof$</em> and <em>Adapter.eof$</em> which are Subjects and produce
+      new values when scalar properties change.
     </p>
     <p>
       In this demo we have limited datasource consisting of 100 items starting from index 1.
       So initially we are at the left position of the available dataset, and that's why we see
       "Begin of file is reached" message. After some scrolling down <em>bof</em> is
       being turned to <em>false</em>. The first item is destroyed and can be retrieved again.
+    </p>
+    <p>
+      The <em>edgeCounter</em> is bof/eof changes counter. It is defined via <em>merge(bof$, eof$)</em>
+      subscription which is being triggered each time <em>bof$</em>/<em>eof$</em> emits a new value.
     </p>
   </div>
 </app-demo>

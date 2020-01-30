@@ -2,7 +2,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow } from './interfaces/index';
+import { Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus } from './interfaces/index';
 import {
   Init, Scroll, Reload, Append, Check, Remove, UserClip, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
@@ -33,7 +33,11 @@ export class Workflow {
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];
-    this.onScrollHandler = event => Scroll.run(this.scroller, event);
+    this.onScrollHandler = event => this.callWorkflow({
+      process: Process.scroll,
+      status: ProcessStatus.start,
+      payload: event
+    });
 
     if (this.scroller.settings.initializeDelay) {
       setTimeout(() => this.init(), this.scroller.settings.initializeDelay);
@@ -124,6 +128,9 @@ export class Workflow {
         }
         break;
       case Process.scroll:
+        if (status === Status.start) {
+          run(Scroll)(payload);
+        }
         if (status === Status.next) {
           if (!options.keepScroll) {
             run(Init)(process);

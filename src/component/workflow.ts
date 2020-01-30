@@ -215,7 +215,11 @@ export class Workflow {
               run(PreFetch)(payload);
               break;
             default:
-              run(PreFetch)();
+              if (options.noFetch) {
+                run(End)(process);
+              } else {
+                run(PreFetch)();
+              }
           }
         }
         break;

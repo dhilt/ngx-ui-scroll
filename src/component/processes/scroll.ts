@@ -180,12 +180,12 @@ export default class Scroll {
       scrollState.keepScroll = true;
       return;
     }
-    const skip = scroller.buffer.bof && scroller.buffer.eof;
     workflowOptions.scroll = true;
     workflowOptions.keepScroll = scrollState.keepScroll;
+    workflowOptions.noFetch = scroller.buffer.bof && scroller.buffer.eof;
     workflow.call({
       process: Process.scroll,
-      status: skip ? ProcessStatus.done : ProcessStatus.next
+      status: ProcessStatus.next
     });
   }
 

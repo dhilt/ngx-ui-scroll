@@ -17,16 +17,13 @@ describe('Bug Spec', () => {
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           const { state } = misc.scroller;
           if (state.countDone === 1) {
-            expect(state.innerLoopCount).toEqual(1);
             misc.scrollMax();
-            setTimeout(() => {
-              expect(state.innerLoopCount).toEqual(2);
-              misc.scrollMin();
-              setTimeout(() => {
-                expect(state.innerLoopCount).toEqual(3);
-                done();
-              }, 50);
-            }, 50);
+          } else if (state.countDone === 2) {
+            misc.scrollMin();
+          } else if (state.countDone === 3) {
+            misc.scrollMax();
+          } else {
+            done();
           }
         });
       }

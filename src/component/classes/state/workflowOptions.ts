@@ -6,6 +6,7 @@ export class WorkflowOptions implements IWorkflowOptions {
     scroll: boolean;
     keepScroll: boolean;
     byTimer: boolean;
+    noFetch: boolean;
 
     constructor(settings: Settings) {
       this.reset();
@@ -16,5 +17,6 @@ export class WorkflowOptions implements IWorkflowOptions {
       this.scroll = false;
       this.keepScroll = false;
       this.byTimer = false;
+      this.noFetch = false;
     }
   }

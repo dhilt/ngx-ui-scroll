@@ -16,6 +16,7 @@ export class Logger {
   readonly getLoopNext: Function;
   readonly getWorkflowOptions: Function;
   readonly getSynthScrollState: Function;
+  readonly getScrollPosition: Function;
   private logs: Array<any> = [];
 
   constructor(scroller: Scroller) {
@@ -48,6 +49,7 @@ export class Logger {
       `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
     this.getWorkflowOptions = () => scroller.state.workflowOptions;
     this.getSynthScrollState = () => scroller.state.syntheticScroll;
+    this.getScrollPosition = (element: HTMLElement) => scroller.routines.getScrollPosition(element);
     this.log(() => `uiScroll Workflow has been started (v${scroller.version}, instance ${settings.instanceIndex})`);
   }
 
@@ -87,6 +89,12 @@ export class Logger {
         '/ queued', synth.list.map((i: any) => i.position)
       ];
     });
+  }
+
+  prepareForLog(data: any) {
+    return data instanceof Event
+      ? this.getScrollPosition(data.target)
+      : data;
   }
 
   logProcess(data: ProcessSubject) {
@@ -150,6 +158,7 @@ export class Logger {
       if (this.logTime) {
         args = [...args, this.getTime()];
       }
+      args = args.map((arg: any) => this.prepareForLog(arg));
       if (this.immediateLog) {
         console.log.apply(this, <LogType>args);
       } else {

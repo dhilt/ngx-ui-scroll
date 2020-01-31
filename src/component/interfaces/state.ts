@@ -64,6 +64,7 @@ export interface WorkflowOptions {
   scroll: boolean;
   keepScroll: boolean;
   byTimer: boolean;
+  noFetch: boolean;
 
   reset: Function;
 }

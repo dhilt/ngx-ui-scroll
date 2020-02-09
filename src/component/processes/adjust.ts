@@ -32,7 +32,7 @@ export default class Adjust {
   }
 
   static setPaddings(scroller: Scroller): boolean | number {
-    const { viewport, buffer, state: { fetch } } = scroller;
+    const { viewport, buffer, state: { fetch }, settings: { inverse } } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
     const lastItem = buffer.getLastVisibleItem();
     if (!firstItem || !lastItem) {
@@ -66,11 +66,19 @@ export default class Adjust {
       const item = buffer.cache.get(index);
       fwdSize += item ? item.size : buffer.cache.averageSize;
     }
+
+    // lack of items case
     const bufferSize = viewport.getScrollableSize() - forwardPadding.size - backwardPadding.size;
     const viewportSizeDiff = viewport.getSize() - (bwdSize + bufferSize + fwdSize);
     if (viewportSizeDiff > 0) {
-      fwdSize += viewportSizeDiff;
-      scroller.logger.log(`forward padding will be increased by ${viewportSizeDiff} to fill the viewport`);
+      if (inverse) {
+        bwdSize += viewportSizeDiff;
+      } else {
+        fwdSize += viewportSizeDiff;
+      }
+      scroller.logger.log(() =>
+        inverse ? 'backward' : 'forward' + ` padding will be increased by ${viewportSizeDiff} to fill the viewport`
+      );
     }
 
     forwardPadding.size = fwdSize;

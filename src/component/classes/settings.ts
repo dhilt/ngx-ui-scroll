@@ -10,7 +10,8 @@ export const defaultSettings: ISettings = {
   padding: 0.5,
   infinite: false,
   horizontal: false,
-  windowViewport: false
+  windowViewport: false,
+  inverse: false, // [experimental] if true, forward padding element will have a priority when filling the viewport in case of lack of items
 };
 
 export const minSettings: ISettings = {
@@ -43,7 +44,7 @@ export const minDevSettings: IDevSettings = {
   maxSynthScrollDelay: 0
 };
 
-export class Settings implements ISettings {
+export class Settings implements ISettings, IDevSettings {
 
   // user settings
   adapter: boolean;
@@ -70,6 +71,7 @@ export class Settings implements ISettings {
   initWindowDelay: number;
   maxSynthScrollDelay: number;
   changeOverflow: boolean;
+  inverse: boolean;
 
   // internal settings, managed by scroller itself
   instanceIndex: number;

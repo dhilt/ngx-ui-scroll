@@ -84,6 +84,7 @@ export const assignSettings = (
   assignBoolean(target, settings, 'infinite', defaults);
   assignBoolean(target, settings, 'horizontal', defaults);
   assignBoolean(target, settings, 'windowViewport', defaults);
+  assignBoolean(target, settings, 'inverse', defaults);
 };
 
 export const assignDevSettings = (

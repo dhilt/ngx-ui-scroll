@@ -14,6 +14,7 @@ import { HomeComponent } from './samples/home.component';
 import { SettingsComponent } from './samples/settings.component';
 import { AdapterComponent } from './samples/adapter.component';
 import { DatasourceComponent } from './samples/datasource.component';
+import { ExperimentalComponent } from './samples/experimental.component';
 
 import { DemoBasicComponent } from './samples/common/basic.component';
 import { DemoBufferSizeComponent } from './samples/common/buffer-size.component';
@@ -43,6 +44,7 @@ import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/pos
 import { RemoteDataService, DemoRemoteDatasourceComponent } from './samples/datasource/remote-datasource.component';
 import { DemoInvertedDatasourceComponent } from './samples/datasource/inverted-datasource.component';
 import { DemoPagesDatasourceComponent } from './samples/datasource/pages-datasource.component';
+import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
 
@@ -57,6 +59,7 @@ import { AppRoutingModule } from './app-routing.module';
     SettingsComponent,
     AdapterComponent,
     DatasourceComponent,
+    ExperimentalComponent,
     DemoBasicComponent,
     DemoBufferSizeComponent,
     DemoPaddingComponent,
@@ -85,6 +88,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoRemoteDatasourceComponent,
     DemoInvertedDatasourceComponent,
     DemoPagesDatasourceComponent,
+    DemoInverseSettingComponent,
     WindowComponent,
     TestComponent,
     TestInnerComponent

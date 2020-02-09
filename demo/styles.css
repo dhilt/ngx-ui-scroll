@@ -173,6 +173,10 @@ button:hover {
   margin: 0 5px;
 }
 
+.demo .actions .comment {
+  font-style: italic;
+}
+
 input[type=checkbox], input[type=radio] {
   height: 13px;
 }
@@ -249,6 +253,13 @@ input[type=checkbox], input[type=radio] {
   height: 100px;
   padding: 0 5px;
   font-weight: bolder;
+}
+
+.demo .work .viewport.inverse div[data-padding-backward] {
+  background-color: #e1f0ff;
+}
+.demo .work .viewport.inverse .item {
+  background-color: #bcdeff;
 }
 
 .demo .work .log {

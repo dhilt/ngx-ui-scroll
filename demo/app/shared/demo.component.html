@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div class="log" *ngIf="init">
+    <div class="log" *ngIf="init && !context.noInfo">
       <ng-container
         *ngIf="!context.logViewOnly; then allView; else logView">
       </ng-container>

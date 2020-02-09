@@ -1,0 +1,21 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+
+  <div actions class="comment">Available since v1.3.4, undocumented</div>
+
+  <div description>
+    <p>
+      When there is a lack of items in the viewport, the <em>uiScroll</em> sets
+      the height of the forward padding element to some value enough to fill the viewport.
+      This is default behavior, and this can be changed with the help of <em>inverse</em> setting.
+    </p>
+    <p>
+      When <em>inverse</em> setting is set to <em>true</em>,
+      the backward padding element will have a priority over the forward one,
+      and it will be stretched if there are not enough items in the viewport.
+    </p>
+  </div>
+</app-demo>

@@ -153,7 +153,7 @@ export class Buffer {
 
   setItems(items: Array<Item>): boolean {
     if (!this.items.length) {
-      this.items = items;
+      this.items = [...items];
     } else if (this.items[0].$index > items[items.length - 1].$index) {
       this.items = [...items, ...this.items];
     } else if (items[0].$index > this.items[this.items.length - 1].$index) {

@@ -11,7 +11,7 @@ export const defaultSettings: ISettings = {
   infinite: false,
   horizontal: false,
   windowViewport: false,
-  inverse: false, // [experimental] if true, forward padding element will have a priority when filling the viewport in case of lack of items
+  inverse: false // [experimental] if true, backward padding element will have a priority when filling the viewport in case of lack of items
 };
 
 export const minSettings: ISettings = {

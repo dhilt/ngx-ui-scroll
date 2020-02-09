@@ -14,6 +14,7 @@ import { HomeComponent } from './samples/home.component';
 import { SettingsComponent } from './samples/settings.component';
 import { AdapterComponent } from './samples/adapter.component';
 import { DatasourceComponent } from './samples/datasource.component';
+import { ExperimentalComponent } from './samples/experimental.component';
 
 import { DemoBasicComponent } from './samples/common/basic.component';
 import { DemoBufferSizeComponent } from './samples/common/buffer-size.component';
@@ -57,6 +58,7 @@ import { AppRoutingModule } from './app-routing.module';
     SettingsComponent,
     AdapterComponent,
     DatasourceComponent,
+    ExperimentalComponent,
     DemoBasicComponent,
     DemoBufferSizeComponent,
     DemoPaddingComponent,

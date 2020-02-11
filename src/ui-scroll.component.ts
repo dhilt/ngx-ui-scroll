@@ -15,7 +15,7 @@ import { Item } from './component/classes/item';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div data-padding-backward></div>
-    <ng-container
+    <div
       *ngFor="let item of items"
       [attr.data-sid]="item.nodeId"
       [style.position]="item.invisible ? 'fixed' : null"
@@ -27,9 +27,8 @@ import { Item } from './component/classes/item';
           index: item.$index,
           odd: item.$index % 2,
           even: !(item.$index % 2)
-      }">
-      </ng-template>
-    </ng-container>
+      }"></ng-template>
+    </div>
     <div data-padding-forward></div>`
 })
 export class UiScrollComponent implements OnInit, OnDestroy {

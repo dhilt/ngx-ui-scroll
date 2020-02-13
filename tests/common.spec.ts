@@ -278,4 +278,26 @@ describe('Workflow initialization', () => {
     });
   });
 
+  describe('Disposing after delayed initialization', () => {
+    runBeforeEach(delay);
+
+    it('should pass', (done: Function) => {
+      setTimeout(() => {
+        misc.fixture.destroy();
+        expect(misc.workflow.isInitialized).toBe(false);
+        done();
+      }, delay);
+    });
+  });
+
+  describe('Disposing before delayed initialization', () => {
+    runBeforeEach(delay);
+
+    it('should dispose correctly', (done: Function) => {
+      misc.fixture.destroy();
+      expect(misc.workflow.isInitialized).toBe(false);
+      done();
+    });
+  });
+
 });

@@ -1,4 +1,4 @@
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
@@ -7,6 +7,7 @@ import {
   Init, Scroll, Reload, Append, Check, Remove, UserClip, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 } from './processes/index';
+import { takeUntil } from 'rxjs/operators';
 
 export class Workflow {
 
@@ -19,13 +20,14 @@ export class Workflow {
 
   readonly context: UiScrollComponent;
   readonly onScrollHandler: EventListener;
-  private itemsSubscription: Subscription;
-  private workflowSubscription: Subscription;
   private scrollEventOptions: any;
+
+  private destroy$: Subject<void>;
 
   constructor(context: UiScrollComponent) {
     this.isInitialized = false;
     this.context = context;
+    this.destroy$ = new Subject();
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
@@ -58,8 +60,13 @@ export class Workflow {
   initListeners() {
     const scroller = this.scroller;
     scroller.logger.log(() => `uiScroll Workflow listeners are being initialized`);
-    this.itemsSubscription = scroller.buffer.$items.subscribe(items => this.context.items = items);
-    this.workflowSubscription = this.process$.subscribe(this.process.bind(this));
+
+    // update the items in the view
+    scroller.buffer.$items.pipe(
+      takeUntil(this.destroy$) // unsubscribe when destroy$ emits a value (destroy() is called)
+    ).subscribe(items => this.context.items = items);
+
+    this.process$.subscribe(this.process.bind(this));
     this.initScrollEventListener();
   }
 
@@ -342,8 +349,8 @@ export class Workflow {
   dispose() {
     this.detachScrollEventListener();
     this.process$.complete();
-    this.workflowSubscription.unsubscribe();
-    this.itemsSubscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
     this.scroller.dispose();
     this.isInitialized = false;
   }

@@ -13,20 +13,23 @@ import { Item } from './component/classes/item';
 @Component({
   selector: '[ui-scroll]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<div data-padding-backward></div><div
-  *ngFor="let item of items"
-  [attr.data-sid]="item.nodeId"
-  [style.position]="item.invisible ? 'fixed' : null"
-  [style.left]="item.invisible ? '-99999px' : null"
-><ng-template
-  [ngTemplateOutlet]="template"
-  [ngTemplateOutletContext]="{
-    $implicit: item.data,
-    index: item.$index,
-    odd: item.$index % 2,
-    even: !(item.$index % 2)
- }"
-></ng-template></div><div data-padding-forward></div>`
+  template: `
+    <div data-padding-backward></div>
+    <div
+      *ngFor="let item of items"
+      [attr.data-sid]="item.nodeId"
+      [style.position]="item.invisible ? 'fixed' : null"
+      [style.left]="item.invisible ? '-99999px' : null">
+      <ng-template
+        [ngTemplateOutlet]="template"
+        [ngTemplateOutletContext]="{
+          $implicit: item.data,
+          index: item.$index,
+          odd: item.$index % 2,
+          even: !(item.$index % 2)
+      }"></ng-template>
+    </div>
+    <div data-padding-forward></div>`
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 
@@ -43,9 +46,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
 
   constructor(
     public changeDetector: ChangeDetectorRef,
-    public elementRef: ElementRef
-  ) {
-  }
+    public elementRef: ElementRef) { }
 
   ngOnInit() {
     this.workflow = new Workflow(this);

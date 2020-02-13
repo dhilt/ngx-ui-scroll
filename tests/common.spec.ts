@@ -4,7 +4,7 @@ import { Settings, Direction } from '../src/component/interfaces';
 import { defaultSettings, minSettings } from '../src/component/classes/settings';
 
 import { configureTestBed } from './scaffolding/testBed';
-import { defaultDatasourceClass } from './scaffolding/datasources';
+import { defaultDatasourceClass, generateDatasourceClass } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 import { makeTest } from './scaffolding/runner';
@@ -240,6 +240,42 @@ describe('Bad datasource', () => {
       expect(error).toBe('Datasource get method invalid signature');
       done();
     }
+  });
+
+});
+
+describe('Workflow initialization', () => {
+
+  let misc: Misc;
+  const delay = 1;
+  const runBeforeEach = (initDelay: number) =>
+    beforeEach(
+      () =>
+        (misc = new Misc(
+          configureTestBed(
+            generateDatasourceClass(
+              'infinite-callback-no-delay',
+              { adapter: true },
+              { initDelay }
+            ),
+            defaultTemplate
+          )
+        ))
+    );
+
+  describe('Delayed initialization', () => {
+    runBeforeEach(delay);
+
+    it('should pass', (done: Function) => {
+      const { datasource: { adapter }, workflow } = misc;
+      expect(workflow.isInitialized).toBe(false);
+      expect(adapter.init).toBe(true);
+      setTimeout(() => {
+        expect(adapter.init).toBe(true);
+        expect(workflow.isInitialized).toBe(true);
+        done();
+      }, delay);
+    });
   });
 
 });

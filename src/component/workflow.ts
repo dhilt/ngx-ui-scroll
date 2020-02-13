@@ -10,6 +10,7 @@ import {
 
 export class Workflow {
 
+  isInitialized: boolean;
   scroller: Scroller;
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
@@ -23,6 +24,7 @@ export class Workflow {
   private scrollEventOptions: any;
 
   constructor(context: UiScrollComponent) {
+    this.isInitialized = false;
     this.context = context;
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
@@ -50,6 +52,7 @@ export class Workflow {
     this.scroller.init();
     this.scroller.logger.stat('initialization');
     this.initListeners();
+    this.isInitialized = true;
   }
 
   initListeners() {
@@ -342,6 +345,7 @@ export class Workflow {
     this.workflowSubscription.unsubscribe();
     this.itemsSubscription.unsubscribe();
     this.scroller.dispose();
+    this.isInitialized = false;
   }
 
   finalize() {

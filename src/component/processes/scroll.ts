@@ -185,7 +185,8 @@ export default class Scroll {
     workflowOptions.noFetch = scroller.buffer.bof && scroller.buffer.eof;
     workflow.call({
       process: Process.scroll,
-      status: ProcessStatus.next
+      status: ProcessStatus.next,
+      payload: { keepScroll: workflowOptions.keepScroll }
     });
   }
 

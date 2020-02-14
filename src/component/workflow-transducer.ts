@@ -28,11 +28,9 @@ interface StateMachineParams {
     done: Function;
     onError: Function;
   };
-  options: any;
 }
 
 export const runStateMachine = ({
-  options,
   input: { process, status, payload = {} },
   methods: { run, interrupt, done, onError }
 }: StateMachineParams) => {
@@ -47,15 +45,15 @@ export const runStateMachine = ({
         run(Init)();
       }
       if (status === Status.next) {
-        run(Start)(payload);
+        run(Start)(payload.process);
       }
       break;
     case Process.scroll:
       if (status === Status.start) {
-        run(Scroll)(payload);
+        run(Scroll)(payload.event);
       }
       if (status === Status.next) {
-        if (!options.keepScroll) {
+        if (!payload.keepScroll) {
           run(Init)(process);
         } else {
           run(Start)(process);
@@ -125,7 +123,7 @@ export const runStateMachine = ({
       break;
     case Process.start:
       if (status === Status.next) {
-        switch (payload) {
+        switch (payload.process) {
           case Process.append:
           case Process.prepend:
           case Process.check:
@@ -135,10 +133,10 @@ export const runStateMachine = ({
             run(Clip)();
             break;
           case Process.userClip:
-            run(PreFetch)(payload);
+            run(PreFetch)(payload.process);
             break;
           default:
-            if (options.noFetch) {
+            if (payload.noFetch) {
               run(End)(process);
             } else {
               run(PreFetch)();
@@ -147,7 +145,7 @@ export const runStateMachine = ({
       }
       break;
     case Process.preFetch:
-      const userClip = payload === Process.userClip;
+      const userClip = payload.process === Process.userClip;
       if (status === Status.done && !userClip) {
         run(End)(process);
       }
@@ -191,8 +189,8 @@ export const runStateMachine = ({
       break;
     case Process.clip:
       if (status === Status.next) {
-        if (payload === Process.end) {
-          run(End)();
+        if (payload.process === Process.end) {
+          run(End)(process);
         } else {
           run(Adjust)();
         }
@@ -205,13 +203,13 @@ export const runStateMachine = ({
       break;
     case Process.end:
       if (status === Status.next) {
-        switch (payload) {
+        switch (payload.process) {
           case Process.reload:
             done();
-            run(Init)(payload);
+            run(Init)(payload.process);
             break;
           default:
-            if (options.keepScroll) {
+            if (payload.keepScroll) {
               run(Scroll)();
             } else {
               run(Start)(process);

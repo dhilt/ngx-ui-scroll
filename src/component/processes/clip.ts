@@ -14,7 +14,7 @@ export default class Clip {
     workflow.call({
       process: Process.clip,
       status: ProcessStatus.next,
-      ...(clip.simulate ? { payload: Process.end } : {})
+      ...(clip.simulate ? { payload: { process: Process.end } } : {})
     });
   }
 

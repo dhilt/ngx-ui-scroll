@@ -14,7 +14,7 @@ export default class Init {
     workflow.call({
       process: Process.init,
       status: ProcessStatus.next,
-      payload: process || Process.init
+      payload: { process: process || Process.init }
     });
   }
 

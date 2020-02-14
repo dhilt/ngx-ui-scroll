@@ -19,7 +19,7 @@ export default class Start {
     scroller.workflow.call({
       process: Process.start,
       status: ProcessStatus.next,
-      payload: process
+      payload: { process, noFetch: workflowOptions.noFetch }
     });
   }
 

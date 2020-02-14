@@ -39,7 +39,7 @@ export class Workflow {
     this.onScrollHandler = event => this.callWorkflow({
       process: Process.scroll,
       status: ProcessStatus.start,
-      payload: event
+      payload: { event }
     });
     this.stateMachineMethods = {
       run: this.runProcess(),
@@ -117,9 +117,7 @@ export class Workflow {
     if (process === Process.end) {
       this.scroller.finalize();
     }
-    const options = this.scroller.state.workflowOptions
     runStateMachine({
-      options,
       input: data,
       methods: this.stateMachineMethods
     });

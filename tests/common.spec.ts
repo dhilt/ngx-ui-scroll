@@ -300,4 +300,15 @@ describe('Workflow initialization', () => {
     });
   });
 
+  describe('Disposing after immediate initialization', () => {
+    runBeforeEach(0);
+
+    it('should pass', (done: Function) => {
+      expect(misc.workflow.isInitialized).toBe(true);
+      misc.fixture.destroy();
+      expect(misc.workflow.isInitialized).toBe(false);
+      done();
+    });
+  });
+
 });

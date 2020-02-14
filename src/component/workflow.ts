@@ -1,13 +1,15 @@
 import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
-import { Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus } from './interfaces/index';
+import {
+  Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
+} from './interfaces/index';
 import {
   Init, Scroll, Reload, Append, Check, Remove, UserClip, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 } from './processes/index';
-import { takeUntil } from 'rxjs/operators';
 
 export class Workflow {
 
@@ -21,7 +23,7 @@ export class Workflow {
   readonly context: UiScrollComponent;
   readonly onScrollHandler: EventListener;
   private scrollEventOptions: any;
-  private dispose$: Subject<boolean>;
+  private dispose$: Subject<void>;
 
   constructor(context: UiScrollComponent) {
     this.isInitialized = false;

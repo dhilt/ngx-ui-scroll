@@ -21,13 +21,12 @@ export class Workflow {
   readonly context: UiScrollComponent;
   readonly onScrollHandler: EventListener;
   private scrollEventOptions: any;
-
-  private destroy$: Subject<void>;
+  private dispose$: Subject<boolean>;
 
   constructor(context: UiScrollComponent) {
     this.isInitialized = false;
     this.context = context;
-    this.destroy$ = new Subject();
+    this.dispose$ = new Subject();
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
@@ -53,21 +52,23 @@ export class Workflow {
   init() {
     this.scroller.init();
     this.scroller.logger.stat('initialization');
-    this.initListeners();
+    this.initWorkflowListeners();
+    this.initScrollEventListener();
     this.isInitialized = true;
   }
 
-  initListeners() {
-    const scroller = this.scroller;
-    scroller.logger.log(() => `uiScroll Workflow listeners are being initialized`);
+  initWorkflowListeners() {
+    this.scroller.logger.log(() => `uiScroll Workflow listeners initialization`);
 
-    // update the items in the view
-    scroller.buffer.$items.pipe(
-      takeUntil(this.destroy$) // unsubscribe when destroy$ emits a value (destroy() is called)
+    // propagate the item list to the view
+    this.scroller.buffer.$items.pipe(
+      takeUntil(this.dispose$)
     ).subscribe(items => this.context.items = items);
 
-    this.process$.subscribe(this.process.bind(this));
-    this.initScrollEventListener();
+    // run the workflow
+    this.process$.pipe(
+      takeUntil(this.dispose$)
+    ).subscribe(this.process.bind(this));
   }
 
   initScrollEventListener() {
@@ -84,11 +85,10 @@ export class Workflow {
     this.scroller.viewport.scrollEventElement.addEventListener(
       'scroll', this.onScrollHandler, this.scrollEventOptions
     );
-  }
-
-  detachScrollEventListener() {
-    this.scroller.viewport.scrollEventElement.removeEventListener(
-      'scroll', this.onScrollHandler, this.scrollEventOptions
+    this.dispose$.subscribe(() =>
+      this.scroller.viewport.scrollEventElement.removeEventListener(
+        'scroll', this.onScrollHandler, this.scrollEventOptions
+      )
     );
   }
 
@@ -347,10 +347,8 @@ export class Workflow {
   }
 
   dispose() {
-    this.detachScrollEventListener();
-    this.process$.complete();
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.dispose$.next();
+    this.dispose$.complete();
     this.scroller.dispose();
     this.isInitialized = false;
   }

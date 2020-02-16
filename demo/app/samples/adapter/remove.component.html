@@ -1,5 +1,5 @@
 <ng-template #itemTemplate let-item="item">
-  {{item.text}} 
+  {{item.text}}
   <span class="remove" (click)="doRemove(item.id)">[remove]</span>
 </ng-template>
 
@@ -19,16 +19,18 @@
     </p>
     <pre>{{predicateDescription}}</pre>
     <p>
-      Here <em>id</em> is being received from the template
-      as the <em>id</em> of the item the user ckicked on.
+      Since the argument of the predicate has <em>ItemAdapter</em> type,
+      the <em>data</em> contains id-text objects defined at the component level.
+      The argument of <em>doRemove</em> method comes from the template
+      as the <em>id</em> of the item the user clicked on.
     </p>
     <p>
-      The very important thing is to syncronize our datasource with the changes
+      The very important thing is to synchronize our datasource with the changes
       we are making over the <em>uiScroll</em> buffer via <em>Adapter.remove</em>.
       Generally this is the App component responsibility,
-      and in this demo it is being provided via <em>doRemoveDatasource(id)</em> method.
+      and in this demo it happens via <em>doRemoveDatasource(id)</em> method.
       It removes item with given <em>id</em> from the initial dataset,
-      and decrements <em>id</em> of all items which ids are more than given one.
+      and decrements <em>id</em> of all items whose ids are greater than the given one.
     </p>
   </div>
 </app-demo>

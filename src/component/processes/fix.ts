@@ -14,8 +14,14 @@ enum FixParamToken {
 interface FixParam {
   token: FixParamToken;
   type: InputValue;
-  call: Function;
+  call?: Function;
   value?: any;
+}
+
+interface CallParams {
+  scroller: Scroller;
+  params: FixParam[];
+  value: any;
 }
 
 export default class Fix {
@@ -57,7 +63,10 @@ export default class Fix {
     }
 
     params.forEach((param: FixParam) => {
-      param.call(scroller, param.value);
+      if (typeof param.call !== 'function') {
+        return;
+      }
+      param.call({ scroller, params, value: param.value });
     });
 
     workflow.call({
@@ -66,26 +75,23 @@ export default class Fix {
     });
   }
 
-  static setScrollPosition(scroller: Scroller, value: number) {
-    const { state, viewport } = scroller;
+  static setScrollPosition({ scroller: { state, viewport }, value }: CallParams) {
     state.syntheticScroll.reset();
-    viewport.setPosition(value);
+    viewport.setPosition(<number>value);
   }
 
-  static setMinIndex(scroller: Scroller, value: number) {
-    const { buffer, settings } = scroller;
-    settings.minIndex = value;
-    buffer.absMinIndex = value;
+  static setMinIndex({ scroller: { buffer, settings }, value }: CallParams) {
+    settings.minIndex = <number>value;
+    buffer.absMinIndex = <number>value;
   }
 
-  static setMaxIndex(scroller: Scroller, value: number) {
-    const { buffer, settings } = scroller;
-    settings.maxIndex = value;
-    buffer.absMaxIndex = value;
+  static setMaxIndex({ scroller: { buffer, settings }, value }: CallParams) {
+    settings.maxIndex = <number>value;
+    buffer.absMaxIndex = <number>value;
   }
 
-  static updateItems(scroller: Scroller, callback: ItemsLooper) {
-    scroller.buffer.items.forEach(item => callback(item.get()));
+  static updateItems({ scroller: { buffer }, value }: CallParams) {
+    buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
   }
 
   static checkOptions(scroller: Scroller, options: FixOptions): FixParam[] {

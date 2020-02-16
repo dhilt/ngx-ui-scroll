@@ -58,9 +58,9 @@ export class Workflow {
   init() {
     this.scroller.init();
     this.scroller.logger.stat('initialization');
+    this.isInitialized = true;
     this.initWorkflowListeners();
     this.initScrollEventListener();
-    this.isInitialized = true;
   }
 
   initWorkflowListeners() {
@@ -99,6 +99,9 @@ export class Workflow {
   }
 
   callWorkflow(processSubject: ProcessSubject) {
+    if (!this.isInitialized) {
+      return;
+    }
     // this.scroller.logger.log(() => {
     //   const { process, status, payload } = processSubject;
     //   return ['%ccall%c', ...['color: #77cc77;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])];

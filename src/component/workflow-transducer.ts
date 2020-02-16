@@ -36,7 +36,9 @@ export const runStateMachine = ({
 }: StateMachineParams) => {
   if (status === Status.error) {
     onError(process, payload);
-    run(End)(process, payload);
+    if (!process.startsWith('adapter')) {
+      run(End)(process, payload);
+    }
     return;
   }
   switch (process) {

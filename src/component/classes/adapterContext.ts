@@ -138,6 +138,12 @@ export class AdapterContext {
     this.init$.complete();
   }
 
+  dispose() {
+    if (!this.init$.closed) {
+      this.init$.complete();
+    }
+  }
+
   private initializeProtected(state: IState) {
     let getFirstVisibleProtected = () => {
       getFirstVisibleProtected = () => state.firstVisibleItem;

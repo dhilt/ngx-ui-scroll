@@ -29,6 +29,7 @@ export const generateMockAdapter = (): IAdapter => (
     eof: false,
     eof$: new BehaviorSubject<boolean>(false),
     initialize: () => null,
+    dispose: () => null,
     reload: () => null,
     append: () => null,
     prepend: () => null,

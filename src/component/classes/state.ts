@@ -18,8 +18,8 @@ import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
 
-  protected settings: Settings;
-  protected logger: Logger;
+  private settings: Settings;
+  private logger: Logger;
 
   initTime: number;
   innerLoopCount: number;

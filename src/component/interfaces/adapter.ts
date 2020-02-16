@@ -19,6 +19,7 @@ export interface FixOptions {
   minIndex?: number;
   maxIndex?: number;
   updater?: ItemsLooper;
+  safe?: boolean;
 }
 
 export interface Adapter {
@@ -41,6 +42,7 @@ export interface Adapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   initialize: Function; // internal use only
+  dispose: Function; // internal use only
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, bof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;

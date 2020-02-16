@@ -96,6 +96,7 @@ export class Scroller {
   }
 
   dispose() {
+    this.datasource.adapter.dispose();
     this.purgeInnerLoopSubscriptions();
     this.purgeScrollTimers();
   }

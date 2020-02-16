@@ -84,12 +84,17 @@ export class Adapter implements IAdapter {
     this.init$ = new BehaviorSubject<boolean>(false);
     this.context = new AdapterContext(this.init$);
 
+    // public methods should not be invoked before Adapter initialization
     ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix']
       .forEach(token => protectAdapterPublicMethod(this, token));
   }
 
   initialize(scroller: Scroller) {
     this.context.initialize(scroller);
+  }
+
+  dispose() {
+    this.context.dispose();
   }
 
   reload(reloadIndex?: number | string) {

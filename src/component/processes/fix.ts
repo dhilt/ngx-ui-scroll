@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
 import {
-  Direction, ItemsPredicate, ItemsLooper, Process, ProcessStatus, FixOptions, ItemAdapter
+  Direction, ItemsPredicate, ItemsLooper, Process, ProcessStatus, AdapterFixOptions, ItemAdapter
 } from '../interfaces/index';
 import { InputValue, ValidatedValue, validate } from '../utils/index';
 
@@ -49,7 +49,7 @@ export default class Fix {
     }
   ];
 
-  static run(scroller: Scroller, options: FixOptions) {
+  static run(scroller: Scroller, options: AdapterFixOptions) {
     const { workflow } = scroller;
     const params = Fix.checkOptions(scroller, options);
 
@@ -94,7 +94,7 @@ export default class Fix {
     buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
   }
 
-  static checkOptions(scroller: Scroller, options: FixOptions): FixParam[] {
+  static checkOptions(scroller: Scroller, options: AdapterFixOptions): FixParam[] {
     if (!options || typeof options !== 'object') {
       return [];
     }

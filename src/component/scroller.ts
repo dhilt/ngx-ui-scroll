@@ -9,9 +9,8 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
-import { ScrollerWorkflow } from './interfaces/index';
 import { Adapter } from './classes/adapter';
-import { IAdapter } from './interfaces/adapter';
+import { ScrollerWorkflow, IAdapter } from './interfaces/index';
 
 let instanceCount = 0;
 

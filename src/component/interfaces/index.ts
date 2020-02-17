@@ -6,13 +6,13 @@ import {
   ItemAdapter,
   ItemsPredicate,
   ItemsLooper,
-  ClipOptions,
-  FixOptions
+  AdapterClipOptions,
+  AdapterFixOptions
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { WindowScrollState, ScrollEventData, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
-import { Process, ProcessStatus, ScrollPayload, ProcessSubject, WorkflowError, ScrollerWorkflow } from './process';
+import { Process, ProcessStatus, ProcessSubject, WorkflowError, ScrollerWorkflow } from './process';
 
 export {
   Datasource,
@@ -23,8 +23,8 @@ export {
   ItemAdapter,
   ItemsPredicate,
   ItemsLooper,
-  ClipOptions,
-  FixOptions,
+  AdapterClipOptions,
+  AdapterFixOptions,
   Settings,
   DevSettings,
   Direction,
@@ -36,7 +36,6 @@ export {
   State,
   Process,
   ProcessStatus,
-  ScrollPayload,
   ProcessSubject,
   WorkflowError,
   ScrollerWorkflow

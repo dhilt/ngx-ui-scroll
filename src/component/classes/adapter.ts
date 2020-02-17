@@ -14,8 +14,8 @@ import {
   ProcessStatus,
   ItemAdapter,
   ItemsPredicate,
-  ClipOptions,
-  FixOptions,
+  AdapterClipOptions,
+  AdapterFixOptions,
   State,
   ScrollerWorkflow
 } from '../interfaces/index';
@@ -156,7 +156,7 @@ export class Adapter implements IAdapter {
     });
   }
 
-  clip(options?: ClipOptions) {
+  clip(options?: AdapterClipOptions) {
     this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
     this.workflow.call(<ProcessSubject>{
       process: Process.userClip,
@@ -170,7 +170,7 @@ export class Adapter implements IAdapter {
     this.logger.logForce();
   }
 
-  fix(options: FixOptions) {
+  fix(options: AdapterFixOptions) {
     this.logger.log(() =>
       `adapter: fix(${options ? '{ ' + Object.keys(options).join(', ') + ' }' : ''})`
     );

@@ -9,4 +9,11 @@ export class ExperimentalComponent {
   constructor() {
   }
 
+  adapterFixArgumentDescription = `  interface AdapterFixOptions {
+    scrollPosition?: number;
+    minIndex?: number;
+    maxIndex?: number;
+    updater?: (item: ItemAdapter) => any;
+  }`;
+
 }

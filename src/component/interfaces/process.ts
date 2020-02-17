@@ -26,11 +26,6 @@ export enum ProcessStatus {
   error = 'error'
 }
 
-export interface ScrollPayload {
-  event?: Event;
-  byTimer?: boolean;
-}
-
 export interface ProcessSubject {
   process: Process;
   status: ProcessStatus;

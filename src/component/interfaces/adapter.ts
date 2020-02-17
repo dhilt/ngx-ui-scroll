@@ -35,9 +35,9 @@ export interface IAdapter {
   prepend: (items: any, bof?: boolean) => any;
   check: () => any;
   remove: (predicate: ItemsPredicate) => any;
-  clip: (options?: ClipOptions) => any;
+  clip: (options?: AdapterClipOptions) => any;
   showLog: () => any;
-  fix: (options: FixOptions) => any; // undocumented
+  fix: (options: AdapterFixOptions) => any; // undocumented
 }
 
 export interface ItemAdapter {
@@ -49,12 +49,12 @@ export interface ItemAdapter {
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
 export type ItemsLooper = (item: ItemAdapter) => any;
 
-export interface ClipOptions {
+export interface AdapterClipOptions {
   forwardOnly?: boolean;
   backwardOnly?: boolean;
 }
 
-export interface FixOptions {
+export interface AdapterFixOptions {
   scrollPosition?: number;
   minIndex?: number;
   maxIndex?: number;

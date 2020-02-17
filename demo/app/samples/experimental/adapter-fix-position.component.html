@@ -1,0 +1,16 @@
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
+
+  <div actions>
+    <div class="comment">Available since v1.2.4, undocumented</div>
+    <button (click)="scrollTop()">scroll top</button>
+    <button (click)="scrollBottom()">scroll bottom</button>
+  </div>
+
+  <div description>
+    <p>
+      The first option of <em>Adapter.fix</em> method is <em>scrollPosition</em>.
+      It allows to change the position of the viewport's scrollbar programmatically.
+      It is used in the lib tests.
+    </p>
+  </div>
+</app-demo>

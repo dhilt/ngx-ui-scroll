@@ -11,7 +11,7 @@ import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { ScrollerWorkflow } from './interfaces/index';
 import { Adapter } from './classes/adapter';
-import { IAdapterNew } from './interfaces/adapter';
+import { IAdapter } from './interfaces/adapter';
 
 let instanceCount = 0;
 
@@ -99,7 +99,9 @@ export class Scroller {
   }
 
   dispose() {
-    this.adapter && this.adapter.dispose();
+    if (this.adapter) {
+      this.adapter.dispose();
+    }
     this.purgeInnerLoopSubscriptions();
     this.purgeScrollTimers();
   }

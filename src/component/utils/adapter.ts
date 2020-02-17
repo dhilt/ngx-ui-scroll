@@ -1,112 +1,40 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 
-import { Adapter as IAdapter, ItemAdapter } from '../interfaces/index';
-import { IAdapterNew } from '../interfaces/adapter';
+import {
+  IAdapterProp,
+  AdapterPropType as Prop,
+  ItemAdapter,
+  IAdapter
+} from '../interfaces/adapter';
+
+export const ADAPTER_PROPS: IAdapterProp[] = [
+  { type: Prop.Scalar, name: 'version' },
+  { type: Prop.Scalar, name: 'isLoading' },
+  { type: Prop.Scalar, name: 'loopPending' },
+  { type: Prop.Scalar, name: 'cyclePending' },
+  { type: Prop.Scalar, name: 'firstVisible' },
+  { type: Prop.Scalar, name: 'lastVisible' },
+  { type: Prop.Scalar, name: 'bof' },
+  { type: Prop.Scalar, name: 'eof' },
+  { type: Prop.Function, name: 'reload' },
+  { type: Prop.Function, name: 'append' },
+  { type: Prop.Function, name: 'prepend' },
+  { type: Prop.Function, name: 'check' },
+  { type: Prop.Function, name: 'remove' },
+  { type: Prop.Function, name: 'clip' },
+  { type: Prop.Function, name: 'showLog' },
+  { type: Prop.Function, name: 'fix' },
+  { type: Prop.Observable, name: 'isLoading$' },
+  { type: Prop.Observable, name: 'loopPending$' },
+  { type: Prop.Observable, name: 'cyclePending$' },
+  { type: Prop.Observable, name: 'firstVisible$' },
+  { type: Prop.Observable, name: 'lastVisible$' },
+  { type: Prop.Observable, name: 'bof$' },
+  { type: Prop.Observable, name: 'eof$' }
+];
 
 export const itemAdapterEmpty = <ItemAdapter>{
   data: {},
   element: {}
-};
-
-class AdapterContext {
-  init$ = new BehaviorSubject<boolean>(false);
-
-  // public scalar properties
-  version = '';
-  isLoading = false;
-  loopPending = false;
-  cyclePending = false;
-  firstVisible = itemAdapterEmpty;
-  lastVisible = itemAdapterEmpty;
-  itemsCount = 0;
-  bof = false;
-  eof = false;
-
-  constructor(mock: boolean) {
-
-    // public methods
-    const publicMethods = [
-      'reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix'
-    ];
-    publicMethods.forEach((token: string) => (<any>this)[token] = () => null);
-
-    if (mock) {
-      return;
-    }
-
-    // public observable properties
-    const self = this;
-    const publicObservableProperties = [
-      'isLoading$', 'loopPending$', 'cyclePending$', 'firstVisible$', 'lastVisible$', 'bof$', 'eof$'
-    ];
-    publicObservableProperties.forEach((token: string) =>
-      Object.defineProperty(this, token, {
-        get: () =>
-          this.init$.getValue()
-            ? (<any>this)[`_${token}`]
-            : this.init$.pipe(
-                filter(init => !!init),
-                switchMap(() => (<any>self)[`_${token}`])
-              )
-      })
-    );
-  }
-}
-
-export const generateAdapterContext = (mock: boolean): IAdapterNew => <any>(new AdapterContext(mock));
-
-export const generateMockAdapter = (): IAdapter => (
-  <IAdapter>{
-    context: <any>{},
-    init$: new BehaviorSubject<boolean>(false),
-    version: '',
-    init: false,
-    isLoading: false,
-    isLoading$: new Subject<boolean>(),
-    loopPending: false,
-    loopPending$: new Subject<boolean>(),
-    cyclePending: false,
-    cyclePending$: new Subject<boolean>(),
-    firstVisible: itemAdapterEmpty,
-    firstVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
-    lastVisible: itemAdapterEmpty,
-    lastVisible$: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty),
-    itemsCount: 0,
-    bof: false,
-    bof$: new BehaviorSubject<boolean>(false),
-    eof: false,
-    eof$: new BehaviorSubject<boolean>(false),
-    initialize: () => null,
-    dispose: () => null,
-    reload: () => null,
-    append: () => null,
-    prepend: () => null,
-    check: () => null,
-    remove: () => null,
-    clip: () => null,
-    showLog: () => null,
-    fix: () => null // undocumented
-  }
-);
-
-export const protectAdapterPublicMethod = (context: any, token: string) => {
-  const func: any = context[token];
-  if (typeof func !== 'function') {
-    return;
-  }
-  context[token] = (...args: any) => {
-    if (context.init) {
-      context[token] = func;
-      func.apply(context, args);
-      return;
-    }
-    const sub = context.init$.subscribe((init: any) => {
-      if (init) {
-        context[token] = func;
-        func.apply(context, args);
-        sub.unsubscribe();
-      }
-    });
-  };
 };

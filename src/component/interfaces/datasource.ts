@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { Settings, DevSettings } from './settings';
-import { Adapter, IAdapterNew } from './adapter';
+import { IAdapter } from './adapter';
 
 export type DatasourceGetCallback = (index: number, count: number, success: Function, fail?: Function) => void;
 export type DatasourceGetObservable = (index: number, count: number) => Observable<any>;
@@ -13,5 +13,5 @@ export interface Datasource {
   get: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;
-  adapter?: IAdapterNew;
+  adapter?: IAdapter;
 }

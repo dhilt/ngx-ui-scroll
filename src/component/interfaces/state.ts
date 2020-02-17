@@ -70,6 +70,8 @@ export interface WorkflowOptions {
 }
 
 export interface State {
+  version: string;
+
   initTime: number;
   innerLoopCount: number;
   isInitialLoop: boolean;

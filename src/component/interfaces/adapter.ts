@@ -1,5 +1,20 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
+export interface IAdapterNew {
+  readonly init$: BehaviorSubject<boolean>;
+  readonly version: string;
+  readonly isLoading: boolean;
+  readonly isLoading$: Subject<boolean>;
+  reload: (reloadIndex?: number | string) => any;
+  append: (items: any, bof?: boolean) => any;
+  prepend: (items: any, bof?: boolean) => any;
+  check: () => any;
+  remove: (predicate: ItemsPredicate) => any;
+  clip: (options?: ClipOptions) => any;
+  showLog: () => any;
+  fix: (options: FixOptions) => any; // undocumented
+}
+
 export interface ItemAdapter {
   $index: number;
   data: any;

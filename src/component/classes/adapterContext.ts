@@ -117,7 +117,7 @@ export class AdapterContext {
     this.callWorkflow = workflow.call;
     this.logger = logger;
 
-    this.getVersion = (): string | null => scroller.version;
+    this.getVersion = (): string | null => state.version;
     this.getIsLoading = (): boolean => state.isLoading;
     this.getIsLoading$ = (): Subject<boolean> => state.isLoadingSource;
     this.getLoopPending = (): boolean => state.loopPending;

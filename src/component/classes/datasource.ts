@@ -1,8 +1,10 @@
 import {
   Datasource as IDatasource, DatasourceGet, DevSettings, Settings, Adapter as IAdapter
 } from '../interfaces/index';
-import { Adapter } from './adapter';
+import { AdapterOld } from './adapter';
 import { generateMockAdapter } from '../utils/index';
+import { IAdapterNew } from '../interfaces/adapter';
+import { generateAdapterContext } from '../utils/adapter';
 
 export class Datasource implements IDatasource {
   readonly constructed: boolean;
@@ -10,6 +12,7 @@ export class Datasource implements IDatasource {
   settings?: Settings;
   devSettings?: DevSettings;
   adapter: IAdapter;
+  adapterNew: IAdapterNew;
 
   constructor(datasource: IDatasource, hasNoAdapter?: boolean) {
     this.constructed = true;
@@ -17,7 +20,8 @@ export class Datasource implements IDatasource {
     if (hasNoAdapter) {
       this.adapter = <IAdapter>generateMockAdapter();
     } else {
-      this.adapter = new Adapter();
+      this.adapter = new AdapterOld();
+      this.adapterNew = generateAdapterContext();
     }
   }
 }

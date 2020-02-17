@@ -4,10 +4,146 @@ import { Scroller } from '../scroller';
 import { AdapterContext } from './adapterContext';
 import { protectAdapterPublicMethod } from '../utils/index';
 import {
-  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions, FixOptions
+  Adapter as IAdapter,
+  Process,
+  ProcessSubject,
+  ProcessStatus,
+  ItemAdapter,
+  ItemsPredicate,
+  ClipOptions,
+  FixOptions,
+  State,
+  ScrollerWorkflow
 } from '../interfaces/index';
+import { Logger } from './logger';
+import { IAdapterNew } from '../interfaces/adapter';
 
-export class Adapter implements IAdapter {
+export class Adapter {
+  readonly state: State;
+  readonly logger: Logger;
+  readonly workflow: ScrollerWorkflow;
+
+  publicContext: IAdapterNew; // todo remove
+  init$ = new BehaviorSubject<boolean>(false);
+
+  get version(): string {
+    return this.state.version;
+  }
+  get isLoading(): boolean {
+    return this.state.isLoading;
+  }
+  get isLoading$(): Subject<boolean> {
+    return this.state.isLoadingSource;
+  }
+
+  constructor(publicContext: IAdapterNew, state: State, workflow: ScrollerWorkflow, logger: Logger) {
+    this.publicContext = <IAdapterNew>publicContext;
+    this.state = state;
+    this.workflow = workflow;
+    this.logger = logger;
+
+    const publicMethods = [
+      'reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix'
+    ];
+    const publicProperties = [
+      'version', 'isLoading'
+    ];
+    [...publicProperties, ...publicMethods].forEach((token: string) =>
+      Object.defineProperty(publicContext, token, {
+        get: () => {
+          const value = (<any>this)[token];
+          return typeof value === 'function' ? value.bind(this) : value;
+        }
+      })
+    );
+
+    const publicObservableProperties = [
+      'isLoading$', 'loopPending$', 'cyclePending$', 'firstVisible$', 'lastVisible$', 'bof$', 'eof$'
+    ];
+    publicObservableProperties.forEach((token: string) =>
+      Object.defineProperty(publicContext, `_${token}`, {
+        get: () => (<any>this)[token]
+      })
+    );
+
+    publicContext.init$.next(true);
+  }
+
+  reload(reloadIndex?: number | string) {
+    this.logger.log(() => `adapter: reload(${reloadIndex})`);
+    this.workflow.call(<ProcessSubject>{
+      process: Process.reload,
+      status: ProcessStatus.start,
+      payload: reloadIndex
+    });
+  }
+
+  append(items: any, eof?: boolean) {
+    this.logger.log(() => {
+      const count = Array.isArray(items) ? items.length : 1;
+      return `adapter: append([${count}], ${!!eof})`;
+    });
+    this.workflow.call(<ProcessSubject>{
+      process: Process.append,
+      status: ProcessStatus.start,
+      payload: { items, eof }
+    });
+  }
+
+  prepend(items: any, bof?: boolean) {
+    this.logger.log(() => {
+      const count = Array.isArray(items) ? items.length : 1;
+      return `adapter: prepend([${count}], ${!!bof})`;
+    });
+    this.workflow.call(<ProcessSubject>{
+      process: Process.prepend,
+      status: ProcessStatus.start,
+      payload: { items, bof }
+    });
+  }
+
+  check() {
+    this.logger.log(() => `adapter: check()`);
+    this.workflow.call(<ProcessSubject>{
+      process: Process.check,
+      status: ProcessStatus.start
+    });
+  }
+
+  remove(predicate: ItemsPredicate) {
+    this.logger.log(() => `adapter: remove()`);
+    this.workflow.call(<ProcessSubject>{
+      process: Process.remove,
+      status: ProcessStatus.start,
+      payload: predicate
+    });
+  }
+
+  clip(options?: ClipOptions) {
+    this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
+    this.workflow.call(<ProcessSubject>{
+      process: Process.userClip,
+      status: ProcessStatus.start,
+      payload: options
+    });
+  }
+
+  showLog() {
+    this.logger.log(() => `adapter: showLog()`);
+    this.logger.logForce();
+  }
+
+  fix(options: FixOptions) {
+    this.logger.log(() => `adapter: fix(${JSON.stringify(options)})`);
+    this.workflow.call(<ProcessSubject>{
+      process: Process.fix,
+      status: ProcessStatus.start,
+      payload: options
+    });
+  }
+}
+
+export class AdapterOld implements IAdapter {
 
   private context: AdapterContext;
   init$: BehaviorSubject<boolean>;

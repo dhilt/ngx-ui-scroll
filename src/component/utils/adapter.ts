@@ -1,17 +1,62 @@
 import { BehaviorSubject, Subject } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 
 import { Adapter as IAdapter, ItemAdapter } from '../interfaces/index';
+import { IAdapterNew } from '../interfaces/adapter';
 
 export const itemAdapterEmpty = <ItemAdapter>{
   data: {},
   element: {}
 };
 
+class AdapterContext {
+  init$ = new BehaviorSubject<boolean>(false);
+
+  // public scalar properties
+  version = '';
+  isLoading = false;
+  loopPending = false;
+  cyclePending = false;
+  firstVisible = itemAdapterEmpty;
+  lastVisible = itemAdapterEmpty;
+  itemsCount = 0;
+  bof = false;
+  eof = false;
+
+  constructor() {
+
+    // public methods
+    const publicMethods = [
+      'reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix'
+    ];
+    publicMethods.forEach((token: string) => (<any>this)[token] = () => null);
+
+    // public observable properties
+    const self = this;
+    const publicObservableProperties = [
+      'isLoading$', 'loopPending$', 'cyclePending$', 'firstVisible$', 'lastVisible$', 'bof$', 'eof$'
+    ];
+    publicObservableProperties.forEach((token: string) =>
+      Object.defineProperty(this, token, {
+        get: () =>
+          this.init$.getValue()
+            ? (<any>this)[`_${token}`]
+            : this.init$.pipe(
+                filter(init => !!init),
+                switchMap(() => (<any>self)[`_${token}`])
+              )
+      })
+    );
+  }
+}
+
+export const generateAdapterContext = (): IAdapterNew => <any>(new AdapterContext());
+
 export const generateMockAdapter = (): IAdapter => (
   <IAdapter>{
     context: <any>{},
     init$: new BehaviorSubject<boolean>(false),
-    version: null,
+    version: '',
     init: false,
     isLoading: false,
     isLoading$: new Subject<boolean>(),

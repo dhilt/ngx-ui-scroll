@@ -20,13 +20,12 @@ import {
   ScrollerWorkflow
 } from '../interfaces/index';
 
-export class Adapter {
+export class Adapter implements IAdapter {
   readonly state: State;
   readonly buffer: Buffer;
   readonly logger: Logger;
   readonly workflow: ScrollerWorkflow;
 
-  publicContext: IAdapter; // todo remove
   init$ = new BehaviorSubject<boolean>(false);
 
   get version(): string {
@@ -83,7 +82,6 @@ export class Adapter {
   }
 
   constructor(publicContext: IAdapter, state: State, buffer: Buffer, workflow: ScrollerWorkflow, logger: Logger) {
-    this.publicContext = <IAdapter>publicContext;
     this.state = state;
     this.buffer = buffer;
     this.workflow = workflow;

@@ -11,17 +11,11 @@ export class Datasource implements IDatasource {
   get: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;
-  adapter: IAdapter;
-  adapterNew: IAdapterNew;
+  adapter: IAdapterNew;
 
-  constructor(datasource: IDatasource, hasNoAdapter?: boolean) {
+  constructor(datasource: IDatasource, noAdapter?: boolean) {
     this.constructed = true;
     Object.assign(<any>this, datasource);
-    if (hasNoAdapter) {
-      this.adapter = <IAdapter>generateMockAdapter();
-    } else {
-      this.adapter = new AdapterOld();
-      this.adapterNew = generateAdapterContext();
-    }
+    this.adapter = generateAdapterContext(!!noAdapter);
   }
 }

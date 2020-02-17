@@ -269,9 +269,9 @@ describe('Workflow initialization', () => {
     it('should pass', (done: Function) => {
       const { datasource: { adapter }, workflow } = misc;
       expect(workflow.isInitialized).toBe(false);
-      expect(adapter.init).toBe(true);
+      expect(adapter.init$.getValue()).toBe(true);
       setTimeout(() => {
-        expect(adapter.init).toBe(true);
+        expect(adapter.init$.getValue()).toBe(true);
         expect(workflow.isInitialized).toBe(true);
         done();
       }, delay);

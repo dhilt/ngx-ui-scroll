@@ -27,7 +27,7 @@ export class Scroller {
   public viewport: Viewport;
   public buffer: Buffer;
   public state: State;
-  public adapter: Adapter;
+  public adapter?: Adapter;
 
   public innerLoopSubscriptions: Array<Subscription>;
 
@@ -61,13 +61,13 @@ export class Scroller {
     if (!datasource.constructed) {
       this.datasource = new Datasource(datasource, !settings.adapter);
       if (settings.adapter) {
-        this.adapter = new Adapter(this.datasource.adapterNew, this.state, this.workflow, this.logger);
-        this.datasource.adapter.initialize(this);
-        datasource.adapter = this.datasource.adapter;
+        this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.workflow, this.logger);
+        // this.datasource.adapter.initialize(this);
+        // datasource.adapter = this.datasource.adapter;
       }
     } else {
-      this.adapter = new Adapter(this.datasource.adapterNew, this.state, this.workflow, this.logger);
-      this.datasource.adapter.initialize(this);
+      this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.workflow, this.logger);
+      // this.datasource.adapter.initialize(this);
     }
   }
 
@@ -99,7 +99,7 @@ export class Scroller {
   }
 
   dispose() {
-    this.datasource.adapter.dispose();
+    this.adapter && this.adapter.dispose();
     this.purgeInnerLoopSubscriptions();
     this.purgeScrollTimers();
   }

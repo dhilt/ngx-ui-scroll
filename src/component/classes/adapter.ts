@@ -17,9 +17,11 @@ import {
 } from '../interfaces/index';
 import { Logger } from './logger';
 import { IAdapterNew } from '../interfaces/adapter';
+import { Buffer } from './buffer';
 
 export class Adapter {
   readonly state: State;
+  readonly buffer: Buffer;
   readonly logger: Logger;
   readonly workflow: ScrollerWorkflow;
 
@@ -35,10 +37,54 @@ export class Adapter {
   get isLoading$(): Subject<boolean> {
     return this.state.isLoadingSource;
   }
+  get loopPending(): boolean {
+    return this.state.loopPending;
+  }
+  get loopPending$(): Subject<boolean> {
+    return this.state.loopPendingSource;
+  }
+  get cyclePending(): boolean {
+    return this.state.workflowPending;
+  }
+  get cyclePending$(): Subject<boolean> {
+    return this.state.workflowPendingSource;
+  }
+  get firstVisible(): ItemAdapter {
+    this.state.firstVisibleWanted = true;
+    return this.state.firstVisibleItem;
+  }
+  get firstVisible$(): BehaviorSubject<ItemAdapter> {
+    this.state.firstVisibleWanted = true;
+    return this.state.firstVisibleSource;
+  }
+  get lastVisible(): ItemAdapter {
+    this.state.lastVisibleWanted = true;
+    return this.state.lastVisibleItem;
+  }
+  get lastVisible$(): BehaviorSubject<ItemAdapter> {
+    this.state.lastVisibleWanted = true;
+    return this.state.lastVisibleSource;
+  }
+  get itemsCount(): number {
+    return this.buffer.getVisibleItemsCount();
+  }
+  get bof(): boolean {
+    return this.buffer.bof;
+  }
+  get bof$(): Subject<boolean> {
+    return this.buffer.bofSource;
+  }
+  get eof(): boolean {
+    return this.buffer.eof;
+  }
+  get eof$(): Subject<boolean> {
+    return this.buffer.eofSource;
+  }
 
-  constructor(publicContext: IAdapterNew, state: State, workflow: ScrollerWorkflow, logger: Logger) {
+  constructor(publicContext: IAdapterNew, state: State, buffer: Buffer, workflow: ScrollerWorkflow, logger: Logger) {
     this.publicContext = <IAdapterNew>publicContext;
     this.state = state;
+    this.buffer = buffer;
     this.workflow = workflow;
     this.logger = logger;
 
@@ -46,7 +92,7 @@ export class Adapter {
       'reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix'
     ];
     const publicProperties = [
-      'version', 'isLoading'
+      'version', 'isLoading', 'loopPending', 'cyclePending', 'firstVisible', 'lastVisible', 'bof', 'eof'
     ];
     [...publicProperties, ...publicMethods].forEach((token: string) =>
       Object.defineProperty(publicContext, token, {
@@ -67,7 +113,10 @@ export class Adapter {
     );
 
     publicContext.init$.next(true);
+    publicContext.init$.complete();
   }
+
+  dispose() { }
 
   reload(reloadIndex?: number | string) {
     this.logger.log(() => `adapter: reload(${reloadIndex})`);

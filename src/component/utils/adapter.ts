@@ -23,13 +23,17 @@ class AdapterContext {
   bof = false;
   eof = false;
 
-  constructor() {
+  constructor(mock: boolean) {
 
     // public methods
     const publicMethods = [
       'reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix'
     ];
     publicMethods.forEach((token: string) => (<any>this)[token] = () => null);
+
+    if (mock) {
+      return;
+    }
 
     // public observable properties
     const self = this;
@@ -50,7 +54,7 @@ class AdapterContext {
   }
 }
 
-export const generateAdapterContext = (): IAdapterNew => <any>(new AdapterContext());
+export const generateAdapterContext = (mock: boolean): IAdapterNew => <any>(new AdapterContext(mock));
 
 export const generateMockAdapter = (): IAdapter => (
   <IAdapter>{

@@ -8,33 +8,130 @@ import {
   IAdapter
 } from '../interfaces/adapter';
 
-export const ADAPTER_PROPS: IAdapterProp[] = [
-  { type: Prop.Scalar, name: 'version' },
-  { type: Prop.Scalar, name: 'isLoading' },
-  { type: Prop.Scalar, name: 'loopPending' },
-  { type: Prop.Scalar, name: 'cyclePending' },
-  { type: Prop.Scalar, name: 'firstVisible' },
-  { type: Prop.Scalar, name: 'lastVisible' },
-  { type: Prop.Scalar, name: 'bof' },
-  { type: Prop.Scalar, name: 'eof' },
-  { type: Prop.Function, name: 'reload' },
-  { type: Prop.Function, name: 'append' },
-  { type: Prop.Function, name: 'prepend' },
-  { type: Prop.Function, name: 'check' },
-  { type: Prop.Function, name: 'remove' },
-  { type: Prop.Function, name: 'clip' },
-  { type: Prop.Function, name: 'showLog' },
-  { type: Prop.Function, name: 'fix' },
-  { type: Prop.Observable, name: 'isLoading$' },
-  { type: Prop.Observable, name: 'loopPending$' },
-  { type: Prop.Observable, name: 'cyclePending$' },
-  { type: Prop.Observable, name: 'firstVisible$' },
-  { type: Prop.Observable, name: 'lastVisible$' },
-  { type: Prop.Observable, name: 'bof$' },
-  { type: Prop.Observable, name: 'eof$' }
-];
-
 export const itemAdapterEmpty = <ItemAdapter>{
   data: {},
   element: {}
 };
+
+export const ADAPTER_PROPS: IAdapterProp[] = [
+  {
+    type: Prop.Scalar,
+    name: 'version',
+    value: ''
+  },
+  {
+    type: Prop.Scalar,
+    name: 'isLoading',
+    value: false
+  },
+  {
+    type: Prop.Scalar,
+    name: 'loopPending',
+    value: false
+  },
+  {
+    type: Prop.Scalar,
+    name: 'cyclePending',
+    value: false
+  },
+  {
+    type: Prop.Scalar,
+    name: 'firstVisible',
+    value: itemAdapterEmpty
+  },
+  {
+    type: Prop.Scalar,
+    name: 'lastVisible',
+    value: itemAdapterEmpty
+  },
+  {
+    type: Prop.Scalar,
+    name: 'itemsCount',
+    value: 0
+  },
+  {
+    type: Prop.Scalar,
+    name: 'bof',
+    value: false
+  },
+  {
+    type: Prop.Scalar,
+    name: 'eof',
+    value: false
+  },
+  {
+    type: Prop.Function,
+    name: 'reload',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
+    name: 'append',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
+    name: 'prepend',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
+    name: 'check',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
+    name: 'remove',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
+    name: 'clip',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
+    name: 'showLog',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
+    name: 'fix',
+    value: () => null
+  },
+  {
+    type: Prop.Observable,
+    name: 'isLoading$',
+    value: new Subject<boolean>()
+  },
+  {
+    type: Prop.Observable,
+    name: 'loopPending$',
+    value: new Subject<boolean>()
+  },
+  {
+    type: Prop.Observable,
+    name: 'cyclePending$',
+    value: new Subject<boolean>()
+  },
+  {
+    type: Prop.Observable,
+    name: 'firstVisible$',
+    value: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty)
+  },
+  {
+    type: Prop.Observable,
+    name: 'lastVisible$',
+    value: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty)
+  },
+  {
+    type: Prop.Observable,
+    name: 'bof$',
+    value: new Subject<boolean>()
+  },
+  {
+    type: Prop.Observable,
+    name: 'eof$',
+    value: new Subject<boolean>()
+  }
+];

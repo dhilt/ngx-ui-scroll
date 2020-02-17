@@ -9,6 +9,7 @@ export enum AdapterPropType {
 export interface IAdapterProp {
   type: AdapterPropType;
   name: string;
+  value: any;
 }
 
 export interface IAdapter {

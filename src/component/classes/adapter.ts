@@ -171,7 +171,9 @@ export class Adapter implements IAdapter {
   }
 
   fix(options: FixOptions) {
-    this.logger.log(() => `adapter: fix(${JSON.stringify(options)})`);
+    this.logger.log(() =>
+      `adapter: fix(${options ? '{ ' + Object.keys(options).join(', ') + ' }' : ''})`
+    );
     this.workflow.call(<ProcessSubject>{
       process: Process.fix,
       status: ProcessStatus.start,

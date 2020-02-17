@@ -7,28 +7,19 @@ import { AdapterPropType } from '../interfaces/index';
 export class AdapterContext {
   init$ = new BehaviorSubject<boolean>(false);
 
-  // default public scalar properties
-  version = '';
-  isLoading = false;
-  loopPending = false;
-  cyclePending = false;
-  firstVisible = itemAdapterEmpty;
-  lastVisible = itemAdapterEmpty;
-  itemsCount = 0;
-  bof = false;
-  eof = false;
-
   constructor(mock: boolean) {
-    // null public methods
-    ADAPTER_PROPS.filter(
-      prop => prop.type === AdapterPropType.Function
-    ).forEach(({ name }) => ((<any>this)[name] = () => null));
-
+    // set defaults public adapter props
+    ADAPTER_PROPS.filter( // except observables in non-mock case
+      prop => mock || prop.type !== AdapterPropType.Observable
+    ).forEach(({ name, value }) =>
+      Object.defineProperty(this, name, {
+        get: () => value
+      })
+    );
     if (mock) {
       return;
     }
-
-    // public observable properties
+    // set public observable props in non-mock case
     const self = this;
     ADAPTER_PROPS.filter(
       prop => prop.type === AdapterPropType.Observable

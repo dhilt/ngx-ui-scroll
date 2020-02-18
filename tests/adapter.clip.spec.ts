@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { testItemsCounter, ItemsCounter } from './miscellaneous/itemsCounter';
-import { ClipOptions } from 'src/component/interfaces';
+import { AdapterClipOptions } from 'src/component/interfaces';
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
@@ -25,7 +25,7 @@ const configByDirectionList = configList.map((config: TestBedConfig, index: numb
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
 export const getItemsCounter = (
-  settings: TestBedConfig, misc: Misc, itemSize: number, firstIndex: number, lastIndex: number, clipOptions: ClipOptions
+  settings: TestBedConfig, misc: Misc, itemSize: number, firstIndex: number, lastIndex: number, clipOptions: AdapterClipOptions
 ): ItemsCounter => {
   const { startIndex, padding } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize(settings);

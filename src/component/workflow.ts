@@ -20,7 +20,6 @@ export class Workflow {
   readonly context: UiScrollComponent;
   readonly onScrollHandler: EventListener;
   private stateMachineMethods: any;
-  private scrollEventOptions: any;
   private dispose$: Subject<void>;
 
   constructor(context: UiScrollComponent) {
@@ -57,43 +56,37 @@ export class Workflow {
 
   init() {
     this.scroller.init();
-    this.scroller.logger.stat('initialization');
     this.isInitialized = true;
-    this.initWorkflowListeners();
-    this.initScrollEventListener();
-  }
-
-  initWorkflowListeners() {
-    this.scroller.logger.log(() => `uiScroll Workflow listeners initialization`);
 
     // propagate the item list to the view
     this.scroller.buffer.$items.pipe(
       takeUntil(this.dispose$)
     ).subscribe(items => this.context.items = items);
 
-    // run the workflow
+    // run the workflow process
     this.process$.pipe(
       takeUntil(this.dispose$)
     ).subscribe(this.process.bind(this));
+
+    this.initScrollEventListener();
   }
 
   initScrollEventListener() {
-    let passiveSupported = false;
+    let scrollEventOptions: any = false;
     try {
       window.addEventListener(
         'test', <EventListenerOrEventListenerObject>{}, Object.defineProperty({}, 'passive', {
-          get: () => passiveSupported = true
+          get: () => scrollEventOptions = { passive: false }
         })
       );
     } catch (err) {
     }
-    this.scrollEventOptions = passiveSupported ? { passive: false } : false;
     this.scroller.viewport.scrollEventElement.addEventListener(
-      'scroll', this.onScrollHandler, this.scrollEventOptions
+      'scroll', this.onScrollHandler, scrollEventOptions
     );
     this.dispose$.subscribe(() =>
       this.scroller.viewport.scrollEventElement.removeEventListener(
-        'scroll', this.onScrollHandler, this.scrollEventOptions
+        'scroll', this.onScrollHandler, scrollEventOptions
       )
     );
   }

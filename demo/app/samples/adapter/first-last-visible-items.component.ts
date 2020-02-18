@@ -92,8 +92,8 @@ Visible items counter: {{visibleCount}}
   }];
 
   itemAdapterDescription = `  ItemAdapter {
-    $index?: number;
-    data?: any;
+    $index: number;
+    data: any;
     element?: HTMLElement;
   }`;
 

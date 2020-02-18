@@ -21,7 +21,7 @@ h3 {
   cursor: pointer;
   border-bottom: 1px solid #efefef;
   padding-top: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 h3 a {
@@ -44,7 +44,7 @@ p, li {
 }
 
 p {
-  margin-top: 29px;
+  margin-top: 2rem;
 }
 
 em {
@@ -175,6 +175,7 @@ button:hover {
 
 .demo .actions .comment {
   font-style: italic;
+  margin-bottom: 1rem;
 }
 
 input[type=checkbox], input[type=radio] {

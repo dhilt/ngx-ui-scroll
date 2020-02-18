@@ -23,12 +23,13 @@
     <p>
       In this demo we have limited datasource consisting of 100 items starting from index 1.
       So initially we are at the left position of the available dataset, and that's why we see
-      "Begin of file is reached" message. After some scrolling down <em>bof</em> is
-      being turned to <em>false</em>. The first item is destroyed and can be retrieved again.
+      "Begin of file is reached" message.
+      After some scrolling down <em>bof</em> is turned to <em>false</em>.
+      The first item is destroyed and can be retrieved again.
     </p>
     <p>
       The <em>edgeCounter</em> is bof/eof changes counter. It is defined via <em>merge(bof$, eof$)</em>
-      subscription which is being triggered each time <em>bof$</em>/<em>eof$</em> emits a new value.
+      subscription which is triggered each time <em>bof$</em>/<em>eof$</em> emits a new value.
     </p>
   </div>
 </app-demo>

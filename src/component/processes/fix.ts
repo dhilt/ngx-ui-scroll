@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
 import {
-  Direction, ItemsPredicate, ItemsLooper, Process, ProcessStatus, FixOptions, ItemAdapter
+  Direction, ItemsPredicate, ItemsLooper, Process, ProcessStatus, AdapterFixOptions, ItemAdapter
 } from '../interfaces/index';
 import { InputValue, ValidatedValue, validate } from '../utils/index';
 
@@ -11,19 +11,25 @@ enum FixParamToken {
   updater = 'updater'
 }
 
-interface FixParam {
+interface IFixParam {
   token: FixParamToken;
   type: InputValue;
-  call: Function;
+  call?: Function;
   value?: any;
+}
+
+interface IFixCall {
+  scroller: Scroller;
+  params: IFixParam[];
+  value: any;
 }
 
 export default class Fix {
 
-  static params: FixParam[] = [
+  static params: IFixParam[] = [
     {
       token: FixParamToken.scrollPosition,
-      type: InputValue.integer,
+      type: InputValue.integerUnlimited,
       call: Fix.setScrollPosition
     },
     {
@@ -43,7 +49,7 @@ export default class Fix {
     }
   ];
 
-  static run(scroller: Scroller, options: FixOptions) {
+  static run(scroller: Scroller, options: AdapterFixOptions) {
     const { workflow } = scroller;
     const params = Fix.checkOptions(scroller, options);
 
@@ -56,8 +62,11 @@ export default class Fix {
       return;
     }
 
-    params.forEach((param: FixParam) => {
-      param.call(scroller, param.value);
+    params.forEach((param: IFixParam) => {
+      if (typeof param.call !== 'function') {
+        return;
+      }
+      param.call({ scroller, params, value: param.value });
     });
 
     workflow.call({
@@ -66,33 +75,36 @@ export default class Fix {
     });
   }
 
-  static setScrollPosition(scroller: Scroller, value: number) {
-    const { state, viewport } = scroller;
+  static setScrollPosition({ scroller: { state, viewport }, value }: IFixCall) {
     state.syntheticScroll.reset();
-    viewport.setPosition(value);
+    let result = <number>value;
+    if (value === -Infinity) {
+      result = 0;
+    } else if (value === Infinity) {
+      result = viewport.getScrollableSize();
+    }
+    viewport.setPosition(result);
   }
 
-  static setMinIndex(scroller: Scroller, value: number) {
-    const { buffer, settings } = scroller;
-    settings.minIndex = value;
-    buffer.absMinIndex = value;
+  static setMinIndex({ scroller: { buffer, settings }, value }: IFixCall) {
+    settings.minIndex = <number>value;
+    buffer.absMinIndex = <number>value;
   }
 
-  static setMaxIndex(scroller: Scroller, value: number) {
-    const { buffer, settings } = scroller;
-    settings.maxIndex = value;
-    buffer.absMaxIndex = value;
+  static setMaxIndex({ scroller: { buffer, settings }, value }: IFixCall) {
+    settings.maxIndex = <number>value;
+    buffer.absMaxIndex = <number>value;
   }
 
-  static updateItems(scroller: Scroller, callback: ItemsLooper) {
-    scroller.buffer.items.forEach(item => callback(item.get()));
+  static updateItems({ scroller: { buffer }, value }: IFixCall) {
+    buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
   }
 
-  static checkOptions(scroller: Scroller, options: FixOptions): FixParam[] {
+  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {
     if (!options || typeof options !== 'object') {
       return [];
     }
-    return Fix.params.reduce((acc: FixParam[], param: FixParam) => {
+    return Fix.params.reduce((acc: IFixParam[], param: IFixParam) => {
       const { token, type } = param;
       if (options.hasOwnProperty(token)) {
         const parsed = validate((<any>options)[token], type);

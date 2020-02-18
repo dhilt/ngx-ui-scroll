@@ -97,7 +97,7 @@ export class Buffer {
   }
 
   private checkBOF() {
-    // since bof has no setter, need to call setBOF() on items and absMinIndex change
+    // since bof has no setter, need to call checkBOF() on items and absMinIndex change
     const bof = this.items.length
       ? (this.items[0].$index === this.absMinIndex)
       : isFinite(this.absMinIndex);
@@ -109,7 +109,7 @@ export class Buffer {
   }
 
   private checkEOF() {
-    // since eof has no setter, need to call etEOF() on items and absMaxIndex change
+    // since eof has no setter, need to call checkEOF() on items and absMaxIndex change
     const eof = this.items.length
       ? (this.items[this.items.length - 1].$index === this.absMaxIndex)
       : isFinite(this.absMaxIndex);
@@ -173,7 +173,7 @@ export class Buffer {
   }
 
   removeItem(item: Item) {
-    this.items = this.items.filter((_item: Item) => _item.$index !== item.$index);
+    this.items = this.items.filter(({ $index }: Item) => $index !== item.$index);
     this.items.forEach((_item: Item) => {
       if (_item.$index > item.$index) {
         _item.$index--;

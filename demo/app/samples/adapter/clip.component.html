@@ -9,7 +9,7 @@
       allowing to remove out-of-viewport items on demand.
       Commonly, the <em>uiScroll</em> runs the clipping procedure
       each time new items are fetched after scrolling.
-      Also, the <em>uiScroll</em> clipps old items from a side of the viewport
+      Also, the <em>uiScroll</em> clips old items from a side of the viewport
       that is opposite to a side where new items appear.
       This is one of the core parts of the virtualization concept.
       By invoking the <em>Adapter.clip</em> method
@@ -31,17 +31,17 @@
       Here we disabled virtualization by turning on the <em>infinite</em> setting.
       Clipping will never happen automatically.
       We see how the DOM elements counter value is getting bigger and bigger as we scroll on and on.
-      By pressiing the "Clip" button, we let only 20-21 items to survive.
+      By pressing the "Clip" button, we let only 20-21 items to survive.
       This way a kind of manual virtualization could be implemented.
     </p>
     <p>
       The method has an argument object that allows to run clipping process
-      only in one direction: 
+      only in one direction:
     </p>
     <pre>{{clipOptionsDescription}}</pre>
     <p>
       So, if we call <em>Adapter.clip({{clipOptionsSample}})</em>,
-      only ithose tems that are out of the bottom border of the visible part of the viewport
+      only those items that are out of the bottom edge of the visible part of the viewport
       will be clipped out.
     </p>
   </div>

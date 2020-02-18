@@ -5,7 +5,7 @@ export default class Check {
 
   static run(scroller: Scroller) {
     const { workflow, buffer, state: { fetch } } = scroller;
-    let min = Number.POSITIVE_INFINITY, max = Number.NEGATIVE_INFINITY;
+    let min = Infinity, max = -Infinity;
 
     buffer.items.forEach(item => {
       const size = item.size;

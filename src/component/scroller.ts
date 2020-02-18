@@ -58,6 +58,7 @@ export class Scroller {
 
   init() {
     this.viewport.reset(0);
+    this.logger.stat('initialization');
   }
 
   bindData(): Observable<any> {

@@ -19,7 +19,7 @@ export class Logger {
   readonly getScrollPosition: Function;
   private logs: Array<any> = [];
 
-  constructor(scroller: Scroller) {
+  constructor(scroller: Scroller, version: string) {
     const { settings } = scroller;
     this.debug = settings.debug;
     this.immediateLog = settings.immediateLog;
@@ -46,11 +46,11 @@ export class Logger {
     this.getLoop = (): string => scroller.state.loop;
     this.getLoopNext = (): string => scroller.state.loopNext;
     this.getWorkflowCycleData = (): string =>
-      `${scroller.settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
+      `${settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
     this.getWorkflowOptions = () => scroller.state.workflowOptions;
     this.getSynthScrollState = () => scroller.state.syntheticScroll;
     this.getScrollPosition = (element: HTMLElement) => scroller.routines.getScrollPosition(element);
-    this.log(() => `uiScroll Workflow has been started (v${scroller.version}, instance ${settings.instanceIndex})`);
+    this.log(() => `uiScroll Workflow has been started (v${version}, instance ${settings.instanceIndex})`);
   }
 
   object(str: string, obj: any, stringify?: boolean) {

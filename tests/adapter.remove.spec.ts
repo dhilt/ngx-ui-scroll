@@ -58,14 +58,17 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (d
 
 const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const cycles = misc.workflow.cyclesDone;
-    if (cycles === 1) {
+    if (misc.workflow.cyclesDone === 1) {
+      const innerLoopCount = misc.scroller.state.innerLoopCount;
       // call remove with wrong predicate
       misc.datasource.adapter.remove(<any>null);
-    } else if (cycles === 2) {
-      expect(misc.workflow.errors.length).toEqual(1);
-      expect(misc.workflow.errors[0].process).toEqual(Process.remove);
-      done();
+      setTimeout(() => {
+        expect(misc.workflow.cyclesDone).toEqual(1);
+        expect(misc.scroller.state.innerLoopCount).toEqual(innerLoopCount);
+        expect(misc.workflow.errors.length).toEqual(1);
+        expect(misc.workflow.errors[0].process).toEqual(Process.remove);
+        done();
+      }, 40);
     }
   });
 };

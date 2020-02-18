@@ -1,0 +1,34 @@
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
+
+  <div actions>
+    <div class="comment">Available since v1.2.4, undocumented</div>
+    <button (click)="scrollTop()">scroll top</button>
+    <button (click)="scrollBottom()">scroll bottom</button>
+  </div>
+
+  <div description>
+    <p>
+      The first option of <em>Adapter.fix</em> method is <em>scrollPosition</em>.
+      It allows to change the position of the viewport's scrollbar programmatically.
+      It is used in the lib tests.
+    </p>
+    <p>
+      The value of <em>scrollPosition</em> should be an integer or Infinity.
+      Negative value would be treated as zero.
+      Despite the browsers have no agreement on how to deal with
+      setting <em>scrollTop</em>/<em>scrollLeft</em> properties
+      into <em>+/-Infinity</em>, the <em>uiScroll</em> treats them as follows:
+    </p>
+    <ul>
+      <li>
+        scroll to the beginning of the viewport if <em>-Infinity</em>,
+        (the value will be set to <em>0</em>)
+      </li>
+      <li>
+        scroll to the end of the viewport if <em>Infinity</em>
+        (scroll position will be set into the viewport's
+        <em>scrollHeight</em> or <em>scrollWidth</em> value)
+      </li>
+    </ul>
+  </div>
+</app-demo>

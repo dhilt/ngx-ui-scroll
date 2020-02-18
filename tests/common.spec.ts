@@ -4,7 +4,7 @@ import { Settings, Direction } from '../src/component/interfaces';
 import { defaultSettings, minSettings } from '../src/component/classes/settings';
 
 import { configureTestBed } from './scaffolding/testBed';
-import { defaultDatasourceClass } from './scaffolding/datasources';
+import { defaultDatasourceClass, generateDatasourceClass } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 import { makeTest } from './scaffolding/runner';
@@ -240,6 +240,75 @@ describe('Bad datasource', () => {
       expect(error).toBe('Datasource get method invalid signature');
       done();
     }
+  });
+
+});
+
+describe('Workflow initialization', () => {
+
+  let misc: Misc;
+  const delay = 1;
+  const runBeforeEach = (initDelay: number) =>
+    beforeEach(
+      () =>
+        (misc = new Misc(
+          configureTestBed(
+            generateDatasourceClass(
+              'infinite-callback-no-delay',
+              { adapter: true },
+              { initDelay }
+            ),
+            defaultTemplate
+          )
+        ))
+    );
+
+  describe('Delayed initialization', () => {
+    runBeforeEach(delay);
+
+    it('should pass', (done: Function) => {
+      const { datasource: { adapter }, workflow } = misc;
+      expect(workflow.isInitialized).toBe(false);
+      expect(adapter.init$.getValue()).toBe(true);
+      setTimeout(() => {
+        expect(adapter.init$.getValue()).toBe(true);
+        expect(workflow.isInitialized).toBe(true);
+        done();
+      }, delay);
+    });
+  });
+
+  describe('Disposing after delayed initialization', () => {
+    runBeforeEach(delay);
+
+    it('should pass', (done: Function) => {
+      setTimeout(() => {
+        misc.fixture.destroy();
+        expect(misc.workflow.isInitialized).toBe(false);
+        done();
+      }, delay);
+    });
+  });
+
+  describe('Disposing before delayed initialization', () => {
+    runBeforeEach(delay);
+
+    it('should dispose correctly', (done: Function) => {
+      misc.fixture.destroy();
+      expect(misc.workflow.isInitialized).toBe(false);
+      done();
+    });
+  });
+
+  describe('Disposing after immediate initialization', () => {
+    runBeforeEach(0);
+
+    it('should pass', (done: Function) => {
+      expect(misc.workflow.isInitialized).toBe(true);
+      misc.fixture.destroy();
+      expect(misc.workflow.isInitialized).toBe(false);
+      done();
+    });
   });
 
 });

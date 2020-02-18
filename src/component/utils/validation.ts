@@ -1,7 +1,8 @@
 export enum InputValue {
   integer = 'integer',
   integerUnlimited = 'integer or infinity',
-  iteratorCallback = 'iterator callback'
+  iteratorCallback = 'iterator callback',
+  boolean = 'boolean'
 }
 
 export interface ValidatedValue {
@@ -43,6 +44,9 @@ export const validate = (value: any, type: InputValue): ValidatedValue => {
       error = 'it must have 1 argument';
     }
     parsedValue = value;
+  }
+  if (type === InputValue.boolean) {
+    parsedValue = !!value;
   }
   return {
     value: parsedValue,

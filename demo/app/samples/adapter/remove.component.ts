@@ -86,7 +86,7 @@ doRemoveDatasource(id: number) {
 }
 
 doRemove(id: number) {
-  this.datasource.adapter.remove(item => item.data.id === id);
+  this.datasource.adapter.remove(({ data }) => data.id === id);
   this.doRemoveDatasource(id);
 }`
   }, {
@@ -122,7 +122,7 @@ doRemove(id: number) {
 }`
   }];
 
-  predicateDescription = `  this.datasource.adapter.remove(item => item.data.id === id);`;
+  predicateDescription = `  this.datasource.adapter.remove(({ data }) => data.id === id);`;
 
   doRemoveDatasource(id: number) {
     this.data = this.data.reduce((acc, item) => {
@@ -138,7 +138,7 @@ doRemove(id: number) {
   }
 
   doRemove(id: number) {
-    this.datasource.adapter.remove(item => item.data.id === id);
+    this.datasource.adapter.remove(({ data }) => data.id === id);
     this.doRemoveDatasource(id);
   }
 

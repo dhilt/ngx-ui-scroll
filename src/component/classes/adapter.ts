@@ -1,100 +1,114 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import { Scroller } from '../scroller';
+import { Logger } from './logger';
+import { Buffer } from './buffer';
 import { AdapterContext } from './adapterContext';
-import { protectAdapterPublicMethod } from '../utils/index';
+import { ADAPTER_PROPS } from '../utils/index';
 import {
-  Adapter as IAdapter, Process, ProcessSubject, ProcessStatus, ItemAdapter, ItemsPredicate, ClipOptions, FixOptions
+  AdapterPropType,
+  IAdapterProp,
+  IAdapter,
+  Process,
+  ProcessSubject,
+  ProcessStatus,
+  ItemAdapter,
+  ItemsPredicate,
+  AdapterClipOptions,
+  AdapterFixOptions,
+  State,
+  ScrollerWorkflow
 } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
+  readonly state: State;
+  readonly buffer: Buffer;
+  readonly logger: Logger;
+  readonly workflow: ScrollerWorkflow;
 
-  private context: AdapterContext;
-  init$: BehaviorSubject<boolean>;
+  init$ = new BehaviorSubject<boolean>(false);
 
-  get init(): boolean {
-    return this.context.init;
+  get version(): string {
+    return this.state.version;
   }
-
-  get version(): string | null {
-    return this.context.version;
-  }
-
   get isLoading(): boolean {
-    return this.context.isLoading;
+    return this.state.isLoading;
   }
-
   get isLoading$(): Subject<boolean> {
-    return this.context.isLoading$;
+    return this.state.isLoadingSource;
   }
-
   get loopPending(): boolean {
-    return this.context.loopPending;
+    return this.state.loopPending;
   }
-
   get loopPending$(): Subject<boolean> {
-    return this.context.loopPending$;
+    return this.state.loopPendingSource;
   }
-
   get cyclePending(): boolean {
-    return this.context.cyclePending;
+    return this.state.workflowPending;
   }
-
   get cyclePending$(): Subject<boolean> {
-    return this.context.cyclePending$;
+    return this.state.workflowPendingSource;
   }
-
-  get bof(): boolean {
-    return this.context.bof;
-  }
-
-  get bof$(): Subject<boolean> {
-    return this.context.bof$;
-  }
-
-  get eof(): boolean {
-    return this.context.eof;
-  }
-
-  get eof$(): Subject<boolean> {
-    return this.context.eof$;
-  }
-
   get firstVisible(): ItemAdapter {
-    return this.context.firstVisible;
+    this.state.firstVisibleWanted = true;
+    return this.state.firstVisibleItem;
   }
-
   get firstVisible$(): BehaviorSubject<ItemAdapter> {
-    return this.context.firstVisible$;
+    this.state.firstVisibleWanted = true;
+    return this.state.firstVisibleSource;
   }
-
   get lastVisible(): ItemAdapter {
-    return this.context.lastVisible;
+    this.state.lastVisibleWanted = true;
+    return this.state.lastVisibleItem;
   }
-
   get lastVisible$(): BehaviorSubject<ItemAdapter> {
-    return this.context.lastVisible$;
+    this.state.lastVisibleWanted = true;
+    return this.state.lastVisibleSource;
   }
-
   get itemsCount(): number {
-    return this.context.itemsCount;
+    return this.buffer.getVisibleItemsCount();
+  }
+  get bof(): boolean {
+    return this.buffer.bof;
+  }
+  get bof$(): Subject<boolean> {
+    return this.buffer.bofSource;
+  }
+  get eof(): boolean {
+    return this.buffer.eof;
+  }
+  get eof$(): Subject<boolean> {
+    return this.buffer.eofSource;
   }
 
-  constructor() {
-    this.init$ = new BehaviorSubject<boolean>(false);
-    this.context = new AdapterContext(this.init$);
+  constructor(publicContext: IAdapter, state: State, buffer: Buffer, workflow: ScrollerWorkflow, logger: Logger) {
+    this.state = state;
+    this.buffer = buffer;
+    this.workflow = workflow;
+    this.logger = logger;
 
-    ['reload', 'append', 'prepend', 'check', 'remove', 'clip', 'showLog', 'fix']
-      .forEach(token => protectAdapterPublicMethod(this, token));
+    ADAPTER_PROPS.forEach(({ type, name }: IAdapterProp) =>
+      Object.defineProperty(
+        publicContext,
+        type === AdapterPropType.Observable ? `_${name}` : name,
+        {
+          get: () => {
+            const value = (<any>this)[name];
+            return type === AdapterPropType.Function ? value.bind(this) : value;
+          }
+        }
+      )
+    );
+
+    publicContext.init$.next(true);
+    publicContext.init$.complete();
   }
 
-  initialize(scroller: Scroller) {
-    this.context.initialize(scroller);
-  }
+  dispose() { }
 
   reload(reloadIndex?: number | string) {
-    this.context.logger.log(() => `adapter: reload(${reloadIndex})`);
-    this.context.callWorkflow(<ProcessSubject>{
+    this.logger.log(() => `adapter: reload(${reloadIndex})`);
+    this.workflow.call(<ProcessSubject>{
       process: Process.reload,
       status: ProcessStatus.start,
       payload: reloadIndex
@@ -102,11 +116,11 @@ export class Adapter implements IAdapter {
   }
 
   append(items: any, eof?: boolean) {
-    this.context.logger.log(() => {
+    this.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
       return `adapter: append([${count}], ${!!eof})`;
     });
-    this.context.callWorkflow(<ProcessSubject>{
+    this.workflow.call(<ProcessSubject>{
       process: Process.append,
       status: ProcessStatus.start,
       payload: { items, eof }
@@ -114,11 +128,11 @@ export class Adapter implements IAdapter {
   }
 
   prepend(items: any, bof?: boolean) {
-    this.context.logger.log(() => {
+    this.logger.log(() => {
       const count = Array.isArray(items) ? items.length : 1;
       return `adapter: prepend([${count}], ${!!bof})`;
     });
-    this.context.callWorkflow(<ProcessSubject>{
+    this.workflow.call(<ProcessSubject>{
       process: Process.prepend,
       status: ProcessStatus.start,
       payload: { items, bof }
@@ -126,25 +140,25 @@ export class Adapter implements IAdapter {
   }
 
   check() {
-    this.context.logger.log(() => `adapter: check()`);
-    this.context.callWorkflow(<ProcessSubject>{
+    this.logger.log(() => `adapter: check()`);
+    this.workflow.call(<ProcessSubject>{
       process: Process.check,
       status: ProcessStatus.start
     });
   }
 
   remove(predicate: ItemsPredicate) {
-    this.context.logger.log(() => `adapter: remove()`);
-    this.context.callWorkflow(<ProcessSubject>{
+    this.logger.log(() => `adapter: remove()`);
+    this.workflow.call(<ProcessSubject>{
       process: Process.remove,
       status: ProcessStatus.start,
       payload: predicate
     });
   }
 
-  clip(options?: ClipOptions) {
-    this.context.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
-    this.context.callWorkflow(<ProcessSubject>{
+  clip(options?: AdapterClipOptions) {
+    this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
+    this.workflow.call(<ProcessSubject>{
       process: Process.userClip,
       status: ProcessStatus.start,
       payload: options
@@ -152,14 +166,15 @@ export class Adapter implements IAdapter {
   }
 
   showLog() {
-    this.context.logger.log(() => `adapter: showLog()`);
-    this.context.logger.logForce();
+    this.logger.log(() => `adapter: showLog()`);
+    this.logger.logForce();
   }
 
-  // undocumented
-  fix(options: FixOptions) {
-    this.context.logger.log(() => `adapter: fix(${JSON.stringify(options)})`);
-    this.context.callWorkflow(<ProcessSubject>{
+  fix(options: AdapterFixOptions) {
+    this.logger.log(() =>
+      `adapter: fix(${options ? '{ ' + Object.keys(options).join(', ') + ' }' : ''})`
+    );
+    this.workflow.call(<ProcessSubject>{
       process: Process.fix,
       status: ProcessStatus.start,
       payload: options

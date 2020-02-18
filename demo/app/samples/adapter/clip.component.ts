@@ -69,7 +69,7 @@ doClip() {
 }`
   }];
 
-  clipOptionsDescription = `  ClipOptions {
+  clipOptionsDescription = `  AdapterClipOptions {
     forwardOnly?: boolean;
     backwardOnly?: boolean;
   }`;

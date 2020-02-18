@@ -36,7 +36,7 @@ export default class End {
     workflow.call({
       process: Process.end,
       status: next ? ProcessStatus.next : ProcessStatus.done,
-      payload: process
+      payload: { process, keepScroll: state.workflowOptions.keepScroll }
     });
 
     // if the Workflow isn't finalized, it may freeze for no more than settings.throttle ms
@@ -134,7 +134,8 @@ export default class End {
         workflowOptions.keepScroll = false;
         scroller.workflow.call({
           process: Process.end,
-          status: ProcessStatus.next
+          status: ProcessStatus.next,
+          payload: { keepScroll: state.workflowOptions.keepScroll }
         });
       }
     }, scroller.settings.throttle);

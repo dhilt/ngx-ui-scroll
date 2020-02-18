@@ -36,7 +36,7 @@ export default class PreFetch {
     workflow.call({
       process: Process.preFetch,
       status: fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
-      payload: process
+      payload: { ...(process ? { process } : {}) }
     });
   }
 

@@ -11,25 +11,25 @@ enum FixParamToken {
   updater = 'updater'
 }
 
-interface FixParam {
+interface IFixParam {
   token: FixParamToken;
   type: InputValue;
   call?: Function;
   value?: any;
 }
 
-interface CallParams {
+interface IFixCall {
   scroller: Scroller;
-  params: FixParam[];
+  params: IFixParam[];
   value: any;
 }
 
 export default class Fix {
 
-  static params: FixParam[] = [
+  static params: IFixParam[] = [
     {
       token: FixParamToken.scrollPosition,
-      type: InputValue.integer,
+      type: InputValue.integerUnlimited,
       call: Fix.setScrollPosition
     },
     {
@@ -62,7 +62,7 @@ export default class Fix {
       return;
     }
 
-    params.forEach((param: FixParam) => {
+    params.forEach((param: IFixParam) => {
       if (typeof param.call !== 'function') {
         return;
       }
@@ -75,30 +75,36 @@ export default class Fix {
     });
   }
 
-  static setScrollPosition({ scroller: { state, viewport }, value }: CallParams) {
+  static setScrollPosition({ scroller: { state, viewport }, value }: IFixCall) {
     state.syntheticScroll.reset();
-    viewport.setPosition(<number>value);
+    let result = <number>value;
+    if (value === -Infinity) {
+      result = 0;
+    } else if (value === Infinity) {
+      result = viewport.getScrollableSize();
+    }
+    viewport.setPosition(result);
   }
 
-  static setMinIndex({ scroller: { buffer, settings }, value }: CallParams) {
+  static setMinIndex({ scroller: { buffer, settings }, value }: IFixCall) {
     settings.minIndex = <number>value;
     buffer.absMinIndex = <number>value;
   }
 
-  static setMaxIndex({ scroller: { buffer, settings }, value }: CallParams) {
+  static setMaxIndex({ scroller: { buffer, settings }, value }: IFixCall) {
     settings.maxIndex = <number>value;
     buffer.absMaxIndex = <number>value;
   }
 
-  static updateItems({ scroller: { buffer }, value }: CallParams) {
+  static updateItems({ scroller: { buffer }, value }: IFixCall) {
     buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
   }
 
-  static checkOptions(scroller: Scroller, options: AdapterFixOptions): FixParam[] {
+  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {
     if (!options || typeof options !== 'object') {
       return [];
     }
-    return Fix.params.reduce((acc: FixParam[], param: FixParam) => {
+    return Fix.params.reduce((acc: IFixParam[], param: IFixParam) => {
       const { token, type } = param;
       if (options.hasOwnProperty(token)) {
         const parsed = validate((<any>options)[token], type);

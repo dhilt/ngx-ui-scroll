@@ -38,7 +38,6 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (d
         config.custom.remove.some((i: number) => i === (byId ? item.data.id : item.$index))
       );
     } else if (cycles === 2) {
-      misc.fixture.detectChanges();
       const first = <number>buffer.firstIndex;
       const last = <number>buffer.lastIndex;
       const offset = config.custom.remove.length;

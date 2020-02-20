@@ -1,4 +1,5 @@
 import { async } from '@angular/core/testing';
+import { BehaviorSubject } from 'rxjs';
 
 import { Settings, Direction } from '../src/component/interfaces';
 import { defaultSettings, minSettings } from '../src/component/classes/settings';
@@ -267,11 +268,11 @@ describe('Workflow initialization', () => {
     runBeforeEach(delay);
 
     it('should pass', (done: Function) => {
-      const { datasource: { adapter }, workflow } = misc;
+      const { datasource: { adapter: { init$ } }, workflow } = misc;
       expect(workflow.isInitialized).toBe(false);
-      expect(adapter.init$.getValue()).toBe(true);
+      expect((<BehaviorSubject<boolean>>init$).getValue()).toBe(true);
       setTimeout(() => {
-        expect(adapter.init$.getValue()).toBe(true);
+        expect((<BehaviorSubject<boolean>>init$).getValue()).toBe(true);
         expect(workflow.isInitialized).toBe(true);
         done();
       }, delay);

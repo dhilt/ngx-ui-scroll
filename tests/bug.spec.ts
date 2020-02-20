@@ -3,16 +3,14 @@ import { Misc } from './miscellaneous/misc';
 
 describe('Bug Spec', () => {
 
-  describe('empty datasource for scrollable viewport', () => {
-    const config: TestBedConfig = {
-      datasourceName: 'empty-callback',
-      templateSettings: { viewportPadding: 200 },
-      datasourceSettings: { adapter: true }
-    };
-
+  describe('empty datasource for scrollable viewport', () =>
     makeTest({
       title: 'should stop on first inner loop',
-      config,
+      config: {
+        datasourceName: 'empty-callback',
+        templateSettings: { viewportPadding: 200 },
+        datasourceSettings: { adapter: true }
+      },
       it: (misc: Misc) => (done: Function) => {
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           const { state } = misc.scroller;
@@ -27,19 +25,17 @@ describe('Bug Spec', () => {
           }
         });
       }
-    });
-  });
+    })
+  );
 
-  describe('first/lastVisible when BOF and EOF', () => {
-    const config: TestBedConfig = {
-      datasourceName: 'limited-1-100-no-delay',
-      templateSettings: { viewportHeight: 300, itemHeight: 15 },
-      datasourceSettings: { padding: 5, adapter: true }
-    };
-
+  describe('first/lastVisible when BOF and EOF', () =>
     makeTest({
       title: 'should update first/lastVisible',
-      config,
+      config: {
+        datasourceName: 'limited-1-100-no-delay',
+        templateSettings: { viewportHeight: 300, itemHeight: 15 },
+        datasourceSettings: { padding: 5, adapter: true }
+      },
       it: (misc: Misc) => (done: Function) => {
         const { state, datasource: { adapter } } = misc.scroller;
         adapter.firstVisible$.subscribe(item => count++);
@@ -64,7 +60,41 @@ describe('Bug Spec', () => {
           }
         });
       }
-    });
-  });
+    })
+  );
+
+  describe('massive reload', () =>
+    makeTest({
+      config: {
+        datasourceName: 'infinite-callback-delay-150',
+        datasourceSettings: {
+          adapter: true,
+          bufferSize: 15
+        }
+      },
+      title: 'should continue the workflow again and again',
+      it: (misc: Misc) => (done: Function) => {
+        const { adapter } = misc.datasource;
+        let count = 0;
+        const doubleReload = () => {
+          count++;
+          adapter.reload();
+          count++;
+          adapter.reload();
+        };
+        doubleReload();
+        setTimeout(() => {
+          doubleReload();
+          setTimeout(() => {
+            doubleReload();
+            spyOn(misc.workflow, 'finalize').and.callFake(() => {
+              expect(misc.scroller.state.workflowCycleCount).toEqual(count);
+              done();
+            });
+          }, 25);
+        }, 25);
+      }
+    })
+  );
 
 });

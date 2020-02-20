@@ -39,7 +39,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public datasource: IDatasource | Datasource;
 
   // use in the template
-  public items: Array<Item>;
+  public items: Item[] = [];
 
   // Component-Workflow integration
   public workflow: Workflow;
@@ -49,7 +49,18 @@ export class UiScrollComponent implements OnInit, OnDestroy {
     public elementRef: ElementRef) { }
 
   ngOnInit() {
-    this.workflow = new Workflow(this);
+    this.workflow = new Workflow(
+      this.elementRef.nativeElement,
+      this.datasource,
+      this.version,
+      (items: Item[]) => {
+        if (!items.length && !this.items.length) {
+          return;
+        }
+        this.items = items;
+        this.changeDetector.markForCheck();
+      }
+    );
   }
 
   ngOnDestroy() {

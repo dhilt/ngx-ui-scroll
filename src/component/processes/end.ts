@@ -23,11 +23,6 @@ export default class End {
     // what next? done?
     const next = End.getNext(scroller, process, error);
 
-    // need to apply Buffer.items changes if clip
-    if (state.clip.doClip) {
-      scroller.runChangeDetector();
-    }
-
     // finalize current workflow loop
     End.endWorkflowLoop(scroller, next);
     state.innerLoopCount++;

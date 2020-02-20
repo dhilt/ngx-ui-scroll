@@ -110,7 +110,6 @@ const invertDirection = (config: TestBedConfig) => {
 };
 
 const getInitialItemsCounter = (misc: Misc): ItemsCounter => {
-  misc.fixture.detectChanges();
   const { startIndex } = misc.scroller.settings;
   const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(Direction.forward);
   const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(Direction.backward);
@@ -140,7 +139,6 @@ const getFullHouseDiff = (
 };
 
 const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: ItemsCounter): ItemsCounter => {
-  misc.fixture.detectChanges();
   const { bufferSize, padding } = misc.scroller.settings;
   const viewportSize = misc.scroller.viewport.getSize();
   const itemSize = misc.scroller.buffer.averageSize;

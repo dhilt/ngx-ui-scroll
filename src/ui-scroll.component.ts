@@ -39,7 +39,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public datasource: IDatasource | Datasource;
 
   // use in the template
-  public items: Item[];
+  public items: Item[] = [];
 
   // Component-Workflow integration
   public workflow: Workflow;
@@ -54,6 +54,9 @@ export class UiScrollComponent implements OnInit, OnDestroy {
       this.datasource,
       this.version,
       (items: Item[]) => {
+        if (!items.length && !this.items.length) {
+          return;
+        }
         this.items = items;
         this.changeDetector.markForCheck();
       }

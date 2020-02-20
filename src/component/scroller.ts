@@ -27,8 +27,8 @@ export class Scroller {
 
   public innerLoopSubscriptions: Array<Subscription>;
 
-  constructor(element: HTMLElement, originalDatasource: IDatasource, version: string, callWorkflow: Function) {
-    const datasource = <Datasource>checkDatasource(originalDatasource);
+  constructor(element: HTMLElement, datasource: Datasource | IDatasource, version: string, callWorkflow: Function) {
+    checkDatasource(datasource);
 
     this.workflow = <ScrollerWorkflow>{ call: callWorkflow };
     this.innerLoopSubscriptions = [];
@@ -43,10 +43,11 @@ export class Scroller {
     this.logger.object('uiScroll settings object', this.settings, true);
 
     // datasource & adapter initialization
-    this.datasource = !datasource.constructed
+    const constructed = datasource instanceof Datasource;
+    this.datasource = !constructed
       ? new Datasource(datasource, !this.settings.adapter)
-      : datasource;
-    if (datasource.constructed || this.settings.adapter) {
+      : <Datasource>datasource;
+    if (constructed || this.settings.adapter) {
       this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.logger, () => this.workflow);
     }
   }

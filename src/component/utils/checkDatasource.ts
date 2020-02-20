@@ -1,8 +1,9 @@
-import { Datasource } from '../interfaces/index';
-
-export const checkDatasource = (datasource: Datasource): Datasource => {
-  if (!datasource) {
+export const checkDatasource = (datasource: any) => {
+  if (!datasource) { // also handles null case
     throw new Error('No datasource provided');
+  }
+  if (!(typeof datasource === 'object')) {
+    throw new Error('Datasource is not an object');
   }
   if (!('get' in datasource)) {
     throw new Error('Datasource get method is not implemented');
@@ -13,5 +14,4 @@ export const checkDatasource = (datasource: Datasource): Datasource => {
   if ((<Function>(datasource.get)).length < 2) {
     throw new Error('Datasource get method invalid signature');
   }
-  return datasource;
 };

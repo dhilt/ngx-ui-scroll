@@ -1,6 +1,6 @@
+import { ElementRef } from '@angular/core';
 import { Observable, Subscription, Observer } from 'rxjs';
 
-import { UiScrollComponent } from '../ui-scroll.component';
 import { checkDatasource } from './utils/index';
 import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';
@@ -10,13 +10,11 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
-import { ScrollerWorkflow, IAdapter } from './interfaces/index';
+import { ScrollerWorkflow, IAdapter, Datasource as IDatasource } from './interfaces/index';
 
 let instanceCount = 0;
 
 export class Scroller {
-
-  readonly runChangeDetector: Function;
   public workflow: ScrollerWorkflow;
 
   public datasource: Datasource;
@@ -30,20 +28,18 @@ export class Scroller {
 
   public innerLoopSubscriptions: Array<Subscription>;
 
-  constructor(context: UiScrollComponent, callWorkflow: Function) {
-    const datasource = <Datasource>checkDatasource(context.datasource);
+  constructor(elementRef: ElementRef, originalDatasource: IDatasource, version: string, callWorkflow: Function) {
+    const datasource = <Datasource>checkDatasource(originalDatasource);
 
-    this.runChangeDetector = () => context.changeDetector.markForCheck();
-    // this.runChangeDetector = () => context.changeDetector.detectChanges();
     this.workflow = <ScrollerWorkflow>{ call: callWorkflow };
     this.innerLoopSubscriptions = [];
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
-    this.logger = new Logger(this, context.version);
+    this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
-    this.state = new State(this.settings, context.version, this.logger);
+    this.state = new State(this.settings, version, this.logger);
     this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger);
-    this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.state, this.logger);
+    this.viewport = new Viewport(elementRef, this.settings, this.routines, this.state, this.logger);
 
     this.logger.object('uiScroll settings object', this.settings, true);
 
@@ -62,7 +58,6 @@ export class Scroller {
   }
 
   bindData(): Observable<any> {
-    this.runChangeDetector();
     return new Observable((observer: Observer<any>) => {
       setTimeout(() => {
         observer.next(true);

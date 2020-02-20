@@ -1,11 +1,11 @@
+import { ElementRef } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { UiScrollComponent } from '../ui-scroll.component';
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
 import {
-  Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
+  Datasource, Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
 } from './interfaces/index';
 
 export class Workflow {
@@ -17,21 +17,21 @@ export class Workflow {
   interruptionCount: number;
   errors: Array<WorkflowError>;
 
-  readonly context: UiScrollComponent;
+  readonly propagateChanges: Function;
   readonly onScrollHandler: EventListener;
   private stateMachineMethods: any;
   private dispose$: Subject<void>;
 
-  constructor(context: UiScrollComponent) {
+  constructor(elementRef: ElementRef, datasource: Datasource, version: string, run: Function) {
     this.isInitialized = false;
-    this.context = context;
     this.dispose$ = new Subject();
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
       status: Status.start
     });
+    this.propagateChanges = run;
     this.callWorkflow = <any>this.callWorkflow.bind(this);
-    this.scroller = new Scroller(this.context, this.callWorkflow);
+    this.scroller = new Scroller(elementRef, datasource, version, this.callWorkflow);
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];
@@ -61,7 +61,7 @@ export class Workflow {
     // propagate the item list to the view
     this.scroller.buffer.$items.pipe(
       takeUntil(this.dispose$)
-    ).subscribe(items => this.context.items = items);
+    ).subscribe(items => this.propagateChanges(items));
 
     // run the workflow process
     this.process$.pipe(

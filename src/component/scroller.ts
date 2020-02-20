@@ -48,7 +48,7 @@ export class Scroller {
       ? new Datasource(datasource, !this.settings.adapter)
       : datasource;
     if (datasource.constructed || this.settings.adapter) {
-      this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.workflow, this.logger);
+      this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.logger, () => this.workflow);
     }
   }
 

@@ -6,6 +6,7 @@ import { Buffer } from './buffer';
 import { AdapterContext } from './adapterContext';
 import { ADAPTER_PROPS } from '../utils/index';
 import {
+  WorkflowGetter,
   AdapterPropType,
   IAdapterProp,
   IAdapter,
@@ -24,9 +25,11 @@ export class Adapter implements IAdapter {
   readonly state: State;
   readonly buffer: Buffer;
   readonly logger: Logger;
-  readonly workflow: ScrollerWorkflow;
+  readonly getWorkflow: WorkflowGetter;
 
-  init$ = new BehaviorSubject<boolean>(false);
+  get workflow(): ScrollerWorkflow {
+    return this.getWorkflow();
+  }
 
   get version(): string {
     return this.state.version;
@@ -81,11 +84,11 @@ export class Adapter implements IAdapter {
     return this.buffer.eofSource;
   }
 
-  constructor(publicContext: IAdapter, state: State, buffer: Buffer, workflow: ScrollerWorkflow, logger: Logger) {
+  constructor(publicContext: IAdapter, state: State, buffer: Buffer, logger: Logger, getWorkflow: WorkflowGetter) {
     this.state = state;
     this.buffer = buffer;
-    this.workflow = workflow;
     this.logger = logger;
+    this.getWorkflow = getWorkflow;
 
     ADAPTER_PROPS.forEach(({ type, name }: IAdapterProp) =>
       Object.defineProperty(
@@ -100,14 +103,17 @@ export class Adapter implements IAdapter {
       )
     );
 
-    publicContext.init$.next(true);
-    publicContext.init$.complete();
+    const init$ = <Subject<boolean>>publicContext.init$;
+    init$.next(true);
+    init$.complete();
   }
 
   dispose() { }
 
   reload(reloadIndex?: number | string) {
-    this.logger.log(() => `adapter: reload(${reloadIndex})`);
+    this.logger.log(() =>
+      `adapter: reload(${typeof reloadIndex !== 'undefined' ? reloadIndex : ''})`
+    );
     this.workflow.call(<ProcessSubject>{
       process: Process.reload,
       status: ProcessStatus.start,

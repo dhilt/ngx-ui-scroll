@@ -13,7 +13,7 @@ export interface IAdapterProp {
 }
 
 export interface IAdapter {
-  readonly init$: BehaviorSubject<boolean>;
+  readonly init$?: BehaviorSubject<boolean>;
   readonly version: string;
   readonly isLoading: boolean;
   readonly isLoading$: Subject<boolean>;

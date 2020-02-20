@@ -143,6 +143,8 @@ export class Workflow {
   interrupt(process?: Process) {
     const { scroller } = this;
     if (scroller.state.isLoading) {
+      // we are going to create a new reference for the scroller.workflow object
+      // calling the old version of the scroller.workflow by any outstanding async processes will be skipped
       scroller.workflow.call = (p?: ProcessSubject) => scroller.logger.log('[skip wf call]');
       (<any>scroller.workflow.call).interrupted = true;
       scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };

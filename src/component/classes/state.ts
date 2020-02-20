@@ -161,7 +161,7 @@ export class State implements IState {
     let index = Number(newStartIndex);
     if (isNaN(index)) {
       this.logger.log(() =>
-        `fallback startIndex to settings.startIndex (${startIndex}) because ${newStartIndex} is not a number`);
+        `fallback startIndex to settings.startIndex (${startIndex})`);
       index = startIndex;
     }
     if (index < minIndex) {

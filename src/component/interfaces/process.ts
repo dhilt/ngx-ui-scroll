@@ -42,3 +42,5 @@ export interface WorkflowError {
 export interface ScrollerWorkflow {
   call: Function;
 }
+
+export type WorkflowGetter = () => ScrollerWorkflow;

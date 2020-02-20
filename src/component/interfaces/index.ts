@@ -12,7 +12,7 @@ import {
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { WindowScrollState, ScrollEventData, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
-import { Process, ProcessStatus, ProcessSubject, WorkflowError, ScrollerWorkflow } from './process';
+import { Process, ProcessStatus, ProcessSubject, WorkflowError, ScrollerWorkflow, WorkflowGetter } from './process';
 
 export {
   Datasource,
@@ -38,5 +38,6 @@ export {
   ProcessStatus,
   ProcessSubject,
   WorkflowError,
-  ScrollerWorkflow
+  ScrollerWorkflow,
+  WorkflowGetter,
 };

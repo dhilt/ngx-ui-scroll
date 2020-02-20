@@ -1,4 +1,3 @@
-import { ElementRef } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -22,7 +21,7 @@ export class Workflow {
   private stateMachineMethods: any;
   private dispose$: Subject<void>;
 
-  constructor(elementRef: ElementRef, datasource: Datasource, version: string, run: Function) {
+  constructor(element: HTMLElement, datasource: Datasource, version: string, run: Function) {
     this.isInitialized = false;
     this.dispose$ = new Subject();
     this.process$ = new BehaviorSubject(<ProcessSubject>{
@@ -31,7 +30,7 @@ export class Workflow {
     });
     this.propagateChanges = run;
     this.callWorkflow = <any>this.callWorkflow.bind(this);
-    this.scroller = new Scroller(elementRef, datasource, version, this.callWorkflow);
+    this.scroller = new Scroller(element, datasource, version, this.callWorkflow);
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];

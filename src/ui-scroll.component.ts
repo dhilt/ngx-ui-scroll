@@ -50,7 +50,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.workflow = new Workflow(
-      this.elementRef,
+      this.elementRef.nativeElement,
       this.datasource,
       this.version,
       (items: Item[]) => {

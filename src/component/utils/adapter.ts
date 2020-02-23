@@ -1,14 +1,15 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 
-import { ValidatorType } from './validation';
+import { VALIDATORS } from './validation';
 import {
   AdapterPropType as Prop,
   IAdapterProp,
   ItemAdapter,
   IAdapter,
-  IAdapterMethodParam as IParam
-} from '../interfaces/adapter';
+  IAdapterMethodParam as IParam,
+  ValidatorType
+} from '../interfaces/index';
 
 export const itemAdapterEmpty = <ItemAdapter>{
   data: {},
@@ -153,22 +154,24 @@ interface AdapterMethods {
   [key: string]: AdapterMethodParams;
 }
 
+const { INTEGER_UNLIMITED, BOOLEAN, ITERATOR_CALLBACK } = VALIDATORS;
+
 const FIX_METHOD_PARAMS: AdapterMethodParams = {
   scrollPosition: {
     name: 'scrollPosition',
-    validators: [ValidatorType.integerUnlimited]
+    validators: [INTEGER_UNLIMITED]
   },
   minIndex: {
     name: 'minIndex',
-    validators: [ValidatorType.integerUnlimited]
+    validators: [INTEGER_UNLIMITED]
   },
   maxIndex: {
     name: 'maxIndex',
-    validators: [ValidatorType.integerUnlimited]
+    validators: [INTEGER_UNLIMITED]
   },
   updater: {
     name: 'updater',
-    validators: [ValidatorType.iteratorCallback]
+    validators: [ITERATOR_CALLBACK]
   }
 };
 

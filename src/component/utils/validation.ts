@@ -1,32 +1,39 @@
-export enum ValidatorType {
-  integer = 'integer',
-  integerUnlimited = 'integer or infinity',
-  iteratorCallback = 'iterator callback',
-  boolean = 'boolean'
-}
+import { ValidatorType, IValidator, ValidatedValue } from '../interfaces/validation';
 
-export interface ValidatedValue {
-  value: any;
-  isValid: boolean;
-  errors: string[];
-}
+export const VALIDATORS = {
+  INTEGER: <IValidator>{
+    type: ValidatorType.integer
+  },
+  INTEGER_UNLIMITED: <IValidator>{
+    type: ValidatorType.integerUnlimited
+  },
+  BOOLEAN: <IValidator>{
+    type: ValidatorType.boolean
+  },
+  ITERATOR_CALLBACK: <IValidator>{
+    type: ValidatorType.iteratorCallback
+  },
+};
 
 const getNumber = (value: any): number =>
   value === '' || value === null ? NaN : Number(value);
 
-const validateOne = (
-  { value, isValid, errors }: ValidatedValue, validator: ValidatorType
+export const validateOne = (
+  { value, isValid, errors }: ValidatedValue,
+  { type, params }: IValidator
 ): ValidatedValue => {
   let parsedValue = value;
   let error = '';
-  if (validator === ValidatorType.integer) {
+
+  if (type === ValidatorType.integer) {
     value = getNumber(value);
     parsedValue = parseInt(value, 10);
     if (value !== parsedValue) {
       error = 'it must be an integer';
     }
   }
-  if (validator === ValidatorType.integerUnlimited) {
+
+  if (type === ValidatorType.integerUnlimited) {
     value = getNumber(value);
     if (value === Infinity || value === -Infinity) {
       parsedValue = value;
@@ -37,7 +44,8 @@ const validateOne = (
       error = 'it must be an integer or +/- Infinity';
     }
   }
-  if (validator === ValidatorType.iteratorCallback) {
+
+  if (type === ValidatorType.iteratorCallback) {
     if (typeof value !== 'function') {
       error = 'it must be an iterator callback function';
     }
@@ -46,9 +54,11 @@ const validateOne = (
     }
     parsedValue = value;
   }
-  if (validator === ValidatorType.boolean) {
+
+  if (type === ValidatorType.boolean) {
     parsedValue = !!value;
   }
+
   return {
     value: parsedValue,
     isValid: isValid && !error,
@@ -56,7 +66,7 @@ const validateOne = (
   };
 };
 
-export const validate = (value: any, validators: ValidatorType[]): ValidatedValue =>
+export const validate = (value: any, validators: IValidator[]): ValidatedValue =>
   validators.reduce((acc, validator) => ({
     ...acc,
     ...validateOne(acc, validator)

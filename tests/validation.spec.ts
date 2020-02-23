@@ -1,4 +1,7 @@
-import { ValidatorType, validate } from '../src/component/utils/validation';
+import { VALIDATORS, validate } from '../src/component/utils/validation';
+import { ValidatorType } from '../src/component/interfaces/validation';
+
+const { INTEGER, INTEGER_UNLIMITED, ITERATOR_CALLBACK } = VALIDATORS;
 
 describe('Input Params Validation', () => {
   describe('[Integer]', () => {
@@ -32,7 +35,7 @@ describe('Input Params Validation', () => {
 
     it('should pass limited integer', (done: Function) => {
       integerPassInputs.forEach(input => {
-        const parsed = validate(input.value, [ValidatorType.integer]);
+        const parsed = validate(input.value, [INTEGER]);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -48,7 +51,7 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: NaN },
       ];
       inputs.forEach(input => {
-        const parsed = validate(input.value, [ValidatorType.integer]);
+        const parsed = validate(input.value, [INTEGER]);
         expect(parsed).toEqual({
           value: input.parsed,
           isValid: false,
@@ -67,7 +70,7 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: -Infinity },
       ];
       inputs.forEach(input => {
-        const parsed = validate(input.value, [ValidatorType.integerUnlimited]);
+        const parsed = validate(input.value, [INTEGER_UNLIMITED]);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -76,7 +79,7 @@ describe('Input Params Validation', () => {
 
     it('should block non unlimited integer', (done: Function) => {
       integerBlockInputs.forEach(input => {
-        const parsed = validate(input.value, [ValidatorType.integerUnlimited]);
+        const parsed = validate(input.value, [INTEGER_UNLIMITED]);
         expect(parsed).toEqual({
           value: input.parsed,
           isValid: false,
@@ -89,7 +92,7 @@ describe('Input Params Validation', () => {
 
   describe('[Iterator callback]', () => {
     it('should pass only one-argument function', (done: Function) => {
-      const validators = [ValidatorType.iteratorCallback];
+      const validators = [ITERATOR_CALLBACK];
       expect(validate(1, validators).isValid).toEqual(false);
       expect(validate(true, validators).isValid).toEqual(false);
       expect(validate({}, validators).isValid).toEqual(false);

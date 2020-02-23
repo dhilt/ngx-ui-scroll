@@ -15,6 +15,7 @@ import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { WindowScrollState, ScrollEventData, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
 import { Process, ProcessStatus, ProcessSubject, WorkflowError, ScrollerWorkflow, WorkflowGetter } from './process';
+import { ValidatorType, IValidator, ValidatedValue } from './validation';
 
 export {
   Datasource,
@@ -44,4 +45,7 @@ export {
   WorkflowError,
   ScrollerWorkflow,
   WorkflowGetter,
+  ValidatorType,
+  IValidator,
+  ValidatedValue,
 };

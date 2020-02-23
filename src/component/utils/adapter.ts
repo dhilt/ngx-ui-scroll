@@ -91,6 +91,11 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   },
   {
     type: Prop.Function,
+    name: 'insert',
+    value: () => null
+  },
+  {
+    type: Prop.Function,
     name: 'showLog',
     value: () => null
   },

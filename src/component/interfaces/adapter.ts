@@ -12,6 +12,12 @@ export interface IAdapterProp {
   value: any;
 }
 
+export interface ItemAdapter {
+  $index: number;
+  data: any;
+  element?: HTMLElement;
+}
+
 export interface IAdapter {
   readonly init$?: BehaviorSubject<boolean>;
   readonly version: string;
@@ -32,18 +38,13 @@ export interface IAdapter {
   readonly eof$: Subject<boolean>;
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, bof?: boolean) => any;
-  prepend: (items: any, bof?: boolean) => any;
+  prepend: (items: any, eof?: boolean) => any;
   check: () => any;
   remove: (predicate: ItemsPredicate) => any;
   clip: (options?: AdapterClipOptions) => any;
+  insert: (options?: AdapterInsertOptions) => any;
   showLog: () => any;
   fix: (options: AdapterFixOptions) => any; // undocumented
-}
-
-export interface ItemAdapter {
-  $index: number;
-  data: any;
-  element?: HTMLElement;
 }
 
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
@@ -52,6 +53,12 @@ export type ItemsLooper = (item: ItemAdapter) => any;
 export interface AdapterClipOptions {
   forwardOnly?: boolean;
   backwardOnly?: boolean;
+}
+
+export interface AdapterInsertOptions {
+  before?: ItemsPredicate;
+  after?: ItemsPredicate;
+  decrement?: boolean;
 }
 
 export interface AdapterFixOptions {

@@ -7,6 +7,7 @@ import {
   ItemsPredicate,
   ItemsLooper,
   AdapterClipOptions,
+  AdapterInsertOptions,
   AdapterFixOptions
 } from './adapter';
 import { Settings, DevSettings } from './settings';
@@ -24,6 +25,7 @@ export {
   ItemsPredicate,
   ItemsLooper,
   AdapterClipOptions,
+  AdapterInsertOptions,
   AdapterFixOptions,
   Settings,
   DevSettings,

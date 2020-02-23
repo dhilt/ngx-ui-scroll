@@ -42,7 +42,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public items: Item[] = [];
 
   // Component-Workflow integration
-  private workflow: Workflow;
+  public workflow: Workflow;
 
   constructor(
     public changeDetector: ChangeDetectorRef,

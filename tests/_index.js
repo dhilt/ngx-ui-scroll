@@ -26,7 +26,7 @@ getTestBed().initTestEnvironment(
 const testContext = require.context(
   './',
   false,
-  /(common|datasource\-get|initial\-load|scroll\-basic|min\-max\-indexes|eof|dynamic\-size|bug|adapter\.reload|adapter\.prepend|dynamic\-height\-reload|dynamic\-height\-scroll|adapter\.append\-prepend|adapter\.check|adapter\.remove|adapter\.clip|adapter\.fix)\.spec\.ts/
+  /(common|datasource\-get|initial\-load|scroll\-basic|min\-max\-indexes|eof|dynamic\-size|bug|adapter\.reload|adapter\.prepend|dynamic\-height\-reload|dynamic\-height\-scroll|adapter\.append\-prepend|adapter\.check|adapter\.remove|adapter\.clip|validation)\.spec\.ts/
   //(bug)\.spec\.ts/
 );
 

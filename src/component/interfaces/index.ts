@@ -2,13 +2,14 @@ import { Datasource, DatasourceGet } from './datasource';
 import {
   AdapterPropType,
   IAdapterProp,
-  IAdapter,
   ItemAdapter,
   ItemsPredicate,
   ItemsLooper,
   AdapterClipOptions,
   AdapterInsertOptions,
-  AdapterFixOptions
+  AdapterFixOptions,
+  IAdapter,
+  IAdapterMethodParam
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
@@ -20,13 +21,14 @@ export {
   DatasourceGet,
   AdapterPropType,
   IAdapterProp,
-  IAdapter,
   ItemAdapter,
+  IAdapter,
   ItemsPredicate,
   ItemsLooper,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
+  IAdapterMethodParam,
   Settings,
   DevSettings,
   Direction,

@@ -1,17 +1,21 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 
+import { InputValueType } from './validation';
 import {
-  IAdapterProp,
   AdapterPropType as Prop,
+  IAdapterProp,
   ItemAdapter,
-  IAdapter
+  IAdapter,
+  IAdapterMethodParam as IParam
 } from '../interfaces/adapter';
 
 export const itemAdapterEmpty = <ItemAdapter>{
   data: {},
   element: {}
 };
+
+const noop = () => null;
 
 export const ADAPTER_PROPS: IAdapterProp[] = [
   {
@@ -62,47 +66,47 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   {
     type: Prop.Function,
     name: 'reload',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'append',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'prepend',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'check',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'remove',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'clip',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'insert',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'showLog',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'fix',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Observable,
@@ -140,3 +144,34 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
     value: new Subject<boolean>()
   }
 ];
+
+interface AdapterMethodParams {
+  [key: string]: IParam;
+}
+
+interface AdapterMethods {
+  [key: string]: AdapterMethodParams;
+}
+
+const FIX_METHOD_PARAMS: AdapterMethodParams = {
+  scrollPosition: {
+    name: 'scrollPosition',
+    type: InputValueType.integerUnlimited
+  },
+  minIndex: {
+    name: 'minIndex',
+    type: InputValueType.integerUnlimited
+  },
+  maxIndex: {
+    name: 'maxIndex',
+    type: InputValueType.integerUnlimited
+  },
+  updater: {
+    name: 'updater',
+    type: InputValueType.iteratorCallback
+  }
+};
+
+export const ADAPTER_METHODS_PARAMS: AdapterMethods = {
+  FIX: FIX_METHOD_PARAMS
+};

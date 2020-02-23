@@ -1,4 +1,4 @@
-export enum InputValue {
+export enum InputValueType {
   integer = 'integer',
   integerUnlimited = 'integer or infinity',
   iteratorCallback = 'iterator callback',
@@ -7,7 +7,7 @@ export enum InputValue {
 
 export interface ValidatedValue {
   value: any;
-  type: InputValue;
+  type: InputValueType;
   isValid: boolean;
   error: string;
 }
@@ -15,17 +15,17 @@ export interface ValidatedValue {
 const getNumber = (value: any): number =>
   value === '' || value === null ? NaN : Number(value);
 
-export const validate = (value: any, type: InputValue): ValidatedValue => {
+export const validate = (value: any, type: InputValueType): ValidatedValue => {
   let parsedValue = value;
   let error = '';
-  if (type === InputValue.integer) {
+  if (type === InputValueType.integer) {
     value = getNumber(value);
     parsedValue = parseInt(value, 10);
     if (value !== parsedValue) {
       error = 'it must be an integer';
     }
   }
-  if (type === InputValue.integerUnlimited) {
+  if (type === InputValueType.integerUnlimited) {
     value = getNumber(value);
     if (value === Infinity || value === -Infinity) {
       parsedValue = value;
@@ -36,7 +36,7 @@ export const validate = (value: any, type: InputValue): ValidatedValue => {
       error = 'it must be an integer or +/- Infinity';
     }
   }
-  if (type === InputValue.iteratorCallback) {
+  if (type === InputValueType.iteratorCallback) {
     if (typeof value !== 'function') {
       error = 'it must be an iterator callback function';
     }
@@ -45,7 +45,7 @@ export const validate = (value: any, type: InputValue): ValidatedValue => {
     }
     parsedValue = value;
   }
-  if (type === InputValue.boolean) {
+  if (type === InputValueType.boolean) {
     parsedValue = !!value;
   }
   return {

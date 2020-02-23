@@ -13,6 +13,8 @@ export const VALIDATORS = {
   ITERATOR_CALLBACK: <IValidator>{
     type: ValidatorType.iteratorCallback
   },
+  THIS_OR_THAT: (params: any): IValidator =>
+    ({ type: ValidatorType.thisOrThat, params }),
 };
 
 const getNumber = (value: any): number =>
@@ -20,7 +22,8 @@ const getNumber = (value: any): number =>
 
 export const validateOne = (
   { value, isValid, errors }: ValidatedValue,
-  { type, params }: IValidator
+  { type, params }: IValidator,
+  context?: any
 ): ValidatedValue => {
   let parsedValue = value;
   let error = '';
@@ -59,6 +62,12 @@ export const validateOne = (
     parsedValue = !!value;
   }
 
+  if (type === ValidatorType.thisOrThat) {
+    if (typeof context === 'object' && context.hasOwnProperty(params)) {
+      error = `only this or "${params}" must be present`;
+    }
+  }
+
   return {
     value: parsedValue,
     isValid: isValid && !error,
@@ -66,10 +75,12 @@ export const validateOne = (
   };
 };
 
-export const validate = (value: any, validators: IValidator[]): ValidatedValue =>
+export const validate = (
+  value: any, validators: IValidator[], context?: Object
+): ValidatedValue =>
   validators.reduce((acc, validator) => ({
     ...acc,
-    ...validateOne(acc, validator)
+    ...validateOne(acc, validator, context)
   }), <ValidatedValue>{
     value,
     isValid: true,

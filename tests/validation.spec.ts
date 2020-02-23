@@ -1,7 +1,7 @@
 import { VALIDATORS, validate } from '../src/component/utils/validation';
 import { ValidatorType } from '../src/component/interfaces/validation';
 
-const { INTEGER, INTEGER_UNLIMITED, ITERATOR_CALLBACK } = VALIDATORS;
+const { INTEGER, INTEGER_UNLIMITED, ITERATOR_CALLBACK, THIS_OR_THAT } = VALIDATORS;
 
 describe('Input Params Validation', () => {
   describe('[Integer]', () => {
@@ -100,6 +100,24 @@ describe('Input Params Validation', () => {
       expect(validate(() => null, validators).isValid).toEqual(false);
       expect(validate((a: any, b: any) => null, validators).isValid).toEqual(false);
       expect(validate((item: any) => null, validators).isValid).toEqual(true);
+      done();
+    });
+  });
+
+  describe('[This or that', () => {
+    const token = 'test';
+
+    it('should pass only one of twos', (done: Function) => {
+      expect(validate(1, [THIS_OR_THAT(token)], { [token]: 0 }).isValid).toEqual(false);
+      expect(validate(1, [THIS_OR_THAT(token)], { [token]: 1 }).isValid).toEqual(false);
+      expect(validate(1, [THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(true);
+      expect(validate('one', [THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(true);
+      done();
+    });
+
+    it('should pass only one integer of twos', (done: Function) => {
+      expect(validate(1, [INTEGER, THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(true);
+      expect(validate('one', [INTEGER, THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(false);
       done();
     });
   });

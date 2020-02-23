@@ -3,6 +3,7 @@ export enum ValidatorType {
   integerUnlimited = 'integer or infinity',
   iteratorCallback = 'iterator callback',
   boolean = 'boolean',
+  thisOrThat = 'only one should be present',
 }
 
 export interface IValidator {

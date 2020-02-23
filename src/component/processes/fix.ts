@@ -90,10 +90,10 @@ export default class Fix {
     }
     return Object.keys(FIX).reduce((acc: IParam[], key: string) => {
       const param = FIX[key];
-      const { name, type } = param;
+      const { name, validators } = param;
       const error = `failed: can't set ${name}`;
       if (options.hasOwnProperty(name)) {
-        const parsed = validate((<any>options)[name], type);
+        const parsed = validate((<any>options)[name], validators);
         if (parsed.isValid) {
           const call = Fix.getCallMethod(name);
           if (call) {
@@ -102,7 +102,7 @@ export default class Fix {
             scroller.logger.log(() => `${error}, call method not found`);
           }
         } else {
-          scroller.logger.log(() => `${error}, ${parsed.error}`);
+          scroller.logger.log(() => `${error}, ${parsed.errors}`);
         }
       }
       return acc;

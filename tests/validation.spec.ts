@@ -1,4 +1,4 @@
-import { InputValueType, validate } from '../src/component/utils/validation';
+import { ValidatorType, validate } from '../src/component/utils/validation';
 
 describe('Input Params Validation', () => {
   describe('[Integer]', () => {
@@ -32,7 +32,7 @@ describe('Input Params Validation', () => {
 
     it('should pass limited integer', (done: Function) => {
       integerPassInputs.forEach(input => {
-        const parsed = validate(input.value, InputValueType.integer);
+        const parsed = validate(input.value, [ValidatorType.integer]);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -48,12 +48,11 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: NaN },
       ];
       inputs.forEach(input => {
-        const parsed = validate(input.value, InputValueType.integer);
+        const parsed = validate(input.value, [ValidatorType.integer]);
         expect(parsed).toEqual({
           value: input.parsed,
-          type: InputValueType.integer,
           isValid: false,
-          error: 'it must be an integer'
+          errors: ['it must be an integer']
         });
       });
       done();
@@ -68,7 +67,7 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: -Infinity },
       ];
       inputs.forEach(input => {
-        const parsed = validate(input.value, InputValueType.integerUnlimited);
+        const parsed = validate(input.value, [ValidatorType.integerUnlimited]);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -77,12 +76,11 @@ describe('Input Params Validation', () => {
 
     it('should block non unlimited integer', (done: Function) => {
       integerBlockInputs.forEach(input => {
-        const parsed = validate(input.value, InputValueType.integerUnlimited);
+        const parsed = validate(input.value, [ValidatorType.integerUnlimited]);
         expect(parsed).toEqual({
           value: input.parsed,
-          type: InputValueType.integerUnlimited,
           isValid: false,
-          error: 'it must be an integer or +/- Infinity'
+          errors: ['it must be an integer or +/- Infinity']
         });
       });
       done();
@@ -91,14 +89,14 @@ describe('Input Params Validation', () => {
 
   describe('[Iterator callback]', () => {
     it('should pass only one-argument function', (done: Function) => {
-      const type = InputValueType.iteratorCallback;
-      expect(validate(1, type).isValid).toEqual(false);
-      expect(validate(true, type).isValid).toEqual(false);
-      expect(validate({}, type).isValid).toEqual(false);
-      expect(validate('test', type).isValid).toEqual(false);
-      expect(validate(() => null, type).isValid).toEqual(false);
-      expect(validate((a: any, b: any) => null, type).isValid).toEqual(false);
-      expect(validate((item: any) => null, type).isValid).toEqual(true);
+      const validators = [ValidatorType.iteratorCallback];
+      expect(validate(1, validators).isValid).toEqual(false);
+      expect(validate(true, validators).isValid).toEqual(false);
+      expect(validate({}, validators).isValid).toEqual(false);
+      expect(validate('test', validators).isValid).toEqual(false);
+      expect(validate(() => null, validators).isValid).toEqual(false);
+      expect(validate((a: any, b: any) => null, validators).isValid).toEqual(false);
+      expect(validate((item: any) => null, validators).isValid).toEqual(true);
       done();
     });
   });

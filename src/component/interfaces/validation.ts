@@ -6,13 +6,15 @@ export enum ValidatorType {
   thisOrThat = 'only one should be present',
 }
 
-export interface IValidator {
-  type: ValidatorType;
-  params?: any;
-}
+type ValidatorMethod = (value: any, context?: any) => ValidatedValue
 
 export interface ValidatedValue {
   value: any;
   isValid: boolean;
   errors: string[];
+}
+
+export interface IValidator {
+  type: ValidatorType;
+  method: ValidatorMethod;
 }

@@ -6,7 +6,7 @@ export enum ValidatorType {
   thisOrThat = 'only one should be present',
 }
 
-type ValidatorMethod = (value: any, context?: any) => ValidatedValue
+type ValidatorMethod = (value: any, context?: any) => ValidatedValue;
 
 export interface ValidatedValue {
   value: any;

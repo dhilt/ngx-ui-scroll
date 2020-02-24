@@ -154,7 +154,7 @@ interface AdapterMethods {
   [key: string]: AdapterMethodParams;
 }
 
-const { INTEGER_UNLIMITED, BOOLEAN, ITERATOR_CALLBACK } = VALIDATORS;
+const { INTEGER_UNLIMITED, BOOLEAN, ITERATOR_CALLBACK, THIS_OR_THAT } = VALIDATORS;
 
 const FIX_METHOD_PARAMS: AdapterMethodParams = {
   scrollPosition: {
@@ -175,6 +175,22 @@ const FIX_METHOD_PARAMS: AdapterMethodParams = {
   }
 };
 
+const INSERT_METHOD_PARAMS: AdapterMethodParams = {
+  before: {
+    name: 'before',
+    validators: [ITERATOR_CALLBACK, THIS_OR_THAT('after')]
+  },
+  after: {
+    name: 'after',
+    validators: [ITERATOR_CALLBACK, THIS_OR_THAT('before')]
+  },
+  decrease: {
+    name: 'decrease',
+    validators: [BOOLEAN]
+  }
+};
+
 export const ADAPTER_METHODS_PARAMS: AdapterMethods = {
-  FIX: FIX_METHOD_PARAMS
+  FIX: FIX_METHOD_PARAMS,
+  INSERT: INSERT_METHOD_PARAMS
 };

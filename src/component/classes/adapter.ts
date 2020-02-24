@@ -178,6 +178,11 @@ export class Adapter implements IAdapter {
     this.logger.log(() =>
       `adapter: insert(${typeof options !== 'undefined' ? JSON.stringify(options) : ''})`
     );
+    this.workflow.call(<ProcessSubject>{
+      process: Process.insert,
+      status: ProcessStatus.start,
+      payload: options
+    });
   }
 
   showLog() {

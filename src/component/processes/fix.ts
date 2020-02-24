@@ -1,4 +1,5 @@
 import { Scroller } from '../scroller';
+import { ADAPTER_METHODS_PARAMS, validate } from '../utils/index';
 import {
   Process,
   ProcessStatus,
@@ -6,7 +7,6 @@ import {
   AdapterFixOptions,
   IAdapterMethodParam as IParam
 } from '../interfaces/index';
-import { ADAPTER_METHODS_PARAMS, validate } from '../utils/index';
 
 const { FIX } = ADAPTER_METHODS_PARAMS;
 

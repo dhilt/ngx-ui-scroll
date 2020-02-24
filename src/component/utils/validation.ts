@@ -38,7 +38,7 @@ const onIteratorCallback = (value: any): ValidatedValue => {
   if (typeof value !== 'function') {
     errors.push('it must be an iterator callback function');
   } else if ((<Function>value).length !== 1) {
-    errors.push('it must have 1 argument');
+    errors.push('it must be an iterator callback function with 1 argument');
   }
   return { value, isValid: !errors.length, errors };
 };

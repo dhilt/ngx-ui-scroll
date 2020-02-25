@@ -43,12 +43,18 @@ const onIteratorCallback = (value: any): ValidatedValue => {
   return { value, isValid: !errors.length, errors };
 };
 
-const onThisOrThat = (token: string) => (value: any, context: any): ValidatedValue => {
+const onOneOf = (tokens: string[]) => (value: any, context: any): ValidatedValue => {
   const errors = [];
-  if (typeof context !== 'object' || typeof token !== 'string') {
-    errors.push(`context and token must be passed`);
-  } else if (context.hasOwnProperty(token)) {
-    errors.push(`only this or "${token}" must be present`);
+  if (typeof context !== 'object' || !Array.isArray(tokens) || !tokens.length) {
+    errors.push(`context and token list must be passed`);
+  } else {
+    for (let i = tokens.length - 1; i >= 0; i--) {
+      if (typeof tokens[i] !== 'string') {
+        errors.push(`token list must be an array of strings`);
+      } else if (context.hasOwnProperty(tokens[i])) {
+        errors.push(`must not be present with "${tokens[i]}"`);
+      }
+    }
   }
   return { value, isValid: !errors.length, errors };
 };
@@ -70,9 +76,9 @@ export const VALIDATORS = {
     type: ValidatorType.iteratorCallback,
     method: onIteratorCallback
   },
-  THIS_OR_THAT: (params: any): IValidator => ({
-    type: ValidatorType.thisOrThat,
-    method: onThisOrThat(params)
+  ONE_OF: (list: string[]): IValidator => ({
+    type: ValidatorType.oneOf,
+    method: onOneOf(list)
   }),
 };
 

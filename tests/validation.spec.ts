@@ -1,7 +1,7 @@
 import { VALIDATORS, validate } from '../src/component/utils/validation';
 import { ValidatorType } from '../src/component/interfaces/validation';
 
-const { INTEGER, INTEGER_UNLIMITED, ITERATOR_CALLBACK, THIS_OR_THAT } = VALIDATORS;
+const { INTEGER, INTEGER_UNLIMITED, ITERATOR_CALLBACK, ONE_OF: ONE_OF } = VALIDATORS;
 
 describe('Input Params Validation', () => {
   describe('[Integer]', () => {
@@ -104,20 +104,28 @@ describe('Input Params Validation', () => {
     });
   });
 
-  describe('[This or that', () => {
+  describe('[One of', () => {
     const token = 'test';
 
     it('should pass only one of twos', (done: Function) => {
-      expect(validate(1, [THIS_OR_THAT(token)], { [token]: 0 }).isValid).toEqual(false);
-      expect(validate(1, [THIS_OR_THAT(token)], { [token]: 1 }).isValid).toEqual(false);
-      expect(validate(1, [THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(true);
-      expect(validate('one', [THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(true);
+      expect(validate(1, [ONE_OF([token])], { [token]: 0 }).isValid).toEqual(false);
+      expect(validate(1, [ONE_OF([token])], { [token]: 1 }).isValid).toEqual(false);
+      expect(validate(1, [ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(true);
+      expect(validate('one', [ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(true);
+      done();
+    });
+
+    it('should pass only one of many', (done: Function) => {
+      expect(validate(1, [ONE_OF([token, token + '_'])], { [token]: 0 }).isValid).toEqual(false);
+      expect(validate(1, [ONE_OF([token, token + '_'])], { [token + '_']: 0 }).isValid).toEqual(false);
+      expect(validate(1, [ONE_OF([token, token + '_'])], { [token]: 0, [token + '_']: 0 }).isValid).toEqual(false);
+      expect(validate(1, [ONE_OF([token, token + '_'])], { [token + '__']: 0 }).isValid).toEqual(true);
       done();
     });
 
     it('should pass only one integer of twos', (done: Function) => {
-      expect(validate(1, [INTEGER, THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(true);
-      expect(validate('one', [INTEGER, THIS_OR_THAT(token)], { [token + '_']: 1 }).isValid).toEqual(false);
+      expect(validate(1, [INTEGER, ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(true);
+      expect(validate('one', [INTEGER, ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(false);
       done();
     });
   });

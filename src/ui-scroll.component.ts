@@ -11,7 +11,7 @@ import { Datasource } from './component/classes/datasource';
 import { Item } from './component/classes/item';
 
 const tableTemplate = `
-<ng-container #uiScrollTemplateRef *ngIf="isTable">
+<ng-container *ngIf="isTable">
   <tr data-sid="backward">
     <td><div data-padding-backward></div></td>
   </tr>
@@ -55,7 +55,10 @@ const commonTemplate = `
 @Component({
   selector: 'tbody [ui-scroll]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: commonTemplate + tableTemplate
+  template: `<ng-template #uiScrollTemplateRef>
+    ${commonTemplate}
+    ${tableTemplate}
+  </ng-template>`
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 

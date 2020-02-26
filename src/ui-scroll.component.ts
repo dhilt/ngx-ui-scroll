@@ -1,7 +1,8 @@
 import {
   Component, OnInit, OnDestroy,
   TemplateRef, ElementRef,
-  ChangeDetectionStrategy, ChangeDetectorRef
+  ChangeDetectionStrategy, ChangeDetectorRef,
+  ViewChild
 } from '@angular/core';
 
 import { Workflow } from './component/workflow';
@@ -9,7 +10,7 @@ import { Datasource as IDatasource } from './component/interfaces/index';
 import { Datasource } from './component/classes/datasource';
 import { Item } from './component/classes/item';
 
-const template = `<ng-container *ngIf="isTable"><tr data-sid="backward">
+const template = `<ng-container #uiScrollTemplateRef *ngIf="isTable"><tr data-sid="backward">
   <td><div data-padding-backward></div></td>
 </tr><ng-template
   *ngFor="let item of items"
@@ -35,7 +36,7 @@ const template = `<ng-container *ngIf="isTable"><tr data-sid="backward">
     odd: item.$index % 2,
     even: !(item.$index % 2)
  }"
-></ng-template></div><div data-padding-forward></div></ng-container>`
+></ng-template></div><div data-padding-forward></div></ng-container>`;
 
 /* tslint:disable:component-selector */
 @Component({
@@ -44,6 +45,9 @@ const template = `<ng-container *ngIf="isTable"><tr data-sid="backward">
   template
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
+
+  @ViewChild('uiScrollTemplateRef', { static: true })
+  public uiScrollTemplateRef: TemplateRef<any>;
 
   // come from the directive
   public version: string;

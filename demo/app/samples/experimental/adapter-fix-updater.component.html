@@ -1,0 +1,47 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+
+  <div actions>
+    <div class="comment">Available since v1.3.1, undocumented</div>
+    <button (click)="doUpdate()">Update</button> item #
+    <input [(ngModel)]="inputValue" size="2">
+    <div>Items in buffer: {{this.countItems()}}</div>
+  </div>
+
+  <div description>
+    <p>
+      <em>Adapter.fix</em> method could be invoked with <em>updater</em> option
+      which is a function that is applied to each element in current <em>uiScroll</em> buffer list
+      and allows to update buffered items on the fly.
+      The argument of the <em>updater</em> function is an object of special <em>ItemAdapter</em> type
+    </p>
+    <pre>{{itemAdapterDescription}}</pre>
+    <p>
+      The <em>data</em> is exactly what the <em>Datasource</em> sends to the <em>uiScroll</em>
+      as the items contents. So we have an access to the items inside the <em>uiScroll</em> buffer,
+      and in this demo we update the <em>text</em> of selected item by its index.
+      If we destroy the updated item by scrolling out and then scroll back,
+      we will see that our update is gone. Speaking generally,
+      we need to care about datasource consistency and every update we want to
+      be applied to the <em>uiScroll</em> buffer should also happen at the datasource level.
+      The examples of Datasource-Adapter synching can be found
+      <a href="#/adapter#remove">here</a> and <a href="#/adapter#remove">here</a>.
+    </p>
+    <p>
+      The <em>Adapter.fix(&#123; updater &#125;)</em> usage can be very diverse. For example, we may
+      not change anything in the buffer, but gather some statistic. In this demo
+      <em>countItems</em> method uses <em>updater</em> to get a number of items in the buffer
+      at a particular moment. The result is equal to the value of <em>Adapter.itemsCount</em>
+      read-only property (<a href="#/adapter#items-count">link</a>).
+      Also, I would not recommend to bind <em>countItems</em>-like methods with the template
+      as it is in this demo, for it might affect the performance.
+    </p>
+    <p>
+      See also the <a href="https://github.com/dhilt/ngx-ui-scroll/pull/127">PR description</a>
+      as it might shed additional light on this feature.
+    </p>
+  </div>
+</app-demo>

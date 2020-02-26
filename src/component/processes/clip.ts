@@ -4,17 +4,17 @@ import { Process, ProcessStatus, Direction } from '../interfaces/index';
 export default class Clip {
 
   static run(scroller: Scroller) {
-    const { clip } = scroller.state;
+    const { workflow, state: { clip } } = scroller;
     if (clip.doClip) {
       Clip.doClip(scroller);
     } else {
       scroller.logger.log(() => 'no clip');
     }
 
-    scroller.callWorkflow({
+    workflow.call({
       process: Process.clip,
       status: ProcessStatus.next,
-      ...(clip.simulate ? { payload: Process.end } : {})
+      ...(clip.simulate ? { payload: { process: Process.end } } : {})
     });
   }
 
@@ -28,12 +28,8 @@ export default class Clip {
       if (item.toRemove) {
         item.hide();
         size[item.removeDirection] += item.size;
-        if (item.removeDirection === Direction.backward) {
-          paddings.forward.size += item.size;
-        }
-        if (item.removeDirection === Direction.forward) {
-          paddings.backward.size += item.size;
-        }
+        const padding = paddings.byDirection(item.removeDirection);
+        padding.size += item.size;
         clipped.push(item.$index);
         if (clip.simulate && !clip.force) {
           buffer.removeItem(item);

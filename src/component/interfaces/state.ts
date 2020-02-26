@@ -64,11 +64,14 @@ export interface WorkflowOptions {
   scroll: boolean;
   keepScroll: boolean;
   byTimer: boolean;
+  noFetch: boolean;
 
   reset: Function;
 }
 
 export interface State {
+  version: string;
+
   initTime: number;
   innerLoopCount: number;
   isInitialLoop: boolean;

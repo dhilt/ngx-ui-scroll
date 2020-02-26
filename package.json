@@ -19,7 +19,7 @@
     "build-app": "ng build --prod --aot --source-map",
     "preinstall": "cd server && npm install",
     "postinstall": "npm run build-app",
-    "pack:install": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-1.2.0.tgz --no-save",
+    "pack:install": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-1.4.1.tgz --no-save",
     "pack:start": "npm run pack:install && npm start",
     "build": "node build.js",
     "publish:lib": "npm run build && npm publish ./dist",
@@ -27,30 +27,28 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@angular/animations": "^7.2.3",
-    "@angular/common": "^7.2.3",
-    "@angular/core": "^7.2.3",
-    "@angular/forms": "^7.2.3",
+    "@angular/animations": "^8.2.14",
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "@angular/forms": "^8.2.14",
     "@angular/http": "^7.2.3",
-    "@angular/platform-browser": "^7.2.3",
-    "@angular/platform-browser-dynamic": "^7.2.3",
-    "@angular/router": "^7.2.3",
+    "@angular/platform-browser": "^8.2.14",
+    "@angular/platform-browser-dynamic": "^8.2.14",
+    "@angular/router": "^8.2.14",
     "core-js": "^2.6.3",
     "ngx-bootstrap": "^3.2.0",
     "rxjs": "^6.4.0",
     "tslib": "^1.9.0",
-    "zone.js": "^0.8.29"
+    "zone.js": "^0.9.1"
   },
   "peerDependencies": {
-    "rxjs": ">= 6.0.0",
-    "@angular/common": ">= 7.0.0",
-    "@angular/core": ">= 7.0.0"
+    "rxjs": ">= 6.0.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.13.9",
-    "@angular/cli": "^7.0.5",
-    "@angular/compiler": "^7.0.3",
-    "@angular/compiler-cli": "^7.2.9",
+    "@angular-devkit/build-angular": "^0.803.23",
+    "@angular/cli": "^8.3.22",
+    "@angular/compiler": "^8.2.14",
+    "@angular/compiler-cli": "^8.2.14",
     "@types/jasmine": "2.8.9",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "10.12.0",
@@ -84,9 +82,9 @@
     "tsickle": "0.33.0",
     "tslint": "^5.19.0",
     "tslint-angular": "^3.0.2",
-    "typescript": "^3.1.6",
+    "typescript": "^3.5.3",
     "uglify-js": "3.4.9",
-    "webpack": "^4.29.5",
+    "webpack": "^4.41.5",
     "webpack-filter-warnings-plugin": "1.2.0"
   }
 }

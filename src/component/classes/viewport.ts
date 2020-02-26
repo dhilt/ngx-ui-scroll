@@ -1,5 +1,3 @@
-import { ElementRef } from '@angular/core';
-
 import { Direction } from '../interfaces/index';
 import { Paddings } from './paddings';
 import { Settings } from './settings';
@@ -23,12 +21,12 @@ export class Viewport {
 
   private disabled: boolean;
 
-  constructor(elementRef: ElementRef, settings: Settings, routines: Routines, state: State, logger: Logger) {
+  constructor(element: HTMLElement, settings: Settings, routines: Routines, state: State, logger: Logger) {
+    this.element = element;
     this.settings = settings;
     this.routines = routines;
     this.state = state;
     this.logger = logger;
-    this.element = elementRef.nativeElement;
     this.disabled = false;
 
     if (settings.windowViewport) {
@@ -36,7 +34,7 @@ export class Viewport {
       this.scrollEventElement = <Document>(this.element.ownerDocument);
       this.scrollable = <HTMLElement>this.scrollEventElement.scrollingElement;
     } else {
-      this.host = <HTMLElement>this.element.parentElement;//.parentElement.parentElement;
+      this.host = <HTMLElement>this.element.parentElement; // .parentElement.parentElement;
       if (this.host) {
         this.host = <HTMLElement>this.host.parentElement;
       }

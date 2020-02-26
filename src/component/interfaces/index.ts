@@ -1,30 +1,43 @@
 import { Datasource, DatasourceGet } from './datasource';
-import { ItemAdapter, ItemsPredicate, ClipOptions, Adapter } from './adapter';
+import {
+  AdapterPropType,
+  IAdapterProp,
+  IAdapter,
+  ItemAdapter,
+  ItemsPredicate,
+  ItemsLooper,
+  AdapterClipOptions,
+  AdapterFixOptions
+} from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { WindowScrollState, ScrollEventData, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
-import { Process, ProcessStatus, ScrollPayload, ProcessSubject, CallWorkflow, WorkflowError } from './process';
+import { Process, ProcessStatus, ProcessSubject, WorkflowError, ScrollerWorkflow, WorkflowGetter } from './process';
 
 export {
   Datasource,
   DatasourceGet,
-  Direction,
+  AdapterPropType,
+  IAdapterProp,
+  IAdapter,
+  ItemAdapter,
+  ItemsPredicate,
+  ItemsLooper,
+  AdapterClipOptions,
+  AdapterFixOptions,
   Settings,
   DevSettings,
-  Process,
-  ProcessStatus,
-  ScrollPayload,
-  ProcessSubject,
-  CallWorkflow,
-  WorkflowError,
+  Direction,
   WindowScrollState,
   ScrollEventData,
   ScrollState,
   SyntheticScroll,
   WorkflowOptions,
   State,
-  ItemAdapter,
-  ItemsPredicate,
-  ClipOptions,
-  Adapter
+  Process,
+  ProcessStatus,
+  ProcessSubject,
+  WorkflowError,
+  ScrollerWorkflow,
+  WorkflowGetter,
 };

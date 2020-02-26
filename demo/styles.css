@@ -21,7 +21,7 @@ h3 {
   cursor: pointer;
   border-bottom: 1px solid #efefef;
   padding-top: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 h3 a {
@@ -44,7 +44,7 @@ p, li {
 }
 
 p {
-  margin-top: 29px;
+  margin-top: 2rem;
 }
 
 em {
@@ -173,6 +173,11 @@ button:hover {
   margin: 0 5px;
 }
 
+.demo .actions .comment {
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+
 input[type=checkbox], input[type=radio] {
   height: 13px;
 }
@@ -249,6 +254,13 @@ input[type=checkbox], input[type=radio] {
   height: 100px;
   padding: 0 5px;
   font-weight: bolder;
+}
+
+.demo .work .viewport.inverse div[data-padding-backward] {
+  background-color: #e1f0ff;
+}
+.demo .work .viewport.inverse .item {
+  background-color: #bcdeff;
 }
 
 .demo .work .log {

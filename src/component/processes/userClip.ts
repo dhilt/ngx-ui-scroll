@@ -1,22 +1,22 @@
 import { Scroller } from '../scroller';
-import { ClipOptions, Process, ProcessStatus } from '../interfaces/index';
+import { AdapterClipOptions, Process, ProcessStatus } from '../interfaces/index';
 
 export default class UserClip {
 
-  static run(scroller: Scroller, options?: ClipOptions) {
+  static run(scroller: Scroller, options?: AdapterClipOptions) {
     const _options = UserClip.checkOptions(options);
 
     scroller.state.clip.forceForward = !_options.backwardOnly;
     scroller.state.clip.forceBackward = !_options.forwardOnly;
 
-    scroller.callWorkflow({
+    scroller.workflow.call({
       process: Process.userClip,
       status: ProcessStatus.next
     });
   }
 
-  static checkOptions(options?: ClipOptions): ClipOptions {
-    const result: ClipOptions = {
+  static checkOptions(options?: AdapterClipOptions): AdapterClipOptions {
+    const result: AdapterClipOptions = {
       forwardOnly: false,
       backwardOnly: false
     };

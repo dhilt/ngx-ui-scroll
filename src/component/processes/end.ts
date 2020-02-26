@@ -5,36 +5,37 @@ import { itemAdapterEmpty } from '../utils/adapter';
 export default class End {
 
   static run(scroller: Scroller, process: Process, payload: any = {}) {
+    const { workflow, state } = scroller;
     const { error } = payload;
 
-    scroller.state.workflowOptions.reset();
+    state.workflowOptions.reset();
 
     if (!error && process !== Process.reload) {
       // set out params, accessible via Adapter
       End.calculateParams(scroller);
     }
 
+    // explicit interruption for we don't want go through the workflow loop finalizing
+    if ((<any>workflow.call).interrupted) {
+      return workflow.call();
+    }
+
     // what next? done?
     const next = End.getNext(scroller, process, error);
 
-    // need to apply Buffer.items changes if clip
-    if (scroller.state.clip.doClip) {
-      scroller.runChangeDetector();
-    }
-
     // finalize current workflow loop
     End.endWorkflowLoop(scroller, next);
-    scroller.state.innerLoopCount++;
+    state.innerLoopCount++;
 
-    // continue the Workflow synchronously; current cycle could be finilized immediately
-    scroller.callWorkflow({
+    // continue the Workflow synchronously; current cycle could be finalized immediately
+    workflow.call({
       process: Process.end,
       status: next ? ProcessStatus.next : ProcessStatus.done,
-      payload: process
+      payload: { process, keepScroll: state.workflowOptions.keepScroll }
     });
 
-    // if the Workflow isn't finilized, it may freeze for no more than settings.throttle ms
-    if (scroller.state.workflowPending && !scroller.state.loopPending) {
+    // if the Workflow isn't finalized, it may freeze for no more than settings.throttle ms
+    if (state.workflowPending && !state.loopPending) {
       // continue the Workflow asynchronously
       End.continueWorkflowByTimer(scroller);
     }
@@ -42,14 +43,14 @@ export default class End {
 
   static endWorkflowLoop(scroller: Scroller, next: boolean) {
     const { state, state: { clip } } = scroller;
-    state.loopPending = false;
     state.countDone++;
     state.isInitialLoop = false;
-    state.fetch.simulate = false;
+    state.fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
     state.lastPosition = scroller.viewport.scrollPosition;
     scroller.purgeInnerLoopSubscriptions();
+    state.loopPending = false;
   }
 
   static calculateParams(scroller: Scroller) {
@@ -121,14 +122,15 @@ export default class End {
     const { state, state: { workflowCycleCount, innerLoopCount, workflowOptions } } = scroller;
     scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
     state.scrollState.workflowTimer = <any>setTimeout(() => {
-      // if the WF isn't finilized while the old sub-cycle is done and there's no new sub-cycle
+      // if the WF isn't finalized while the old sub-cycle is done and there's no new sub-cycle
       if (state.workflowPending && !state.loopPending && innerLoopCount === state.innerLoopCount) {
         workflowOptions.scroll = true;
         workflowOptions.byTimer = true;
         workflowOptions.keepScroll = false;
-        scroller.callWorkflow({
+        scroller.workflow.call({
           process: Process.end,
-          status: ProcessStatus.next
+          status: ProcessStatus.next,
+          payload: { keepScroll: state.workflowOptions.keepScroll }
         });
       }
     }, scroller.settings.throttle);

@@ -71,7 +71,7 @@ Basic usage template may look like
 </div>
 ```
 
-where the viewport is a scrollable area of finite height.
+where the viewport is a scrollable area of finite height:
 
 ```css
 .viewport {
@@ -80,6 +80,8 @@ where the viewport is a scrollable area of finite height.
     overflow-anchor: none;
 }
 ```
+
+If the viewport's height is not constrained, it will pull the entire content of the datasource and no scrollbar will appear. Also, [here](https://github.com/dhilt/ngx-ui-scroll/issues/115#issuecomment-577150328) is a few words on the scroll anchoring issue.
 
 \*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters. The directive calls `Datasource.get` method each time a user scrolls to the edge of visible element list. That's the API provided by the \*uiScroll.
 
@@ -99,7 +101,7 @@ export class AppComponent {
 }
 ```
 
-_Datasource.get_ method must provide an array of _count_ data-items started from _index_ position. If there are no items within given range _[index; index + count - 1]_, an empty array has to be passed. Empty result is treated as reaching the edge of the dataset (eof/bof), and \*uiScroll will place no further data requests.
+_Datasource.get_ method must provide an array of _count_ data-items started from _index_ position. If there are no items within given range _[index; index + count - 1]_, an empty array has to be passed. Empty result (or result which length is less than _count_) is being treated as the edge of the dataset (eof/bof), and no further requests for preceding/tailing items will be issued.
 
 _Datasource.get_ has 3 signatures: callback based, Promise based and Observable based. So, if we want some remote API to be a source of our data, basically it may look like
 
@@ -138,7 +140,7 @@ Settings are being applied during the uiScroll initialization and have an impact
 |[maxIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#min-max-indexes)|number,<br>integer|+Infinity| Fixes absolute maximal index of the data set. The datasource right boundary. |
 |[infinite](https://dhilt.github.io/ngx-ui-scroll/#settings#infinite-mode)|boolean|false| Allows to run "infinite" mode, when items rendered once are never removed. |
 |[horizontal](https://dhilt.github.io/ngx-ui-scroll/#settings#horizontal-mode)|boolean|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
-|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#settings#window-viewport)|boolean|false| Allows to run "entire window scrollabe" mode, when the entire window becomes the scrollable viewport. |
+|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#settings#window-viewport)|boolean|false| Allows to run "entire window scrollable" mode, when the entire window becomes the scrollable viewport. |
 
 ### Adapter API
 
@@ -162,10 +164,12 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#is-loading)|Subject<br>&lt;boolean&gt;|An Observable version of "isLoading" property. |
 |[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#/adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|
 |[bof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the beginning of the dataset is reached or not.|
+|[bof$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|Subject<br>&lt;boolean&gt;|An Observable version of "bof" property.|
 |[eof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|boolean|Indicates whether the end of the dataset is reached or not.|
-|[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index?:&nbsp;number;<br>&nbsp;&nbsp;data?:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the datasource item index value, "data" is exactly the item's content, "element" is a link to DOM element which is relevant to the item. |
+|[eof$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof)|Subject<br>&lt;boolean&gt;|An Observable version of "eof" property.|
+|[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the datasource item index value, "data" is exactly the item's content, "element" is a link to DOM element which is relevant to the item. |
 |[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "firstVisible" property. |
-|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index?:&nbsp;number;<br>&nbsp;&nbsp;data?:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
+|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
 |[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "lastVisible" property. |
 
 Below is the list of invocable methods of the Adapter API.
@@ -177,7 +181,9 @@ Below is the list of invocable methods of the Adapter API.
 |[prepend](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], bof?:&nbsp;boolean)|Adds items or single item to the beginning of the uiScroll dataset. If bof parameter is not set, items will be added and rendered immediately, they will be placed right before the first item in the uiScroll buffer. If bof parameter is set to true, items will be added and rendered only if the beginning of the dataset is reached; otherwise, these items will be virtualized. |
 |[check](https://dhilt.github.io/ngx-ui-scroll/#/adapter#check-size)| |Checks if any of current items changed it's size and runs a procedure to provide internal consistency and new items fetching if needed. |
 |[remove](https://dhilt.github.io/ngx-ui-scroll/#/adapter#remove)|(predicate: (item: ItemAdapter) => boolean)|Removes items from current buffer. Predicate is a function to be applied to every item presently in the buffer. Predicate must return boolean value. If predicate's return value is true, the item will be removed. _Note!_ Current implementation allows to remove only a continuous series of items per call. If you want to remove, say, 5 and 7 items, you should call the remove method twice. Removing a series of items from 5 to 7 could be done in a single call.|
-|[clip](https://dhilt.github.io/ngx-ui-scroll/#/adapter#clip)|(options?: {<br>&nbsp;&nbsp;forwardOnly?:&nbsp;boolean,<br>&nbsp;&nbsp;backwardOnly?:&nbsp;boolean<br>})|Removes out-of-viewport items on demand. Passing an options object, the direction in which inveisible items will be clipped could be specified. If no options is passed, clipping will affect both forward and backward directions. |
+|[clip](https://dhilt.github.io/ngx-ui-scroll/#/adapter#clip)|(options?: {<br>&nbsp;&nbsp;forwardOnly?:&nbsp;boolean,<br>&nbsp;&nbsp;backwardOnly?:&nbsp;boolean<br>})|Removes out-of-viewport items on demand. Passing an options object, the direction in which invisible items will be clipped could be specified. If no options is passed, clipping will affect both forward and backward directions. |
+
+Along with the documented API there are some undocumented features that can be treated as experimental. They are not tested enough and might change over time. Some of them can be found on the [experimental tab](https://dhilt.github.io/ngx-ui-scroll/#/experimental) of the demo app.
 
 ### Development
 
@@ -205,10 +211,10 @@ import { Datasource } from 'ngx-ui-scroll';
   });
 ```
 
-We are not going to discuss development settings here, information about it can be obtained directly from the [source code](https://github.com/dhilt/ngx-ui-scroll/blob/master/src/component/classes/settings.ts), but the uiScroll has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
+Like the experimental features, the development settings are not documented. Information about them can be obtained directly from the [source code](https://github.com/dhilt/ngx-ui-scroll/blob/master/src/component/classes/settings.ts). The uiScroll has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
 
-The work has just begun. We have great plans and any participation is welcome! So, feel free to submit new issues and open Pull Requests.
+At last, any participation is welcome, so feel free to submit new [Issues](https://github.com/dhilt/ngx-ui-scroll/issues) and open [Pull Requests](https://github.com/dhilt/ngx-ui-scroll/pulls).
 
 __________
 
-2019 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)
+2020 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)

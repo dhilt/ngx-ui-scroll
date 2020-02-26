@@ -79,17 +79,27 @@ const configList: TestBedConfig[] = [
   }
 ];
 
+const moreProcessesConfigList = configList
+  .filter((v, i) => i === 1 || i === 4)
+  .map((v, i) => ({
+    ...v, custom: { ...v.custom, prepend: i % 2  === 0 }
+  }));
+
+const updateDOMElement = (misc: Misc, index: number, size: number) => {
+  const element = misc.getElement(index);
+  if (element) {
+    if (misc.scroller.settings.horizontal) {
+      (<HTMLElement>element).style.width = size + 'px';
+    } else {
+      (<HTMLElement>element).style.height = size + 'px';
+    }
+  }
+};
+
 const updateDOM = (misc: Misc, { min, max, size, initialSize }: any) => {
   const { datasource } = <any>misc.fixture.componentInstance;
   for (let i = min; i <= max; i++) {
-    const element = misc.getElement(i);
-    if (element) {
-      if (misc.scroller.settings.horizontal) {
-        (<HTMLElement>element).style.width = size + 'px';
-      } else {
-        (<HTMLElement>element).style.height = size + 'px';
-      }
-    }
+    updateDOMElement(misc, i, size);
     // persist new sizes on the datasource level
     datasource.setProcessGet((result: Array<any>) =>
       result.forEach(item => item.size = item.id >= min && item.id <= max ? size : initialSize)
@@ -110,7 +120,7 @@ const getFirstVisibleIndex = (misc: Misc): number => {
   return NaN;
 };
 
-const testIt = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const { datasource } = <any>misc.fixture.componentInstance;
   const { datasource: { adapter }, settings, buffer } = misc.scroller;
   const initialSize = config.datasourceSettings.itemSize;
@@ -138,13 +148,83 @@ const testIt = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   });
 };
 
+const shouldSimulateFetch = (misc: Misc, value: boolean) => {
+  const { fetch } = misc.scroller.state;
+  expect(fetch.simulate).toEqual(value);
+  expect(fetch.isReplace).toEqual(value);
+};
+
+const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    const { state, datasource: { adapter } } = misc.scroller;
+    switch (state.workflowCycleCount) {
+      case 2:
+        updateDOMElement(misc, <number>config.datasourceSettings.startIndex, 50);
+        adapter.check();
+        shouldSimulateFetch(misc, true);
+        break;
+      case 3:
+        shouldSimulateFetch(misc, false);
+        misc.scrollMax();
+        break;
+      case 4:
+        done();
+    }
+  });
+
+const shouldDoubleCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  const { state, datasource: { adapter } } = misc.scroller;
+  const { itemSize, startIndex } = config.datasourceSettings;
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    switch (state.workflowCycleCount) {
+      case 2:
+        updateDOMElement(misc, <number>startIndex, 50);
+        adapter.check();
+        shouldSimulateFetch(misc, true);
+        break;
+      case 3:
+        shouldSimulateFetch(misc, false);
+        if (config.custom.prepend) {
+          adapter.prepend({ id: MIN_INDEX - 1, text: 'new item', size: itemSize });
+        } else {
+          adapter.append({ id: MAX_INDEX + 1, text: 'new item', size: itemSize });
+        }
+        break;
+      case 4:
+        updateDOMElement(misc, <number>startIndex, itemSize);
+        adapter.check();
+        shouldSimulateFetch(misc, true);
+        break;
+      case 5:
+        shouldSimulateFetch(misc, false);
+        done();
+    }
+  });
+};
+
 describe('Adapter Check Size Spec', () => {
 
   configList.forEach(config =>
     makeTest({
       config,
       title: 'should check properly',
-      it: testIt(config)
+      it: shouldCheck(config)
+    })
+  );
+
+  moreProcessesConfigList.forEach(config =>
+    makeTest({
+      config,
+      title: 'should fetch after check',
+      it: shouldFetchAfterCheck(config)
+    })
+  );
+
+  moreProcessesConfigList.forEach(config =>
+    makeTest({
+      config,
+      title: `should check after check and ${config.custom.prepend ? 'prepend' : 'append'}`,
+      it: shouldDoubleCheck(config)
     })
   );
 

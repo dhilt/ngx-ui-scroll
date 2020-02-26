@@ -6,17 +6,18 @@ export default class Adjust {
   static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {
-    scroller.state.preAdjustPosition = scroller.viewport.scrollPosition;
+    const { workflow, state, viewport } = scroller;
+    state.preAdjustPosition = viewport.scrollPosition;
 
     // padding-elements adjustments
     const setPaddingsResult =
       Adjust.setPaddings(scroller);
 
     if (setPaddingsResult === false) {
-      scroller.callWorkflow({
+      workflow.call({
         process: Process.adjust,
         status: ProcessStatus.error,
-        payload: { error: 'Can\'t get visible item' }
+        payload: { error: `Can't get visible item` }
       });
       return;
     }
@@ -24,14 +25,14 @@ export default class Adjust {
     // scroll position adjustments
     Adjust.fixScrollPosition(scroller, <number>setPaddingsResult);
 
-    scroller.callWorkflow({
+    workflow.call({
       process: Process.adjust,
       status: ProcessStatus.done
     });
   }
 
   static setPaddings(scroller: Scroller): boolean | number {
-    const { viewport, buffer, state: { fetch } } = scroller;
+    const { viewport, buffer, state: { fetch }, settings: { inverse } } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
     const lastItem = buffer.getLastVisibleItem();
     if (!firstItem || !lastItem) {
@@ -65,11 +66,19 @@ export default class Adjust {
       const item = buffer.cache.get(index);
       fwdSize += item ? item.size : buffer.cache.averageSize;
     }
+
+    // lack of items case
     const bufferSize = viewport.getScrollableSize() - forwardPadding.size - backwardPadding.size;
     const viewportSizeDiff = viewport.getSize() - (bwdSize + bufferSize + fwdSize);
     if (viewportSizeDiff > 0) {
-      fwdSize += viewportSizeDiff;
-      scroller.logger.log(`forward padding will be increased by ${viewportSizeDiff} to fill the viewport`);
+      if (inverse) {
+        bwdSize += viewportSizeDiff;
+      } else {
+        fwdSize += viewportSizeDiff;
+      }
+      scroller.logger.log(() =>
+        inverse ? 'backward' : 'forward' + ` padding will be increased by ${viewportSizeDiff} to fill the viewport`
+      );
     }
 
     forwardPadding.size = fwdSize;

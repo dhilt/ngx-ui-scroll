@@ -1,6 +1,5 @@
 import { Observable, Subscription, Observer } from 'rxjs';
 
-import { UiScrollComponent } from '../ui-scroll.component';
 import { checkDatasource } from './utils/index';
 import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';
@@ -9,16 +8,14 @@ import { Routines } from './classes/domRoutines';
 import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
-import { CallWorkflow } from './interfaces/index';
+import { Adapter } from './classes/adapter';
+import { ScrollerWorkflow, IAdapter, Datasource as IDatasource } from './interfaces/index';
 
 let instanceCount = 0;
 
 export class Scroller {
+  public workflow: ScrollerWorkflow;
 
-  readonly runChangeDetector: Function;
-  readonly callWorkflow: CallWorkflow;
-
-  public version: string;
   public datasource: Datasource;
   public settings: Settings;
   public logger: Logger;
@@ -26,50 +23,41 @@ export class Scroller {
   public viewport: Viewport;
   public buffer: Buffer;
   public state: State;
+  public adapter?: Adapter;
 
   public innerLoopSubscriptions: Array<Subscription>;
 
-  constructor(context: UiScrollComponent, callWorkflow: CallWorkflow) {
-    const datasource = <Datasource>checkDatasource(context.datasource);
-    this.datasource = datasource;
-    this.version = context.version;
+  constructor(element: HTMLElement, datasource: Datasource | IDatasource, version: string, callWorkflow: Function) {
+    checkDatasource(datasource);
 
-    this.runChangeDetector = () => context.changeDetector.markForCheck();
-    // this.runChangeDetector = () => context.changeDetector.detectChanges();
-    this.callWorkflow = callWorkflow;
+    this.workflow = <ScrollerWorkflow>{ call: callWorkflow };
     this.innerLoopSubscriptions = [];
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
-    this.logger = new Logger(this);
+    this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
-    this.state = new State(this.settings, this.logger);
+    this.state = new State(this.settings, version, this.logger);
     this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger);
-    this.viewport = new Viewport(context.elementRef, this.settings, this.routines, this.state, this.logger);
+    this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
 
     this.logger.object('uiScroll settings object', this.settings, true);
 
-    this.datasourceInit();
+    // datasource & adapter initialization
+    const constructed = datasource instanceof Datasource;
+    this.datasource = !constructed
+      ? new Datasource(datasource, !this.settings.adapter)
+      : <Datasource>datasource;
+    if (constructed || this.settings.adapter) {
+      this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.logger, () => this.workflow);
+    }
   }
 
   init() {
     this.viewport.reset(0);
-  }
-
-  datasourceInit() {
-    const { datasource, settings } = this;
-    if (!datasource.constructed) {
-      this.datasource = new Datasource(datasource, !settings.adapter);
-      if (settings.adapter) {
-        this.datasource.adapter.initialize(this);
-        datasource.adapter = this.datasource.adapter;
-      }
-    } else {
-      this.datasource.adapter.initialize(this);
-    }
+    this.logger.stat('initialization');
   }
 
   bindData(): Observable<any> {
-    this.runChangeDetector();
     return new Observable((observer: Observer<any>) => {
       setTimeout(() => {
         observer.next(true);
@@ -96,6 +84,9 @@ export class Scroller {
   }
 
   dispose() {
+    if (this.adapter) {
+      this.adapter.dispose();
+    }
     this.purgeInnerLoopSubscriptions();
     this.purgeScrollTimers();
   }

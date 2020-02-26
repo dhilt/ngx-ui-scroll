@@ -6,40 +6,41 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Fetch {
 
   static run(scroller: Scroller) {
+    const { workflow } = scroller;
+
+    function success(data: Array<any>) {
+      scroller.logger.log(() => `resolved ${data.length} items ` +
+        `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
+      scroller.state.fetch.newItemsData = data;
+      workflow.call({
+        process: Process.fetch,
+        status: ProcessStatus.next
+      });
+    }
+
+    function fail(error: string) {
+      workflow.call({
+        process: Process.fetch,
+        status: ProcessStatus.error,
+        payload: { error }
+      });
+    }
+
     const result = Fetch.get(scroller);
     if (typeof result.subscribe !== 'function') {
       if (!result.isError) {
-        Fetch.success(result.data, scroller);
+        success(result.data);
       } else {
-        Fetch.fail(result.error, scroller);
+        fail(result.error);
       }
     } else {
       scroller.innerLoopSubscriptions.push(
         result.subscribe(
-          (data: Array<any>) => Fetch.success(data, scroller),
-          (error: any) => Fetch.fail(error, scroller)
+          (data: Array<any>) => success(data),
+          (error: any) => fail(error)
         )
       );
     }
-  }
-
-  static success(data: Array<any>, scroller: Scroller) {
-    scroller.logger.log(() => `resolved ${data.length} items ` +
-      `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
-    scroller.state.fetch.newItemsData = data;
-
-    scroller.callWorkflow({
-      process: Process.fetch,
-      status: ProcessStatus.next
-    });
-  }
-
-  static fail(error: string, scroller: Scroller) {
-    scroller.callWorkflow({
-      process: Process.fetch,
-      status: ProcessStatus.error,
-      payload: { error }
-    });
   }
 
   static get(scroller: Scroller) {

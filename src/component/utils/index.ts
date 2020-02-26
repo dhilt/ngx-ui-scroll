@@ -1,8 +1,15 @@
 import { checkDatasource } from './checkDatasource';
 import { assignSettings, assignDevSettings } from './assignSettings';
-import { itemAdapterEmpty, generateMockAdapter, protectAdapterPublicMethod } from './adapter';
+import { InputValue, ValidatedValue, validate } from './validation';
+import { ADAPTER_PROPS, itemAdapterEmpty } from './adapter';
 
 export {
-  checkDatasource, assignSettings, assignDevSettings,
-  itemAdapterEmpty, generateMockAdapter, protectAdapterPublicMethod
+  checkDatasource,
+  assignSettings,
+  assignDevSettings,
+  InputValue,
+  ValidatedValue,
+  validate,
+  ADAPTER_PROPS,
+  itemAdapterEmpty
 };

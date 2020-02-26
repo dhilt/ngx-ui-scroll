@@ -18,8 +18,9 @@ import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
 
-  protected settings: Settings;
-  protected logger: Logger;
+  private settings: Settings;
+  readonly version: string;
+  private logger: Logger;
 
   initTime: number;
   innerLoopCount: number;
@@ -120,8 +121,9 @@ export class State implements IState {
     return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount + 1}`;
   }
 
-  constructor(settings: Settings, logger: Logger) {
+  constructor(settings: Settings, version: string, logger: Logger) {
     this.settings = settings;
+    this.version = version;
     this.logger = logger;
     this.initTime = Number(new Date());
     this.innerLoopCount = 0;
@@ -159,7 +161,7 @@ export class State implements IState {
     let index = Number(newStartIndex);
     if (isNaN(index)) {
       this.logger.log(() =>
-        `fallback startIndex to settings.startIndex (${startIndex}) because ${newStartIndex} is not a number`);
+        `fallback startIndex to settings.startIndex (${startIndex})`);
       index = startIndex;
     }
     if (index < minIndex) {

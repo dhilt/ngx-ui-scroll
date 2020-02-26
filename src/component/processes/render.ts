@@ -14,16 +14,16 @@ export default class Render {
             (<any>elt).dataset['sid'] = scroller.state.fetch.items[index].nodeId;
           });
         if (Render.processElements(scroller)) {
-          scroller.callWorkflow({
+          scroller.workflow.call({
             process: Process.render,
             status: ProcessStatus.next,
             payload: { noClip: scroller.state.clip.noClip }
           });
         } } else {
-          scroller.callWorkflow({
+          scroller.workflow.call({
             process: Process.render,
             status: ProcessStatus.error,
-            payload: { error: 'Can\'t associate item with element' }
+            payload: { error: `Can't associate item with element` }
           });
         }
       })

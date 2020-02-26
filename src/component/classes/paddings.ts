@@ -39,14 +39,33 @@ export class Paddings {
     this.backward = new Padding(element, Direction.backward, routines);
   }
 
+  byDirection(direction: Direction, opposite?: boolean): Padding {
+    return direction === Direction.backward
+      ? (opposite ? this.forward : this.backward)
+      : (opposite ? this.backward : this.forward);
+  }
+
   reset(viewportSize: number, startIndex: number) {
-    this.forward.reset(this.getPositiveSize(startIndex, viewportSize));
-    this.backward.reset(this.getNegativeSize(startIndex));
-    const fwdDiff = viewportSize - this.forward.size;
-    if (fwdDiff > 0) {
-      this.forward.size += fwdDiff;
-      this.backward.size -= fwdDiff;
+    const positive = this.getPositiveSize(startIndex, viewportSize);
+    const negative = this.getNegativeSize(startIndex);
+    if (this.settings.inverse) {
+      this.forward.reset(negative);
+      this.backward.reset(positive);
+      const diff = viewportSize - this.backward.size;
+      if (diff > 0) {
+        this.backward.size += diff;
+        this.forward.size -= diff;
+      }
+    } else {
+      this.forward.reset(positive);
+      this.backward.reset(negative);
+      const diff = viewportSize - this.forward.size;
+      if (diff > 0) {
+        this.backward.size -= diff;
+        this.forward.size += diff;
+      }
     }
+
   }
 
   getPositiveSize(startIndex: number, viewportSize: number) {

@@ -15,6 +15,7 @@ export class FetchModel {
   averageItemSize: number;
   hasAverageItemSizeChanged: boolean;
   direction: Direction | null;
+
   simulate: boolean;
   isPrepend: boolean;
   isReplace: boolean;
@@ -65,7 +66,7 @@ export class FetchModel {
     return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
   }
 
-  doSimulate(items: Array<Item>) {
+  startSimulate(items: Array<Item>) {
     this.simulate = true;
     this._newItemsData = items.map(item => item.data);
     this.items = items;
@@ -73,15 +74,21 @@ export class FetchModel {
     this.negativeSize = 0;
   }
 
+  stopSimulate() {
+    this.simulate = false;
+    this.isPrepend = false;
+    this.isReplace = false;
+  }
+
   append(items: Array<Item>) {
-    this.doSimulate(items);
+    this.startSimulate(items);
     this.lastIndex = items[items.length - 1].$index;
     this.firstIndex = items[0].$index;
     this.direction = Direction.forward;
   }
 
   prepend(items: Array<Item>) {
-    this.doSimulate(items);
+    this.startSimulate(items);
     this.lastIndex = items[0].$index;
     this.firstIndex = items[items.length - 1].$index;
     this.direction = Direction.backward;
@@ -89,7 +96,7 @@ export class FetchModel {
   }
 
   replace(items: Array<Item>) {
-    this.doSimulate(items);
+    this.startSimulate(items);
     this.lastIndex = items[0].$index;
     this.firstIndex = items[items.length - 1].$index;
     this.isReplace = true;

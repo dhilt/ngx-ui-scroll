@@ -9,6 +9,7 @@ export interface Settings {
   infinite?: boolean;
   horizontal?: boolean;
   windowViewport?: boolean;
+  inverse?: boolean;
 }
 
 export interface DevSettings {

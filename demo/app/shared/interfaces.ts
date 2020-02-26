@@ -23,6 +23,7 @@ export interface DemoContext {
   addClass?: string;
   noWorkView?: boolean;
   logViewOnly?: boolean;
+  noInfo?: boolean;
 
   // dynamic data
   count: number;

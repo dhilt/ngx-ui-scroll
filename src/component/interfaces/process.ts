@@ -7,6 +7,7 @@ export enum Process {
   check = 'adapter.check',
   remove = 'adapter.remove',
   userClip = 'adapter.clip',
+  fix = 'adapter.fix',
   start = 'start',
   preFetch = 'preFetch',
   fetch = 'fetch',
@@ -25,11 +26,6 @@ export enum ProcessStatus {
   error = 'error'
 }
 
-export interface ScrollPayload {
-  event?: Event;
-  byTimer?: boolean;
-}
-
 export interface ProcessSubject {
   process: Process;
   status: ProcessStatus;
@@ -43,4 +39,8 @@ export interface WorkflowError {
   process: Process;
 }
 
-export type CallWorkflow = (processSubject: ProcessSubject) => undefined;
+export interface ScrollerWorkflow {
+  call: Function;
+}
+
+export type WorkflowGetter = () => ScrollerWorkflow;

@@ -27,8 +27,8 @@ export const datasourceGetInfinite =
 
 export const datasourceGetLimited =
   (demoContext: DemoContext, min: number, max: number, index: number, count: number) => {
-    min = isNaN(Number(min)) ? Number.NEGATIVE_INFINITY : Number(min);
-    max = isNaN(Number(max)) ? Number.POSITIVE_INFINITY : Number(max);
+    min = isNaN(Number(min)) ? -Infinity : Number(min);
+    max = isNaN(Number(max)) ? Infinity : Number(max);
     const data = [];
     const start = Math.max(min, index);
     const end = Math.min(index + count - 1, max);

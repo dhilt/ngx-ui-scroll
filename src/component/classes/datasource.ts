@@ -1,23 +1,16 @@
 import {
-  Datasource as IDatasource, DatasourceGet, DevSettings, Settings, Adapter as IAdapter
+  Datasource as IDatasource, DatasourceGet, DevSettings, Settings, IAdapter
 } from '../interfaces/index';
-import { Adapter } from './adapter';
-import { generateMockAdapter } from '../utils/index';
+import { AdapterContext } from './adapterContext';
 
 export class Datasource implements IDatasource {
-  readonly constructed: boolean;
   get: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;
   adapter: IAdapter;
 
-  constructor(datasource: IDatasource, hasNoAdapter?: boolean) {
-    this.constructed = true;
+  constructor(datasource: IDatasource, noAdapter?: boolean) {
     Object.assign(<any>this, datasource);
-    if (hasNoAdapter) {
-      this.adapter = <IAdapter>generateMockAdapter();
-    } else {
-      this.adapter = new Adapter();
-    }
+    this.adapter = <IAdapter>new AdapterContext(!!noAdapter);
   }
 }

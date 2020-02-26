@@ -70,6 +70,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   public template: TemplateRef<any>;
   public datasource: IDatasource | Datasource;
   public isTable: boolean;
+  public parentElement: HTMLElement;
 
   // use in the template
   public items: Item[] = [];
@@ -79,11 +80,14 @@ export class UiScrollComponent implements OnInit, OnDestroy {
 
   constructor(
     public changeDetector: ChangeDetectorRef,
-    public elementRef: ElementRef) { }
+    public elementRef: ElementRef
+  ) {
+    setTimeout(() => this.ngOnInit()); // 😢
+  }
 
   ngOnInit() {
     this.workflow = new Workflow(
-      this.elementRef.nativeElement,
+      this.parentElement, // this.elementRef.nativeElement,
       this.datasource,
       this.version,
       (items: Item[]) => {

@@ -34,5 +34,6 @@ export class UiScrollDirective implements OnInit {
     componentRef.instance.version = version;
     componentRef.instance.parentElement = this.templateRef.elementRef.nativeElement.parentElement;
     this.viewContainer.createEmbeddedView(componentRef.instance.uiScrollTemplateRef);
+    componentRef.changeDetectorRef.detectChanges();
   }
 }

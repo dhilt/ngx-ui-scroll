@@ -9,7 +9,11 @@ import {
   AdapterInsertOptions,
   AdapterFixOptions,
   IAdapter,
-  IAdapterMethodParam
+  IAdapterMethodParam,
+  IAdapterMethodParams,
+  IAdapterMethods,
+  IAdapterValidatedMethodParams,
+  IAdapterValidatedMethodData,
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
@@ -30,6 +34,10 @@ export {
   AdapterInsertOptions,
   AdapterFixOptions,
   IAdapterMethodParam,
+  IAdapterMethodParams,
+  IAdapterMethods,
+  IAdapterValidatedMethodParams,
+  IAdapterValidatedMethodData,
   Settings,
   DevSettings,
   Direction,

@@ -1,6 +1,6 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { IValidator } from './validation';
+import { IValidator, ValidatedValue } from './validation';
 
 export enum AdapterPropType {
   Scalar,
@@ -76,4 +76,22 @@ export interface IAdapterMethodParam {
   validators: IValidator[];
   call?: Function;
   value?: any;
+}
+
+export interface IAdapterMethodParams {
+  [key: string]: IAdapterMethodParam;
+}
+
+export interface IAdapterMethods {
+  [key: string]: IAdapterMethodParams;
+}
+
+export interface IAdapterValidatedMethodParams {
+  [key: string]: ValidatedValue;
+}
+
+export interface IAdapterValidatedMethodData {
+  isValid: boolean;
+  errors: string[];
+  params: IAdapterValidatedMethodParams;
 }

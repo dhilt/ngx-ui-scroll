@@ -7,8 +7,11 @@ import {
   IAdapterProp,
   ItemAdapter,
   IAdapter,
-  IAdapterMethodParam as IParam,
-  ValidatorType
+  IAdapterMethodParam,
+  IAdapterMethodParams,
+  IAdapterMethods,
+  ValidatorType,
+  ValidatedValue
 } from '../interfaces/index';
 
 export const itemAdapterEmpty = <ItemAdapter>{
@@ -146,17 +149,9 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   }
 ];
 
-interface AdapterMethodParams {
-  [key: string]: IParam;
-}
+const { INTEGER_UNLIMITED, BOOLEAN, ITERATOR_CALLBACK, ONE_OF_MUST } = VALIDATORS;
 
-interface AdapterMethods {
-  [key: string]: AdapterMethodParams;
-}
-
-const { INTEGER_UNLIMITED, BOOLEAN, ITERATOR_CALLBACK, ONE_OF } = VALIDATORS;
-
-const FIX_METHOD_PARAMS: AdapterMethodParams = {
+const FIX_METHOD_PARAMS: IAdapterMethodParams = {
   scrollPosition: {
     name: 'scrollPosition',
     validators: [INTEGER_UNLIMITED]
@@ -175,14 +170,14 @@ const FIX_METHOD_PARAMS: AdapterMethodParams = {
   }
 };
 
-const INSERT_METHOD_PARAMS: AdapterMethodParams = {
+const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
   before: {
     name: 'before',
-    validators: [ITERATOR_CALLBACK, ONE_OF(['after'])]
+    validators: [ITERATOR_CALLBACK, ONE_OF_MUST(['after'])]
   },
   after: {
     name: 'after',
-    validators: [ITERATOR_CALLBACK, ONE_OF(['before'])]
+    validators: [ITERATOR_CALLBACK, ONE_OF_MUST(['before'])]
   },
   decrease: {
     name: 'decrease',
@@ -190,7 +185,7 @@ const INSERT_METHOD_PARAMS: AdapterMethodParams = {
   }
 };
 
-export const ADAPTER_METHODS_PARAMS: AdapterMethods = {
+export const ADAPTER_METHODS_PARAMS: IAdapterMethods = {
   FIX: FIX_METHOD_PARAMS,
   INSERT: INSERT_METHOD_PARAMS
 };

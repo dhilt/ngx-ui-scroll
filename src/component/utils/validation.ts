@@ -1,7 +1,21 @@
-import { ValidatorType, IValidator, ValidatedValue } from '../interfaces/validation';
+import {
+  ValidatorType,
+  IValidator,
+  ValidatedValue,
+  IAdapterMethodParams,
+  IAdapterValidatedMethodData,
+  IAdapterValidatedMethodParams
+} from '../interfaces/index';
 
 const getNumber = (value: any): number =>
   value === '' || value === null ? NaN : Number(value);
+
+const onMandatory = (value: any): ValidatedValue => {
+  const isValid = typeof value !== 'undefined';
+  return { value: value, isValid, errors: isValid ? [] : [
+    'must be present'
+  ] };
+};
 
 const onInteger = (value: any): ValidatedValue => {
   let parsedValue = value;
@@ -9,7 +23,7 @@ const onInteger = (value: any): ValidatedValue => {
   value = getNumber(value);
   parsedValue = parseInt(value, 10);
   if (value !== parsedValue) {
-    errors.push('it must be an integer');
+    errors.push('must be an integer');
   }
   return { value: parsedValue, isValid: !errors.length, errors };
 };
@@ -24,7 +38,7 @@ const onIntegerUnlimited = (value: any): ValidatedValue => {
     parsedValue = parseInt(value, 10);
   }
   if (value !== parsedValue) {
-    errors.push('it must be an integer or +/- Infinity');
+    errors.push('must be an integer or +/- Infinity');
   }
   return { value: parsedValue, isValid: !errors.length, errors };
 };
@@ -36,30 +50,47 @@ const onBoolean = (value: any): ValidatedValue => {
 const onIteratorCallback = (value: any): ValidatedValue => {
   const errors = [];
   if (typeof value !== 'function') {
-    errors.push('it must be an iterator callback function');
+    errors.push('must be an iterator callback function');
   } else if ((<Function>value).length !== 1) {
-    errors.push('it must be an iterator callback function with 1 argument');
+    errors.push('must be an iterator callback function with 1 argument');
   }
   return { value, isValid: !errors.length, errors };
 };
 
-const onOneOf = (tokens: string[]) => (value: any, context: any): ValidatedValue => {
+const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any): ValidatedValue => {
   const errors = [];
-  if (typeof context !== 'object' || !Array.isArray(tokens) || !tokens.length) {
-    errors.push(`context and token list must be passed`);
+  const isPresent = typeof value !== 'undefined';
+  let noOneIsPresent = !isPresent;
+  if (!Array.isArray(tokens) || !tokens.length) {
+    errors.push(`token list must be passed`);
   } else {
     for (let i = tokens.length - 1; i >= 0; i--) {
-      if (typeof tokens[i] !== 'string') {
+      const token = tokens[i];
+      if (typeof token !== 'string') {
         errors.push(`token list must be an array of strings`);
-      } else if (context.hasOwnProperty(tokens[i])) {
-        errors.push(`must not be present with "${tokens[i]}"`);
+        break;
       }
+      const isAnotherPresent = context.hasOwnProperty(token);
+      if (isPresent && isAnotherPresent) {
+        errors.push(`must not be present with "${token}"`);
+        break;
+      }
+      if (noOneIsPresent && isAnotherPresent) {
+        noOneIsPresent = false;
+      }
+    }
+    if (must && noOneIsPresent) {
+      errors.push(`must be present (or "${tokens.join('", "')}" must be present)`);
     }
   }
   return { value, isValid: !errors.length, errors };
 };
 
 export const VALIDATORS = {
+  MANDATORY: <IValidator>{
+    type: ValidatorType.mandatory,
+    method: onMandatory
+  },
   INTEGER: <IValidator>{
     type: ValidatorType.integer,
     method: onInteger
@@ -76,18 +107,73 @@ export const VALIDATORS = {
     type: ValidatorType.iteratorCallback,
     method: onIteratorCallback
   },
-  ONE_OF: (list: string[]): IValidator => ({
-    type: ValidatorType.oneOf,
-    method: onOneOf(list)
+  ONE_OF_CAN: (list: string[]): IValidator => ({
+    type: ValidatorType.oneOfCan,
+    method: onOneOf(list, false)
+  }),
+  ONE_OF_MUST: (params: any): IValidator => ({
+    type: ValidatorType.oneOfMust,
+    method: onOneOf(params, true)
   }),
 };
 
-export const validateOne = (
-  { value, isValid, errors }: ValidatedValue,
-  { type, method }: IValidator,
+export class AdapterValidatedMethodData implements IAdapterValidatedMethodData {
+  private context: any;
+  private commonErrors: string[];
+
+  isValid: boolean;
+  errors: string[];
+  params: IAdapterValidatedMethodParams;
+
+  constructor(context: any) {
+    this.context = context;
+    this.commonErrors = [];
+    this.isValid = true;
+    this.errors = [];
+    this.params = <IAdapterValidatedMethodParams>{};
+    this.checkContext();
+  }
+
+  private checkContext() {
+    if (!this.context || typeof this.context !== 'object') {
+      this.setCommonError(`context is not an object`);
+    }
+  }
+
+  private setValidity() {
+    this.errors = Object.keys(this.params).reduce((acc: string[], key: string) => [
+      ...acc, ...this.params[key].errors
+    ], this.commonErrors);
+    this.isValid = !this.errors.length;
+  }
+
+  setCommonError(error: string) {
+    this.commonErrors.push(error);
+    this.errors.push(error);
+    this.isValid = false;
+  }
+
+  setParam(token: string, value: ValidatedValue) {
+    this.params[token] = value;
+    this.setValidity();
+  }
+}
+
+const shouldSkip = ({ type }: IValidator, value: any) =>
+  type !== ValidatorType.mandatory &&
+  type !== ValidatorType.oneOfMust &&
+  typeof value === 'undefined';
+
+export const runValidator = (
+  current: ValidatedValue,
+  validator: IValidator,
   context?: any
 ): ValidatedValue => {
-  const result = method(value, context);
+  const { value, errors } = current;
+  if (shouldSkip(validator, value)) {
+    return current;
+  }
+  const result = validator.method(value, context);
   const _errors = [...errors, ...result.errors];
   return {
     value: result.value,
@@ -96,14 +182,29 @@ export const validateOne = (
   };
 };
 
-export const validate = (
-  value: any, validators: IValidator[], context?: Object
+export const validateOne = (
+  context: any, name: string, validators: IValidator[]
 ): ValidatedValue =>
   validators.reduce((acc, validator) => ({
     ...acc,
-    ...validateOne(acc, validator, context)
+    ...runValidator(acc, validator, context)
   }), <ValidatedValue>{
-    value,
+    value: context[name],
     isValid: true,
     errors: []
   });
+
+export const validate = (
+  context: any, params: IAdapterMethodParams
+): IAdapterValidatedMethodData => {
+  const data = new AdapterValidatedMethodData(context);
+  if (!data.isValid) {
+    return data;
+  }
+  Object.keys(params).forEach((key: string) => {
+    const { name, validators } = params[key];
+    const parsed = validateOne(context, name, validators);
+    data.setParam(name, parsed);
+  });
+  return data;
+};

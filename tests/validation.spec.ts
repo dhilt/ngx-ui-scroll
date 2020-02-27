@@ -1,7 +1,15 @@
-import { VALIDATORS, validate } from '../src/component/utils/validation';
-import { ValidatorType } from '../src/component/interfaces/validation';
+import { VALIDATORS, validateOne, validate } from '../src/component/utils/validation';
+import { ValidatorType, IAdapterMethodParams, IValidator } from 'src/component/interfaces/index';
 
-const { INTEGER, INTEGER_UNLIMITED, ITERATOR_CALLBACK, ONE_OF: ONE_OF } = VALIDATORS;
+const {
+  MANDATORY,
+  INTEGER,
+  INTEGER_UNLIMITED,
+  ITERATOR_CALLBACK,
+  BOOLEAN,
+  ONE_OF_CAN,
+  ONE_OF_MUST
+} = VALIDATORS;
 
 describe('Input Params Validation', () => {
   describe('[Integer]', () => {
@@ -29,13 +37,13 @@ describe('Input Params Validation', () => {
       { value: 1.11e1, parsed: 11 },
       { value: () => null, parsed: NaN },
       { value: {}, parsed: NaN },
-      { value: undefined, parsed: NaN },
+      // { value: undefined, parsed: NaN },
       { value: null, parsed: NaN },
     ];
 
     it('should pass limited integer', (done: Function) => {
       integerPassInputs.forEach(input => {
-        const parsed = validate(input.value, [INTEGER]);
+        const parsed = validateOne(input, 'value', [INTEGER]);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -51,11 +59,11 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: NaN },
       ];
       inputs.forEach(input => {
-        const parsed = validate(input.value, [INTEGER]);
+        const parsed = validateOne(input, 'value', [INTEGER]);
         expect(parsed).toEqual({
           value: input.parsed,
           isValid: false,
-          errors: ['it must be an integer']
+          errors: ['must be an integer']
         });
       });
       done();
@@ -70,7 +78,7 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: -Infinity },
       ];
       inputs.forEach(input => {
-        const parsed = validate(input.value, [INTEGER_UNLIMITED]);
+        const parsed = validateOne(input, 'value', [INTEGER_UNLIMITED]);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -79,11 +87,11 @@ describe('Input Params Validation', () => {
 
     it('should block non unlimited integer', (done: Function) => {
       integerBlockInputs.forEach(input => {
-        const parsed = validate(input.value, [INTEGER_UNLIMITED]);
+        const parsed = validateOne(input, 'value', [INTEGER_UNLIMITED]);
         expect(parsed).toEqual({
           value: input.parsed,
           isValid: false,
-          errors: ['it must be an integer or +/- Infinity']
+          errors: ['must be an integer or +/- Infinity']
         });
       });
       done();
@@ -92,41 +100,164 @@ describe('Input Params Validation', () => {
 
   describe('[Iterator callback]', () => {
     it('should pass only one-argument function', (done: Function) => {
-      const validators = [ITERATOR_CALLBACK];
-      expect(validate(1, validators).isValid).toEqual(false);
-      expect(validate(true, validators).isValid).toEqual(false);
-      expect(validate({}, validators).isValid).toEqual(false);
-      expect(validate('test', validators).isValid).toEqual(false);
-      expect(validate(() => null, validators).isValid).toEqual(false);
-      expect(validate((a: any, b: any) => null, validators).isValid).toEqual(false);
-      expect(validate((item: any) => null, validators).isValid).toEqual(true);
+      const badInputs = [1, true, {}, 'test', () => null, (a: any, b: any) => null];
+      badInputs.forEach(input =>
+        expect(
+          validateOne({ value: input }, 'value', [ITERATOR_CALLBACK]).isValid
+        ).toEqual(false)
+      );
+      expect(
+        validateOne({ value: (item: any) => null }, 'value', [ITERATOR_CALLBACK]).isValid
+      ).toEqual(true);
       done();
     });
   });
 
   describe('[One of', () => {
-    const token = 'test';
+    const value = 1;
+    const test = 2;
+    const add = 3;
 
     it('should pass only one of twos', (done: Function) => {
-      expect(validate(1, [ONE_OF([token])], { [token]: 0 }).isValid).toEqual(false);
-      expect(validate(1, [ONE_OF([token])], { [token]: 1 }).isValid).toEqual(false);
-      expect(validate(1, [ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(true);
-      expect(validate('one', [ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(true);
+      expect(validateOne({ value }, 'value', [ONE_OF_CAN(['value'])]).isValid).toEqual(false);
+      expect(validateOne({ value }, 'value', [ONE_OF_CAN(['test'])]).isValid).toEqual(true);
+      expect(validateOne({ value }, 'test', [ONE_OF_CAN(['value'])]).isValid).toEqual(true);
+      expect(validateOne({ value }, 'test', [ONE_OF_CAN(['test'])]).isValid).toEqual(true);
+      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['value'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'test', [ONE_OF_CAN(['value'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['test'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'test', [ONE_OF_CAN(['test'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'test', [ONE_OF_CAN(['testX'])]).isValid).toEqual(true);
       done();
     });
 
     it('should pass only one of many', (done: Function) => {
-      expect(validate(1, [ONE_OF([token, token + '_'])], { [token]: 0 }).isValid).toEqual(false);
-      expect(validate(1, [ONE_OF([token, token + '_'])], { [token + '_']: 0 }).isValid).toEqual(false);
-      expect(validate(1, [ONE_OF([token, token + '_'])], { [token]: 0, [token + '_']: 0 }).isValid).toEqual(false);
-      expect(validate(1, [ONE_OF([token, token + '_'])], { [token + '__']: 0 }).isValid).toEqual(true);
-      done();
-    });
-
-    it('should pass only one integer of twos', (done: Function) => {
-      expect(validate(1, [INTEGER, ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(true);
-      expect(validate('one', [INTEGER, ONE_OF([token])], { [token + '_']: 1 }).isValid).toEqual(false);
+      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['value', 'add'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['test', 'value'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['test', 'valueX'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['testX', 'addX'])]).isValid).toEqual(true);
+      expect(validateOne({ value }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(true);
+      expect(validateOne({ test }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(true);
+      expect(validateOne({ test, add }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(true);
       done();
     });
   });
+});
+
+
+describe('Validation', () => {
+
+  describe('[Context]', () => {
+    it('should not pass bad context', () => {
+      expect(validate(null, {}).isValid).toBe(false);
+      expect(validate(false, {}).isValid).toBe(false);
+      expect(validate(12, {}).isValid).toBe(false);
+      expect(validate('bad', {}).isValid).toBe(false);
+      expect(validate(() => null, {}).isValid).toBe(false);
+      expect(validate({}, {}).isValid).toBe(true);
+    });
+  });
+
+  describe('[Mandatory]', () => {
+    it('should not pass missed mandatory fields', () => {
+      const token = 'test';
+      const run = (context: any, validators: IValidator[]) =>
+        validate(context, {
+          [token]: {
+            name: token,
+            validators
+          }
+        }).isValid;
+      expect(run({}, [])).toBe(true);
+      expect(run({}, [MANDATORY])).toBe(false);
+      expect(run({ [token]: 1 }, [MANDATORY])).toBe(true);
+    });
+
+    it('should deal with mandatory and some other validation', () => {
+      const token = 'test';
+      const run = (context: any, validators: IValidator[]) =>
+        validate(context, {
+          [token]: {
+            name: token,
+            validators
+          }
+        }).isValid;
+      expect(run({}, [MANDATORY, INTEGER])).toBe(false);
+      expect(run({ [token]: 'x' }, [MANDATORY, INTEGER])).toBe(false);
+      expect(run({ [token]: 1 }, [MANDATORY, INTEGER])).toBe(true);
+    });
+  });
+
+  describe('[One of must]', () => {
+    it('should not pass empty context or empty params', () => {
+      expect(validate({}, {
+        opt1: {
+          name: 'opt1',
+          validators: [ONE_OF_MUST(['opt2'])]
+        },
+        opt2: {
+          name: 'opt2',
+          validators: [ONE_OF_MUST(['opt1'])]
+        }
+      }).isValid).toBe(false);
+
+      expect(validate({}, {
+        opt1: {
+          name: 'opt1',
+          validators: [ONE_OF_MUST([])]
+        },
+        opt2: {
+          name: 'opt2',
+          validators: [ONE_OF_MUST([])]
+        }
+      }).isValid).toBe(false);
+    });
+
+    it('should work with 1 and more tokens', () => {
+      expect(validate({
+        ['opt1']: 1, ['opt2']: 2
+      }, {
+        opt1: {
+          name: 'opt1',
+          validators: [ONE_OF_MUST(['opt2'])]
+        },
+        opt2: {
+          name: 'opt2',
+          validators: [ONE_OF_MUST(['opt1'])]
+        }
+      }).isValid).toBe(false);
+
+      const result = validate({
+        ['opt1']: 1, ['opt2']: 2
+      }, {
+        opt1: {
+          name: 'opt1',
+          validators: [ONE_OF_MUST(['opt2', 'opt3'])]
+        },
+        opt2: {
+          name: 'opt2',
+          validators: [ONE_OF_MUST(['opt3'])]
+        }
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.params['opt1'].isValid).toBe(false);
+      expect(result.params['opt2'].isValid).toBe(true);
+
+      expect(validate({
+        ['opt1']: 1
+      }, {
+        opt1: {
+          name: 'opt1',
+          validators: [ONE_OF_MUST(['opt2'])]
+        },
+        opt2: {
+          name: 'opt2',
+          validators: [ONE_OF_MUST(['opt1'])]
+        }
+      }).isValid).toBe(true);
+    });
+  });
+
 });

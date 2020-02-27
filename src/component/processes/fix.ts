@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validate } from '../utils/index';
+import { ADAPTER_METHODS_PARAMS, validateOne } from '../utils/index';
 import {
   Process,
   ProcessStatus,
@@ -93,7 +93,7 @@ export default class Fix {
       const { name, validators } = param;
       const error = `failed: can't set ${name}`;
       if (options.hasOwnProperty(name)) {
-        const parsed = validate((<any>options)[name], validators);
+        const parsed = validateOne(options, name, validators);
         if (parsed.isValid) {
           const call = Fix.getCallMethod(name);
           if (call) {

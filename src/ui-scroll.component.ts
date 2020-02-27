@@ -81,9 +81,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   constructor(
     public changeDetector: ChangeDetectorRef,
     public elementRef: ElementRef
-  ) {
-    setTimeout(() => this.ngOnInit()); // 😢
-  }
+  ) { }
 
   ngOnInit() {
     this.workflow = new Workflow(

@@ -13,7 +13,8 @@ export class AdapterContext {
       prop => mock || prop.type !== AdapterPropType.Observable
     ).forEach(({ name, value }) =>
       Object.defineProperty(this, name, {
-        get: () => value
+        get: () => value,
+        configurable: true
       })
     );
     if (mock) {

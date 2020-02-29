@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from 'rxjs/index';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/state/fetch';

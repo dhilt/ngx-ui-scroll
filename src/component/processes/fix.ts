@@ -118,7 +118,7 @@ export default class Fix {
       scroller.logger.log(() => `scrollToItem cancelled, item not found`);
       return;
     }
-    found.element.scrollIntoView(alignToTop);
+    found.scrollTo(alignToTop);
   }
 
   static scrollToItemTop(params: IFixCall) {

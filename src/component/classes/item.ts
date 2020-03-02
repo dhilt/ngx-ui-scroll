@@ -52,6 +52,12 @@ export class Item {
     }
   }
 
+  scrollTo(backwardAlignment: boolean) {
+    if (this.element) {
+      this.routines.scrollTo(this.element, backwardAlignment);
+    }
+  }
+
   get(): ItemAdapter {
     return this.container;
   }

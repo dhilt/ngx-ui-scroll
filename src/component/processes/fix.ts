@@ -8,7 +8,9 @@ enum FixParamToken {
   scrollPosition = 'scrollPosition',
   minIndex = 'minIndex',
   maxIndex = 'maxIndex',
-  updater = 'updater'
+  updater = 'updater',
+  scrollToItemTop = 'scrollToItemTop',
+  scrollToItemBottom = 'scrollToItemBottom'
 }
 
 interface IFixParam {
@@ -46,6 +48,16 @@ export default class Fix {
       token: FixParamToken.updater,
       type: InputValue.iteratorCallback,
       call: Fix.updateItems
+    },
+    {
+      token: FixParamToken.scrollToItemTop,
+      type: InputValue.iteratorCallback,
+      call: Fix.scrollToItemTop
+    },
+    {
+      token: FixParamToken.scrollToItemBottom,
+      type: InputValue.iteratorCallback,
+      call: Fix.scrollToItemBottom
     }
   ];
 
@@ -98,6 +110,23 @@ export default class Fix {
 
   static updateItems({ scroller: { buffer }, value }: IFixCall) {
     buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
+  }
+
+  static scrollToItem({ scroller, value }: IFixCall, alignToTop: boolean) {
+    const found = scroller.buffer.items.find(item => (<ItemsPredicate>value)(item.get()));
+    if (!found) {
+      scroller.logger.log(() => `scrollToItem cancelled, item not found`);
+      return;
+    }
+    found.element.scrollIntoView(alignToTop);
+  }
+
+  static scrollToItemTop(params: IFixCall) {
+    Fix.scrollToItem(params, true);
+  }
+
+  static scrollToItemBottom(params: IFixCall) {
+    Fix.scrollToItem(params, false);
   }
 
   static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {

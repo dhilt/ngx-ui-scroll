@@ -1,5 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { generateItem, Item } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
+import { Settings, DevSettings, DatasourceGet } from 'src/component/interfaces/index';
 
 describe('Bug Spec', () => {
 
@@ -93,6 +95,68 @@ describe('Bug Spec', () => {
             });
           }, 25);
         }, 25);
+      }
+    })
+  );
+
+  describe('real items height > viewport while expected items height < viewport (inverse case)', () =>
+    makeTest({
+      title: 'should not extend forward padding element',
+      config: {
+        datasourceClass: class {
+          private messages: Item[] = [];
+          private MIN = 0;
+          private START = 0;
+          private COUNT = 7;
+
+          settings: Settings;
+          devSettings: DevSettings;
+          get: DatasourceGet;
+
+          constructor() {
+            const inverse = true;
+
+            for (let i = this.MIN; i < this.MIN + this.COUNT; ++i) {
+              const item = generateItem(i);
+              if (i === 4) {
+                item.size = 93;
+              }
+              this.messages.push(item);
+            }
+
+            this.settings = {
+              startIndex: inverse ? this.MIN - this.START - 1 : this.START,
+              bufferSize: this.COUNT,
+              adapter: true,
+              itemSize: 20,
+              inverse
+            };
+
+            this.get = (index, count, success) => {
+              const data = [];
+              const start = inverse ? -index - count + this.MIN : index;
+              const end = start + count - 1;
+              if (start <= end) {
+                for (let i = start; i <= end; i++) {
+                  if (!this.messages[i]) {
+                    continue;
+                  }
+                  data.push(this.messages[i]);
+                }
+              }
+              success(inverse ? data.reverse() : data);
+            };
+          }
+        },
+        templateSettings: { viewportHeight: 200, dynamicSize: 'size' }
+      },
+      it: (misc: Misc) => (done: Function) => {
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          const { state, datasource: { adapter } } = misc.scroller;
+          expect(misc.scroller.viewport.paddings.backward.size).toEqual(0);
+          expect(misc.scroller.viewport.paddings.forward.size).toEqual(0);
+          done();
+        });
       }
     })
   );

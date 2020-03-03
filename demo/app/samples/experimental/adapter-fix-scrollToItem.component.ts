@@ -5,15 +5,15 @@ import { Datasource } from '../../../../public_api';
 import { doLog } from '../../shared/datasource-get';
 
 @Component({
-  selector: 'app-adapter-fix-updater',
-  templateUrl: './adapter-fix-updater.component.html'
+  selector: 'app-adapter-fix-scrollToItem',
+  templateUrl: './adapter-fix-scrollToItem.component.html'
 })
-export class DemoAdapterFixUpdaterComponent {
+export class DemoAdapterFixScrollToItemComponent {
 
   demoContext: DemoContext = <DemoContext>{
     scope: 'experimental',
-    title: `Adapter fix updater`,
-    titleId: `adapter-fix-updater`,
+    title: `Adapter fix scrollToItem`,
+    titleId: `adapter-fix-scrollToItem`,
     noInfo: true
   };
 
@@ -24,6 +24,9 @@ export class DemoAdapterFixUpdaterComponent {
         data.push({ id: i, text: 'item #' + i });
       }
       success(data);
+    },
+    devSettings: {
+      debug: true
     }
   });
 
@@ -35,9 +38,8 @@ export class DemoAdapterFixUpdaterComponent {
 
   sources: DemoSources = [{
     name: DemoSourceType.Template,
-    text: `<button (click)="doUpdate()">Update</button> item #
+    text: `<button (click)="doScrollTo()">Scroll to</button> item #
 <input [(ngModel)]="inputValue" size="2">
-<div>Items in buffer: {{this.countItems()}}</div>
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
@@ -58,7 +60,7 @@ datasource = new Datasource({
   }
 });
 
-doUpdate() {
+doScrollTo() {
   const index = Number(this.inputValue);
   if (!isNaN(index)) {
     this.datasource.adapter.fix({
@@ -70,44 +72,18 @@ doUpdate() {
     });
   }
 }
-
-countItems() {
-  let count = 0;
-  this.datasource.adapter.fix({
-    updater: ({}) => count++
-  });
-  return count;
-}
 `
   }];
 
-  itemAdapterDescription = `  ItemAdapter {
-    $index: number;
-    data: any;
-    element?: HTMLElement;
-  }`;
+  adapterFixUpdater = `Adapter.fix({ scrollToItem })`;
 
-  adapterFixUpdater = `Adapter.fix({ updater })`;
-
-  doUpdate() {
+  doScrollTo() {
     const index = Number(this.inputValue);
     if (!isNaN(index)) {
       this.datasource.adapter.fix({
-        updater: ({ $index, data }) => {
-          if (index === $index) {
-            data.text += '*';
-          }
-        }
+        scrollToItemTop: ({ $index, data }) => data.id === index
       });
     }
-  }
-
-  countItems() {
-    let count = 0;
-    this.datasource.adapter.fix({
-      updater: ({}) => count++
-    });
-    return count;
   }
 
 }

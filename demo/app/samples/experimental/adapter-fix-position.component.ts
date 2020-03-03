@@ -24,10 +24,6 @@ export class DemoAdapterFixPositionComponent {
         data.push({ id: i, text: 'item #' + i });
       }
       success(data);
-    },
-    devSettings: {
-      debug: true,
-      // logProcessRun: true
     }
   });
 

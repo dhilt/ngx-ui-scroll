@@ -1,0 +1,14 @@
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
+
+  <div actions>
+    <div class="comment">Available since v1.4.5, undocumented</div>
+    <button (click)="doScrollTo()">Scroll to</button> item #
+    <input [(ngModel)]="inputValue" size="2">
+  </div>
+
+  <div description>
+    <p>
+      <em>Adapter.fix</em> method could be invoked with <em>scrollToItem</em> option
+    </p>
+  </div>
+</app-demo>

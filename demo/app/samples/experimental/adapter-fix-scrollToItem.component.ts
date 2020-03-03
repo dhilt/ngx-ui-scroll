@@ -5,7 +5,7 @@ import { Datasource } from '../../../../public_api';
 import { doLog } from '../../shared/datasource-get';
 
 @Component({
-  selector: 'app-adapter-fix-scrollToItem',
+  selector: 'app-adapter-fix-scroll-to-item',
   templateUrl: './adapter-fix-scrollToItem.component.html'
 })
 export class DemoAdapterFixScrollToItemComponent {

@@ -30,16 +30,19 @@ export class DemoAdapterFixScrollToItemComponent {
     }
   });
 
-  inputValue: string;
+  index: string;
+  scrollToBottom: boolean;
 
   constructor() {
-    this.inputValue = '5';
+    this.index = '5';
+    this.scrollToBottom = false;
   }
 
   sources: DemoSources = [{
     name: DemoSourceType.Template,
     text: `<button (click)="doScrollTo()">Scroll to</button> item #
-<input [(ngModel)]="inputValue" size="2">
+<input [(ngModel)]="index" size="2">
+<input type="checkbox" [(ngModel)]="scrollToBottom"> - scroll to bottom
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
@@ -48,7 +51,8 @@ export class DemoAdapterFixScrollToItemComponent {
 </div>`
   }, {
     name: DemoSourceType.Component,
-    text: `inputValue = '5'
+      text: `index = '5'
+scrollToBottom = false;
 
 datasource = new Datasource({
   get: (index, count, success) => {
@@ -61,14 +65,12 @@ datasource = new Datasource({
 });
 
 doScrollTo() {
-  const index = Number(this.inputValue);
+  const index = Number(this.index);
+  const alignToTop = !Boolean(this.scrollToBottom);
   if (!isNaN(index)) {
     this.datasource.adapter.fix({
-      updater: ({ $index, data }) => {
-        if (index === $index) {
-          data.text += '*';
-        }
-      }
+      scrollToItem: ({ data }) => data.id === index,
+      scrollToItemOpt: alignToTop
     });
   }
 }
@@ -78,10 +80,12 @@ doScrollTo() {
   adapterFixUpdater = `Adapter.fix({ scrollToItem })`;
 
   doScrollTo() {
-    const index = Number(this.inputValue);
+    const index = Number(this.index);
+    const alignToTop = !Boolean(this.scrollToBottom);
     if (!isNaN(index)) {
       this.datasource.adapter.fix({
-        scrollToItemTop: ({ $index, data }) => data.id === index
+        scrollToItem: ({ data }) => data.id === index,
+        scrollToItemOpt: alignToTop
       });
     }
   }

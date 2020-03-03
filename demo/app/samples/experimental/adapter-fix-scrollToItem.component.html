@@ -3,7 +3,9 @@
   <div actions>
     <div class="comment">Available since v1.4.5, undocumented</div>
     <button (click)="doScrollTo()">Scroll to</button> item #
-    <input [(ngModel)]="inputValue" size="2">
+    <input [(ngModel)]="index" size="2">
+    <br>
+    <input type="checkbox" [(ngModel)]="scrollToBottom"> - scroll to bottom
   </div>
 
   <div description>

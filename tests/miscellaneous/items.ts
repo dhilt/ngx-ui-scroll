@@ -1,7 +1,7 @@
 import { getDynamicSizeByIndex } from './dynamicSize';
 import { getMin } from './common';
 
-interface Item {
+export interface Item {
   id: number;
   text: string;
   size?: number;

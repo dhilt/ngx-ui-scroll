@@ -1,5 +1,7 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
+import { IValidator, ValidatedValue } from './validation';
+
 export enum AdapterPropType {
   Scalar,
   Function,
@@ -7,9 +9,37 @@ export enum AdapterPropType {
 }
 
 export interface IAdapterProp {
-  type: AdapterPropType;
   name: string;
+  type: AdapterPropType;
   value: any;
+}
+
+export interface ItemAdapter {
+  $index: number;
+  data: any;
+  element?: HTMLElement;
+}
+
+export type ItemsPredicate = (item: ItemAdapter) => boolean;
+export type ItemsLooper = (item: ItemAdapter) => any;
+
+export interface AdapterClipOptions {
+  forwardOnly?: boolean;
+  backwardOnly?: boolean;
+}
+
+export interface AdapterInsertOptions {
+  before?: ItemsPredicate;
+  after?: ItemsPredicate;
+  decrement?: boolean;
+}
+
+export interface AdapterFixOptions {
+  scrollPosition?: number;
+  minIndex?: number;
+  maxIndex?: number;
+  updater?: ItemsLooper;
+  safe?: boolean;
 }
 
 export interface IAdapter {
@@ -31,35 +61,37 @@ export interface IAdapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   reload: (reloadIndex?: number | string) => any;
-  append: (items: any, bof?: boolean) => any;
+  append: (items: any, eof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;
   check: () => any;
   remove: (predicate: ItemsPredicate) => any;
   clip: (options?: AdapterClipOptions) => any;
+  insert: (options?: AdapterInsertOptions) => any;
   showLog: () => any;
   fix: (options: AdapterFixOptions) => any; // undocumented
 }
 
-export interface ItemAdapter {
-  $index: number;
-  data: any;
-  element?: HTMLElement;
+export interface IAdapterMethodParam {
+  name: string;
+  validators: IValidator[];
+  call?: Function;
+  value?: any;
 }
 
-export type ItemsPredicate = (item: ItemAdapter) => boolean;
-export type ItemsLooper = (item: ItemAdapter) => any;
-
-export interface AdapterClipOptions {
-  forwardOnly?: boolean;
-  backwardOnly?: boolean;
+export interface IAdapterMethodParams {
+  [key: string]: IAdapterMethodParam;
 }
 
-export interface AdapterFixOptions {
-  scrollPosition?: number;
-  minIndex?: number;
-  maxIndex?: number;
-  updater?: ItemsLooper;
-  scrollToItemTop?: ItemsPredicate;
-  scrollToItemBottom?: ItemsPredicate;
-  safe?: boolean;
+export interface IAdapterMethods {
+  [key: string]: IAdapterMethodParams;
+}
+
+export interface IAdapterValidatedMethodParams {
+  [key: string]: ValidatedValue;
+}
+
+export interface IAdapterValidatedMethodData {
+  isValid: boolean;
+  errors: string[];
+  params: IAdapterValidatedMethodParams;
 }

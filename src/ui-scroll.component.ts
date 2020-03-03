@@ -33,12 +33,12 @@ import { Item } from './component/classes/item';
 })
 export class UiScrollComponent implements OnInit, OnDestroy {
 
-  // come from the directive
+  // these should come from the directive
   public version: string;
   public template: TemplateRef<any>;
   public datasource: IDatasource | Datasource;
 
-  // use in the template
+  // the only template variable
   public items: Item[] = [];
 
   // Component-Workflow integration

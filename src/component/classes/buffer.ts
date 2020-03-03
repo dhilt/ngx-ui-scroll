@@ -173,14 +173,15 @@ export class Buffer {
   }
 
   removeItem(item: Item) {
-    this.items = this.items.filter(({ $index }: Item) => $index !== item.$index);
-    this.items.forEach((_item: Item) => {
+    const items = this.items.filter(({ $index }: Item) => $index !== item.$index);
+    items.forEach((_item: Item) => {
       if (_item.$index > item.$index) {
         _item.$index--;
         _item.nodeId = String(_item.$index);
       }
     });
-    this.absMaxIndex--;
+    this.absMaxIndex--; // todo: perhaps we want to reduce absMinIndex in some cases
+    this.items = items;
     this.cache.removeItem(item.$index);
   }
 

@@ -16,6 +16,7 @@ import {
   ItemAdapter,
   ItemsPredicate,
   AdapterClipOptions,
+  AdapterInsertOptions,
   AdapterFixOptions,
   State,
   ScrollerWorkflow
@@ -163,9 +164,22 @@ export class Adapter implements IAdapter {
   }
 
   clip(options?: AdapterClipOptions) {
-    this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
+    this.logger.log(() =>
+      `adapter: clip(${typeof options !== 'undefined' ? JSON.stringify(options) : ''})`
+    );
     this.workflow.call(<ProcessSubject>{
       process: Process.userClip,
+      status: ProcessStatus.start,
+      payload: options
+    });
+  }
+
+  insert(options?: AdapterInsertOptions) {
+    this.logger.log(() =>
+      `adapter: insert(${typeof options !== 'undefined' ? JSON.stringify(options) : ''})`
+    );
+    this.workflow.call(<ProcessSubject>{
+      process: Process.insert,
       status: ProcessStatus.start,
       payload: options
     });

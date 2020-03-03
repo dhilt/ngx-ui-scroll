@@ -1,17 +1,25 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { filter, switchMap } from 'rxjs/operators';
 
+import { VALIDATORS } from './validation';
 import {
-  IAdapterProp,
   AdapterPropType as Prop,
+  IAdapterProp,
   ItemAdapter,
-  IAdapter
-} from '../interfaces/adapter';
+  IAdapter,
+  IAdapterMethodParam,
+  IAdapterMethodParams,
+  IAdapterMethods,
+  ValidatorType,
+  ValidatedValue
+} from '../interfaces/index';
 
 export const itemAdapterEmpty = <ItemAdapter>{
   data: {},
   element: {}
 };
+
+const noop = () => null;
 
 export const ADAPTER_PROPS: IAdapterProp[] = [
   {
@@ -62,42 +70,47 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   {
     type: Prop.Function,
     name: 'reload',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'append',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'prepend',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'check',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'remove',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'clip',
-    value: () => null
+    value: noop
+  },
+  {
+    type: Prop.Function,
+    name: 'insert',
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'showLog',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'fix',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Observable,
@@ -135,3 +148,52 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
     value: new Subject<boolean>()
   }
 ];
+
+const { INTEGER_UNLIMITED, BOOLEAN, ITERATOR_CALLBACK, ONE_OF_MUST, ONE_OF_CAN } = VALIDATORS;
+
+const FIX_METHOD_PARAMS: IAdapterMethodParams = {
+  scrollPosition: {
+    name: 'scrollPosition',
+    validators: [INTEGER_UNLIMITED]
+  },
+  minIndex: {
+    name: 'minIndex',
+    validators: [INTEGER_UNLIMITED]
+  },
+  maxIndex: {
+    name: 'maxIndex',
+    validators: [INTEGER_UNLIMITED]
+  },
+  updater: {
+    name: 'updater',
+    validators: [ITERATOR_CALLBACK]
+  },
+  scrollToItemTop: {
+    name: 'scrollToItemTop',
+    validators: [ITERATOR_CALLBACK, ONE_OF_CAN(['scrollToItemBottom'])]
+  },
+  scrollToItemBottom: {
+    name: 'scrollToItemBottom',
+    validators: [ITERATOR_CALLBACK, ONE_OF_CAN(['scrollToItemTop'])]
+  },
+};
+
+const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
+  before: {
+    name: 'before',
+    validators: [ITERATOR_CALLBACK, ONE_OF_MUST(['after'])]
+  },
+  after: {
+    name: 'after',
+    validators: [ITERATOR_CALLBACK, ONE_OF_MUST(['before'])]
+  },
+  decrease: {
+    name: 'decrease',
+    validators: [BOOLEAN]
+  }
+};
+
+export const ADAPTER_METHODS_PARAMS: IAdapterMethods = {
+  FIX: FIX_METHOD_PARAMS,
+  INSERT: INSERT_METHOD_PARAMS
+};

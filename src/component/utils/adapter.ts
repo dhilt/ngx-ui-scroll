@@ -168,13 +168,13 @@ const FIX_METHOD_PARAMS: IAdapterMethodParams = {
     name: 'updater',
     validators: [ITERATOR_CALLBACK]
   },
-  scrollToItemTop: {
-    name: 'scrollToItemTop',
-    validators: [ITERATOR_CALLBACK, ONE_OF_CAN(['scrollToItemBottom'])]
+  scrollToItem: {
+    name: 'scrollToItem',
+    validators: [ITERATOR_CALLBACK]
   },
-  scrollToItemBottom: {
-    name: 'scrollToItemBottom',
-    validators: [ITERATOR_CALLBACK, ONE_OF_CAN(['scrollToItemTop'])]
+  scrollToItemOpt: {
+    name: 'scrollToItemOpt',
+    validators: []
   },
 };
 

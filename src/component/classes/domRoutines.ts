@@ -84,13 +84,9 @@ export class Routines {
     return this.horizontal ? element.offsetLeft : element.offsetTop;
   }
 
-  scrollTo(element: HTMLElement, backwardAlignment: boolean) {
+  scrollTo(element: HTMLElement, argument?: boolean | ScrollIntoViewOptions) {
     this.checkElement(element);
-    if (this.horizontal) {
-      // todo implement scroll into view for horizontal case
-      return;
-    }
-    element.scrollIntoView(backwardAlignment);
+    element.scrollIntoView(argument);
   }
 
 }

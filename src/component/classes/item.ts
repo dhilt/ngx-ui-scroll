@@ -52,9 +52,9 @@ export class Item {
     }
   }
 
-  scrollTo(backwardAlignment: boolean) {
+  scrollTo(argument?: boolean | ScrollIntoViewOptions) {
     if (this.element) {
-      this.routines.scrollTo(this.element, backwardAlignment);
+      this.routines.scrollTo(this.element, argument);
     }
   }
 

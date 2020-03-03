@@ -70,25 +70,18 @@ export default class Fix {
     buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
   }
 
-  static scrollToItem({ scroller, value }: IFixCall, alignToTop: boolean) {
+  static scrollToItem({ scroller, value, params }: IFixCall) {
     const found = scroller.buffer.items.find(item => (<ItemsPredicate>value)(item.get()));
     if (!found) {
       scroller.logger.log(() => `scrollToItem cancelled, item not found`);
       return;
     }
-    found.scrollTo(alignToTop);
-  }
-
-  static scrollToItemTop(params: IFixCall) {
-    Fix.scrollToItem(params, true);
-  }
-
-  static scrollToItemBottom(params: IFixCall) {
-    Fix.scrollToItem(params, false);
+    const scrollToItemOpt = params.find(({ name }: IParam) => name === FIX.scrollToItemOpt.name);
+    found.scrollTo(scrollToItemOpt ? scrollToItemOpt.value : undefined);
   }
 
   static getCallMethod(token: string): Function | null {
-    const { scrollPosition, minIndex, maxIndex, updater, scrollToItemTop, scrollToItemBottom } = FIX;
+    const { scrollPosition, minIndex, maxIndex, updater, scrollToItem, scrollToItemOpt } = FIX;
     switch (token) {
       case scrollPosition.name:
         return Fix.setScrollPosition;
@@ -98,10 +91,10 @@ export default class Fix {
         return Fix.setMaxIndex;
       case updater.name:
         return Fix.updateItems;
-      case scrollToItemTop.name:
-        return Fix.scrollToItemTop;
-      case scrollToItemBottom.name:
-        return Fix.scrollToItemBottom;
+      case scrollToItem.name:
+        return Fix.scrollToItem;
+      case scrollToItemOpt.name:
+        return () => null;
     }
     return null;
   }

@@ -29,6 +29,7 @@ export interface AdapterClipOptions {
 }
 
 export interface AdapterInsertOptions {
+  items: any[];
   before?: ItemsPredicate;
   after?: ItemsPredicate;
   decrement?: boolean;

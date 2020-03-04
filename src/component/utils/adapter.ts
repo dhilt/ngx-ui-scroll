@@ -149,7 +149,9 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   }
 ];
 
-const { INTEGER_UNLIMITED, BOOLEAN, ITERATOR_CALLBACK, ONE_OF_MUST } = VALIDATORS;
+const {
+  MANDATORY, INTEGER_UNLIMITED, BOOLEAN, ITEM_LIST, ITERATOR_CALLBACK, ONE_OF_MUST
+} = VALIDATORS;
 
 const FIX_METHOD_PARAMS: IAdapterMethodParams = {
   scrollPosition: {
@@ -171,6 +173,10 @@ const FIX_METHOD_PARAMS: IAdapterMethodParams = {
 };
 
 const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
+  items: {
+    name: 'items',
+    validators: [MANDATORY, ITEM_LIST]
+  },
   before: {
     name: 'before',
     validators: [ITERATOR_CALLBACK, ONE_OF_MUST(['after'])]

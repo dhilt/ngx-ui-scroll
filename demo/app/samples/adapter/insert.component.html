@@ -1,0 +1,17 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    <button (click)="doInsert()">Insert</button>
+    <input [(ngModel)]="inputCount" size="2"> items
+    <br>
+    after item #<input [(ngModel)]="inputIndex" size="2">
+  </div>
+  <div description>
+    <p>
+      <em>Adapter.insert</em> method.
+    </p>
+  </div>
+</app-demo>

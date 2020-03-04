@@ -34,6 +34,7 @@ import { DemoFirstLastVisibleItemsComponent } from './samples/adapter/first-last
 import { DemoAppendPrependComponent } from './samples/adapter/append-prepend.component';
 import { DemoAppendPrependSyncComponent } from './samples/adapter/append-prepend-sync.component';
 import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-extended.component';
+import { DemoInsertComponent } from './samples/adapter/insert.component';
 import { DemoCheckSizeComponent } from './samples/adapter/check-size.component';
 import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
@@ -80,6 +81,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoAppendPrependComponent,
     DemoAppendPrependSyncComponent,
     DemoIsLoadingExtendedComponent,
+    DemoInsertComponent,
     DemoCheckSizeComponent,
     DemoRemoveComponent,
     DemoClipComponent,

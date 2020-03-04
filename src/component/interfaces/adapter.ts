@@ -67,7 +67,7 @@ export interface IAdapter {
   check: () => any;
   remove: (predicate: ItemsPredicate) => any;
   clip: (options?: AdapterClipOptions) => any;
-  insert: (options?: AdapterInsertOptions) => any;
+  insert: (options: AdapterInsertOptions) => any;
   showLog: () => any;
   fix: (options: AdapterFixOptions) => any; // undocumented
 }

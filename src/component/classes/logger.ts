@@ -144,6 +144,28 @@ export class Logger {
     }
   }
 
+  logAdapterMethod = (methodName: string, methodArg?: any, methodSecondArg?: any) => {
+    if (!this.debug) {
+      return;
+    }
+    const params = [
+      ...(methodArg ? [methodArg] : []),
+      ...(methodSecondArg ? [methodSecondArg] : [])
+    ]
+      .map((arg: any) => {
+        if (typeof arg === 'function') {
+          return 'func';
+        } else if (typeof arg !== 'object' || !arg) {
+          return arg;
+        } else if (Array.isArray(arg)) {
+          return `[of ${arg.length}]`;
+        }
+        return '{ ' + Object.keys(arg).join(', ') + ' }';
+      })
+      .join(', ');
+    this.log(`adapter: ${methodName}(${params || ''})`);
+  }
+
   log(...args: any[]) {
     if (this.debug) {
       if (typeof args[0] === 'function') {

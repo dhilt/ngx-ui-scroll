@@ -8,13 +8,13 @@ import { Logger } from './logger';
 
 export class Buffer {
 
-  private _items: Array<Item>;
+  private _items: Item[];
   private _absMinIndex: number;
   private _absMaxIndex: number;
   private _bof: boolean;
   private _eof: boolean;
 
-  $items: BehaviorSubject<Array<Item>>;
+  $items: BehaviorSubject<Item[]>;
   bofSource: Subject<boolean>;
   eofSource: Subject<boolean>;
 
@@ -28,7 +28,7 @@ export class Buffer {
   readonly logger: Logger;
 
   constructor(settings: Settings, startIndex: number, logger: Logger) {
-    this.$items = new BehaviorSubject<Array<Item>>([]);
+    this.$items = new BehaviorSubject<Item[]>([]);
     this.eofSource = new Subject<boolean>();
     this.bofSource = new Subject<boolean>();
     this.cache = new Cache(settings.itemSize, logger);
@@ -54,7 +54,7 @@ export class Buffer {
     }
   }
 
-  set items(items: Array<Item>) {
+  set items(items: Item[]) {
     this.pristine = false;
     this._items = items;
     this.$items.next(items);
@@ -62,7 +62,7 @@ export class Buffer {
     this.checkEOF();
   }
 
-  get items(): Array<Item> {
+  get items(): Item[] {
     return this._items;
   }
 
@@ -151,7 +151,7 @@ export class Buffer {
     return this.items.find((item: Item) => item.$index === $index);
   }
 
-  setItems(items: Array<Item>): boolean {
+  setItems(items: Item[]): boolean {
     if (!this.items.length) {
       this.items = [...items];
     } else if (this.items[0].$index > items[items.length - 1].$index) {
@@ -164,11 +164,11 @@ export class Buffer {
     return true;
   }
 
-  append(items: Array<Item>) {
+  append(items: Item[]) {
     this.items = [...this.items, ...items];
   }
 
-  prepend(items: Array<Item>) {
+  prepend(items: Item[]) {
     this.items = [...items, ...this.items];
   }
 
@@ -183,6 +183,22 @@ export class Buffer {
     this.absMaxIndex--; // todo: perhaps we want to reduce absMinIndex in some cases
     this.items = items;
     this.cache.removeItem(item.$index);
+  }
+
+  insertItems(items: Item[], from: Item) {
+    const count = items.length;
+    const index = this.items.indexOf(from) + 1;
+    const itemsBefore = this.items.slice(0, index);
+    const itemsAfter = this.items.slice(index);
+    itemsAfter.forEach((item: Item) => item.updateIndex(item.$index + count));
+    const result = <Item[]>[
+      ...itemsBefore,
+      ...items,
+      ...itemsAfter
+    ];
+    this.absMaxIndex += count; // todo: perhaps we want to increase absMinIndex in some cases
+    this.items = result;
+    // this.cache.insertItems(items); // todo: implement
   }
 
   getFirstVisibleItemIndex(): number {

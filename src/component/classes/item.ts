@@ -52,6 +52,11 @@ export class Item {
     }
   }
 
+  updateIndex(index: number) {
+    this.$index = index;
+    this.nodeId = String(index);
+  }
+
   get(): ItemAdapter {
     return this.container;
   }

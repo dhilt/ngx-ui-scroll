@@ -46,6 +46,9 @@ export class DemoInsertComponent {
     },
     settings: {
       startIndex: this.MIN
+    },
+    devSettings: {
+      debug: true
     }
   });
 
@@ -82,7 +85,7 @@ export class DemoInsertComponent {
     for (let i = 1; i <= count; i++) {
       this.MAX++;
       const newItem = {
-        id: index + i,
+        id: this.MAX,
         text: 'item #' + index + ' ' + Array(i).fill('*').join('')
       };
       items.push(newItem);

@@ -138,6 +138,7 @@ export const runStateMachine = ({
           case Process.append:
           case Process.prepend:
           case Process.check:
+          case Process.insert:
             run(Render)();
             break;
           case Process.remove:

@@ -12,7 +12,7 @@ const getNumber = (value: any): number =>
 
 const onMandatory = (value: any): ValidatedValue => {
   const isValid = typeof value !== 'undefined';
-  return { value: value, isValid, errors: isValid ? [] : [
+  return { value: value, isSet: false, isValid, errors: isValid ? [] : [
     'must be present'
   ] };
 };
@@ -25,7 +25,7 @@ const onInteger = (value: any): ValidatedValue => {
   if (value !== parsedValue) {
     errors.push('must be an integer');
   }
-  return { value: parsedValue, isValid: !errors.length, errors };
+  return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
 };
 
 const onIntegerUnlimited = (value: any): ValidatedValue => {
@@ -40,11 +40,11 @@ const onIntegerUnlimited = (value: any): ValidatedValue => {
   if (value !== parsedValue) {
     errors.push('must be an integer or +/- Infinity');
   }
-  return { value: parsedValue, isValid: !errors.length, errors };
+  return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
 };
 
 const onBoolean = (value: any): ValidatedValue => {
-  return { value: !!value, isValid: true, errors: [] };
+  return { value: !!value, isSet: true, isValid: true, errors: [] };
 };
 
 const onItemList = (value: any): ValidatedValue => {
@@ -61,7 +61,7 @@ const onItemList = (value: any): ValidatedValue => {
       errors.push('must be an array of items of the same type');
     }
   }
-  return { value: parsedValue, isValid: !errors.length, errors };
+  return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
 };
 
 const onIteratorCallback = (value: any): ValidatedValue => {
@@ -71,7 +71,7 @@ const onIteratorCallback = (value: any): ValidatedValue => {
   } else if ((<Function>value).length !== 1) {
     errors.push('must be an iterator callback function with 1 argument');
   }
-  return { value, isValid: !errors.length, errors };
+  return { value, isSet: true, isValid: !errors.length, errors };
 };
 
 const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any): ValidatedValue => {
@@ -100,7 +100,7 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
       errors.push(`must be present (or "${tokens.join('", "')}" must be present)`);
     }
   }
-  return { value, isValid: !errors.length, errors };
+  return { value, isSet: true, isValid: !errors.length, errors };
 };
 
 export const VALIDATORS = {
@@ -175,6 +175,11 @@ export class AdapterValidatedMethodData implements IAdapterValidatedMethodData {
   }
 
   setParam(token: string, value: ValidatedValue) {
+    if (!value.isValid) {
+      value.errors = value.errors.map((err: string) =>
+        `"${token}" ${err}`
+      );
+    }
     this.params[token] = value;
     this.setValidity();
   }
@@ -192,12 +197,13 @@ export const runValidator = (
 ): ValidatedValue => {
   const { value, errors } = current;
   if (shouldSkip(validator, value)) {
-    return current;
+    return { ...current, isSet: false };
   }
   const result = validator.method(value, context);
   const _errors = [...errors, ...result.errors];
   return {
     value: result.value,
+    isSet: result.isSet,
     isValid: !_errors.length,
     errors: _errors
   };
@@ -211,6 +217,7 @@ export const validateOne = (
     ...runValidator(acc, validator, context)
   }), <ValidatedValue>{
     value: context[name],
+    isSet: false,
     isValid: true,
     errors: []
   });

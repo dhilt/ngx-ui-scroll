@@ -9,9 +9,7 @@ import {
   IAdapter,
   IAdapterMethodParam,
   IAdapterMethodParams,
-  IAdapterMethods,
-  ValidatorType,
-  ValidatedValue
+  IAdapterMethods
 } from '../interfaces/index';
 
 export const itemAdapterEmpty = <ItemAdapter>{

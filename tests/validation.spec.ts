@@ -63,6 +63,7 @@ describe('Input Params Validation', () => {
         const parsed = validateOne(input, 'value', [INTEGER]);
         expect(parsed).toEqual({
           value: input.parsed,
+          isSet: true,
           isValid: false,
           errors: ['must be an integer']
         });
@@ -91,6 +92,7 @@ describe('Input Params Validation', () => {
         const parsed = validateOne(input, 'value', [INTEGER_UNLIMITED]);
         expect(parsed).toEqual({
           value: input.parsed,
+          isSet: true,
           isValid: false,
           errors: ['must be an integer or +/- Infinity']
         });

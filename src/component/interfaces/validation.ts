@@ -13,6 +13,7 @@ type ValidatorMethod = (value: any, context?: any) => ValidatedValue;
 
 export interface ValidatedValue {
   value: any;
+  isSet: boolean;
   isValid: boolean;
   errors: string[];
 }

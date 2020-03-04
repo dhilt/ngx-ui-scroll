@@ -7,6 +7,7 @@ const {
   INTEGER_UNLIMITED,
   ITERATOR_CALLBACK,
   BOOLEAN,
+  ITEM_LIST,
   ONE_OF_CAN,
   ONE_OF_MUST
 } = VALIDATORS;
@@ -257,6 +258,75 @@ describe('Validation', () => {
           validators: [ONE_OF_MUST(['opt1'])]
         }
       }).isValid).toBe(true);
+    });
+  });
+
+  describe('[Item List]', () => {
+    const token = 'test';
+
+    it('should not pass non-array', () => {
+      const run = (context: any, validators: IValidator[]) =>
+        validate(context, {
+          [token]: {
+            name: token,
+            validators
+          }
+        }).isValid;
+      [
+        null,
+        true,
+        'test',
+        123,
+        { test: true }
+      ].forEach(value =>
+        expect(run({ [token]: value }, [ITEM_LIST])).toBe(false)
+      );
+    });
+
+    it('should not pass empty array', () => {
+      expect(validate({
+        [token]: []
+      }, {
+        [token]: {
+          name: token,
+          validators: [ITEM_LIST]
+        }
+      }).isValid).toBe(false);
+    });
+
+    it('should not pass array with items of different types', () => {
+      [
+        [1, 2, true],
+        ['1', '2', 3],
+        [{ a: 1 }, { b: 2 }, 3]
+      ].forEach(value =>
+        expect(validate({
+          [token]: value
+        }, {
+          [token]: {
+            name: token,
+            validators: [ITEM_LIST]
+          }
+        }).isValid).toBe(false)
+      );
+    });
+
+    it('should pass array with items of the same types', () => {
+      [
+        ['just one item'],
+        [1, 2, 3],
+        ['1', '2', '3'],
+        [{ a: 1 }, { b: 2 }, { a: true }]
+      ].forEach(value =>
+        expect(validate({
+          [token]: value
+        }, {
+          [token]: {
+            name: token,
+            validators: [ITEM_LIST]
+          }
+        }).isValid).toBe(true)
+      );
     });
   });
 

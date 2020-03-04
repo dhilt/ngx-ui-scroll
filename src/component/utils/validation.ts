@@ -47,6 +47,23 @@ const onBoolean = (value: any): ValidatedValue => {
   return { value: !!value, isValid: true, errors: [] };
 };
 
+const onItemList = (value: any): ValidatedValue => {
+  let parsedValue = value;
+  const errors = [];
+  if (!Array.isArray(value)) {
+    errors.push('must be an array');
+    parsedValue = [];
+  } else if (!value.length) {
+    errors.push('must be an array with at least 1 item');
+  } else if (value.length > 1) {
+    const type = typeof value[0];
+    if (value.some((v: any) => typeof v !== type)) {
+      errors.push('must be an array of items of the same type');
+    }
+  }
+  return { value: parsedValue, isValid: !errors.length, errors };
+};
+
 const onIteratorCallback = (value: any): ValidatedValue => {
   const errors = [];
   if (typeof value !== 'function') {
@@ -102,6 +119,10 @@ export const VALIDATORS = {
   BOOLEAN: <IValidator>{
     type: ValidatorType.boolean,
     method: onBoolean
+  },
+  ITEM_LIST: <IValidator>{
+    type: ValidatorType.itemList,
+    method: onItemList
   },
   ITERATOR_CALLBACK: <IValidator>{
     type: ValidatorType.iteratorCallback,

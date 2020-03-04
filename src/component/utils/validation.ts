@@ -76,8 +76,8 @@ const onIteratorCallback = (value: any): ValidatedValue => {
 
 const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any): ValidatedValue => {
   const errors = [];
-  const isPresent = typeof value !== 'undefined';
-  let noOneIsPresent = !isPresent;
+  const isSet = typeof value !== 'undefined';
+  let noOneIsPresent = !isSet;
   if (!Array.isArray(tokens) || !tokens.length) {
     errors.push(`token list must be passed`);
   } else {
@@ -88,7 +88,7 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
         break;
       }
       const isAnotherPresent = context.hasOwnProperty(token);
-      if (isPresent && isAnotherPresent) {
+      if (isSet && isAnotherPresent) {
         errors.push(`must not be present with "${token}"`);
         break;
       }
@@ -100,7 +100,7 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
       errors.push(`must be present (or "${tokens.join('", "')}" must be present)`);
     }
   }
-  return { value, isSet: true, isValid: !errors.length, errors };
+  return { value, isSet, isValid: !errors.length, errors };
 };
 
 export const VALIDATORS = {

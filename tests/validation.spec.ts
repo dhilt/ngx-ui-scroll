@@ -194,72 +194,80 @@ describe('Validation', () => {
   });
 
   describe('[One of must]', () => {
+    const opt1 = 'opt1';
+    const opt2 = 'opt2';
+
     it('should not pass empty context or empty params', () => {
       expect(validate({}, {
-        opt1: {
-          name: 'opt1',
-          validators: [ONE_OF_MUST(['opt2'])]
+        [opt1]: {
+          name: opt1,
+          validators: [ONE_OF_MUST([opt2])]
         },
-        opt2: {
-          name: 'opt2',
-          validators: [ONE_OF_MUST(['opt1'])]
+        [opt2]: {
+          name: opt2,
+          validators: [ONE_OF_MUST([opt1])]
         }
       }).isValid).toBe(false);
 
       expect(validate({}, {
-        opt1: {
-          name: 'opt1',
+        [opt1]: {
+          name: opt1,
           validators: [ONE_OF_MUST([])]
         },
-        opt2: {
-          name: 'opt2',
+        [opt2]: {
+          name: opt2,
           validators: [ONE_OF_MUST([])]
         }
       }).isValid).toBe(false);
     });
 
-    it('should work with 1 and more tokens', () => {
+    it('should not pass if more than 1 param is present', () => {
       expect(validate({
-        ['opt1']: 1, ['opt2']: 2
+        [opt1]: 1, [opt2]: 2
       }, {
-        opt1: {
-          name: 'opt1',
-          validators: [ONE_OF_MUST(['opt2'])]
+        [opt1]: {
+          name: opt1,
+          validators: [ONE_OF_MUST([opt2])]
         },
-        opt2: {
-          name: 'opt2',
-          validators: [ONE_OF_MUST(['opt1'])]
+        [opt2]: {
+          name: opt2,
+          validators: [ONE_OF_MUST([opt1])]
         }
       }).isValid).toBe(false);
 
       const result = validate({
-        ['opt1']: 1, ['opt2']: 2
+        [opt1]: 1, [opt2]: 2
       }, {
-        opt1: {
-          name: 'opt1',
-          validators: [ONE_OF_MUST(['opt2', 'opt3'])]
+        [opt1]: {
+          name: opt1,
+          validators: [ONE_OF_MUST([opt2, 'opt3'])]
         },
-        opt2: {
-          name: 'opt2',
+        [opt2]: {
+          name: opt2,
           validators: [ONE_OF_MUST(['opt3'])]
         }
       });
       expect(result.isValid).toBe(false);
-      expect(result.params['opt1'].isValid).toBe(false);
-      expect(result.params['opt2'].isValid).toBe(true);
+      expect(result.params[opt1].isValid).toBe(false);
+      expect(result.params[opt2].isValid).toBe(true);
+    });
 
-      expect(validate({
-        ['opt1']: 1
+    it('should pass if only 1 param is present', () => {
+      const result = validate({
+        [opt1]: 1
       }, {
-        opt1: {
-          name: 'opt1',
-          validators: [ONE_OF_MUST(['opt2'])]
+        [opt1]: {
+          name: opt1,
+          validators: [ONE_OF_MUST([opt2])]
         },
-        opt2: {
-          name: 'opt2',
-          validators: [ONE_OF_MUST(['opt1'])]
+        [opt2]: {
+          name: opt2,
+          validators: [ONE_OF_MUST([opt1])]
         }
-      }).isValid).toBe(true);
+      });
+      expect(result.isValid).toBe(true);
+      expect(result.params[opt1].isSet).toBe(true);
+      expect(result.params[opt2].isSet).toBe(false);
     });
   });
 

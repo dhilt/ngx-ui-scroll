@@ -185,18 +185,26 @@ export class Buffer {
     this.cache.removeItem(item.$index);
   }
 
-  insertItems(items: Item[], from: Item, addition: number) {
+  insertItems(items: Item[], from: Item, addition: number, decrement: boolean) {
     const count = items.length;
     const index = this.items.indexOf(from) + addition;
     const itemsBefore = this.items.slice(0, index);
     const itemsAfter = this.items.slice(index);
-    itemsAfter.forEach((item: Item) => item.updateIndex(item.$index + count));
+    if (decrement) {
+      itemsBefore.forEach((item: Item) => item.updateIndex(item.$index - count));
+    } else {
+      itemsAfter.forEach((item: Item) => item.updateIndex(item.$index + count));
+    }
     const result = <Item[]>[
       ...itemsBefore,
       ...items,
       ...itemsAfter
     ];
-    this.absMaxIndex += count; // todo: perhaps we want to increase absMinIndex in some cases
+    if (decrement) {
+      this.absMinIndex -= count;
+    } else {
+      this.absMaxIndex += count;
+    }
     this.items = result;
     // this.cache.insertItems(items); // todo: implement
   }

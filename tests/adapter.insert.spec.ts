@@ -38,24 +38,42 @@ describe('Adapter Insert Spec', () => {
         ...configBase.datasourceSettings,
         startIndex: MAX
       },
-      custom: { before: false, index: MAX, amount: 3, desc: ' (append)' }
+      custom: { before: false, index: MAX, amount: 3, desc: ' (append case)' }
     }, {
       ...configBase,
       datasourceSettings: {
         ...configBase.datasourceSettings,
         startIndex: MIN
       },
-      custom: { before: true, index: 1, amount: 3, desc: ' (prepend)' }
+      custom: { before: true, index: 1, amount: 3, desc: ' (prepend case)' }
     }
   ];
 
   const configOutList: TestBedConfig[] = [{
     ...configBase,
-    custom: { before: false, index: 1, amount: 3 }
+    custom: { index: 1, amount: 3 }
   }, {
     ...configBase,
-    custom: { before: false, index: MAX - 1, amount: 3 }
+    custom: { index: MAX - 1, amount: 3 }
   }];
+
+  configOutList.push(
+    ...configOutList.map(config => ({
+      ...config,
+      custom: {
+        ...config.custom,
+        before: true
+      }
+    } as TestBedConfig))
+  );
+
+  const configDecreaseList: TestBedConfig[] = configList.map(config => ({
+    ...config,
+    custom: {
+      ...config.custom,
+      decrease: true
+    }
+  }));
 
   const generateNewItems = (amount: number): Item[] => {
     const newItems = [];
@@ -66,27 +84,45 @@ describe('Adapter Insert Spec', () => {
   };
 
   interface ICheckData {
+    absMin: number;
+    absMax: number;
     bufferSize: number;
     viewportSize: number;
+    bufferedIndexes: number[];
     bufferedIds: number[];
   }
 
   const getCheckData = ({ scroller: { buffer, viewport } }: Misc): ICheckData => ({
+    absMin: buffer.absMinIndex,
+    absMax: buffer.absMaxIndex,
     bufferSize: buffer.size,
     viewportSize: viewport.getScrollableSize(),
-    bufferedIds: buffer.items.map(({ $index, data: { id } }) => id)
+    bufferedIndexes: buffer.items.map(({ $index }) => $index),
+    bufferedIds: buffer.items.map(({ data: { id } }) => id)
   });
 
-  const doCheck = (prevData: ICheckData, misc: Misc, config: TestBedConfig, shouldInsert: boolean) => {
+  const doCheck = (
+    prevData: ICheckData, misc: Misc, config: TestBedConfig, shouldInsert: boolean
+  ) => {
     const { scroller: { datasource: { adapter } } } = misc;
-    const { before, amount, index } = config.custom;
+    const { before, decrease, amount, index } = config.custom;
     const newData = getCheckData(misc);
     expect(adapter.isLoading).toEqual(false);
     expect(newData.bufferSize).toEqual(prevData.bufferSize + (shouldInsert ? amount : 0));
     expect(newData.viewportSize).toEqual(prevData.viewportSize + (shouldInsert ? amount * ITEM_SIZE : 0));
     if (!shouldInsert) {
+      expect(newData.absMin).toEqual(prevData.absMin);
+      expect(newData.absMax).toEqual(prevData.absMax);
+      expect(newData.bufferedIndexes).toEqual(prevData.bufferedIndexes);
       expect(newData.bufferedIds).toEqual(prevData.bufferedIds);
     } else {
+      expect(newData.absMin).toEqual(prevData.absMin - (decrease ? amount : 0));
+      expect(newData.absMax).toEqual(prevData.absMax + (decrease ? 0 : amount));
+      expect(newData.bufferedIndexes).toEqual(
+        Array.from(Array(newData.bufferSize), (_, i) =>
+          prevData.bufferedIndexes[0] - (decrease ? amount : 0) + i
+        )
+      );
       const addition = before ? 0 : 1;
       const indexToSlice = prevData.bufferedIds.indexOf(index) + addition;
       expect(newData.bufferedIds).toEqual([
@@ -99,9 +135,9 @@ describe('Adapter Insert Spec', () => {
 
   const shouldCheckStaticProcess = (
     config: TestBedConfig, shouldInsert: boolean
-  ) => (misc: Misc) => (done: any) => {
+) => (misc: Misc) => (done: any) => {
     const { datasource: { adapter } } = misc.scroller;
-    const { before, amount, index } = config.custom;
+    const { before, decrease, amount, index } = config.custom;
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       if (misc.workflow.cyclesDone !== 1) {
         return;
@@ -110,12 +146,14 @@ describe('Adapter Insert Spec', () => {
       if (before) {
         adapter.insert({
           before: ({ $index }) => $index === index,
-          items: generateNewItems(amount)
+          items: generateNewItems(amount),
+          decrease
         });
       } else {
         adapter.insert({
           after: ({ $index }) => $index === index,
-          items: generateNewItems(amount)
+          items: generateNewItems(amount),
+          decrease
         });
       }
       const check = () => {
@@ -131,11 +169,22 @@ describe('Adapter Insert Spec', () => {
     });
   };
 
+  const insert = (config: TestBedConfig) =>
+    config.custom.before ? 'insert.before' : 'insert.after';
+
   describe('Static Insert Process', () => {
     configList.forEach(config =>
       makeTest({
         config: config,
-        title: `should insert some items` + config.custom.desc,
+        title: `should ${insert(config)} some items incrementally` + config.custom.desc,
+        it: shouldCheckStaticProcess(config, true)
+      })
+    );
+
+    configDecreaseList.forEach(config =>
+      makeTest({
+        config: config,
+        title: `should ${insert(config)} some items with decrement` + config.custom.desc,
         it: shouldCheckStaticProcess(config, true)
       })
     );
@@ -143,7 +192,7 @@ describe('Adapter Insert Spec', () => {
     configOutList.forEach(config =>
       makeTest({
         config,
-        title: `should not insert`,
+        title: `should not ${insert(config)}`,
         it: shouldCheckStaticProcess(config, false)
       })
     );

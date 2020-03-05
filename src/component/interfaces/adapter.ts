@@ -32,7 +32,7 @@ export interface AdapterInsertOptions {
   items: any[];
   before?: ItemsPredicate;
   after?: ItemsPredicate;
-  decrement?: boolean;
+  decrease?: boolean;
 }
 
 export interface AdapterFixOptions {

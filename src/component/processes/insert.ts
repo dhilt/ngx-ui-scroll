@@ -32,28 +32,32 @@ export default class Insert {
 
   static doInsert(scroller: Scroller, methodData: IAdapterValidatedMethodData): boolean {
     const { buffer } = scroller;
-    const { before, after, items } = methodData.params;
-    const method: ItemsPredicate = (before.isSet ? before.value : after.value);
+    const { before, after, items, decrease } = methodData.params;
+    const method: ItemsPredicate = before.isSet ? before.value : after.value;
     const found = buffer.items.find(item => method(item.get()));
     if (!found) {
       return false;
     }
-    return Insert.simulateFetch(scroller, found, items.value, before.isSet);
+    const decrement = decrease.isSet && decrease.value;
+    return Insert.simulateFetch(scroller, found, items.value, before.isSet, decrement);
   }
 
-  static simulateFetch(scroller: Scroller, from: Item, items: any[], before: boolean): boolean {
+  static simulateFetch(
+    scroller: Scroller, from: Item, items: any[], before: boolean, decrement: boolean
+  ): boolean {
     const { buffer, routines, state: { fetch, clip } } = scroller;
-    const bufferLimit = buffer.absMaxIndex;
+    const bufferLimit = decrement ? buffer.absMinIndex : buffer.absMaxIndex;
     const addition = before ? 0 : 1;
+    const count = items.length;
     const itemsToInsert = items.map((item: any, i: number) =>
-      new Item(from.$index + i + addition, item, routines) // todo: need decrement case
+      new Item(from.$index + i + addition - (decrement ? count : 0), item, routines)
     );
-    buffer.insertItems(itemsToInsert, from, addition);
-    if (bufferLimit !== buffer.absMaxIndex) {
-      scroller.logger.log(() =>
-        `buffer.absMaxIndex value had been changed from ${bufferLimit} to ${buffer.absMaxIndex}`
-      );
-    }
+    buffer.insertItems(itemsToInsert, from, addition, decrement);
+    scroller.logger.log(() => {
+      const newBufferLimit = decrement ? buffer.absMinIndex : buffer.absMaxIndex;
+      const token = decrement ? 'absMinIndex' : 'absMaxIndex';
+      return `buffer.${token} value has been changed from ${bufferLimit} to ${newBufferLimit}`;
+    });
     fetch.insert(itemsToInsert);
     fetch.firstIndexBuffer = buffer.firstIndex;
     fetch.lastIndexBuffer = buffer.lastIndex;

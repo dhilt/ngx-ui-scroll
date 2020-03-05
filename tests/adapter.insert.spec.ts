@@ -21,15 +21,40 @@ describe('Adapter Insert Spec', () => {
       adapter: true
     },
     templateSettings: { viewportHeight: ITEM_SIZE * 10 },
-    custom: { after: true, index: MIDDLE, amount: 3 }
+    custom: { before: false, index: MIDDLE, amount: 3, desc: '' }
   };
+
+  const configList: TestBedConfig[] = [{
+      ...configBase
+  }, {
+      ...configBase,
+      custom: {
+        ...configBase.custom,
+        before: true
+      }
+    }, {
+      ...configBase,
+      datasourceSettings: {
+        ...configBase.datasourceSettings,
+        startIndex: MAX
+      },
+      custom: { before: false, index: MAX, amount: 3, desc: ' (append)' }
+    }, {
+      ...configBase,
+      datasourceSettings: {
+        ...configBase.datasourceSettings,
+        startIndex: MIN
+      },
+      custom: { before: true, index: 1, amount: 3, desc: ' (prepend)' }
+    }
+  ];
 
   const configOutList: TestBedConfig[] = [{
     ...configBase,
-    custom: { after: true, index: 1, amount: 3 }
+    custom: { before: false, index: 1, amount: 3 }
   }, {
     ...configBase,
-    custom: { after: true, index: MAX - 1, amount: 3 }
+    custom: { before: false, index: MAX - 1, amount: 3 }
   }];
 
   const generateNewItems = (amount: number): Item[] => {
@@ -52,21 +77,22 @@ describe('Adapter Insert Spec', () => {
     bufferedIds: buffer.items.map(({ $index, data: { id } }) => id)
   });
 
-  const doCheck = (before: ICheckData, misc: Misc, config: TestBedConfig, shouldInsert: boolean) => {
+  const doCheck = (prevData: ICheckData, misc: Misc, config: TestBedConfig, shouldInsert: boolean) => {
     const { scroller: { datasource: { adapter } } } = misc;
-    const { amount, index } = config.custom;
-    const after = getCheckData(misc);
+    const { before, amount, index } = config.custom;
+    const newData = getCheckData(misc);
     expect(adapter.isLoading).toEqual(false);
-    expect(after.bufferSize).toEqual(before.bufferSize + (shouldInsert ? amount : 0));
-    expect(after.viewportSize).toEqual(before.viewportSize + (shouldInsert ? amount * ITEM_SIZE : 0));
+    expect(newData.bufferSize).toEqual(prevData.bufferSize + (shouldInsert ? amount : 0));
+    expect(newData.viewportSize).toEqual(prevData.viewportSize + (shouldInsert ? amount * ITEM_SIZE : 0));
     if (!shouldInsert) {
-      expect(after.bufferedIds).toEqual(before.bufferedIds);
+      expect(newData.bufferedIds).toEqual(prevData.bufferedIds);
     } else {
-      const indexToSlice = before.bufferedIds.indexOf(index) + 1;
-      expect(after.bufferedIds).toEqual([
-        ...before.bufferedIds.slice(0, indexToSlice),
+      const addition = before ? 0 : 1;
+      const indexToSlice = prevData.bufferedIds.indexOf(index) + addition;
+      expect(newData.bufferedIds).toEqual([
+        ...prevData.bufferedIds.slice(0, indexToSlice),
         ...Array.from(Array(amount), (_, i) => MAX + i + 1),
-        ...before.bufferedIds.slice(indexToSlice),
+        ...prevData.bufferedIds.slice(indexToSlice),
       ]);
     }
   };
@@ -75,18 +101,25 @@ describe('Adapter Insert Spec', () => {
     config: TestBedConfig, shouldInsert: boolean
   ) => (misc: Misc) => (done: any) => {
     const { datasource: { adapter } } = misc.scroller;
-    const { amount, index } = config.custom;
+    const { before, amount, index } = config.custom;
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       if (misc.workflow.cyclesDone !== 1) {
         return;
       }
-      const before = getCheckData(misc);
-      adapter.insert({
-        after: ({ $index }) => $index === index,
-        items: generateNewItems(amount)
-      });
+      const dataToCheck = getCheckData(misc);
+      if (before) {
+        adapter.insert({
+          before: ({ $index }) => $index === index,
+          items: generateNewItems(amount)
+        });
+      } else {
+        adapter.insert({
+          after: ({ $index }) => $index === index,
+          items: generateNewItems(amount)
+        });
+      }
       const check = () => {
-        doCheck(before, misc, config, shouldInsert);
+        doCheck(dataToCheck, misc, config, shouldInsert);
         done();
       };
       if (shouldInsert) {
@@ -99,11 +132,13 @@ describe('Adapter Insert Spec', () => {
   };
 
   describe('Static Insert Process', () => {
-    makeTest({
-      config: configBase,
-      title: `should insert some items`,
-      it: shouldCheckStaticProcess(configBase, true)
-    });
+    configList.forEach(config =>
+      makeTest({
+        config: config,
+        title: `should insert some items` + config.custom.desc,
+        it: shouldCheckStaticProcess(config, true)
+      })
+    );
 
     configOutList.forEach(config =>
       makeTest({

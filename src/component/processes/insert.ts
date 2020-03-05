@@ -44,10 +44,11 @@ export default class Insert {
   static simulateFetch(scroller: Scroller, from: Item, items: any[], before: boolean): boolean {
     const { buffer, routines, state: { fetch, clip } } = scroller;
     const bufferLimit = buffer.absMaxIndex;
+    const addition = before ? 0 : 1;
     const itemsToInsert = items.map((item: any, i: number) =>
-      new Item(from.$index + i + 1, item, routines) // todo: need decrement case
+      new Item(from.$index + i + addition, item, routines) // todo: need decrement case
     );
-    buffer.insertItems(itemsToInsert, from);
+    buffer.insertItems(itemsToInsert, from, addition);
     if (bufferLimit !== buffer.absMaxIndex) {
       scroller.logger.log(() =>
         `buffer.absMaxIndex value had been changed from ${bufferLimit} to ${buffer.absMaxIndex}`

@@ -185,9 +185,9 @@ export class Buffer {
     this.cache.removeItem(item.$index);
   }
 
-  insertItems(items: Item[], from: Item) {
+  insertItems(items: Item[], from: Item, addition: number) {
     const count = items.length;
-    const index = this.items.indexOf(from) + 1;
+    const index = this.items.indexOf(from) + addition;
     const itemsBefore = this.items.slice(0, index);
     const itemsAfter = this.items.slice(index);
     itemsAfter.forEach((item: Item) => item.updateIndex(item.$index + count));

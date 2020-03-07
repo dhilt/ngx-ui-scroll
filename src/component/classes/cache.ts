@@ -156,40 +156,29 @@ export class Cache {
   }
 
   insertItems(index: number, newItems: Item[], decrement: boolean) {
-    let min = Infinity, max = -Infinity;
-    const setMinMax = ({ $index }: ItemCache) => {
-      min = $index < min ? $index : min;
-      max = $index > max ? $index : max;
-    };
-    const insertNewItems = () => newItems
-      .map((item: Item) => new ItemCache(item))
-      .forEach((item: ItemCache) => {
-        items.set(item.$index, item);
-        setMinMax(item);
-      });
+    // just shift indexes of existed items
+    const count = newItems.length;
     const items = new Map<number, ItemCache>();
-
     this.items.forEach((item: ItemCache) => {
       const { $index } = item;
       if ($index < index) {
         if (decrement) {
-          item.changeIndex($index - 1);
+          item.changeIndex($index - count);
         }
-        items.set($index, item);
+        items.set(item.$index, item);
       } else {
-        if ($index === index) {
-          insertNewItems();
-        }
         if (!decrement) {
-          item.changeIndex($index + 1);
+          item.changeIndex($index + count);
         }
-        items.set($index, item);
+        items.set(item.$index, item);
       }
-      setMinMax(item);
+      if (item.$index < this.minIndex) {
+        this.minIndex = item.$index;
+      }
+      if (item.$index > this.maxIndex) {
+        this.maxIndex = item.$index;
+      }
     });
-
     this.items = items;
-    this.minIndex = min;
-    this.maxIndex = max;
   }
 }

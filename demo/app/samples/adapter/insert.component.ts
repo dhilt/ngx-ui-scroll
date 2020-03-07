@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { BehaviorSubject, Subject, merge, Subscription } from 'rxjs';
 
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
-import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -16,36 +15,56 @@ export class DemoInsertComponent {
     scope: 'adapter',
     title: `Insert`,
     titleId: `insert`,
-    viewportId: `insert-viewport`,
-    count: 0,
-    log: ''
+    viewportId: `insert-viewport`
   };
 
   MIN = 1;
   MAX = 100;
-  data: Array<any>;
+  data: Array<string>;
+  MIN2 = 1;
+  MAX2 = 100;
+  data2: Array<string>;
 
   constructor() {
     this.data = [];
     for (let i = this.MIN; i <= this.MAX; i++) {
-      this.data.push({ id: i, text: 'item #' + i });
+      this.data.push('item #' + i);
+    }
+    this.data2 = [];
+    for (let i = this.MIN2; i <= this.MAX2; i++) {
+      this.data2.push('item #' + i);
     }
   }
 
   datasource = new Datasource({
     get: (index, count, success) => {
-      const data = [];
-      for (let i = index; i < index + count; i++) {
-        const found = this.data.find(item => item.id === i);
-        if (found) {
-          data.push(found);
-        }
+      index -= this.MIN; // convert to natural indexes starting with 0
+      const start = Math.max(0, index);
+      const end = Math.min(this.MAX - this.MIN + 1, index + count);
+      if (start > end) {
+        success([]);
+        return;
       }
-      doLog(this.demoContext, index, count, data.length);
-      success(data);
+      success(this.data.slice(start, end));
     },
     settings: {
       startIndex: this.MIN
+    }
+  });
+
+  datasource2 = new Datasource({
+    get: (index, count, success) => {
+      index -= this.MIN2; // convert to natural indexes starting with 0
+      const start = Math.max(0, index);
+      const end = Math.min(this.MAX2 - this.MIN2 + 1, index + count);
+      if (start > end) {
+        success([]);
+        return;
+      }
+      success(this.data2.slice(start, end));
+    },
+    settings: {
+      startIndex: this.MIN2
     },
     devSettings: {
       debug: true
@@ -54,50 +73,145 @@ export class DemoInsertComponent {
 
   inputCount = '2';
   inputIndex = '3';
+  inputCount2 = '2';
+  inputIndex2 = '3';
 
   sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: ``
-  }, {
     active: true,
-    name: DemoSourceType.Template,
-    text: ``
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
-  width: 150px;
-  height: 250px;
-  overflow-y: auto;
+    name: DemoSourceType.Component,
+    text: `MIN = 1;
+MAX = 100;
+data: Array<string>;
+
+inputCount = '2';
+inputIndex = '3';
+
+constructor() {
+  this.data = [];
+  for (let i = this.MIN; i <= this.MAX; i++) {
+    this.data.push('item #' + i);
+  }
 }
-.item {
-  font-weight: bold;
-  height: 25px;
-}`
+
+datasource = new Datasource({
+  get: (index, count, success) => {
+    index -= this.MIN; // convert to natural indexes starting with 0
+    const start = Math.max(0, index);
+    const end = Math.min(this.MAX - this.MIN + 1, index + count);
+    if (start > end) {
+      success([]);
+      return;
+    }
+    success(this.data.slice(start, end));
+  },
+  settings: {
+    startIndex: this.MIN
+  }
+});
+  `
+  }, {
+    name: 'Increment',
+      text: `
+doInsert() {
+  const count = Number(this.inputCount); // first input
+  const itemData = 'item #' + this.inputIndex; // second input
+  const index = this.data.indexOf(itemData);
+  if (index < 0 || isNaN(count)) {
+    return;
+  }
+  const items = [];
+  for (let i = 1; i <= count; i++) {
+    this.MAX++;
+    const newItem = itemData + ' ' + Array(i).fill('*').join('');
+    items.push(newItem);
+  }
+  this.data = [
+    ...this.data.slice(0, index),
+    ...items,
+    ...this.data.slice(index)
+  ];
+  this.datasource.adapter.insert({
+    after: ({ data }) => data === itemData,
+    items
+  });
+}
+`
+  }, {
+    name: 'Decrement',
+    text: `
+doInsert() {
+  const count = Number(this.inputCount); // first input
+  const itemData = 'item #' + this.inputIndex; // second input
+  const index = this.data.indexOf(itemData);
+  if (index < 0 || isNaN(count)) {
+    return;
+  }
+  const items = [];
+  for (let i = 1; i <= count; i++) {
+    this.MIN--;
+    const newItem = itemData + ' ' + Array(i).fill('*').join('');
+    items.unshift(newItem);
+  }
+  this.data = [
+    ...this.data.slice(0, index),
+    ...items,
+    ...this.data.slice(index)
+  ];
+  this.datasource.adapter.insert({
+    before: ({ data }) => data === itemData,
+    items,
+    decrease: true
+  });
+}
+`
   }];
 
   doInsert() {
-    const index = Number(this.inputIndex);
+    const itemData = `item #${this.inputIndex}`;
+    const index = this.data.indexOf(itemData);
     const count = Number(this.inputCount);
-    if (isNaN(index) || isNaN(count)) {
+    if (index < 0 || isNaN(count)) {
       return;
     }
     const items = [];
     for (let i = 1; i <= count; i++) {
       this.MAX++;
-      const newItem = {
-        id: index + i,
-        text: 'item #' + index + ' ' + Array(i).fill('*').join('')
-      };
+      const newItem = itemData + ' ' + Array(i).fill('*').join('');
       items.push(newItem);
     }
     this.data = [
       ...this.data.slice(0, index),
       ...items,
-      ...this.data.slice(index).map(item => ({ ...item, id: item.id + index - 1 }))
+      ...this.data.slice(index)
     ];
     this.datasource.adapter.insert({
-      after: ({ $index, data }) => $index === index,
+      after: ({ data }) => data === itemData,
       items
+    });
+  }
+
+  doInsert2() {
+    const itemData = `item #${this.inputIndex2}`;
+    const index = this.data.indexOf(itemData);
+    const count = Number(this.inputCount2);
+    if (index < 0 || isNaN(count)) {
+      return;
+    }
+    const items = [];
+    for (let i = 1; i <= count; i++) {
+      this.MIN2--;
+      const newItem = itemData + ' ' + Array(i).fill('*').join('');
+      items.unshift(newItem);
+    }
+    this.data2 = [
+      ...this.data2.slice(0, index),
+      ...items,
+      ...this.data2.slice(index)
+    ];
+    this.datasource2.adapter.insert({
+      before: ({ data }) => data === itemData,
+      items,
+      decrease: true
     });
   }
 }

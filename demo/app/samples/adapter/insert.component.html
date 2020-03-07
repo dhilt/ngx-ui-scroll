@@ -1,17 +1,52 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
-  <div actions>
-    <button (click)="doInsert()">Insert</button>
-    <input [(ngModel)]="inputCount" size="2"> items
-    <br>
-    after item #<input [(ngModel)]="inputIndex" size="2">
+<div class="demo">
+
+  <app-demo-title [context]="demoContext"></app-demo-title>
+
+  <div class="work">
+    <div class="viewport-wrapper">
+      <div class="actions">
+        <button (click)="doInsert()">Insert</button>
+        <input [(ngModel)]="inputCount" size="2"> items
+        <br>
+        after item #<input [(ngModel)]="inputIndex" size="4"><br>
+        incrementally
+      </div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasource; let index = index">
+          <div class="item">
+            <small>{{index}})</small>
+            {{item}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="viewport-wrapper">
+      <div class="actions">
+        <button (click)="doInsert2()">Insert</button>
+        <input [(ngModel)]="inputCount2" size="2"> items
+        <br>
+        before item #<input [(ngModel)]="inputIndex2" size="4">
+        <br>
+        decrementally
+      </div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasource2; let index = index">
+          <div class="item">
+            <small>{{index}})</small>
+            {{item}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix mb-3"></div>
   </div>
-  <div description>
+
+  <app-demo-sources [sources]="sources"></app-demo-sources>
+
+  <div class="description">
     <p>
       <em>Adapter.insert</em> method.
     </p>
   </div>
-</app-demo>
+</div>
+

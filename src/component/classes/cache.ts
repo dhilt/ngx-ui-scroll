@@ -154,4 +154,42 @@ export class Cache {
     this.minIndex = min;
     this.maxIndex = max;
   }
+
+  insertItems(index: number, newItems: Item[], decrement: boolean) {
+    let min = Infinity, max = -Infinity;
+    const setMinMax = ({ $index }: ItemCache) => {
+      min = $index < min ? $index : min;
+      max = $index > max ? $index : max;
+    };
+    const insertNewItems = () => newItems
+      .map((item: Item) => new ItemCache(item))
+      .forEach((item: ItemCache) => {
+        items.set(item.$index, item);
+        setMinMax(item);
+      });
+    const items = new Map<number, ItemCache>();
+
+    this.items.forEach((item: ItemCache) => {
+      const { $index } = item;
+      if ($index < index) {
+        if (decrement) {
+          item.changeIndex($index - 1);
+        }
+        items.set($index, item);
+      } else {
+        if ($index === index) {
+          insertNewItems();
+        }
+        if (!decrement) {
+          item.changeIndex($index + 1);
+        }
+        items.set($index, item);
+      }
+      setMinMax(item);
+    });
+
+    this.items = items;
+    this.minIndex = min;
+    this.maxIndex = max;
+  }
 }

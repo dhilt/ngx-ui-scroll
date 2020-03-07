@@ -85,7 +85,7 @@ export class DemoInsertComponent {
     for (let i = 1; i <= count; i++) {
       this.MAX++;
       const newItem = {
-        id: this.MAX,
+        id: index + i,
         text: 'item #' + index + ' ' + Array(i).fill('*').join('')
       };
       items.push(newItem);
@@ -93,7 +93,7 @@ export class DemoInsertComponent {
     this.data = [
       ...this.data.slice(0, index),
       ...items,
-      ...this.data.slice(index).map(item => ({ ...item, id: item.id + index }))
+      ...this.data.slice(index).map(item => ({ ...item, id: item.id + index - 1 }))
     ];
     this.datasource.adapter.insert({
       after: ({ $index, data }) => $index === index,

@@ -227,7 +227,8 @@ input[type=checkbox], input[type=radio] {
 .demo .work .item {
   font-weight: bolder;
   height: 25px;
-  overflow-y: hidden;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .demo .work .viewport.remove {

@@ -65,9 +65,6 @@ export class DemoInsertComponent {
     },
     settings: {
       startIndex: this.MIN2
-    },
-    devSettings: {
-      debug: true
     }
   });
 
@@ -81,13 +78,12 @@ export class DemoInsertComponent {
     name: DemoSourceType.Component,
     text: `MIN = 1;
 MAX = 100;
-data: Array<string>;
+data = [];
 
 inputCount = '2';
 inputIndex = '3';
 
 constructor() {
-  this.data = [];
   for (let i = this.MIN; i <= this.MAX; i++) {
     this.data.push('item #' + i);
   }
@@ -110,7 +106,7 @@ datasource = new Datasource({
 });
   `
   }, {
-    name: 'Increment',
+    name: 'Increase',
       text: `
 doInsert() {
   const count = Number(this.inputCount); // first input
@@ -137,7 +133,7 @@ doInsert() {
 }
 `
   }, {
-    name: 'Decrement',
+    name: 'Decrease',
     text: `
 doInsert() {
   const count = Number(this.inputCount); // first input
@@ -165,6 +161,13 @@ doInsert() {
 }
 `
   }];
+
+  argumentsDescription = `  AdapterInsertOptions {
+    items: any[];
+    before?: ItemsPredicate;
+    after?: ItemsPredicate;
+    decrease?: boolean;
+  }`;
 
   doInsert() {
     const itemData = `item #${this.inputIndex}`;

@@ -8,6 +8,8 @@ import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav.component';
+import { DemoTitleComponent } from './shared/demo/demo-title.component';
+import { DemoSourcesComponent } from './shared/demo/demo-sources.component';
 import { DemoComponent } from './shared/demo.component';
 
 import { HomeComponent } from './samples/home.component';
@@ -57,6 +59,8 @@ import { AppRoutingModule } from './app-routing.module';
   declarations: [
     AppComponent,
     NavComponent,
+    DemoTitleComponent,
+    DemoSourcesComponent,
     DemoComponent,
     HomeComponent,
     SettingsComponent,

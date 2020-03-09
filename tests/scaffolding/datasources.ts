@@ -53,7 +53,7 @@ const datasourceGetLimited = (
     }
   }
   if (processor) {
-    processor(data);
+    processor(data, index, count, min, max);
   }
   return data;
 };
@@ -214,6 +214,10 @@ const datasourceStore = {
 
   'limited--99-100-dynamic-size-processor': <Datasource>{
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0, true)
+  },
+
+  'limited-1-100-insert-processor': <Datasource>{
+    get: limitedDatasourceGet(1, 100, true, DatasourceType.Callback, 0, true)
   },
 
   'default-bad-settings': <Datasource>{

@@ -74,6 +74,14 @@
       with natural indexes, which forces us to subtract <em>MIN</em> value from
       the <em>index</em> coming into the <em>Datasource.get</em> body.
     </p>
+    <p>
+      Also, this is very important to maintain consistency
+      between the external <em>Datasource</em> and the internal <em>uiScroll</em> buffer.
+      Both <em>doInsert</em> methods do it.They
+      a) generate new items in a for-loop,
+      b) insert them into the datasource by updating <em>this.data</em>,
+      c) insert them into the internal <em>Buffer</em> via <em>Adapter.insert</em>.
+    </p>
   </div>
 </div>
 

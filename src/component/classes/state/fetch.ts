@@ -19,7 +19,6 @@ export class FetchModel {
   simulate: boolean;
   isPrepend: boolean;
   isReplace: boolean;
-  isInsert: boolean;
 
   constructor() {
     this.callCount = 0;
@@ -38,7 +37,6 @@ export class FetchModel {
     this.direction = null;
     this.isPrepend = false;
     this.isReplace = false;
-    this.isInsert = false;
   }
 
   get newItemsData(): Array<Item> | null {
@@ -80,7 +78,6 @@ export class FetchModel {
     this.simulate = false;
     this.isPrepend = false;
     this.isReplace = false;
-    this.isInsert = false;
   }
 
   append(items: Array<Item>) {
@@ -109,6 +106,5 @@ export class FetchModel {
     this.startSimulate(items);
     this.lastIndex = items[0].$index;
     this.firstIndex = items[items.length - 1].$index;
-    this.isInsert = true;
   }
 }

@@ -206,7 +206,7 @@ export class Buffer {
       this.absMaxIndex += count;
     }
     this.items = result;
-    this.cache.insertItems(from.$index + addition, items, decrement);
+    this.cache.insertItems(from.$index + addition, count, decrement);
   }
 
   getFirstVisibleItemIndex(): number {

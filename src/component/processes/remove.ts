@@ -16,7 +16,7 @@ export default class Remove {
     scroller.buffer.items.forEach(item => {
       if (predicate(item.get())) {
         item.toRemove = true;
-        item.removeDirection = Direction.backward; // inversion, will alway increase fwd padding
+        item.removeDirection = Direction.forward; // will alway increase fwd padding
         scroller.state.clip.doClip = true;
         scroller.state.clip.simulate = true;
       }

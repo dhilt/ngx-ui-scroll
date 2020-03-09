@@ -172,7 +172,7 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
 .item {
   font-weight: bold;
   height: 25px;
-  overflow-y: hidden;
+  overflow: hidden;
 }`
   }];
 

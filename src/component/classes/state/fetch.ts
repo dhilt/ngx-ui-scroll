@@ -101,4 +101,10 @@ export class FetchModel {
     this.firstIndex = items[items.length - 1].$index;
     this.isReplace = true;
   }
+
+  insert(items: Array<Item>) {
+    this.startSimulate(items);
+    this.lastIndex = items[0].$index;
+    this.firstIndex = items[items.length - 1].$index;
+  }
 }

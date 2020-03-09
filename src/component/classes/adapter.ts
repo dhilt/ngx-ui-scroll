@@ -16,6 +16,7 @@ import {
   ItemAdapter,
   ItemsPredicate,
   AdapterClipOptions,
+  AdapterInsertOptions,
   AdapterFixOptions,
   State,
   ScrollerWorkflow
@@ -111,9 +112,7 @@ export class Adapter implements IAdapter {
   dispose() { }
 
   reload(reloadIndex?: number | string) {
-    this.logger.log(() =>
-      `adapter: reload(${typeof reloadIndex !== 'undefined' ? reloadIndex : ''})`
-    );
+    this.logger.logAdapterMethod('reload', reloadIndex);
     this.workflow.call(<ProcessSubject>{
       process: Process.reload,
       status: ProcessStatus.start,
@@ -122,10 +121,7 @@ export class Adapter implements IAdapter {
   }
 
   append(items: any, eof?: boolean) {
-    this.logger.log(() => {
-      const count = Array.isArray(items) ? items.length : 1;
-      return `adapter: append([${count}], ${!!eof})`;
-    });
+    this.logger.logAdapterMethod('append', items, eof);
     this.workflow.call(<ProcessSubject>{
       process: Process.append,
       status: ProcessStatus.start,
@@ -134,10 +130,7 @@ export class Adapter implements IAdapter {
   }
 
   prepend(items: any, bof?: boolean) {
-    this.logger.log(() => {
-      const count = Array.isArray(items) ? items.length : 1;
-      return `adapter: prepend([${count}], ${!!bof})`;
-    });
+    this.logger.logAdapterMethod('prepend', items, bof);
     this.workflow.call(<ProcessSubject>{
       process: Process.prepend,
       status: ProcessStatus.start,
@@ -146,7 +139,7 @@ export class Adapter implements IAdapter {
   }
 
   check() {
-    this.logger.log(() => `adapter: check()`);
+    this.logger.logAdapterMethod('check');
     this.workflow.call(<ProcessSubject>{
       process: Process.check,
       status: ProcessStatus.start
@@ -154,7 +147,7 @@ export class Adapter implements IAdapter {
   }
 
   remove(predicate: ItemsPredicate) {
-    this.logger.log(() => `adapter: remove()`);
+    this.logger.logAdapterMethod('clip', predicate);
     this.workflow.call(<ProcessSubject>{
       process: Process.remove,
       status: ProcessStatus.start,
@@ -163,7 +156,7 @@ export class Adapter implements IAdapter {
   }
 
   clip(options?: AdapterClipOptions) {
-    this.logger.log(() => `adapter: clip(${options ? JSON.stringify(options) : ''})`);
+    this.logger.logAdapterMethod('clip', options);
     this.workflow.call(<ProcessSubject>{
       process: Process.userClip,
       status: ProcessStatus.start,
@@ -171,15 +164,22 @@ export class Adapter implements IAdapter {
     });
   }
 
+  insert(options: AdapterInsertOptions) {
+    this.logger.logAdapterMethod('insert', options);
+    this.workflow.call(<ProcessSubject>{
+      process: Process.insert,
+      status: ProcessStatus.start,
+      payload: options
+    });
+  }
+
   showLog() {
-    this.logger.log(() => `adapter: showLog()`);
+    this.logger.logAdapterMethod('showLog');
     this.logger.logForce();
   }
 
   fix(options: AdapterFixOptions) {
-    this.logger.log(() =>
-      `adapter: fix(${options ? '{ ' + Object.keys(options).join(', ') + ' }' : ''})`
-    );
+    this.logger.logAdapterMethod('fix', options);
     this.workflow.call(<ProcessSubject>{
       process: Process.fix,
       status: ProcessStatus.start,

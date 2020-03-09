@@ -14,6 +14,11 @@ export class ItemCache {
     this.data = item.data;
     this.size = item.size;
   }
+
+  changeIndex(value: number) {
+    this.$index = value;
+    this.nodeId = String(value);
+  }
 }
 
 interface ItemSize {
@@ -131,15 +136,49 @@ export class Cache {
   }
 
   removeItem($index: number) {
-    // decrement indexes that are greater than $index
-    const _items = new Map<number, ItemCache>();
-    this.items.forEach((item: ItemCache, index: number) => {
-      if (index > $index) {
-        _items.set(index - 1, item);
+    const items = new Map<number, ItemCache>();
+    let min = Infinity, max = -Infinity;
+    this.items.delete($index);
+    this.items.forEach((item: ItemCache) => {
+      if (item.$index < $index) {
+        items.set(item.$index, item);
+      } else {
+        // decrement indexes that are greater than $index
+        item.changeIndex(item.$index - 1);
+        items.set(item.$index - 1, item);
+      }
+      min = item.$index < min ? item.$index : min;
+      max = item.$index > max ? item.$index : max;
+    });
+    this.items = items;
+    this.minIndex = min;
+    this.maxIndex = max;
+  }
+
+  insertItems(index: number, count: number, decrement: boolean) {
+    // we do not insert new items here, we just shift indexes of existed items
+    // new items adding will be done by Cache.add execution
+    const items = new Map<number, ItemCache>();
+    this.items.forEach((item: ItemCache) => {
+      const { $index } = item;
+      if ($index < index) {
+        if (decrement) {
+          item.changeIndex($index - count);
+        }
+        items.set(item.$index, item);
+      } else {
+        if (!decrement) {
+          item.changeIndex($index + count);
+        }
+        items.set(item.$index, item);
+      }
+      if (item.$index < this.minIndex) {
+        this.minIndex = item.$index;
+      }
+      if (item.$index > this.maxIndex) {
+        this.maxIndex = item.$index;
       }
     });
-    this.items = new Map([...this.items, ..._items]);
-    this.items.delete(this.maxIndex);
-    this.maxIndex--;
+    this.items = items;
   }
 }

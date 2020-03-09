@@ -6,6 +6,7 @@ import {
   Check,
   Remove,
   UserClip,
+  Insert,
   Fix,
   Start,
   PreFetch,
@@ -115,6 +116,14 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       break;
+    case Process.insert:
+      if (status === Status.start) {
+        run(Insert)(payload);
+      }
+      if (status === Status.next) {
+        run(Init)(process);
+      }
+      break;
     case Process.fix:
       if (status === Status.start) {
         run(Fix)(payload);
@@ -129,6 +138,7 @@ export const runStateMachine = ({
           case Process.append:
           case Process.prepend:
           case Process.check:
+          case Process.insert:
             run(Render)();
             break;
           case Process.remove:

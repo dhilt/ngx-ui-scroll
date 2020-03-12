@@ -67,6 +67,11 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   },
   {
     type: Prop.Function,
+    name: 'reset',
+    value: noop
+  },
+  {
+    type: Prop.Function,
     name: 'reload',
     value: noop
   },

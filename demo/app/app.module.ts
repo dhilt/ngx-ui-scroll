@@ -28,6 +28,7 @@ import { DemoInfiniteComponent } from './samples/common/infinite.component';
 import { DemoHorizontalComponent } from './samples/common/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
 import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
+import { DemoResetComponent } from './samples/adapter/reset.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 import { DemoItemsCountComponent } from './samples/adapter/items-count.component';
@@ -77,6 +78,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoHorizontalComponent,
     DemoDifferentHeightsComponent,
     DemoWindowViewportComponent,
+    DemoResetComponent,
     DemoReloadComponent,
     DemoIsLoadingComponent,
     DemoItemsCountComponent,

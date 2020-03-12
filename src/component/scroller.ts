@@ -9,7 +9,7 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
-import { ScrollerWorkflow, IAdapter, Datasource as IDatasource } from './interfaces/index';
+import { ScrollerWorkflow, IAdapter, IDatasource } from './interfaces/index';
 
 let instanceCount = 0;
 

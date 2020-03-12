@@ -1,6 +1,4 @@
-import {
-  Datasource as IDatasource, DatasourceGet, DevSettings, Settings, IAdapter
-} from '../interfaces/index';
+import { IDatasource, DatasourceGet, DevSettings, Settings, IAdapter } from '../interfaces/index';
 import { AdapterContext } from './adapterContext';
 
 export class Datasource implements IDatasource {

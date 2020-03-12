@@ -1,4 +1,4 @@
-import { Datasource, DatasourceGet } from './datasource';
+import { IDatasource, DatasourceGet } from './datasource';
 import {
   AdapterPropType,
   IAdapterProp,
@@ -22,7 +22,7 @@ import { Process, ProcessStatus, ProcessSubject, WorkflowError, ScrollerWorkflow
 import { ValidatorType, ValidatedValue, IValidator } from './validation';
 
 export {
-  Datasource,
+  IDatasource,
   DatasourceGet,
   AdapterPropType,
   IAdapterProp,

@@ -37,7 +37,7 @@ export class DemoInsertComponent {
   }
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       index -= this.MIN; // convert to natural indexes starting with 0
       const start = Math.max(0, index);
       const end = Math.min(this.MAX - this.MIN + 1, index + count);
@@ -53,7 +53,7 @@ export class DemoInsertComponent {
   });
 
   datasource2 = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       index -= this.MIN2; // convert to natural indexes starting with 0
       const start = Math.max(0, index);
       const end = Math.min(this.MAX2 - this.MIN2 + 1, index + count);

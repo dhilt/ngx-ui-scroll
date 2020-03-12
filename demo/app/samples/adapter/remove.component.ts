@@ -33,7 +33,7 @@ export class DemoRemoveComponent {
   }
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         const found = this.data.find(item => item.id === i);

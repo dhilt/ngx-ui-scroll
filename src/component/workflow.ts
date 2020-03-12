@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
 import {
-  Datasource, Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
+  IDatasource, Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
 } from './interfaces/index';
 
 export class Workflow {
@@ -21,7 +21,7 @@ export class Workflow {
   private stateMachineMethods: any;
   private dispose$: Subject<void>;
 
-  constructor(element: HTMLElement, datasource: Datasource, version: string, run: Function) {
+  constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
     this.dispose$ = new Subject();
     this.process$ = new BehaviorSubject(<ProcessSubject>{

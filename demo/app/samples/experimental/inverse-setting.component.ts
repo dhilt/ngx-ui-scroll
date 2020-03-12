@@ -22,7 +22,7 @@ export class DemoInverseSettingComponent {
   MAX = 5;
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       const start = Math.max(this.MIN, index);
       const end = Math.min(index + count - 1, this.MAX);

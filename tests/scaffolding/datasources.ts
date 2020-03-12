@@ -1,9 +1,9 @@
 import { Observable, Observer } from 'rxjs';
 
-import { Datasource, Settings, DevSettings } from '../../src/component/interfaces';
+import { IDatasource, Settings, DevSettings } from '../../src/component/interfaces';
 import { generateItem } from '../miscellaneous/items';
 
-export class DatasourceService implements Datasource {
+export class DatasourceService implements IDatasource {
   get() {
   }
 }
@@ -133,7 +133,7 @@ const limitedDatasourceSpecialGet = (
 
 const datasourceStore = {
 
-  'initial': <Datasource>{
+  'initial': <IDatasource>{
     get: infiniteDatasourceGet(),
     settings: {
       bufferSize: 5,
@@ -141,96 +141,96 @@ const datasourceStore = {
     }
   },
 
-  'default': <Datasource>{
+  'default': <IDatasource>{
     get: infiniteDatasourceGet()
   },
 
 
-  'infinite-observable-no-delay': <Datasource>{
+  'infinite-observable-no-delay': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Observable)
   },
-  'infinite-promise-no-delay': <Datasource>{
+  'infinite-promise-no-delay': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Promise)
   },
-  'infinite-callback-no-delay': <Datasource>{
+  'infinite-callback-no-delay': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Callback)
   },
-  'limited-observable-no-delay': <Datasource>{
+  'limited-observable-no-delay': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable, 0)
   },
-  'limited-promise-no-delay': <Datasource>{
+  'limited-promise-no-delay': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Promise, 0)
   },
-  'limited-callback-no-delay': <Datasource>{
+  'limited-callback-no-delay': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Callback, 0)
   },
-  'infinite-observable-delay-1': <Datasource>{
+  'infinite-observable-delay-1': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Observable, 1)
   },
-  'infinite-promise-delay-1': <Datasource>{
+  'infinite-promise-delay-1': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Promise, 1)
   },
-  'infinite-callback-delay-1': <Datasource>{
+  'infinite-callback-delay-1': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Callback, 1)
   },
-  'limited-observable-delay-1': <Datasource>{
+  'limited-observable-delay-1': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable, 1)
   },
-  'limited-promise-delay-1': <Datasource>{
+  'limited-promise-delay-1': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Promise, 1)
   },
-  'limited-callback-delay-1': <Datasource>{
+  'limited-callback-delay-1': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Callback, 1)
   },
 
 
-  'default-delay-25': <Datasource>{
+  'default-delay-25': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Observable, 25)
   },
 
-  'limited': <Datasource>{
+  'limited': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable, 1)
   },
 
-  'limited-1-100-no-delay': <Datasource>{
+  'limited-1-100-no-delay': <IDatasource>{
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable, 0)
   },
 
-  'limited-51-200-no-delay': <Datasource>{
+  'limited-51-200-no-delay': <IDatasource>{
     get: limitedDatasourceGet(51, 200, false, DatasourceType.Observable, 0)
   },
 
-  'limited--50-99-dynamic-size': <Datasource>{
+  'limited--50-99-dynamic-size': <IDatasource>{
     get: limitedDatasourceGet(-50, 99, true, DatasourceType.Callback, 0)
   },
 
-  'limited--99-100-dynamic-size': <Datasource>{
+  'limited--99-100-dynamic-size': <IDatasource>{
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0)
   },
 
-  'limited-1-20-dynamic-size-special': <Datasource>{
+  'limited-1-20-dynamic-size-special': <IDatasource>{
     get: limitedDatasourceSpecialGet
   },
 
-  'limited--99-100-dynamic-size-processor': <Datasource>{
+  'limited--99-100-dynamic-size-processor': <IDatasource>{
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0, true)
   },
 
-  'limited-1-100-insert-processor': <Datasource>{
+  'limited-1-100-insert-processor': <IDatasource>{
     get: limitedDatasourceGet(1, 100, true, DatasourceType.Callback, 0, true)
   },
 
-  'default-bad-settings': <Datasource>{
+  'default-bad-settings': <IDatasource>{
     get: infiniteDatasourceGet(),
     settings: 'invalid'
   },
 
-  'infinite-callback-delay-150': <Datasource>{
+  'infinite-callback-delay-150': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Callback, 150)
   },
 
-  'empty-callback': <Datasource>{
-    get: (index, count, success) => success([])
+  'empty-callback': <IDatasource>{
+    get: (index: number, count: number, success: Function) => success([])
   }
 
 };

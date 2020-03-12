@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { Datasource } from '../../src/component/interfaces';
+import { IDatasource } from '../../src/component/interfaces';
 
 import { DatasourceService } from './datasources';
 import { defaultTemplate, TemplateSettings } from './templates';
 
 export interface TestComponentInterface {
-  datasource: Datasource;
+  datasource: IDatasource;
 }
 
 @Component({
@@ -15,14 +15,14 @@ export interface TestComponentInterface {
   providers: [DatasourceService]
 })
 export class TestComponent implements TestComponentInterface {
-  datasource: Datasource;
+  datasource: IDatasource;
   templateSettings: TemplateSettings;
 
   constructor(
     private sanitizer: DomSanitizer,
     datasourceService: DatasourceService
   ) {
-    this.datasource = <Datasource>datasourceService;
+    this.datasource = <IDatasource>datasourceService;
   }
 
   getItemStyle(item: any) {

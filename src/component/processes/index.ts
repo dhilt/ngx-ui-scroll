@@ -1,5 +1,6 @@
 import Init from './init';
 import Scroll from './scroll';
+import Reset from './reset';
 import Reload from './reload';
 import Append from './append';
 import Check from './check';
@@ -18,6 +19,6 @@ import Clip from './clip';
 import End from './end';
 
 export {
-  Init, Scroll, Reload, Append, Check, Remove, UserClip, Insert, Fix,
+  Init, Scroll, Reset, Reload, Append, Check, Remove, UserClip, Insert, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 };

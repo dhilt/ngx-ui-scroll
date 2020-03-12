@@ -1,6 +1,7 @@
 import {
   Init,
   Scroll,
+  Reset,
   Reload,
   Append,
   Check,
@@ -60,6 +61,19 @@ export const runStateMachine = ({
           run(Init)(process);
         } else {
           run(Start)(process);
+        }
+      }
+      break;
+    case Process.reset:
+      if (status === Status.start) {
+        run(Reset)(payload);
+      }
+      if (status === Status.next) {
+        interrupt(process);
+        if (payload.finalize) {
+          run(End)(process);
+        } else {
+          run(Init)(process);
         }
       }
       break;

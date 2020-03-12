@@ -1,6 +1,7 @@
 export enum Process {
   init = 'init',
   scroll = 'scroll',
+  reset = 'adapter.reset',
   reload = 'adapter.reload',
   append = 'adapter.append',
   prepend = 'adapter.prepend',

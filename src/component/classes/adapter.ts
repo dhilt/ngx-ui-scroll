@@ -115,11 +115,11 @@ export class Adapter implements IAdapter {
 
   reset(datasource?: IDatasource | Datasource) {
     this.logger.logAdapterMethod('reset', datasource);
-    // this.workflow.call(<ProcessSubject>{
-    //   process: Process.reload,
-    //   status: ProcessStatus.start,
-    //   payload: reloadIndex
-    // });
+    this.workflow.call(<ProcessSubject>{
+      process: Process.reload,
+      status: ProcessStatus.start,
+      payload: datasource
+    });
   }
 
   reload(reloadIndex?: number | string) {

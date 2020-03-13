@@ -160,7 +160,7 @@ export class Workflow {
         `workflow had been interrupted by the ${process} process (${this.interruptionCount})`
       );
     }
-    if (datasource) {
+    if (datasource) { // Scroller re-initialization case
       this.scroller.logger.log('new Scroller instantiation');
       const {
         viewport: { element },

@@ -11,7 +11,20 @@
 
   <div description>
     <p>
-      <em>Adapter.reset</em> method.
+      <em>Adapter.reset</em> method is designed to reset the internal state of the <em>uiScroll</em>.
+      It differs from <em>Adapter.reload</em> because it re-instantiates all internal entities,
+      which is equivalent to destroying the scroller and re-creating it again via <em>ngIf</em>.
+    </p>
+    <p>
+      The method has 1 optional argument: <em>datasource</em>. By passing it,
+      we tell the <em>uiScroll</em> that we want to use a new datasource.
+      If the argument is not passed, the old <em>datasource</em> will be used after re-initialization.
+    </p>
+    <p>
+      In this demo the <em>Adapter.reset</em> method is used to change
+      <em>startIndex</em> and <em>bufferSize</em> settings
+      while <em>Datasource.get</em> remains pristine.
+      It affects the value of the DOM elements counter and the size of the scrollable area.
     </p>
   </div>
 </app-demo>

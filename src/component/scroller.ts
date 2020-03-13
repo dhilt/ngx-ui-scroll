@@ -57,7 +57,7 @@ export class Scroller {
       this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.logger, () => this.workflow);
     }
 
-    if ($items) {
+    if ($items) { // re-initialization case
       this.init();
     }
   }

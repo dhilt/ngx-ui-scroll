@@ -1,22 +1,36 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { Datasource } from '../classes/datasource';
+import { checkDatasource } from '../utils';
+import { Process, ProcessStatus, IDatasource } from '../interfaces/index';
 
 export default class Reset {
 
-  static run(scroller: Scroller, reloadIndex: any) {
-    const scrollPosition = scroller.viewport.scrollPosition;
-    scroller.state.setCurrentStartIndex(reloadIndex);
-    scroller.buffer.reset(true, scroller.state.startIndex);
-    scroller.viewport.reset(scrollPosition);
-    const payload: any = {};
-    if (scroller.state.isLoading) {
-      scroller.purgeScrollTimers();
-      payload.finalize = true;
+  static run(scroller: Scroller, datasource: IDatasource | Datasource | null) {
+    if (datasource) {
+      try {
+        checkDatasource(datasource);
+      } catch ({ message }) {
+        scroller.workflow.call({
+          process: Process.reset,
+          status: ProcessStatus.error,
+          payload: { error: message }
+        });
+        return;
+      }
+    } else {
+      datasource = scroller.datasource;
     }
+
+    scroller.buffer.reset(true);
+    scroller.dispose();
+
     scroller.workflow.call({
-      process: Process.reload,
+      process: Process.reset,
       status: ProcessStatus.next,
-      payload
+      payload: {
+        finalize: scroller.state.isLoading,
+        datasource
+      }
     });
   }
 

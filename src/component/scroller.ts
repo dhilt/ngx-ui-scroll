@@ -1,4 +1,4 @@
-import { Observable, Subscription, Observer } from 'rxjs';
+import { Observable, Subscription, Observer, BehaviorSubject } from 'rxjs';
 
 import { checkDatasource } from './utils/index';
 import { Datasource } from './classes/datasource';
@@ -9,6 +9,7 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
+import { Item } from './classes/item';
 import { ScrollerWorkflow, IAdapter, IDatasource } from './interfaces/index';
 
 let instanceCount = 0;
@@ -27,7 +28,12 @@ export class Scroller {
 
   public innerLoopSubscriptions: Array<Subscription>;
 
-  constructor(element: HTMLElement, datasource: Datasource | IDatasource, version: string, callWorkflow: Function) {
+  constructor(
+    element: HTMLElement,
+    datasource: Datasource | IDatasource,
+    version: string, callWorkflow: Function,
+    $items?: BehaviorSubject<Item[]> // to keep the reference during re-initialization
+  ) {
     checkDatasource(datasource);
 
     this.workflow = <ScrollerWorkflow>{ call: callWorkflow };
@@ -37,7 +43,7 @@ export class Scroller {
     this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
     this.state = new State(this.settings, version, this.logger);
-    this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger);
+    this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger, $items);
     this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
 
     this.logger.object('uiScroll settings object', this.settings, true);
@@ -49,6 +55,10 @@ export class Scroller {
       : <Datasource>datasource;
     if (constructed || this.settings.adapter) {
       this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.logger, () => this.workflow);
+    }
+
+    if ($items) {
+      this.init();
     }
   }
 

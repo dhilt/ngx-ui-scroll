@@ -27,8 +27,8 @@ export class Buffer {
   readonly minBufferSize: number;
   readonly logger: Logger;
 
-  constructor(settings: Settings, startIndex: number, logger: Logger) {
-    this.$items = new BehaviorSubject<Item[]>([]);
+  constructor(settings: Settings, startIndex: number, logger: Logger, $items?: BehaviorSubject<Item[]>) {
+    this.$items = $items || new BehaviorSubject<Item[]>([]);
     this.eofSource = new Subject<boolean>();
     this.bofSource = new Subject<boolean>();
     this.cache = new Cache(settings.itemSize, logger);

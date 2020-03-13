@@ -20,13 +20,14 @@ import {
   End
 } from './processes/index';
 
-import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
+import { Process, ProcessStatus as Status, ProcessSubject, IDatasource } from './interfaces/index';
+import { Datasource } from './classes/datasource';
 
 interface StateMachineParams {
   input: ProcessSubject;
   methods: {
     run: Function;
-    interrupt: Function;
+    interrupt: (params: InterruptParams) => any;
     done: Function;
     onError: Function;
   };
@@ -69,7 +70,7 @@ export const runStateMachine = ({
         run(Reset)(payload);
       }
       if (status === Status.next) {
-        interrupt(process);
+        interrupt({ process, ...payload });
         if (payload.finalize) {
           run(End)(process);
         } else {
@@ -82,7 +83,7 @@ export const runStateMachine = ({
         run(Reload)(payload);
       }
       if (status === Status.next) {
-        interrupt(process);
+        interrupt({ process, ...payload });
         if (payload.finalize) {
           run(End)(process);
         } else {

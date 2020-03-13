@@ -2,7 +2,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { Scroller } from './scroller';
-import { runStateMachine } from './workflow-transducer';
+import { runStateMachine, InterruptParams } from './workflow-transducer';
 import {
   IDatasource, Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
 } from './interfaces/index';
@@ -139,18 +139,28 @@ export class Workflow {
     this.scroller.logger.logError(message);
   }
 
-  interrupt(process?: Process) {
-    const { scroller } = this;
-    if (scroller.state.isLoading) {
+  interrupt({ process, finalize, datasource }: InterruptParams) {
+    if (finalize) {
+      const { workflow, logger } = this.scroller;
       // we are going to create a new reference for the scroller.workflow object
       // calling the old version of the scroller.workflow by any outstanding async processes will be skipped
-      scroller.workflow.call = (p?: ProcessSubject) => scroller.logger.log('[skip wf call]');
-      (<any>scroller.workflow.call).interrupted = true;
-      scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
+      workflow.call = (p?: ProcessSubject) => logger.log('[skip wf call]');
+      (<any>workflow.call).interrupted = true;
+      this.scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
       this.interruptionCount++;
-      scroller.logger.log(() =>
+      logger.log(() =>
         `workflow had been interrupted by the ${process} process (${this.interruptionCount})`
       );
+    }
+    if (datasource) {
+      this.scroller.logger.log('new Scroller instantiation');
+      const {
+        viewport: { element },
+        state: { version, isLoading },
+        workflow: { call },
+        buffer: { $items }
+      } = this.scroller;
+      this.scroller = new Scroller(element, datasource, version, call, $items);
     }
   }
 

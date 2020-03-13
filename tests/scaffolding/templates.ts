@@ -45,4 +45,4 @@ export const generateTemplate = (templateSettings?: TemplateSettings): TemplateD
   };
 };
 
-export const defaultTemplate = generateTemplate().template;
+export const defaultTemplate: string = generateTemplate().template;

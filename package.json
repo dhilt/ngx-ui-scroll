@@ -19,7 +19,7 @@
     "build-app": "ng build --prod --aot --source-map",
     "preinstall": "cd server && npm install",
     "postinstall": "npm run build-app",
-    "pack:install": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-1.5.0.tgz --no-save",
+    "pack:install": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-1.5.1-beta.tgz --no-save",
     "pack:start": "npm run pack:install && npm start",
     "build": "node build.js",
     "publish:lib": "npm run build && npm publish ./dist",

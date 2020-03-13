@@ -33,16 +33,3 @@ export interface ProcessSubject {
   status: ProcessStatus;
   payload?: any;
 }
-
-export interface WorkflowError {
-  loop: string;
-  time: number;
-  message: string;
-  process: Process;
-}
-
-export interface ScrollerWorkflow {
-  call: Function;
-}
-
-export type WorkflowGetter = () => ScrollerWorkflow;

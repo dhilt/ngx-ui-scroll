@@ -20,18 +20,13 @@ import {
   End
 } from './processes/index';
 
-import { Process, ProcessStatus as Status, ProcessSubject, IDatasource } from './interfaces/index';
-import { Datasource } from './classes/datasource';
-
-interface StateMachineParams {
-  input: ProcessSubject;
-  methods: {
-    run: Function;
-    interrupt: (params: InterruptParams) => any;
-    done: Function;
-    onError: Function;
-  };
-}
+import {
+  Process,
+  ProcessStatus as Status,
+  ProcessSubject,
+  IDatasource,
+  StateMachineParams
+} from './interfaces/index';
 
 export const runStateMachine = ({
   input: { process, status, payload = {} },

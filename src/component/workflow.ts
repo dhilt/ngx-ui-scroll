@@ -2,9 +2,17 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { Scroller } from './scroller';
-import { runStateMachine, InterruptParams } from './workflow-transducer';
+import { runStateMachine } from './workflow-transducer';
 import {
-  IDatasource, Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
+  IDatasource,
+  Process,
+  ProcessStatus as Status,
+  ProcessSubject,
+  ProcessStatus,
+  WorkflowError,
+  ScrollerWorkflow,
+  InterruptParams,
+  StateMachineMethods
 } from './interfaces/index';
 
 export class Workflow {
@@ -18,7 +26,7 @@ export class Workflow {
 
   readonly propagateChanges: Function;
   readonly onScrollHandler: EventListener;
-  private stateMachineMethods: any;
+  private stateMachineMethods: StateMachineMethods;
   private dispose$: Subject<void>;
 
   constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {

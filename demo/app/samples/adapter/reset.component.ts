@@ -27,6 +27,9 @@ export class DemoResetComponent {
     }
   });
 
+  startIndex = 100;
+  bufferSize = 20;
+
   sources: DemoSources = [{
     name: DemoSourceType.Component,
     text: `datasource = new Datasource ({
@@ -39,15 +42,24 @@ export class DemoResetComponent {
   }
 });
 
-reloadIndex: number = 99;
+startIndex = 100;
+bufferSize = 20;
 
-doReload() {
-  this.datasource.adapter.reload(this.reloadIndex);
+doReset() {
+  this.datasource.adapter.reset({
+    ...this.datasource,
+    settings: {
+      startIndex: Number(this.startIndex),
+      bufferSize: Number(this.bufferSize)
+    }
+  });
 }`
   }, {
     active: true,
     name: DemoSourceType.Template,
-    text: `<button (click)="doReset()">Reset</button>
+      text: `<button (click)="doReset()">Reset</button>
+<input [(ngModel)]="startIndex" size="3"> - new start index
+<input [(ngModel)]="bufferSize" size="3"> - new buffer size
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
@@ -59,7 +71,13 @@ doReload() {
   doReset() {
     this.demoContext.count = 0;
     this.demoContext.log = '';
-    this.datasource.adapter.reset();
+    this.datasource.adapter.reset({
+      ...this.datasource,
+      settings: {
+        startIndex: Number(this.startIndex),
+        bufferSize: Number(this.bufferSize)
+      }
+    });
   }
 
 }

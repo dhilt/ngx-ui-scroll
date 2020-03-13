@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
 import { Datasource } from '../classes/datasource';
-import { checkDatasource } from '../utils';
+import { checkDatasource } from '../utils/index';
 import { Process, ProcessStatus, IDatasource } from '../interfaces/index';
 
 export default class Reset {

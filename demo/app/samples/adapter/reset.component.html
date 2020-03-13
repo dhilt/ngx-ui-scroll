@@ -3,8 +3,10 @@
   [context]="demoContext"
   [sources]="sources"
 >
-  <div actions style="display: flex">
-    <button (click)="doReset()">Reset</button>
+  <div actions>
+    <button (click)="doReset()">Reset</button><br>
+    <input [(ngModel)]="startIndex" size="3"> - new start index<br>
+    <input [(ngModel)]="bufferSize" size="3"> - new buffer size
   </div>
 
   <div description>

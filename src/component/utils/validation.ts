@@ -47,6 +47,14 @@ const onBoolean = (value: any): ValidatedValue => {
   return { value: !!value, isSet: true, isValid: true, errors: [] };
 };
 
+const onObject = (value: any): ValidatedValue => {
+  const errors = [];
+  if (typeof value !== 'object') {
+    errors.push('must be an object');
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
 const onItemList = (value: any): ValidatedValue => {
   let parsedValue = value;
   const errors = [];
@@ -130,6 +138,10 @@ export const VALIDATORS = {
   BOOLEAN: <IValidator>{
     type: ValidatorType.boolean,
     method: onBoolean
+  },
+  OBJECT: <IValidator>{
+    type: ValidatorType.object,
+    method: onObject
   },
   ITEM_LIST: <IValidator>{
     type: ValidatorType.itemList,

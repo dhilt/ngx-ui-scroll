@@ -153,7 +153,14 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
 ];
 
 const {
-  MANDATORY, INTEGER_UNLIMITED, BOOLEAN, ITEM_LIST, ITERATOR_CALLBACK, ONE_OF_MUST
+  MANDATORY,
+  INTEGER_UNLIMITED,
+  BOOLEAN,
+  OBJECT,
+  ITEM_LIST,
+  ITERATOR_CALLBACK,
+  ONE_OF_MUST,
+  CALLBACK_WITH_N_AND_MORE_ARGS,
 } = VALIDATORS;
 
 const FIX_METHOD_PARAMS: IAdapterMethodParams = {
@@ -195,21 +202,22 @@ const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
 };
 
 const RESET_METHOD_PARAMS: IAdapterMethodParams = {
-  items: {
+  get: {
     name: 'get',
-    validators: []
+    validators: [CALLBACK_WITH_N_AND_MORE_ARGS(2)]
   },
-  before: {
+  settings: {
     name: 'settings',
-    validators: []
+    validators: [OBJECT]
   },
-  after: {
+  devSettings: {
     name: 'devSettings',
-    validators: []
+    validators: [OBJECT]
   }
 };
 
 export const ADAPTER_METHODS_PARAMS: IAdapterMethods = {
   FIX: FIX_METHOD_PARAMS,
-  INSERT: INSERT_METHOD_PARAMS
+  INSERT: INSERT_METHOD_PARAMS,
+  RESET: RESET_METHOD_PARAMS,
 };

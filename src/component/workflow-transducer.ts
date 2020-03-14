@@ -61,21 +61,10 @@ export const runStateMachine = ({
       }
       break;
     case Process.reset:
-      if (status === Status.start) {
-        run(Reset)(payload);
-      }
-      if (status === Status.next) {
-        interrupt({ process, ...payload });
-        if (payload.finalize) {
-          run(End)(process);
-        } else {
-          run(Init)(process);
-        }
-      }
-      break;
     case Process.reload:
+      const processToRun = process === Process.reset ? Reset : Reload;
       if (status === Status.start) {
-        run(Reload)(payload);
+        run(processToRun)(payload);
       }
       if (status === Status.next) {
         interrupt({ process, ...payload });
@@ -226,6 +215,7 @@ export const runStateMachine = ({
     case Process.end:
       if (status === Status.next) {
         switch (payload.process) {
+          case Process.reset:
           case Process.reload:
             done();
             run(Init)(payload.process);

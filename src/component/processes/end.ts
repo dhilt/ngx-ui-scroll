@@ -10,7 +10,7 @@ export default class End {
 
     state.workflowOptions.reset();
 
-    if (!error && process !== Process.reload) {
+    if (!error && process !== Process.reset && process !== Process.reload) {
       // set out params, accessible via Adapter
       End.calculateParams(scroller);
     }
@@ -94,7 +94,7 @@ export default class End {
       workflowOptions.empty = true;
       return false;
     }
-    if (process === Process.reload) {
+    if (process === Process.reset || process === Process.reload) {
       return true;
     }
     if (clip.simulate) {

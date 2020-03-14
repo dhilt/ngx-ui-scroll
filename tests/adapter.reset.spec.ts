@@ -1,8 +1,10 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { Misc } from './miscellaneous/misc';
 import { Process, IDatasourceOptional } from '../src/component/interfaces';
+import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { datasourceStore } from './scaffolding/datasources';
+import { Misc } from './miscellaneous/misc';
+import { generateItem } from './miscellaneous/items';
 
-const customDefault = { settings: null, interruption: false };
+const customDefault = { settings: null, get: null, interruption: false };
 const datasourceName = 'infinite-promise-no-delay';
 
 const configList: TestBedConfig[] = [{
@@ -60,8 +62,17 @@ const settingsConfigList = configList
         ...config.datasourceSettings,
         startIndex: 999
       }
-    },
-    // datasourceDevSettings: { debug: true, logProcessRun: true }
+    }
+  }));
+
+const newGetConfigList = configList
+  .filter((c, i) => i === 0 || i === 2)
+  .map(config => ({
+    ...config,
+    custom: {
+      ...config.custom,
+      get: datasourceStore['infinite-callback-no-delay-star'].get
+    }
   }));
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
@@ -73,6 +84,7 @@ interface ICheckReset {
   instanceIndex: number;
   firstVisible: number;
   lastVisible: number;
+  firstVisibleText: number;
   interruptionCount: number;
 }
 
@@ -82,22 +94,28 @@ const setCheck = (misc: Misc): ICheckReset => {
     instanceIndex: settings.instanceIndex,
     firstVisible: adapter.firstVisible.$index,
     lastVisible: adapter.lastVisible.$index,
+    firstVisibleText: adapter.firstVisible.data.text,
     interruptionCount: misc.workflow.interruptionCount,
   };
 };
 
 const checkReset = (config: TestBedConfig, misc: Misc, oldCheck: ICheckReset) => {
-  const { settings } = config.custom;
+  const { settings, get, interruption } = config.custom;
+  let firstIndex = oldCheck.firstVisible;
+  let lastIndex = oldCheck.lastVisible;
+  if (settings && typeof settings.startIndex !== 'undefined') {
+    firstIndex = settings.startIndex;
+    lastIndex = firstIndex + (oldCheck.lastVisible - oldCheck.firstVisible);
+  }
+  const firstText = generateItem(firstIndex, false, get ? ' *' : '').text;
+  const interruptionCount = oldCheck.interruptionCount + Number(interruption);
+
   const newCheck = setCheck(misc);
   expect(newCheck.instanceIndex).toEqual(oldCheck.instanceIndex + 1);
-  if (!settings) {
-    expect(newCheck.firstVisible).toEqual(oldCheck.firstVisible);
-    expect(newCheck.lastVisible).toEqual(oldCheck.lastVisible);
-  } else {
-    expect(newCheck.firstVisible).toEqual(settings.startIndex);
-    expect(newCheck.lastVisible).toEqual(settings.startIndex + (oldCheck.lastVisible - oldCheck.firstVisible));
-  }
-  expect(newCheck.interruptionCount).toEqual(oldCheck.interruptionCount + Number(config.custom.interruption));
+  expect(newCheck.firstVisible).toEqual(firstIndex);
+  expect(newCheck.lastVisible).toEqual(lastIndex);
+  expect(newCheck.firstVisibleText).toEqual(firstText);
+  expect(newCheck.interruptionCount).toEqual(interruptionCount);
 };
 
 const doReset = (config: TestBedConfig, misc: Misc) => {
@@ -177,11 +195,21 @@ describe('Adapter Reset Spec', () => {
     )
   );
 
-  describe('reset with new settings', () =>
+  describe('reset with new "settings"', () =>
     settingsConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should reset at new position',
+        it: shouldReset(config)
+      })
+    )
+  );
+
+  describe('reset with new "get"', () =>
+    newGetConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should reset with new data',
         it: shouldReset(config)
       })
     )

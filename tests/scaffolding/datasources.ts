@@ -33,10 +33,10 @@ export const generateDatasourceClass = (_name: string, _settings?: Settings, _de
 
 export const defaultDatasourceClass = generateDatasourceClass('initial');
 
-const datasourceGetInfinite = (index: number, count: number) => {
+const datasourceGetInfinite = (index: number, count: number, suffix?: string) => {
   const data = [];
   for (let i = index; i <= index + count - 1; i++) {
-    data.push(generateItem(i));
+    data.push(generateItem(i, false, suffix));
   }
   return data;
 };
@@ -72,18 +72,18 @@ enum DatasourceType {
   Callback = 'callback'
 }
 
-const infiniteDatasourceGet = (type?: DatasourceType, delay?: number) =>
+const infiniteDatasourceGet = (type?: DatasourceType, delay?: number, suffix?: string) =>
   (index: number, count: number, success?: (data: any) => any) => {
     switch (type) {
       case DatasourceType.Callback:
-        return success && delayedRun(() => success(datasourceGetInfinite(index, count)), delay);
+        return success && delayedRun(() => success(datasourceGetInfinite(index, count, suffix)), delay);
       case DatasourceType.Promise:
         return new Promise(resolve =>
-          delayedRun(() => resolve(datasourceGetInfinite(index, count)), delay)
+          delayedRun(() => resolve(datasourceGetInfinite(index, count, suffix)), delay)
         );
       default: // DatasourceType.Observable
         return new Observable((observer: Observer<any>) =>
-          delayedRun(() => observer.next(datasourceGetInfinite(index, count)), delay)
+          delayedRun(() => observer.next(datasourceGetInfinite(index, count, suffix)), delay)
         );
     }
   };
@@ -131,7 +131,7 @@ const limitedDatasourceSpecialGet = (
   success(data);
 };
 
-const datasourceStore = {
+export const datasourceStore = {
 
   'initial': <IDatasource>{
     get: infiniteDatasourceGet(),
@@ -144,7 +144,6 @@ const datasourceStore = {
   'default': <IDatasource>{
     get: infiniteDatasourceGet()
   },
-
 
   'infinite-observable-no-delay': <IDatasource>{
     get: infiniteDatasourceGet(DatasourceType.Observable)
@@ -231,6 +230,10 @@ const datasourceStore = {
 
   'empty-callback': <IDatasource>{
     get: (index: number, count: number, success: Function) => success([])
-  }
+  },
+
+  'infinite-callback-no-delay-star': <IDatasource>{
+    get: infiniteDatasourceGet(DatasourceType.Callback, 0, ' *')
+  },
 
 };

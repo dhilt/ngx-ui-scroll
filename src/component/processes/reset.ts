@@ -22,6 +22,12 @@ export default class Reset {
       const { get, settings, devSettings } = methodData.params;
       if (get.isSet) {
         datasource = params as IDatasource;
+        if (!settings.isSet) {
+          datasource.settings = scroller.datasource.settings;
+        }
+        if (!devSettings.isSet) {
+          datasource.devSettings = scroller.datasource.devSettings;
+        }
       } else {
         datasource = scroller.datasource;
         if (settings.isSet) {

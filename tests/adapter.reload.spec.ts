@@ -1,6 +1,5 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { configListDestructiveFilter } from './miscellaneous/common';
 
 const customDefault = { startIndex: null, scrollCount: 0, preLoad: false, interruptionCount: 0 };
 

@@ -1,6 +1,5 @@
 import { Process, ProcessSubject } from './process';
-import { IDatasource } from './datasource';
-import { Datasource } from '../classes/datasource';
+import { IDatasourceOptional } from './datasource';
 
 export interface ScrollerWorkflow {
   call: Function;
@@ -18,7 +17,7 @@ export interface WorkflowError {
 export interface InterruptParams {
   process: Process;
   finalize: boolean;
-  datasource?: IDatasource | Datasource;
+  datasource?: IDatasourceOptional;
 }
 
 export interface StateMachineMethods {

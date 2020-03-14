@@ -1,11 +1,10 @@
 import { Scroller } from '../scroller';
-import { Datasource } from '../classes/datasource';
 import { checkDatasource } from '../utils/index';
-import { Process, ProcessStatus, IDatasource } from '../interfaces/index';
+import { Process, ProcessStatus, IDatasourceOptional } from '../interfaces/index';
 
 export default class Reset {
 
-  static run(scroller: Scroller, datasource: IDatasource | Datasource | null) {
+  static run(scroller: Scroller, datasource: IDatasourceOptional | null) {
     if (datasource) {
       try {
         checkDatasource(datasource);

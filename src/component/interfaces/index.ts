@@ -1,4 +1,4 @@
-import { IDatasource, DatasourceGet } from './datasource';
+import { IDatasource, DatasourceGet, IDatasourceOptional } from './datasource';
 import {
   ScrollerWorkflow,
   WorkflowGetter,
@@ -32,6 +32,7 @@ import { ValidatorType, ValidatedValue, IValidator } from './validation';
 export {
   IDatasource,
   DatasourceGet,
+  IDatasourceOptional,
   ScrollerWorkflow,
   WorkflowGetter,
   WorkflowError,

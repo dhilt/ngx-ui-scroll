@@ -5,7 +5,6 @@ import { Logger } from './logger';
 import { Buffer } from './buffer';
 import { AdapterContext } from './adapterContext';
 import { ADAPTER_PROPS } from '../utils/index';
-import { Datasource } from './datasource';
 import {
   WorkflowGetter,
   AdapterPropType,
@@ -21,7 +20,7 @@ import {
   AdapterFixOptions,
   State,
   ScrollerWorkflow,
-  IDatasource
+  IDatasourceOptional
 } from '../interfaces/index';
 
 export class Adapter implements IAdapter {
@@ -113,7 +112,7 @@ export class Adapter implements IAdapter {
 
   dispose() { }
 
-  reset(datasource?: IDatasource | Datasource) {
+  reset(datasource?: IDatasourceOptional) {
     this.logger.logAdapterMethod('reset', datasource);
     this.workflow.call(<ProcessSubject>{
       process: Process.reset,

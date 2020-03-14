@@ -1,8 +1,7 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import { IValidator, ValidatedValue } from './validation';
-import { IDatasource } from './datasource';
-import { Datasource } from '../classes/datasource';
+import { IDatasourceOptional } from './datasource';
 
 export enum AdapterPropType {
   Scalar,
@@ -63,7 +62,7 @@ export interface IAdapter {
   readonly bof$: Subject<boolean>;
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
-  reset: (datasource?: IDatasource | Datasource) => any;
+  reset: (datasource?: IDatasourceOptional) => any;
   reload: (reloadIndex?: number | string) => any;
   append: (items: any, eof?: boolean) => any;
   prepend: (items: any, bof?: boolean) => any;

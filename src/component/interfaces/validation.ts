@@ -7,6 +7,7 @@ export enum ValidatorType {
   boolean = 'must be boolean',
   oneOfCan = 'can be present only if none of arg1 list is present',
   oneOfMust = 'must be present if none of arg1 list is present',
+  callbackWithMoreParams = 'must be callback with arg1 or more arguments',
 }
 
 type ValidatorMethod = (value: any, context?: any) => ValidatedValue;

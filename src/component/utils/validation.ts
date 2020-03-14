@@ -103,6 +103,17 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
   return { value, isSet, isValid: !errors.length, errors };
 };
 
+const onCallbackWithMoreParams = (argsCount: number) => (value: any, context: any): ValidatedValue => {
+  const errors = [];
+  if (typeof value !== 'function') {
+    errors.push(`must be a function`);
+  }
+  if ((<Function>(value)).length < argsCount) {
+    errors.push(`must have at least ${argsCount} arguments`);
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
 export const VALIDATORS = {
   MANDATORY: <IValidator>{
     type: ValidatorType.mandatory,
@@ -135,6 +146,10 @@ export const VALIDATORS = {
   ONE_OF_MUST: (params: any): IValidator => ({
     type: ValidatorType.oneOfMust,
     method: onOneOf(params, true)
+  }),
+  CALLBACK_WITH_N_AND_MORE_ARGS: (argsCount: number): IValidator => ({
+    type: ValidatorType.callbackWithMoreParams,
+    method: onCallbackWithMoreParams(argsCount)
   }),
 };
 

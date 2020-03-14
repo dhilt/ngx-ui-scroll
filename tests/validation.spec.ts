@@ -9,7 +9,8 @@ const {
   BOOLEAN,
   ITEM_LIST,
   ONE_OF_CAN,
-  ONE_OF_MUST
+  ONE_OF_MUST,
+  CALLBACK_WITH_N_AND_MORE_ARGS,
 } = VALIDATORS;
 
 describe('Input Params Validation', () => {
@@ -337,6 +338,26 @@ describe('Validation', () => {
           }
         }).isValid).toBe(true)
       );
+    });
+  });
+
+  describe('[Function with arguments]', () => {
+    it('should pass function with 2 or more arguments', () => {
+      const token = 'test';
+      const run = (context: any) =>
+        validate(context, {
+          [token]: {
+            name: token,
+            validators: [CALLBACK_WITH_N_AND_MORE_ARGS(2)]
+          }
+        }).isValid;
+      expect(run({})).toBe(true);
+      expect(run({ [token]: 1 })).toBe(false);
+      expect(run({ [token]: {} })).toBe(false);
+      expect(run({ [token]: () => null })).toBe(false);
+      expect(run({ [token]: (x: any) => null })).toBe(false);
+      expect(run({ [token]: (x: any, y: any) => null })).toBe(true);
+      expect(run({ [token]: (x: any, y: any, z: any) => null })).toBe(true);
     });
   });
 

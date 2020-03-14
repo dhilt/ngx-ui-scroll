@@ -194,6 +194,21 @@ const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
   }
 };
 
+const RESET_METHOD_PARAMS: IAdapterMethodParams = {
+  items: {
+    name: 'get',
+    validators: []
+  },
+  before: {
+    name: 'settings',
+    validators: []
+  },
+  after: {
+    name: 'devSettings',
+    validators: []
+  }
+};
+
 export const ADAPTER_METHODS_PARAMS: IAdapterMethods = {
   FIX: FIX_METHOD_PARAMS,
   INSERT: INSERT_METHOD_PARAMS

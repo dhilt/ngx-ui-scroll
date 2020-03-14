@@ -1,6 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { generateDatasourceClass } from './scaffolding/datasources';
+import { Process, IDatasourceOptional } from '../src/component/interfaces';
 
 const customDefault = { settings: null, interruption: false };
 const datasourceName = 'infinite-promise-no-delay';
@@ -20,6 +20,27 @@ const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -33, bufferSize: 5, padding: 0.3, adapter: true, horizontal: true },
   templateSettings: { viewportWidth: 300, itemWidth: 100, horizontal: true },
   custom: { ...customDefault }
+}];
+
+const failedConfigList = [{
+  ...configList[0],
+  custom: { settings: 'bad' }
+}, {
+  ...configList[0],
+  custom: { devSettings: 'bad' }
+}, {
+  ...configList[0],
+  custom: { get: 'bad' }
+}, {
+  ...configList[0],
+  custom: { get: (x: any) => 'bad' }
+}, {
+  ...configList[0],
+  custom: {
+    get: (x: any, y: any) => null,
+    settings: {},
+    devSettings: 'bad',
+  }
 }];
 
 const interruptionConfigList = configList
@@ -80,17 +101,26 @@ const checkReset = (config: TestBedConfig, misc: Misc, oldCheck: ICheckReset) =>
 };
 
 const doReset = (config: TestBedConfig, misc: Misc) => {
-  const { settings } = config.custom;
-  if (!settings) {
+  const { get, settings, devSettings } = config.custom;
+  if (!settings && !get && !devSettings) {
     misc.datasource.adapter.reset();
   } else {
-    const datasource = new (generateDatasourceClass(datasourceName, settings))();
+    const datasource: IDatasourceOptional = {};
+    if (get) {
+      datasource.get = get;
+    }
+    if (settings) {
+      datasource.settings = settings;
+    }
+    if (devSettings) {
+      datasource.devSettings = devSettings;
+    }
     misc.datasource.adapter.reset(datasource);
   }
   accessFirstLastVisibleItems(misc);
 };
 
-const shouldReset = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReset = (config: TestBedConfig, fail?: boolean) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   const { interruption } = config.custom;
   let check: ICheckReset;
@@ -103,6 +133,10 @@ const shouldReset = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
         setTimeout(() => doReset(config, misc));
       } else {
         doReset(config, misc);
+        if (fail) {
+          expect(misc.workflow.errors.some(e => e.process === Process.reset)).toEqual(true);
+          done();
+        }
       }
     } else if (!interruption || (interruption && cyclesDone === 3)) {
       checkReset(config, misc, check);
@@ -119,6 +153,16 @@ describe('Adapter Reset Spec', () => {
         config,
         title: 'should reset at initial position',
         it: shouldReset(config)
+      })
+    )
+  );
+
+  describe('reset with invalid params', () =>
+    failedConfigList.forEach((config, i) =>
+      makeTest({
+        config,
+        title: `should not reset (${(i + 1)})`,
+        it: shouldReset(config, true)
       })
     )
   );

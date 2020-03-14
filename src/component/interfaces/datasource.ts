@@ -16,7 +16,7 @@ export interface IDatasource {
 }
 
 export interface IDatasourceOptional {
-  get: DatasourceGet;
+  get?: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;
 }

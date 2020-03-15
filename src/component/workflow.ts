@@ -14,6 +14,7 @@ import {
   InterruptParams,
   StateMachineMethods
 } from './interfaces/index';
+import { Datasource } from './classes/datasource';
 
 export class Workflow {
 
@@ -26,11 +27,13 @@ export class Workflow {
 
   readonly propagateChanges: Function;
   readonly onScrollHandler: EventListener;
+  private externalDatasource: IDatasource;
   private stateMachineMethods: StateMachineMethods;
   private dispose$: Subject<void>;
 
   constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
+    this.externalDatasource = datasource;
     this.dispose$ = new Subject();
     this.process$ = new BehaviorSubject(<ProcessSubject>{
       process: Process.init,
@@ -169,6 +172,14 @@ export class Workflow {
         buffer: { $items }
       } = this.scroller;
       this.scroller = new Scroller(element, datasource, version, call, $items);
+      // update external datasource by re-assigning new fields
+      Object.keys(this.scroller.datasource).forEach(key => {
+        const external: any = this.externalDatasource;
+        const internal: any = this.scroller.datasource;
+        if (external[key] !== internal[key]) {
+          external[key] = internal[key];
+        }
+      });
     }
   }
 

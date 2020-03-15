@@ -1,10 +1,10 @@
-import { Process, IDatasourceOptional } from '../src/component/interfaces';
+import { Process, IDatasourceOptional, Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
 
-const customDefault = { settings: null, get: null, interruption: false };
+const customDefault = { settings: null, get: null, interruption: false, scrollCount: 0 };
 const datasourceName = 'infinite-promise-no-delay';
 
 const configList: TestBedConfig[] = [{
@@ -17,7 +17,7 @@ const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -123, bufferSize: 6, padding: 0.62, adapter: true },
   templateSettings: { viewportHeight: 160 },
   custom: { ...customDefault }
-  }, {
+}, {
   datasourceName,
   datasourceSettings: { startIndex: -33, bufferSize: 5, padding: 0.3, adapter: true, horizontal: true },
   templateSettings: { viewportWidth: 300, itemWidth: 100, horizontal: true },
@@ -64,6 +64,26 @@ const settingsConfigList = configList
       }
     }
   }));
+
+const settingsScrollConfigList = settingsConfigList
+  .map(config => ({
+    ...config,
+    custom: {
+      ...config.custom,
+      scrollCount: 4,
+      direction: Direction.forward
+    }
+  }));
+settingsScrollConfigList.push(...settingsScrollConfigList
+  .map(config => ({
+    ...config,
+    custom: {
+      ...config.custom,
+      scrollCount: 4,
+      direction: Direction.backward
+    }
+  }))
+);
 
 const newGetConfigList = configList
   .filter((c, i) => i === 0 || i === 2)
@@ -140,20 +160,29 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
 
 const shouldReset = (config: TestBedConfig, fail?: boolean) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
-  const { interruption } = config.custom;
+  const { interruption, scrollCount, direction } = config.custom;
+  const cyclesCount = 1 + (scrollCount || 0);
   let check: ICheckReset;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const { cyclesDone } = misc.workflow;
-    if (cyclesDone === 1) {
+    if (cyclesDone <= cyclesCount) {
       check = setCheck(misc);
       if (interruption) {
         misc.datasource.adapter.reload();
         setTimeout(() => doReset(config, misc));
       } else {
-        doReset(config, misc);
-        if (fail) {
-          expect(misc.workflow.errors.some(e => e.process === Process.reset)).toEqual(true);
-          done();
+        if (cyclesDone < cyclesCount) {
+          if (direction === Direction.backward) {
+            misc.scrollMin();
+          } else {
+            misc.scrollMax();
+          }
+        } else {
+          doReset(config, misc);
+          if (fail) {
+            expect(misc.workflow.errors.some(e => e.process === Process.reset)).toEqual(true);
+            done();
+          }
         }
       }
     } else if (!interruption || (interruption && cyclesDone === 3)) {
@@ -166,10 +195,10 @@ const shouldReset = (config: TestBedConfig, fail?: boolean) => (misc: Misc) => (
 describe('Adapter Reset Spec', () => {
 
   describe('reset without params', () =>
-    configList.forEach(config =>
+    configList.forEach((config, i) =>
       makeTest({
         config,
-        title: 'should reset at initial position',
+        title: `should reset at initial position (${(i + 1)})`,
         it: shouldReset(config)
       })
     )
@@ -186,30 +215,40 @@ describe('Adapter Reset Spec', () => {
   );
 
   describe('reset without params (interrupted)', () =>
-    interruptionConfigList.forEach(config =>
+    interruptionConfigList.forEach((config, i) =>
       makeTest({
         config,
-        title: 'should reset with interruption',
+        title: `should reset with interruption (${(i + 1)})`,
         it: shouldReset(config)
       })
     )
   );
 
   describe('reset with new "settings"', () =>
-    settingsConfigList.forEach(config =>
+    settingsConfigList.forEach((config, i) =>
       makeTest({
         config,
-        title: 'should reset at new position',
+        title: `should reset at new position (${(i + 1)})`,
+        it: shouldReset(config)
+      })
+    )
+  );
+
+  describe('reset with new "settings" after some scroll', () =>
+    settingsScrollConfigList.forEach((config, i) =>
+      makeTest({
+        config,
+        title: `should reset at new position (${(i + 1)})`,
         it: shouldReset(config)
       })
     )
   );
 
   describe('reset with new "get"', () =>
-    newGetConfigList.forEach(config =>
+    newGetConfigList.forEach((config, i) =>
       makeTest({
         config,
-        title: 'should reset with new data',
+        title: `should reset with new data (${(i + 1)})`,
         it: shouldReset(config)
       })
     )

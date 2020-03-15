@@ -10,7 +10,7 @@ import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { Item } from './classes/item';
-import { ScrollerWorkflow, IAdapter, IDatasource } from './interfaces/index';
+import { ScrollerWorkflow, IAdapter, IDatasource, CallWorkflow } from './interfaces/index';
 
 let instanceCount = 0;
 
@@ -31,7 +31,8 @@ export class Scroller {
   constructor(
     element: HTMLElement,
     datasource: Datasource | IDatasource,
-    version: string, callWorkflow: Function,
+    version: string,
+    callWorkflow: CallWorkflow,
     $items?: BehaviorSubject<Item[]> // to keep the reference during re-initialization
   ) {
     checkDatasource(datasource);

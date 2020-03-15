@@ -152,7 +152,7 @@ export class Workflow {
       const { workflow, logger } = this.scroller;
       // we are going to create a new reference for the scroller.workflow object
       // calling the old version of the scroller.workflow by any outstanding async processes will be skipped
-      workflow.call = (p?: ProcessSubject) => logger.log('[skip wf call]');
+      workflow.call = (p: ProcessSubject) => logger.log('[skip wf call]');
       (<any>workflow.call).interrupted = true;
       this.scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
       this.interruptionCount++;

@@ -1,5 +1,6 @@
 import { IDatasource, DatasourceGet, IDatasourceOptional } from './datasource';
 import {
+  CallWorkflow,
   ScrollerWorkflow,
   WorkflowGetter,
   WorkflowError,
@@ -33,6 +34,7 @@ export {
   IDatasource,
   DatasourceGet,
   IDatasourceOptional,
+  CallWorkflow,
   ScrollerWorkflow,
   WorkflowGetter,
   WorkflowError,

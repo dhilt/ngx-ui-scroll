@@ -17,7 +17,7 @@ export default class End {
 
     // explicit interruption for we don't want go through the workflow loop finalizing
     if ((<any>workflow.call).interrupted) {
-      return workflow.call();
+      return workflow.call({ process, status: ProcessStatus.done, payload });
     }
 
     // what next? done?

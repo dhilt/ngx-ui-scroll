@@ -11,7 +11,6 @@ import {
   IAdapterProp,
   IAdapter,
   Process,
-  ProcessSubject,
   ProcessStatus,
   ItemAdapter,
   ItemsPredicate,
@@ -105,7 +104,7 @@ export class Adapter implements IAdapter {
       )
     );
 
-    const init$ = <Subject<boolean>>publicContext.init$;
+    const init$ = publicContext.init$ as Subject<boolean>;
     init$.next(true);
     init$.complete();
   }
@@ -114,7 +113,7 @@ export class Adapter implements IAdapter {
 
   reset(datasource?: IDatasourceOptional) {
     this.logger.logAdapterMethod('reset', datasource);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.reset,
       status: ProcessStatus.start,
       payload: datasource || null
@@ -123,7 +122,7 @@ export class Adapter implements IAdapter {
 
   reload(reloadIndex?: number | string) {
     this.logger.logAdapterMethod('reload', reloadIndex);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.reload,
       status: ProcessStatus.start,
       payload: reloadIndex
@@ -132,7 +131,7 @@ export class Adapter implements IAdapter {
 
   append(items: any, eof?: boolean) {
     this.logger.logAdapterMethod('append', items, eof);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.append,
       status: ProcessStatus.start,
       payload: { items, eof }
@@ -141,7 +140,7 @@ export class Adapter implements IAdapter {
 
   prepend(items: any, bof?: boolean) {
     this.logger.logAdapterMethod('prepend', items, bof);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.prepend,
       status: ProcessStatus.start,
       payload: { items, bof }
@@ -150,7 +149,7 @@ export class Adapter implements IAdapter {
 
   check() {
     this.logger.logAdapterMethod('check');
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.check,
       status: ProcessStatus.start
     });
@@ -158,7 +157,7 @@ export class Adapter implements IAdapter {
 
   remove(predicate: ItemsPredicate) {
     this.logger.logAdapterMethod('clip', predicate);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.remove,
       status: ProcessStatus.start,
       payload: predicate
@@ -167,7 +166,7 @@ export class Adapter implements IAdapter {
 
   clip(options?: AdapterClipOptions) {
     this.logger.logAdapterMethod('clip', options);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.userClip,
       status: ProcessStatus.start,
       payload: options
@@ -176,7 +175,7 @@ export class Adapter implements IAdapter {
 
   insert(options: AdapterInsertOptions) {
     this.logger.logAdapterMethod('insert', options);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.insert,
       status: ProcessStatus.start,
       payload: options
@@ -190,7 +189,7 @@ export class Adapter implements IAdapter {
 
   fix(options: AdapterFixOptions) {
     this.logger.logAdapterMethod('fix', options);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.fix,
       status: ProcessStatus.start,
       payload: options

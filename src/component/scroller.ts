@@ -11,6 +11,7 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { Item } from './classes/item';
 import { ScrollerWorkflow, IAdapter, IDatasource, CallWorkflow } from './interfaces/index';
+import { AdapterContext } from './classes/adapterContext';
 
 let instanceCount = 0;
 
@@ -51,11 +52,16 @@ export class Scroller {
 
     // datasource & adapter initialization
     const constructed = datasource instanceof Datasource;
+    const hasAdapter = datasource.adapter instanceof AdapterContext;
+    const needAdapter = this.settings.adapter || hasAdapter;
     this.datasource = !constructed
-      ? new Datasource(datasource, !this.settings.adapter)
+      ? new Datasource(datasource, !needAdapter)
       : <Datasource>datasource;
-    if (constructed || this.settings.adapter) {
+    if (constructed || needAdapter) {
       this.adapter = new Adapter(this.datasource.adapter, this.state, this.buffer, this.logger, () => this.workflow);
+      if (needAdapter) {
+        datasource.adapter = this.datasource.adapter;
+      }
     }
 
     if ($items) { // re-initialization case

@@ -29,5 +29,12 @@
       while <em>Datasource.get</em> remains pristine.
       It affects the value of the DOM elements counter.
     </p>
+    <p>
+      <b>Important note!</b> It is not recommended to pass the <em>datasource</em> constructed
+      via operator <em>new</em>. This breaks template expressions like
+      <em>{{isLoadingSample}}</em> and <em>{{isLoading$Sample}}</em>.
+      The component bindings and subscriptions persist regardless of the shape of the
+      <em>Adapter.reset</em> method argument.
+    </p>
   </div>
 </app-demo>

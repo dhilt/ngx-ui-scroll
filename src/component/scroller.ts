@@ -8,7 +8,6 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
-import { Item } from './classes/item';
 import { AdapterContext } from './classes/adapterContext';
 import { checkDatasource } from './utils/index';
 

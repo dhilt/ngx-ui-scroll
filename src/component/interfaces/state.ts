@@ -94,20 +94,6 @@ export interface State {
   scrollState: ScrollState;
   syntheticScroll: SyntheticScroll;
 
-  isLoadingSource: Subject<boolean>;
-  loopPendingSource: Subject<boolean>;
-  workflowPendingSource: Subject<boolean>;
-  firstVisibleSource: BehaviorSubject<ItemAdapter>;
-  lastVisibleSource: BehaviorSubject<ItemAdapter>;
-
-  isLoading: boolean;
-  loopPending: boolean;
-  workflowPending: boolean;
-  firstVisibleItem: ItemAdapter;
-  lastVisibleItem: ItemAdapter;
-  firstVisibleWanted: boolean;
-  lastVisibleWanted: boolean;
-
   time: number;
   loop: string;
   loopNext: string;

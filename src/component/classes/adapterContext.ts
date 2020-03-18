@@ -9,7 +9,7 @@ let instanceCount = 0;
 export class AdapterContext {
   init$ = new BehaviorSubject<boolean>(false);
 
-  constructor(mock: boolean) {
+  constructor(mock?: boolean) {
     const id = ++instanceCount;
     Object.defineProperty(this, 'id', { get: () => id });
 
@@ -22,9 +22,11 @@ export class AdapterContext {
         configurable: true
       })
     );
+
     if (mock) {
       return;
     }
+
     // set public observable props in non-mock case
     const self = this;
     ADAPTER_PROPS.filter(

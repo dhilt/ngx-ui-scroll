@@ -23,47 +23,58 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   {
     type: Prop.Scalar,
     name: 'version',
-    value: ''
+    value: '',
+    onDemand: true
   },
   {
     type: Prop.Scalar,
     name: 'isLoading',
-    value: false
+    value: false,
+    observable: 'isLoading$'
   },
   {
     type: Prop.Scalar,
     name: 'loopPending',
-    value: false
+    value: false,
+    observable: 'loopPending$'
   },
   {
     type: Prop.Scalar,
     name: 'cyclePending',
-    value: false
+    value: false,
+    observable: 'cyclePending$'
   },
   {
     type: Prop.Scalar,
     name: 'firstVisible',
-    value: itemAdapterEmpty
+    value: itemAdapterEmpty,
+    observable: 'firstVisible$',
+    wanted: true
   },
   {
     type: Prop.Scalar,
     name: 'lastVisible',
-    value: itemAdapterEmpty
-  },
-  {
-    type: Prop.Scalar,
-    name: 'itemsCount',
-    value: 0
+    value: itemAdapterEmpty,
+    observable: 'lastVisible$',
+    wanted: true
   },
   {
     type: Prop.Scalar,
     name: 'bof',
-    value: false
+    value: false,
+    observable: 'bof$'
   },
   {
     type: Prop.Scalar,
     name: 'eof',
-    value: false
+    value: false,
+    observable: 'eof$'
+  },
+  {
+    type: Prop.Scalar,
+    name: 'itemsCount',
+    value: 0,
+    onDemand: true
   },
   {
     type: Prop.Function,

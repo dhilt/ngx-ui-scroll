@@ -4,13 +4,13 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Init {
 
   static run(scroller: Scroller, process?: Process) {
-    const { state, workflow } = scroller;
+    const { state, workflow, adapter } = scroller;
     const isInitial = !process || process === Process.reset || process === Process.reload;
     scroller.logger.logCycle(true);
     state.isInitialWorkflowCycle = isInitial;
     state.isInitialLoop = isInitial;
-    state.workflowPending = true;
-    state.isLoading = true;
+    adapter.cyclePending = true;
+    adapter.isLoading = true;
     workflow.call({
       process: Process.init,
       status: ProcessStatus.next,

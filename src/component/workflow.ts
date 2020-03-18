@@ -65,7 +65,7 @@ export class Workflow {
   }
 
   init() {
-    this.scroller.init();
+    this.scroller.init(this.dispose$);
     this.isInitialized = true;
 
     // propagate the item list to the view
@@ -159,23 +159,19 @@ export class Workflow {
       (<any>workflow.call).interrupted = true;
       this.scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
       this.interruptionCount++;
-      logger.log(() =>
-        `workflow had been interrupted by the ${process} process (${this.interruptionCount})`
-      );
+      logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
     }
     if (datasource) { // Scroller re-initialization case
       this.scroller.logger.log('new Scroller instantiation');
-      const {
-        viewport: { element },
-        state: { version, isLoading },
-        workflow: { call },
-        buffer: { $items }
-      } = this.scroller;
-      this.scroller = new Scroller(element, datasource, version, call, $items);
+      const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
+      const scroller = new Scroller(element, datasource, version, call, this.scroller);
+      this.scroller.dispose();
+      this.scroller = scroller;
+      this.scroller.init(this.dispose$);
       // update external datasource by re-assigning new fields
-      Object.keys(this.scroller.datasource).forEach(key => {
-        const external: any = this.externalDatasource;
-        const internal: any = this.scroller.datasource;
+      const external: any = this.externalDatasource;
+      const internal: any = this.scroller.datasource;
+      Object.keys(internal).forEach(key => {
         if (external[key] !== internal[key]) {
           external[key] = internal[key];
         }
@@ -184,14 +180,14 @@ export class Workflow {
   }
 
   done() {
-    const { state } = this.scroller;
+    const { state, adapter } = this.scroller;
     this.cyclesDone++;
     this.scroller.logger.logCycle(false);
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
-    state.workflowPending = false;
+    adapter.cyclePending = false;
     if (state.scrollState.scrollTimer === null) {
-      state.isLoading = false;
+      adapter.isLoading = false;
     }
     this.finalize();
   }
@@ -199,7 +195,7 @@ export class Workflow {
   dispose() {
     this.dispose$.next();
     this.dispose$.complete();
-    this.scroller.dispose();
+    this.scroller.dispose(true);
     this.isInitialized = false;
   }
 

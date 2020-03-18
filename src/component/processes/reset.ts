@@ -1,13 +1,14 @@
 import { Scroller } from '../scroller';
 import { ADAPTER_METHODS_PARAMS, validate } from '../utils/index';
 import { Process, ProcessStatus, IDatasource, IDatasourceOptional } from '../interfaces/index';
+import { Datasource } from '../classes/datasource';
 
 const { RESET } = ADAPTER_METHODS_PARAMS;
 
 export default class Reset {
 
   static run(scroller: Scroller, params: IDatasourceOptional | null) {
-    let datasource: IDatasource;
+    let datasource = scroller.datasource;
     if (params) {
       const methodData = validate(params, RESET);
       if (!methodData.isValid) {
@@ -20,16 +21,12 @@ export default class Reset {
         return;
       }
       const { get, settings, devSettings } = methodData.params;
-      if (get.isSet) {
-        datasource = params as IDatasource;
-        if (!settings.isSet) {
-          datasource.settings = scroller.datasource.settings;
-        }
-        if (!devSettings.isSet) {
-          datasource.devSettings = scroller.datasource.devSettings;
-        }
+      if (params instanceof Datasource) {
+        datasource = params;
       } else {
-        datasource = scroller.datasource;
+        if (get.isSet) {
+          datasource.get = get.value;
+        }
         if (settings.isSet) {
           datasource.settings = settings.value;
         }
@@ -37,18 +34,17 @@ export default class Reset {
           datasource.devSettings = devSettings.value;
         }
       }
-    } else {
-      datasource = scroller.datasource;
     }
 
     scroller.buffer.reset(true);
-    scroller.dispose();
+    scroller.viewport.paddings.backward.reset();
+    scroller.viewport.paddings.forward.reset();
 
     scroller.workflow.call({
       process: Process.reset,
       status: ProcessStatus.next,
       payload: {
-        finalize: scroller.state.isLoading,
+        finalize: scroller.adapter.isLoading,
         datasource
       }
     });

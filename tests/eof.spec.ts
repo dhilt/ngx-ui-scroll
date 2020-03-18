@@ -19,6 +19,14 @@ describe('EOF/BOF Spec', () => {
     }
   };
 
+  const emptyConfig: TestBedConfig = {
+    ...config.bof,
+    datasourceName: 'empty-callback',
+    datasourceSettings: {
+      ...config.bof.datasourceSettings
+    }
+  };
+
   const observableCountConfig: TestBedConfig = {
     ...config.bof,
     datasourceSettings: {
@@ -29,19 +37,19 @@ describe('EOF/BOF Spec', () => {
   };
 
   const initializeBofEofContainer = (misc: Misc) => {
-    const { bof$, eof$ } = misc.datasource.adapter;
+    const { adapter } = misc.datasource;
     misc.shared.bofEofContainer = {
-      bof: { count: 0, value: false },
-      eof: { count: 0, value: false }
+      bof: { count: 0, value: adapter.bof },
+      eof: { count: 0, value: adapter.eof }
     };
     const { bof, eof } = misc.shared.bofEofContainer;
-    eof.subscription = eof$.subscribe(value => {
-      eof.count++;
-      eof.value = value;
-    });
-    bof.subscription = bof$.subscribe(value => {
+    bof.subscription = adapter.bof$.subscribe(value => {
       bof.count++;
       bof.value = value;
+    });
+    eof.subscription = adapter.eof$.subscribe(value => {
+      eof.count++;
+      eof.value = value;
     });
   };
 
@@ -159,6 +167,20 @@ describe('EOF/BOF Spec', () => {
   runLimitSuite('eof');
 
   _makeTest({
+    config: emptyConfig,
+    title: `should reach both bof and eof during the first WF cycle`,
+    it: (misc: Misc) => (done: Function) =>
+      spyOn(misc.workflow, 'finalize').and.callFake(() => {
+        const { bof, eof } = misc.shared.bofEofContainer;
+        expect(bof.count).toEqual(1);
+        expect(eof.count).toEqual(1);
+        expect(bof.value).toEqual(true);
+        expect(eof.value).toEqual(true);
+        done();
+      })
+  });
+
+  _makeTest({
     config: observableCountConfig,
     title: `should reach bof/eof multiple times`,
     it: (misc: Misc) => (done: Function) =>
@@ -175,8 +197,8 @@ describe('EOF/BOF Spec', () => {
           }
         } else {
           const { bof, eof } = misc.shared.bofEofContainer;
-          expect(bof.count).toEqual(COUNT - 1); // because we are at BOF initially (startIndex = min)
-          expect(eof.count).toEqual(COUNT);
+          expect(bof.count).toEqual(COUNT); // because we are at BOF initially (startIndex = min)
+          expect(eof.count).toEqual(COUNT - 1);
           done();
         }
       })

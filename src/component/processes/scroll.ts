@@ -174,8 +174,8 @@ export default class Scroll {
   }
 
   static doScroll(scroller: Scroller, workflow: ScrollerWorkflow) {
-    const { state: { workflowPending, scrollState, workflowOptions } } = scroller;
-    if (workflowPending) {
+    const { state: { scrollState, workflowOptions }, adapter } = scroller;
+    if (adapter.cyclePending) {
       Scroll.logPendingWorkflow(scroller);
       scrollState.keepScroll = true;
       return;

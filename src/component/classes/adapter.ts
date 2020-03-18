@@ -1,4 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
@@ -22,91 +23,144 @@ import {
   IDatasourceOptional
 } from '../interfaces/index';
 
+const fixScalarWanted = (name: string, container: { [key: string]: boolean }) => {
+  const scalar = ADAPTER_PROPS.find(
+    ({ observable, wanted }: IAdapterProp) => wanted && observable === name
+  );
+  if (scalar) {
+    container[scalar.name] = true;
+  }
+};
+
 export class Adapter implements IAdapter {
-  readonly state: State;
-  readonly buffer: Buffer;
-  readonly logger: Logger;
-  readonly getWorkflow: WorkflowGetter;
+  private logger: Logger;
+  private getWorkflow: WorkflowGetter;
+  private source: { [key: string]: any } = {}; // for observables
+  private box: { [key: string]: any } = {}; // for scalars over observables
+  private demand: { [key: string]: any } = {}; // for scalars on demand
+  public wanted: { [key: string]: boolean } = {};
 
   get workflow(): ScrollerWorkflow {
     return this.getWorkflow();
   }
 
-  get version(): string {
-    return this.state.version;
-  }
-  get isLoading(): boolean {
-    return this.state.isLoading;
-  }
-  get isLoading$(): Subject<boolean> {
-    return this.state.isLoadingSource;
-  }
-  get loopPending(): boolean {
-    return this.state.loopPending;
-  }
-  get loopPending$(): Subject<boolean> {
-    return this.state.loopPendingSource;
-  }
-  get cyclePending(): boolean {
-    return this.state.workflowPending;
-  }
-  get cyclePending$(): Subject<boolean> {
-    return this.state.workflowPendingSource;
-  }
-  get firstVisible(): ItemAdapter {
-    this.state.firstVisibleWanted = true;
-    return this.state.firstVisibleItem;
-  }
-  get firstVisible$(): BehaviorSubject<ItemAdapter> {
-    this.state.firstVisibleWanted = true;
-    return this.state.firstVisibleSource;
-  }
-  get lastVisible(): ItemAdapter {
-    this.state.lastVisibleWanted = true;
-    return this.state.lastVisibleItem;
-  }
-  get lastVisible$(): BehaviorSubject<ItemAdapter> {
-    this.state.lastVisibleWanted = true;
-    return this.state.lastVisibleSource;
-  }
-  get itemsCount(): number {
-    return this.buffer.getVisibleItemsCount();
-  }
-  get bof(): boolean {
-    return this.buffer.bof;
-  }
-  get bof$(): Subject<boolean> {
-    return this.buffer.bofSource;
-  }
-  get eof(): boolean {
-    return this.buffer.eof;
-  }
-  get eof$(): Subject<boolean> {
-    return this.buffer.eofSource;
-  }
+  version: string;
+  isLoading: boolean;
+  isLoading$: Subject<boolean>;
+  loopPending: boolean;
+  loopPending$: Subject<boolean>;
+  cyclePending: boolean;
+  cyclePending$: Subject<boolean>;
+  firstVisible: ItemAdapter;
+  firstVisible$: BehaviorSubject<ItemAdapter>;
+  lastVisible: ItemAdapter;
+  lastVisible$: BehaviorSubject<ItemAdapter>;
+  bof: boolean;
+  bof$: Subject<boolean>;
+  eof: boolean;
+  eof$: Subject<boolean>;
+  itemsCount: number;
 
-  constructor(publicContext: IAdapter, state: State, buffer: Buffer, logger: Logger, getWorkflow: WorkflowGetter) {
-    this.state = state;
-    this.buffer = buffer;
-    this.logger = logger;
+  constructor(publicContext: IAdapter | null, getWorkflow: WorkflowGetter, logger: Logger) {
     this.getWorkflow = getWorkflow;
+    this.logger = logger;
 
-    ADAPTER_PROPS.forEach(({ type, name }: IAdapterProp) =>
-      Object.defineProperty(
-        publicContext,
-        type === AdapterPropType.Observable ? `_${name}` : name,
-        {
-          get: () => {
-            const value = (<any>this)[name];
-            return type === AdapterPropType.Function ? value.bind(this) : value;
+    ADAPTER_PROPS // observable props should be placed in and get from "source" container
+      .filter(prop => prop.type === AdapterPropType.Observable)
+      .forEach(({ name, value, wanted }: IAdapterProp) => {
+        this.source[name] = value;
+        Object.defineProperty(
+          this,
+          name,
+          {
+            get: () => {
+              fixScalarWanted(name, this.wanted);
+              return this.source[name];
+            }
           }
+        );
+      });
+
+    ADAPTER_PROPS // scalar props that have observable twins should use "box" container
+      .filter(prop => prop.type === AdapterPropType.Scalar && !!prop.observable)
+      .forEach(({ type, name, value, observable, wanted }: IAdapterProp) => {
+        if (wanted) {
+          this.wanted[name] = false;
         }
-      )
-    );
+        Object.defineProperty(
+          this,
+          name,
+          {
+            set: (newValue: any) => {
+              if (newValue !== this.box[name]) {
+                this.box[name] = newValue;
+                this.source[observable as string].next(newValue);
+              }
+            },
+            get: () => {
+              if (wanted && !this.wanted[name]) {
+                this.wanted[name] = true;
+              }
+              return this.box[name];
+            }
+          }
+        );
+        (this as any)[name] = value;
+      });
+
+    ADAPTER_PROPS // scalar props on-demand, require definition on init()
+      .filter(prop => prop.type === AdapterPropType.Scalar && prop.onDemand)
+      .forEach(({ name, value }: IAdapterProp) => {
+        this.demand[name] = value;
+        Object.defineProperty(this, name, { get: () => this.demand[name] });
+      });
+
+    if (!publicContext) {
+      return;
+    }
+
+    ADAPTER_PROPS // augment Adapter public context
+      .forEach(({ type, name }: IAdapterProp) =>
+        Object.defineProperty(
+          publicContext,
+          type === AdapterPropType.Observable ? `_${name}` : name,
+          {
+            get: () => {
+              const value = (this as any)[name];
+              return type === AdapterPropType.Function ? value.bind(this) : value;
+            }
+          }
+        )
+      );
 
     const init$ = publicContext.init$ as Subject<boolean>;
     init$.next(true);
     init$.complete();
+  }
+
+  init(state: State, buffer: Buffer, logger: Logger, dispose$: Subject<void>) {
+    const _get = (name: string) => {
+      switch (name) {
+        case 'version':
+          return () => state.version;
+        case 'itemsCount':
+          return () => buffer.getVisibleItemsCount();
+      }
+    };
+    ADAPTER_PROPS // on-demand scalars definition
+      .filter(prop => prop.type === AdapterPropType.Scalar && prop.onDemand)
+      .forEach(({ name }: IAdapterProp) =>
+        Object.defineProperty(this.demand, name, { get: _get(name) })
+      );
+
+    // logger
+    this.logger = logger;
+
+    // others
+    this.bof = buffer.bof;
+    buffer.bofSource.pipe(takeUntil(dispose$)).subscribe(value => this.bof = value);
+    this.eof = buffer.eof;
+    buffer.eofSource.pipe(takeUntil(dispose$)).subscribe(value => this.eof = value);
   }
 
   dispose() { }

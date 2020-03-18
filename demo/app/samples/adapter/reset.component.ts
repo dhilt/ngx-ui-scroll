@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
-import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
+import { datasourceGetCallbackInfinite, datasourceGetCallbackLimited } from '../../shared/datasource-get';
 
 import { Datasource, IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -21,10 +21,7 @@ export class DemoResetComponent {
   };
 
   datasource = new Datasource({
-    get: datasourceGetCallbackInfinite(this.demoContext),
-    devSettings: {
-      debug: true
-    }
+    get: datasourceGetCallbackInfinite(this.demoContext)
   });
 
   startIndex = 100;
@@ -46,13 +43,11 @@ startIndex = 100;
 bufferSize = 20;
 
 doReset() {
-  this.datasource.adapter.reset({
-    ...this.datasource,
-    settings: {
-      startIndex: Number(this.startIndex),
-      bufferSize: Number(this.bufferSize)
-    }
-  });
+  const settings = {
+    startIndex: Number(this.startIndex),
+    bufferSize: Number(this.bufferSize)
+  };
+  this.datasource.adapter.reset({ settings });
 }`
   }, {
     active: true,
@@ -68,16 +63,18 @@ doReset() {
 </div>`
   }];
 
+  isLoadingSample = '{{ds.adapter.isLoading}}';
+  isLoading$Sample = '{{ds.adapter.isLoading$ | async}}';
+  isLoadingSubSample = `ds.adapter.isLoading$.subscribe(v => console.log(v));`;
+
   doReset() {
     this.demoContext.count = 0;
     this.demoContext.log = '';
-    this.datasource.adapter.reset({
-      ...this.datasource,
-      settings: {
-        startIndex: Number(this.startIndex),
-        bufferSize: Number(this.bufferSize)
-      }
-    });
+    const settings = {
+      startIndex: Number(this.startIndex),
+      bufferSize: Number(this.bufferSize)
+    };
+    this.datasource.adapter.reset({ settings });
   }
 
 }

@@ -144,7 +144,7 @@ describe('Adapter Append-Prepend Spec', () => {
     const shouldDealWithEmptyDatasource = (virtualize: boolean) =>
       makeTest({
         config: (<any>configEmpty)[token],
-        title: `should ${token} to empty datasource` + virtualize ? ' (virtualization)' : '',
+        title: `should ${token} to empty datasource` + (virtualize ? ' (virtualization)' : ''),
         it: (misc: Misc) => (done: any) => {
           const { viewport, buffer } = misc.scroller;
           const { paddings } = viewport;

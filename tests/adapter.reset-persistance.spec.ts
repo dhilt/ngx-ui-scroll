@@ -19,8 +19,22 @@ const mainConfig: TestBedConfig = {
       ...defaultSettings,
       startIndex: 100
     }
+  }
+};
+
+const bofConfig = {
+  ...mainConfig,
+  datasourceName: 'limited-1-100-no-delay',
+  datasourceSettings: {
+    ...mainConfig.datasourceSettings,
+    bufferSize: 25
   },
-  // datasourceDevSettings: { debug: true }
+  custom: {
+    settings: {
+      ...defaultSettings,
+      startIndex: 1
+    }
+  },
 };
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
@@ -95,7 +109,7 @@ const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done
   });
 };
 
-const shouldPersistIsLoading = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const subs = [
     misc.datasource.adapter,
     misc.workflow.scroller.datasource.adapter
@@ -132,7 +146,7 @@ const shouldPersistIsLoading = (config: TestBedConfig) => (misc: Misc) => (done:
   });
 };
 
-const shouldPersistFirstVisible = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   const subs = [
     misc.datasource.adapter,
@@ -169,6 +183,43 @@ const shouldPersistFirstVisible = (config: TestBedConfig) => (misc: Misc) => (do
   });
 };
 
+const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  const subs = [
+    misc.datasource.adapter,
+    misc.workflow.scroller.datasource.adapter
+  ].reduce((acc: Subscription[], adapter) => {
+    let call = 0;
+    return [
+      ...acc,
+      adapter.bof$.subscribe((bof: boolean) => {
+        misc.shared.count = ++call;
+        const { startIndex } = config.datasourceSettings;
+        if (call === 1) {
+          expect(bof).toEqual(true);
+        } else if (call === 2) {
+          expect(bof).toEqual(false);
+        } else if (call === 3) {
+          expect(bof).toEqual(true);
+        } else {
+          expect('Event #4').toEqual('should not be triggered');
+        }
+        expect(bof).toEqual(adapter.bof);
+      })
+    ];
+  }, []);
+  spyOn(misc.workflow, 'finalize').and.callFake(() => {
+    if (misc.workflow.cyclesDone === 1) {
+      misc.scrollMax();
+    } else if (misc.workflow.cyclesDone === 2) {
+      doReset(config, misc);
+    } else {
+      subs.forEach((sub) => sub.unsubscribe());
+      expect(misc.shared.count).toEqual(3);
+      done();
+    }
+  });
+};
+
 describe('Adapter Reset Persistence Spec', () => {
 
   describe('version scalar on-demand prop', () =>
@@ -187,19 +238,27 @@ describe('Adapter Reset Persistence Spec', () => {
     })
   );
 
-  describe('isLoading subscription', () =>
+  describe('isLoading$ subscription', () =>
     makeTest({
       config: mainConfig,
       title: 'should persist',
-      it: shouldPersistIsLoading(mainConfig)
+      it: shouldPersistIsLoading$(mainConfig)
     })
   );
 
-  describe('firstVisible wanted subscription', () =>
+  describe('firstVisible$ wanted subscription', () =>
     makeTest({
       config: mainConfig,
       title: 'should persist',
-      it: shouldPersistFirstVisible(mainConfig)
+      it: shouldPersistFirstVisible$(mainConfig)
+    })
+  );
+
+  describe('bof$ on-init subscription', () =>
+    makeTest({
+      config: bofConfig,
+      title: 'should persist',
+      it: shouldPersistBof$(bofConfig)
     })
   );
 

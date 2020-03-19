@@ -1,4 +1,4 @@
-import { Observable, Subscription, Observer, BehaviorSubject, Subject } from 'rxjs';
+import { Observable, Subscription, Observer, Subject } from 'rxjs';
 
 import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';

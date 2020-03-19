@@ -1,10 +1,14 @@
-import { async } from '@angular/core/testing';
+import { async, ComponentFixture } from '@angular/core/testing';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 
-import { Settings, Direction } from '../src/component/interfaces';
+import { Settings, Direction, IAdapter } from '../src/component/interfaces';
 import { defaultSettings, minSettings } from '../src/component/classes/settings';
+import { UiScrollComponent } from '../src/ui-scroll.component';
+import { Workflow } from '../src/component/workflow';
 
-import { configureTestBed } from './scaffolding/testBed';
+import { configureTestBed, configureTestBedTwo } from './scaffolding/testBed';
 import { defaultDatasourceClass, generateDatasourceClass } from './scaffolding/datasources';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
@@ -310,6 +314,107 @@ describe('Workflow initialization', () => {
       expect(misc.workflow.isInitialized).toBe(false);
       done();
     });
+  });
+
+});
+
+describe('Multiple Instances', () => {
+
+  let fixture: ComponentFixture<any>;
+  let reconfigure = true;
+  const getAdapters = (): { a1: IAdapter, a2: IAdapter } => ({
+    a1: fixture.componentInstance.datasource.adapter,
+    a2: fixture.componentInstance.datasource2.adapter
+  });
+  const getWorkflows = (): { w1: Workflow, w2: Workflow } =>
+    fixture.debugElement.queryAll(By.css('[ui-scroll]'))
+      .reduce((acc, element: DebugElement, i: number) => ({
+        ...acc,
+        ['w' + (i + 1)]: element.componentInstance.workflow
+      }), {} as any);
+
+
+  describe('Initialization', () => {
+
+    beforeEach(async(() => {
+      if (!reconfigure) {
+        return;
+      }
+      reconfigure = false;
+      fixture = configureTestBedTwo();
+    }));
+
+    it('should init component with 2 datasources', () => {
+      const cmp = fixture.componentInstance;
+      expect(cmp).toBeTruthy();
+      const ds1 = cmp.datasource;
+      const ds2 = cmp.datasource2;
+      expect(ds1).toBeTruthy();
+      expect(ds2).toBeTruthy();
+      const adapter1 = ds1.adapter;
+      const adapter2 = ds2.adapter;
+      expect(adapter1).toBeTruthy();
+      expect(adapter2).toBeTruthy();
+    });
+
+    it('should init component with 2 workflows', () => {
+      const uiScrollElements: DebugElement[] =
+        fixture.debugElement.queryAll(By.css('[ui-scroll]'));
+      expect(uiScrollElements).toBeTruthy();
+      expect(uiScrollElements.length).toEqual(2);
+      uiScrollElements
+        .map((element: DebugElement) => element.componentInstance)
+        .forEach((component: UiScrollComponent) =>
+          expect(component.workflow).toBeTruthy()
+        );
+    });
+
+    it('should provide 2 live adapters', () => {
+      const { a1, a2 } = getAdapters();
+      expect(a1.version).toBeTruthy();
+      expect(a2.version).toBeTruthy();
+      expect(a2.version).toEqual(a1.version);
+    });
+
+    it('should provide 2 live workflows', () => {
+      const { w1, w2 } = getWorkflows();
+      expect(w1.scroller).toBeTruthy();
+      expect(w2.scroller).toBeTruthy();
+    });
+
+  });
+
+  describe('Subscriptions', () => {
+
+    beforeEach(() => {
+      fixture = configureTestBedTwo();
+    });
+
+    it('should not interfere', (done) => {
+      const { a1, a2 } = getAdapters();
+      const { w1, w2 } = getWorkflows();
+      let c1 = 0, c2 = 0, count = 0;
+      a1.isLoading$.subscribe(value => c1++);
+      a2.isLoading$.subscribe(value => c2++);
+      const _done = () => {
+        if (++count === 2) {
+          done();
+        }
+      };
+      spyOn(w1, 'finalize').and.callFake(() =>
+        setTimeout(() => {
+          expect(c1).toEqual(2);
+          _done();
+        })
+      );
+      spyOn(w2, 'finalize').and.callFake(() =>
+        setTimeout(() => {
+          expect(c2).toEqual(2);
+          _done();
+        })
+      );
+    });
+
   });
 
 });

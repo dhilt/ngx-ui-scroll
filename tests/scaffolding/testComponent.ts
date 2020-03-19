@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { IDatasource } from '../../src/component/interfaces';
+import { Datasource } from '../../src/component/classes/datasource';
 
 import { DatasourceService } from './datasources';
 import { defaultTemplate, TemplateSettings } from './templates';
@@ -14,7 +15,7 @@ export interface TestComponentInterface {
   template: defaultTemplate,
   providers: [DatasourceService]
 })
-export class TestComponent implements TestComponentInterface {
+export class ScrollerTestComponent implements TestComponentInterface {
   datasource: IDatasource;
   templateSettings: TemplateSettings;
 
@@ -22,7 +23,7 @@ export class TestComponent implements TestComponentInterface {
     private sanitizer: DomSanitizer,
     datasourceService: DatasourceService
   ) {
-    this.datasource = <IDatasource>datasourceService;
+    this.datasource = datasourceService as IDatasource;
   }
 
   getItemStyle(item: any) {
@@ -45,4 +46,31 @@ export class TestComponent implements TestComponentInterface {
     }
     return this.sanitizer.bypassSecurityTrustStyle(result);
   }
+}
+
+@Component({
+  template: `<div
+  style="height: 200px; overflow-y: scroll;"
+><div
+  *uiScroll="let item of datasource; let index = index"
+><span>{{index}}</span> : <b>{{item.text}}</b></div></div><br><div
+  style="height: 200px; overflow-y: scroll;"
+><div
+  *uiScroll="let item of datasource2; let index = index"
+><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`
+})
+export class TwoScrollersTestComponent implements TestComponentInterface {
+  datasource = new Datasource({
+    get: (index, count, success) =>
+      success(Array.from({ length: count }, (j, i) =>
+        ({ id: i + index, text: 'item #' + (i + index) })
+      ))
+  });
+
+  datasource2 = new Datasource({
+    get: (index, count, success) =>
+      success(Array.from({ length: count }, (j, i) =>
+        ({ id: i + index, text: 'item #' + (i + index) + ' *' })
+      ))
+  });
 }

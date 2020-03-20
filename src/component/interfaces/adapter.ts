@@ -48,7 +48,8 @@ export interface AdapterFixOptions {
 }
 
 export interface IAdapter {
-  readonly init$?: BehaviorSubject<boolean>;
+  readonly id: number;
+  readonly mock: boolean;
   readonly version: string;
   readonly isLoading: boolean;
   readonly isLoading$: Subject<boolean>;

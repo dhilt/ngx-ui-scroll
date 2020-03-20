@@ -19,7 +19,7 @@ export const itemAdapterEmpty = <ItemAdapter>{
 
 const noop = () => null;
 
-export const ADAPTER_PROPS: IAdapterProp[] = [
+export const ADAPTER_PROPS = (): IAdapterProp[] => [
   {
     type: Prop.Scalar,
     name: 'version',

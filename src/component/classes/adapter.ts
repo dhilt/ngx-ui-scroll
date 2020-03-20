@@ -23,8 +23,10 @@ import {
   IDatasourceOptional
 } from '../interfaces/index';
 
+const ADAPTER_PROPS_STUB = ADAPTER_PROPS();
+
 const fixScalarWanted = (name: string, container: { [key: string]: boolean }) => {
-  const scalar = ADAPTER_PROPS.find(
+  const scalar = ADAPTER_PROPS_STUB.find(
     ({ observable, wanted }: IAdapterProp) => wanted && observable === name
   );
   if (scalar) {
@@ -44,6 +46,8 @@ export class Adapter implements IAdapter {
     return this.getWorkflow();
   }
 
+  id: number;
+  mock: boolean;
   version: string;
   isLoading: boolean;
   isLoading$: Subject<boolean>;
@@ -65,77 +69,82 @@ export class Adapter implements IAdapter {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
 
-    ADAPTER_PROPS // observable props should be placed in and get from "source" container
+    // restore original values from the publicContext if present
+    const adapterProps = publicContext
+      ? ADAPTER_PROPS_STUB.map(prop => ({
+          ...prop,
+          value: (publicContext as any)[prop.name]
+        }))
+      : ADAPTER_PROPS();
+
+    // Observable props
+    // 1) store original values in "source" container, to avoid extra .get() calls on scalar twins set
+    // 2) "wanted" container is bound with scalars; get() updates it
+    adapterProps
       .filter(prop => prop.type === AdapterPropType.Observable)
       .forEach(({ name, value, wanted }: IAdapterProp) => {
         this.source[name] = value;
-        Object.defineProperty(
-          this,
-          name,
-          {
-            get: () => {
-              fixScalarWanted(name, this.wanted);
-              return this.source[name];
-            }
+        Object.defineProperty(this, name, {
+          get: () => {
+            fixScalarWanted(name, this.wanted);
+            return this.source[name];
           }
-        );
+        });
       });
 
-    ADAPTER_PROPS // scalar props that have observable twins should use "box" container
+    // Scalar props that have Observable twins
+    // 1) scalars should use "box" container
+    // 2) "wanted" should be updated on get
+    // 3) observables (from "source") are triggered on set
+    adapterProps
       .filter(prop => prop.type === AdapterPropType.Scalar && !!prop.observable)
       .forEach(({ type, name, value, observable, wanted }: IAdapterProp) => {
         if (wanted) {
           this.wanted[name] = false;
         }
-        Object.defineProperty(
-          this,
-          name,
-          {
-            set: (newValue: any) => {
-              if (newValue !== this.box[name]) {
-                this.box[name] = newValue;
-                this.source[observable as string].next(newValue);
-              }
-            },
-            get: () => {
-              if (wanted && !this.wanted[name]) {
-                this.wanted[name] = true;
-              }
-              return this.box[name];
+        this.box[name] = value;
+        Object.defineProperty(this, name, {
+          set: (newValue: any) => {
+            if (newValue !== this.box[name]) {
+              this.box[name] = newValue;
+              this.source[observable as string].next(newValue);
             }
+          },
+          get: () => {
+            if (wanted && !this.wanted[name]) {
+              this.wanted[name] = true;
+            }
+            return this.box[name];
           }
-        );
-        (this as any)[name] = value;
+        });
       });
 
-    ADAPTER_PROPS // scalar props on-demand, require definition on init()
+    // Scalar props on-demand
+    // these scalars should use "demand" container
+    // setting defaults should be overridden on init()
+    adapterProps
       .filter(prop => prop.type === AdapterPropType.Scalar && prop.onDemand)
       .forEach(({ name, value }: IAdapterProp) => {
         this.demand[name] = value;
-        Object.defineProperty(this, name, { get: () => this.demand[name] });
+        Object.defineProperty(this, name, {
+          get: () => this.demand[name]
+        });
       });
 
     if (!publicContext) {
       return;
     }
 
-    ADAPTER_PROPS // augment Adapter public context
-      .forEach(({ type, name }: IAdapterProp) =>
-        Object.defineProperty(
-          publicContext,
-          type === AdapterPropType.Observable ? `_${name}` : name,
-          {
-            get: () => {
-              const value = (this as any)[name];
-              return type === AdapterPropType.Function ? value.bind(this) : value;
-            }
+    // augment Adapter public context
+    adapterProps
+      .forEach(({ name, type }: IAdapterProp) =>
+        Object.defineProperty(publicContext, name, {
+          get: () => {
+            const value = (this as any)[name];
+            return type === AdapterPropType.Function ? value.bind(this) : value;
           }
-        )
+        })
       );
-
-    const init$ = publicContext.init$ as Subject<boolean>;
-    init$.next(true);
-    init$.complete();
   }
 
   init(state: State, buffer: Buffer, logger: Logger, dispose$: Subject<void>) {
@@ -147,7 +156,7 @@ export class Adapter implements IAdapter {
           return () => buffer.getVisibleItemsCount();
       }
     };
-    ADAPTER_PROPS // on-demand scalars definition
+    ADAPTER_PROPS_STUB // on-demand scalars definition
       .filter(prop => prop.type === AdapterPropType.Scalar && prop.onDemand)
       .forEach(({ name }: IAdapterProp) =>
         Object.defineProperty(this.demand, name, { get: _get(name) })

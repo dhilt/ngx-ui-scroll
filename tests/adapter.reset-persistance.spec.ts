@@ -1,11 +1,13 @@
 import { Subscription } from 'rxjs';
 
 import { ADAPTER_PROPS } from '../src/component/utils';
-import { Process, IDatasourceOptional, Direction } from '../src/component/interfaces';
+import { Process, IDatasourceOptional, Direction, IAdapter } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
+
+const ADAPTER_PROPS_STUB = ADAPTER_PROPS();
 
 const defaultSettings = { startIndex: 1, adapter: true };
 
@@ -63,16 +65,16 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
 };
 
 const shouldPersistVersion = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const outer = misc.datasource;
+  const outer = misc.testComponent.datasource;
   const inner = misc.workflow.scroller.datasource;
   const version = misc.workflow.scroller.state.version;
   expect(version).toBeTruthy();
-  const versionProp = ADAPTER_PROPS.find(({ name }) => name === 'version');
+  const versionProp = ADAPTER_PROPS_STUB.find(({ name }) => name === 'version');
   expect(versionProp).toBeTruthy();
   const versionDefault = (versionProp as any).value;
   const check = (isDefault?: boolean) => {
-    expect(outer.adapter.version).toEqual(isDefault ? versionDefault : version);
-    expect(outer.adapter.version).toEqual(inner.adapter.version);
+    expect(outer.adapter as IAdapter).toEqual(inner.adapter);
+    expect(inner.adapter.version).toEqual(isDefault ? versionDefault : version);
   };
   check(true);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -87,15 +89,15 @@ const shouldPersistVersion = (config: TestBedConfig) => (misc: Misc) => (done: F
 };
 
 const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const outer = misc.datasource;
+  const outer = misc.testComponent.datasource;
   const inner = misc.workflow.scroller.datasource;
-  const itemsCountProp = ADAPTER_PROPS.find(({ name }) => name === 'itemsCount');
+  const itemsCountProp = ADAPTER_PROPS_STUB.find(({ name }) => name === 'itemsCount');
   expect(itemsCountProp).toBeTruthy();
   const itemsCountDefault = (itemsCountProp as any).value;
   const check = (isDefault?: boolean) => {
     const itemsCount = isDefault ? itemsCountDefault : misc.workflow.scroller.buffer.getVisibleItemsCount();
-    expect(outer.adapter.itemsCount).toEqual(itemsCount);
-    expect(outer.adapter.itemsCount).toEqual(inner.adapter.itemsCount);
+    expect(outer.adapter as IAdapter).toEqual(inner.adapter);
+    expect(inner.adapter.itemsCount).toEqual(itemsCount);
   };
   check(true);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -111,7 +113,7 @@ const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done
 
 const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const subs = [
-    misc.datasource.adapter,
+    misc.testComponent.datasource.adapter as IAdapter,
     misc.workflow.scroller.datasource.adapter
   ].reduce((acc: Subscription[], adapter) => {
     let call = 0;
@@ -149,7 +151,7 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
 const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   const subs = [
-    misc.datasource.adapter,
+    misc.testComponent.datasource.adapter as IAdapter,
     misc.workflow.scroller.datasource.adapter
   ].reduce((acc: Subscription[], adapter) => {
     let call = 0;
@@ -185,7 +187,7 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
 
 const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const subs = [
-    misc.datasource.adapter,
+    misc.testComponent.datasource.adapter as IAdapter,
     misc.workflow.scroller.datasource.adapter
   ].reduce((acc: Subscription[], adapter) => {
     let call = 0;

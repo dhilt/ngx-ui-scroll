@@ -272,11 +272,9 @@ describe('Workflow initialization', () => {
     runBeforeEach(delay);
 
     it('should pass', (done: Function) => {
-      const { datasource: { adapter: { init$ } }, workflow } = misc;
+      const { workflow } = misc;
       expect(workflow.isInitialized).toBe(false);
-      expect((<BehaviorSubject<boolean>>init$).getValue()).toBe(true);
       setTimeout(() => {
-        expect((<BehaviorSubject<boolean>>init$).getValue()).toBe(true);
         expect(workflow.isInitialized).toBe(true);
         done();
       }, delay);

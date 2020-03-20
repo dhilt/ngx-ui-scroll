@@ -56,25 +56,22 @@ export class Scroller {
   initDatasource(datasource: Datasource | IDatasource, scroller?: Scroller) {
     const call = () => this.workflow;
     const constructed = datasource instanceof Datasource;
+    const mockAdapter = !constructed && !this.settings.adapter;
     if (!scroller) { // scroller is being instantiated for the first time
-      let adapterContext: AdapterContext;
       if (!constructed) { // datasource as POJO case
-        // creating non-augmented context
-        adapterContext = new AdapterContext(!this.settings.adapter);
-        this.datasource = new Datasource(datasource, adapterContext);
+        this.datasource = new Datasource(datasource, mockAdapter);
+        if (this.settings.adapter) {
+          datasource.adapter = this.datasource.adapter;
+        }
       } else { // instantiated datasource case
-        // taking non-augmented context
-        adapterContext = datasource.adapter as AdapterContext;
         this.datasource = datasource as Datasource;
       }
-      // adapter instantiating with context augmentation
-      const needAdapter = constructed || this.settings.adapter;
-      const publicContext = needAdapter ? adapterContext as IAdapter : null;
+      const publicContext = !mockAdapter ? this.datasource.adapter : null;
       this.adapter = new Adapter(publicContext, call, this.logger);
     } else { // scroller re-instantiating case
       const adapterContext = datasource.adapter as AdapterContext;
       if (!constructed) {
-        this.datasource = new Datasource(datasource, adapterContext);
+        this.datasource = new Datasource(datasource, adapterContext.mock);
       } else {
         this.datasource = datasource as Datasource;
       }
@@ -84,8 +81,8 @@ export class Scroller {
 
   init(dispose$: Subject<void>) {
     this.viewport.reset(0);
-    this.adapter.init(this.state, this.buffer, this.logger, dispose$);
     this.logger.stat('initialization');
+    this.adapter.init(this.state, this.buffer, this.logger, dispose$);
   }
 
   bindData(): Observable<any> {

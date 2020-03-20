@@ -1,14 +1,15 @@
 export enum ValidatorType {
   mandatory = 'must be present',
-  integer = 'must be integer',
-  integerUnlimited = 'must be integer or infinity',
-  itemList = 'must be array of items',
-  iteratorCallback = 'must be iterator callback',
-  boolean = 'must be boolean',
-  object = 'must be object',
+  integer = 'must be an integer',
+  integerUnlimited = 'must be an integer or infinity',
+  itemList = 'must be an array of items',
+  boolean = 'must be a boolean',
+  object = 'must be an object',
+  function = 'must be a function',
+  funcOfxArguments = 'must have arg1 arguments',
+  funcOfxAndMoreArguments = 'must have at least arg1 arguments',
   oneOfCan = 'can be present only if none of arg1 list is present',
   oneOfMust = 'must be present if none of arg1 list is present',
-  callbackWithMoreParams = 'must be callback with arg1 or more arguments',
 }
 
 type ValidatorMethod = (value: any, context?: any) => ValidatedValue;

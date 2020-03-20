@@ -54,29 +54,25 @@ export class Scroller {
   }
 
   initDatasource(datasource: Datasource | IDatasource, scroller?: Scroller) {
-    const call = () => this.workflow;
+    if (scroller) { // scroller re-instantiating case
+      this.datasource = datasource as Datasource;
+      this.adapter = scroller.adapter;
+      // todo: what about (this.settings.adapter !== scroller.setting.adapter) case?
+      return;
+    }
+    // scroller is being instantiated for the first time
     const constructed = datasource instanceof Datasource;
     const mockAdapter = !constructed && !this.settings.adapter;
-    if (!scroller) { // scroller is being instantiated for the first time
-      if (!constructed) { // datasource as POJO case
-        this.datasource = new Datasource(datasource, mockAdapter);
-        if (this.settings.adapter) {
-          datasource.adapter = this.datasource.adapter;
-        }
-      } else { // instantiated datasource case
-        this.datasource = datasource as Datasource;
+    if (!constructed) { // datasource as POJO case
+      this.datasource = new Datasource(datasource, mockAdapter);
+      if (this.settings.adapter) {
+        datasource.adapter = this.datasource.adapter;
       }
-      const publicContext = !mockAdapter ? this.datasource.adapter : null;
-      this.adapter = new Adapter(publicContext, call, this.logger);
-    } else { // scroller re-instantiating case
-      const adapterContext = datasource.adapter as AdapterContext;
-      if (!constructed) {
-        this.datasource = new Datasource(datasource, adapterContext.mock);
-      } else {
-        this.datasource = datasource as Datasource;
-      }
-      this.adapter = scroller.adapter;
+    } else { // instantiated datasource case
+      this.datasource = datasource as Datasource;
     }
+    const publicContext = !mockAdapter ? this.datasource.adapter : null;
+    this.adapter = new Adapter(publicContext, () => this.workflow, this.logger);
   }
 
   init(dispose$: Subject<void>) {

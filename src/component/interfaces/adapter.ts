@@ -16,6 +16,7 @@ export interface IAdapterProp {
   observable?: string;
   wanted?: boolean;
   onDemand?: boolean;
+  permanent?: boolean;
 }
 
 export interface ItemAdapter {

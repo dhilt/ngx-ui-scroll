@@ -5,13 +5,13 @@ const {
   MANDATORY,
   INTEGER,
   INTEGER_UNLIMITED,
-  ITERATOR_CALLBACK,
   BOOLEAN,
   OBJECT,
   ITEM_LIST,
+  FUNC_WITH_X_ARGUMENTS,
+  FUNC_WITH_X_AND_MORE_ARGUMENTS,
   ONE_OF_CAN,
   ONE_OF_MUST,
-  CALLBACK_WITH_N_AND_MORE_ARGS,
 } = VALIDATORS;
 
 describe('Input Params Validation', () => {
@@ -109,11 +109,11 @@ describe('Input Params Validation', () => {
       const badInputs = [1, true, {}, 'test', () => null, (a: any, b: any) => null];
       badInputs.forEach(input =>
         expect(
-          validateOne({ value: input }, 'value', [ITERATOR_CALLBACK]).isValid
+          validateOne({ value: input }, 'value', [FUNC_WITH_X_ARGUMENTS(1)]).isValid
         ).toEqual(false)
       );
       expect(
-        validateOne({ value: (item: any) => null }, 'value', [ITERATOR_CALLBACK]).isValid
+        validateOne({ value: (item: any) => null }, 'value', [FUNC_WITH_X_ARGUMENTS(1)]).isValid
       ).toEqual(true);
       done();
     });
@@ -329,7 +329,7 @@ describe('Validation', () => {
 
   describe('[Function with arguments]', () => {
     it('should pass function with 2 or more arguments', () => {
-      const validators = [CALLBACK_WITH_N_AND_MORE_ARGS(2)];
+      const validators = [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)];
       expect(run({}, validators)).toBe(true);
       expect(run({}, [MANDATORY, ...validators])).toBe(false);
       expect(run({ [token]: 1 }, validators)).toBe(false);

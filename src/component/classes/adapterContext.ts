@@ -9,6 +9,8 @@ export class AdapterContext {
 
   constructor(mock?: boolean) {
     const id = ++instanceCount;
+
+    // set up permanent props
     Object.defineProperty(this, 'id', { get: () => id });
     Object.defineProperty(this, 'mock', { get: () => !!mock });
 

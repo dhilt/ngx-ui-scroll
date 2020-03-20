@@ -19,7 +19,7 @@ export interface WorkflowError {
 export interface InterruptParams {
   process: Process;
   finalize: boolean;
-  datasource?: IDatasource;
+  datasource: IDatasource;
 }
 
 export interface StateMachineMethods {

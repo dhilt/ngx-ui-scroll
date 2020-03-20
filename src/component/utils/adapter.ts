@@ -22,6 +22,18 @@ const noop = () => null;
 export const ADAPTER_PROPS = (): IAdapterProp[] => [
   {
     type: Prop.Scalar,
+    name: 'id',
+    value: '',
+    permanent: true
+  },
+  {
+    type: Prop.Scalar,
+    name: 'mock',
+    value: true,
+    permanent: true
+  },
+  {
+    type: Prop.Scalar,
     name: 'version',
     value: '',
     onDemand: true
@@ -169,9 +181,9 @@ const {
   BOOLEAN,
   OBJECT,
   ITEM_LIST,
-  ITERATOR_CALLBACK,
+  FUNC_WITH_X_ARGUMENTS,
+  FUNC_WITH_X_AND_MORE_ARGUMENTS,
   ONE_OF_MUST,
-  CALLBACK_WITH_N_AND_MORE_ARGS,
 } = VALIDATORS;
 
 const FIX_METHOD_PARAMS: IAdapterMethodParams = {
@@ -189,7 +201,7 @@ const FIX_METHOD_PARAMS: IAdapterMethodParams = {
   },
   updater: {
     name: 'updater',
-    validators: [ITERATOR_CALLBACK]
+    validators: [FUNC_WITH_X_ARGUMENTS(1)]
   }
 };
 
@@ -200,11 +212,11 @@ const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
   },
   before: {
     name: 'before',
-    validators: [ITERATOR_CALLBACK, ONE_OF_MUST(['after'])]
+    validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST(['after'])]
   },
   after: {
     name: 'after',
-    validators: [ITERATOR_CALLBACK, ONE_OF_MUST(['before'])]
+    validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST(['before'])]
   },
   decrease: {
     name: 'decrease',
@@ -215,7 +227,7 @@ const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
 const RESET_METHOD_PARAMS: IAdapterMethodParams = {
   get: {
     name: 'get',
-    validators: [CALLBACK_WITH_N_AND_MORE_ARGS(2)]
+    validators: [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)]
   },
   settings: {
     name: 'settings',

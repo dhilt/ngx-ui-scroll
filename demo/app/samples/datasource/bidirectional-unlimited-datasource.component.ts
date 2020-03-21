@@ -20,7 +20,7 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
   };
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });

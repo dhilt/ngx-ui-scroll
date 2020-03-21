@@ -22,7 +22,7 @@ export class DemoBofEofComponent {
   };
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const MIN = 1, MAX = 100;
       const data = [];
       const start = Math.max(MIN, index);

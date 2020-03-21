@@ -1,4 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
@@ -11,7 +12,6 @@ import {
   IAdapterProp,
   IAdapter,
   Process,
-  ProcessSubject,
   ProcessStatus,
   ItemAdapter,
   ItemsPredicate,
@@ -19,101 +19,182 @@ import {
   AdapterInsertOptions,
   AdapterFixOptions,
   State,
-  ScrollerWorkflow
+  ScrollerWorkflow,
+  IDatasourceOptional
 } from '../interfaces/index';
 
+const ADAPTER_PROPS_STUB = ADAPTER_PROPS();
+
+const fixScalarWanted = (name: string, container: { [key: string]: boolean }) => {
+  const scalar = ADAPTER_PROPS_STUB.find(
+    ({ observable, wanted }: IAdapterProp) => wanted && observable === name
+  );
+  if (scalar) {
+    container[scalar.name] = true;
+  }
+};
+
 export class Adapter implements IAdapter {
-  readonly state: State;
-  readonly buffer: Buffer;
-  readonly logger: Logger;
-  readonly getWorkflow: WorkflowGetter;
+  private logger: Logger;
+  private getWorkflow: WorkflowGetter;
+  private source: { [key: string]: any } = {}; // for observables
+  private box: { [key: string]: any } = {}; // for scalars over observables
+  private demand: { [key: string]: any } = {}; // for scalars on demand
+  public wanted: { [key: string]: boolean } = {};
 
   get workflow(): ScrollerWorkflow {
     return this.getWorkflow();
   }
 
-  get version(): string {
-    return this.state.version;
-  }
-  get isLoading(): boolean {
-    return this.state.isLoading;
-  }
-  get isLoading$(): Subject<boolean> {
-    return this.state.isLoadingSource;
-  }
-  get loopPending(): boolean {
-    return this.state.loopPending;
-  }
-  get loopPending$(): Subject<boolean> {
-    return this.state.loopPendingSource;
-  }
-  get cyclePending(): boolean {
-    return this.state.workflowPending;
-  }
-  get cyclePending$(): Subject<boolean> {
-    return this.state.workflowPendingSource;
-  }
-  get firstVisible(): ItemAdapter {
-    this.state.firstVisibleWanted = true;
-    return this.state.firstVisibleItem;
-  }
-  get firstVisible$(): BehaviorSubject<ItemAdapter> {
-    this.state.firstVisibleWanted = true;
-    return this.state.firstVisibleSource;
-  }
-  get lastVisible(): ItemAdapter {
-    this.state.lastVisibleWanted = true;
-    return this.state.lastVisibleItem;
-  }
-  get lastVisible$(): BehaviorSubject<ItemAdapter> {
-    this.state.lastVisibleWanted = true;
-    return this.state.lastVisibleSource;
-  }
-  get itemsCount(): number {
-    return this.buffer.getVisibleItemsCount();
-  }
-  get bof(): boolean {
-    return this.buffer.bof;
-  }
-  get bof$(): Subject<boolean> {
-    return this.buffer.bofSource;
-  }
-  get eof(): boolean {
-    return this.buffer.eof;
-  }
-  get eof$(): Subject<boolean> {
-    return this.buffer.eofSource;
-  }
+  id: number;
+  mock: boolean;
+  version: string;
+  isLoading: boolean;
+  isLoading$: Subject<boolean>;
+  loopPending: boolean;
+  loopPending$: Subject<boolean>;
+  cyclePending: boolean;
+  cyclePending$: Subject<boolean>;
+  firstVisible: ItemAdapter;
+  firstVisible$: BehaviorSubject<ItemAdapter>;
+  lastVisible: ItemAdapter;
+  lastVisible$: BehaviorSubject<ItemAdapter>;
+  bof: boolean;
+  bof$: Subject<boolean>;
+  eof: boolean;
+  eof$: Subject<boolean>;
+  itemsCount: number;
 
-  constructor(publicContext: IAdapter, state: State, buffer: Buffer, logger: Logger, getWorkflow: WorkflowGetter) {
-    this.state = state;
-    this.buffer = buffer;
-    this.logger = logger;
+  constructor(publicContext: IAdapter | null, getWorkflow: WorkflowGetter, logger: Logger) {
     this.getWorkflow = getWorkflow;
+    this.logger = logger;
 
-    ADAPTER_PROPS.forEach(({ type, name }: IAdapterProp) =>
-      Object.defineProperty(
-        publicContext,
-        type === AdapterPropType.Observable ? `_${name}` : name,
-        {
+    // restore original values from the publicContext if present
+    const adapterProps = publicContext
+      ? ADAPTER_PROPS_STUB.map(prop => ({
+          ...prop,
+          value: (publicContext as any)[prop.name]
+        }))
+      : ADAPTER_PROPS();
+
+    // Scalar permanent props
+    adapterProps
+      .filter(({ type, permanent }) => type === AdapterPropType.Scalar && permanent)
+      .forEach(({ name, value, wanted }: IAdapterProp) =>
+        Object.defineProperty(this, name, {
+          get: () => value
+        })
+      );
+
+    // Observable props
+    // 1) store original values in "source" container, to avoid extra .get() calls on scalar twins set
+    // 2) "wanted" container is bound with scalars; get() updates it
+    adapterProps
+      .filter(prop => prop.type === AdapterPropType.Observable)
+      .forEach(({ name, value, wanted }: IAdapterProp) => {
+        this.source[name] = value;
+        Object.defineProperty(this, name, {
           get: () => {
-            const value = (<any>this)[name];
+            fixScalarWanted(name, this.wanted);
+            return this.source[name];
+          }
+        });
+      });
+
+    // Scalar props that have Observable twins
+    // 1) scalars should use "box" container
+    // 2) "wanted" should be updated on get
+    // 3) observables (from "source") are triggered on set
+    adapterProps
+      .filter(prop => prop.type === AdapterPropType.Scalar && !!prop.observable)
+      .forEach(({ type, name, value, observable, wanted }: IAdapterProp) => {
+        if (wanted) {
+          this.wanted[name] = false;
+        }
+        this.box[name] = value;
+        Object.defineProperty(this, name, {
+          set: (newValue: any) => {
+            if (newValue !== this.box[name]) {
+              this.box[name] = newValue;
+              this.source[observable as string].next(newValue);
+            }
+          },
+          get: () => {
+            if (wanted && !this.wanted[name]) {
+              this.wanted[name] = true;
+            }
+            return this.box[name];
+          }
+        });
+      });
+
+    // Scalar props on-demand
+    // these scalars should use "demand" container
+    // setting defaults should be overridden on init()
+    adapterProps
+      .filter(prop => prop.type === AdapterPropType.Scalar && prop.onDemand)
+      .forEach(({ name, value }: IAdapterProp) => {
+        this.demand[name] = value;
+        Object.defineProperty(this, name, {
+          get: () => this.demand[name]
+        });
+      });
+
+    if (!publicContext) {
+      return;
+    }
+
+    // augment Adapter public context
+    adapterProps
+      .forEach(({ name, type }: IAdapterProp) =>
+        Object.defineProperty(publicContext, name, {
+          get: () => {
+            const value = (this as any)[name];
             return type === AdapterPropType.Function ? value.bind(this) : value;
           }
-        }
-      )
-    );
+        })
+      );
+  }
 
-    const init$ = <Subject<boolean>>publicContext.init$;
-    init$.next(true);
-    init$.complete();
+  init(state: State, buffer: Buffer, logger: Logger, dispose$: Subject<void>) {
+    const _get = (name: string) => {
+      switch (name) {
+        case 'version':
+          return () => state.version;
+        case 'itemsCount':
+          return () => buffer.getVisibleItemsCount();
+      }
+    };
+    ADAPTER_PROPS_STUB // on-demand scalars definition
+      .filter(prop => prop.type === AdapterPropType.Scalar && prop.onDemand)
+      .forEach(({ name }: IAdapterProp) =>
+        Object.defineProperty(this.demand, name, { get: _get(name) })
+      );
+
+    // logger
+    this.logger = logger;
+
+    // others
+    this.bof = buffer.bof;
+    buffer.bofSource.pipe(takeUntil(dispose$)).subscribe(value => this.bof = value);
+    this.eof = buffer.eof;
+    buffer.eofSource.pipe(takeUntil(dispose$)).subscribe(value => this.eof = value);
   }
 
   dispose() { }
 
+  reset(datasource?: IDatasourceOptional) {
+    this.logger.logAdapterMethod('reset', datasource);
+    this.workflow.call({
+      process: Process.reset,
+      status: ProcessStatus.start,
+      payload: datasource || null
+    });
+  }
+
   reload(reloadIndex?: number | string) {
     this.logger.logAdapterMethod('reload', reloadIndex);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.reload,
       status: ProcessStatus.start,
       payload: reloadIndex
@@ -122,7 +203,7 @@ export class Adapter implements IAdapter {
 
   append(items: any, eof?: boolean) {
     this.logger.logAdapterMethod('append', items, eof);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.append,
       status: ProcessStatus.start,
       payload: { items, eof }
@@ -131,7 +212,7 @@ export class Adapter implements IAdapter {
 
   prepend(items: any, bof?: boolean) {
     this.logger.logAdapterMethod('prepend', items, bof);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.prepend,
       status: ProcessStatus.start,
       payload: { items, bof }
@@ -140,7 +221,7 @@ export class Adapter implements IAdapter {
 
   check() {
     this.logger.logAdapterMethod('check');
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.check,
       status: ProcessStatus.start
     });
@@ -148,7 +229,7 @@ export class Adapter implements IAdapter {
 
   remove(predicate: ItemsPredicate) {
     this.logger.logAdapterMethod('clip', predicate);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.remove,
       status: ProcessStatus.start,
       payload: predicate
@@ -157,7 +238,7 @@ export class Adapter implements IAdapter {
 
   clip(options?: AdapterClipOptions) {
     this.logger.logAdapterMethod('clip', options);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.userClip,
       status: ProcessStatus.start,
       payload: options
@@ -166,7 +247,7 @@ export class Adapter implements IAdapter {
 
   insert(options: AdapterInsertOptions) {
     this.logger.logAdapterMethod('insert', options);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.insert,
       status: ProcessStatus.start,
       payload: options
@@ -180,7 +261,7 @@ export class Adapter implements IAdapter {
 
   fix(options: AdapterFixOptions) {
     this.logger.logAdapterMethod('fix', options);
-    this.workflow.call(<ProcessSubject>{
+    this.workflow.call({
       process: Process.fix,
       status: ProcessStatus.start,
       payload: options

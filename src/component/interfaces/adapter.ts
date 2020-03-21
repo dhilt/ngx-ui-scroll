@@ -1,6 +1,7 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import { IValidator, ValidatedValue } from './validation';
+import { IDatasourceOptional } from './datasource';
 
 export enum AdapterPropType {
   Scalar,
@@ -12,6 +13,10 @@ export interface IAdapterProp {
   name: string;
   type: AdapterPropType;
   value: any;
+  observable?: string;
+  wanted?: boolean;
+  onDemand?: boolean;
+  permanent?: boolean;
 }
 
 export interface ItemAdapter {
@@ -44,7 +49,8 @@ export interface AdapterFixOptions {
 }
 
 export interface IAdapter {
-  readonly init$?: BehaviorSubject<boolean>;
+  readonly id: number;
+  readonly mock: boolean;
   readonly version: string;
   readonly isLoading: boolean;
   readonly isLoading$: Subject<boolean>;
@@ -56,20 +62,21 @@ export interface IAdapter {
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;
   readonly lastVisible$: BehaviorSubject<ItemAdapter>;
-  readonly itemsCount: number;
   readonly bof: boolean;
   readonly bof$: Subject<boolean>;
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
-  reload: (reloadIndex?: number | string) => any;
-  append: (items: any, eof?: boolean) => any;
-  prepend: (items: any, bof?: boolean) => any;
-  check: () => any;
-  remove: (predicate: ItemsPredicate) => any;
-  clip: (options?: AdapterClipOptions) => any;
-  insert: (options: AdapterInsertOptions) => any;
-  showLog: () => any;
-  fix: (options: AdapterFixOptions) => any; // undocumented
+  readonly itemsCount: number;
+  reset: (datasource?: IDatasourceOptional) => void;
+  reload: (reloadIndex?: number | string) => void;
+  append: (items: any, eof?: boolean) => void;
+  prepend: (items: any, bof?: boolean) => void;
+  check: () => void;
+  remove: (predicate: ItemsPredicate) => void;
+  clip: (options?: AdapterClipOptions) => void;
+  insert: (options: AdapterInsertOptions) => void;
+  showLog: () => void;
+  fix: (options: AdapterFixOptions) => void; // experimental
 }
 
 export interface IAdapterMethodParam {

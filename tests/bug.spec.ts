@@ -132,7 +132,7 @@ describe('Bug Spec', () => {
               inverse
             };
 
-            this.get = (index, count, success) => {
+            this.get = (index: number, count: number, success: Function) => {
               const data = [];
               const start = inverse ? -index - count + this.MIN : index;
               const end = start + count - 1;

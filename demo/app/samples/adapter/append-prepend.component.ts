@@ -25,7 +25,7 @@ export class DemoAppendPrependComponent {
   newIndex = 0;
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });

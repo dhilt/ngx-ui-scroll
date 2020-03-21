@@ -4,8 +4,17 @@ import { takeUntil } from 'rxjs/operators';
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
 import {
-  Datasource, Process, ProcessStatus as Status, ProcessSubject, WorkflowError, ScrollerWorkflow, ProcessStatus
+  IDatasource,
+  Process,
+  ProcessStatus as Status,
+  ProcessSubject,
+  ProcessStatus,
+  WorkflowError,
+  ScrollerWorkflow,
+  InterruptParams,
+  StateMachineMethods
 } from './interfaces/index';
+import { Datasource } from './classes/datasource';
 
 export class Workflow {
 
@@ -18,18 +27,18 @@ export class Workflow {
 
   readonly propagateChanges: Function;
   readonly onScrollHandler: EventListener;
-  private stateMachineMethods: any;
+  private stateMachineMethods: StateMachineMethods;
   private dispose$: Subject<void>;
 
-  constructor(element: HTMLElement, datasource: Datasource, version: string, run: Function) {
+  constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
     this.dispose$ = new Subject();
-    this.process$ = new BehaviorSubject(<ProcessSubject>{
+    this.process$ = new BehaviorSubject({
       process: Process.init,
       status: Status.start
-    });
+    } as ProcessSubject);
     this.propagateChanges = run;
-    this.callWorkflow = <any>this.callWorkflow.bind(this);
+    this.callWorkflow = this.callWorkflow.bind(this);
     this.scroller = new Scroller(element, datasource, version, this.callWorkflow);
     this.cyclesDone = 0;
     this.interruptionCount = 0;
@@ -54,7 +63,7 @@ export class Workflow {
   }
 
   init() {
-    this.scroller.init();
+    this.scroller.init(this.dispose$);
     this.isInitialized = true;
 
     // propagate the item list to the view
@@ -74,7 +83,7 @@ export class Workflow {
     let scrollEventOptions: any = false;
     try {
       window.addEventListener(
-        'test', <EventListenerOrEventListenerObject>{}, Object.defineProperty({}, 'passive', {
+        'test', {} as EventListenerOrEventListenerObject, Object.defineProperty({}, 'passive', {
           get: () => scrollEventOptions = { passive: false }
         })
       );
@@ -139,30 +148,36 @@ export class Workflow {
     this.scroller.logger.logError(message);
   }
 
-  interrupt(process?: Process) {
-    const { scroller } = this;
-    if (scroller.state.isLoading) {
+  interrupt({ process, finalize, datasource }: InterruptParams) {
+    if (finalize) {
+      const { workflow, logger } = this.scroller;
       // we are going to create a new reference for the scroller.workflow object
       // calling the old version of the scroller.workflow by any outstanding async processes will be skipped
-      scroller.workflow.call = (p?: ProcessSubject) => scroller.logger.log('[skip wf call]');
-      (<any>scroller.workflow.call).interrupted = true;
-      scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
+      workflow.call = (p: ProcessSubject) => logger.log('[skip wf call]');
+      (workflow.call as any).interrupted = true;
+      this.scroller.workflow = { call: this.callWorkflow } as ScrollerWorkflow;
       this.interruptionCount++;
-      scroller.logger.log(() =>
-        `workflow had been interrupted by the ${process} process (${this.interruptionCount})`
-      );
+      logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
+    }
+    if (datasource) { // Scroller re-initialization case
+      this.scroller.logger.log('new Scroller instantiation');
+      const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
+      const scroller = new Scroller(element, datasource, version, call, this.scroller);
+      this.scroller.dispose();
+      this.scroller = scroller;
+      this.scroller.init(this.dispose$);
     }
   }
 
   done() {
-    const { state } = this.scroller;
+    const { state, adapter } = this.scroller;
     this.cyclesDone++;
     this.scroller.logger.logCycle(false);
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
-    state.workflowPending = false;
+    adapter.cyclePending = false;
     if (state.scrollState.scrollTimer === null) {
-      state.isLoading = false;
+      adapter.isLoading = false;
     }
     this.finalize();
   }
@@ -170,7 +185,7 @@ export class Workflow {
   dispose() {
     this.dispose$.next();
     this.dispose$.complete();
-    this.scroller.dispose();
+    this.scroller.dispose(true);
     this.isInitialized = false;
   }
 

@@ -8,9 +8,15 @@ export type DatasourceGetPromise = (index: number, count: number) => PromiseLike
 
 export type DatasourceGet = DatasourceGetCallback | DatasourceGetObservable | DatasourceGetPromise;
 
-export interface Datasource {
+export interface IDatasource {
   get: DatasourceGet;
   settings?: Settings;
   devSettings?: DevSettings;
   adapter?: IAdapter;
+}
+
+export interface IDatasourceOptional {
+  get?: DatasourceGet;
+  settings?: Settings;
+  devSettings?: DevSettings;
 }

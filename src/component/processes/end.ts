@@ -5,19 +5,19 @@ import { itemAdapterEmpty } from '../utils/adapter';
 export default class End {
 
   static run(scroller: Scroller, process: Process, payload: any = {}) {
-    const { workflow, state } = scroller;
+    const { workflow, state, adapter } = scroller;
     const { error } = payload;
 
     state.workflowOptions.reset();
 
-    if (!error && process !== Process.reload) {
+    if (!error && process !== Process.reset && process !== Process.reload) {
       // set out params, accessible via Adapter
       End.calculateParams(scroller);
     }
 
     // explicit interruption for we don't want go through the workflow loop finalizing
     if ((<any>workflow.call).interrupted) {
-      return workflow.call();
+      return workflow.call({ process, status: ProcessStatus.done, payload });
     }
 
     // what next? done?
@@ -35,14 +35,14 @@ export default class End {
     });
 
     // if the Workflow isn't finalized, it may freeze for no more than settings.throttle ms
-    if (state.workflowPending && !state.loopPending) {
+    if (adapter.cyclePending && !adapter.loopPending) {
       // continue the Workflow asynchronously
       End.continueWorkflowByTimer(scroller);
     }
   }
 
   static endWorkflowLoop(scroller: Scroller, next: boolean) {
-    const { state, state: { clip } } = scroller;
+    const { state, state: { clip }, adapter } = scroller;
     state.countDone++;
     state.isInitialLoop = false;
     state.fetch.stopSimulate();
@@ -50,27 +50,25 @@ export default class End {
     clip.forceReset();
     state.lastPosition = scroller.viewport.scrollPosition;
     scroller.purgeInnerLoopSubscriptions();
-    state.loopPending = false;
+    adapter.loopPending = false;
   }
 
   static calculateParams(scroller: Scroller) {
-    const { items } = scroller.buffer;
+    const { buffer: { items }, adapter } = scroller;
 
     // first visible item
-    if (scroller.state.firstVisibleWanted) {
+    if (adapter.wanted.firstVisible) {
       const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
       const firstItem = items.find(item =>
         scroller.viewport.getElementEdge(item.element, Direction.forward) > viewportBackwardEdge
       );
-      scroller.state.firstVisibleItem = firstItem ? {
-        $index: firstItem.$index,
-        data: firstItem.data,
-        element: firstItem.element
-      } : itemAdapterEmpty;
+      if (!firstItem || firstItem.element !== adapter.firstVisible.element) {
+        adapter.firstVisible = firstItem ? firstItem.get() : itemAdapterEmpty;
+      }
     }
 
     // last visible item
-    if (scroller.state.lastVisibleWanted) {
+    if (adapter.wanted.lastVisible) {
       const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
       let lastItem = null;
       for (let i = items.length - 1; i >= 0; i--) {
@@ -80,11 +78,9 @@ export default class End {
           break;
         }
       }
-      scroller.state.lastVisibleItem = lastItem ? {
-        $index: lastItem.$index,
-        data: lastItem.data,
-        element: lastItem.element
-      } : itemAdapterEmpty;
+      if (!lastItem || lastItem.element !== adapter.lastVisible.element) {
+        adapter.lastVisible = lastItem ? lastItem.get() : itemAdapterEmpty;
+      }
     }
   }
 
@@ -94,7 +90,7 @@ export default class End {
       workflowOptions.empty = true;
       return false;
     }
-    if (process === Process.reload) {
+    if (process === Process.reset || process === Process.reload) {
       return true;
     }
     if (clip.simulate) {
@@ -119,11 +115,11 @@ export default class End {
   }
 
   static continueWorkflowByTimer(scroller: Scroller) {
-    const { state, state: { workflowCycleCount, innerLoopCount, workflowOptions } } = scroller;
+    const { state, state: { workflowCycleCount, innerLoopCount, workflowOptions }, adapter } = scroller;
     scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
     state.scrollState.workflowTimer = <any>setTimeout(() => {
       // if the WF isn't finalized while the old sub-cycle is done and there's no new sub-cycle
-      if (state.workflowPending && !state.loopPending && innerLoopCount === state.innerLoopCount) {
+      if (adapter.cyclePending && !adapter.loopPending && innerLoopCount === state.innerLoopCount) {
         workflowOptions.scroll = true;
         workflowOptions.byTimer = true;
         workflowOptions.keepScroll = false;

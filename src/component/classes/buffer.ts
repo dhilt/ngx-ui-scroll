@@ -18,19 +18,19 @@ export class Buffer {
   bofSource: Subject<boolean>;
   eofSource: Subject<boolean>;
 
-  pristine: boolean;
   cache: Cache;
   minIndexUser: number;
   maxIndexUser: number;
 
   private startIndex: number;
+  private pristine: boolean;
   readonly minBufferSize: number;
   readonly logger: Logger;
 
-  constructor(settings: Settings, startIndex: number, logger: Logger) {
-    this.$items = new BehaviorSubject<Item[]>([]);
-    this.eofSource = new Subject<boolean>();
+  constructor(settings: Settings, startIndex: number, logger: Logger, $items?: BehaviorSubject<Item[]>) {
+    this.$items = $items || new BehaviorSubject<Item[]>([]);
     this.bofSource = new Subject<boolean>();
+    this.eofSource = new Subject<boolean>();
     this.cache = new Cache(settings.itemSize, logger);
     this.minIndexUser = settings.minIndex;
     this.maxIndexUser = settings.maxIndex;
@@ -40,26 +40,38 @@ export class Buffer {
     this.logger = logger;
   }
 
+  dispose(forever?: boolean) {
+    this.bofSource.complete();
+    this.eofSource.complete();
+    if (forever) {
+      this.$items.complete();
+    }
+  }
+
   reset(reload?: boolean, startIndex?: number) {
     if (reload) {
       this.items.forEach(item => item.hide());
     }
-    this.items = [];
     this.pristine = true;
+    this.items = [];
     this.cache.reset();
     this.absMinIndex = this.minIndexUser;
     this.absMaxIndex = this.maxIndexUser;
     if (typeof startIndex !== 'undefined') {
       this.startIndex = startIndex;
     }
+    this._bof = false;
+    this._eof = false;
+    this.pristine = false;
   }
 
   set items(items: Item[]) {
-    this.pristine = false;
     this._items = items;
     this.$items.next(items);
-    this.checkBOF();
-    this.checkEOF();
+    if (!this.pristine) {
+      this.checkBOF();
+      this.checkEOF();
+    }
   }
 
   get items(): Item[] {
@@ -69,6 +81,8 @@ export class Buffer {
   set absMinIndex(value: number) {
     if (this._absMinIndex !== value) {
       this._absMinIndex = value;
+    }
+    if (!this.pristine) {
       this.checkBOF();
     }
   }
@@ -80,6 +94,8 @@ export class Buffer {
   set absMaxIndex(value: number) {
     if (this._absMaxIndex !== value) {
       this._absMaxIndex = value;
+    }
+    if (!this.pristine) {
       this.checkEOF();
     }
   }
@@ -101,7 +117,6 @@ export class Buffer {
     const bof = this.items.length
       ? (this.items[0].$index === this.absMinIndex)
       : isFinite(this.absMinIndex);
-
     if (this._bof !== bof) {
       this._bof = bof;
       this.bofSource.next(bof);

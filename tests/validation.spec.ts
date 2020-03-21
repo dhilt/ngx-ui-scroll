@@ -5,14 +5,17 @@ const {
   MANDATORY,
   INTEGER,
   INTEGER_UNLIMITED,
-  ITERATOR_CALLBACK,
   BOOLEAN,
+  OBJECT,
   ITEM_LIST,
+  FUNC_WITH_X_ARGUMENTS,
+  FUNC_WITH_X_AND_MORE_ARGUMENTS,
   ONE_OF_CAN,
-  ONE_OF_MUST
+  ONE_OF_MUST,
 } = VALIDATORS;
 
 describe('Input Params Validation', () => {
+
   describe('[Integer]', () => {
 
     const integerPassInputs = [
@@ -106,11 +109,11 @@ describe('Input Params Validation', () => {
       const badInputs = [1, true, {}, 'test', () => null, (a: any, b: any) => null];
       badInputs.forEach(input =>
         expect(
-          validateOne({ value: input }, 'value', [ITERATOR_CALLBACK]).isValid
+          validateOne({ value: input }, 'value', [FUNC_WITH_X_ARGUMENTS(1)]).isValid
         ).toEqual(false)
       );
       expect(
-        validateOne({ value: (item: any) => null }, 'value', [ITERATOR_CALLBACK]).isValid
+        validateOne({ value: (item: any) => null }, 'value', [FUNC_WITH_X_ARGUMENTS(1)]).isValid
       ).toEqual(true);
       done();
     });
@@ -147,10 +150,19 @@ describe('Input Params Validation', () => {
       done();
     });
   });
+
 });
 
-
 describe('Validation', () => {
+
+  const token = 'test';
+  const run = (context: any, validators: IValidator[]) =>
+    validate(context, {
+      [token]: {
+        name: token,
+        validators
+      }
+    }).isValid;
 
   describe('[Context]', () => {
     it('should not pass bad context', () => {
@@ -165,28 +177,12 @@ describe('Validation', () => {
 
   describe('[Mandatory]', () => {
     it('should not pass missed mandatory fields', () => {
-      const token = 'test';
-      const run = (context: any, validators: IValidator[]) =>
-        validate(context, {
-          [token]: {
-            name: token,
-            validators
-          }
-        }).isValid;
       expect(run({}, [])).toBe(true);
       expect(run({}, [MANDATORY])).toBe(false);
       expect(run({ [token]: 1 }, [MANDATORY])).toBe(true);
     });
 
     it('should deal with mandatory and some other validation', () => {
-      const token = 'test';
-      const run = (context: any, validators: IValidator[]) =>
-        validate(context, {
-          [token]: {
-            name: token,
-            validators
-          }
-        }).isValid;
       expect(run({}, [MANDATORY, INTEGER])).toBe(false);
       expect(run({ [token]: 'x' }, [MANDATORY, INTEGER])).toBe(false);
       expect(run({ [token]: 1 }, [MANDATORY, INTEGER])).toBe(true);
@@ -272,16 +268,7 @@ describe('Validation', () => {
   });
 
   describe('[Item List]', () => {
-    const token = 'test';
-
     it('should not pass non-array', () => {
-      const run = (context: any, validators: IValidator[]) =>
-        validate(context, {
-          [token]: {
-            name: token,
-            validators
-          }
-        }).isValid;
       [
         null,
         true,
@@ -337,6 +324,35 @@ describe('Validation', () => {
           }
         }).isValid).toBe(true)
       );
+    });
+  });
+
+  describe('[Function with arguments]', () => {
+    it('should pass function with 2 or more arguments', () => {
+      const validators = [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)];
+      expect(run({}, validators)).toBe(true);
+      expect(run({}, [MANDATORY, ...validators])).toBe(false);
+      expect(run({ [token]: 1 }, validators)).toBe(false);
+      expect(run({ [token]: {} }, validators)).toBe(false);
+      expect(run({ [token]: () => null }, validators)).toBe(false);
+      expect(run({ [token]: (x: any) => null }, validators)).toBe(false);
+      expect(run({ [token]: (x: any, y: any) => null }, validators)).toBe(true);
+      expect(run({ [token]: (x: any, y: any, z: any) => null }, validators)).toBe(true);
+    });
+  });
+
+  describe('[Object]', () => {
+    it('should pass object', () => {
+      expect(run({}, [OBJECT])).toBe(true);
+      expect(run({}, [MANDATORY, OBJECT])).toBe(false);
+      expect(run({ [token]: 1 }, [OBJECT])).toBe(false);
+      expect(run({ [token]: true }, [OBJECT])).toBe(false);
+      expect(run({ [token]: 'hello' }, [OBJECT])).toBe(false);
+      expect(run({ [token]: () => null }, [OBJECT])).toBe(false);
+      expect(run({ [token]: function () { } }, [OBJECT])).toBe(false);
+      expect(run({ [token]: [] }, [OBJECT])).toBe(true);
+      expect(run({ [token]: {} }, [OBJECT])).toBe(true);
+      expect(run({ [token]: { x: 0 } }, [OBJECT])).toBe(true);
     });
   });
 

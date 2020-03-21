@@ -7,9 +7,9 @@ export interface Item {
   size?: number;
 }
 
-export const generateItem = (index: number, dynamicSize = false): Item => ({
+export const generateItem = (index: number, dynamicSize = false, suffix = ''): Item => ({
   id: index,
-  text: 'item #' + index,
+  text: 'item #' + index + suffix,
   ...(dynamicSize ? { size: getDynamicSizeByIndex(index) } : {})
 });
 

@@ -47,6 +47,14 @@ const onBoolean = (value: any): ValidatedValue => {
   return { value: !!value, isSet: true, isValid: true, errors: [] };
 };
 
+const onObject = (value: any): ValidatedValue => {
+  const errors = [];
+  if (typeof value !== 'object') {
+    errors.push('must be an object');
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
 const onItemList = (value: any): ValidatedValue => {
   let parsedValue = value;
   const errors = [];
@@ -64,12 +72,36 @@ const onItemList = (value: any): ValidatedValue => {
   return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
 };
 
-const onIteratorCallback = (value: any): ValidatedValue => {
+const onFunction = (value: any): ValidatedValue => {
   const errors = [];
   if (typeof value !== 'function') {
-    errors.push('must be an iterator callback function');
-  } else if ((<Function>value).length !== 1) {
-    errors.push('must be an iterator callback function with 1 argument');
+    errors.push('must be a function');
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
+const onFunctionWithXArguments = (argsCount: number) => (value: any): ValidatedValue => {
+  const result = onFunction(value);
+  if (!result.isValid) {
+    return result;
+  }
+  value = result.value;
+  const errors = [];
+  if ((value as Function).length !== argsCount) {
+    errors.push(`must have ${argsCount} argument` + (argsCount > 1 ? 's' : ''));
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
+const onFunctionWithXAndMoreArguments = (argsCount: number) => (value: any): ValidatedValue => {
+  const result = onFunction(value);
+  if (!result.isValid) {
+    return result;
+  }
+  value = result.value;
+  const errors = [];
+  if ((value as Function).length < argsCount) {
+    errors.push(`must have at least ${argsCount} argument` + (argsCount > 1 ? 's' : ''));
   }
   return { value, isSet: true, isValid: !errors.length, errors };
 };
@@ -120,14 +152,26 @@ export const VALIDATORS = {
     type: ValidatorType.boolean,
     method: onBoolean
   },
+  OBJECT: <IValidator>{
+    type: ValidatorType.object,
+    method: onObject
+  },
   ITEM_LIST: <IValidator>{
     type: ValidatorType.itemList,
     method: onItemList
   },
-  ITERATOR_CALLBACK: <IValidator>{
-    type: ValidatorType.iteratorCallback,
-    method: onIteratorCallback
+  FUNC: <IValidator>{
+    type: ValidatorType.function,
+    method: onFunction
   },
+  FUNC_WITH_X_ARGUMENTS: (count: number): IValidator => ({
+    type: ValidatorType.funcOfxArguments,
+    method: onFunctionWithXArguments(count)
+  }),
+  FUNC_WITH_X_AND_MORE_ARGUMENTS: (count: number): IValidator => ({
+    type: ValidatorType.funcOfxAndMoreArguments,
+    method: onFunctionWithXAndMoreArguments(count)
+  }),
   ONE_OF_CAN: (list: string[]): IValidator => ({
     type: ValidatorType.oneOfCan,
     method: onOneOf(list, false)

@@ -20,7 +20,7 @@ export class DemoPositiveLimitedDatasourceComponent {
   };
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       const start = Math.max(1, index); // or 0
       const end = index + count - 1;

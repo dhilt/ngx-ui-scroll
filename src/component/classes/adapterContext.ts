@@ -10,16 +10,16 @@ export class AdapterContext {
   constructor(mock?: boolean) {
     const id = ++instanceCount;
 
-    // set up permanent props
-    Object.defineProperty(this, 'id', { get: () => id });
-    Object.defineProperty(this, 'mock', { get: () => !!mock });
-
     // props will be reassigned on Scroller instantiation
-    ADAPTER_PROPS().forEach(({ name, value, type }) =>
+    ADAPTER_PROPS().forEach(({ name, value, type, permanent }) =>
       Object.defineProperty(this, name, {
         get: () => value,
-        configurable: !mock
+        configurable: !mock || permanent
       })
     );
+
+    // set up permanent props
+    Object.defineProperty(this, 'id', { get: () => id, configurable: !mock });
+    Object.defineProperty(this, 'mock', { get: () => !!mock, configurable: !mock });
   }
 }

@@ -77,6 +77,15 @@ export class Adapter implements IAdapter {
         }))
       : ADAPTER_PROPS();
 
+    // Scalar permanent props
+    adapterProps
+      .filter(({ type, permanent }) => type === AdapterPropType.Scalar && permanent)
+      .forEach(({ name, value, wanted }: IAdapterProp) =>
+        Object.defineProperty(this, name, {
+          get: () => value
+        })
+      );
+
     // Observable props
     // 1) store original values in "source" container, to avoid extra .get() calls on scalar twins set
     // 2) "wanted" container is bound with scalars; get() updates it

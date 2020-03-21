@@ -27,20 +27,18 @@ export class Workflow {
 
   readonly propagateChanges: Function;
   readonly onScrollHandler: EventListener;
-  private externalDatasource: IDatasource;
   private stateMachineMethods: StateMachineMethods;
   private dispose$: Subject<void>;
 
   constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
-    this.externalDatasource = datasource;
     this.dispose$ = new Subject();
-    this.process$ = new BehaviorSubject(<ProcessSubject>{
+    this.process$ = new BehaviorSubject({
       process: Process.init,
       status: Status.start
-    });
+    } as ProcessSubject);
     this.propagateChanges = run;
-    this.callWorkflow = <any>this.callWorkflow.bind(this);
+    this.callWorkflow = this.callWorkflow.bind(this);
     this.scroller = new Scroller(element, datasource, version, this.callWorkflow);
     this.cyclesDone = 0;
     this.interruptionCount = 0;
@@ -85,7 +83,7 @@ export class Workflow {
     let scrollEventOptions: any = false;
     try {
       window.addEventListener(
-        'test', <EventListenerOrEventListenerObject>{}, Object.defineProperty({}, 'passive', {
+        'test', {} as EventListenerOrEventListenerObject, Object.defineProperty({}, 'passive', {
           get: () => scrollEventOptions = { passive: false }
         })
       );
@@ -156,8 +154,8 @@ export class Workflow {
       // we are going to create a new reference for the scroller.workflow object
       // calling the old version of the scroller.workflow by any outstanding async processes will be skipped
       workflow.call = (p: ProcessSubject) => logger.log('[skip wf call]');
-      (<any>workflow.call).interrupted = true;
-      this.scroller.workflow = <ScrollerWorkflow>{ call: <Function>this.callWorkflow };
+      (workflow.call as any).interrupted = true;
+      this.scroller.workflow = { call: this.callWorkflow } as ScrollerWorkflow;
       this.interruptionCount++;
       logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
     }
@@ -168,14 +166,6 @@ export class Workflow {
       this.scroller.dispose();
       this.scroller = scroller;
       this.scroller.init(this.dispose$);
-      // update external datasource by re-assigning new fields
-      const external: any = this.externalDatasource;
-      const internal: any = this.scroller.datasource;
-      Object.keys(internal).forEach(key => {
-        if (external[key] !== internal[key]) {
-          external[key] = internal[key];
-        }
-      });
     }
   }
 

@@ -1,7 +1,9 @@
 import { Subscription } from 'rxjs';
 
 import { ADAPTER_PROPS } from '../src/component/utils';
-import { Process, IDatasourceOptional, Direction, IAdapter } from '../src/component/interfaces';
+import { Datasource } from '../src/component/classes/datasource';
+import { Process, IDatasourceOptional, Direction, IAdapter, IDatasource } from '../src/component/interfaces';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources';
 import { Misc } from './miscellaneous/misc';
@@ -16,6 +18,7 @@ const mainConfig: TestBedConfig = {
   datasourceSettings: defaultSettings,
   templateSettings: { viewportHeight: 100 },
   custom: {
+    isNew: true,
     get: datasourceStore['infinite-callback-no-delay-star'].get,
     settings: {
       ...defaultSettings,
@@ -32,12 +35,22 @@ const bofConfig = {
     bufferSize: 25
   },
   custom: {
+    isNew: true,
     settings: {
       ...defaultSettings,
       startIndex: 1
     }
-  },
+  }
 };
+
+const cloneConfig = (config: TestBedConfig): TestBedConfig => ({
+  ...config, custom: {
+    ...config.custom,
+    isNew: false
+  }
+});
+const configList = [mainConfig, cloneConfig(mainConfig)];
+const bofConfigList = [bofConfig, cloneConfig(bofConfig)];
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
   // need to have a pre-call
@@ -45,7 +58,7 @@ const accessFirstLastVisibleItems = (misc: Misc) => {
 };
 
 const doReset = (config: TestBedConfig, misc: Misc) => {
-  const { get, settings, devSettings } = config.custom;
+  const { get, settings, devSettings, isNew } = config.custom;
   if (!settings && !get && !devSettings) {
     misc.datasource.adapter.reset();
   } else {
@@ -59,7 +72,14 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
     if (devSettings) {
       datasource.devSettings = devSettings;
     }
-    misc.datasource.adapter.reset(datasource);
+    if (isNew) {
+      if (!datasource.get) {
+        datasource.get = misc.datasource.get;
+      }
+      misc.datasource.adapter.reset(new Datasource(datasource as IDatasource));
+    } else {
+      misc.datasource.adapter.reset(datasource);
+    }
   }
   accessFirstLastVisibleItems(misc);
 };
@@ -224,44 +244,58 @@ const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Func
 
 describe('Adapter Reset Persistence Spec', () => {
 
-  describe('version scalar on-demand prop', () =>
-    makeTest({
-      config: mainConfig,
-      title: 'should persist',
-      it: shouldPersistVersion(mainConfig)
-    })
-  );
+  const title = (config: TestBedConfig, token = 'should persist'): string =>
+    token + (config.custom.isNew ? ' (new)' : '');
 
-  describe('itemsCount scalar on-demand prop', () =>
-    makeTest({
-      config: mainConfig,
-      title: 'should persist',
-      it: shouldPersistItemsCount(mainConfig)
-    })
-  );
+  configList.forEach(config => {
+    describe('version scalar on-demand prop', () =>
+      makeTest({
+        config,
+        title: title(config),
+        it: shouldPersistVersion(config)
+      })
+    );
 
-  describe('isLoading$ subscription', () =>
-    makeTest({
-      config: mainConfig,
-      title: 'should persist',
-      it: shouldPersistIsLoading$(mainConfig)
-    })
-  );
+    describe('itemsCount scalar on-demand prop', () =>
+      makeTest({
+        config,
+        title: title(config),
+        it: shouldPersistItemsCount(config)
+      })
+    );
 
-  describe('firstVisible$ wanted subscription', () =>
-    makeTest({
-      config: mainConfig,
-      title: 'should persist',
-      it: shouldPersistFirstVisible$(mainConfig)
-    })
-  );
+    describe('isLoading$ subscription', () =>
+      makeTest({
+        config,
+        title: title(config),
+        it: shouldPersistIsLoading$(config)
+      })
+    );
 
-  describe('bof$ on-init subscription', () =>
-    makeTest({
-      config: bofConfig,
-      title: 'should persist',
-      it: shouldPersistBof$(bofConfig)
-    })
-  );
+    describe('firstVisible$ wanted subscription', () =>
+      makeTest({
+        config,
+        title: title(config),
+        it: shouldPersistFirstVisible$(config)
+      })
+    );
 
+    describe('bof$ on-init subscription', () =>
+      makeTest({
+        config: bofConfig,
+        title: title(config),
+        it: shouldPersistBof$(bofConfig)
+      })
+    );
+  });
+
+  bofConfigList.forEach(config => {
+    describe('bof$ on-init subscription', () =>
+      makeTest({
+        config,
+        title: title(config),
+        it: shouldPersistBof$(config)
+      })
+    );
+  });
 });

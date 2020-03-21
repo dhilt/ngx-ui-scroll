@@ -63,9 +63,7 @@ doReset() {
 </div>`
   }];
 
-  isLoadingSample = '{{ds.adapter.isLoading}}';
-  isLoading$Sample = '{{ds.adapter.isLoading$ | async}}';
-  isLoadingSubSample = `ds.adapter.isLoading$.subscribe(v => console.log(v));`;
+  resetWithNewInstanceSample = `  this.datasource.adapter.reset(new Datasource(...));`;
 
   doReset() {
     this.demoContext.count = 0;

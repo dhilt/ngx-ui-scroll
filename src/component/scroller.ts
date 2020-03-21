@@ -8,10 +8,9 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
-import { AdapterContext } from './classes/adapterContext';
 import { checkDatasource } from './utils/index';
 
-import { ScrollerWorkflow, IAdapter, IDatasource, CallWorkflow } from './interfaces/index';
+import { ScrollerWorkflow, IDatasource, CallWorkflow } from './interfaces/index';
 
 let instanceCount = 0;
 
@@ -39,7 +38,7 @@ export class Scroller {
     checkDatasource(datasource);
 
     const $items = scroller ? scroller.buffer.$items : void 0;
-    this.workflow = <ScrollerWorkflow>{ call: callWorkflow };
+    this.workflow = { call: callWorkflow };
     this.innerLoopSubscriptions = [];
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
@@ -108,7 +107,7 @@ export class Scroller {
   }
 
   dispose(forever?: boolean) {
-    if (this.adapter) {
+    if (this.adapter && forever) {
       this.adapter.dispose();
     }
     this.buffer.dispose(forever);

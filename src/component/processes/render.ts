@@ -31,14 +31,14 @@ export default class Render {
       ? scroller.viewport.scrollPosition
       : null;
     if (!fetch.isReplace) {
-      state.sizeBeforeRender = viewport.getScrollableSize();
-      state.fwdPaddingBeforeRender = viewport.paddings.forward.size;
+      state.render.sizeBefore = viewport.getScrollableSize();
+      state.render.fwdPaddingBefore = viewport.paddings.forward.size;
       if (!items.reduce((acc, item) => acc && Render.processElement(scroller, item), true)) {
         return false;
       }
     }
     fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
-    state.sizeAfterRender = viewport.getScrollableSize();
+    state.render.sizeAfter = viewport.getScrollableSize();
     if (scrollBeforeRender !== null) {
       Render.processWindowScrollBackJump(scroller, scrollBeforeRender);
     }
@@ -70,7 +70,7 @@ export default class Render {
     // then this position will be updated silently in case of entire window scrollable
     // so we need to remember the delta and to update scroll position manually right after it is changed silently
     const inc = scrollBeforeRender >= viewport.paddings.backward.size ? 1 : -1;
-    const delta = inc * Math.abs(state.sizeAfterRender - state.sizeBeforeRender);
+    const delta = inc * Math.abs(state.render.sizeAfter - state.render.sizeBefore);
     const positionToUpdate = scrollBeforeRender - delta;
     if (delta && positionToUpdate > 0) {
       window.positionToUpdate = positionToUpdate;

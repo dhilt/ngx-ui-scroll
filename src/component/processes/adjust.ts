@@ -134,13 +134,13 @@ export default class Adjust {
     }
 
     // if scrollable area size has not been changed during this cycle
-    if (viewport.getScrollableSize() === state.sizeBeforeRender) {
+    if (viewport.getScrollableSize() === state.render.sizeBefore) {
       return;
     }
 
     // to fill forward padding gap in case of no minIndex
     if (!isFinite(buffer.absMinIndex)) {
-      const fwdPaddingSizeDiff = state.fwdPaddingBeforeRender - viewport.paddings.forward.size;
+      const fwdPaddingSizeDiff = state.render.fwdPaddingBefore - viewport.paddings.forward.size;
       const diff = negativeSize - fwdPaddingSizeDiff;
       negativeSize = diff < 0 ? negativeSize : Math.min(negativeSize, diff);
     }

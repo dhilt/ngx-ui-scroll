@@ -196,3 +196,21 @@ describe('Dynamic Size Spec', () => {
   });
 
 });
+
+describe('Zero Size Spec', () => {
+
+  describe('Items with zero size', () =>
+    makeTest({
+      config: {
+        datasourceName: 'limited-1-100-zero-size',
+        templateSettings: { dynamicSize: 'size' }
+      },
+      title: 'should stop the Workflow after the first loop',
+      it: (misc: Misc) => (done: Function) =>
+        spyOn(misc.scroller, 'finalize').and.callFake(() =>
+          done()
+        )
+    })
+  );
+
+});

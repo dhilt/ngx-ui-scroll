@@ -111,19 +111,18 @@ const limitedDatasourceGet = (
   };
 
 const limitedDatasourceSpecialGet = (
+  min: number, max: number, getSizeByIndex?: Function
+) => (
   index: number, count: number, success: (data: any) => any
 ) => {
-  const min = 1;
-  const max = 20;
   const data = [];
   const start = Math.max(min, index);
   const end = Math.min(index + count - 1, max);
   if (start <= end) {
     for (let i = start; i <= end; i++) {
       const item = <any>generateItem(i);
-      item.size = 20;
-      if (i === 1) {
-        item.size = 200;
+      if (getSizeByIndex) {
+        item.size = getSizeByIndex(i);
       }
       data.push(item);
     }
@@ -208,7 +207,11 @@ export const datasourceStore = {
   },
 
   'limited-1-20-dynamic-size-special': <IDatasource>{
-    get: limitedDatasourceSpecialGet
+    get: limitedDatasourceSpecialGet(1, 20, (i: number) => i === 1 ? 200 : 20)
+  },
+
+  'limited-1-100-zero-size': <IDatasource>{
+    get: limitedDatasourceSpecialGet(1, 100, (i: number) => 0)
   },
 
   'limited--99-100-dynamic-size-processor': <IDatasource>{

@@ -3,6 +3,10 @@ export class RenderModel {
   sizeAfter: number;
   fwdPaddingBefore: number;
 
+  get noSize(): boolean {
+    return this.sizeBefore === this.sizeAfter;
+  }
+
   constructor() {
     this.reset();
   }

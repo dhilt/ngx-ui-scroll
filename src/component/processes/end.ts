@@ -85,7 +85,7 @@ export default class End {
   }
 
   static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
-    const { state: { clip, fetch, scrollState, workflowOptions } } = scroller;
+    const { state: { clip, fetch, render, scrollState, workflowOptions } } = scroller;
     if (error) {
       workflowOptions.empty = true;
       return false;
@@ -95,6 +95,9 @@ export default class End {
     }
     if (clip.simulate) {
       return true;
+    }
+    if (process === Process.render && render.noSize) {
+      return false;
     }
     let result = false;
     if (!fetch.simulate) {

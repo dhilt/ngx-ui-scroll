@@ -41,7 +41,7 @@ describe('Input Params Validation', () => {
       { value: 1.11e1, parsed: 11 },
       { value: () => null, parsed: NaN },
       { value: {}, parsed: NaN },
-      // { value: undefined, parsed: NaN },
+      // { value: void 0, parsed: NaN },
       { value: null, parsed: NaN },
     ];
 

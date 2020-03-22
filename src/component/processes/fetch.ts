@@ -71,11 +71,11 @@ export default class Fetch {
       return result; // do not wrap observable
     }
 
-    if (immediateData !== undefined || immediateError !== undefined) {
+    if (immediateData !== void 0 || immediateError !== void 0) {
       return {
         data: immediateData,
         error: immediateError,
-        isError: immediateError !== undefined
+        isError: immediateError !== void 0
       };
     }
 

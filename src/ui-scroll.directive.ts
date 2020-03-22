@@ -23,7 +23,7 @@ export class UiScrollDirective implements OnInit {
   ngOnInit() {
     const compFactory = this.resolver.resolveComponentFactory(UiScrollComponent);
     const componentRef = this.viewContainer.createComponent(
-      compFactory, undefined, this.viewContainer.injector
+      compFactory, void 0, this.viewContainer.injector
     );
     componentRef.instance.datasource = this.datasource;
     componentRef.instance.template = this.templateRef;

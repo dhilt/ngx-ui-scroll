@@ -199,17 +199,36 @@ describe('Dynamic Size Spec', () => {
 
 describe('Zero Size Spec', () => {
 
+  const config = {
+    datasourceName: 'limited-1-100-zero-size',
+    datasourceSettings: { bufferSize: 5, startIndex: 1 },
+    templateSettings: { dynamicSize: 'size', viewportHeight: 200 }
+  };
+
   describe('Items with zero size', () =>
     makeTest({
-      config: {
-        datasourceName: 'limited-1-100-zero-size',
-        templateSettings: { dynamicSize: 'size' }
-      },
+      config,
       title: 'should stop the Workflow after the first loop',
       it: (misc: Misc) => (done: Function) =>
-        spyOn(misc.scroller, 'finalize').and.callFake(() =>
-          done()
-        )
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          expect(misc.scroller.state.innerLoopCount).toEqual(1);
+          done();
+        })
+    })
+  );
+
+  describe('Items with zero size started from 2 pack', () =>
+    makeTest({
+      config: {
+        ...config,
+        datasourceName: 'limited-1-100-zero-size-started-from-6'
+      },
+      title: 'should stop the Workflow after the second loop',
+      it: (misc: Misc) => (done: Function) =>
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          expect(misc.scroller.state.innerLoopCount).toEqual(2);
+          done();
+        })
     })
   );
 

@@ -26,8 +26,8 @@ getTestBed().initTestEnvironment(
 const testContext = require.context(
   './',
   false,
-  /(common|datasource\-get|initial\-load|scroll\-basic|min\-max\-indexes|eof|dynamic\-size|bug|adapter\.reload|adapter\.prepend|dynamic\-height\-reload|dynamic\-height\-scroll|adapter\.append\-prepend|adapter\.check|adapter\.remove|adapter\.clip|validation|adapter\.insert|adapter\.reset|adapter\.reset\-persistance)\.spec\.ts/
-  //(common)\.spec\.ts/
+  /\.spec\.ts/
+  //(dynamic\-size)\.spec\.ts/
 );
 
 function requireAll(requireContext) {

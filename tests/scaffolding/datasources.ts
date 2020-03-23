@@ -113,7 +113,7 @@ const limitedDatasourceGet = (
 const limitedDatasourceSpecialGet = (
   min: number, max: number, getSizeByIndex?: Function
 ) => (
-  index: number, count: number, success: (data: any) => any
+  index: number, count: number, success: (data: any) => any, reject?: (data: any) => any, processor?: Function
 ) => {
   const data = [];
   const start = Math.max(min, index);
@@ -126,6 +126,9 @@ const limitedDatasourceSpecialGet = (
       }
       data.push(item);
     }
+  }
+  if (processor) {
+    processor(data, index, count, min, max);
   }
   success(data);
 };

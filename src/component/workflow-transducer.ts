@@ -187,6 +187,9 @@ export const runStateMachine = ({
           run(PreClip)();
         }
       }
+      if (status === Status.done) {
+        run(End)(process);
+      }
       break;
     case Process.preClip:
       if (status === Status.next) {

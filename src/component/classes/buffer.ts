@@ -143,7 +143,7 @@ export class Buffer {
   }
 
   get hasItemSize(): boolean {
-    return this.averageSize !== undefined;
+    return this.averageSize !== void 0;
   }
 
   get minIndex(): number {

@@ -235,7 +235,7 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
     }
     this.doChangeSize();
     this.datasource.adapter.check();
-    if (firstVisibleIndex !== undefined) {
+    if (firstVisibleIndex !== void 0) {
       this.autoscroll(firstVisibleIndex);
     }
   }

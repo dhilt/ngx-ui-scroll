@@ -174,7 +174,7 @@ export class Logger {
           args = [args];
         }
       }
-      if (args.every(item => item === undefined)) {
+      if (args.every(item => item === void 0)) {
         return;
       }
       if (this.logTime) {

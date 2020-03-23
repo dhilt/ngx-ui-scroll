@@ -14,7 +14,7 @@
         <div *uiScroll="let item of datasource">
           <div
             class="item {{context.addClass || ''}}"
-            [style.height]="item.height !== undefined ? item.height + 'px' : null"
+            [style.height]="item.hasOwnProperty('height') ? item.height + 'px' : null"
           >
             <ng-template
               [ngTemplateOutlet]="itemTemplate || defaultItemTemplate"

@@ -4,7 +4,7 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Start {
 
   static run(scroller: Scroller, process: Process) {
-    const { state, state: { workflowOptions, scrollState, fetch, clip }, adapter } = scroller;
+    const { state, state: { workflowOptions, scrollState, fetch, clip, render }, adapter } = scroller;
 
     adapter.loopPending = true;
     if (!fetch.simulate) {
@@ -13,6 +13,7 @@ export default class Start {
     if (!clip.simulate && !clip.force) {
       clip.reset();
     }
+    render.reset();
     scrollState.scroll = workflowOptions.scroll || false;
     scrollState.keepScroll = false;
 

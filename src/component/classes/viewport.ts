@@ -62,7 +62,7 @@ export class Viewport {
   }
 
   setPosition(value: number, oldPosition?: number): number {
-    if (oldPosition === undefined) {
+    if (oldPosition === void 0) {
       oldPosition = this.scrollPosition;
     }
     if (oldPosition === value) {

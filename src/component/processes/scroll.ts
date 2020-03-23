@@ -170,7 +170,7 @@ export default class Scroll {
       !scroller.state.scrollState.keepScroll ? [
         `setting %ckeepScroll%c flag (scrolling while the Workflow is pending)`,
         'color: #006600;', 'color: #000000;'
-      ] : undefined);
+      ] : void 0);
   }
 
   static doScroll(scroller: Scroller, workflow: ScrollerWorkflow) {

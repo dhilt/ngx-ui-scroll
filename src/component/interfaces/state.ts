@@ -3,6 +3,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/state/fetch';
 import { ClipModel } from '../classes/state/clip';
+import { RenderModel } from '../classes/state/render';
 
 export interface WindowScrollState {
   delta: number;
@@ -82,13 +83,11 @@ export interface State {
 
   fetch: FetchModel;
   clip: ClipModel;
+  render: RenderModel;
   startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
   preAdjustPosition: number;
-  sizeBeforeRender: number;
-  sizeAfterRender: number;
-  fwdPaddingBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: ScrollState;

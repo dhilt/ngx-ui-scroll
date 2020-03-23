@@ -6,29 +6,25 @@ describe('Fast Scroll Spec', () => {
 
   const configList = [{
     datasourceName: 'limited-1-100-no-delay',
-    datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5 },
-    // datasourceDevSettings: { paddingForwardSize: 2000 },
+    datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.5, minIndex: 1, maxIndex: 100, adapter: true },
     templateSettings: { viewportHeight: 100 },
     custom: { items: 100, bounce: 5, start: 'top' },
     timeout: 5000
   }, {
     datasourceName: 'limited-1-100-no-delay',
-    datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 0.3 },
-    // datasourceDevSettings: { paddingForwardSize: 2000 },
+    datasourceSettings: { startIndex: 1, bufferSize: 3, padding: 0.3, minIndex: 1, maxIndex: 100, adapter: true },
     templateSettings: { viewportHeight: 110 },
-    custom: { items: 100, bounce: 10, start: 'top' },
+    custom: { items: 100, bounce: 8, start: 'top' },
     timeout: 5000
   }, {
     datasourceName: 'limited-51-200-no-delay',
-    datasourceSettings: { startIndex: 51, bufferSize: 7, padding: 1.1 },
-    // datasourceDevSettings: { paddingForwardSize: 3000 },
+    datasourceSettings: { startIndex: 51, bufferSize: 7, padding: 1.1, minIndex: 51, maxIndex: 200, adapter: true },
     templateSettings: { viewportHeight: 69 },
     custom: { items: 150, bounce: 6, start: 'top' },
     timeout: 5000
   }, {
     datasourceName: 'limited-51-200-no-delay',
-    datasourceSettings: { startIndex: 51, bufferSize: 20, padding: 0.2, windowViewport: true },
-    // datasourceDevSettings: { paddingForwardSize: 3000 },
+    datasourceSettings: { startIndex: 51, bufferSize: 20, padding: 0.2, windowViewport: true, minIndex: 51, maxIndex: 200, adapter: true },
     templateSettings: { noViewportClass: true, viewportHeight: 0 },
     custom: { items: 150, bounce: 5, start: 'top' },
     timeout: 7000
@@ -42,7 +38,7 @@ describe('Fast Scroll Spec', () => {
     }
   }));
 
-  const runFastScroll = (misc: Misc, customConfig: any) => {
+  const runFastScroll = (misc: Misc, customConfig: any, done: Function) => {
     (<any>misc.shared).fin = false;
     const scr = (iteration: number) => new Promise(success => {
       setTimeout(() => {
@@ -59,7 +55,13 @@ describe('Fast Scroll Spec', () => {
     for (let i = 1; i <= customConfig.bounce; i++) {
       result = result.then(() => scr(i));
     }
-    result.then(() => (<any>misc.shared).fin = true);
+    result.then(() => {
+      if (!misc.datasource.adapter.isLoading) {
+        done();
+      } else {
+        (<any>misc.shared).fin = true;
+      }
+    });
   };
 
   const expectations = (config: TestBedConfig, misc: Misc, done: Function) => {
@@ -110,7 +112,7 @@ describe('Fast Scroll Spec', () => {
     const _done = debounce(() => preExpectations(config, misc, done), 25);
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       if (misc.workflow.cyclesDone === 1) {
-        runFastScroll(misc, config.custom);
+        runFastScroll(misc, config.custom, done);
       } else if ((<any>misc.shared).fin) {
         _done();
       }

@@ -85,7 +85,7 @@ export default class End {
   }
 
   static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
-    const { state: { clip, fetch, scrollState, workflowOptions } } = scroller;
+    const { state: { clip, fetch, render, scrollState, workflowOptions } } = scroller;
     if (error) {
       workflowOptions.empty = true;
       return false;
@@ -96,20 +96,21 @@ export default class End {
     if (clip.simulate) {
       return true;
     }
+    if (fetch.simulate && fetch.isReplace) {
+      return true;
+    }
+    if (process === Process.render && render.noSize) {
+      return false;
+    }
     let result = false;
-    if (!fetch.simulate) {
-      if (fetch.hasNewItems) {
-        result = true;
-        workflowOptions.scroll = false;
-      } else if (fetch.hasAnotherPack) {
-        result = true;
-        workflowOptions.scroll = false;
-      }
+    if (!fetch.simulate && (fetch.hasNewItems || fetch.hasAnotherPack)) {
+      workflowOptions.scroll = false;
+      result = true;
     }
     if (scrollState.keepScroll) {
-      result = true;
       workflowOptions.scroll = true;
       workflowOptions.keepScroll = true;
+      result = true;
     }
     return result;
   }

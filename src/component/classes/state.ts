@@ -12,6 +12,7 @@ import { Settings } from './settings';
 import { Logger } from './logger';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
+import { RenderModel } from './state/render';
 import { WorkflowOptions } from './state/workflowOptions';
 import { ScrollState, SyntheticScroll } from './state/scroll';
 import { itemAdapterEmpty } from '../utils/adapter';
@@ -32,13 +33,11 @@ export class State implements IState {
 
   fetch: FetchModel;
   clip: ClipModel;
+  render: RenderModel;
   startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
   preAdjustPosition: number;
-  sizeBeforeRender: number;
-  sizeAfterRender: number;
-  fwdPaddingBeforeRender: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
@@ -71,9 +70,7 @@ export class State implements IState {
     this.setCurrentStartIndex(settings.startIndex);
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
-    this.sizeBeforeRender = 0;
-    this.sizeAfterRender = 0;
-    this.fwdPaddingBeforeRender = 0;
+    this.render = new RenderModel();
     this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();

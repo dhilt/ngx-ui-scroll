@@ -39,7 +39,7 @@ export class ScrollerTestComponent implements TestComponentInterface {
     if (!dynamicSize && settings.itemWidth) {
       result = 'width:' + settings.itemWidth + 'px; overflow-x: hidden;';
     }
-    if (dynamicSize && item && item[dynamicSize]) {
+    if (dynamicSize && item && item[dynamicSize] !== void 0) {
       result =
         (settings.horizontal ? 'width' : 'height') + ': ' + item[dynamicSize] + 'px; ' +
         'overflow-' + (settings.horizontal ? 'x' : 'y') + ': hidden;';

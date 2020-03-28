@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ComponentFixtureAutoDetect } from '@angular/core/testing';
 
 import { UiScrollModule } from '../../src/ui-scroll.module';
@@ -6,7 +6,9 @@ import { UiScrollModule } from '../../src/ui-scroll.module';
 import { ScrollerTestComponent, TwoScrollersTestComponent } from './testComponent';
 import { DatasourceService } from './datasources';
 
-export const configureTestBed = (datasource: any, template: string) =>
+export const configureTestBed = (
+  datasource: any, template: string
+): ComponentFixture<TestComponent> =>
   TestBed
     .configureTestingModule({
       imports: [UiScrollModule],

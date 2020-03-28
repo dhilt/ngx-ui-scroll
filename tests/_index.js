@@ -16,8 +16,6 @@ import {
 import 'rxjs';
 import { config } from 'rxjs';
 
-config.useDeprecatedSynchronousErrorHandling = true;
-
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting()

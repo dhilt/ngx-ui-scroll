@@ -46,7 +46,7 @@ export default class Fix {
 
   static setScrollPosition({ scroller: { state, viewport }, value }: IFixCall) {
     state.syntheticScroll.reset();
-    let result = <number>value;
+    let result = value as number;
     if (value === -Infinity) {
       result = 0;
     } else if (value === Infinity) {
@@ -56,17 +56,17 @@ export default class Fix {
   }
 
   static setMinIndex({ scroller: { buffer, settings }, value }: IFixCall) {
-    settings.minIndex = <number>value;
-    buffer.absMinIndex = <number>value;
+    settings.minIndex = value as number;
+    buffer.absMinIndex = value as number;
   }
 
   static setMaxIndex({ scroller: { buffer, settings }, value }: IFixCall) {
-    settings.maxIndex = <number>value;
-    buffer.absMaxIndex = <number>value;
+    settings.maxIndex = value as number;
+    buffer.absMaxIndex = value as number;
   }
 
   static updateItems({ scroller: { buffer }, value }: IFixCall) {
-    buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
+    buffer.items.forEach(item => (value as ItemsLooper)(item.get()));
   }
 
   static getCallMethod(token: string): Function | null {

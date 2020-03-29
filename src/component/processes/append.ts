@@ -41,7 +41,7 @@ export default class Append {
     });
   }
 
-  static doVirtualize(scroller: Scroller, items: Array<any>, prepend: boolean) {
+  static doVirtualize(scroller: Scroller, items: any[], prepend: boolean) {
     const { buffer, viewport: { paddings } } = scroller;
     const bufferToken = prepend ? 'absMinIndex' : 'absMaxIndex';
     if (isFinite(buffer[bufferToken])) {
@@ -57,7 +57,7 @@ export default class Append {
     }
   }
 
-  static simulateFetch(scroller: Scroller, items: Array<any>, eof: boolean, prepend: boolean): boolean {
+  static simulateFetch(scroller: Scroller, items: any[], eof: boolean, prepend: boolean): boolean {
     const { buffer, state, state: { fetch } } = scroller;
     const bufferToken = prepend ? 'absMinIndex' : 'absMaxIndex';
     let indexToAdd = buffer.getIndexToAdd(eof, prepend);

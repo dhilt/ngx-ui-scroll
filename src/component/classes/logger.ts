@@ -17,7 +17,7 @@ export class Logger {
   readonly getWorkflowOptions: Function;
   readonly getSynthScrollState: Function;
   readonly getScrollPosition: Function;
-  private logs: Array<any> = [];
+  private logs: any[] = [];
 
   constructor(scroller: Scroller, version: string) {
     const { settings } = scroller;
@@ -182,7 +182,7 @@ export class Logger {
       }
       args = args.map((arg: any) => this.prepareForLog(arg));
       if (this.immediateLog) {
-        console.log.apply(this, <LogType>args);
+        console.log.apply(this, args as LogType);
       } else {
         this.logs.push(args);
       }
@@ -196,7 +196,7 @@ export class Logger {
         this.logs = [];
       }
       if (args.length) {
-        console.log.apply(this, <LogType>args);
+        console.log.apply(this, args as LogType);
       }
     }
   }

@@ -11,7 +11,7 @@ export const checkDatasource = (datasource: any) => {
   if (typeof datasource.get !== 'function') {
     throw new Error('Datasource get is not a function');
   }
-  if ((<Function>(datasource.get)).length < 2) {
+  if (((datasource.get as Function)).length < 2) {
     throw new Error('Datasource get method invalid signature');
   }
 };

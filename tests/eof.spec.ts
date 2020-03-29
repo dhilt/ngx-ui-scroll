@@ -10,7 +10,7 @@ const min = 1, max = 100, scrollCount = 10;
 
 describe('EOF/BOF Spec', () => {
 
-  const config: OperationConfig<typeof Operation> = {
+  const config: OperationConfig<Operation> = {
     [Operation.bof]: {
       datasourceName: 'limited',
       datasourceSettings: { startIndex: min, bufferSize: 10, padding: 0.5, adapter: true },

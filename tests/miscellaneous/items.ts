@@ -18,7 +18,7 @@ const generateItem2 = (id: number, index: number): Item => ({
   text: 'item #' + index
 });
 
-export const removeItems = (items: Item[], idListToRemove: Array<number>) =>
+export const removeItems = (items: Item[], idListToRemove: number[]) =>
   items.forEach((item: Item) => {
     const id = item.id;
     if (id < getMin(idListToRemove)) {

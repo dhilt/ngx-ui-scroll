@@ -136,31 +136,31 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
 };
 
 export const VALIDATORS = {
-  MANDATORY: <IValidator>{
+  MANDATORY: {
     type: ValidatorType.mandatory,
     method: onMandatory
   },
-  INTEGER: <IValidator>{
+  INTEGER: {
     type: ValidatorType.integer,
     method: onInteger
   },
-  INTEGER_UNLIMITED: <IValidator>{
+  INTEGER_UNLIMITED: {
     type: ValidatorType.integerUnlimited,
     method: onIntegerUnlimited
   },
-  BOOLEAN: <IValidator>{
+  BOOLEAN: {
     type: ValidatorType.boolean,
     method: onBoolean
   },
-  OBJECT: <IValidator>{
+  OBJECT: {
     type: ValidatorType.object,
     method: onObject
   },
-  ITEM_LIST: <IValidator>{
+  ITEM_LIST: {
     type: ValidatorType.itemList,
     method: onItemList
   },
-  FUNC: <IValidator>{
+  FUNC: {
     type: ValidatorType.function,
     method: onFunction
   },
@@ -195,7 +195,7 @@ export class AdapterValidatedMethodData implements IAdapterValidatedMethodData {
     this.commonErrors = [];
     this.isValid = true;
     this.errors = [];
-    this.params = <IAdapterValidatedMethodParams>{};
+    this.params = {};
     this.checkContext();
   }
 
@@ -232,7 +232,7 @@ export class AdapterValidatedMethodData implements IAdapterValidatedMethodData {
 const shouldSkip = ({ type }: IValidator, value: any) =>
   type !== ValidatorType.mandatory &&
   type !== ValidatorType.oneOfMust &&
-  typeof value === 'undefined';
+  value === void 0;
 
 export const runValidator = (
   current: ValidatedValue,
@@ -259,12 +259,12 @@ export const validateOne = (
   validators.reduce((acc, validator) => ({
     ...acc,
     ...runValidator(acc, validator, context)
-  }), <ValidatedValue>{
+  }), {
     value: context[name],
     isSet: false,
     isValid: true,
     errors: []
-  });
+  } as ValidatedValue);
 
 export const validate = (
   context: any, params: IAdapterMethodParams

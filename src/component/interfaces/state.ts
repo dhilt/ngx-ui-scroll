@@ -24,8 +24,8 @@ export interface ScrollState {
   firstScroll: boolean;
   firstScrollTime: number;
   lastScrollTime: number;
-  scrollTimer: number | null;
-  workflowTimer: number | null;
+  scrollTimer: ReturnType<typeof setTimeout> | null;
+  workflowTimer: ReturnType<typeof setTimeout> | null;
   scroll: boolean;
   keepScroll: boolean;
   window: WindowScrollState;
@@ -40,7 +40,7 @@ export interface ScrollState {
 }
 
 export interface SyntheticScroll {
-  list: Array<ScrollEventData>;
+  list: ScrollEventData[];
   before: ScrollEventData | null;
 
   isSet: boolean;

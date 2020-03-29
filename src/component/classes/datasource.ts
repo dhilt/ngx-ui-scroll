@@ -8,7 +8,7 @@ export class Datasource implements IDatasource {
   adapter: IAdapter;
 
   constructor(datasource: IDatasource, mockAdapter?: boolean) {
-    Object.assign(<any>this, datasource);
+    Object.assign(this as any, datasource);
     this.adapter = (new AdapterContext(mockAdapter)) as IAdapter;
   }
 }

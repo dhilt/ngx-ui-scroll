@@ -29,8 +29,8 @@ export class Routines {
   getParams(element: HTMLElement): ClientRect {
     this.checkElement(element);
     if (element.tagName.toLowerCase() === 'body') {
-      element = <HTMLElement>element.parentElement;
-      return <ClientRect>{
+      element = element.parentElement as HTMLElement;
+      return {
         'height': element.clientHeight,
         'width': element.clientWidth,
         'top': element.clientTop,
@@ -49,7 +49,7 @@ export class Routines {
   getSizeStyle(element: HTMLElement): number {
     this.checkElement(element);
     const size = element.style[this.horizontal ? 'width' : 'height'];
-    return parseInt(<string>size, 10) || 0;
+    return parseInt(size as string, 10) || 0;
   }
 
   setSizeStyle(element: HTMLElement, value: number) {

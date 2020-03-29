@@ -30,13 +30,13 @@ export class Viewport {
     this.disabled = false;
 
     if (settings.windowViewport) {
-      this.host = (<Document>this.element.ownerDocument).body;
-      this.scrollEventElement = <Document>(this.element.ownerDocument);
-      this.scrollable = <HTMLElement>this.scrollEventElement.scrollingElement;
+      this.scrollEventElement = this.element.ownerDocument as Document;
+      this.host = this.scrollEventElement.body;
+      this.scrollable = this.scrollEventElement.scrollingElement as HTMLElement;
     } else {
-      this.host = <HTMLElement>this.element.parentElement;
+      this.host = this.element.parentElement as HTMLElement;
       this.scrollEventElement = this.host;
-      this.scrollable = <HTMLElement>this.element.parentElement;
+      this.scrollable = this.element.parentElement as HTMLElement;
     }
 
     this.paddings = new Paddings(this.element, this.routines, settings);

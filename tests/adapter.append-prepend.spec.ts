@@ -13,7 +13,7 @@ const amount = 3, emptyAmount = 20;
 
 describe('Adapter Append-Prepend Spec', () => {
 
-  const config: OperationConfig<typeof Operation> = {
+  const config: OperationConfig<Operation> = {
     [Operation.prepend]: {
       datasourceName: 'limited',
       datasourceSettings: {
@@ -36,7 +36,7 @@ describe('Adapter Append-Prepend Spec', () => {
     }
   };
 
-  const configScroll: OperationConfig<typeof Operation> = {
+  const configScroll: OperationConfig<Operation> = {
     [Operation.prepend]: {
       ...config.prepend,
       datasourceSettings: {
@@ -53,7 +53,7 @@ describe('Adapter Append-Prepend Spec', () => {
     }
   };
 
-  const configEmpty: OperationConfig<typeof Operation> = {
+  const configEmpty: OperationConfig<Operation> = {
     [Operation.prepend]: {
       datasourceName: 'empty-callback',
       datasourceSettings: {

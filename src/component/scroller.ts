@@ -26,7 +26,7 @@ export class Scroller {
   public state: State;
   public adapter: Adapter;
 
-  public innerLoopSubscriptions: Array<Subscription>;
+  public innerLoopSubscriptions: Subscription[];
 
   constructor(
     element: HTMLElement,
@@ -80,10 +80,10 @@ export class Scroller {
     this.adapter.init(this.state, this.buffer, this.logger, dispose$);
   }
 
-  bindData(): Observable<any> {
-    return new Observable((observer: Observer<any>) => {
+  bindData(): Observable<void> {
+    return new Observable((observer: Observer<void>) => {
       setTimeout(() => {
-        observer.next(true);
+        observer.next();
         observer.complete();
       });
     });

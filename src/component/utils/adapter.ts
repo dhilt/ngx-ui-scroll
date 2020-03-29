@@ -12,10 +12,10 @@ import {
   IAdapterMethods
 } from '../interfaces/index';
 
-export const itemAdapterEmpty = <ItemAdapter>{
+export const itemAdapterEmpty = {
   data: {},
   element: {}
-};
+} as ItemAdapter;
 
 const noop = () => null;
 

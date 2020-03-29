@@ -8,9 +8,11 @@ export default class Fetch {
   static run(scroller: Scroller) {
     const { workflow } = scroller;
 
-    function success(data: Array<any>) {
-      scroller.logger.log(() => `resolved ${data.length} items ` +
-        `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
+    function success(data: any[]) {
+      scroller.logger.log(() =>
+        `resolved ${data.length} items ` +
+        `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`
+      );
       scroller.state.fetch.newItemsData = data;
       workflow.call({
         process: Process.fetch,
@@ -36,7 +38,7 @@ export default class Fetch {
     } else {
       scroller.innerLoopSubscriptions.push(
         result.subscribe(
-          (data: Array<any>) => success(data),
+          (data: any[]) => success(data),
           (error: any) => fail(error)
         )
       );
@@ -44,11 +46,11 @@ export default class Fetch {
   }
 
   static get(scroller: Scroller) {
-    const _get = <Function>scroller.datasource.get;
+    const _get = scroller.datasource.get as Function;
 
     let immediateData, immediateError;
-    let observer: Observer<any>;
-    const success = (data: any) => {
+    let observer: Observer<any[]>;
+    const success = (data: any[]) => {
       if (!observer) {
         immediateData = data || null;
         return;
@@ -79,7 +81,7 @@ export default class Fetch {
       };
     }
 
-    return new Observable((_observer: Observer<any>) => {
+    return new Observable((_observer: Observer<any[]>) => {
       observer = _observer;
     });
   }

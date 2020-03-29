@@ -28,8 +28,8 @@ interface ItemSize {
 }
 
 export class RecalculateAverage {
-  newItems: Array<ItemSize>;
-  oldItems: Array<ItemSize>;
+  newItems: ItemSize[];
+  oldItems: ItemSize[];
 
   constructor() {
     this.reset();
@@ -78,7 +78,7 @@ export class Cache {
     }
     if (oldItemsLength) {
       const oldItemsSize = this.recalculateAverage.oldItems.reduce((acc, item) => acc + item.size, 0);
-      const newItemsSize = this.recalculateAverage.oldItems.reduce((acc, item) => acc + <number>item.newSize, 0);
+      const newItemsSize = this.recalculateAverage.oldItems.reduce((acc, item) => acc + (item.newSize as number), 0);
       const averageSize = this.averageSizeFloat || 0;
       this.averageSizeFloat = averageSize - (oldItemsSize - newItemsSize) / (this.items.size - newItemsLength);
     }

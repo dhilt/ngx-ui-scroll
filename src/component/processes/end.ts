@@ -16,7 +16,7 @@ export default class End {
     }
 
     // explicit interruption for we don't want go through the workflow loop finalizing
-    if ((<any>workflow.call).interrupted) {
+    if ((workflow.call as any).interrupted) {
       return workflow.call({ process, status: ProcessStatus.done, payload });
     }
 
@@ -118,7 +118,7 @@ export default class End {
   static continueWorkflowByTimer(scroller: Scroller) {
     const { state, state: { workflowCycleCount, innerLoopCount, workflowOptions }, adapter } = scroller;
     scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
-    state.scrollState.workflowTimer = <any>setTimeout(() => {
+    state.scrollState.workflowTimer = setTimeout(() => {
       // if the WF isn't finalized while the old sub-cycle is done and there's no new sub-cycle
       if (adapter.cyclePending && !adapter.loopPending && innerLoopCount === state.innerLoopCount) {
         workflowOptions.scroll = true;

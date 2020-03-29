@@ -54,7 +54,7 @@ export default class Render {
     if (!element) {
       return false;
     }
-    item.element = <HTMLElement>element;
+    item.element = element as HTMLElement;
     item.element.style.left = '';
     item.element.style.position = '';
     item.invisible = false;

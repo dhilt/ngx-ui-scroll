@@ -210,7 +210,7 @@ export class Buffer {
     } else {
       itemsAfter.forEach((item: Item) => item.updateIndex(item.$index + count));
     }
-    const result = <Item[]>[
+    const result = [
       ...itemsBefore,
       ...items,
       ...itemsAfter

@@ -26,7 +26,7 @@ export class Item {
   }
 
   get element(): HTMLElement {
-    return <HTMLElement>this.container.element;
+    return this.container.element as HTMLElement;
   }
   set element(value: HTMLElement) {
     this.container.element = value;

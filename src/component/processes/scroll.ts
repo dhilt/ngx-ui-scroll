@@ -18,7 +18,7 @@ export default class Scroll {
     const position = scroller.viewport.scrollPosition;
     const time = Number(new Date());
     const direction = Scroll.getDirection(scroller, position);
-    const data = <ScrollEventData>{ position, time, direction };
+    const data = { position, time, direction } as ScrollEventData;
 
     scroller.logger.log(() => [
       direction === Direction.backward ? '\u2934' : '\u2935',
@@ -46,8 +46,8 @@ export default class Scroll {
     let _direction = scrollState.direction;
     let _position = scrollState.position;
     if (synth.isDone) {
-      _direction = <Direction>synth.direction;
-      _position = <number>synth.position;
+      _direction = synth.direction as Direction;
+      _position = synth.position as number;
     }
     if (position === _position) {
       return _direction;
@@ -70,7 +70,7 @@ export default class Scroll {
     }
 
     // H2 -- too much time have passed since last synthetic position change
-    if (time - <number>synth.time > scroller.settings.maxSynthScrollDelay) {
+    if (time - (synth.time as number) > scroller.settings.maxSynthScrollDelay) {
       synth.reset();
       scroller.logger.log('reset synthetic by time');
       if (synth.position === position) { // do we need this branch?
@@ -87,8 +87,8 @@ export default class Scroll {
         scroller.logger.log('reset synthetic by position');
       } else {
         if (synth.isDone) {
-          scrollState.position = <number>synth.handledPosition;
-          scrollState.time = <number>synth.handledTime;
+          scrollState.position = synth.handledPosition as number;
+          scrollState.time = synth.handledTime as number;
         }
         synth.done();
         scroller.logger.synth('synthetic done');
@@ -109,7 +109,8 @@ export default class Scroll {
     }
 
     const { position } = scrollEvent;
-    const delta = position - <number>synth.position;
+    const _position = synth.position as number;
+    const delta = position - _position;
     const inertiaDelta = position - nearest.position;
 
     // current inertia does continue last synthetic position
@@ -130,7 +131,7 @@ export default class Scroll {
     // }
 
     // make new synthetic scroll to fix inertia issue
-    viewport.scrollPosition = <number>synth.position + inertiaDelta;
+    viewport.scrollPosition = _position + inertiaDelta;
     return ScrollProcess.stop;
   }
 
@@ -153,7 +154,7 @@ export default class Scroll {
     } else if (!state.scrollTimer && !state.keepScroll) {
       scroller.logger.log(() => `setting the timer at ${scroller.state.time + diff}`);
       state.firstScrollTime = time;
-      state.scrollTimer = <any>setTimeout(() => {
+      state.scrollTimer = setTimeout(() => {
         state.scrollTimer = null;
         scroller.logger.log(() => `fire the timer (${scroller.state.time})`);
         workflowOptions.byTimer = true;

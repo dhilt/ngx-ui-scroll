@@ -4,45 +4,45 @@ import { Settings } from '../classes/settings';
 type ISettings = _ISettings | _IDevSettings;
 
 const assignBoolean = (
-  target: Settings, source: ISettings, token: string, defaults: ISettings
+  target: any, source: any, token: string, defaults: any
 ) => {
-  const param = (<any>source)[token];
+  const param = source[token];
   if (typeof param === 'undefined') {
     return;
   }
   if (typeof param !== 'boolean') {
-    console.warn(token + ' setting parse error, set it to ' + (<any>defaults)[token] + ' (default)');
+    console.warn(token + ' setting parse error, set it to ' + (defaults)[token] + ' (default)');
     return;
   }
-  (<any>target)[token] = param;
+  target[token] = param;
   return true;
 };
 
 const assignNumeric = (
-  target: Settings, source: ISettings, token: string, defaults: ISettings, integer = false
+  target: any, source: any, token: string, defaults: any, integer = false
 ) => {
-  const param = (<any>source)[token];
+  const param = source[token];
   if (typeof param === 'undefined') {
     return;
   }
   if (typeof param !== 'number') {
-    console.warn(token + ' setting parse error, set it to ' + (<any>defaults)[token] + ' (default)');
+    console.warn(token + ' setting parse error, set it to ' + defaults[token] + ' (default)');
     return;
   }
   if (integer && parseInt(param.toString(), 10) !== param) {
-    console.warn(token + ' setting parse error, set it to ' + (<any>defaults)[token] + ' (default)');
+    console.warn(token + ' setting parse error, set it to ' + defaults[token] + ' (default)');
     return;
   }
-  (<any>target)[token] = param;
+  target[token] = param;
   return true;
 };
 
 const assignMinimalNumeric = (
-  target: Settings,
+  target: any,
   source: ISettings,
   token: string,
   defaults: ISettings,
-  minSettings: ISettings,
+  minSettings: any,
   integer = false,
   mustExist = true
 ) => {
@@ -51,9 +51,9 @@ const assignMinimalNumeric = (
       return;
     }
   }
-  if ((<any>target)[token] < (<any>minSettings)[token]) {
-    console.warn(token + ' setting is less than minimum, set it to ' + (<any>minSettings)[token]);
-    (<any>target)[token] = (<any>minSettings)[token];
+  if (target[token] < minSettings[token]) {
+    console.warn(token + ' setting is less than minimum, set it to ' + minSettings[token]);
+    target[token] = minSettings[token];
     return;
   }
   return true;

@@ -13,7 +13,7 @@ export default class Adjust {
     const setPaddingsResult =
       Adjust.setPaddings(scroller);
 
-    if (setPaddingsResult === false) {
+    if (setPaddingsResult === null) {
       workflow.call({
         process: Process.adjust,
         status: ProcessStatus.error,
@@ -23,7 +23,7 @@ export default class Adjust {
     }
 
     // scroll position adjustments
-    Adjust.fixScrollPosition(scroller, <number>setPaddingsResult);
+    Adjust.fixScrollPosition(scroller, setPaddingsResult);
 
     workflow.call({
       process: Process.adjust,
@@ -31,12 +31,12 @@ export default class Adjust {
     });
   }
 
-  static setPaddings(scroller: Scroller): boolean | number {
+  static setPaddings(scroller: Scroller): null | number {
     const { viewport, buffer, state: { fetch }, settings: { inverse } } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
     const lastItem = buffer.getLastVisibleItem();
     if (!firstItem || !lastItem) {
-      return false;
+      return null;
     }
     const forwardPadding = viewport.paddings.forward;
     const backwardPadding = viewport.paddings.backward;
@@ -56,7 +56,7 @@ export default class Adjust {
       }
     }
     if (hasAverageItemSizeChanged) {
-      for (index = firstIndex; index < <number>fetch.firstIndexBuffer; index++) {
+      for (index = firstIndex; index < (fetch.firstIndexBuffer as number); index++) {
         bwdPaddingAverageSizeItemsCount += !buffer.cache.get(index) ? 1 : 0;
       }
     }

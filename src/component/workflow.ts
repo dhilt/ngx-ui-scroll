@@ -23,7 +23,7 @@ export class Workflow {
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
   interruptionCount: number;
-  errors: Array<WorkflowError>;
+  errors: WorkflowError[];
 
   readonly propagateChanges: Function;
   readonly onScrollHandler: EventListener;

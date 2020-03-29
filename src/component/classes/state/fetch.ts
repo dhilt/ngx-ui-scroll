@@ -2,8 +2,8 @@ import { Direction } from '../../interfaces/index';
 import { Item } from '../item';
 
 export class FetchModel {
-  private _newItemsData: Array<any> | null;
-  items: Array<Item>;
+  private _newItemsData: any[] | null;
+  items: Item[];
   firstIndexBuffer: number | null;
   lastIndexBuffer: number | null;
   firstIndex: number | null;
@@ -39,11 +39,11 @@ export class FetchModel {
     this.isReplace = false;
   }
 
-  get newItemsData(): Array<Item> | null {
+  get newItemsData(): Item[] | null {
     return this._newItemsData;
   }
 
-  set newItemsData(items: Array<Item> | null) {
+  set newItemsData(items: Item[] | null) {
     this._newItemsData = items;
     if (items && items.length) {
       this.callCount++;
@@ -66,7 +66,7 @@ export class FetchModel {
     return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
   }
 
-  startSimulate(items: Array<Item>) {
+  startSimulate(items: Item[]) {
     this.simulate = true;
     this._newItemsData = items.map(item => item.data);
     this.items = items;
@@ -80,14 +80,14 @@ export class FetchModel {
     this.isReplace = false;
   }
 
-  append(items: Array<Item>) {
+  append(items: Item[]) {
     this.startSimulate(items);
     this.lastIndex = items[items.length - 1].$index;
     this.firstIndex = items[0].$index;
     this.direction = Direction.forward;
   }
 
-  prepend(items: Array<Item>) {
+  prepend(items: Item[]) {
     this.startSimulate(items);
     this.lastIndex = items[0].$index;
     this.firstIndex = items[items.length - 1].$index;
@@ -95,14 +95,14 @@ export class FetchModel {
     this.isPrepend = true;
   }
 
-  replace(items: Array<Item>) {
+  replace(items: Item[]) {
     this.startSimulate(items);
     this.lastIndex = items[0].$index;
     this.firstIndex = items[items.length - 1].$index;
     this.isReplace = true;
   }
 
-  insert(items: Array<Item>) {
+  insert(items: Item[]) {
     this.startSimulate(items);
     this.lastIndex = items[0].$index;
     this.firstIndex = items[items.length - 1].$index;

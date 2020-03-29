@@ -26,8 +26,8 @@ export class ScrollState implements IScrollState {
   firstScroll: boolean;
   firstScrollTime: number;
   lastScrollTime: number;
-  scrollTimer: number | null;
-  workflowTimer: number | null;
+  scrollTimer: ReturnType<typeof setTimeout> | null;
+  workflowTimer: ReturnType<typeof setTimeout> | null;
   scroll: boolean;
   keepScroll: boolean;
   window: IWindowScrollState;
@@ -85,7 +85,7 @@ class ScrollEventData implements IScrollEventData {
 
 export class SyntheticScroll implements ISyntheticScroll {
   before: IScrollEventData | null;
-  list: Array<IScrollEventData>;
+  list: IScrollEventData[];
   logger: Logger;
 
   get isSet(): boolean {
@@ -197,25 +197,23 @@ export class SyntheticScroll implements ISyntheticScroll {
       `position: ${position}`,
       `prev pos: ${this.registeredPosition}`,
       `synth pos: ${this.position}`,
-      `delta synth: ${position - <number>this.position}`,
+      `delta synth: ${position - (this.position as number)}`,
       `delta inertia: ${position - nearest.position}`,
-      `delta synth: ${time - <number>this.time}`,
+      `delta synth: ${time - (this.time as number)}`,
       `delta inertia: ${time - nearest.time}`,
     ].join(', '));
 
-    const nearest = <IScrollEventData>this.list.reduce(
-      (acc: IScrollEventData | null, item: IScrollEventData) => {
-        const delta = Math.abs(position - item.position);
-        if (!acc) {
-          return item;
-        }
-        const accDelta = Math.abs(position - acc.position);
-        if (accDelta < delta) {
-          return item;
-        }
-        return acc;
+    const nearest = this.list.reduce((acc, item) => {
+      const delta = Math.abs(position - item.position);
+      if (!acc) {
+        return item;
       }
-      , null);
+      const accDelta = Math.abs(position - acc.position);
+      if (accDelta < delta) {
+        return item;
+      }
+      return acc;
+    }, {} as IScrollEventData);
 
     const inc = last.direction === Direction.forward ? -1 : 1;
     const synthDelta = inc * (position - nearest.position);

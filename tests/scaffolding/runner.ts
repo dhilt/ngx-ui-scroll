@@ -19,7 +19,9 @@ export interface TestBedConfig {
   expected?: any;
 }
 
-export type OperationConfig<T> = { [key in keyof T]: TestBedConfig };
+export type OperationConfig<T extends PropertyKey> = {
+  [key in T]: TestBedConfig
+};
 
 export interface MakeTestConfig {
   title: string;

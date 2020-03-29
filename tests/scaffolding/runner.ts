@@ -1,3 +1,5 @@
+import { NgZone } from '@angular/core';
+
 import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
@@ -16,6 +18,8 @@ export interface TestBedConfig {
   timeout?: number;
   expected?: any;
 }
+
+export type OperationConfig<T> = { [key in keyof T]: TestBedConfig };
 
 export interface MakeTestConfig {
   title: string;
@@ -107,7 +111,7 @@ export const makeTest = (data: MakeTestConfig) => {
             misc = new Misc(fixture);
           } catch (_error) {
             runPromise = new Promise((resolve, reject) =>
-              (<any>fixture).ngZone.onError.subscribe((error: any) =>
+              (fixture.ngZone as NgZone).onError.subscribe((error: any) =>
                 reject(error)
               )
             );
@@ -116,11 +120,11 @@ export const makeTest = (data: MakeTestConfig) => {
           runPromise = Promise.reject(error);
         }
         if (typeof data.before === 'function') {
-          (<Function>data.before)(misc);
+          (data.before as Function)(misc);
         }
       });
       if (typeof data.after === 'function') {
-        afterEach(() => (<Function>data.after)(misc));
+        afterEach(() => (data.after as Function)(misc));
       }
       _it = (done: Function) =>
         runPromise.then(() =>
@@ -135,6 +139,6 @@ export const makeTest = (data: MakeTestConfig) => {
     } else {
       _it = data.it;
     }
-    (<Function>it)(data.title, _it, timeout);
+    (it as Function)(data.title, _it, timeout);
   });
 };

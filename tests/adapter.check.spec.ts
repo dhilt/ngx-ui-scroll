@@ -89,30 +89,31 @@ const updateDOMElement = (misc: Misc, index: number, size: number) => {
   const element = misc.getElement(index);
   if (element) {
     if (misc.scroller.settings.horizontal) {
-      (<HTMLElement>element).style.width = size + 'px';
+      element.style.width = size + 'px';
     } else {
-      (<HTMLElement>element).style.height = size + 'px';
+      element.style.height = size + 'px';
     }
   }
 };
 
 const updateDOM = (misc: Misc, { min, max, size, initialSize }: any) => {
-  const { datasource } = <any>misc.fixture.componentInstance;
+  const { datasource } = misc.fixture.componentInstance;
   for (let i = min; i <= max; i++) {
     updateDOMElement(misc, i, size);
     // persist new sizes on the datasource level
-    datasource.setProcessGet((result: Array<any>) =>
+    (datasource as any).setProcessGet((result: any[]) =>
       result.forEach(item => item.size = item.id >= min && item.id <= max ? size : initialSize)
     );
   }
 };
 
 const getFirstVisibleIndex = (misc: Misc): number => {
-  const token = misc.scroller.settings.horizontal ? 'offsetLeft' : 'offsetTop';
-  const firstVisible = Array.from(misc.getElements()).find((e) =>
-    (<HTMLElement>e)[token] >= misc.getScrollPosition());
+  const { horizontal } = misc.scroller.settings;
+  const firstVisible = Array.from(misc.getElements()).find(e =>
+    e[horizontal ? 'offsetLeft' : 'offsetTop'] >= misc.getScrollPosition()
+  );
   if (firstVisible) {
-    const value = (<HTMLElement>firstVisible).dataset.sid;
+    const value = firstVisible.dataset.sid;
     if (value) {
       return Number(value);
     }
@@ -121,13 +122,13 @@ const getFirstVisibleIndex = (misc: Misc): number => {
 };
 
 const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const { datasource } = <any>misc.fixture.componentInstance;
+  const { datasource } = misc.fixture.componentInstance;
   const { datasource: { adapter }, settings, buffer } = misc.scroller;
   const initialSize = config.datasourceSettings.itemSize;
   const { min, max, size } = config.custom;
   const changedCount = (max - min + 1);
   let firstVisibleIndex = NaN;
-  datasource.setProcessGet((result: Array<any>) =>
+  (datasource as any).setProcessGet((result: any[]) =>
     result.forEach(item => item.size = initialSize)
   );
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -156,10 +157,10 @@ const shouldSimulateFetch = (misc: Misc, value: boolean) => {
 
 const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const { state, datasource: { adapter } } = misc.scroller;
+    const { state, datasource: { adapter }, settings } = misc.scroller;
     switch (state.workflowCycleCount) {
       case 2:
-        updateDOMElement(misc, <number>config.datasourceSettings.startIndex, 50);
+        updateDOMElement(misc, settings.startIndex, 50);
         adapter.check();
         shouldSimulateFetch(misc, true);
         break;
@@ -173,12 +174,12 @@ const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: 
   });
 
 const shouldDoubleCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const { state, datasource: { adapter } } = misc.scroller;
-  const { itemSize, startIndex } = config.datasourceSettings;
+  const { state, datasource: { adapter }, settings: { startIndex } } = misc.scroller;
+  const { itemSize } = config.datasourceSettings;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     switch (state.workflowCycleCount) {
       case 2:
-        updateDOMElement(misc, <number>startIndex, 50);
+        updateDOMElement(misc, startIndex, 50);
         adapter.check();
         shouldSimulateFetch(misc, true);
         break;
@@ -191,7 +192,7 @@ const shouldDoubleCheck = (config: TestBedConfig) => (misc: Misc) => (done: Func
         }
         break;
       case 4:
-        updateDOMElement(misc, <number>startIndex, itemSize);
+        updateDOMElement(misc, startIndex, itemSize);
         adapter.check();
         shouldSimulateFetch(misc, true);
         break;

@@ -62,7 +62,7 @@ describe('Common Spec', () => {
       expect(misc.scroller.settings).toEqual(jasmine.any(Object));
       const mergedSettings = { ...defaultSettings, ..._settings };
       Object.keys(defaultSettings).forEach(key => {
-        expect((<any>misc.scroller.settings)[key]).toEqual((<any>mergedSettings)[key]);
+        expect((misc.scroller.settings as any)[key]).toEqual((mergedSettings as any)[key]);
       });
       done();
     };

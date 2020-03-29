@@ -63,7 +63,7 @@ const doubleReloadConfigList: TestBedConfig[] = configList.map((config, i) => ({
   }
 }));
 
-doubleReloadConfigList.push(<TestBedConfig>{
+doubleReloadConfigList.push({
   ...configList[0],
   datasourceSettings: {
     ...configList[0].datasourceSettings,
@@ -141,9 +141,9 @@ const doReload = (config: TestBedConfig, misc: Misc) => {
 };
 
 const doReloadOnFirstDatasourceGetCall = (config: TestBedConfig, misc: Misc) => {
-  const { datasource } = <any>misc.fixture.componentInstance;
+  const { datasource } = misc.fixture.componentInstance;
   let reloaded = false;
-  datasource.setProcessGet((result: Array<any>) => {
+  (datasource as any).setProcessGet((result: any[]) => {
     if (!reloaded) {
       reloaded = true;
       doReload(config, misc);
@@ -265,8 +265,8 @@ const shouldReloadOnFirstVisibleChange = (config: TestBedConfig) => (misc: Misc)
   accessFirstLastVisibleItems(misc);
   let stopScroll = false;
   let lastCycle: number;
-  const sub = misc.scroller.datasource.adapter.firstVisible$.subscribe(firstVisible => {
-    if (firstVisible && <any>firstVisible.$index <= config.custom.firstVisible) {
+  const sub = misc.scroller.datasource.adapter.firstVisible$.subscribe(({ $index }) => {
+    if ($index <= config.custom.firstVisible) {
       sub.unsubscribe();
       stopScroll = true;
       doReload(config, misc);

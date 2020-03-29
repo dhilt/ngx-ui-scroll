@@ -29,18 +29,23 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (d
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
       // remove item from the original datasource
-      const { datasource } = <any>misc.fixture.componentInstance;
-      datasource.setProcessGet((result: Array<any>) =>
+      const { datasource } = misc.fixture.componentInstance;
+      (datasource as any).setProcessGet((result: any[]) =>
         removeItems(result, config.custom.remove)
       );
       // remove items from the UiScroll
       misc.datasource.adapter.remove(item =>
-        config.custom.remove.some((i: number) => i === (byId ? item.data.id : item.$index))
+        config.custom.remove.some((i: number) =>
+          i === (byId ? item.data.id : item.$index)
+        )
       );
     } else if (cycles === 2) {
-      const first = <number>buffer.firstIndex;
-      const last = <number>buffer.lastIndex;
+      const first = buffer.firstIndex;
+      const last = buffer.lastIndex;
       const offset = config.custom.remove.length;
+      if (first === null || last === null) {
+        return;
+      }
       for (let i = first; i <= last; i++) {
         if (i < minIndexToRemove) {
           expect(misc.checkElementContentByIndex(i)).toEqual(true);
@@ -60,7 +65,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
     if (misc.workflow.cyclesDone === 1) {
       const innerLoopCount = misc.scroller.state.innerLoopCount;
       // call remove with wrong predicate
-      misc.datasource.adapter.remove(<any>null);
+      misc.datasource.adapter.remove(null as any);
       setTimeout(() => {
         expect(misc.workflow.cyclesDone).toEqual(1);
         expect(misc.scroller.state.innerLoopCount).toEqual(innerLoopCount);

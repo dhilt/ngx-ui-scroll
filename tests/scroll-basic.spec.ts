@@ -112,16 +112,19 @@ const invertDirection = (config: TestBedConfig) => {
 const getInitialItemsCounter = (misc: Misc): ItemsCounter => {
   const { startIndex } = misc.scroller.settings;
   const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(Direction.forward);
-  const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(Direction.backward);
+  const oppositeItem = misc.scroller.buffer.getEdgeVisibleItem(Direction.backward);
   const result = new ItemsCounter();
+  if (!edgeItem || !oppositeItem) {
+    return result;
+  }
   result.set(Direction.forward, {
-    count: (<any>edgeItem).$index - startIndex + 1,
-    index: (<any>edgeItem).$index,
+    count: edgeItem.$index - startIndex + 1,
+    index: edgeItem.$index,
     padding: 0
   });
   result.set(Direction.backward, {
-    count: startIndex - (<any>oppositeEdgeItem).$index,
-    index: (<any>oppositeEdgeItem).$index,
+    count: startIndex - oppositeItem.$index,
+    index: oppositeItem.$index,
     padding: 0
   });
   return result;
@@ -200,18 +203,18 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
       doScrollMax(config, misc);
     } else {
       // expectations
-      const direction = custom.direction;
+      const direction: Direction = custom.direction;
       const opposite = direction === Direction.forward ? Direction.backward : Direction.forward;
       const edgeItem = misc.scroller.buffer.getEdgeVisibleItem(direction);
-      const oppositeEdgeItem = misc.scroller.buffer.getEdgeVisibleItem(opposite);
+      const oppositeItem = misc.scroller.buffer.getEdgeVisibleItem(opposite);
       const edgeItemIndex = itemsCounter.get(direction).index;
-      const edgeOppositeItemIndex = itemsCounter.get(opposite).index;
+      const oppositeItemIndex = itemsCounter.get(opposite).index;
       expect(edgeItem && edgeItem.$index).toEqual(edgeItemIndex);
-      expect(oppositeEdgeItem && oppositeEdgeItem.$index).toEqual(edgeOppositeItemIndex);
-      expect((<any>misc.padding)[direction].getSize()).toEqual(itemsCounter.get(direction).padding);
-      expect((<any>misc.padding)[opposite].getSize()).toEqual(itemsCounter.get(opposite).padding);
+      expect(oppositeItem && oppositeItem.$index).toEqual(oppositeItemIndex);
+      expect(misc.padding[direction].getSize()).toEqual(itemsCounter.get(direction).padding);
+      expect(misc.padding[opposite].getSize()).toEqual(itemsCounter.get(opposite).padding);
       expect(misc.checkElementContentByIndex(edgeItemIndex)).toEqual(true);
-      expect(misc.checkElementContentByIndex(edgeOppositeItemIndex)).toEqual(true);
+      expect(misc.checkElementContentByIndex(oppositeItemIndex)).toEqual(true);
       done();
     }
   });

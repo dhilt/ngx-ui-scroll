@@ -153,9 +153,9 @@ describe('Adapter Insert Spec', () => {
         return;
       }
       // insert items to the original datasource
-      const { datasource } = <any>misc.fixture.componentInstance;
-      datasource.setProcessGet((
-        result: Array<any>, _index: number, _count: number, _min: number, _max: number
+      const { datasource } = misc.fixture.componentInstance;
+      (datasource as any).setProcessGet((
+        result: any[], _index: number, _count: number, _min: number, _max: number
       ) =>
         insertItems(result, _index, _count, _min, _max, index + (before ? 0 : 1), amount, decrease)
       );

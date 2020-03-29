@@ -8,7 +8,7 @@ import { DatasourceService } from './datasources';
 
 export const configureTestBed = (
   datasource: any, template: string
-): ComponentFixture<TestComponent> =>
+): ComponentFixture<ScrollerTestComponent> =>
   TestBed
     .configureTestingModule({
       imports: [UiScrollModule],
@@ -25,7 +25,7 @@ export const configureTestBed = (
     .overrideComponent(ScrollerTestComponent, { set: { template } })
     .createComponent(ScrollerTestComponent);
 
-export const configureTestBedTwo = () =>
+export const configureTestBedTwo = (): ComponentFixture<TwoScrollersTestComponent> =>
   TestBed
     .configureTestingModule({
       imports: [UiScrollModule],

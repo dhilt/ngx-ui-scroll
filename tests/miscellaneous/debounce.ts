@@ -1,5 +1,5 @@
 export function debounce(func: Function, wait: number, immediate?: boolean) {
-  let timeout: number, context: any, args: any;
+  let timeout: any, context: any, args: any;
   return function (this: any) {
     context = this;
     args = arguments;
@@ -11,7 +11,7 @@ export function debounce(func: Function, wait: number, immediate?: boolean) {
     };
     const callNow = immediate && !timeout;
     clearTimeout(timeout);
-    timeout = <any>setTimeout(later, wait);
+    timeout = setTimeout(later, wait);
     if (callNow) {
       func.apply(context, args);
     }

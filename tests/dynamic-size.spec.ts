@@ -246,8 +246,8 @@ describe('Zero Size Spec', () => {
           const { viewport, adapter } = misc.scroller;
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-            const ds = misc.fixture.componentInstance.datasource as any;
-            ds.setProcessGet((result: Array<any>) =>
+            const ds = misc.fixture.componentInstance.datasource;
+            (ds as any).setProcessGet((result: any[]) =>
               result.forEach(item => item.size = 20)
             );
             adapter.fix({ updater: ({ element, data }) => {

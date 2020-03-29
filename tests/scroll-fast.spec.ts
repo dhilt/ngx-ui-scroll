@@ -39,7 +39,7 @@ describe('Fast Scroll Spec', () => {
   }));
 
   const runFastScroll = (misc: Misc, customConfig: any, done: Function) => {
-    (<any>misc.shared).fin = false;
+    misc.shared.fin = false;
     const scr = (iteration: number) => new Promise(success => {
       setTimeout(() => {
         misc.scrollMax();
@@ -59,7 +59,7 @@ describe('Fast Scroll Spec', () => {
       if (!misc.datasource.adapter.isLoading) {
         done();
       } else {
-        (<any>misc.shared).fin = true;
+        misc.shared.fin = true;
       }
     });
   };
@@ -85,7 +85,7 @@ describe('Fast Scroll Spec', () => {
     done();
   };
 
-  let expectationsTimer: number;
+  let expectationsTimer: any;
   const preExpectations = (config: TestBedConfig, misc: Misc, done: Function) => {
     const position = misc.getScrollPosition();
     const buffer = misc.scroller.buffer;
@@ -103,7 +103,7 @@ describe('Fast Scroll Spec', () => {
     if (!misc.scroller.adapter.loopPending && buffer.size && buffer.items[index] && buffer.items[index].element) {
       runExpectations();
     } else {
-      expectationsTimer = <any>setTimeout(() => preExpectations(config, misc, done), 25);
+      expectationsTimer = setTimeout(() => preExpectations(config, misc, done), 25);
     }
   };
 
@@ -113,7 +113,7 @@ describe('Fast Scroll Spec', () => {
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       if (misc.workflow.cyclesDone === 1) {
         runFastScroll(misc, config.custom, done);
-      } else if ((<any>misc.shared).fin) {
+      } else if (misc.shared.fin) {
         _done();
       }
     });

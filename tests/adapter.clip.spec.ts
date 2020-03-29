@@ -60,25 +60,26 @@ const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => (done: 
   let indexToAppend = -Infinity;
   const NEW_ITEMS_COUNT = 50;
   const { itemSize } = config.datasourceSettings;
+  const { buffer } = misc.scroller;
   let firstIndex: number, lastIndex: number;
   const clipSettings = getClipArgument(config);
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
-      indexToAppend = misc.scroller.buffer.getIndexToAppend();
+      indexToAppend = buffer.getIndexToAppend();
       const itemsToAppend = Array.from(Array(NEW_ITEMS_COUNT), (_, x) => ({
         id: indexToAppend - x,
         text: `!item #${indexToAppend - x}`
       }));
       misc.datasource.adapter.append(itemsToAppend);
     } else if (cycles === 2) {
-      firstIndex = <number>misc.scroller.buffer.firstIndex;
-      lastIndex = <number>misc.scroller.buffer.lastIndex;
+      firstIndex = buffer.firstIndex as number;
+      lastIndex = buffer.lastIndex as number;
       expect(lastIndex).toEqual(indexToAppend + NEW_ITEMS_COUNT - 1);
       expect(misc.padding.backward.getSize()).toEqual(0);
       misc.datasource.adapter.clip(clipSettings);
-    } else {
+    } else if (firstIndex !== null) {
       // user clip requires additional reflow to remove DOM elements
       setTimeout(() => {
         const itemsCounter = getItemsCounter(config, misc, itemSize, firstIndex, lastIndex, clipSettings);

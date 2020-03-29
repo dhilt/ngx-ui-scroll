@@ -25,7 +25,7 @@ const testContext = require.context(
   './',
   false,
   /\.spec\.ts/
-  //(dynamic\-size)\.spec\.ts/
+  //(bug)\.spec\.ts/
 );
 
 function requireAll(requireContext) {

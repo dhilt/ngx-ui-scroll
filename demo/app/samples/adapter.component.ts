@@ -9,7 +9,6 @@ export class AdapterComponent {
   constructor() {
   }
 
-
   importSample = `  import { Datasource } from 'ngx-ui-scroll';`;
 
   datasourceSample = `  datasource = new Datasource({

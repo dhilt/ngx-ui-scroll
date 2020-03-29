@@ -12,7 +12,7 @@ import { Datasource } from '../../../../public_api';
 })
 export class DemoCheckSizeComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Check size`,
     titleId: `check-size`,
@@ -25,7 +25,7 @@ export class DemoCheckSizeComponent {
   MAX = 200;
   startIndex = 20;
   sizeValue = 15;
-  data: Array<any>;
+  data: any[];
   needAutoscroll: false;
 
   constructor() {
@@ -58,7 +58,7 @@ export class DemoCheckSizeComponent {
 MAX = 200;
 startIndex = 20;
 sizeValue = 15;
-data: Array<any>;
+data: any[];
 needAutoscroll: false;
 
 constructor() {

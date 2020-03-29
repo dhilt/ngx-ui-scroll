@@ -11,7 +11,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoMinMaxIndexesComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'settings',
     title: `minIndex / maxIndex settings`,
     titleId: `min-max-indexes`,

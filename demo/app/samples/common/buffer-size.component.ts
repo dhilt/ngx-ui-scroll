@@ -11,7 +11,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoBufferSizeComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'settings',
     title: `bufferSize setting`,
     titleId: `buffer-size`,

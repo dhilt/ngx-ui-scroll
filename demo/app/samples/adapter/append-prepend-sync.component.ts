@@ -11,7 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoAppendPrependSyncComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Append / prepend sync`,
     titleId: `append-prepend-sync`,
@@ -22,7 +22,7 @@ export class DemoAppendPrependSyncComponent {
 
   MIN = 100;
   MAX = 200;
-  data: Array<any>;
+  data: any[];
 
   constructor() {
     this.data = [];
@@ -53,7 +53,7 @@ export class DemoAppendPrependSyncComponent {
     text: `MIN = 100;
 MAX = 200;
 inputValue = 1;
-data: Array<any>;
+data: any[];
 
 constructor() {
   this.data = [];

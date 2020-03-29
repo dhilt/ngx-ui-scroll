@@ -10,12 +10,12 @@ import { doLog } from '../../shared/datasource-get';
 })
 export class DemoAdapterFixUpdaterComponent {
 
-  demoContext: DemoContext = <DemoContext>{
+  demoContext = {
     scope: 'experimental',
     title: `Adapter fix updater`,
     titleId: `adapter-fix-updater`,
     noInfo: true
-  };
+  } as DemoContext;
 
   datasource = new Datasource({
     get: (index: number, count: number, success: Function) => {

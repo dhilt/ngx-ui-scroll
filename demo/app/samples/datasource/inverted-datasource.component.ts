@@ -9,12 +9,12 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoInvertedDatasourceComponent {
 
-  context: DemoContext = <DemoContext> {
+  context = {
     scope: 'datasource',
     title: `Inverted datasource`,
     titleId: `inverted-indexes`,
     noWorkView: true
-  };
+  } as DemoContext;
 
   MIN = 1;
 

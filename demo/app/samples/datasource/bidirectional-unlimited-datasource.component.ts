@@ -10,14 +10,14 @@ import { IDatasource } from '../../../../public_api';
 })
 export class DemoBidirectionalUnlimitedDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Unlimited bidirectional datasource`,
     titleId: `unlimited-bidirectional`,
     logViewOnly: true,
     log: '',
     count: 0
-  };
+  } as DemoContext;
 
   datasource: IDatasource = {
     get: (index: number, count: number, success: Function) => {

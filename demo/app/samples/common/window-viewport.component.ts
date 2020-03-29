@@ -8,7 +8,7 @@ import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interface
 })
 export class DemoWindowViewportComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'settings',
     title: `Entire window scrollable`,
     titleId: `window-viewport`,

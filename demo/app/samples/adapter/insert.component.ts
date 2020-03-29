@@ -11,19 +11,19 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoInsertComponent {
 
-  demoContext: DemoContext = <DemoContext>{
+  demoContext = {
     scope: 'adapter',
     title: `Insert`,
     titleId: `insert`,
     viewportId: `insert-viewport`
-  };
+  } as DemoContext;
 
   MIN = 1;
   MAX = 100;
-  data: Array<string>;
+  data: string[];
   MIN2 = 1;
   MAX2 = 100;
-  data2: Array<string>;
+  data2: string[];
 
   constructor() {
     this.data = [];

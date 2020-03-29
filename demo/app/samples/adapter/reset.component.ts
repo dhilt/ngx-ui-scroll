@@ -11,7 +11,7 @@ import { Datasource, IDatasource } from '../../../../public_api'; // from 'ngx-u
 })
 export class DemoResetComponent {
 
-  demoContext: DemoContext = <DemoContext>{
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Reset`,
     titleId: `reset`,

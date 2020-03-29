@@ -10,12 +10,12 @@ import { doLog } from '../../shared/datasource-get';
 })
 export class DemoAdapterFixPositionComponent {
 
-  demoContext: DemoContext = <DemoContext>{
+  demoContext = {
     scope: 'experimental',
     title: `Adapter fix scroll position`,
     titleId: `adapter-fix-position`,
     noInfo: true
-  };
+  } as DemoContext;
 
   datasource = new Datasource({
     get: (index: number, count: number, success: Function) => {

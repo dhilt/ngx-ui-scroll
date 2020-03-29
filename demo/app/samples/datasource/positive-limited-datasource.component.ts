@@ -10,14 +10,14 @@ import { doLog } from '../../shared/datasource-get';
 })
 export class DemoPositiveLimitedDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Positive limited datasource`,
     titleId: `positive-limited-indexes`,
     logViewOnly: true,
     log: '',
     count: 0
-  };
+  } as DemoContext;
 
   datasource: IDatasource = {
     get: (index: number, count: number, success: Function) => {

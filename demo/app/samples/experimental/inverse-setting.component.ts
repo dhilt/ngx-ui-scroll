@@ -10,13 +10,13 @@ import { doLog } from '../../shared/datasource-get';
 })
 export class DemoInverseSettingComponent {
 
-  demoContext: DemoContext = <DemoContext>{
+  demoContext = {
     scope: 'experimental',
     title: `Inverse setting`,
     titleId: `inverse-setting`,
     addClass: `inverse`,
     noInfo: true
-  };
+  } as DemoContext;
 
   MIN = 1;
   MAX = 5;

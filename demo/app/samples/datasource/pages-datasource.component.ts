@@ -9,13 +9,13 @@ import { IDatasource } from '../../../../public_api';
 })
 export class DemoPagesDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Pages datasource`,
     titleId: `pages`,
     logViewOnly: true,
     log: ''
-  };
+  } as DemoContext;
 
   private getCount = 0;
   private pagesCount = 30;

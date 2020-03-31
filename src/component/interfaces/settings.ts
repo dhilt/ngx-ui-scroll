@@ -18,9 +18,6 @@ export interface DevSettings {
   logProcessRun?: boolean;
   logTime?: boolean;
   throttle?: number;
-  inertia?: boolean;
-  inertiaScrollDelay?: number;
-  inertiaScrollDelta?: number;
   initDelay?: number;
   initWindowDelay?: number;
   maxSynthScrollDelay?: number;

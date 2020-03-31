@@ -55,9 +55,6 @@ export class TestComponent {
       logTime: false,
       logProcessRun: true,
       throttle: 40,
-      inertia: true,
-      inertiaScrollDelay: 55,
-      inertiaScrollDelta: 135,
       changeOverflow: false
     }
   });

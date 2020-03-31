@@ -53,27 +53,6 @@ export interface ScrollState {
   setData: Function;
 }
 
-export interface SyntheticScroll {
-  list: ScrollEventData[];
-  before: ScrollEventData | null;
-
-  isSet: boolean;
-  isDone: boolean;
-  position: number | null;
-  time: number | null;
-  direction: Direction | null;
-  handledPosition: number | null;
-  handledTime: number | null;
-  registeredPosition: number | null;
-  registeredTime: number | null;
-
-  reset: Function;
-  register: Function;
-  push: Function;
-  done: Function;
-  nearest: Function;
-}
-
 export interface WorkflowOptions {
   empty: boolean;
   scroll: boolean;
@@ -105,7 +84,6 @@ export interface State {
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: ScrollState;
-  syntheticScroll: SyntheticScroll;
 
   time: number;
   loop: string;

@@ -4,7 +4,6 @@ import {
   ItemAdapter,
   State as IState,
   ScrollState as IScrollState,
-  SyntheticScroll as ISyntheticScroll,
   WorkflowOptions as IWorkflowOptions
 } from '../interfaces/index';
 
@@ -14,7 +13,7 @@ import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
 import { WorkflowOptions } from './state/workflowOptions';
-import { ScrollState, SyntheticScroll } from './state/scroll';
+import { ScrollState } from './state/scroll';
 import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
@@ -41,7 +40,6 @@ export class State implements IState {
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
-  syntheticScroll: ISyntheticScroll;
 
   get time(): number {
     return Number(new Date()) - this.initTime;
@@ -74,7 +72,6 @@ export class State implements IState {
     this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
-    this.syntheticScroll = new SyntheticScroll(logger);
   }
 
   setCurrentStartIndex(newStartIndex: any) {

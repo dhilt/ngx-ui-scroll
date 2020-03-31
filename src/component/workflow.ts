@@ -161,9 +161,7 @@ export class Workflow {
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
     adapter.cyclePending = false;
-    if (state.scrollState.scrollTimer === null) {
-      adapter.isLoading = false;
-    }
+    adapter.isLoading = false;
     this.finalize();
   }
 

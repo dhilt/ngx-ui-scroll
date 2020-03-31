@@ -104,6 +104,10 @@ export class Scroller {
       clearTimeout(scrollState.workflowTimer);
       scrollState.workflowTimer = null;
     }
+    if (!localOnly && scrollState.animationFrameId) {
+      cancelAnimationFrame(scrollState.animationFrameId);
+      scrollState.animationFrameId = 0;
+    }
   }
 
   dispose(forever?: boolean) {

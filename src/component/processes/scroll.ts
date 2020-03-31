@@ -1,138 +1,59 @@
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessStatus, ScrollEventData, ScrollerWorkflow } from '../interfaces/index';
 
-enum ScrollProcess {
-  stop = -1,
-  start = 0,
-  synth = 1,
-  inertia = 2,
-  delay = 3,
-  run = 4
-}
-
 export default class Scroll {
 
   static run(scroller: Scroller, event?: Event) {
-    const { workflow } = scroller;
-    const { syntheticScroll: synth, scrollState } = scroller.state;
-    const position = scroller.viewport.scrollPosition;
+    const { workflow, viewport, state } = scroller;
+    const position = viewport.scrollPosition;
+
+    if (Scroll.processSynthetic(scroller, position)) {
+      return;
+    }
+
     const time = Number(new Date());
     const direction = Scroll.getDirection(scroller, position);
     const data = { position, time, direction } as ScrollEventData;
 
     scroller.logger.log(() => [
       direction === Direction.backward ? '\u2934' : '\u2935',
-      position, (time - scrollState.time) + 'ms',
-      ...(synth.position === position ? ['- done synthetic'] : [])
+      position,
+      (time - state.scrollState.time) + 'ms'
     ]);
 
-    let next = Scroll.processSyntheticScroll(scroller, data);
-
-    if (!synth.isSet || synth.position !== position) {
-      scrollState.setData(data);
-    }
-
-    if (next === ScrollProcess.inertia) {
-      next = this.processInertiaScroll(scroller, data);
-    }
-
-    if (next === ScrollProcess.delay) {
-      this.delayScroll(scroller, workflow);
-    }
+    Scroll.delayScroll(scroller, workflow);
   }
 
-  static getDirection(scroller: Scroller, position: number): Direction {
-    const { syntheticScroll: synth, scrollState } = scroller.state;
-    let _direction = scrollState.direction;
-    let _position = scrollState.position;
-    if (synth.isDone) {
-      _direction = synth.direction as Direction;
-      _position = synth.position as number;
-    }
-    if (position === _position) {
-      return _direction;
-    }
-    return position > _position ? Direction.forward : Direction.backward;
-  }
-
-  static processSyntheticScroll(
-    scroller: Scroller, { position, time }: ScrollEventData
-  ): ScrollProcess {
-    const { syntheticScroll: synth, scrollState } = scroller.state;
-
-    if (synth.isSet) {
-      scroller.logger.synth('synthetic proc');
-    }
-
-    // H1 -- no synthetic position changes
-    if (!synth.isSet) {
-      return ScrollProcess.delay;
-    }
-
-    // H2 -- too much time have passed since last synthetic position change
-    if (time - (synth.time as number) > scroller.settings.maxSynthScrollDelay) {
-      synth.reset();
-      scroller.logger.log('reset synthetic by time');
-      if (synth.position === position) { // do we need this branch?
-        return ScrollProcess.stop;
-      } else {
-        return ScrollProcess.delay;
+  static processSynthetic(scroller: Scroller, position: number): boolean {
+    const { scrollState } = scroller.state;
+    const synthPos = scrollState.syntheticPosition;
+    if (synthPos !== null) {
+      if (scrollState.syntheticFulfill) {
+        scrollState.syntheticPosition = null;
       }
-    }
-
-    // H3 -- this event is handling the exact last synthetic position change
-    if (synth.position === position) {
-      if (!synth.isDone && synth.handledPosition === position) {
-        synth.reset();
-        scroller.logger.log('reset synthetic by position');
-      } else {
-        if (synth.isDone) {
-          scrollState.position = synth.handledPosition as number;
-          scrollState.time = synth.handledTime as number;
-        }
-        synth.done();
-        scroller.logger.synth('synthetic done');
+      if (!scrollState.syntheticFulfill || synthPos === position) {
+        scroller.logger.log(() => [
+          'skipping scroll', position, `[${scrollState.syntheticFulfill ? '' : 'pre-'}synthetic]`
+        ]);
+        return true;
       }
-      return ScrollProcess.stop;
+      scroller.logger.log(() => [
+        'synthetic scroll has been fulfilled:', position, position < synthPos ? '<' : '>', synthPos
+      ]);
     }
-
-    // H4 -- here we have inertia over synthetic position change
-    return scroller.settings.inertia ? ScrollProcess.inertia : ScrollProcess.delay;
+    return false;
   }
 
-  static processInertiaScroll(scroller: Scroller, scrollEvent: ScrollEventData): ScrollProcess {
-    const { viewport, logger, state: { syntheticScroll: synth } } = scroller;
-    const nearest = synth.nearest(scrollEvent);
-    if (nearest === null) {
-      logger.log('skip, no inertia');
-      return ScrollProcess.delay;
+  static getDirection(scroller: Scroller, newPosition: number): Direction {
+    const { previous } = scroller.state.scrollState;
+    if (!previous) {
+      return Direction.forward;
     }
-
-    const { position } = scrollEvent;
-    const _position = synth.position as number;
-    const delta = position - _position;
-    const inertiaDelta = position - nearest.position;
-
-    // current inertia does continue last synthetic position
-    if (inertiaDelta === delta) {
-      synth.reset();
-      logger.log('skip, proper inertia');
-      return ScrollProcess.delay;
+    const { position, direction } = previous;
+    if (newPosition === position) {
+      return direction || Direction.forward;
     }
-
-    // if ( // precise inertia settings
-    //   scroller.settings.inertia &&
-    //   -inertiaDelta > scroller.settings.inertiaScrollDelta &&
-    //   inertiaDelay > scroller.settings.inertiaScrollDelay
-    // ) {
-    //   synth.reset();
-    //   logger.log('skip, out of settings');
-    //   return ScrollProcess.delay;
-    // }
-
-    // make new synthetic scroll to fix inertia issue
-    viewport.scrollPosition = _position + inertiaDelta;
-    return ScrollProcess.stop;
+    return newPosition > position ? Direction.forward : Direction.backward;
   }
 
   static delayScroll(scroller: Scroller, workflow: ScrollerWorkflow) {

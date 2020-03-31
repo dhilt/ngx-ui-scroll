@@ -25,6 +25,18 @@ export default class Adjust {
     // scroll position adjustments
     Adjust.fixScrollPosition(scroller, setPaddingsResult);
 
+    // re-set scroll position (if changed) via animation frame
+    const position = viewport.scrollPosition;
+    if (state.preAdjustPosition !== position) {
+      viewport.setPositionSafe(state.preAdjustPosition, position, () =>
+         workflow.call({
+          process: Process.adjust,
+          status: ProcessStatus.done
+        })
+      );
+      return;
+    }
+
     workflow.call({
       process: Process.adjust,
       status: ProcessStatus.done

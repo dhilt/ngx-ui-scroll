@@ -61,10 +61,8 @@ export class Viewport {
     this.startDelta = 0;
   }
 
-  setPosition(value: number, oldPosition?: number): number {
-    if (oldPosition === void 0) {
-      oldPosition = this.scrollPosition;
-    }
+  setPosition(value: number): number {
+    const oldPosition = this.scrollPosition;
     if (oldPosition === value) {
       this.logger.log(() => ['setting scroll position at', value, '[cancelled]']);
       return value;
@@ -75,15 +73,27 @@ export class Viewport {
     return position;
   }
 
+  setPositionSafe(oldPos: number, newPos: number, done: Function) {
+    const { scrollState } = this.state;
+    scrollState.syntheticPosition = newPos;
+    this.logger.log(() => ['setting scroll position at', oldPos, '(meaning', newPos, 'in next repaint)']);
+    this.routines.setScrollPosition(this.scrollable, oldPos);
+    scrollState.syntheticFulfill = false;
+    scrollState.animationFrameId =
+      requestAnimationFrame(() => {
+        scrollState.syntheticFulfill = true;
+        this.logger.log(() => ['setting scroll position at', newPos, '(synthetic fulfillment)']);
+        this.routines.setScrollPosition(this.scrollable, newPos);
+        done();
+      });
+  }
+
   get scrollPosition(): number {
     return this.routines.getScrollPosition(this.scrollable);
   }
 
   set scrollPosition(value: number) {
-    const oldPosition = this.scrollPosition;
-    const newPosition = this.setPosition(value, oldPosition);
-    const { syntheticScroll, scrollState } = this.state;
-    syntheticScroll.push(newPosition, oldPosition, scrollState.getData());
+    this.setPosition(value);
   }
 
   disableScrollForOneLoop() {

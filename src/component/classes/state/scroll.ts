@@ -7,6 +7,7 @@ import {
 } from '../../interfaces/index';
 
 import { Logger } from '../logger';
+import { ScrollEventData2 } from '../../interfaces/state';
 
 class WindowScrollState implements IWindowScrollState {
   positionToUpdate: number;
@@ -23,6 +24,9 @@ class WindowScrollState implements IWindowScrollState {
 }
 
 export class ScrollState implements IScrollState {
+  previous: ScrollEventData2;
+  current: ScrollEventData2;
+
   firstScroll: boolean;
   firstScrollTime: number;
   lastScrollTime: number;
@@ -36,6 +40,10 @@ export class ScrollState implements IScrollState {
   time: number;
   direction: Direction;
   positionBefore: number;
+
+  syntheticPosition: number | null;
+  syntheticFulfill: boolean;
+  animationFrameId: number;
 
   constructor() {
     this.window = new WindowScrollState();
@@ -53,6 +61,9 @@ export class ScrollState implements IScrollState {
     this.position = 0;
     this.time = Number(new Date());
     this.direction = Direction.forward;
+    this.syntheticPosition = null;
+    this.syntheticFulfill = false;
+    this.animationFrameId = 0;
     this.window.reset();
   }
 

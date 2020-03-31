@@ -20,7 +20,16 @@ export interface ScrollEventData {
   handled: boolean;
 }
 
+export interface ScrollEventData2 {
+  time: number;
+  position: number;
+  direction: Direction | null;
+}
+
 export interface ScrollState {
+  previous: ScrollEventData2;
+  current: ScrollEventData2;
+
   firstScroll: boolean;
   firstScrollTime: number;
   lastScrollTime: number;
@@ -33,6 +42,11 @@ export interface ScrollState {
   position: number;
   time: number;
   direction: Direction;
+  positionBefore: number;
+
+  syntheticPosition: number | null;
+  syntheticFulfill: boolean;
+  animationFrameId: number;
 
   reset: Function;
   getData: Function;

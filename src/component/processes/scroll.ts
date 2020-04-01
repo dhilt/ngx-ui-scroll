@@ -1,6 +1,5 @@
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessStatus, ScrollEventData, ScrollerWorkflow } from '../interfaces/index';
-import { ScrollEventData2 } from '../interfaces/state';
 
 export default class Scroll {
 
@@ -62,7 +61,7 @@ export default class Scroll {
     return false;
   }
 
-  static setCurrent(scroller: Scroller, position: number): ScrollEventData2 {
+  static setCurrent(scroller: Scroller, position: number): ScrollEventData {
     const time = Number(new Date());
     let direction: Direction | null = Direction.forward;
     const { scrollState } = scroller.state;

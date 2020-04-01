@@ -100,7 +100,6 @@ export class Logger {
     const loopLog: string[] = [];
     if (
       process === Process.init && status === Status.next ||
-      process === Process.scroll && status === Status.next && options.keepScroll ||
       process === Process.end && status === Status.next && options.byTimer
     ) {
       loopLog.push(`%c---=== loop ${this.getLoopNext()} start`);
@@ -108,7 +107,7 @@ export class Logger {
       process === Process.end && !options.byTimer
     ) {
       loopLog.push(`%c---=== loop ${this.getLoop()} done`);
-      if (status === Status.next && !(options.keepScroll)) {
+      if (status === Status.next) {
         loopLog[0] += `, loop ${this.getLoopNext()} start`;
       }
     }

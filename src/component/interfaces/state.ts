@@ -15,27 +15,18 @@ export interface WindowScrollState {
 export interface ScrollEventData {
   time: number;
   position: number;
-  positionBefore: number | null;
-  direction: Direction;
-  handled: boolean;
-}
-
-export interface ScrollEventData2 {
-  time: number;
-  position: number;
   direction: Direction | null;
 }
 
 export interface ScrollState {
-  previous: ScrollEventData2;
-  current: ScrollEventData2;
+  previous: ScrollEventData;
+  current: ScrollEventData;
 
   firstScroll: boolean;
   firstScrollTime: number;
   lastScrollTime: number;
   scrollTimer: ReturnType<typeof setTimeout> | null;
   workflowTimer: ReturnType<typeof setTimeout> | null;
-  scroll: boolean;
   window: WindowScrollState;
 
   position: number;
@@ -48,13 +39,9 @@ export interface ScrollState {
   animationFrameId: number;
 
   reset: Function;
-  getData: Function;
-  setData: Function;
 }
 
 export interface WorkflowOptions {
-  empty: boolean;
-  scroll: boolean;
   keepScroll: boolean;
   byTimer: boolean;
   noFetch: boolean;

@@ -15,7 +15,6 @@ export default class Start {
       clip.reset();
     }
     render.reset();
-    scrollState.scroll = workflowOptions.scroll || false;
 
     scroller.workflow.call({
       process: Process.start,

@@ -84,9 +84,8 @@ export default class End {
   }
 
   static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
-    const { state: { clip, fetch, render, scrollState, workflowOptions } } = scroller;
+    const { state: { clip, fetch, render, scrollState } } = scroller;
     if (error) {
-      workflowOptions.empty = true;
       return false;
     }
     if (process === Process.reset || process === Process.reload) { // Adapter.reload/reset

@@ -202,7 +202,7 @@ describe('Zero Size Spec', () => {
 
   const config = {
     datasourceName: 'limited-1-100-zero-size',
-    datasourceSettings: { bufferSize: 5, startIndex: 1 },
+    datasourceSettings: { bufferSize: 5, minIndex: 1 },
     templateSettings: { dynamicSize: 'size', viewportHeight: 200 }
   };
 

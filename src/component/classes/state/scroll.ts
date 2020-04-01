@@ -32,7 +32,6 @@ export class ScrollState implements IScrollState {
   scrollTimer: ReturnType<typeof setTimeout> | null;
   workflowTimer: ReturnType<typeof setTimeout> | null;
   scroll: boolean;
-  keepScroll: boolean;
   window: IWindowScrollState;
 
   position: number;
@@ -56,7 +55,6 @@ export class ScrollState implements IScrollState {
     this.scrollTimer = null;
     this.workflowTimer = null;
     this.scroll = false;
-    this.keepScroll = false;
     this.position = 0;
     this.time = Number(new Date());
     this.direction = Direction.forward;

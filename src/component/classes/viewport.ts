@@ -57,7 +57,6 @@ export class Viewport {
     }
     this.scrollPosition = newPosition;
     this.state.scrollState.reset();
-    // this.state.syntheticScroll.reset(scrollPosition !== newPosition ? newPosition : null);
     this.startDelta = 0;
   }
 

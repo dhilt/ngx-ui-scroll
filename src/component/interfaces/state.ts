@@ -36,7 +36,6 @@ export interface ScrollState {
   scrollTimer: ReturnType<typeof setTimeout> | null;
   workflowTimer: ReturnType<typeof setTimeout> | null;
   scroll: boolean;
-  keepScroll: boolean;
   window: WindowScrollState;
 
   position: number;

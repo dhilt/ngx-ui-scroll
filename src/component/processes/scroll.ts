@@ -1,30 +1,32 @@
 import { Scroller } from '../scroller';
 import { Direction, Process, ProcessStatus, ScrollEventData, ScrollerWorkflow } from '../interfaces/index';
+import { ScrollEventData2 } from '../interfaces/state';
 
 export default class Scroll {
 
-  static run(scroller: Scroller, event?: Event) {
-    const { workflow, viewport, state } = scroller;
+  static run(scroller: Scroller, process: Process, payload?: { event?: Event }) {
+    const { workflow, viewport, state: { scrollState } } = scroller;
     const position = viewport.scrollPosition;
 
-    if (Scroll.processSynthetic(scroller, position)) {
+    if (Scroll.onSynthetic(scroller, position)) {
       return;
     }
 
-    const time = Number(new Date());
-    const direction = Scroll.getDirection(scroller, position);
-    const data = { position, time, direction } as ScrollEventData;
+    if (Scroll.onThrottle(scroller, position)) {
+      return;
+    }
 
-    scroller.logger.log(() => [
-      direction === Direction.backward ? '\u2934' : '\u2935',
-      position,
-      (time - state.scrollState.time) + 'ms'
-    ]);
+    if (Scroll.onPending(scroller, position)) {
+      return;
+    }
 
-    Scroll.delayScroll(scroller, workflow);
+    workflow.call({
+      process: Process.scroll,
+      status: ProcessStatus.next
+    });
   }
 
-  static processSynthetic(scroller: Scroller, position: number): boolean {
+  static onSynthetic(scroller: Scroller, position: number): boolean {
     const { scrollState } = scroller.state;
     const synthPos = scrollState.syntheticPosition;
     if (synthPos !== null) {
@@ -44,72 +46,44 @@ export default class Scroll {
     return false;
   }
 
-  static getDirection(scroller: Scroller, newPosition: number): Direction {
-    const { previous } = scroller.state.scrollState;
-    if (!previous) {
-      return Direction.forward;
-    }
-    const { position, direction } = previous;
-    if (newPosition === position) {
-      return direction || Direction.forward;
-    }
-    return newPosition > position ? Direction.forward : Direction.backward;
+  static onThrottle(scroller: Scroller, position: number): boolean {
+    const { scrollState } = scroller.state;
+    const { direction, time } = Scroll.setCurrent(scroller, position);
+    scroller.logger.log(() => [
+      direction === Direction.backward ? '\u2934' : '\u2935',
+      position,
+      (scrollState.previous ? (time - scrollState.previous.time) : 0) + 'ms'
+    ]);
+
+    // throttle ...
+
+    scrollState.previous = { position, time, direction };
+
+    return false;
   }
 
-  static delayScroll(scroller: Scroller, workflow: ScrollerWorkflow) {
-    const { workflowOptions, scrollState: state } = scroller.state;
-    if (!scroller.settings.throttle || workflowOptions.byTimer) {
-      Scroll.doScroll(scroller, workflow);
-      return;
+  static setCurrent(scroller: Scroller, position: number): ScrollEventData2 {
+    const time = Number(new Date());
+    let direction: Direction | null = Direction.forward;
+    const { scrollState } = scroller.state;
+    const { previous } = scrollState;
+    if (previous) {
+      if (position === previous.position) {
+        direction = previous.direction;
+      } else if (position < previous.position) {
+        direction = Direction.backward;
+      }
     }
-    const time = Number(Date.now());
-    const tDiff = state.lastScrollTime + scroller.settings.throttle - time;
-    const dDiff = scroller.settings.throttle + (state.firstScrollTime ? state.firstScrollTime - time : 0);
-    const diff = Math.max(tDiff, dDiff);
-    // scroller.logger.log('tDiff:', tDiff, 'dDiff:', dDiff, 'diff:', diff);
-    if (diff <= 0) {
-      scroller.purgeScrollTimers(true);
-      state.lastScrollTime = time;
-      state.firstScrollTime = 0;
-      Scroll.doScroll(scroller, workflow);
-    } else if (!state.scrollTimer && !state.keepScroll) {
-      scroller.logger.log(() => `setting the timer at ${scroller.state.time + diff}`);
-      state.firstScrollTime = time;
-      state.scrollTimer = setTimeout(() => {
-        state.scrollTimer = null;
-        scroller.logger.log(() => `fire the timer (${scroller.state.time})`);
-        workflowOptions.byTimer = true;
-        Scroll.run(scroller);
-      }, diff);
-    }
-    // else {
-    //   scroller.logger.log('MISS TIMER');
-    // }
+    scrollState.current = { position, direction, time };
+    return scrollState.current;
   }
 
-  static logPendingWorkflow(scroller: Scroller) {
-    scroller.logger.log(() =>
-      !scroller.state.scrollState.keepScroll ? [
-        `setting %ckeepScroll%c flag (scrolling while the Workflow is pending)`,
-        'color: #006600;', 'color: #000000;'
-      ] : void 0);
-  }
-
-  static doScroll(scroller: Scroller, workflow: ScrollerWorkflow) {
-    const { state: { scrollState, workflowOptions }, adapter } = scroller;
-    if (adapter.cyclePending) {
-      Scroll.logPendingWorkflow(scroller);
-      scrollState.keepScroll = true;
-      return;
+  static onPending(scroller: Scroller, position: number): boolean {
+    if (!scroller.adapter.isLoading) {
+      return false;
     }
-    workflowOptions.scroll = true;
-    workflowOptions.keepScroll = scrollState.keepScroll;
-    workflowOptions.noFetch = scroller.buffer.bof && scroller.buffer.eof;
-    workflow.call({
-      process: Process.scroll,
-      status: ProcessStatus.next,
-      payload: { keepScroll: workflowOptions.keepScroll }
-    });
+    scroller.logger.log(() => ['skipping scroll', position, '[pending]']);
+    return true;
   }
 
 }

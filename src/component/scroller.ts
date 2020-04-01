@@ -89,12 +89,12 @@ export class Scroller {
     });
   }
 
-  purgeInnerLoopSubscriptions() {
+  purgeSubscriptions(localOnly = false) {
     this.innerLoopSubscriptions.forEach((item: Subscription) => item.unsubscribe());
     this.innerLoopSubscriptions = [];
   }
 
-  purgeScrollTimers(localOnly?: boolean) {
+  purgeScrollTimers(localOnly = false) {
     const { state: { scrollState } } = this;
     if (scrollState.scrollTimer) {
       clearTimeout(scrollState.scrollTimer);
@@ -115,7 +115,7 @@ export class Scroller {
       this.adapter.dispose();
     }
     this.buffer.dispose(forever);
-    this.purgeInnerLoopSubscriptions();
+    this.purgeSubscriptions();
     this.purgeScrollTimers();
   }
 

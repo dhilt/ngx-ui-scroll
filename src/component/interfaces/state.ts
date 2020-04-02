@@ -19,14 +19,13 @@ export interface ScrollEventData {
 }
 
 export interface ScrollState {
-  previous: ScrollEventData;
-  current: ScrollEventData;
+  previous: ScrollEventData | null;
+  current: ScrollEventData | null;
 
   firstScroll: boolean;
   firstScrollTime: number;
   lastScrollTime: number;
   scrollTimer: ReturnType<typeof setTimeout> | null;
-  workflowTimer: ReturnType<typeof setTimeout> | null;
   window: WindowScrollState;
 
   position: number;

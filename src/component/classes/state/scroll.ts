@@ -22,14 +22,13 @@ class WindowScrollState implements IWindowScrollState {
 }
 
 export class ScrollState implements IScrollState {
-  previous: IScrollEventData;
-  current: IScrollEventData;
+  previous: IScrollEventData | null;
+  current: IScrollEventData | null;
 
   firstScroll: boolean;
   firstScrollTime: number;
   lastScrollTime: number;
   scrollTimer: ReturnType<typeof setTimeout> | null;
-  workflowTimer: ReturnType<typeof setTimeout> | null;
   window: IWindowScrollState;
 
   position: number;
@@ -47,11 +46,12 @@ export class ScrollState implements IScrollState {
   }
 
   reset() {
+    this.previous = null;
+    this.current = null;
     this.firstScroll = false;
     this.firstScrollTime = 0;
     this.lastScrollTime = 0;
     this.scrollTimer = null;
-    this.workflowTimer = null;
     this.position = 0;
     this.time = Number(new Date());
     this.direction = Direction.forward;

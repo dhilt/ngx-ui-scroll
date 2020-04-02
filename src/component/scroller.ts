@@ -89,22 +89,18 @@ export class Scroller {
     });
   }
 
-  purgeSubscriptions(localOnly = false) {
+  purgeSubscriptions() {
     this.innerLoopSubscriptions.forEach((item: Subscription) => item.unsubscribe());
     this.innerLoopSubscriptions = [];
   }
 
-  purgeScrollTimers(localOnly = false) {
+  purgeScrollTimers() {
     const { state: { scrollState } } = this;
     if (scrollState.scrollTimer) {
       clearTimeout(scrollState.scrollTimer);
       scrollState.scrollTimer = null;
     }
-    if (!localOnly && scrollState.workflowTimer) {
-      clearTimeout(scrollState.workflowTimer);
-      scrollState.workflowTimer = null;
-    }
-    if (!localOnly && scrollState.animationFrameId) {
+    if (scrollState.animationFrameId) {
       cancelAnimationFrame(scrollState.animationFrameId);
       scrollState.animationFrameId = 0;
     }

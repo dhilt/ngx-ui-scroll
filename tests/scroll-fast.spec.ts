@@ -140,3 +140,41 @@ describe('Fast Scroll Spec', () => {
   );
 
 });
+
+describe('Fast Scroll Spec (Throttle)', () => {
+  const config: TestBedConfig = {
+    datasourceName: 'infinite-promise-no-delay',
+    datasourceSettings: { startIndex: 1, adapter: true },
+    templateSettings: { viewportHeight: 200 },
+    datasourceDevSettings: { throttle: 500 },
+    timeout: 5000
+  };
+
+  makeTest({
+    title: 'should throttle properly',
+    config,
+    it: (misc: Misc) => (done: Function) => {
+      const COUNT = 10;
+      let count = 0, timer: ReturnType<typeof setInterval>;
+      spyOn(misc.workflow, 'finalize').and.callFake(() => {
+        const { cyclesDone } = misc.workflow;
+        if (cyclesDone === 1) {
+          timer = setInterval(() => {
+            count++;
+            if (count % 2 === 0) {
+              misc.scrollMin();
+            } else {
+              misc.scrollMax();
+            }
+            if (count === COUNT) {
+              clearInterval(timer);
+            }
+          }, 25);
+        } else if (cyclesDone === 3) {
+          expect(count).toEqual(COUNT);
+          done();
+        }
+      });
+    }
+  });
+});

@@ -25,16 +25,8 @@ export class ScrollState implements IScrollState {
   previous: IScrollEventData | null;
   current: IScrollEventData | null;
 
-  firstScroll: boolean;
-  firstScrollTime: number;
-  lastScrollTime: number;
   scrollTimer: ReturnType<typeof setTimeout> | null;
   window: IWindowScrollState;
-
-  position: number;
-  time: number;
-  direction: Direction;
-  positionBefore: number;
 
   syntheticPosition: number | null;
   syntheticFulfill: boolean;
@@ -48,13 +40,7 @@ export class ScrollState implements IScrollState {
   reset() {
     this.previous = null;
     this.current = null;
-    this.firstScroll = false;
-    this.firstScrollTime = 0;
-    this.lastScrollTime = 0;
     this.scrollTimer = null;
-    this.position = 0;
-    this.time = Number(new Date());
-    this.direction = Direction.forward;
     this.syntheticPosition = null;
     this.syntheticFulfill = false;
     this.animationFrameId = 0;

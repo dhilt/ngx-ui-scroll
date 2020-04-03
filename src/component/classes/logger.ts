@@ -14,7 +14,6 @@ export class Logger {
   readonly getWorkflowCycleData: Function;
   readonly getLoop: Function;
   readonly getLoopNext: Function;
-  readonly getWorkflowOptions: Function;
   readonly getScrollPosition: Function;
   private logs: any[] = [];
 
@@ -46,7 +45,6 @@ export class Logger {
     this.getLoopNext = (): string => scroller.state.loopNext;
     this.getWorkflowCycleData = (): string =>
       `${settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
-    this.getWorkflowOptions = () => scroller.state.workflowOptions;
     this.getScrollPosition = (element: HTMLElement) => scroller.routines.getScrollPosition(element);
     this.log(() => `uiScroll Workflow has been started (v${version}, instance ${settings.instanceIndex})`);
   }
@@ -89,22 +87,15 @@ export class Logger {
       return;
     }
     const { process, status } = data;
-    const options = this.getWorkflowOptions();
-
-    // standard process log
-    // const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
-    // const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
-    // this.log(() => [processLog, ...styles, data.payload, ...(!options.empty ? [options] : [])]);
 
     // inner loop start-end log
     const loopLog: string[] = [];
     if (
-      process === Process.init && status === Status.next ||
-      process === Process.end && status === Status.next && options.byTimer
+      process === Process.init && status === Status.next
     ) {
       loopLog.push(`%c---=== loop ${this.getLoopNext()} start`);
     } else if (
-      process === Process.end && !options.byTimer
+      process === Process.end
     ) {
       loopLog.push(`%c---=== loop ${this.getLoop()} done`);
       if (status === Status.next) {

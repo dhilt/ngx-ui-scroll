@@ -3,8 +3,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import {
   ItemAdapter,
   State as IState,
-  ScrollState as IScrollState,
-  WorkflowOptions as IWorkflowOptions
+  ScrollState as IScrollState
 } from '../interfaces/index';
 
 import { Settings } from './settings';
@@ -12,7 +11,6 @@ import { Logger } from './logger';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
-import { WorkflowOptions } from './state/workflowOptions';
 import { ScrollState } from './state/scroll';
 import { itemAdapterEmpty } from '../utils/adapter';
 
@@ -28,7 +26,6 @@ export class State implements IState {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
-  workflowOptions: IWorkflowOptions;
 
   fetch: FetchModel;
   clip: ClipModel;
@@ -63,7 +60,6 @@ export class State implements IState {
     this.workflowCycleCount = 1;
     this.isInitialWorkflowCycle = false;
     this.countDone = 0;
-    this.workflowOptions = new WorkflowOptions(settings);
 
     this.setCurrentStartIndex(settings.startIndex);
     this.fetch = new FetchModel();

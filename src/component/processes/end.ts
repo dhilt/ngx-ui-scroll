@@ -8,8 +8,6 @@ export default class End {
     const { workflow, state, adapter } = scroller;
     const { error } = payload;
 
-    state.workflowOptions.reset();
-
     if (!error && process !== Process.reset && process !== Process.reload) {
       // set out params, accessible via Adapter
       End.calculateParams(scroller);

@@ -22,28 +22,12 @@ export interface ScrollState {
   previous: ScrollEventData | null;
   current: ScrollEventData | null;
 
-  firstScroll: boolean;
-  firstScrollTime: number;
-  lastScrollTime: number;
   scrollTimer: ReturnType<typeof setTimeout> | null;
   window: WindowScrollState;
-
-  position: number;
-  time: number;
-  direction: Direction;
-  positionBefore: number;
 
   syntheticPosition: number | null;
   syntheticFulfill: boolean;
   animationFrameId: number;
-
-  reset: Function;
-}
-
-export interface WorkflowOptions {
-  keepScroll: boolean;
-  byTimer: boolean;
-  noFetch: boolean;
 
   reset: Function;
 }
@@ -57,7 +41,6 @@ export interface State {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
-  workflowOptions: WorkflowOptions;
 
   fetch: FetchModel;
   clip: ClipModel;

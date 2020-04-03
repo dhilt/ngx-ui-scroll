@@ -142,11 +142,7 @@ export const runStateMachine = ({
             run(PreFetch)(payload.process);
             break;
           default:
-            if (payload.noFetch) {
-              run(End)(process);
-            } else {
-              run(PreFetch)();
-            }
+            run(PreFetch)();
         }
       }
       break;

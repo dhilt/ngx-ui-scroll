@@ -17,6 +17,7 @@
     "lint": "tslint -c tslint.json  --project . ",
     "test": "npm run lint && karma start",
     "build-app": "ng build --prod --aot --source-map",
+    "deploy-app": "npm run build-app && firebase deploy",
     "preinstall": "cd server && npm install",
     "postinstall": "npm run build-app",
     "pack:install": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-1.5.3.tgz --no-save",

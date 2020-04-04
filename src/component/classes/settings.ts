@@ -28,15 +28,13 @@ export const defaultDevSettings: IDevSettings = {
   throttle: 40, // if > 0, scroll event handling is throttled (ms)
   initDelay: 1, // if set, the Workflow initialization will be postponed (ms)
   initWindowDelay: 40, // if set and the entire window is scrollable, the Workflow init will be postponed (ms)
-  maxSynthScrollDelay: 450, // if > 0, synthetic scroll params will be reset after [value] (ms)
   changeOverflow: false, // if true, scroll will be disabled per each item's average size change
 };
 
 export const minDevSettings: IDevSettings = {
   throttle: 0,
   initDelay: 0,
-  initWindowDelay: 0,
-  maxSynthScrollDelay: 0
+  initWindowDelay: 0
 };
 
 export class Settings implements ISettings, IDevSettings {
@@ -61,7 +59,6 @@ export class Settings implements ISettings, IDevSettings {
   throttle: number;
   initDelay: number;
   initWindowDelay: number;
-  maxSynthScrollDelay: number;
   changeOverflow: boolean;
   inverse: boolean;
 

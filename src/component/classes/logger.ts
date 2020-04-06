@@ -166,6 +166,16 @@ export class Logger {
     }
   }
 
+  // logNow(...args: any[]) {
+  //   const immediateLog = this.immediateLog;
+  //   const debug = this.debug;
+  //   (this as any).debug = true;
+  //   (this as any).immediateLog = true;
+  //   this.log.apply(this, args);
+  //   (this as any).debug = debug;
+  //   (this as any).immediateLog = immediateLog;
+  // }
+
   logForce(...args: any[]) {
     if (this.debug) {
       if (!this.immediateLog && this.logs.length) {

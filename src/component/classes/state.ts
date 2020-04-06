@@ -33,7 +33,6 @@ export class State implements IState {
   startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
-  preAdjustPosition: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: IScrollState;

@@ -7,7 +7,7 @@ export default class Adjust {
 
   static run(scroller: Scroller) {
     const { workflow, state, viewport } = scroller;
-    state.preAdjustPosition = viewport.scrollPosition;
+    const preAdjustPosition = viewport.scrollPosition;
 
     // padding-elements adjustments
     const setPaddingsResult =
@@ -23,12 +23,12 @@ export default class Adjust {
     }
 
     // scroll position adjustments
-    Adjust.fixScrollPosition(scroller, setPaddingsResult);
+    Adjust.fixScrollPosition(scroller, setPaddingsResult, preAdjustPosition);
 
     // re-set scroll position (if changed) via animation frame
-    const position = viewport.scrollPosition;
-    if (state.preAdjustPosition !== position) {
-      viewport.setPositionSafe(state.preAdjustPosition, position, () =>
+    const { scrollPosition, previousPosition } = viewport;
+    if (preAdjustPosition !== scrollPosition && previousPosition !== scrollPosition) {
+      viewport.setPositionSafe(previousPosition, scrollPosition, () =>
          workflow.call({
           process: Process.adjust,
           status: ProcessStatus.done
@@ -100,10 +100,10 @@ export default class Adjust {
     return bwdPaddingAverageSizeItemsCount;
   }
 
-  static fixScrollPosition(scroller: Scroller, bwdPaddingAverageSizeItemsCount: number) {
+  static fixScrollPosition(scroller: Scroller, bwdPaddingAverageSizeItemsCount: number, preAdjustPosition: number) {
     const { viewport, buffer, state, state: { fetch, fetch: { items } } } = scroller;
     const newPosition = viewport.scrollPosition;
-    const posDiff = state.preAdjustPosition - newPosition;
+    const posDiff = preAdjustPosition - newPosition;
     let { negativeSize } = fetch;
 
     if (scroller.settings.windowViewport) {

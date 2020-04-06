@@ -9,6 +9,7 @@ export class Viewport {
 
   paddings: Paddings;
   startDelta: number;
+  previousPosition: number;
 
   readonly element: HTMLElement;
   readonly host: HTMLElement;
@@ -66,9 +67,12 @@ export class Viewport {
       this.logger.log(() => ['setting scroll position at', value, '[cancelled]']);
       return value;
     }
+    this.previousPosition = oldPosition;
     this.routines.setScrollPosition(this.scrollable, value);
     const position = this.scrollPosition;
-    this.logger.log(() => ['setting scroll position at', position]);
+    this.logger.log(() => [
+      'setting scroll position at', position, ...(position !== value ? [`(${value})`] : [])
+    ]);
     return position;
   }
 
@@ -80,8 +84,17 @@ export class Viewport {
     scrollState.syntheticFulfill = false;
     scrollState.animationFrameId =
       requestAnimationFrame(() => {
+        const diff = oldPos - this.scrollPosition;
+        if (diff > 0) {
+          newPos -= diff;
+          scrollState.syntheticPosition = newPos;
+        }
         scrollState.syntheticFulfill = true;
-        this.logger.log(() => ['setting scroll position at', newPos, '(synthetic fulfillment)']);
+        this.logger.log(() => [
+          'setting scroll position at', newPos,
+          ...(diff > 0 ? [`(${(newPos + diff)} - ${diff})`] : []),
+          '- synthetic fulfillment'
+        ]);
         this.routines.setScrollPosition(this.scrollable, newPos);
         done();
       });

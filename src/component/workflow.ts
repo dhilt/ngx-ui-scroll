@@ -26,7 +26,6 @@ export class Workflow {
   errors: WorkflowError[];
 
   readonly propagateChanges: Function;
-  readonly onScrollHandler: EventListener;
   private stateMachineMethods: StateMachineMethods;
   private dispose$: Subject<void>;
 
@@ -43,11 +42,6 @@ export class Workflow {
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];
-    this.onScrollHandler = event => this.callWorkflow({
-      process: Process.scroll,
-      status: ProcessStatus.start,
-      payload: { event }
-    });
     this.stateMachineMethods = {
       run: this.runProcess(),
       interrupt: this.interrupt.bind(this),
@@ -66,7 +60,7 @@ export class Workflow {
     this.scroller.init(this.dispose$);
     this.isInitialized = true;
 
-    // propagate the item list to the view
+    // propagate item list to the view
     this.scroller.buffer.$items.pipe(
       takeUntil(this.dispose$)
     ).subscribe(items => this.propagateChanges(items));
@@ -76,26 +70,17 @@ export class Workflow {
       takeUntil(this.dispose$)
     ).subscribe(this.process.bind(this));
 
-    this.initScrollEventListener();
-  }
-
-  initScrollEventListener() {
-    let scrollEventOptions: any = false;
-    try {
-      window.addEventListener(
-        'test', {} as EventListenerOrEventListenerObject, Object.defineProperty({}, 'passive', {
-          get: () => scrollEventOptions = { passive: false }
-        })
-      );
-    } catch (err) {
-    }
-    this.scroller.viewport.scrollEventElement.addEventListener(
-      'scroll', this.onScrollHandler, scrollEventOptions
-    );
+    // set up scroll event listener
+    const { scrollEventElement } = this.scroller.viewport;
+    const onScrollHandler: EventListener =
+      event => this.callWorkflow({
+        process: Process.scroll,
+        status: ProcessStatus.start,
+        payload: { event }
+      });
+    scrollEventElement.addEventListener('scroll', onScrollHandler);
     this.dispose$.subscribe(() =>
-      this.scroller.viewport.scrollEventElement.removeEventListener(
-        'scroll', this.onScrollHandler, scrollEventOptions
-      )
+      scrollEventElement.removeEventListener('scroll', onScrollHandler)
     );
   }
 
@@ -176,9 +161,7 @@ export class Workflow {
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
     adapter.cyclePending = false;
-    if (state.scrollState.scrollTimer === null) {
-      adapter.isLoading = false;
-    }
+    adapter.isLoading = false;
     this.finalize();
   }
 

@@ -15,57 +15,19 @@ export interface WindowScrollState {
 export interface ScrollEventData {
   time: number;
   position: number;
-  positionBefore: number | null;
-  direction: Direction;
-  handled: boolean;
+  direction: Direction | null;
 }
 
 export interface ScrollState {
-  firstScroll: boolean;
-  firstScrollTime: number;
-  lastScrollTime: number;
+  previous: ScrollEventData | null;
+  current: ScrollEventData | null;
+
   scrollTimer: ReturnType<typeof setTimeout> | null;
-  workflowTimer: ReturnType<typeof setTimeout> | null;
-  scroll: boolean;
-  keepScroll: boolean;
   window: WindowScrollState;
 
-  position: number;
-  time: number;
-  direction: Direction;
-
-  reset: Function;
-  getData: Function;
-  setData: Function;
-}
-
-export interface SyntheticScroll {
-  list: ScrollEventData[];
-  before: ScrollEventData | null;
-
-  isSet: boolean;
-  isDone: boolean;
-  position: number | null;
-  time: number | null;
-  direction: Direction | null;
-  handledPosition: number | null;
-  handledTime: number | null;
-  registeredPosition: number | null;
-  registeredTime: number | null;
-
-  reset: Function;
-  register: Function;
-  push: Function;
-  done: Function;
-  nearest: Function;
-}
-
-export interface WorkflowOptions {
-  empty: boolean;
-  scroll: boolean;
-  keepScroll: boolean;
-  byTimer: boolean;
-  noFetch: boolean;
+  syntheticPosition: number | null;
+  syntheticFulfill: boolean;
+  animationFrameId: number;
 
   reset: Function;
 }
@@ -79,7 +41,6 @@ export interface State {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
-  workflowOptions: WorkflowOptions;
 
   fetch: FetchModel;
   clip: ClipModel;
@@ -87,11 +48,9 @@ export interface State {
   startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
-  preAdjustPosition: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: ScrollState;
-  syntheticScroll: SyntheticScroll;
 
   time: number;
   loop: string;

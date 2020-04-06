@@ -3,8 +3,9 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Start {
 
-  static run(scroller: Scroller, process: Process) {
-    const { state, state: { workflowOptions, scrollState, fetch, clip, render }, adapter } = scroller;
+  static run(scroller: Scroller, process: Process, payload?: { process: Process }) {
+    const { state, state: { scrollState, fetch, clip, render }, adapter } = scroller;
+    const processToPass = payload && payload.process || process;
 
     adapter.loopPending = true;
     if (!fetch.simulate) {
@@ -14,13 +15,11 @@ export default class Start {
       clip.reset();
     }
     render.reset();
-    scrollState.scroll = workflowOptions.scroll || false;
-    scrollState.keepScroll = false;
 
     scroller.workflow.call({
       process: Process.start,
       status: ProcessStatus.next,
-      payload: { process, noFetch: workflowOptions.noFetch }
+      payload: { process: processToPass }
     });
   }
 

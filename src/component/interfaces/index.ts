@@ -26,7 +26,7 @@ import {
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
-import { WindowScrollState, ScrollEventData, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
+import { WindowScrollState, ScrollEventData, ScrollState, State } from './state';
 import { Process, ProcessStatus, ProcessSubject } from './process';
 import { ValidatorType, ValidatedValue, IValidator } from './validation';
 
@@ -61,8 +61,6 @@ export {
   WindowScrollState,
   ScrollEventData,
   ScrollState,
-  SyntheticScroll,
-  WorkflowOptions,
   State,
   Process,
   ProcessStatus,

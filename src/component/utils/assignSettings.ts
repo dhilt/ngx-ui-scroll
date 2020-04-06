@@ -96,11 +96,7 @@ export const assignDevSettings = (
   assignBoolean(target, devSettings, 'logTime', defaults);
   assignBoolean(target, devSettings, 'logProcessRun', defaults);
   assignMinimalNumeric(target, devSettings, 'throttle', defaults, minDevSettings, true);
-  assignBoolean(target, devSettings, 'inertia', defaults);
-  assignMinimalNumeric(target, devSettings, 'inertiaScrollDelay', defaults, minDevSettings, true);
-  assignMinimalNumeric(target, devSettings, 'inertiaScrollDelta', defaults, minDevSettings, true);
   assignMinimalNumeric(target, devSettings, 'initDelay', defaults, minDevSettings, true);
   assignMinimalNumeric(target, devSettings, 'initWindowDelay', defaults, minDevSettings, true);
-  assignMinimalNumeric(target, devSettings, 'maxSynthScrollDelay', defaults, minDevSettings, true);
   assignBoolean(target, devSettings, 'changeOverflow', defaults);
 };

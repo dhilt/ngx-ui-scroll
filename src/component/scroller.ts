@@ -89,20 +89,20 @@ export class Scroller {
     });
   }
 
-  purgeInnerLoopSubscriptions() {
+  purgeSubscriptions() {
     this.innerLoopSubscriptions.forEach((item: Subscription) => item.unsubscribe());
     this.innerLoopSubscriptions = [];
   }
 
-  purgeScrollTimers(localOnly?: boolean) {
+  purgeScrollTimers() {
     const { state: { scrollState } } = this;
     if (scrollState.scrollTimer) {
       clearTimeout(scrollState.scrollTimer);
       scrollState.scrollTimer = null;
     }
-    if (!localOnly && scrollState.workflowTimer) {
-      clearTimeout(scrollState.workflowTimer);
-      scrollState.workflowTimer = null;
+    if (scrollState.animationFrameId) {
+      cancelAnimationFrame(scrollState.animationFrameId);
+      scrollState.animationFrameId = 0;
     }
   }
 
@@ -111,7 +111,7 @@ export class Scroller {
       this.adapter.dispose();
     }
     this.buffer.dispose(forever);
-    this.purgeInnerLoopSubscriptions();
+    this.purgeSubscriptions();
     this.purgeScrollTimers();
   }
 

@@ -45,7 +45,6 @@ export default class Fix {
   }
 
   static setScrollPosition({ scroller: { state, viewport }, value }: IFixCall) {
-    state.syntheticScroll.reset();
     let result = value as number;
     if (value === -Infinity) {
       result = 0;

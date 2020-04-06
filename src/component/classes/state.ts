@@ -3,9 +3,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import {
   ItemAdapter,
   State as IState,
-  ScrollState as IScrollState,
-  SyntheticScroll as ISyntheticScroll,
-  WorkflowOptions as IWorkflowOptions
+  ScrollState as IScrollState
 } from '../interfaces/index';
 
 import { Settings } from './settings';
@@ -13,8 +11,7 @@ import { Logger } from './logger';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
-import { WorkflowOptions } from './state/workflowOptions';
-import { ScrollState, SyntheticScroll } from './state/scroll';
+import { ScrollState } from './state/scroll';
 import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
@@ -29,7 +26,6 @@ export class State implements IState {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
-  workflowOptions: IWorkflowOptions;
 
   fetch: FetchModel;
   clip: ClipModel;
@@ -37,11 +33,9 @@ export class State implements IState {
   startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
-  preAdjustPosition: number;
   bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
-  syntheticScroll: ISyntheticScroll;
 
   get time(): number {
     return Number(new Date()) - this.initTime;
@@ -65,7 +59,6 @@ export class State implements IState {
     this.workflowCycleCount = 1;
     this.isInitialWorkflowCycle = false;
     this.countDone = 0;
-    this.workflowOptions = new WorkflowOptions(settings);
 
     this.setCurrentStartIndex(settings.startIndex);
     this.fetch = new FetchModel();
@@ -74,7 +67,6 @@ export class State implements IState {
     this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
-    this.syntheticScroll = new SyntheticScroll(logger);
   }
 
   setCurrentStartIndex(newStartIndex: any) {

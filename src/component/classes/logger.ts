@@ -14,8 +14,6 @@ export class Logger {
   readonly getWorkflowCycleData: Function;
   readonly getLoop: Function;
   readonly getLoopNext: Function;
-  readonly getWorkflowOptions: Function;
-  readonly getSynthScrollState: Function;
   readonly getScrollPosition: Function;
   private logs: any[] = [];
 
@@ -47,8 +45,6 @@ export class Logger {
     this.getLoopNext = (): string => scroller.state.loopNext;
     this.getWorkflowCycleData = (): string =>
       `${settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
-    this.getWorkflowOptions = () => scroller.state.workflowOptions;
-    this.getSynthScrollState = () => scroller.state.syntheticScroll;
     this.getScrollPosition = (element: HTMLElement) => scroller.routines.getScrollPosition(element);
     this.log(() => `uiScroll Workflow has been started (v${version}, instance ${settings.instanceIndex})`);
   }
@@ -80,17 +76,6 @@ export class Logger {
     }
   }
 
-  synth(token?: string) {
-    this.log(() => {
-      const synth = this.getSynthScrollState();
-      return [
-        ...(token ? [token + ';'] : []),
-        'registered', synth.registeredPosition,
-        '/ queued', synth.list.map((i: any) => i.position)
-      ];
-    });
-  }
-
   prepareForLog(data: any) {
     return data instanceof Event
       ? this.getScrollPosition(data.target)
@@ -102,26 +87,18 @@ export class Logger {
       return;
     }
     const { process, status } = data;
-    const options = this.getWorkflowOptions();
-
-    // standard process log
-    // const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
-    // const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
-    // this.log(() => [processLog, ...styles, data.payload, ...(!options.empty ? [options] : [])]);
 
     // inner loop start-end log
     const loopLog: string[] = [];
     if (
-      process === Process.init && status === Status.next ||
-      process === Process.scroll && status === Status.next && options.keepScroll ||
-      process === Process.end && status === Status.next && options.byTimer
+      process === Process.init && status === Status.next
     ) {
       loopLog.push(`%c---=== loop ${this.getLoopNext()} start`);
     } else if (
-      process === Process.end && !options.byTimer
+      process === Process.end
     ) {
       loopLog.push(`%c---=== loop ${this.getLoop()} done`);
-      if (status === Status.next && !(options.keepScroll)) {
+      if (status === Status.next) {
         loopLog[0] += `, loop ${this.getLoopNext()} start`;
       }
     }
@@ -188,6 +165,16 @@ export class Logger {
       }
     }
   }
+
+  // logNow(...args: any[]) {
+  //   const immediateLog = this.immediateLog;
+  //   const debug = this.debug;
+  //   (this as any).debug = true;
+  //   (this as any).immediateLog = true;
+  //   this.log.apply(this, args);
+  //   (this as any).debug = debug;
+  //   (this as any).immediateLog = immediateLog;
+  // }
 
   logForce(...args: any[]) {
     if (this.debug) {

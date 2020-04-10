@@ -158,10 +158,7 @@ describe('Validation', () => {
   const token = 'test';
   const run = (context: any, validators: IValidator[]) =>
     validate(context, {
-      [token]: {
-        name: token,
-        validators
-      }
+      [token]: { validators }
     }).isValid;
 
   describe('[Context]', () => {
@@ -195,23 +192,15 @@ describe('Validation', () => {
 
     it('should not pass empty context or empty params', () => {
       expect(validate({}, {
-        [opt1]: {
-          name: opt1,
-          validators: [ONE_OF_MUST([opt2])]
-        },
-        [opt2]: {
-          name: opt2,
-          validators: [ONE_OF_MUST([opt1])]
-        }
+        [opt1]: { validators: [ONE_OF_MUST([opt2])] },
+        [opt2]: { validators: [ONE_OF_MUST([opt1])] }
       }).isValid).toBe(false);
 
       expect(validate({}, {
         [opt1]: {
-          name: opt1,
           validators: [ONE_OF_MUST([])]
         },
         [opt2]: {
-          name: opt2,
           validators: [ONE_OF_MUST([])]
         }
       }).isValid).toBe(false);
@@ -221,27 +210,15 @@ describe('Validation', () => {
       expect(validate({
         [opt1]: 1, [opt2]: 2
       }, {
-        [opt1]: {
-          name: opt1,
-          validators: [ONE_OF_MUST([opt2])]
-        },
-        [opt2]: {
-          name: opt2,
-          validators: [ONE_OF_MUST([opt1])]
-        }
+        [opt1]: { validators: [ONE_OF_MUST([opt2])] },
+        [opt2]: { validators: [ONE_OF_MUST([opt1])] }
       }).isValid).toBe(false);
 
       const result = validate({
         [opt1]: 1, [opt2]: 2
       }, {
-        [opt1]: {
-          name: opt1,
-          validators: [ONE_OF_MUST([opt2, 'opt3'])]
-        },
-        [opt2]: {
-          name: opt2,
-          validators: [ONE_OF_MUST(['opt3'])]
-        }
+        [opt1]: { validators: [ONE_OF_MUST([opt2, 'opt3'])] },
+        [opt2]: { validators: [ONE_OF_MUST(['opt3'])] }
       });
       expect(result.isValid).toBe(false);
       expect(result.params[opt1].isValid).toBe(false);
@@ -252,14 +229,8 @@ describe('Validation', () => {
       const result = validate({
         [opt1]: 1
       }, {
-        [opt1]: {
-          name: opt1,
-          validators: [ONE_OF_MUST([opt2])]
-        },
-        [opt2]: {
-          name: opt2,
-          validators: [ONE_OF_MUST([opt1])]
-        }
+        [opt1]: { validators: [ONE_OF_MUST([opt2])] },
+        [opt2]: { validators: [ONE_OF_MUST([opt1])] }
       });
       expect(result.isValid).toBe(true);
       expect(result.params[opt1].isSet).toBe(true);
@@ -284,10 +255,7 @@ describe('Validation', () => {
       expect(validate({
         [token]: []
       }, {
-        [token]: {
-          name: token,
-          validators: [ITEM_LIST]
-        }
+        [token]: { validators: [ITEM_LIST] }
       }).isValid).toBe(false);
     });
 
@@ -300,10 +268,7 @@ describe('Validation', () => {
         expect(validate({
           [token]: value
         }, {
-          [token]: {
-            name: token,
-            validators: [ITEM_LIST]
-          }
+          [token]: { validators: [ITEM_LIST] }
         }).isValid).toBe(false)
       );
     });
@@ -318,10 +283,7 @@ describe('Validation', () => {
         expect(validate({
           [token]: value
         }, {
-          [token]: {
-            name: token,
-            validators: [ITEM_LIST]
-          }
+          [token]: { validators: [ITEM_LIST] }
         }).isValid).toBe(true)
       );
     });

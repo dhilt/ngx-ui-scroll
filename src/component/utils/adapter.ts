@@ -187,54 +187,43 @@ const {
 } = VALIDATORS;
 
 const FIX_METHOD_PARAMS: IAdapterMethodParams = {
-  scrollPosition: {
-    name: 'scrollPosition',
+  'scrollPosition': {
     validators: [INTEGER_UNLIMITED]
   },
-  minIndex: {
-    name: 'minIndex',
+  'minIndex': {
     validators: [INTEGER_UNLIMITED]
   },
-  maxIndex: {
-    name: 'maxIndex',
+  'maxIndex': {
     validators: [INTEGER_UNLIMITED]
   },
-  updater: {
-    name: 'updater',
+  'updater': {
     validators: [FUNC_WITH_X_ARGUMENTS(1)]
   }
 };
 
 const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
-  items: {
-    name: 'items',
+  'items': {
     validators: [MANDATORY, ITEM_LIST]
   },
-  before: {
-    name: 'before',
+  'before': {
     validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST(['after'])]
   },
-  after: {
-    name: 'after',
+  'after': {
     validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST(['before'])]
   },
-  decrease: {
-    name: 'decrease',
+  'decrease': {
     validators: [BOOLEAN]
   }
 };
 
 const RESET_METHOD_PARAMS: IAdapterMethodParams = {
-  get: {
-    name: 'get',
+  'get': {
     validators: [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)]
   },
-  settings: {
-    name: 'settings',
+  'settings': {
     validators: [OBJECT]
   },
-  devSettings: {
-    name: 'devSettings',
+  'devSettings': {
     validators: [OBJECT]
   }
 };

@@ -80,7 +80,6 @@ export interface IAdapter {
 }
 
 export interface IAdapterMethodParam {
-  name: string;
   validators: IValidator[];
   call?: Function;
   value?: any;

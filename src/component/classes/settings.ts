@@ -1,41 +1,5 @@
-import { Settings as ISettings, DevSettings as IDevSettings } from '../interfaces/index';
-import { assignSettings, assignDevSettings } from '../utils/index';
-
-export const defaultSettings: ISettings = {
-  adapter: false,
-  startIndex: 1,
-  minIndex: -Infinity,
-  maxIndex: Infinity,
-  bufferSize: 5,
-  padding: 0.5,
-  infinite: false,
-  horizontal: false,
-  windowViewport: false,
-  inverse: false // [experimental] if true, backward padding element will have a priority when filling the viewport in case of lack of items
-};
-
-export const minSettings: ISettings = {
-  itemSize: 1,
-  bufferSize: 1,
-  padding: 0.01
-};
-
-export const defaultDevSettings: IDevSettings = {
-  debug: false, // if true, logging is enabled; need to turn off when release
-  immediateLog: true, // if false, logging is not immediate and could be done via Workflow.logForce call
-  logTime: false, // if true, time differences will be logged
-  logProcessRun: false, // if true, process fire/run info will be logged
-  throttle: 40, // if > 0, scroll event handling is throttled (ms)
-  initDelay: 1, // if set, the Workflow initialization will be postponed (ms)
-  initWindowDelay: 40, // if set and the entire window is scrollable, the Workflow init will be postponed (ms)
-  changeOverflow: false, // if true, scroll will be disabled per each item's average size change
-};
-
-export const minDevSettings: IDevSettings = {
-  throttle: 0,
-  initDelay: 0,
-  initWindowDelay: 0
-};
+import { Settings as ISettings, DevSettings as IDevSettings, ICommonProps } from '../interfaces/index';
+import { SETTINGS, DEV_SETTINGS, validate } from '../utils/index';
 
 export class Settings implements ISettings, IDevSettings {
 
@@ -50,17 +14,17 @@ export class Settings implements ISettings, IDevSettings {
   infinite: boolean;
   horizontal: boolean;
   windowViewport: boolean;
+  inverse: boolean;  // [experimental] if true, backward padding element will have a priority when filling the viewport in case of lack of items
 
   // development settings
-  debug: boolean;
-  immediateLog: boolean;
-  logTime: boolean;
-  logProcessRun: boolean;
-  throttle: number;
-  initDelay: number;
-  initWindowDelay: number;
-  changeOverflow: boolean;
-  inverse: boolean;
+  debug: boolean; // if true, logging is enabled; need to turn off when release
+  immediateLog: boolean; // if false, logging is not immediate and could be done via Workflow.logForce call
+  logTime: boolean; // if true, time differences will be logged
+  logProcessRun: boolean; // if true, process fire/run info will be logged
+  throttle: number; // if > 0, scroll event handling is throttled (ms)
+  initDelay: number; // if set, the Workflow initialization will be postponed (ms)
+  initWindowDelay: number; // if set and the entire window is scrollable, the Workflow init will be postponed (ms)
+  changeOverflow: boolean; // if true, scroll will be disabled per each item's average size change
 
   // internal settings, managed by scroller itself
   instanceIndex: number;
@@ -69,11 +33,21 @@ export class Settings implements ISettings, IDevSettings {
   constructor(
     settings: ISettings | undefined, devSettings: IDevSettings | undefined, instanceIndex: number
   ) {
-    assignSettings(this, settings || {}, defaultSettings, minSettings);
-    assignDevSettings(this, devSettings || {}, defaultDevSettings, minDevSettings);
+    this.parseInput(settings, SETTINGS);
+    this.parseInput(devSettings, DEV_SETTINGS);
     this.instanceIndex = instanceIndex;
     this.initializeDelay = this.getInitializeDelay();
     // todo: min/max indexes must be ignored if infinite mode is enabled ??
+  }
+
+  parseInput(input: ISettings | IDevSettings | undefined, props: ICommonProps<any>) {
+    if (typeof input !== 'object') {
+      input = {};
+    }
+    const result = validate(input, props);
+    Object.entries(result.params).forEach(([key, par]) => {
+      (this as any)[key] = par.isValid ? par.value : (props)[key].defaultValue;
+    });
   }
 
   getInitializeDelay(): number {

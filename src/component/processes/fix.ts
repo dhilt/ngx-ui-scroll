@@ -69,15 +69,14 @@ export default class Fix {
   }
 
   static getCallMethod(token: string): Function | null {
-    const { scrollPosition, minIndex, maxIndex, updater } = FIX;
     switch (token) {
-      case scrollPosition.name:
+      case 'scrollPosition':
         return Fix.setScrollPosition;
-      case minIndex.name:
+      case 'minIndex':
         return Fix.setMinIndex;
-      case maxIndex.name:
+      case 'maxIndex':
         return Fix.setMaxIndex;
-      case updater.name:
+      case 'updater':
         return Fix.updateItems;
     }
     return null;
@@ -89,12 +88,12 @@ export default class Fix {
     }
     return Object.keys(FIX).reduce((acc: IParam[], key: string) => {
       const param = FIX[key];
-      const { name, validators } = param;
-      const error = `failed: can't set ${name}`;
-      if (options.hasOwnProperty(name)) {
-        const parsed = validateOne(options, name, validators);
+      const { validators } = param;
+      const error = `failed: can't set ${key}`;
+      if (options.hasOwnProperty(key)) {
+        const parsed = validateOne(options, key, validators);
         if (parsed.isValid) {
-          const call = Fix.getCallMethod(name);
+          const call = Fix.getCallMethod(key);
           if (call) {
             return [...acc, { ...param, value: parsed.value, call }];
           } else {

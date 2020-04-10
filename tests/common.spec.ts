@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 
 import { Settings, Direction, IAdapter } from '../src/component/interfaces';
-import { defaultSettings, minSettings } from '../src/component/classes/settings';
+import { SETTINGS } from '../src/component/utils';
 import { UiScrollComponent } from '../src/ui-scroll.component';
 import { Workflow } from '../src/component/workflow';
 
@@ -13,6 +13,11 @@ import { defaultDatasourceClass, generateDatasourceClass } from './scaffolding/d
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 import { makeTest } from './scaffolding/runner';
+
+const defaultSettings = Object.entries(SETTINGS).reduce((acc, [key, prop]) => ({
+  ...acc,
+  [key]: prop.defaultValue
+}), {} as any);
 
 describe('Common Spec', () => {
 
@@ -128,7 +133,7 @@ describe('Common Spec', () => {
       config: { datasourceSettings: { bufferSize: -1 } },
       title: 'should fallback bufferSize to the minimum',
       it: (misc: Misc) => (done: Function) => {
-        expect(misc.scroller.settings.bufferSize).toEqual(minSettings.bufferSize);
+        expect(misc.scroller.settings.bufferSize).toEqual(1);
         done();
       }
     });
@@ -146,7 +151,7 @@ describe('Common Spec', () => {
       config: { datasourceSettings: { padding: -0.1 } },
       title: 'should fallback padding to the minimum',
       it: (misc: Misc) => (done: Function) => {
-        expect(misc.scroller.settings.padding).toEqual(minSettings.padding);
+        expect(misc.scroller.settings.padding).toEqual(0.01);
         done();
       }
     });

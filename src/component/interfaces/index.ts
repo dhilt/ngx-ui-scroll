@@ -28,7 +28,15 @@ import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { WindowScrollState, ScrollEventData, ScrollState, State } from './state';
 import { Process, ProcessStatus, ProcessSubject } from './process';
-import { ValidatorType, ValidatedValue, IValidator } from './validation';
+import {
+  ValidatorType,
+  ValidatedValue,
+  IValidator,
+  ICommonProp,
+  ICommonProps,
+  IValidatedCommonProps,
+  IValidatedData,
+} from './validation';
 
 export {
   IDatasource,
@@ -68,4 +76,8 @@ export {
   ValidatorType,
   ValidatedValue,
   IValidator,
+  ICommonProp,
+  ICommonProps,
+  IValidatedCommonProps,
+  IValidatedData,
 };

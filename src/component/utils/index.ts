@@ -1,16 +1,15 @@
 import { checkDatasource } from './checkDatasource';
-import { assignSettings, assignDevSettings } from './assignSettings';
-import { VALIDATORS, AdapterValidatedMethodData, validateOne, validate } from './validation';
+import { VALIDATORS, validateOne, validate } from './validation';
+import { SETTINGS, DEV_SETTINGS } from './settings';
 import { itemAdapterEmpty, ADAPTER_PROPS, ADAPTER_METHODS_PARAMS } from './adapter';
 
 export {
   checkDatasource,
-  assignSettings,
-  assignDevSettings,
   VALIDATORS,
-  AdapterValidatedMethodData,
   validateOne,
   validate,
+  SETTINGS,
+  DEV_SETTINGS,
   itemAdapterEmpty,
   ADAPTER_PROPS,
   ADAPTER_METHODS_PARAMS

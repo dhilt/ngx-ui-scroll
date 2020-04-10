@@ -22,10 +22,10 @@ export default class Reset {
         return;
       }
       const constructed = params instanceof Datasource;
-      Object.entries(RESET).forEach(([key, { name }]) => {
-        const param = methodData.params[name];
-        if (param.isSet || (constructed && datasource.hasOwnProperty(name))) {
-          (datasource as any)[name] = param.value;
+      Object.keys(RESET).forEach(key => {
+        const param = methodData.params[key];
+        if (param.isSet || (constructed && datasource.hasOwnProperty(key))) {
+          (datasource as any)[key] = param.value;
         }
       });
     }

@@ -5,6 +5,7 @@ import {
   IValidatedData,
   IValidatedCommonProps,
   ICommonProps,
+  ICommonProp,
 } from '../interfaces/index';
 
 const getNumber = (value: any): number =>
@@ -282,15 +283,18 @@ const shouldSkip = ({ type }: IValidator, value: any) =>
 export const runValidator = (
   current: ValidatedValue,
   validator: IValidator,
-  context?: any,
-  defaultValue?: any
+  context: any,
+  prop: ICommonProp
 ): ValidatedValue => {
+  let result: ValidatedValue;
   const { value, errors } = current;
+  const { defaultValue } = prop;
   const _value = value === void 0 && defaultValue !== void 0 ? defaultValue : value;
   if (shouldSkip(validator, _value)) {
-    return { ...current, isSet: false };
+    result = { ...current, isSet: false };
+  } else {
+    result = validator.method(_value, context);
   }
-  const result = validator.method(_value, context);
   const _errors = [...errors, ...result.errors];
   return {
     value: result.value,
@@ -301,12 +305,16 @@ export const runValidator = (
 };
 
 export const validateOne = (
-  context: any, name: string, validators: IValidator[], defaultValue?: any
+  context: any, name: string, prop: ICommonProp
 ): ValidatedValue =>
-  validators.reduce((acc, validator) => ({
-    ...acc,
-    ...runValidator(acc, validator, context, defaultValue)
-  }), {
+  prop.validators.reduce((acc, validator) => {
+    const result = runValidator(acc, validator, context, prop);
+    if (!result.isValid && prop.fallback && prop.defaultValue !== void 0) {
+      result.isValid = true;
+      result.value = prop.defaultValue;
+    }
+    return { ...acc, ...result };
+  }, {
     value: context[name],
     isSet: false,
     isValid: true,
@@ -320,10 +328,8 @@ export const validate = (
   if (!data.isValid) {
     return data;
   }
-  Object.keys(params).forEach((key: string) => {
-    const { validators } = params[key];
-    const defaultValue = (params[key] as any).defaultValue;
-    const parsed = validateOne(context, key, validators, defaultValue);
+  Object.entries(params).forEach(([key, prop]) => {
+    const parsed = validateOne(context, key, prop);
     data.setParam(key, parsed);
   });
   return data;

@@ -22,6 +22,11 @@ const configByDirectionList = configList.map((config: TestBedConfig, index: numb
   custom: { forward: index % 2 === 0, backward: index % 2 !== 0 }
 }));
 
+configByDirectionList.push({
+  ...configByDirectionList[0],
+  custom: { ...configByDirectionList[0].custom, forward: true, backward: true }
+});
+
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
 export const getItemsCounter = (
@@ -45,12 +50,15 @@ export const getItemsCounter = (
   itemsCounter.forward.padding = (lastIndex - forward.index) * itemSize;
 
   if (clipOptions) {
-    if (clipOptions.forwardOnly) {
-      backward.padding = 0;
-      backward.index = firstIndex;
-    } else {
-      forward.padding = 0;
-      forward.index = lastIndex;
+    const { backwardOnly, forwardOnly } = clipOptions;
+    if (!backwardOnly || !forwardOnly) { // only one option is allowed
+      if (forwardOnly) {
+        backward.padding = 0;
+        backward.index = firstIndex;
+      } else {
+        forward.padding = 0;
+        forward.index = lastIndex;
+      }
     }
   }
   return itemsCounter;
@@ -91,12 +99,14 @@ const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => (done: 
 };
 
 const getClipArgument = ({ custom }: TestBedConfig): any => {
-  let argument;
+  let argument: any;
   if (custom && custom.forward) {
-    argument = { forwardOnly: true };
+    argument = argument || {};
+    argument.forwardOnly = true;
   }
   if (custom && custom.backward) {
-    argument = { backwardOnly: true };
+    argument = argument || {};
+    argument.backwardOnly = true;
   }
   return argument;
 };

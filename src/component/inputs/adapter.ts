@@ -11,28 +11,37 @@ const {
   FUNC_WITH_X_ARGUMENTS,
   FUNC_WITH_X_AND_MORE_ARGUMENTS,
   ONE_OF_MUST,
+  ONE_OF_CAN,
 } = VALIDATORS;
 
-export enum AdapterFixParams {
-  scrollPosition = 'scrollPosition',
-  minIndex = 'minIndex',
-  maxIndex = 'maxIndex',
-  updater = 'updater',
+const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
+  [DatasourceProps.get]: {
+    validators: [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)]
+  },
+  [DatasourceProps.settings]: {
+    validators: [OBJECT]
+  },
+  [DatasourceProps.devSettings]: {
+    validators: [OBJECT]
+  }
+};
+
+enum AdapterClipParams {
+  backwardOnly = 'backwardOnly',
+  forwardOnly = 'forwardOnly',
 }
 
-const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
-  [AdapterFixParams.scrollPosition]: {
-    validators: [INTEGER_UNLIMITED]
+const CLIP_METHOD_PARAMS: ICommonProps<AdapterClipParams> = {
+  [AdapterClipParams.backwardOnly]: {
+    validators: [BOOLEAN, ONE_OF_CAN([AdapterClipParams.forwardOnly])],
+    defaultValue: false,
+    fallback: true
   },
-  [AdapterFixParams.minIndex]: {
-    validators: [INTEGER_UNLIMITED]
+  [AdapterClipParams.forwardOnly]: {
+    validators: [BOOLEAN, ONE_OF_CAN([AdapterClipParams.backwardOnly])],
+    defaultValue: false,
+    fallback: true
   },
-  [AdapterFixParams.maxIndex]: {
-    validators: [INTEGER_UNLIMITED]
-  },
-  [AdapterFixParams.updater]: {
-    validators: [FUNC_WITH_X_ARGUMENTS(1)]
-  }
 };
 
 enum AdapterInsertParams {
@@ -57,24 +66,38 @@ const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
   }
 };
 
-const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
-  [DatasourceProps.get]: {
-    validators: [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)]
+export enum AdapterFixParams {
+  scrollPosition = 'scrollPosition',
+  minIndex = 'minIndex',
+  maxIndex = 'maxIndex',
+  updater = 'updater',
+}
+
+const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
+  [AdapterFixParams.scrollPosition]: {
+    validators: [INTEGER_UNLIMITED]
   },
-  [DatasourceProps.settings]: {
-    validators: [OBJECT]
+  [AdapterFixParams.minIndex]: {
+    validators: [INTEGER_UNLIMITED]
   },
-  [DatasourceProps.devSettings]: {
-    validators: [OBJECT]
+  [AdapterFixParams.maxIndex]: {
+    validators: [INTEGER_UNLIMITED]
+  },
+  [AdapterFixParams.updater]: {
+    validators: [FUNC_WITH_X_ARGUMENTS(1)]
   }
 };
 
-interface IAdapterMethods {
-  [key: string]: ICommonProps<any>;
-}
+export const AdapterMethods = {
+  Reset: AdapterInsertParams,
+  Clip: AdapterClipParams,
+  Insert: AdapterInsertParams,
+  Fix: AdapterFixParams,
+};
 
-export const ADAPTER_METHODS: IAdapterMethods = {
-  FIX: FIX_METHOD_PARAMS,
-  INSERT: INSERT_METHOD_PARAMS,
+export const ADAPTER_METHODS = {
   RESET: RESET_METHOD_PARAMS,
+  CLIP: CLIP_METHOD_PARAMS,
+  INSERT: INSERT_METHOD_PARAMS,
+  FIX: FIX_METHOD_PARAMS,
 };

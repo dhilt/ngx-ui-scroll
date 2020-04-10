@@ -45,9 +45,12 @@ describe('Input Params Validation', () => {
       { value: null, parsed: NaN },
     ];
 
+    const intProp = { validators: [INTEGER] };
+    const intUnlimitedProp = { validators: [INTEGER_UNLIMITED] };
+
     it('should pass limited integer', (done: Function) => {
       integerPassInputs.forEach(input => {
-        const parsed = validateOne(input, 'value', [INTEGER]);
+        const parsed = validateOne(input, 'value', intProp);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -63,7 +66,7 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: NaN },
       ];
       inputs.forEach(input => {
-        const parsed = validateOne(input, 'value', [INTEGER]);
+        const parsed = validateOne(input, 'value', intProp);
         expect(parsed).toEqual({
           value: input.parsed,
           isSet: true,
@@ -83,7 +86,7 @@ describe('Input Params Validation', () => {
         { value: '-Infinity', parsed: -Infinity },
       ];
       inputs.forEach(input => {
-        const parsed = validateOne(input, 'value', [INTEGER_UNLIMITED]);
+        const parsed = validateOne(input, 'value', intUnlimitedProp);
         expect(parsed.value).toEqual(input.parsed);
         expect(parsed.isValid).toEqual(true);
       });
@@ -92,7 +95,7 @@ describe('Input Params Validation', () => {
 
     it('should block non unlimited integer', (done: Function) => {
       integerBlockInputs.forEach(input => {
-        const parsed = validateOne(input, 'value', [INTEGER_UNLIMITED]);
+        const parsed = validateOne(input, 'value', intUnlimitedProp);
         expect(parsed).toEqual({
           value: input.parsed,
           isSet: true,
@@ -107,13 +110,14 @@ describe('Input Params Validation', () => {
   describe('[Iterator callback]', () => {
     it('should pass only one-argument function', (done: Function) => {
       const badInputs = [1, true, {}, 'test', () => null, (a: any, b: any) => null];
+      const funcProp = { validators: [FUNC_WITH_X_ARGUMENTS(1)] };
       badInputs.forEach(input =>
         expect(
-          validateOne({ value: input }, 'value', [FUNC_WITH_X_ARGUMENTS(1)]).isValid
+          validateOne({ value: input }, 'value', funcProp).isValid
         ).toEqual(false)
       );
       expect(
-        validateOne({ value: (item: any) => null }, 'value', [FUNC_WITH_X_ARGUMENTS(1)]).isValid
+        validateOne({ value: (item: any) => null }, 'value', funcProp).isValid
       ).toEqual(true);
       done();
     });
@@ -123,30 +127,31 @@ describe('Input Params Validation', () => {
     const value = 1;
     const test = 2;
     const add = 3;
+    const getProp = (list: string[]) => ({ validators: [ONE_OF_CAN(list)] });
 
     it('should pass only one of twos', (done: Function) => {
-      expect(validateOne({ value }, 'value', [ONE_OF_CAN(['value'])]).isValid).toEqual(false);
-      expect(validateOne({ value }, 'value', [ONE_OF_CAN(['test'])]).isValid).toEqual(true);
-      expect(validateOne({ value }, 'test', [ONE_OF_CAN(['value'])]).isValid).toEqual(true);
-      expect(validateOne({ value }, 'test', [ONE_OF_CAN(['test'])]).isValid).toEqual(true);
-      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['value'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test }, 'test', [ONE_OF_CAN(['value'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['test'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test }, 'test', [ONE_OF_CAN(['test'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test }, 'test', [ONE_OF_CAN(['testX'])]).isValid).toEqual(true);
+      expect(validateOne({ value }, 'value', getProp(['value'])).isValid).toEqual(false);
+      expect(validateOne({ value }, 'value', getProp(['test'])).isValid).toEqual(true);
+      expect(validateOne({ value }, 'test', getProp(['value'])).isValid).toEqual(true);
+      expect(validateOne({ value }, 'test', getProp(['test'])).isValid).toEqual(true);
+      expect(validateOne({ value, test }, 'value', getProp(['value'])).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'test', getProp(['value'])).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'value', getProp(['test'])).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'test', getProp(['test'])).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'test', getProp(['testX'])).isValid).toEqual(true);
       done();
     });
 
     it('should pass only one of many', (done: Function) => {
-      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['value', 'add'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['test', 'value'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test, add }, 'value', [ONE_OF_CAN(['test', 'valueX'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(false);
-      expect(validateOne({ value, test }, 'value', [ONE_OF_CAN(['testX', 'addX'])]).isValid).toEqual(true);
-      expect(validateOne({ value }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(true);
-      expect(validateOne({ test }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(true);
-      expect(validateOne({ test, add }, 'value', [ONE_OF_CAN(['test', 'add'])]).isValid).toEqual(true);
+      expect(validateOne({ value, test, add }, 'value', getProp(['test', 'add'])).isValid).toEqual(false);
+      expect(validateOne({ value, test, add }, 'value', getProp(['value', 'add'])).isValid).toEqual(false);
+      expect(validateOne({ value, test, add }, 'value', getProp(['test', 'value'])).isValid).toEqual(false);
+      expect(validateOne({ value, test, add }, 'value', getProp(['test', 'valueX'])).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'value', getProp(['test', 'add'])).isValid).toEqual(false);
+      expect(validateOne({ value, test }, 'value', getProp(['testX', 'addX'])).isValid).toEqual(true);
+      expect(validateOne({ value }, 'value', getProp(['test', 'add'])).isValid).toEqual(true);
+      expect(validateOne({ test }, 'value', getProp(['test', 'add'])).isValid).toEqual(true);
+      expect(validateOne({ test, add }, 'value', getProp(['test', 'add'])).isValid).toEqual(true);
       done();
     });
   });

@@ -46,4 +46,5 @@ export interface IValidatedData {
   isValid: boolean;
   errors: string[];
   params: IValidatedCommonProps<any>;
+  showErrors: Function;
 }

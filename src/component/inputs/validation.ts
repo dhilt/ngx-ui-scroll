@@ -273,6 +273,12 @@ export class ValidatedData implements IValidatedData {
     this.params[token] = value;
     this.setValidity();
   }
+
+  showErrors(): string {
+    return this.errors.length
+      ? 'validation failed: ' + this.errors.join(', ')
+      : '';
+  }
 }
 
 const shouldSkip = ({ type }: IValidator, value: any) =>

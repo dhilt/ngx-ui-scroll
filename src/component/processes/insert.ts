@@ -13,7 +13,7 @@ export default class Insert {
 
     const methodData = validate(options, INSERT);
     if (!methodData.isValid) {
-      scroller.logger.log(() => methodData.errors.join(', '));
+      scroller.logger.log(() => methodData.showErrors());
       scroller.workflow.call({
         process: Process.insert,
         status: ProcessStatus.error,

@@ -66,7 +66,7 @@ const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
   }
 };
 
-export enum AdapterFixParams {
+enum AdapterFixParams {
   scrollPosition = 'scrollPosition',
   minIndex = 'minIndex',
   maxIndex = 'maxIndex',

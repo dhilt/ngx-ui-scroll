@@ -13,7 +13,7 @@ export default class Reset {
     if (params) {
       const methodData = validate(params, RESET);
       if (!methodData.isValid) {
-        scroller.logger.log(() => methodData.errors.join(', '));
+        scroller.logger.log(() => methodData.showErrors());
         scroller.workflow.call({
           process: Process.reset,
           status: ProcessStatus.error,

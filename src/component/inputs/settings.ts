@@ -1,19 +1,7 @@
 import { VALIDATORS } from './validation';
-
 import { ICommonProps } from '../interfaces/index';
 
-const {
-  MANDATORY,
-  NUMBER,
-  INTEGER,
-  INTEGER_UNLIMITED,
-  MORE_OR_EQUAL,
-  BOOLEAN,
-  OBJECT,
-  ITEM_LIST,
-  FUNC_WITH_X_ARGUMENTS,
-  FUNC_WITH_X_AND_MORE_ARGUMENTS,
-} = VALIDATORS;
+const { NUMBER, INTEGER, INTEGER_UNLIMITED, MORE_OR_EQUAL, BOOLEAN } = VALIDATORS;
 
 enum Settings {
   adapter = 'adapter',

@@ -4,6 +4,7 @@ import { ICommonProps } from '../interfaces/index';
 
 const {
   MANDATORY,
+  INTEGER,
   INTEGER_UNLIMITED,
   BOOLEAN,
   OBJECT,
@@ -24,6 +25,26 @@ const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
   [DatasourceProps.devSettings]: {
     validators: [OBJECT]
   }
+};
+
+enum AdapterReloadParams {
+  reloadIndex = 'reloadIndex',
+}
+
+const RELOAD_METHOD_PARAMS: ICommonProps<AdapterReloadParams> = {
+  [AdapterReloadParams.reloadIndex]: {
+    validators: [INTEGER]
+  },
+};
+
+enum AdapterRemoveParams {
+  predicate = 'predicate',
+}
+
+const REMOVE_METHOD_PARAMS: ICommonProps<AdapterRemoveParams> = {
+  [AdapterRemoveParams.predicate]: {
+    validators: [MANDATORY, FUNC_WITH_X_ARGUMENTS(1)]
+  },
 };
 
 enum AdapterClipParams {
@@ -90,6 +111,7 @@ const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
 
 export const AdapterMethods = {
   Reset: AdapterInsertParams,
+  Reload: AdapterReloadParams,
   Clip: AdapterClipParams,
   Insert: AdapterInsertParams,
   Fix: AdapterFixParams,
@@ -97,6 +119,8 @@ export const AdapterMethods = {
 
 export const ADAPTER_METHODS = {
   RESET: RESET_METHOD_PARAMS,
+  RELOAD: RELOAD_METHOD_PARAMS,
+  REMOVE: REMOVE_METHOD_PARAMS,
   CLIP: CLIP_METHOD_PARAMS,
   INSERT: INSERT_METHOD_PARAMS,
   FIX: FIX_METHOD_PARAMS,

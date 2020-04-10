@@ -22,6 +22,17 @@ const configList: TestBedConfig[] = [{
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
+const configListBad = [{
+  ...configList[0],
+  custom: { ...configList[0].custom, predicate: null }
+}, {
+  ...configList[1],
+  custom: { ...configList[1].custom, predicate: () => null }
+}, {
+  ...configList[0],
+  custom: { ...configList[0].custom, predicate: (x: any, y: any) => null }
+}];
+
 const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (done: Function) => {
   const { buffer } = misc.scroller;
   const minIndexToRemove = getMin(config.custom.remove);
@@ -65,7 +76,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
     if (misc.workflow.cyclesDone === 1) {
       const innerLoopCount = misc.scroller.state.innerLoopCount;
       // call remove with wrong predicate
-      misc.datasource.adapter.remove(null as any);
+      misc.datasource.adapter.remove(config.custom.predicate);
       setTimeout(() => {
         expect(misc.workflow.cyclesDone).toEqual(1);
         expect(misc.scroller.state.innerLoopCount).toEqual(innerLoopCount);
@@ -95,7 +106,7 @@ describe('Adapter Remove Spec', () => {
     })
   );
 
-  configList.forEach(config =>
+  configListBad.forEach(config =>
     makeTest({
       config,
       title: 'should break due to wrong predicate',

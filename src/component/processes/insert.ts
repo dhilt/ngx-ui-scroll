@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validate } from '../utils/index';
+import { ADAPTER_METHODS_PARAMS, validate } from '../inputs/index';
 import { Item } from '../classes/item';
 import {
   Process, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IAdapterValidatedMethodData

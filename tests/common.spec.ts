@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { BehaviorSubject } from 'rxjs';
 
 import { Settings, Direction, IAdapter } from '../src/component/interfaces';
-import { SETTINGS } from '../src/component/utils';
+import { SETTINGS } from '../src/component/inputs';
 import { UiScrollComponent } from '../src/ui-scroll.component';
 import { Workflow } from '../src/component/workflow';
 

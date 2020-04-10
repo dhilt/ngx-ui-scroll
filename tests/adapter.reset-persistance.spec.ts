@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
 
-import { ADAPTER_PROPS } from '../src/component/utils';
+import { ADAPTER_PROPS } from '../src/component/inputs';
 import { Datasource } from '../src/component/classes/datasource';
 import { Process, IDatasourceOptional, Direction, IAdapter, IDatasource } from '../src/component/interfaces';
 
@@ -9,7 +9,7 @@ import { datasourceStore } from './scaffolding/datasources';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
 
-const ADAPTER_PROPS_STUB = ADAPTER_PROPS();
+const ADAPTER_PROPS_STUB = ADAPTER_PROPS(null);
 
 const defaultSettings = { startIndex: 1, adapter: true };
 

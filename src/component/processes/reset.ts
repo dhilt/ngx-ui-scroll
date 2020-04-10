@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validate } from '../utils/index';
+import { ADAPTER_METHODS_PARAMS, validate } from '../inputs/index';
 import { Process, ProcessStatus, IDatasource, IDatasourceOptional } from '../interfaces/index';
 import { Datasource } from '../classes/datasource';
 

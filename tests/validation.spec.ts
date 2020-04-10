@@ -1,5 +1,5 @@
-import { VALIDATORS, validateOne, validate } from '../src/component/utils/validation';
-import { ValidatorType, IAdapterMethodParams, IValidator } from 'src/component/interfaces/index';
+import { VALIDATORS, validateOne, validate } from '../src/component/inputs';
+import { ValidatorType, IAdapterMethodParams, IValidator } from 'src/component/interfaces';
 
 const {
   MANDATORY,

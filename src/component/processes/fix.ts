@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validateOne } from '../utils/index';
+import { ADAPTER_METHODS_PARAMS, validateOne } from '../inputs/index';
 import {
   Process,
   ProcessStatus,

@@ -8,7 +8,7 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
-import { checkDatasource } from './utils/index';
+import { checkDatasource } from './inputs/index';
 
 import { ScrollerWorkflow, IDatasource, CallWorkflow } from './interfaces/index';
 

@@ -1,5 +1,5 @@
 import { Settings as ISettings, DevSettings as IDevSettings, ICommonProps } from '../interfaces/index';
-import { SETTINGS, DEV_SETTINGS, validate } from '../utils/index';
+import { SETTINGS, DEV_SETTINGS, validate } from '../inputs/index';
 
 export class Settings implements ISettings, IDevSettings {
 
@@ -14,7 +14,7 @@ export class Settings implements ISettings, IDevSettings {
   infinite: boolean;
   horizontal: boolean;
   windowViewport: boolean;
-  inverse: boolean;  // [experimental] if true, backward padding element will have a priority when filling the viewport in case of lack of items
+  inverse: boolean; // if true, bwd padding element will have a priority when filling the viewport (if lack of items)
 
   // development settings
   debug: boolean; // if true, logging is enabled; need to turn off when release

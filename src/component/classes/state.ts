@@ -12,7 +12,6 @@ import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
 import { ScrollState } from './state/scroll';
-import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
 

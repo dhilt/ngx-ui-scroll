@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
+import { EMPTY_ITEM } from '../classes/adapterContext';
 import { Process, ProcessStatus, Direction } from '../interfaces/index';
-import { itemAdapterEmpty } from '../utils/adapter';
 
 export default class End {
 
@@ -60,7 +60,7 @@ export default class End {
         scroller.viewport.getElementEdge(item.element, Direction.forward) > viewportBackwardEdge
       );
       if (!firstItem || firstItem.element !== adapter.firstVisible.element) {
-        adapter.firstVisible = firstItem ? firstItem.get() : itemAdapterEmpty;
+        adapter.firstVisible = firstItem ? firstItem.get() : EMPTY_ITEM;
       }
     }
 
@@ -76,7 +76,7 @@ export default class End {
         }
       }
       if (!lastItem || lastItem.element !== adapter.lastVisible.element) {
-        adapter.lastVisible = lastItem ? lastItem.get() : itemAdapterEmpty;
+        adapter.lastVisible = lastItem ? lastItem.get() : EMPTY_ITEM;
       }
     }
   }

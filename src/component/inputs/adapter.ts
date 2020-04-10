@@ -5,21 +5,15 @@ import { VALIDATORS } from './validation';
 import {
   AdapterPropType as Prop,
   IAdapterProp,
-  ItemAdapter,
   IAdapter,
   IAdapterMethodParam,
   IAdapterMethodParams,
   IAdapterMethods
 } from '../interfaces/index';
 
-export const itemAdapterEmpty = {
-  data: {},
-  element: {}
-} as ItemAdapter;
-
 const noop = () => null;
 
-export const ADAPTER_PROPS = (): IAdapterProp[] => [
+export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Prop.Scalar,
     name: 'id',
@@ -59,14 +53,14 @@ export const ADAPTER_PROPS = (): IAdapterProp[] => [
   {
     type: Prop.Scalar,
     name: 'firstVisible',
-    value: itemAdapterEmpty,
+    value: nullItem,
     observable: 'firstVisible$',
     wanted: true
   },
   {
     type: Prop.Scalar,
     name: 'lastVisible',
-    value: itemAdapterEmpty,
+    value: nullItem,
     observable: 'lastVisible$',
     wanted: true
   },
@@ -156,12 +150,12 @@ export const ADAPTER_PROPS = (): IAdapterProp[] => [
   {
     type: Prop.Observable,
     name: 'firstVisible$',
-    value: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty)
+    value: new BehaviorSubject<any>(nullItem)
   },
   {
     type: Prop.Observable,
     name: 'lastVisible$',
-    value: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty)
+    value: new BehaviorSubject<any>(nullItem)
   },
   {
     type: Prop.Observable,

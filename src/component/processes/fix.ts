@@ -1,18 +1,25 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validateOne } from '../inputs/index';
+import { ADAPTER_METHODS, validateOne } from '../inputs/index';
+import { AdapterFixParams } from '../inputs/adapter';
 import {
   Process,
   ProcessStatus,
   ItemsLooper,
   AdapterFixOptions,
-  IAdapterMethodParam as IParam
+  IValidator
 } from '../interfaces/index';
 
-const { FIX } = ADAPTER_METHODS_PARAMS;
+const { FIX } = ADAPTER_METHODS;
+
+interface IFixParam {
+  validators: IValidator[];
+  call?: Function;
+  value?: any;
+}
 
 interface IFixCall {
   scroller: Scroller;
-  params: IParam[];
+  params: IFixParam[];
   value: any;
 }
 
@@ -31,7 +38,7 @@ export default class Fix {
       return;
     }
 
-    params.forEach((param: IParam) => {
+    params.forEach((param: IFixParam) => {
       if (typeof param.call !== 'function') {
         return;
       }
@@ -70,23 +77,23 @@ export default class Fix {
 
   static getCallMethod(token: string): Function | null {
     switch (token) {
-      case 'scrollPosition':
+      case AdapterFixParams.scrollPosition:
         return Fix.setScrollPosition;
-      case 'minIndex':
+      case AdapterFixParams.minIndex:
         return Fix.setMinIndex;
-      case 'maxIndex':
+      case AdapterFixParams.maxIndex:
         return Fix.setMaxIndex;
-      case 'updater':
+      case AdapterFixParams.updater:
         return Fix.updateItems;
     }
     return null;
   }
 
-  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IParam[] {
+  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {
     if (!options || typeof options !== 'object') {
       return [];
     }
-    return Object.keys(FIX).reduce((acc: IParam[], key: string) => {
+    return Object.keys(FIX).reduce((acc: IFixParam[], key: string) => {
       const param = FIX[key];
       const { validators } = param;
       const error = `failed: can't set ${key}`;

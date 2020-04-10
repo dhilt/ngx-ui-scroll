@@ -1,11 +1,6 @@
 import { VALIDATORS } from './validation';
 import { DatasourceProps } from './datasource';
-import {
-  IAdapter,
-  IAdapterMethodParam,
-  IAdapterMethodParams,
-  IAdapterMethods,
-} from '../interfaces/index';
+import { ICommonProps } from '../interfaces/index';
 
 const {
   MANDATORY,
@@ -18,14 +13,14 @@ const {
   ONE_OF_MUST,
 } = VALIDATORS;
 
-enum AdapterFixParams {
+export enum AdapterFixParams {
   scrollPosition = 'scrollPosition',
   minIndex = 'minIndex',
   maxIndex = 'maxIndex',
   updater = 'updater',
 }
 
-const FIX_METHOD_PARAMS: IAdapterMethodParams = {
+const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
   [AdapterFixParams.scrollPosition]: {
     validators: [INTEGER_UNLIMITED]
   },
@@ -47,7 +42,7 @@ enum AdapterInsertParams {
   decrease = 'decrease',
 }
 
-const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
+const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
   [AdapterInsertParams.items]: {
     validators: [MANDATORY, ITEM_LIST]
   },
@@ -62,7 +57,7 @@ const INSERT_METHOD_PARAMS: IAdapterMethodParams = {
   }
 };
 
-const RESET_METHOD_PARAMS: IAdapterMethodParams = {
+const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
   [DatasourceProps.get]: {
     validators: [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)]
   },
@@ -74,7 +69,11 @@ const RESET_METHOD_PARAMS: IAdapterMethodParams = {
   }
 };
 
-export const ADAPTER_METHODS_PARAMS: IAdapterMethods = {
+interface IAdapterMethods {
+  [key: string]: ICommonProps<any>;
+}
+
+export const ADAPTER_METHODS: IAdapterMethods = {
   FIX: FIX_METHOD_PARAMS,
   INSERT: INSERT_METHOD_PARAMS,
   RESET: RESET_METHOD_PARAMS,

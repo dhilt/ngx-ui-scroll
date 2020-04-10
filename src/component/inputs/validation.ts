@@ -4,9 +4,6 @@ import {
   ValidatedValue,
   IValidatedData,
   IValidatedCommonProps,
-  IAdapterMethodParams,
-  IAdapterValidatedMethodData,
-  IAdapterValidatedMethodParams,
   ICommonProps,
 } from '../interfaces/index';
 
@@ -317,7 +314,7 @@ export const validateOne = (
   } as ValidatedValue);
 
 export const validate = (
-  context: any, params: IAdapterMethodParams | ICommonProps<any>
+  context: any, params: ICommonProps<any>
 ): IValidatedData => {
   const data = new ValidatedData(context);
   if (!data.isValid) {

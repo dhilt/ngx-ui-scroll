@@ -18,11 +18,6 @@ import {
   AdapterInsertOptions,
   AdapterFixOptions,
   IAdapter,
-  IAdapterMethodParam,
-  IAdapterMethodParams,
-  IAdapterMethods,
-  IAdapterValidatedMethodParams,
-  IAdapterValidatedMethodData,
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
@@ -58,11 +53,6 @@ export {
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
-  IAdapterMethodParam,
-  IAdapterMethodParams,
-  IAdapterMethods,
-  IAdapterValidatedMethodParams,
-  IAdapterValidatedMethodData,
   Settings,
   DevSettings,
   Direction,

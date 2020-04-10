@@ -1,11 +1,11 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validate } from '../inputs/index';
+import { ADAPTER_METHODS, validate } from '../inputs/index';
 import { Item } from '../classes/item';
 import {
-  Process, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IAdapterValidatedMethodData
+  Process, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IValidatedData
 } from '../interfaces/index';
 
-const { INSERT } = ADAPTER_METHODS_PARAMS;
+const { INSERT } = ADAPTER_METHODS;
 
 export default class Insert {
 
@@ -30,7 +30,7 @@ export default class Insert {
     });
   }
 
-  static doInsert(scroller: Scroller, methodData: IAdapterValidatedMethodData): boolean {
+  static doInsert(scroller: Scroller, methodData: IValidatedData): boolean {
     const { buffer } = scroller;
     const { before, after, items, decrease } = methodData.params;
     const method: ItemsPredicate = before.isSet ? before.value : after.value;

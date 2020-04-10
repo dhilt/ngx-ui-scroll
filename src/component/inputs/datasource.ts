@@ -3,7 +3,7 @@ import { ICommonProps } from '../interfaces/index';
 
 const { MANDATORY, OBJECT, FUNC_WITH_X_AND_MORE_ARGUMENTS } = VALIDATORS;
 
-enum DatasourceProps {
+export enum DatasourceProps {
   get = 'get',
   settings = 'settings',
   devSettings = 'devSettings',

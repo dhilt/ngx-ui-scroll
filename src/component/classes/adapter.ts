@@ -4,8 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
 import { Buffer } from './buffer';
-import { AdapterContext, EMPTY_ITEM } from './adapterContext';
-import { ADAPTER_PROPS } from '../inputs/index';
+import { AdapterContext, EMPTY_ITEM } from './adapter/context';
+import { ADAPTER_PROPS } from './adapter/props';
 import {
   WorkflowGetter,
   AdapterPropType,

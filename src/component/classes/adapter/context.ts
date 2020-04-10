@@ -1,5 +1,5 @@
-import { ADAPTER_PROPS } from '../inputs/index';
-import { ItemAdapter, AdapterPropType } from '../interfaces/index';
+import { ADAPTER_PROPS } from './props';
+import { ItemAdapter, AdapterPropType } from '../../interfaces/index';
 
 let instanceCount = 0;
 

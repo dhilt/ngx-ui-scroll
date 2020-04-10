@@ -1,7 +1,7 @@
 import { VALIDATORS, validateOne, validate } from './validation';
 import { DATASOURCE } from './datasource';
 import { SETTINGS, DEV_SETTINGS } from './settings';
-import { ADAPTER_PROPS, ADAPTER_METHODS_PARAMS } from './adapter';
+import { ADAPTER_METHODS_PARAMS } from './adapter';
 
 export {
   VALIDATORS,
@@ -10,6 +10,5 @@ export {
   DATASOURCE,
   SETTINGS,
   DEV_SETTINGS,
-  ADAPTER_PROPS,
   ADAPTER_METHODS_PARAMS
 };

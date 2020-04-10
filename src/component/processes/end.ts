@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { EMPTY_ITEM } from '../classes/adapterContext';
+import { EMPTY_ITEM } from '../classes/adapter/context';
 import { Process, ProcessStatus, Direction } from '../interfaces/index';
 
 export default class End {

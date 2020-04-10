@@ -1,7 +1,7 @@
 import { Subscription } from 'rxjs';
 
-import { ADAPTER_PROPS } from '../src/component/inputs';
 import { Datasource } from '../src/component/classes/datasource';
+import { ADAPTER_PROPS } from '../src/component/classes/adapter/props';
 import { Process, IDatasourceOptional, Direction, IAdapter, IDatasource } from '../src/component/interfaces';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';

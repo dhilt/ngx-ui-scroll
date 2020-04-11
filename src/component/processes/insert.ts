@@ -5,13 +5,11 @@ import {
   Process, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IValidatedData
 } from '../interfaces/index';
 
-const { INSERT } = ADAPTER_METHODS;
-
 export default class Insert {
 
   static run(scroller: Scroller, options: AdapterInsertOptions) {
 
-    const methodData = validate(options, INSERT);
+    const methodData = validate(options, ADAPTER_METHODS.INSERT);
     if (!methodData.isValid) {
       scroller.logger.log(() => methodData.showErrors());
       scroller.workflow.call({
@@ -30,9 +28,9 @@ export default class Insert {
     });
   }
 
-  static doInsert(scroller: Scroller, methodData: IValidatedData): boolean {
+  static doInsert(scroller: Scroller, { params }: IValidatedData): boolean {
     const { buffer } = scroller;
-    const { before, after, items, decrease } = methodData.params;
+    const { before, after, items, decrease } = params;
     const method: ItemsPredicate = before.isSet ? before.value : after.value;
     const found = buffer.items.find(item => method(item.get()));
     if (!found) {

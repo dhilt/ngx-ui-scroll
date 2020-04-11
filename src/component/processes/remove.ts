@@ -25,17 +25,9 @@ export default class Remove {
       }
     });
 
-    if (!scroller.state.clip.doClip) {
-      scroller.workflow.call({
-        process: Process.remove,
-        status: ProcessStatus.done
-      });
-      return;
-    }
-
     scroller.workflow.call({
       process: Process.remove,
-      status: ProcessStatus.next
+      status: scroller.state.clip.doClip ? ProcessStatus.next : ProcessStatus.done
     });
   }
 

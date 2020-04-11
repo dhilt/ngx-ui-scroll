@@ -318,6 +318,7 @@ export const validateOne = (
     if (!result.isValid && prop.fallback && prop.defaultValue !== void 0) {
       result.isValid = true;
       result.value = prop.defaultValue;
+      result.errors = [];
     }
     return { ...acc, ...result };
   }, {

@@ -2,7 +2,6 @@ import { VALIDATORS, validateOne, validate } from '../src/component/inputs';
 import { ValidatorType, IValidator } from 'src/component/interfaces';
 
 const {
-  MANDATORY,
   INTEGER,
   INTEGER_UNLIMITED,
   BOOLEAN,
@@ -161,12 +160,12 @@ describe('Input Params Validation', () => {
 describe('Validation', () => {
 
   const token = 'test';
-  const run = (context: any, validators: IValidator[]) =>
+  const run = (context: any, validators: IValidator[], mandatory: boolean = false) =>
     validate(context, {
-      [token]: { validators }
+      [token]: { validators, mandatory }
     }).isValid;
 
-  describe('[Context]', () => {
+  describe('Context', () => {
     it('should not pass bad context', () => {
       expect(validate(null, {}).isValid).toBe(false);
       expect(validate(false, {}).isValid).toBe(false);
@@ -177,17 +176,17 @@ describe('Validation', () => {
     });
   });
 
-  describe('[Mandatory]', () => {
+  describe('Mandatory', () => {
     it('should not pass missed mandatory fields', () => {
       expect(run({}, [])).toBe(true);
-      expect(run({}, [MANDATORY])).toBe(false);
-      expect(run({ [token]: 1 }, [MANDATORY])).toBe(true);
+      expect(run({}, [], true)).toBe(false);
+      expect(run({ [token]: 1 }, [], true)).toBe(true);
     });
 
     it('should deal with mandatory and some other validation', () => {
-      expect(run({}, [MANDATORY, INTEGER])).toBe(false);
-      expect(run({ [token]: 'x' }, [MANDATORY, INTEGER])).toBe(false);
-      expect(run({ [token]: 1 }, [MANDATORY, INTEGER])).toBe(true);
+      expect(run({}, [INTEGER], true)).toBe(false);
+      expect(run({ [token]: 'x' }, [INTEGER], true)).toBe(false);
+      expect(run({ [token]: 1 }, [INTEGER], true)).toBe(true);
     });
   });
 
@@ -298,7 +297,7 @@ describe('Validation', () => {
     it('should pass function with 2 or more arguments', () => {
       const validators = [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)];
       expect(run({}, validators)).toBe(true);
-      expect(run({}, [MANDATORY, ...validators])).toBe(false);
+      expect(run({}, validators, true)).toBe(false);
       expect(run({ [token]: 1 }, validators)).toBe(false);
       expect(run({ [token]: {} }, validators)).toBe(false);
       expect(run({ [token]: () => null }, validators)).toBe(false);
@@ -311,7 +310,7 @@ describe('Validation', () => {
   describe('[Object]', () => {
     it('should pass object', () => {
       expect(run({}, [OBJECT])).toBe(true);
-      expect(run({}, [MANDATORY, OBJECT])).toBe(false);
+      expect(run({}, [OBJECT], true)).toBe(false);
       expect(run({ [token]: 1 }, [OBJECT])).toBe(false);
       expect(run({ [token]: true }, [OBJECT])).toBe(false);
       expect(run({ [token]: 'hello' }, [OBJECT])).toBe(false);

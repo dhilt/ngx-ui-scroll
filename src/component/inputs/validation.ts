@@ -13,13 +13,6 @@ const getNumber = (value: any): number =>
     ? Number(value)
     : NaN;
 
-const onMandatory = (value: any): ValidatedValue => {
-  const isValid = typeof value !== 'undefined';
-  return { value: value, isSet: false, isValid, errors: isValid ? [] : [
-    'must be present'
-  ] };
-};
-
 const onNumber = (value: any): ValidatedValue => {
   const parsedValue = getNumber(value);
   const errors = [];
@@ -174,10 +167,6 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
 };
 
 export const VALIDATORS = {
-  MANDATORY: {
-    type: ValidatorType.mandatory,
-    method: onMandatory
-  },
   NUMBER: {
     type: ValidatorType.number,
     method: onNumber
@@ -269,10 +258,12 @@ export class ValidatedData implements IValidatedData {
 
   setParam(token: string, value: ValidatedValue) {
     if (!value.isValid) {
-      value.errors = value.errors.map((err: string) =>
-        `"${token}" ${err}`
-      );
-    }
+      value.errors = !value.isSet
+        ? [`"${token}" must be set`]
+        : value.errors = value.errors.map((err: string) =>
+          `"${token}" ${err}`
+        );
+  }
     this.params[token] = value;
     this.setValidity();
   }
@@ -284,26 +275,14 @@ export class ValidatedData implements IValidatedData {
   }
 }
 
-const shouldSkip = ({ type }: IValidator, value: any) =>
-  type !== ValidatorType.mandatory &&
-  type !== ValidatorType.oneOfMust &&
-  value === void 0;
-
 export const runValidator = (
   current: ValidatedValue,
   validator: IValidator,
   context: any,
   prop: ICommonProp
 ): ValidatedValue => {
-  let result: ValidatedValue;
   const { value, errors } = current;
-  const { defaultValue } = prop;
-  const _value = value === void 0 && defaultValue !== void 0 ? defaultValue : value;
-  if (shouldSkip(validator, _value)) {
-    result = { ...current, isSet: false };
-  } else {
-    result = validator.method(_value, context);
-  }
+  const result = validator.method(value, context);
   const _errors = [...errors, ...result.errors];
   return {
     value: result.value,
@@ -313,42 +292,42 @@ export const runValidator = (
   };
 };
 
-const getDefault = (prop: ICommonProp, current?: ValidatedValue): ValidatedValue | false =>
-  (!current || !current.isValid) && !!prop.fallback && prop.defaultValue !== void 0 && {
-    value: prop.defaultValue,
-    isSet: true,
-    isValid: true,
+const getInitialValue = (value: any, prop: ICommonProp): ValidatedValue => {
+  const empty = value === void 0;
+  const auto = !prop.mandatory && prop.defaultValue !== void 0;
+  return {
+    value: !empty ? value : (auto ? prop.defaultValue : void 0),
+    isSet: !empty || auto,
+    isValid: !empty || !prop.mandatory,
     errors: []
   };
-
-const setDefault = (prop: ICommonProp): ValidatedValue =>
-  getDefault(prop) || {
-    value: void 0,
-    isSet: false,
-    isValid: false,
-    errors: []
-  };
-
-const checkDefault = (prop: ICommonProp, current: ValidatedValue) => {
-  const def = getDefault(prop, current);
-  if (def) {
-    Object.assign(current, def);
-  }
 };
 
 export const validateOne = (
   context: any, name: string, prop: ICommonProp
-): ValidatedValue =>
-  prop.validators.reduce((acc, validator) => {
-    const result = runValidator(acc, validator, context, prop);
-    checkDefault(prop, result);
-    return { ...acc, ...result };
-  }, {
-    value: context[name],
-    isSet: false,
-    isValid: true,
-    errors: []
-  } as ValidatedValue);
+): ValidatedValue => {
+  const result = getInitialValue(context[name], prop);
+  if (!result.isSet) {
+    const oneOfMust = prop.validators.find(v => v.type === ValidatorType.oneOfMust);
+    if (oneOfMust) {
+      return runValidator(result, oneOfMust, context, prop);
+    }
+  } else {
+    for (const validator of Object.values(prop.validators)) {
+      const current = runValidator(result, validator, context, prop);
+      if (!current.isValid && prop.defaultValue !== void 0) {
+        return {
+          value: prop.defaultValue,
+          isSet: true,
+          isValid: true,
+          errors: []
+        };
+      }
+      Object.assign(result, current);
+    }
+  }
+  return result;
+};
 
 export const validate = (
   context: any, params: ICommonProps<any>
@@ -357,7 +336,7 @@ export const validate = (
   Object.entries(params).forEach(([key, prop]) =>
     data.setParam(key, data.isValidContext
       ? validateOne(context, key, prop)
-      : setDefault(prop)
+      : getInitialValue(void 0, prop)
     )
   );
   return data;

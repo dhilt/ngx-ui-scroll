@@ -1,7 +1,7 @@
 import { VALIDATORS } from './validation';
 import { ICommonProps } from '../interfaces/index';
 
-const { MANDATORY, OBJECT, FUNC_WITH_X_AND_MORE_ARGUMENTS } = VALIDATORS;
+const { OBJECT, FUNC_WITH_X_AND_MORE_ARGUMENTS } = VALIDATORS;
 
 export enum DatasourceProps {
   get = 'get',
@@ -11,7 +11,8 @@ export enum DatasourceProps {
 
 export const DATASOURCE: ICommonProps<DatasourceProps> = {
   [DatasourceProps.get]: {
-    validators: [MANDATORY, FUNC_WITH_X_AND_MORE_ARGUMENTS(2)]
+    validators: [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)],
+    mandatory: true
   },
   [DatasourceProps.settings]: {
     validators: [OBJECT]

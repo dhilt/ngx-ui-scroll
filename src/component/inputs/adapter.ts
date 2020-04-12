@@ -3,7 +3,6 @@ import { DatasourceProps } from './datasource';
 import { ICommonProps } from '../interfaces/index';
 
 const {
-  MANDATORY,
   INTEGER,
   INTEGER_UNLIMITED,
   BOOLEAN,
@@ -43,7 +42,8 @@ enum AdapterRemoveParams {
 
 const REMOVE_METHOD_PARAMS: ICommonProps<AdapterRemoveParams> = {
   [AdapterRemoveParams.predicate]: {
-    validators: [MANDATORY, FUNC_WITH_X_ARGUMENTS(1)]
+    validators: [FUNC_WITH_X_ARGUMENTS(1)],
+    mandatory: true
   },
 };
 
@@ -55,13 +55,11 @@ enum AdapterClipParams {
 const CLIP_METHOD_PARAMS: ICommonProps<AdapterClipParams> = {
   [AdapterClipParams.backwardOnly]: {
     validators: [BOOLEAN, ONE_OF_CAN([AdapterClipParams.forwardOnly])],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [AdapterClipParams.forwardOnly]: {
     validators: [BOOLEAN, ONE_OF_CAN([AdapterClipParams.backwardOnly])],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
 };
 
@@ -74,7 +72,8 @@ enum AdapterInsertParams {
 
 const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
   [AdapterInsertParams.items]: {
-    validators: [MANDATORY, ITEM_LIST]
+    validators: [ITEM_LIST],
+    mandatory: true
   },
   [AdapterInsertParams.before]: {
     validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST([AdapterInsertParams.after])]

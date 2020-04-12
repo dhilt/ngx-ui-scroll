@@ -1,5 +1,4 @@
 export enum ValidatorType {
-  mandatory = 'must be present',
   number = 'must be a number',
   integer = 'must be an integer',
   integerUnlimited = 'must be an integer or infinity',
@@ -30,8 +29,8 @@ export interface IValidator {
 
 export interface ICommonProp {
   validators: IValidator[];
-  defaultValue?: any; // if set, undefined prop value will be set to defaultValue
-  fallback?: boolean; // if true, invalid prop value will be set to defaultValue
+  mandatory?: boolean;
+  defaultValue?: any; // if present, undefined non-mandatory prop value will be set to defaultValue
 }
 
 export type ICommonProps<T extends PropertyKey> = {

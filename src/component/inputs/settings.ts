@@ -31,99 +31,80 @@ enum DevSettings {
 export const SETTINGS: ICommonProps<Settings> = {
   [Settings.adapter]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [Settings.startIndex]: {
     validators: [INTEGER],
-    defaultValue: 1,
-    fallback: true
+    defaultValue: 1
   },
   [Settings.minIndex]: {
     validators: [INTEGER_UNLIMITED],
-    defaultValue: -Infinity,
-    fallback: true
+    defaultValue: -Infinity
   },
   [Settings.maxIndex]: {
     validators: [INTEGER_UNLIMITED],
-    defaultValue: Infinity,
-    fallback: true
+    defaultValue: Infinity
   },
   [Settings.itemSize]: {
-    validators: [INTEGER, MORE_OR_EQUAL(1, true)],
-    fallback: true
+    validators: [INTEGER, MORE_OR_EQUAL(1, true)]
   },
   [Settings.bufferSize]: {
     validators: [INTEGER, MORE_OR_EQUAL(1, true)],
-    defaultValue: 5,
-    fallback: true
+    defaultValue: 5
   },
   [Settings.padding]: {
     validators: [NUMBER, MORE_OR_EQUAL(0.01, true)],
-    defaultValue: 0.5,
-    fallback: true
+    defaultValue: 0.5
   },
   [Settings.infinite]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [Settings.horizontal]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [Settings.windowViewport]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [Settings.inverse]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
 };
 
 export const DEV_SETTINGS: ICommonProps<DevSettings> = {
   [DevSettings.debug]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [DevSettings.immediateLog]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: true
   },
   [DevSettings.logProcessRun]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [DevSettings.logTime]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
   [DevSettings.throttle]: {
     validators: [INTEGER, MORE_OR_EQUAL(0, true)],
-    defaultValue: 40,
-    fallback: true
+    defaultValue: 40
   },
   [DevSettings.initDelay]: {
     validators: [INTEGER, MORE_OR_EQUAL(0, true)],
-    defaultValue: 1,
-    fallback: true
+    defaultValue: 1
   },
   [DevSettings.initWindowDelay]: {
     validators: [INTEGER, MORE_OR_EQUAL(0, true)],
-    defaultValue: 40,
-    fallback: true
+    defaultValue: 40
   },
   [DevSettings.changeOverflow]: {
     validators: [BOOLEAN],
-    defaultValue: false,
-    fallback: true
+    defaultValue: false
   },
 };

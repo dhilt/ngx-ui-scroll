@@ -231,6 +231,7 @@ export const VALIDATORS = {
 export class ValidatedData implements IValidatedData {
   private context: any;
   private commonErrors: string[];
+  readonly isValidContext: boolean;
 
   isValid: boolean;
   errors: string[];
@@ -238,17 +239,19 @@ export class ValidatedData implements IValidatedData {
 
   constructor(context: any) {
     this.context = context;
-    this.commonErrors = [];
-    this.isValid = true;
-    this.errors = [];
     this.params = {};
-    this.checkContext();
+    this.commonErrors = [];
+    this.errors = [];
+    this.isValid = true;
+    this.isValidContext = this.checkContext();
   }
 
-  private checkContext() {
+  private checkContext(): boolean {
     if (!this.context || typeof this.context !== 'object') {
       this.setCommonError(`context is not an object`);
+      return false;
     }
+    return true;
   }
 
   private setValidity() {
@@ -310,16 +313,35 @@ export const runValidator = (
   };
 };
 
+const getDefault = (prop: ICommonProp, current?: ValidatedValue): ValidatedValue | false =>
+  (!current || !current.isValid) && !!prop.fallback && prop.defaultValue !== void 0 && {
+    value: prop.defaultValue,
+    isSet: true,
+    isValid: true,
+    errors: []
+  };
+
+const setDefault = (prop: ICommonProp): ValidatedValue =>
+  getDefault(prop) || {
+    value: void 0,
+    isSet: false,
+    isValid: false,
+    errors: []
+  };
+
+const checkDefault = (prop: ICommonProp, current: ValidatedValue) => {
+  const def = getDefault(prop, current);
+  if (def) {
+    Object.assign(current, def);
+  }
+};
+
 export const validateOne = (
   context: any, name: string, prop: ICommonProp
 ): ValidatedValue =>
   prop.validators.reduce((acc, validator) => {
     const result = runValidator(acc, validator, context, prop);
-    if (!result.isValid && prop.fallback && prop.defaultValue !== void 0) {
-      result.isValid = true;
-      result.value = prop.defaultValue;
-      result.errors = [];
-    }
+    checkDefault(prop, result);
     return { ...acc, ...result };
   }, {
     value: context[name],
@@ -332,12 +354,11 @@ export const validate = (
   context: any, params: ICommonProps<any>
 ): IValidatedData => {
   const data = new ValidatedData(context);
-  if (!data.isValid) {
-    return data;
-  }
-  Object.entries(params).forEach(([key, prop]) => {
-    const parsed = validateOne(context, key, prop);
-    data.setParam(key, parsed);
-  });
+  Object.entries(params).forEach(([key, prop]) =>
+    data.setParam(key, data.isValidContext
+      ? validateOne(context, key, prop)
+      : setDefault(prop)
+    )
+  );
   return data;
 };

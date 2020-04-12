@@ -30,8 +30,8 @@ export interface IValidator {
 
 export interface ICommonProp {
   validators: IValidator[];
-  defaultValue?: any;
-  fallback?: boolean; // if true, invalid prop value will be set to default
+  defaultValue?: any; // if set, undefined prop value will be set to defaultValue
+  fallback?: boolean; // if true, invalid prop value will be set to defaultValue
 }
 
 export type ICommonProps<T extends PropertyKey> = {

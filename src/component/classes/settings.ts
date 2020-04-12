@@ -41,13 +41,10 @@ export class Settings implements ISettings, IDevSettings {
   }
 
   parseInput(input: ISettings | IDevSettings | undefined, props: ICommonProps<any>) {
-    if (typeof input !== 'object') {
-      input = {};
-    }
     const result = validate(input, props);
-    Object.entries(result.params).forEach(([key, par]) => {
-      (this as any)[key] = par.isValid ? par.value : (props)[key].defaultValue;
-    });
+    Object.entries(result.params).forEach(([key, par]) =>
+      Object.assign(this, { [key]: par.value })
+    );
   }
 
   getInitializeDelay(): number {

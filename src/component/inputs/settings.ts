@@ -28,6 +28,15 @@ enum DevSettings {
   changeOverflow = 'changeOverflow',
 }
 
+export const MIN = {
+  [Settings.itemSize]: 1,
+  [Settings.bufferSize]: 1,
+  [Settings.padding]: 0.01,
+  [DevSettings.throttle]: 0,
+  [DevSettings.initDelay]: 0,
+  [DevSettings.initWindowDelay]: 0,
+};
+
 export const SETTINGS: ICommonProps<Settings> = {
   [Settings.adapter]: {
     validators: [BOOLEAN],
@@ -46,14 +55,15 @@ export const SETTINGS: ICommonProps<Settings> = {
     defaultValue: Infinity
   },
   [Settings.itemSize]: {
-    validators: [INTEGER, MORE_OR_EQUAL(1, true)]
+    validators: [INTEGER, MORE_OR_EQUAL(MIN[Settings.itemSize],  true)],
+    defaultValue: NaN
   },
   [Settings.bufferSize]: {
-    validators: [INTEGER, MORE_OR_EQUAL(1, true)],
+    validators: [INTEGER, MORE_OR_EQUAL(MIN[Settings.bufferSize], true)],
     defaultValue: 5
   },
   [Settings.padding]: {
-    validators: [NUMBER, MORE_OR_EQUAL(0.01, true)],
+    validators: [NUMBER, MORE_OR_EQUAL(MIN[Settings.padding], true)],
     defaultValue: 0.5
   },
   [Settings.infinite]: {
@@ -92,15 +102,15 @@ export const DEV_SETTINGS: ICommonProps<DevSettings> = {
     defaultValue: false
   },
   [DevSettings.throttle]: {
-    validators: [INTEGER, MORE_OR_EQUAL(0, true)],
+    validators: [INTEGER, MORE_OR_EQUAL(MIN[DevSettings.throttle], true)],
     defaultValue: 40
   },
   [DevSettings.initDelay]: {
-    validators: [INTEGER, MORE_OR_EQUAL(0, true)],
+    validators: [INTEGER, MORE_OR_EQUAL(MIN[DevSettings.initDelay], true)],
     defaultValue: 1
   },
   [DevSettings.initWindowDelay]: {
-    validators: [INTEGER, MORE_OR_EQUAL(0, true)],
+    validators: [INTEGER, MORE_OR_EQUAL(MIN[DevSettings.initWindowDelay], true)],
     defaultValue: 40
   },
   [DevSettings.changeOverflow]: {

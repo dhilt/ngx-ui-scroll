@@ -29,8 +29,8 @@ export interface IValidator {
 
 export interface ICommonProp {
   validators: IValidator[];
-  mandatory?: boolean;
-  defaultValue?: any; // if present, undefined non-mandatory prop value will be set to defaultValue
+  mandatory?: boolean; // if true, undefined prop will produce error
+  defaultValue?: any; // if present, undefined non-mandatory prop will be set to defaultValue
 }
 
 export type ICommonProps<T extends PropertyKey> = {

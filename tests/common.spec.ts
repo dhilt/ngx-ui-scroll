@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../src/ui-scroll.component';
 import { Workflow } from '../src/component/workflow';
-import { SETTINGS } from '../src/component/inputs';
+import { SETTINGS, MIN } from '../src/component/inputs/settings';
 import { INVALID_DATASOURCE_PREFIX } from '../src/component/scroller';
 import { Settings, Direction, IAdapter } from '../src/component/interfaces';
 
@@ -132,7 +132,7 @@ describe('Settings', () => {
     config: { datasourceSettings: { bufferSize: -1 } },
     title: 'should fallback bufferSize to the minimum',
     it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.bufferSize).toEqual(1);
+      expect(misc.scroller.settings.bufferSize).toEqual(MIN.bufferSize);
       done();
     }
   });
@@ -150,7 +150,25 @@ describe('Settings', () => {
     config: { datasourceSettings: { padding: -0.1 } },
     title: 'should fallback padding to the minimum',
     it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.padding).toEqual(0.01);
+      expect(misc.scroller.settings.padding).toEqual(MIN.padding);
+      done();
+    }
+  });
+
+  makeTest({
+    config: { datasourceSettings: { itemSize: -5 } },
+    title: 'should fallback itemSize to the minimum',
+    it: (misc: Misc) => (done: Function) => {
+      expect(misc.scroller.settings.itemSize).toEqual(MIN.itemSize);
+      done();
+    }
+  });
+
+  makeTest({
+    config: { datasourceSettings: { itemSize: 1.5 } },
+    title: 'should fallback itemSize to default',
+    it: (misc: Misc) => (done: Function) => {
+      expect(misc.scroller.settings.itemSize).toEqual(defaultSettings.itemSize);
       done();
     }
   });

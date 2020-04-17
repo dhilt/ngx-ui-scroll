@@ -16,7 +16,7 @@ const getNumber = (value: any): number =>
 const onNumber = (value: any): ValidatedValue => {
   const parsedValue = getNumber(value);
   const errors = [];
-  if (isNaN(parsedValue)) {
+  if (Number.isNaN(parsedValue)) {
     errors.push('must be a number');
   }
   return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
@@ -80,7 +80,7 @@ const onBoolean = (value: any): ValidatedValue => {
 
 const onObject = (value: any): ValidatedValue => {
   const errors = [];
-  if (typeof value !== 'object') {
+  if (Object.prototype.toString.call(value) !== '[object Object]') {
     errors.push('must be an object');
   }
   return { value, isSet: true, isValid: !errors.length, errors };
@@ -219,7 +219,7 @@ export const VALIDATORS = {
 
 export class ValidatedData implements IValidatedData {
   private context: any;
-  private commonErrors: string[];
+  private contextErrors: string[];
   readonly isValidContext: boolean;
 
   isValid: boolean;
@@ -229,14 +229,14 @@ export class ValidatedData implements IValidatedData {
   constructor(context: any) {
     this.context = context;
     this.params = {};
-    this.commonErrors = [];
+    this.contextErrors = [];
     this.errors = [];
     this.isValid = true;
     this.isValidContext = this.checkContext();
   }
 
   private checkContext(): boolean {
-    if (!this.context || typeof this.context !== 'object') {
+    if (!this.context || Object.prototype.toString.call(this.context) !== '[object Object]') {
       this.setCommonError(`context is not an object`);
       return false;
     }
@@ -246,12 +246,12 @@ export class ValidatedData implements IValidatedData {
   private setValidity() {
     this.errors = Object.keys(this.params).reduce((acc: string[], key: string) => [
       ...acc, ...this.params[key].errors
-    ], this.commonErrors);
+    ], []);
     this.isValid = !this.errors.length;
   }
 
   setCommonError(error: string) {
-    this.commonErrors.push(error);
+    this.contextErrors.push(error);
     this.errors.push(error);
     this.isValid = false;
   }
@@ -260,10 +260,10 @@ export class ValidatedData implements IValidatedData {
     if (!value.isValid) {
       value.errors = !value.isSet
         ? [`"${token}" must be set`]
-        : value.errors = value.errors.map((err: string) =>
+        : value.errors.map((err: string) =>
           `"${token}" ${err}`
         );
-  }
+    }
     this.params[token] = value;
     this.setValidity();
   }
@@ -292,7 +292,7 @@ export const runValidator = (
   };
 };
 
-const getInitialValue = (value: any, prop: ICommonProp): ValidatedValue => {
+const getDefault = (value: any, prop: ICommonProp): ValidatedValue => {
   const empty = value === void 0;
   const auto = !prop.mandatory && prop.defaultValue !== void 0;
   return {
@@ -306,7 +306,7 @@ const getInitialValue = (value: any, prop: ICommonProp): ValidatedValue => {
 export const validateOne = (
   context: any, name: string, prop: ICommonProp
 ): ValidatedValue => {
-  const result = getInitialValue(context[name], prop);
+  const result = getDefault(context[name], prop);
   if (!result.isSet) {
     const oneOfMust = prop.validators.find(v => v.type === ValidatorType.oneOfMust);
     if (oneOfMust) {
@@ -336,7 +336,7 @@ export const validate = (
   Object.entries(params).forEach(([key, prop]) =>
     data.setParam(key, data.isValidContext
       ? validateOne(context, key, prop)
-      : getInitialValue(void 0, prop)
+      : getDefault(void 0, prop)
     )
   );
   return data;

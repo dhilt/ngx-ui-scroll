@@ -71,7 +71,7 @@ export class State implements IState {
   setCurrentStartIndex(newStartIndex: any) {
     const { startIndex, minIndex, maxIndex } = this.settings;
     let index = Number(newStartIndex);
-    if (isNaN(index)) {
+    if (Number.isNaN(index)) {
       this.logger.log(() =>
         `fallback startIndex to settings.startIndex (${startIndex})`);
       index = startIndex;

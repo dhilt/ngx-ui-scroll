@@ -311,12 +311,23 @@ describe('Validation', () => {
     it('should pass object', () => {
       expect(run({}, [OBJECT])).toBe(true);
       expect(run({}, [OBJECT], true)).toBe(false);
-      expect(run({ [token]: 1 }, [OBJECT])).toBe(false);
-      expect(run({ [token]: true }, [OBJECT])).toBe(false);
-      expect(run({ [token]: 'hello' }, [OBJECT])).toBe(false);
-      expect(run({ [token]: () => null }, [OBJECT])).toBe(false);
-      expect(run({ [token]: function () { } }, [OBJECT])).toBe(false);
-      expect(run({ [token]: [] }, [OBJECT])).toBe(true);
+      [
+        1,
+        true,
+        '',
+        () => null,
+        function () {},
+        [],
+        null,
+        class {},
+        new Map(),
+        new Set(),
+        Symbol(),
+        new Date(),
+        new RegExp(''),
+      ].forEach(input =>
+        expect(run({ [token]: input }, [OBJECT])).toBe(false)
+      );
       expect(run({ [token]: {} }, [OBJECT])).toBe(true);
       expect(run({ [token]: { x: 0 } }, [OBJECT])).toBe(true);
     });

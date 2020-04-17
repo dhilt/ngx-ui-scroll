@@ -42,6 +42,9 @@ export class Settings implements ISettings, IDevSettings {
 
   parseInput(input: ISettings | IDevSettings | undefined, props: ICommonProps<any>) {
     const result = validate(input, props);
+    if (!result.isValid) {
+      throw new Error('Invalid settings');
+    }
     Object.entries(result.params).forEach(([key, par]) =>
       Object.assign(this, { [key]: par.value })
     );

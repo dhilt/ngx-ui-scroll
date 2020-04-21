@@ -1,7 +1,12 @@
-import { ADAPTER_PROPS, itemAdapterEmpty } from '../utils/index';
-import { AdapterPropType } from '../interfaces/index';
+import { ADAPTER_PROPS } from './props';
+import { ItemAdapter, AdapterPropType } from '../../interfaces/index';
 
 let instanceCount = 0;
+
+export const EMPTY_ITEM = {
+  data: {},
+  element: {}
+} as ItemAdapter;
 
 export class AdapterContext {
   id: number;
@@ -11,7 +16,7 @@ export class AdapterContext {
     const id = ++instanceCount;
 
     // props will be reassigned on Scroller instantiation
-    ADAPTER_PROPS().forEach(({ name, value, type, permanent }) =>
+    ADAPTER_PROPS(EMPTY_ITEM).forEach(({ name, value, type, permanent }) =>
       Object.defineProperty(this, name, {
         get: () => value,
         configurable: !mock || permanent

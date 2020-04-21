@@ -1,18 +1,25 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validateOne } from '../utils/index';
+import { ADAPTER_METHODS, AdapterMethods, validateOne } from '../inputs/index';
 import {
   Process,
   ProcessStatus,
   ItemsLooper,
   AdapterFixOptions,
-  IAdapterMethodParam as IParam
+  IValidator
 } from '../interfaces/index';
 
-const { FIX } = ADAPTER_METHODS_PARAMS;
+const { FIX } = ADAPTER_METHODS;
+const { Fix: FixParams } = AdapterMethods;
+
+interface IFixParam {
+  validators: IValidator[];
+  call?: Function;
+  value?: any;
+}
 
 interface IFixCall {
   scroller: Scroller;
-  params: IParam[];
+  params: IFixParam[];
   value: any;
 }
 
@@ -31,7 +38,7 @@ export default class Fix {
       return;
     }
 
-    params.forEach((param: IParam) => {
+    params.forEach((param: IFixParam) => {
       if (typeof param.call !== 'function') {
         return;
       }
@@ -69,34 +76,31 @@ export default class Fix {
   }
 
   static getCallMethod(token: string): Function | null {
-    const { scrollPosition, minIndex, maxIndex, updater } = FIX;
     switch (token) {
-      case scrollPosition.name:
+      case FixParams.scrollPosition:
         return Fix.setScrollPosition;
-      case minIndex.name:
+      case FixParams.minIndex:
         return Fix.setMinIndex;
-      case maxIndex.name:
+      case FixParams.maxIndex:
         return Fix.setMaxIndex;
-      case updater.name:
+      case FixParams.updater:
         return Fix.updateItems;
     }
     return null;
   }
 
-  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IParam[] {
+  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {
     if (!options || typeof options !== 'object') {
       return [];
     }
-    return Object.keys(FIX).reduce((acc: IParam[], key: string) => {
-      const param = FIX[key];
-      const { name, validators } = param;
-      const error = `failed: can't set ${name}`;
-      if (options.hasOwnProperty(name)) {
-        const parsed = validateOne(options, name, validators);
+    return Object.entries(FIX).reduce((acc: IFixParam[], [key, prop]) => {
+      const error = `failed: can't set ${key}`;
+      if (options.hasOwnProperty(key)) {
+        const parsed = validateOne(options, key, prop);
         if (parsed.isValid) {
-          const call = Fix.getCallMethod(name);
+          const call = Fix.getCallMethod(key);
           if (call) {
-            return [...acc, { ...param, value: parsed.value, call }];
+            return [...acc, { ...prop, value: parsed.value, call }];
           } else {
             scroller.logger.log(() => `${error}, call method not found`);
           }

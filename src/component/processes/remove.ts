@@ -1,10 +1,13 @@
 import { Scroller } from '../scroller';
+import { ADAPTER_METHODS, validate } from '../inputs/index';
 import { Direction, ItemsPredicate, Process, ProcessStatus } from '../interfaces/index';
 
 export default class Remove {
 
   static run(scroller: Scroller, predicate: ItemsPredicate) {
-    if (!Remove.checkPredicate(predicate)) {
+    const methodData = validate({ predicate }, ADAPTER_METHODS.REMOVE);
+    if (!methodData.isValid) {
+      scroller.logger.log(() => methodData.showErrors());
       scroller.workflow.call({
         process: Process.remove,
         status: ProcessStatus.error,
@@ -22,25 +25,10 @@ export default class Remove {
       }
     });
 
-    if (!scroller.state.clip.doClip) {
-      scroller.workflow.call({
-        process: Process.remove,
-        status: ProcessStatus.done
-      });
-      return;
-    }
-
     scroller.workflow.call({
       process: Process.remove,
-      status: ProcessStatus.next
+      status: scroller.state.clip.doClip ? ProcessStatus.next : ProcessStatus.done
     });
-  }
-
-  static checkPredicate(predicate: ItemsPredicate) {
-    if (typeof predicate !== 'function') {
-      return false;
-    }
-    return true;
   }
 
 }

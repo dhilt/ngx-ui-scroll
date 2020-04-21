@@ -1,4 +1,5 @@
 import { Scroller } from '../scroller';
+import { ADAPTER_METHODS } from '../inputs/index';
 import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Reload {

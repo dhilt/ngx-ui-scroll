@@ -37,9 +37,10 @@ export class Logger {
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
     this.getFetchRange = (): string => {
-      const { firstIndex, lastIndex } = scroller.state.fetch;
-      const hasInterval = firstIndex !== null && lastIndex !== null && !isNaN(firstIndex) && !isNaN(lastIndex);
-      return hasInterval ? `[${firstIndex}..${lastIndex}]` : 'no';
+      const { firstIndex: first, lastIndex: last } = scroller.state.fetch;
+      return first !== null && last !== null && !Number.isNaN(first) && !Number.isNaN(last)
+        ? `[${first}..${last}]`
+        : 'no';
     };
     this.getLoop = (): string => scroller.state.loop;
     this.getLoopNext = (): string => scroller.state.loopNext;
@@ -53,7 +54,18 @@ export class Logger {
     this.log(() => [
       str,
       stringify
-        ? JSON.stringify(obj)
+        ? JSON.stringify(obj, (k, v) => {
+          if (Number.isNaN(v)) {
+            return 'NaN';
+          }
+          if (v === Infinity) {
+            return 'Infinity';
+          }
+          if (v === -Infinity) {
+            return '-Infinity';
+          }
+          return v;
+        })
           .replace(/"/g, '')
           .replace(/(\{|\:|\,)/g, '$1 ')
           .replace(/(\})/g, ' $1')

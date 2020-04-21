@@ -18,17 +18,20 @@ import {
   AdapterInsertOptions,
   AdapterFixOptions,
   IAdapter,
-  IAdapterMethodParam,
-  IAdapterMethodParams,
-  IAdapterMethods,
-  IAdapterValidatedMethodParams,
-  IAdapterValidatedMethodData,
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { WindowScrollState, ScrollEventData, ScrollState, State } from './state';
 import { Process, ProcessStatus, ProcessSubject } from './process';
-import { ValidatorType, ValidatedValue, IValidator } from './validation';
+import {
+  ValidatorType,
+  ValidatedValue,
+  IValidator,
+  ICommonProp,
+  ICommonProps,
+  IValidatedCommonProps,
+  IValidatedData,
+} from './validation';
 
 export {
   IDatasource,
@@ -50,11 +53,6 @@ export {
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
-  IAdapterMethodParam,
-  IAdapterMethodParams,
-  IAdapterMethods,
-  IAdapterValidatedMethodParams,
-  IAdapterValidatedMethodData,
   Settings,
   DevSettings,
   Direction,
@@ -68,4 +66,8 @@ export {
   ValidatorType,
   ValidatedValue,
   IValidator,
+  ICommonProp,
+  ICommonProps,
+  IValidatedCommonProps,
+  IValidatedData,
 };

@@ -12,7 +12,6 @@ import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
 import { ScrollState } from './state/scroll';
-import { itemAdapterEmpty } from '../utils/adapter';
 
 export class State implements IState {
 
@@ -72,7 +71,7 @@ export class State implements IState {
   setCurrentStartIndex(newStartIndex: any) {
     const { startIndex, minIndex, maxIndex } = this.settings;
     let index = Number(newStartIndex);
-    if (isNaN(index)) {
+    if (Number.isNaN(index)) {
       this.logger.log(() =>
         `fallback startIndex to settings.startIndex (${startIndex})`);
       index = startIndex;

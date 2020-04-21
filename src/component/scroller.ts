@@ -8,9 +8,11 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
-import { checkDatasource } from './utils/index';
+import { validate, DATASOURCE } from './inputs/index';
 
 import { ScrollerWorkflow, IDatasource, CallWorkflow } from './interfaces/index';
+
+export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
 let instanceCount = 0;
 
@@ -35,7 +37,10 @@ export class Scroller {
     callWorkflow: CallWorkflow,
     scroller?: Scroller // for re-initialization
   ) {
-    checkDatasource(datasource);
+    const { params: { get } } = validate(datasource, DATASOURCE);
+    if (!get.isValid) {
+      throw new Error(`${INVALID_DATASOURCE_PREFIX} ${get.errors[0]}`);
+    }
 
     const $items = scroller ? scroller.buffer.$items : void 0;
     this.workflow = { call: callWorkflow };

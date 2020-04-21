@@ -4,8 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
 import { Buffer } from './buffer';
-import { AdapterContext } from './adapterContext';
-import { ADAPTER_PROPS } from '../utils/index';
+import { AdapterContext, EMPTY_ITEM } from './adapter/context';
+import { ADAPTER_PROPS } from './adapter/props';
 import {
   WorkflowGetter,
   AdapterPropType,
@@ -23,7 +23,7 @@ import {
   IDatasourceOptional
 } from '../interfaces/index';
 
-const ADAPTER_PROPS_STUB = ADAPTER_PROPS();
+const ADAPTER_PROPS_STUB = ADAPTER_PROPS(EMPTY_ITEM);
 
 const fixScalarWanted = (name: string, container: { [key: string]: boolean }) => {
   const scalar = ADAPTER_PROPS_STUB.find(
@@ -75,7 +75,7 @@ export class Adapter implements IAdapter {
           ...prop,
           value: (publicContext as any)[prop.name]
         }))
-      : ADAPTER_PROPS();
+      : ADAPTER_PROPS(EMPTY_ITEM);
 
     // Scalar permanent props
     adapterProps

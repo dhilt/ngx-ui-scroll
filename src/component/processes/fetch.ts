@@ -66,11 +66,18 @@ export default class Fetch {
       observer.error(error);
     };
 
-    const result = _get(scroller.state.fetch.index, scroller.state.fetch.count, success, reject);
-    if (result && typeof result.then === 'function') { // DatasourceGetPromise
-      result.then(success, reject);
-    } else if (result && typeof result.subscribe === 'function') { // DatasourceGetObservable
-      return result; // do not wrap observable
+    let isPromise = false;
+    let result = _get(scroller.state.fetch.index, scroller.state.fetch.count, success, reject);
+    if (result && typeof result === 'object') {
+      if (typeof result.then === 'function') { // DatasourceGetPromise
+        isPromise = true;
+        result.then(success, reject);
+      } else if (typeof result.subscribe === 'function') { // DatasourceGetObservable
+        return result; // do not wrap observable
+      }
+    }
+    if (!isPromise && !Array.isArray(result)) {
+      result = []; // pass empty result if DatasourceGetCallback returns non-array value
     }
 
     if (immediateData !== void 0 || immediateError !== void 0) {

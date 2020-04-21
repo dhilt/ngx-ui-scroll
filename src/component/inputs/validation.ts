@@ -2,26 +2,30 @@ import {
   ValidatorType,
   IValidator,
   ValidatedValue,
-  IAdapterMethodParams,
-  IAdapterValidatedMethodData,
-  IAdapterValidatedMethodParams
+  IValidatedData,
+  IValidatedCommonProps,
+  ICommonProps,
+  ICommonProp,
 } from '../interfaces/index';
 
 const getNumber = (value: any): number =>
-  value === '' || value === null ? NaN : Number(value);
+  typeof value === 'number' || (typeof value === 'string' && value !== '')
+    ? Number(value)
+    : NaN;
 
-const onMandatory = (value: any): ValidatedValue => {
-  const isValid = typeof value !== 'undefined';
-  return { value: value, isSet: false, isValid, errors: isValid ? [] : [
-    'must be present'
-  ] };
+const onNumber = (value: any): ValidatedValue => {
+  const parsedValue = getNumber(value);
+  const errors = [];
+  if (Number.isNaN(parsedValue)) {
+    errors.push('must be a number');
+  }
+  return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
 };
 
 const onInteger = (value: any): ValidatedValue => {
-  let parsedValue = value;
   const errors = [];
   value = getNumber(value);
-  parsedValue = parseInt(value, 10);
+  const parsedValue = parseInt(value, 10);
   if (value !== parsedValue) {
     errors.push('must be an integer');
   }
@@ -43,13 +47,40 @@ const onIntegerUnlimited = (value: any): ValidatedValue => {
   return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
 };
 
+const onMoreOrEqual = (limit: number, fallback?: boolean) => (value: any): ValidatedValue => {
+  const result = onNumber(value);
+  if (!result.isValid) {
+    return result;
+  }
+  value = result.value;
+  const errors = [];
+  if (value < limit) {
+    if (!fallback) {
+      errors.push(`must be greater than ${limit}`);
+    } else {
+      value = limit;
+    }
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
 const onBoolean = (value: any): ValidatedValue => {
-  return { value: !!value, isSet: true, isValid: true, errors: [] };
+  const errors = [];
+  let parsedValue = value;
+  if (value === 'true') {
+    parsedValue = true;
+  } else if (value === 'false') {
+    parsedValue = false;
+  }
+  if (typeof parsedValue !== 'boolean') {
+    errors.push('must be a boolean');
+  }
+  return { value: parsedValue, isSet: true, isValid: !errors.length, errors };
 };
 
 const onObject = (value: any): ValidatedValue => {
   const errors = [];
-  if (typeof value !== 'object') {
+  if (Object.prototype.toString.call(value) !== '[object Object]') {
     errors.push('must be an object');
   }
   return { value, isSet: true, isValid: !errors.length, errors };
@@ -136,9 +167,9 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
 };
 
 export const VALIDATORS = {
-  MANDATORY: {
-    type: ValidatorType.mandatory,
-    method: onMandatory
+  NUMBER: {
+    type: ValidatorType.number,
+    method: onNumber
   },
   INTEGER: {
     type: ValidatorType.integer,
@@ -148,6 +179,10 @@ export const VALIDATORS = {
     type: ValidatorType.integerUnlimited,
     method: onIntegerUnlimited
   },
+  MORE_OR_EQUAL: (limit: number, fallback?: boolean): IValidator => ({
+    type: ValidatorType.moreOrEqual,
+    method: onMoreOrEqual(limit, fallback)
+  }),
   BOOLEAN: {
     type: ValidatorType.boolean,
     method: onBoolean
@@ -176,73 +211,77 @@ export const VALIDATORS = {
     type: ValidatorType.oneOfCan,
     method: onOneOf(list, false)
   }),
-  ONE_OF_MUST: (params: any): IValidator => ({
+  ONE_OF_MUST: (list: string[]): IValidator => ({
     type: ValidatorType.oneOfMust,
-    method: onOneOf(params, true)
+    method: onOneOf(list, true)
   }),
 };
 
-export class AdapterValidatedMethodData implements IAdapterValidatedMethodData {
+export class ValidatedData implements IValidatedData {
   private context: any;
-  private commonErrors: string[];
+  private contextErrors: string[];
+  readonly isValidContext: boolean;
 
   isValid: boolean;
   errors: string[];
-  params: IAdapterValidatedMethodParams;
+  params: IValidatedCommonProps<any>;
 
   constructor(context: any) {
     this.context = context;
-    this.commonErrors = [];
-    this.isValid = true;
-    this.errors = [];
     this.params = {};
-    this.checkContext();
+    this.contextErrors = [];
+    this.errors = [];
+    this.isValid = true;
+    this.isValidContext = this.checkContext();
   }
 
-  private checkContext() {
-    if (!this.context || typeof this.context !== 'object') {
+  private checkContext(): boolean {
+    if (!this.context || Object.prototype.toString.call(this.context) !== '[object Object]') {
       this.setCommonError(`context is not an object`);
+      return false;
     }
+    return true;
   }
 
   private setValidity() {
     this.errors = Object.keys(this.params).reduce((acc: string[], key: string) => [
       ...acc, ...this.params[key].errors
-    ], this.commonErrors);
+    ], []);
     this.isValid = !this.errors.length;
   }
 
   setCommonError(error: string) {
-    this.commonErrors.push(error);
+    this.contextErrors.push(error);
     this.errors.push(error);
     this.isValid = false;
   }
 
   setParam(token: string, value: ValidatedValue) {
     if (!value.isValid) {
-      value.errors = value.errors.map((err: string) =>
-        `"${token}" ${err}`
-      );
+      value.errors = !value.isSet
+        ? [`"${token}" must be set`]
+        : value.errors.map((err: string) =>
+          `"${token}" ${err}`
+        );
     }
     this.params[token] = value;
     this.setValidity();
   }
-}
 
-const shouldSkip = ({ type }: IValidator, value: any) =>
-  type !== ValidatorType.mandatory &&
-  type !== ValidatorType.oneOfMust &&
-  value === void 0;
+  showErrors(): string {
+    return this.errors.length
+      ? 'validation failed: ' + this.errors.join(', ')
+      : '';
+  }
+}
 
 export const runValidator = (
   current: ValidatedValue,
   validator: IValidator,
-  context?: any
+  context: any,
+  prop: ICommonProp
 ): ValidatedValue => {
   const { value, errors } = current;
-  if (shouldSkip(validator, value)) {
-    return { ...current, isSet: false };
-  }
   const result = validator.method(value, context);
   const _errors = [...errors, ...result.errors];
   return {
@@ -253,30 +292,52 @@ export const runValidator = (
   };
 };
 
-export const validateOne = (
-  context: any, name: string, validators: IValidator[]
-): ValidatedValue =>
-  validators.reduce((acc, validator) => ({
-    ...acc,
-    ...runValidator(acc, validator, context)
-  }), {
-    value: context[name],
-    isSet: false,
-    isValid: true,
+const getDefault = (value: any, prop: ICommonProp): ValidatedValue => {
+  const empty = value === void 0;
+  const auto = !prop.mandatory && prop.defaultValue !== void 0;
+  return {
+    value: !empty ? value : (auto ? prop.defaultValue : void 0),
+    isSet: !empty || auto,
+    isValid: !empty || !prop.mandatory,
     errors: []
-  } as ValidatedValue);
+  };
+};
+
+export const validateOne = (
+  context: any, name: string, prop: ICommonProp
+): ValidatedValue => {
+  const result = getDefault(context[name], prop);
+  if (!result.isSet) {
+    const oneOfMust = prop.validators.find(v => v.type === ValidatorType.oneOfMust);
+    if (oneOfMust) {
+      return runValidator(result, oneOfMust, context, prop);
+    }
+  } else {
+    for (const validator of Object.values(prop.validators)) {
+      const current = runValidator(result, validator, context, prop);
+      if (!current.isValid && prop.defaultValue !== void 0) {
+        return {
+          value: prop.defaultValue,
+          isSet: true,
+          isValid: true,
+          errors: []
+        };
+      }
+      Object.assign(result, current);
+    }
+  }
+  return result;
+};
 
 export const validate = (
-  context: any, params: IAdapterMethodParams
-): IAdapterValidatedMethodData => {
-  const data = new AdapterValidatedMethodData(context);
-  if (!data.isValid) {
-    return data;
-  }
-  Object.keys(params).forEach((key: string) => {
-    const { name, validators } = params[key];
-    const parsed = validateOne(context, name, validators);
-    data.setParam(name, parsed);
-  });
+  context: any, params: ICommonProps<any>
+): IValidatedData => {
+  const data = new ValidatedData(context);
+  Object.entries(params).forEach(([key, prop]) =>
+    data.setParam(key, data.isValidContext
+      ? validateOne(context, key, prop)
+      : getDefault(void 0, prop)
+    )
+  );
   return data;
 };

@@ -78,28 +78,3 @@ export interface IAdapter {
   showLog: () => void;
   fix: (options: AdapterFixOptions) => void; // experimental
 }
-
-export interface IAdapterMethodParam {
-  name: string;
-  validators: IValidator[];
-  call?: Function;
-  value?: any;
-}
-
-export interface IAdapterMethodParams {
-  [key: string]: IAdapterMethodParam;
-}
-
-export interface IAdapterMethods {
-  [key: string]: IAdapterMethodParams;
-}
-
-export interface IAdapterValidatedMethodParams {
-  [key: string]: ValidatedValue;
-}
-
-export interface IAdapterValidatedMethodData {
-  isValid: boolean;
-  errors: string[];
-  params: IAdapterValidatedMethodParams;
-}

@@ -1,103 +1,127 @@
 import { BehaviorSubject, Subject } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
 
-import {
-  IAdapterProp,
-  AdapterPropType as Prop,
-  ItemAdapter,
-  IAdapter
-} from '../interfaces/adapter';
+import { AdapterPropType as Prop, IAdapterProp } from '../../interfaces/index';
 
-export const itemAdapterEmpty = <ItemAdapter>{
-  data: {},
-  element: {}
-};
+const noop = () => null;
 
-export const ADAPTER_PROPS: IAdapterProp[] = [
+export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
+  {
+    type: Prop.Scalar,
+    name: 'id',
+    value: '',
+    permanent: true
+  },
+  {
+    type: Prop.Scalar,
+    name: 'mock',
+    value: true,
+    permanent: true
+  },
   {
     type: Prop.Scalar,
     name: 'version',
-    value: ''
+    value: '',
+    onDemand: true
   },
   {
     type: Prop.Scalar,
     name: 'isLoading',
-    value: false
+    value: false,
+    observable: 'isLoading$'
   },
   {
     type: Prop.Scalar,
     name: 'loopPending',
-    value: false
+    value: false,
+    observable: 'loopPending$'
   },
   {
     type: Prop.Scalar,
     name: 'cyclePending',
-    value: false
+    value: false,
+    observable: 'cyclePending$'
   },
   {
     type: Prop.Scalar,
     name: 'firstVisible',
-    value: itemAdapterEmpty
+    value: nullItem,
+    observable: 'firstVisible$',
+    wanted: true
   },
   {
     type: Prop.Scalar,
     name: 'lastVisible',
-    value: itemAdapterEmpty
-  },
-  {
-    type: Prop.Scalar,
-    name: 'itemsCount',
-    value: 0
+    value: nullItem,
+    observable: 'lastVisible$',
+    wanted: true
   },
   {
     type: Prop.Scalar,
     name: 'bof',
-    value: false
+    value: false,
+    observable: 'bof$'
   },
   {
     type: Prop.Scalar,
     name: 'eof',
-    value: false
+    value: false,
+    observable: 'eof$'
+  },
+  {
+    type: Prop.Scalar,
+    name: 'itemsCount',
+    value: 0,
+    onDemand: true
+  },
+  {
+    type: Prop.Function,
+    name: 'reset',
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'reload',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'append',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'prepend',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'check',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'remove',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'clip',
-    value: () => null
+    value: noop
+  },
+  {
+    type: Prop.Function,
+    name: 'insert',
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'showLog',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Function,
     name: 'fix',
-    value: () => null
+    value: noop
   },
   {
     type: Prop.Observable,
@@ -117,12 +141,12 @@ export const ADAPTER_PROPS: IAdapterProp[] = [
   {
     type: Prop.Observable,
     name: 'firstVisible$',
-    value: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty)
+    value: new BehaviorSubject<any>(nullItem)
   },
   {
     type: Prop.Observable,
     name: 'lastVisible$',
-    value: new BehaviorSubject<ItemAdapter>(itemAdapterEmpty)
+    value: new BehaviorSubject<any>(nullItem)
   },
   {
     type: Prop.Observable,

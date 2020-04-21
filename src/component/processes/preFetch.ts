@@ -122,7 +122,7 @@ export default class PreFetch {
       lastIndex = state.startIndex + settings.bufferSize - 1;
       scroller.logger.log(`forcing fetch forward direction [no item size]`);
     } else {
-      let index = <number>fetch.firstIndexBuffer;
+      let index = fetch.firstIndexBuffer as number;
       let position = startPosition;
       lastIndex = index;
       while (1) {
@@ -145,9 +145,9 @@ export default class PreFetch {
       return;
     }
     const { fetch } = scroller.state;
-    const firstIndex = <number>fetch.firstIndex;
-    const lastIndex = <number>fetch.lastIndex;
-    const packs: Array<Array<number>> = [[]];
+    const firstIndex = fetch.firstIndex as number;
+    const lastIndex = fetch.lastIndex as number;
+    const packs: number[][] = [[]];
     let p = 0;
     for (let i = firstIndex; i <= lastIndex; i++) {
       if (!buffer.get(i)) {
@@ -177,13 +177,13 @@ export default class PreFetch {
     if (!buffer.size) {
       return;
     }
-    const fetchFirst = <number>fetch.firstIndex;
-    const bufferLast = <number>buffer.lastIndex;
+    const fetchFirst = fetch.firstIndex as number;
+    const bufferLast = buffer.lastIndex as number;
     if (fetchFirst > bufferLast) {
       fetch.firstIndex = fetch.firstIndexBuffer = bufferLast + 1;
     }
-    const bufferFirst = <number>buffer.firstIndex;
-    const fetchLast = <number>fetch.lastIndex;
+    const bufferFirst = buffer.firstIndex as number;
+    const fetchLast = fetch.lastIndex as number;
     if (fetchLast < bufferFirst) {
       fetch.lastIndex = fetch.lastIndexBuffer = bufferFirst - 1;
     }
@@ -197,8 +197,8 @@ export default class PreFetch {
     if (!fetch.shouldFetch) {
       return;
     }
-    const firstIndex = <number>fetch.firstIndex;
-    const lastIndex = <number>fetch.lastIndex;
+    const firstIndex = fetch.firstIndex as number;
+    const lastIndex = fetch.lastIndex as number;
     const diff = scroller.settings.bufferSize - (lastIndex - firstIndex + 1);
     if (diff <= 0) {
       return;

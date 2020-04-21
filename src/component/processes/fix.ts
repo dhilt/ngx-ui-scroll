@@ -1,19 +1,18 @@
 import { Scroller } from '../scroller';
+import { ADAPTER_METHODS, AdapterMethods, validateOne } from '../inputs/index';
 import {
-  Direction, ItemsPredicate, ItemsLooper, Process, ProcessStatus, AdapterFixOptions, ItemAdapter
+  Process,
+  ProcessStatus,
+  ItemsLooper,
+  AdapterFixOptions,
+  IValidator
 } from '../interfaces/index';
-import { InputValue, ValidatedValue, validate } from '../utils/index';
 
-enum FixParamToken {
-  scrollPosition = 'scrollPosition',
-  minIndex = 'minIndex',
-  maxIndex = 'maxIndex',
-  updater = 'updater'
-}
+const { FIX } = ADAPTER_METHODS;
+const { Fix: FixParams } = AdapterMethods;
 
 interface IFixParam {
-  token: FixParamToken;
-  type: InputValue;
+  validators: IValidator[];
   call?: Function;
   value?: any;
 }
@@ -25,29 +24,6 @@ interface IFixCall {
 }
 
 export default class Fix {
-
-  static params: IFixParam[] = [
-    {
-      token: FixParamToken.scrollPosition,
-      type: InputValue.integerUnlimited,
-      call: Fix.setScrollPosition
-    },
-    {
-      token: FixParamToken.minIndex,
-      type: InputValue.integerUnlimited,
-      call: Fix.setMinIndex
-    },
-    {
-      token: FixParamToken.maxIndex,
-      type: InputValue.integerUnlimited,
-      call: Fix.setMaxIndex
-    },
-    {
-      token: FixParamToken.updater,
-      type: InputValue.iteratorCallback,
-      call: Fix.updateItems
-    }
-  ];
 
   static run(scroller: Scroller, options: AdapterFixOptions) {
     const { workflow } = scroller;
@@ -76,8 +52,7 @@ export default class Fix {
   }
 
   static setScrollPosition({ scroller: { state, viewport }, value }: IFixCall) {
-    state.syntheticScroll.reset();
-    let result = <number>value;
+    let result = value as number;
     if (value === -Infinity) {
       result = 0;
     } else if (value === Infinity) {
@@ -87,31 +62,51 @@ export default class Fix {
   }
 
   static setMinIndex({ scroller: { buffer, settings }, value }: IFixCall) {
-    settings.minIndex = <number>value;
-    buffer.absMinIndex = <number>value;
+    settings.minIndex = value as number;
+    buffer.absMinIndex = value as number;
   }
 
   static setMaxIndex({ scroller: { buffer, settings }, value }: IFixCall) {
-    settings.maxIndex = <number>value;
-    buffer.absMaxIndex = <number>value;
+    settings.maxIndex = value as number;
+    buffer.absMaxIndex = value as number;
   }
 
   static updateItems({ scroller: { buffer }, value }: IFixCall) {
-    buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
+    buffer.items.forEach(item => (value as ItemsLooper)(item.get()));
+  }
+
+  static getCallMethod(token: string): Function | null {
+    switch (token) {
+      case FixParams.scrollPosition:
+        return Fix.setScrollPosition;
+      case FixParams.minIndex:
+        return Fix.setMinIndex;
+      case FixParams.maxIndex:
+        return Fix.setMaxIndex;
+      case FixParams.updater:
+        return Fix.updateItems;
+    }
+    return null;
   }
 
   static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {
     if (!options || typeof options !== 'object') {
       return [];
     }
-    return Fix.params.reduce((acc: IFixParam[], param: IFixParam) => {
-      const { token, type } = param;
-      if (options.hasOwnProperty(token)) {
-        const parsed = validate((<any>options)[token], type);
+    return Object.entries(FIX).reduce((acc: IFixParam[], [key, prop]) => {
+      const error = `failed: can't set ${key}`;
+      if (options.hasOwnProperty(key)) {
+        const parsed = validateOne(options, key, prop);
         if (parsed.isValid) {
-          return [...acc, { ...param, value: parsed.value }];
+          const call = Fix.getCallMethod(key);
+          if (call) {
+            return [...acc, { ...prop, value: parsed.value, call }];
+          } else {
+            scroller.logger.log(() => `${error}, call method not found`);
+          }
+        } else {
+          scroller.logger.log(() => `${error}, ${parsed.errors}`);
         }
-        scroller.logger.log(() => `failed: can't set ${token}, ${parsed.error}`);
       }
       return acc;
     }, []);

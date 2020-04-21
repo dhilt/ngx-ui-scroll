@@ -57,7 +57,7 @@ export class Misc {
     this.testComponent = fixture.componentInstance;
     this.uiScrollElement = this.fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
-    this.viewportElement = <DebugElement>this.uiScrollElement.parent;
+    this.viewportElement = this.uiScrollElement.parent as DebugElement;
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.uiScrollComponent.workflow.scroller;
     this.datasource = this.scroller.datasource;
@@ -78,21 +78,21 @@ export class Misc {
     return this.horizontal ? this.itemWidth : this.itemHeight;
   }
 
-  getElements() {
+  getElements(): HTMLElement[] {
     return this.fixture.nativeElement.querySelectorAll(`[data-sid]`);
   }
 
-  getElement(index: number) {
+  getElement(index: number): HTMLElement {
     return this.fixture.nativeElement.querySelector(`[data-sid="${index}"]`);
   }
 
-  getElementText(index: number): string {
+  getElementText(index: number): string | null {
     const element = this.getElement(index);
     return element ? element.innerText.trim() : null;
   }
 
-  checkElementContentByIndex(index: number): boolean {
-    return this.getElementText(index) === index + ' : ' + generateItem(index).text;
+  checkElementContentByIndex(index: number | null): boolean {
+    return index !== null && this.getElementText(index) === index + ' : ' + generateItem(index).text;
   }
 
   checkElementId(element: HTMLElement, index: number): boolean {

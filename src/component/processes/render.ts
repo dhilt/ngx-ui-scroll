@@ -5,6 +5,7 @@ import { Item } from '../classes/item';
 export default class Render {
 
   static run(scroller: Scroller) {
+    const { workflow, state: { clip, render } } = scroller;
     scroller.logger.stat('before new items render');
     scroller.innerLoopSubscriptions.push(
       scroller.bindData().subscribe(() => {
@@ -14,13 +15,13 @@ export default class Render {
             (<any>elt).dataset['sid'] = scroller.state.fetch.items[index].nodeId;
           });
         if (Render.processElements(scroller)) {
-          scroller.workflow.call({
+          workflow.call({
             process: Process.render,
-            status: ProcessStatus.next,
-            payload: { noClip: scroller.state.clip.noClip }
+            status: render.noSize ? ProcessStatus.done : ProcessStatus.next,
+            payload: { noClip: clip.noClip }
           });
         } } else {
-          scroller.workflow.call({
+          workflow.call({
             process: Process.render,
             status: ProcessStatus.error,
             payload: { error: `Can't associate item with element` }
@@ -31,23 +32,24 @@ export default class Render {
   }
 
   static processElements(scroller: Scroller): boolean {
-    const { state, state: { fetch, fetch: { items } }, viewport, buffer } = scroller;
+    const { state, state: { fetch, fetch: { items }, render }, viewport, buffer } = scroller;
     const scrollBeforeRender = scroller.settings.windowViewport && fetch.isPrepend
       ? scroller.viewport.scrollPosition
       : null;
     if (!fetch.isReplace) {
-      state.sizeBeforeRender = viewport.getScrollableSize();
-      state.fwdPaddingBeforeRender = viewport.paddings.forward.size;
+      render.sizeBefore = viewport.getScrollableSize();
+      render.fwdPaddingBefore = viewport.paddings.forward.size;
       if (!items.reduce((acc, item) => acc && Render.processElement(scroller, item), true)) {
         return false;
       }
     }
     fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
-    state.sizeAfterRender = viewport.getScrollableSize();
-    if (scrollBeforeRender !== null) {
+    render.sizeAfter = viewport.getScrollableSize();
+    if (!render.noSize && scrollBeforeRender !== null) {
       Render.processWindowScrollBackJump(scroller, scrollBeforeRender);
     }
     scroller.logger.stat('after new items render');
+    scroller.logger.log(() => render.noSize ? 'viewport size has not been changed' : void 0);
     return true;
   }
 
@@ -57,7 +59,7 @@ export default class Render {
     if (!element) {
       return false;
     }
-    item.element = <HTMLElement>element;
+    item.element = element as HTMLElement;
     item.element.style.left = '';
     item.element.style.position = '';
     item.element.classList.remove('temp');
@@ -76,7 +78,7 @@ export default class Render {
     // then this position will be updated silently in case of entire window scrollable
     // so we need to remember the delta and to update scroll position manually right after it is changed silently
     const inc = scrollBeforeRender >= viewport.paddings.backward.size ? 1 : -1;
-    const delta = inc * Math.abs(state.sizeAfterRender - state.sizeBeforeRender);
+    const delta = inc * Math.abs(state.render.sizeAfter - state.render.sizeBefore);
     const positionToUpdate = scrollBeforeRender - delta;
     if (delta && positionToUpdate > 0) {
       window.positionToUpdate = positionToUpdate;

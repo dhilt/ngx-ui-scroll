@@ -35,7 +35,7 @@ export class TestComponent {
   sizeIndex = 1;
   sizeValue = 10;
   datasourceDelay = 0;
-  data: Array<MyItem>;
+  data: MyItem[];
 
   datasource = new Datasource({
     get: (index: number, count: number) =>
@@ -55,9 +55,6 @@ export class TestComponent {
       logTime: false,
       logProcessRun: true,
       throttle: 40,
-      inertia: true,
-      inertiaScrollDelay: 55,
-      inertiaScrollDelta: 135,
       changeOverflow: false
     }
   });
@@ -70,7 +67,7 @@ export class TestComponent {
   generateData() {
     this.data = [];
     for (let i = 0; i <= MAX - MIN; i++) {
-      const item = <MyItem>{
+      const item: MyItem = {
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
@@ -84,8 +81,8 @@ export class TestComponent {
     }
   }
 
-  fetchData(index: number, count: number): Observable<Array<MyItem>> {
-    const data: Array<MyItem> = [];
+  fetchData(index: number, count: number): Observable<MyItem[]> {
+    const data: MyItem[] = [];
     const start = Math.max(MIN, index);
     const end = Math.min(MAX, index + count - 1);
     if (start <= end) {
@@ -99,7 +96,7 @@ export class TestComponent {
         // this.datasource.adapter.setMinIndex(MIN);
       }
     }
-    return new Observable((observer: Observer<any>) => {
+    return new Observable((observer: Observer<MyItem[]>) => {
       if (!this.datasourceDelay) {
         observer.next(data);
       } else {
@@ -110,9 +107,9 @@ export class TestComponent {
 
   getVisibleItemsCount(): number {
     const adapter = this.datasource.adapter;
-    let last = <number>adapter.lastVisible.$index;
+    let last = adapter.lastVisible.$index;
     last = Number.isInteger(last) ? last : NaN;
-    let first = <number>adapter.firstVisible.$index;
+    let first = adapter.firstVisible.$index;
     first = Number.isInteger(first) ? first : NaN;
     return (Number.isNaN(last) || Number.isNaN(first)) ? 0 : last - first + 1;
   }
@@ -137,7 +134,7 @@ export class TestComponent {
 
   doPrepend() {
     MIN--;
-    const item = <MyItem>{
+    const item: MyItem = {
       id: MIN,
       text: 'item #' + MIN,
       isSelected: false,
@@ -169,7 +166,7 @@ export class TestComponent {
       for (let i = index; i < index + 5; i++) {
         const element = viewportElement.querySelector(`[data-sid="${i}"]`);
         if (element) {
-          (<HTMLElement>element).style.height = this.sizeValue + 'px';
+          (element as HTMLElement).style.height = this.sizeValue + 'px';
           const item = this.data.find(_item => _item.id === i);
           if (item) {
             item.height = this.sizeValue;

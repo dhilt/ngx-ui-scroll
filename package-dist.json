@@ -1,6 +1,6 @@
 {
   "name": "ngx-ui-scroll",
-  "version": "1.4.1",
+  "version": "1.6.1",
   "description": "Infinite/virtual scroll for Angular",
   "main": "./bundles/ngx-ui-scroll.umd.js",
   "module": "./fesm5/ngx-ui-scroll.js",
@@ -27,9 +27,9 @@
   "sideEffects": false,
   "bundleDependencies": false,
   "peerDependencies": {
-    "rxjs": ">= 6.0.0",
-    "@angular/common": ">= 6.0.0",
-    "@angular/core": ">= 6.0.0"
+    "rxjs": ">= 5.5.0",
+    "@angular/common": ">= 5.0.0",
+    "@angular/core": ">= 5.0.0"
   },
   "dependencies": {
     "tslib": "^1.9.0"

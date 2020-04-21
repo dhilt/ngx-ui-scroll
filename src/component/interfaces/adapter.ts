@@ -1,5 +1,8 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
+import { IValidator, ValidatedValue } from './validation';
+import { IDatasourceOptional } from './datasource';
+
 export enum AdapterPropType {
   Scalar,
   Function,
@@ -7,37 +10,13 @@ export enum AdapterPropType {
 }
 
 export interface IAdapterProp {
-  type: AdapterPropType;
   name: string;
+  type: AdapterPropType;
   value: any;
-}
-
-export interface IAdapter {
-  readonly init$?: BehaviorSubject<boolean>;
-  readonly version: string;
-  readonly isLoading: boolean;
-  readonly isLoading$: Subject<boolean>;
-  readonly loopPending: boolean;
-  readonly loopPending$: Subject<boolean>;
-  readonly cyclePending: boolean;
-  readonly cyclePending$: Subject<boolean>;
-  readonly firstVisible: ItemAdapter;
-  readonly firstVisible$: BehaviorSubject<ItemAdapter>;
-  readonly lastVisible: ItemAdapter;
-  readonly lastVisible$: BehaviorSubject<ItemAdapter>;
-  readonly itemsCount: number;
-  readonly bof: boolean;
-  readonly bof$: Subject<boolean>;
-  readonly eof: boolean;
-  readonly eof$: Subject<boolean>;
-  reload: (reloadIndex?: number | string) => any;
-  append: (items: any, bof?: boolean) => any;
-  prepend: (items: any, bof?: boolean) => any;
-  check: () => any;
-  remove: (predicate: ItemsPredicate) => any;
-  clip: (options?: AdapterClipOptions) => any;
-  showLog: () => any;
-  fix: (options: AdapterFixOptions) => any; // undocumented
+  observable?: string;
+  wanted?: boolean;
+  onDemand?: boolean;
+  permanent?: boolean;
 }
 
 export interface ItemAdapter {
@@ -54,10 +33,48 @@ export interface AdapterClipOptions {
   backwardOnly?: boolean;
 }
 
+export interface AdapterInsertOptions {
+  items: any[];
+  before?: ItemsPredicate;
+  after?: ItemsPredicate;
+  decrease?: boolean;
+}
+
 export interface AdapterFixOptions {
   scrollPosition?: number;
   minIndex?: number;
   maxIndex?: number;
   updater?: ItemsLooper;
   safe?: boolean;
+}
+
+export interface IAdapter {
+  readonly id: number;
+  readonly mock: boolean;
+  readonly version: string;
+  readonly isLoading: boolean;
+  readonly isLoading$: Subject<boolean>;
+  readonly loopPending: boolean;
+  readonly loopPending$: Subject<boolean>;
+  readonly cyclePending: boolean;
+  readonly cyclePending$: Subject<boolean>;
+  readonly firstVisible: ItemAdapter;
+  readonly firstVisible$: BehaviorSubject<ItemAdapter>;
+  readonly lastVisible: ItemAdapter;
+  readonly lastVisible$: BehaviorSubject<ItemAdapter>;
+  readonly bof: boolean;
+  readonly bof$: Subject<boolean>;
+  readonly eof: boolean;
+  readonly eof$: Subject<boolean>;
+  readonly itemsCount: number;
+  reset: (datasource?: IDatasourceOptional) => void;
+  reload: (reloadIndex?: number | string) => void;
+  append: (items: any, eof?: boolean) => void;
+  prepend: (items: any, bof?: boolean) => void;
+  check: () => void;
+  remove: (predicate: ItemsPredicate) => void;
+  clip: (options?: AdapterClipOptions) => void;
+  insert: (options: AdapterInsertOptions) => void;
+  showLog: () => void;
+  fix: (options: AdapterFixOptions) => void; // experimental
 }

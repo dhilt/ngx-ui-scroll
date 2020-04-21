@@ -11,7 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoIsLoadingExtendedComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Is loading, advanced`,
     titleId: `is-loading-advanced`,

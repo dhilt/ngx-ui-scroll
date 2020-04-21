@@ -12,7 +12,7 @@ import { Datasource } from '../../../../public_api';
 })
 export class DemoCheckSizeComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Check size`,
     titleId: `check-size`,
@@ -25,7 +25,7 @@ export class DemoCheckSizeComponent {
   MAX = 200;
   startIndex = 20;
   sizeValue = 15;
-  data: Array<any>;
+  data: any[];
   needAutoscroll: false;
 
   constructor() {
@@ -36,7 +36,7 @@ export class DemoCheckSizeComponent {
   }
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         const found = this.data.find(item => item.id === i);
@@ -58,7 +58,7 @@ export class DemoCheckSizeComponent {
 MAX = 200;
 startIndex = 20;
 sizeValue = 15;
-data: Array<any>;
+data: any[];
 needAutoscroll: false;
 
 constructor() {
@@ -172,7 +172,7 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
 .item {
   font-weight: bold;
   height: 25px;
-  overflow-y: hidden;
+  overflow: hidden;
 }`
   }];
 
@@ -235,7 +235,7 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
     }
     this.doChangeSize();
     this.datasource.adapter.check();
-    if (firstVisibleIndex !== undefined) {
+    if (firstVisibleIndex !== void 0) {
       this.autoscroll(firstVisibleIndex);
     }
   }

@@ -11,7 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoAppendPrependSyncComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Append / prepend sync`,
     titleId: `append-prepend-sync`,
@@ -22,7 +22,7 @@ export class DemoAppendPrependSyncComponent {
 
   MIN = 100;
   MAX = 200;
-  data: Array<any>;
+  data: any[];
 
   constructor() {
     this.data = [];
@@ -32,7 +32,7 @@ export class DemoAppendPrependSyncComponent {
   }
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         const found = this.data.find(item => item.id === i);
@@ -53,7 +53,7 @@ export class DemoAppendPrependSyncComponent {
     text: `MIN = 100;
 MAX = 200;
 inputValue = 1;
-data: Array<any>;
+data: any[];
 
 constructor() {
   this.data = [];

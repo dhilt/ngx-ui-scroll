@@ -11,7 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoItemsCountComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Buffer items counter`,
     titleId: `items-count`,

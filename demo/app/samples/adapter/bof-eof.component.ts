@@ -12,7 +12,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoBofEofComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Begin / end of file`,
     titleId: `bof-eof`,
@@ -22,7 +22,7 @@ export class DemoBofEofComponent {
   };
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const MIN = 1, MAX = 100;
       const data = [];
       const start = Math.max(MIN, index);

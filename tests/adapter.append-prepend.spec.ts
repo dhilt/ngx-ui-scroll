@@ -1,24 +1,29 @@
 import { Direction } from '../src/component/interfaces';
-import { makeTest } from './scaffolding/runner';
+import { makeTest, TestBedConfig, OperationConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
+import { Item } from './miscellaneous/items';
 
+enum Operation {
+  append = 'append',
+  prepend = 'prepend'
+}
 const min = 1, max = 100, bufferSize = 10, padding = 0.5;
 const templateSettings = { viewportHeight: 200 };
 const amount = 3, emptyAmount = 20;
 
 describe('Adapter Append-Prepend Spec', () => {
 
-  const config = {
-    prepend: {
+  const config: OperationConfig<Operation> = {
+    [Operation.prepend]: {
       datasourceName: 'limited',
       datasourceSettings: {
         startIndex: min, minIndex: min + amount, maxIndex: max,
         bufferSize, padding, adapter: true
       },
       templateSettings,
-      amount
+      custom: { amount }
     },
-    append: {
+    [Operation.append]: {
       datasourceName: 'limited',
       datasourceSettings: {
         startIndex: max - bufferSize + 1 - amount,
@@ -27,19 +32,19 @@ describe('Adapter Append-Prepend Spec', () => {
         bufferSize, padding, adapter: true
       },
       templateSettings,
-      amount
+      custom: { amount }
     }
   };
 
-  const configScroll = {
-    prepend: {
+  const configScroll: OperationConfig<Operation> = {
+    [Operation.prepend]: {
       ...config.prepend,
       datasourceSettings: {
         ...config.prepend.datasourceSettings,
         startIndex: max - bufferSize + 1
       }
     },
-    append: {
+    [Operation.append]: {
       ...config.append,
       datasourceSettings: {
         ...config.append.datasourceSettings,
@@ -48,8 +53,8 @@ describe('Adapter Append-Prepend Spec', () => {
     }
   };
 
-  const configEmpty = {
-    prepend: {
+  const configEmpty: OperationConfig<Operation> = {
+    [Operation.prepend]: {
       datasourceName: 'empty-callback',
       datasourceSettings: {
         startIndex: min + emptyAmount - 1,
@@ -57,9 +62,9 @@ describe('Adapter Append-Prepend Spec', () => {
         bufferSize: emptyAmount, padding, adapter: true
       },
       templateSettings,
-      amount: emptyAmount
+      custom: { amount: emptyAmount }
     },
-    append: {
+    [Operation.append]: {
       datasourceName: 'empty-callback',
       datasourceSettings: {
         startIndex: max - emptyAmount + 1,
@@ -67,41 +72,41 @@ describe('Adapter Append-Prepend Spec', () => {
         bufferSize: emptyAmount, padding, adapter: true
       },
       templateSettings,
-      amount: emptyAmount
+      custom: { amount: emptyAmount }
     }
   };
 
-  const getNewItems = (total: number) => ({
-    append: [...Array(total).keys()].map((i: number) => ({
+  const getNewItems = (total: number): { [key: string]: Item[] } => ({
+    [Operation.append]: [...Array(total).keys()].map((i: number) => ({
       id: max - total + i + 1,
       text: 'item #' + (max - total + i + 1)
      })),
-    prepend: [...Array(total).keys()].map((i: number) => ({
+    [Operation.prepend]: [...Array(total).keys()].map((i: number) => ({
       id: min + i,
       text: 'item #' + (min + i)
     })).reverse()
   });
 
-  const runAppendPrependSuite = (token = 'append') => {
+  const runAppendPrependSuite = (token = Operation.append) => {
 
-    const isAppend = token === 'append';
+    const isAppend = token === Operation.append;
     const direction = isAppend ? Direction.forward : Direction.backward;
     const oppositeDirection = isAppend ? Direction.backward : Direction.forward;
 
     makeTest({
-      config: (<any>config)[token],
+      config: config[token],
       title: `should ${token} immediately`,
       it: (misc: Misc) => (done: any) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           const viewport = misc.scroller.viewport;
           const paddings = misc.scroller.viewport.paddings;
-          const _amount = (<any>config)[token].amount;
-          const items = (<any>getNewItems(_amount))[token];
+          const _amount = config[token].custom.amount;
+          const items = getNewItems(_amount)[token];
           const itemSize = misc.getItemSize();
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
             expect(paddings[direction].size).toEqual(0);
-            (<any>misc.scroller.datasource.adapter)[token](items);
+            misc.scroller.datasource.adapter[token](items);
             expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
           } else {
             expect(viewport.getScrollableSize()).toEqual(max * itemSize);
@@ -112,20 +117,20 @@ describe('Adapter Append-Prepend Spec', () => {
     });
 
     makeTest({
-      config: (<any>configScroll)[token],
+      config: configScroll[token],
       title: `should ${token} after scroll (virtualization)`,
       it: (misc: Misc) => (done: any) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           const viewport = misc.scroller.viewport;
           const paddings = viewport.paddings;
-          const _amount = (<any>configScroll)[token].amount;
-          const items = (<any>getNewItems(_amount))[token];
+          const _amount = configScroll[token].custom.amount;
+          const items = getNewItems(_amount)[token];
           const itemSize = misc.getItemSize();
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
             expect(paddings[oppositeDirection].size).toEqual(0);
             const paddingSize = paddings[direction].size;
-            (<any>misc.scroller.datasource.adapter)[token](items, true);
+            misc.scroller.datasource.adapter[token](items, true);
             expect(viewport.getScrollableSize()).toEqual(max * itemSize);
             expect(paddings[direction].size).toEqual(paddingSize + (items.length * itemSize));
             if (isAppend) {
@@ -143,27 +148,28 @@ describe('Adapter Append-Prepend Spec', () => {
 
     const shouldDealWithEmptyDatasource = (virtualize: boolean) =>
       makeTest({
-        config: (<any>configEmpty)[token],
-        title: `should ${token} to empty datasource` + virtualize ? ' (virtualization)' : '',
+        config: configEmpty[token],
+        title: `should ${token} to empty datasource` + (virtualize ? ' (virtualization)' : ''),
         it: (misc: Misc) => (done: any) => {
           const { viewport, buffer } = misc.scroller;
           const { paddings } = viewport;
-          const _config = (<any>configEmpty)[token];
+          const _config = configEmpty[token];
+          const { amount: _amount } = _config.custom;
           const templateSize = _config.templateSettings.viewportHeight;
-          const items = (<any>getNewItems(_config.amount))[token];
+          const items = getNewItems(_amount)[token];
 
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             const itemSize = misc.getItemSize();
             if (misc.workflow.cyclesDone === 1) {
               expect(viewport.getScrollableSize()).toEqual(templateSize);
-              (<any>misc.scroller.datasource.adapter)[token](items, virtualize);
+              misc.scroller.datasource.adapter[token](items, virtualize);
             } else {
-              const viewportSize = Math.max(_config.amount * itemSize, templateSize);
-              const scrollPosition = isAppend ? 0 : Math.min(_config.amount * itemSize, templateSize);
-              const first = <number>buffer.firstIndex;
-              const last = <number>buffer.lastIndex;
-              const _first = isAppend ? max - _config.amount + 1 : min;
-              const _last = isAppend ? max : min + _config.amount - 1;
+              const viewportSize = Math.max(_amount * itemSize, templateSize);
+              const scrollPosition = isAppend ? 0 : Math.min(_amount * itemSize, templateSize);
+              const first = buffer.firstIndex;
+              const last = buffer.lastIndex;
+              const _first = isAppend ? max - _amount + 1 : min;
+              const _last = isAppend ? max : min + _amount - 1;
               expect(misc.getScrollableSize()).toEqual(viewportSize);
               expect(misc.getScrollPosition()).toEqual(scrollPosition);
               expect(first).toEqual(_first);
@@ -181,7 +187,7 @@ describe('Adapter Append-Prepend Spec', () => {
 
   };
 
-  runAppendPrependSuite('append');
-  runAppendPrependSuite('prepend');
+  runAppendPrependSuite(Operation.append);
+  runAppendPrependSuite(Operation.prepend);
 
 });

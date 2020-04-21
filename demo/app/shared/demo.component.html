@@ -2,10 +2,7 @@
 
 <div class="demo">
 
-  <h3 id="{{context.titleId}}">
-    {{context.title}}
-    <a href="#/{{context.scope}}#{{context.titleId}}">#</a>
-  </h3>
+  <app-demo-title [context]="context"></app-demo-title>
 
   <div class="actions">
     <ng-content select="[actions]"></ng-content>
@@ -17,7 +14,7 @@
         <div *uiScroll="let item of datasource">
           <div
             class="item {{context.addClass || ''}}"
-            [style.height]="item.height !== undefined ? item.height + 'px' : null"
+            [style.height]="item.hasOwnProperty('height') ? item.height + 'px' : null"
           >
             <ng-template
               [ngTemplateOutlet]="itemTemplate || defaultItemTemplate"
@@ -59,21 +56,7 @@
     <div class="clearfix mb-3"></div>
   </div>
 
-  <div *ngIf="sources && sources.length" class="sources">
-    <tabset *ngIf="sources.length > 1">
-      <tab
-        *ngFor="let tab of sources; let index = index"
-        heading="{{sources[index].name}}"
-        [active]="sources[index].active"
-      >
-        <pre class="prettyprint">{{sources[index].text}}</pre>
-      </tab>
-    </tabset>
-    <pre
-      *ngIf="sources.length === 1"
-      class="prettyprint"
-    >{{sources[0].text}}</pre>
-  </div>
+  <app-demo-sources [sources]="sources"></app-demo-sources>
 
   <div class="description">
     <ng-content select="[description]"></ng-content>

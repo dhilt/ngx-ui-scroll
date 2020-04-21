@@ -11,7 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoRemoveComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Remove`,
     titleId: `remove`,
@@ -23,7 +23,7 @@ export class DemoRemoveComponent {
 
   MIN = -50;
   MAX = 50;
-  data: Array<any>;
+  data: any[];
 
   constructor() {
     this.data = [];
@@ -33,7 +33,7 @@ export class DemoRemoveComponent {
   }
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         const found = this.data.find(item => item.id === i);
@@ -50,7 +50,7 @@ export class DemoRemoveComponent {
     name: DemoSourceType.Component,
     text: `MIN = -50;
 MAX = 50;
-data: Array<any>;
+data: any[];
 
 constructor() {
   this.data = [];

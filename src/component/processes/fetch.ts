@@ -8,9 +8,11 @@ export default class Fetch {
   static run(scroller: Scroller) {
     const { workflow } = scroller;
 
-    function success(data: Array<any>) {
-      scroller.logger.log(() => `resolved ${data.length} items ` +
-        `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`);
+    function success(data: any[]) {
+      scroller.logger.log(() =>
+        `resolved ${data.length} items ` +
+        `(index = ${scroller.state.fetch.index}, count = ${scroller.state.fetch.count})`
+      );
       scroller.state.fetch.newItemsData = data;
       workflow.call({
         process: Process.fetch,
@@ -36,7 +38,7 @@ export default class Fetch {
     } else {
       scroller.innerLoopSubscriptions.push(
         result.subscribe(
-          (data: Array<any>) => success(data),
+          (data: any[]) => success(data),
           (error: any) => fail(error)
         )
       );
@@ -44,11 +46,11 @@ export default class Fetch {
   }
 
   static get(scroller: Scroller) {
-    const _get = <Function>scroller.datasource.get;
+    const _get = scroller.datasource.get as Function;
 
     let immediateData, immediateError;
-    let observer: Observer<any>;
-    const success = (data: any) => {
+    let observer: Observer<any[]>;
+    const success = (data: any[]) => {
       if (!observer) {
         immediateData = data || null;
         return;
@@ -64,22 +66,29 @@ export default class Fetch {
       observer.error(error);
     };
 
-    const result = _get(scroller.state.fetch.index, scroller.state.fetch.count, success, reject);
-    if (result && typeof result.then === 'function') { // DatasourceGetPromise
-      result.then(success, reject);
-    } else if (result && typeof result.subscribe === 'function') { // DatasourceGetObservable
-      return result; // do not wrap observable
+    let isPromise = false;
+    let result = _get(scroller.state.fetch.index, scroller.state.fetch.count, success, reject);
+    if (result && typeof result === 'object') {
+      if (typeof result.then === 'function') { // DatasourceGetPromise
+        isPromise = true;
+        result.then(success, reject);
+      } else if (typeof result.subscribe === 'function') { // DatasourceGetObservable
+        return result; // do not wrap observable
+      }
+    }
+    if (!isPromise && !Array.isArray(result)) {
+      result = []; // pass empty result if DatasourceGetCallback returns non-array value
     }
 
-    if (immediateData !== undefined || immediateError !== undefined) {
+    if (immediateData !== void 0 || immediateError !== void 0) {
       return {
         data: immediateData,
         error: immediateError,
-        isError: immediateError !== undefined
+        isError: immediateError !== void 0
       };
     }
 
-    return new Observable((_observer: Observer<any>) => {
+    return new Observable((_observer: Observer<any[]>) => {
       observer = _observer;
     });
   }

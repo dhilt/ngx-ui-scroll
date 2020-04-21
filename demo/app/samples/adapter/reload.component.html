@@ -11,24 +11,18 @@
 
   <div description>
     <p>
-      The first <em>Adapter</em> API method is the <em>reload</em> method
-      that allows us to reload the <em>uiScroll</em>: <em>Adapter.reload(index)</em>.
-      It resets the items buffer, resets the viewport params and starts
-      fetching items
+      The first <em>Adapter</em> API method is the <em>reload</em> method.
+      It allows to reload the <em>uiScroll</em> which includes
+      resetting the items <em>Buffer</em> and the <em>Viewport</em> params.
+      The <em>reload</em> method has 1 optional argument: <em>index</em>. It specifies
+      the index of the item to be first in the visible part of the viewport after reload.
     </p>
-    <ul>
-      <li>
-        from <em>index</em> position
-        (if <em>reload</em> had been called with <em>index</em> parameter);
-      </li>
-      <li>
-        from <em>settings.startIndex</em> position
-        (if no <em>index</em> parameter is present and <em>startIndex</em> setting is set);
-      </li>
-      <li>
-        from the default position which is 1
-        (if neither setting nor parameter is present).
-      </li>
-    </ul>
+    <p>
+      If <em>index</em> argument is not set,
+      <em>settings.startIndex</em> will be used as the first index.
+      If neither <em>index</em> argument not <em>startIndex</em> setting is present,
+      the default value 1 will be used.
+      See also <a href="#/settings#start-index">startIndex setting description</a>.
+    </p>
   </div>
 </app-demo>

@@ -24,8 +24,10 @@ export class WindowComponent {
       const data: any[] = [];
       if (start <= end) {
         for (let i = start; i <= end; i++) {
-          const item = <any>{
+          const item = {
+            data: '',
             text: 'item #' + (i),
+            color: 'black',
             height: 20 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
           };
           if (i % 15 === 0) {

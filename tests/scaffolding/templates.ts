@@ -33,7 +33,7 @@ export const generateTemplate = (templateSettings?: TemplateSettings): TemplateD
     `${settings.viewportWidth ? 'width:' + settings.viewportWidth + 'px;' : ''}` +
     `${settings.viewportPadding ? 'padding:' + settings.viewportPadding + 'px;' : ''}`;
   const hasItemStyle = settings.dynamicSize || settings.itemHeight || settings.itemWidth;
-  return <TemplateData>{
+  return {
     settings,
     template: `<div
   class="${viewportClass}"
@@ -45,4 +45,4 @@ export const generateTemplate = (templateSettings?: TemplateSettings): TemplateD
   };
 };
 
-export const defaultTemplate = generateTemplate().template;
+export const defaultTemplate: string = generateTemplate().template;

@@ -166,6 +166,14 @@ const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any):
   return { value, isSet, isValid: !errors.length, errors };
 };
 
+const onOr = (validators: IValidator[]) => (value: any): ValidatedValue => {
+  const errors = [];
+  if (validators.every(validator => !validator.method(value).isValid)) {
+    errors.push(validators.map(v => v.type).join(' OR '));
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
 export const VALIDATORS = {
   NUMBER: {
     type: ValidatorType.number,
@@ -214,6 +222,10 @@ export const VALIDATORS = {
   ONE_OF_MUST: (list: string[]): IValidator => ({
     type: ValidatorType.oneOfMust,
     method: onOneOf(list, true)
+  }),
+  OR: (list: IValidator[]): IValidator => ({
+    type: ValidatorType.or,
+    method: onOr(list)
   }),
 };
 

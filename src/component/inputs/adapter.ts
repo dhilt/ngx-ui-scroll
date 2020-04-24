@@ -12,6 +12,7 @@ const {
   FUNC_WITH_X_AND_MORE_ARGUMENTS,
   ONE_OF_MUST,
   ONE_OF_CAN,
+  OR,
 } = VALIDATORS;
 
 const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
@@ -112,7 +113,7 @@ const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
     validators: [FUNC_WITH_X_ARGUMENTS(1)]
   },
   [AdapterFixParams.scrollToItemOpt]: {
-    validators: []
+    validators: [OR([BOOLEAN, OBJECT])]
   },
 };
 

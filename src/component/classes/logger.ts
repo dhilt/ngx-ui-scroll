@@ -14,10 +14,8 @@ export class Logger {
   readonly getWorkflowCycleData: Function;
   readonly getLoop: Function;
   readonly getLoopNext: Function;
-  readonly getWorkflowOptions: Function;
-  readonly getSynthScrollState: Function;
   readonly getScrollPosition: Function;
-  private logs: Array<any> = [];
+  private logs: any[] = [];
 
   constructor(scroller: Scroller, version: string) {
     const { settings } = scroller;
@@ -39,16 +37,15 @@ export class Logger {
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
     this.getFetchRange = (): string => {
-      const { firstIndex, lastIndex } = scroller.state.fetch;
-      const hasInterval = firstIndex !== null && lastIndex !== null && !isNaN(firstIndex) && !isNaN(lastIndex);
-      return hasInterval ? `[${firstIndex}..${lastIndex}]` : 'no';
+      const { firstIndex: first, lastIndex: last } = scroller.state.fetch;
+      return first !== null && last !== null && !Number.isNaN(first) && !Number.isNaN(last)
+        ? `[${first}..${last}]`
+        : 'no';
     };
     this.getLoop = (): string => scroller.state.loop;
     this.getLoopNext = (): string => scroller.state.loopNext;
     this.getWorkflowCycleData = (): string =>
       `${settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
-    this.getWorkflowOptions = () => scroller.state.workflowOptions;
-    this.getSynthScrollState = () => scroller.state.syntheticScroll;
     this.getScrollPosition = (element: HTMLElement) => scroller.routines.getScrollPosition(element);
     this.log(() => `uiScroll Workflow has been started (v${version}, instance ${settings.instanceIndex})`);
   }
@@ -57,7 +54,18 @@ export class Logger {
     this.log(() => [
       str,
       stringify
-        ? JSON.stringify(obj)
+        ? JSON.stringify(obj, (k, v) => {
+          if (Number.isNaN(v)) {
+            return 'NaN';
+          }
+          if (v === Infinity) {
+            return 'Infinity';
+          }
+          if (v === -Infinity) {
+            return '-Infinity';
+          }
+          return v;
+        })
           .replace(/"/g, '')
           .replace(/(\{|\:|\,)/g, '$1 ')
           .replace(/(\})/g, ' $1')
@@ -80,17 +88,6 @@ export class Logger {
     }
   }
 
-  synth(token?: string) {
-    this.log(() => {
-      const synth = this.getSynthScrollState();
-      return [
-        ...(token ? [token + ';'] : []),
-        'registered', synth.registeredPosition,
-        '/ queued', synth.list.map((i: any) => i.position)
-      ];
-    });
-  }
-
   prepareForLog(data: any) {
     return data instanceof Event
       ? this.getScrollPosition(data.target)
@@ -102,26 +99,18 @@ export class Logger {
       return;
     }
     const { process, status } = data;
-    const options = this.getWorkflowOptions();
-
-    // standard process log
-    // const processLog = `process ${process}, %c${status}%c` + (!options.empty ? ',' : '');
-    // const styles = [status === Status.error ? 'color: #cc0000;' : '', 'color: #000000;'];
-    // this.log(() => [processLog, ...styles, data.payload, ...(!options.empty ? [options] : [])]);
 
     // inner loop start-end log
     const loopLog: string[] = [];
     if (
-      process === Process.init && status === Status.next ||
-      process === Process.scroll && status === Status.next && options.keepScroll ||
-      process === Process.end && status === Status.next && options.byTimer
+      process === Process.init && status === Status.next
     ) {
       loopLog.push(`%c---=== loop ${this.getLoopNext()} start`);
     } else if (
-      process === Process.end && !options.byTimer
+      process === Process.end
     ) {
       loopLog.push(`%c---=== loop ${this.getLoop()} done`);
-      if (status === Status.next && !(options.keepScroll)) {
+      if (status === Status.next) {
         loopLog[0] += `, loop ${this.getLoopNext()} start`;
       }
     }
@@ -144,6 +133,28 @@ export class Logger {
     }
   }
 
+  logAdapterMethod = (methodName: string, methodArg?: any, methodSecondArg?: any) => {
+    if (!this.debug) {
+      return;
+    }
+    const params = [
+      ...(methodArg ? [methodArg] : []),
+      ...(methodSecondArg ? [methodSecondArg] : [])
+    ]
+      .map((arg: any) => {
+        if (typeof arg === 'function') {
+          return 'func';
+        } else if (typeof arg !== 'object' || !arg) {
+          return arg;
+        } else if (Array.isArray(arg)) {
+          return `[of ${arg.length}]`;
+        }
+        return '{ ' + Object.keys(arg).join(', ') + ' }';
+      })
+      .join(', ');
+    this.log(`adapter: ${methodName}(${params || ''})`);
+  }
+
   log(...args: any[]) {
     if (this.debug) {
       if (typeof args[0] === 'function') {
@@ -152,7 +163,7 @@ export class Logger {
           args = [args];
         }
       }
-      if (args.every(item => item === undefined)) {
+      if (args.every(item => item === void 0)) {
         return;
       }
       if (this.logTime) {
@@ -160,12 +171,22 @@ export class Logger {
       }
       args = args.map((arg: any) => this.prepareForLog(arg));
       if (this.immediateLog) {
-        console.log.apply(this, <LogType>args);
+        console.log.apply(this, args as LogType);
       } else {
         this.logs.push(args);
       }
     }
   }
+
+  // logNow(...args: any[]) {
+  //   const immediateLog = this.immediateLog;
+  //   const debug = this.debug;
+  //   (this as any).debug = true;
+  //   (this as any).immediateLog = true;
+  //   this.log.apply(this, args);
+  //   (this as any).debug = debug;
+  //   (this as any).immediateLog = immediateLog;
+  // }
 
   logForce(...args: any[]) {
     if (this.debug) {
@@ -174,7 +195,7 @@ export class Logger {
         this.logs = [];
       }
       if (args.length) {
-        console.log.apply(this, <LogType>args);
+        console.log.apply(this, args as LogType);
       }
     }
   }

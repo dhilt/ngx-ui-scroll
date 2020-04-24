@@ -11,7 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoAppendPrependComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Append / prepend`,
     titleId: `append-prepend`,
@@ -20,12 +20,12 @@ export class DemoAppendPrependComponent {
     log: ''
   };
 
-  data: Array<any>;
+  data: any[];
   inputValue = 4;
   newIndex = 0;
 
   datasource = new Datasource({
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });
@@ -40,7 +40,7 @@ export class DemoAppendPrependComponent {
 
   sources: DemoSources = [{
     name: DemoSourceType.Component,
-    text: `data: Array<any>;
+    text: `data: any[];
 inputValue = 4;
 newIndex = 0;
 

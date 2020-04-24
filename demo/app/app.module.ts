@@ -8,6 +8,8 @@ import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav.component';
+import { DemoTitleComponent } from './shared/demo/demo-title.component';
+import { DemoSourcesComponent } from './shared/demo/demo-sources.component';
 import { DemoComponent } from './shared/demo.component';
 
 import { HomeComponent } from './samples/home.component';
@@ -26,6 +28,7 @@ import { DemoInfiniteComponent } from './samples/common/infinite.component';
 import { DemoHorizontalComponent } from './samples/common/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
 import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
+import { DemoResetComponent } from './samples/adapter/reset.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 import { DemoItemsCountComponent } from './samples/adapter/items-count.component';
@@ -34,6 +37,7 @@ import { DemoFirstLastVisibleItemsComponent } from './samples/adapter/first-last
 import { DemoAppendPrependComponent } from './samples/adapter/append-prepend.component';
 import { DemoAppendPrependSyncComponent } from './samples/adapter/append-prepend-sync.component';
 import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-extended.component';
+import { DemoInsertComponent } from './samples/adapter/insert.component';
 import { DemoCheckSizeComponent } from './samples/adapter/check-size.component';
 import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
@@ -57,6 +61,8 @@ import { AppRoutingModule } from './app-routing.module';
   declarations: [
     AppComponent,
     NavComponent,
+    DemoTitleComponent,
+    DemoSourcesComponent,
     DemoComponent,
     HomeComponent,
     SettingsComponent,
@@ -73,6 +79,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoHorizontalComponent,
     DemoDifferentHeightsComponent,
     DemoWindowViewportComponent,
+    DemoResetComponent,
     DemoReloadComponent,
     DemoIsLoadingComponent,
     DemoItemsCountComponent,
@@ -81,6 +88,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoAppendPrependComponent,
     DemoAppendPrependSyncComponent,
     DemoIsLoadingExtendedComponent,
+    DemoInsertComponent,
     DemoCheckSizeComponent,
     DemoRemoveComponent,
     DemoClipComponent,

@@ -18,8 +18,8 @@ export default class PreClip {
     if (PreClip.shouldNotClip(scroller)) {
       return;
     }
-    const firstIndex = <number>fetch.firstIndexBuffer;
-    const lastIndex = <number>fetch.lastIndexBuffer;
+    const firstIndex = fetch.firstIndexBuffer as number;
+    const lastIndex = fetch.lastIndexBuffer as number;
     scroller.logger.log(() =>
       `looking for ${direction ? 'anti-' + direction + ' ' : ''}items ` +
       `that are out of [${firstIndex}..${lastIndex}] range`);
@@ -41,8 +41,8 @@ export default class PreClip {
       scroller.logger.log(`skipping clip [empty buffer]`);
       return true;
     }
-    if (state.isInitialWorkflowCycle && !state.scrollState.scroll) {
-      scroller.logger.log(`skipping clip [initial cycle, no scroll]`);
+    if (state.isInitialWorkflowCycle) {
+      scroller.logger.log(`skipping clip [initial cycle]`);
       return true;
     }
     return false;

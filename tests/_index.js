@@ -16,8 +16,6 @@ import {
 import 'rxjs';
 import { config } from 'rxjs';
 
-config.useDeprecatedSynchronousErrorHandling = true;
-
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting()
@@ -26,8 +24,8 @@ getTestBed().initTestEnvironment(
 const testContext = require.context(
   './',
   false,
-  /(common|datasource\-get|initial\-load|scroll\-basic|min\-max\-indexes|eof|dynamic\-size|bug|adapter\.reload|adapter\.prepend|dynamic\-height\-reload|dynamic\-height\-scroll|adapter\.append\-prepend|adapter\.check|adapter\.remove|adapter\.clip|validation)\.spec\.ts/
-  //(validation)\.spec\.ts/
+  /\.spec\.ts/
+  //(bug)\.spec\.ts/
 );
 
 function requireAll(requireContext) {

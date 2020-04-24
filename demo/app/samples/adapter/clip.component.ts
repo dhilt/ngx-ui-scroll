@@ -11,7 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoClipComponent {
 
-  demoContext: DemoContext = <DemoContext>{
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `Clip`,
     titleId: `clip`,

@@ -9,13 +9,13 @@ import { IDatasource } from '../../../../public_api';
 })
 export class DemoPagesDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Pages datasource`,
     titleId: `pages`,
     logViewOnly: true,
     log: ''
-  };
+  } as DemoContext;
 
   private getCount = 0;
   private pagesCount = 30;
@@ -37,7 +37,7 @@ export class DemoPagesDatasourceComponent {
   }
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       this.getCount++;
       this.demoContext.log = '\n' + this.demoContext.log;
       this.demoContext.log = `${this.getCount}.1 index = ${index}, count = ${count}\n` + this.demoContext.log;

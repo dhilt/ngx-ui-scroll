@@ -10,17 +10,17 @@ import { IDatasource } from '../../../../public_api';
 })
 export class DemoBidirectionalUnlimitedDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Unlimited bidirectional datasource`,
     titleId: `unlimited-bidirectional`,
     logViewOnly: true,
     log: '',
     count: 0
-  };
+  } as DemoContext;
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });

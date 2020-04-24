@@ -10,20 +10,20 @@ import { doLog } from '../../shared/datasource-get';
 })
 export class DemoLimitedDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Limited datasource`,
     titleId: `limited`,
     logViewOnly: true,
     log: '',
     count: 0
-  };
+  } as DemoContext;
 
   MIN = -99;
   MAX = 900;
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       const start = Math.max(this.MIN, index);
       const end = Math.min(index + count - 1, this.MAX);

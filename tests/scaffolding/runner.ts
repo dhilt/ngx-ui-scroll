@@ -1,3 +1,5 @@
+import { NgZone } from '@angular/core';
+
 import { Settings, DevSettings } from '../../src/component/interfaces';
 
 import { Misc } from '../miscellaneous/misc';
@@ -16,6 +18,10 @@ export interface TestBedConfig {
   timeout?: number;
   expected?: any;
 }
+
+export type OperationConfig<T extends PropertyKey> = {
+  [key in T]: TestBedConfig
+};
 
 export interface MakeTestConfig {
   title: string;
@@ -64,13 +70,34 @@ const generateMetaTitle = (data: MakeTestConfig): string => {
   return title;
 };
 
+const windowOnError = window.onerror;
+const consoleError = console.error;
+let isErrorLogOf = false;
+
+const turnErrorLogOff = () => {
+  window.onerror = () => null;
+  console.error = () => null;
+  isErrorLogOf = true;
+};
+
+const turnErrorLogOn = () => {
+  window.onerror = window.onerror;
+  console.error = consoleError;
+  isErrorLogOf = false;
+};
+
 export const makeTest = (data: MakeTestConfig) => {
   describe(generateMetaTitle(data), () => {
     let _it, timeout = 2000;
     if (data.config) {
       let misc: Misc;
-      let error: any;
+      let runPromise: Promise<void> = Promise.resolve();
       beforeEach(() => {
+        if (data.config.toThrow) {
+          turnErrorLogOff();
+        } else if (isErrorLogOf) {
+          turnErrorLogOn();
+        }
         const datasourceClass = data.config.datasourceClass ?
           data.config.datasourceClass :
           generateDatasourceClass(
@@ -82,27 +109,38 @@ export const makeTest = (data: MakeTestConfig) => {
         try {
           const fixture = configureTestBed(datasourceClass, templateData.template);
           fixture.componentInstance.templateSettings = templateData.settings;
-          misc = new Misc(fixture);
-        } catch (_error) {
-          error = _error;
+          try {
+            misc = new Misc(fixture);
+          } catch (_error) {
+            runPromise = new Promise((resolve, reject) =>
+              (fixture.ngZone as NgZone).onError.subscribe((error: any) =>
+                reject(error)
+              )
+            );
+          }
+        } catch (error) {
+          runPromise = Promise.reject(error);
         }
         if (typeof data.before === 'function') {
-          (<Function>data.before)(misc);
+          (data.before as Function)(misc);
         }
       });
       if (typeof data.after === 'function') {
-        afterEach(() => (<Function>data.after)(misc));
+        afterEach(() => (data.after as Function)(misc));
       }
-      _it = (done: Function) => {
-        if (!data.config.toThrow && error) {
-          throw error;
-        }
-        return data.it(data.config.toThrow ? error.message : misc)(done);
-      };
+      _it = (done: Function) =>
+        runPromise.then(() =>
+          data.it(misc)(done)
+        ).catch(error => {
+          if (!data.config.toThrow && error) {
+            throw error;
+          }
+          data.it(data.config.toThrow ? error.message : misc)(done);
+        });
       timeout = data.config.timeout || timeout;
     } else {
       _it = data.it;
     }
-    (<Function>it)(data.title, _it, timeout);
+    (it as Function)(data.title, _it, timeout);
   });
 };

@@ -1,5 +1,6 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Direction } from '../src/component/interfaces';
+
+import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
 import {
@@ -194,5 +195,73 @@ describe('Dynamic Size Spec', () => {
       })
     );
   });
+
+});
+
+describe('Zero Size Spec', () => {
+
+  const config = {
+    datasourceName: 'limited-1-100-zero-size',
+    datasourceSettings: { bufferSize: 5, minIndex: 1 },
+    templateSettings: { dynamicSize: 'size', viewportHeight: 200 }
+  };
+
+  describe('Items with zero size', () =>
+    makeTest({
+      config,
+      title: 'should stop the Workflow after the first loop',
+      it: (misc: Misc) => (done: Function) =>
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          expect(misc.scroller.state.innerLoopCount).toEqual(1);
+          done();
+        })
+    })
+  );
+
+  describe('Items with zero size started from 2 pack', () =>
+    makeTest({
+      config: {
+        ...config,
+        datasourceName: 'limited-1-100-zero-size-started-from-6'
+      },
+      title: 'should stop the Workflow after the second loop',
+      it: (misc: Misc) => (done: Function) =>
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          expect(misc.scroller.state.innerLoopCount).toEqual(2);
+          done();
+        })
+    })
+  );
+
+  describe('Items get non-zero size asynchronously', () =>
+    makeTest({
+      config: {
+        ...config,
+        datasourceName: 'limited-1-100-zero-size',
+        datasourceSettings: { adapter: true }
+      },
+      title: 'should continue the Workflow after re-size and check',
+      it: (misc: Misc) => (done: Function) =>
+        spyOn(misc.workflow, 'finalize').and.callFake(() => {
+          const { viewport, adapter } = misc.scroller;
+          if (misc.workflow.cyclesDone === 1) {
+            expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
+            const ds = misc.fixture.componentInstance.datasource;
+            (ds as any).setProcessGet((result: any[]) =>
+              result.forEach(item => item.size = 20)
+            );
+            adapter.fix({ updater: ({ element, data }) => {
+              data.size = 20;
+              (element as any).children[0].style.height = '20px';
+            }});
+            adapter.check();
+          } else {
+            expect(viewport.getScrollableSize()).toBeGreaterThan(0);
+            expect(viewport.paddings.forward.size).toEqual(0);
+            done();
+          }
+        })
+    })
+  );
 
 });

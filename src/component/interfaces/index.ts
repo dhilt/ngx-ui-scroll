@@ -1,4 +1,13 @@
-import { Datasource, DatasourceGet } from './datasource';
+import { IDatasource, DatasourceGet, IDatasourceOptional } from './datasource';
+import {
+  CallWorkflow,
+  ScrollerWorkflow,
+  WorkflowGetter,
+  WorkflowError,
+  InterruptParams,
+  StateMachineMethods,
+  StateMachineParams,
+} from './workflow';
 import {
   AdapterPropType,
   IAdapterProp,
@@ -9,21 +18,32 @@ import {
   AdapterInsertOptions,
   AdapterFixOptions,
   IAdapter,
-  IAdapterMethodParam,
-  IAdapterMethodParams,
-  IAdapterMethods,
-  IAdapterValidatedMethodParams,
-  IAdapterValidatedMethodData,
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
-import { WindowScrollState, ScrollEventData, ScrollState, SyntheticScroll, WorkflowOptions, State } from './state';
-import { Process, ProcessStatus, ProcessSubject, WorkflowError, ScrollerWorkflow, WorkflowGetter } from './process';
-import { ValidatorType, ValidatedValue, IValidator } from './validation';
+import { WindowScrollState, ScrollEventData, ScrollState, State } from './state';
+import { Process, ProcessStatus, ProcessSubject } from './process';
+import {
+  ValidatorType,
+  ValidatedValue,
+  IValidator,
+  ICommonProp,
+  ICommonProps,
+  IValidatedCommonProps,
+  IValidatedData,
+} from './validation';
 
 export {
-  Datasource,
+  IDatasource,
   DatasourceGet,
+  IDatasourceOptional,
+  CallWorkflow,
+  ScrollerWorkflow,
+  WorkflowGetter,
+  WorkflowError,
+  InterruptParams,
+  StateMachineMethods,
+  StateMachineParams,
   AdapterPropType,
   IAdapterProp,
   ItemAdapter,
@@ -33,27 +53,21 @@ export {
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
-  IAdapterMethodParam,
-  IAdapterMethodParams,
-  IAdapterMethods,
-  IAdapterValidatedMethodParams,
-  IAdapterValidatedMethodData,
   Settings,
   DevSettings,
   Direction,
   WindowScrollState,
   ScrollEventData,
   ScrollState,
-  SyntheticScroll,
-  WorkflowOptions,
   State,
   Process,
   ProcessStatus,
   ProcessSubject,
-  WorkflowError,
-  ScrollerWorkflow,
-  WorkflowGetter,
   ValidatorType,
   ValidatedValue,
   IValidator,
+  ICommonProp,
+  ICommonProps,
+  IValidatedCommonProps,
+  IValidatedData,
 };

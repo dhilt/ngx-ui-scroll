@@ -1,76 +1,71 @@
 import { Scroller } from '../scroller';
+import { EMPTY_ITEM } from '../classes/adapter/context';
 import { Process, ProcessStatus, Direction } from '../interfaces/index';
-import { itemAdapterEmpty } from '../utils/adapter';
 
 export default class End {
 
   static run(scroller: Scroller, process: Process, payload: any = {}) {
-    const { workflow, state } = scroller;
+    const { workflow, state, adapter } = scroller;
     const { error } = payload;
 
-    state.workflowOptions.reset();
-
-    if (!error && process !== Process.reload) {
+    if (!error && process !== Process.reset && process !== Process.reload) {
       // set out params, accessible via Adapter
       End.calculateParams(scroller);
     }
 
     // explicit interruption for we don't want go through the workflow loop finalizing
-    if ((<any>workflow.call).interrupted) {
-      return workflow.call();
+    if ((workflow.call as any).interrupted) {
+      workflow.call({
+        process,
+        status: ProcessStatus.done,
+        payload
+      });
+      return;
     }
 
     // what next? done?
     const next = End.getNext(scroller, process, error);
 
-    // finalize current workflow loop
+    // finalize current workflow (inner) loop
     End.endWorkflowLoop(scroller, next);
-    state.innerLoopCount++;
 
     // continue the Workflow synchronously; current cycle could be finalized immediately
     workflow.call({
       process: Process.end,
       status: next ? ProcessStatus.next : ProcessStatus.done,
-      payload: { process, keepScroll: state.workflowOptions.keepScroll }
+      payload: { process }
     });
-
-    // if the Workflow isn't finalized, it may freeze for no more than settings.throttle ms
-    if (state.workflowPending && !state.loopPending) {
-      // continue the Workflow asynchronously
-      End.continueWorkflowByTimer(scroller);
-    }
   }
 
   static endWorkflowLoop(scroller: Scroller, next: boolean) {
-    const { state, state: { clip } } = scroller;
+    const { state, state: { clip }, adapter } = scroller;
     state.countDone++;
     state.isInitialLoop = false;
     state.fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
     state.lastPosition = scroller.viewport.scrollPosition;
-    scroller.purgeInnerLoopSubscriptions();
-    state.loopPending = false;
+    scroller.purgeSubscriptions();
+    adapter.loopPending = false;
+    state.innerLoopCount++;
   }
 
   static calculateParams(scroller: Scroller) {
-    const { items } = scroller.buffer;
+    const { buffer: { items }, adapter } = scroller;
 
     // first visible item
-    if (scroller.state.firstVisibleWanted) {
+    if (adapter.wanted.firstVisible) {
       const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
       const firstItem = items.find(item =>
         scroller.viewport.getElementEdge(item.element, Direction.forward) > viewportBackwardEdge
       );
-      scroller.state.firstVisibleItem = firstItem ? {
-        $index: firstItem.$index,
-        data: firstItem.data,
-        element: firstItem.element
-      } : itemAdapterEmpty;
+      if (!firstItem || firstItem.element !== adapter.firstVisible.element) {
+        adapter.firstVisible = firstItem ? firstItem.get() : EMPTY_ITEM;
+      }
     }
 
     // last visible item
-    if (scroller.state.lastVisibleWanted) {
+    if (adapter.wanted.lastVisible) {
       const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
       let lastItem = null;
       for (let i = items.length - 1; i >= 0; i--) {
@@ -80,60 +75,36 @@ export default class End {
           break;
         }
       }
-      scroller.state.lastVisibleItem = lastItem ? {
-        $index: lastItem.$index,
-        data: lastItem.data,
-        element: lastItem.element
-      } : itemAdapterEmpty;
+      if (!lastItem || lastItem.element !== adapter.lastVisible.element) {
+        adapter.lastVisible = lastItem ? lastItem.get() : EMPTY_ITEM;
+      }
     }
   }
 
   static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
-    const { state: { clip, fetch, scrollState, workflowOptions } } = scroller;
+    const { state: { clip, fetch, render, scrollState } } = scroller;
     if (error) {
-      workflowOptions.empty = true;
       return false;
     }
-    if (process === Process.reload) {
+    if (process === Process.reset || process === Process.reload) { // Adapter.reload/reset
       return true;
     }
-    if (clip.simulate) {
+    if (clip.simulate) { // Adapter.remove
       return true;
     }
-    let result = false;
-    if (!fetch.simulate) {
-      if (fetch.hasNewItems) {
-        result = true;
-        workflowOptions.scroll = false;
-      } else if (fetch.hasAnotherPack) {
-        result = true;
-        workflowOptions.scroll = false;
-      }
+    if (fetch.simulate && fetch.isReplace) { // Adapter.check (todo: combine with following)
+      return true;
     }
-    if (scrollState.keepScroll) {
-      result = true;
-      workflowOptions.scroll = true;
-      workflowOptions.keepScroll = true;
+    if (fetch.simulate && !render.noSize) { // Adapter.append/prepend/insert affected viewport size
+      return true;
     }
-    return result;
-  }
-
-  static continueWorkflowByTimer(scroller: Scroller) {
-    const { state, state: { workflowCycleCount, innerLoopCount, workflowOptions } } = scroller;
-    scroller.logger.log(() => `setting Workflow timer (${workflowCycleCount}-${innerLoopCount})`);
-    state.scrollState.workflowTimer = <any>setTimeout(() => {
-      // if the WF isn't finalized while the old sub-cycle is done and there's no new sub-cycle
-      if (state.workflowPending && !state.loopPending && innerLoopCount === state.innerLoopCount) {
-        workflowOptions.scroll = true;
-        workflowOptions.byTimer = true;
-        workflowOptions.keepScroll = false;
-        scroller.workflow.call({
-          process: Process.end,
-          status: ProcessStatus.next,
-          payload: { keepScroll: state.workflowOptions.keepScroll }
-        });
-      }
-    }, scroller.settings.throttle);
+    if ( // common inner loop (App start, Scroll, Adapter.clip) accompanied by fetch
+      !fetch.simulate &&
+      ((fetch.hasNewItems && !render.noSize) || fetch.hasAnotherPack)
+    ) {
+      return true;
+    }
+    return false;
   }
 
 }

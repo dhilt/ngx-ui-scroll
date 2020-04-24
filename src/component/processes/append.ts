@@ -4,19 +4,18 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Append {
 
-  static run(scroller: Scroller, payload: { items: any, eof?: any, bof?: any, prepend?: any }) {
+  static run(scroller: Scroller, process: Process, payload: { items: any, eof?: any, bof?: any }) {
     const { workflow } = scroller;
     let { items } = payload;
     items = !Array.isArray(items) ? [items] : items;
-    const prepend = !!payload.prepend;
+    const prepend = process === Process.prepend;
     const eof = !!(prepend ? payload.bof : payload.eof);
-    const process = prepend ? Process.prepend : Process.append;
 
     if (!items.length) {
       workflow.call({
         process,
         status: ProcessStatus.error,
-        payload: { error: `Wrong argument of the "${prepend ? 'prepend' : 'append'}" method call` }
+        payload: { error: `Wrong argument of the "${process}" method call` }
       });
       return;
     }
@@ -41,7 +40,7 @@ export default class Append {
     });
   }
 
-  static doVirtualize(scroller: Scroller, items: Array<any>, prepend: boolean) {
+  static doVirtualize(scroller: Scroller, items: any[], prepend: boolean) {
     const { buffer, viewport: { paddings } } = scroller;
     const bufferToken = prepend ? 'absMinIndex' : 'absMaxIndex';
     if (isFinite(buffer[bufferToken])) {
@@ -57,7 +56,7 @@ export default class Append {
     }
   }
 
-  static simulateFetch(scroller: Scroller, items: Array<any>, eof: boolean, prepend: boolean): boolean {
+  static simulateFetch(scroller: Scroller, items: any[], eof: boolean, prepend: boolean): boolean {
     const { buffer, state, state: { fetch } } = scroller;
     const bufferToken = prepend ? 'absMinIndex' : 'absMaxIndex';
     let indexToAdd = buffer.getIndexToAdd(eof, prepend);

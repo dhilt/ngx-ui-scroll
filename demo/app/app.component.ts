@@ -10,7 +10,7 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements AfterViewInit, OnDestroy {
 
   hasLayout = true;
-  private subscriptions: Array<Subscription> = [];
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -20,8 +20,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       router.events.pipe(
         filter((event: Event) => event instanceof NavigationStart)
       ).subscribe((event: Event) => {
-        event = <NavigationStart>event;
-        this.hasLayout = !(event.url === '/window' || event.url === '/test');
+        const url = (event as NavigationStart).url;
+        this.hasLayout = !(url === '/window' || url === '/test');
       })
     );
     if ('scrollRestoration' in history) {

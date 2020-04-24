@@ -9,22 +9,22 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoInvertedDatasourceComponent {
 
-  context: DemoContext = <DemoContext> {
+  context = {
     scope: 'datasource',
     title: `Inverted datasource`,
     titleId: `inverted-indexes`,
     noWorkView: true
-  };
+  } as DemoContext;
 
   MIN = 1;
 
   datasourceCommon: IDatasource = {
-    get: (index, count, success) =>
+    get: (index: number, count: number, success: Function) =>
       success(this.getData(index, count))
   };
 
   datasourceInverted: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const _index = -index - count + this.MIN;
       const data = this.getData(_index, count).reverse();
       success(data);

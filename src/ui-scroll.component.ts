@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 
 import { Workflow } from './component/workflow';
-import { Datasource as IDatasource } from './component/interfaces/index';
+import { IDatasource } from './component/interfaces/index';
 import { Datasource } from './component/classes/datasource';
 import { Item } from './component/classes/item';
 

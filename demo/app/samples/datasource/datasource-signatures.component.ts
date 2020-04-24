@@ -8,12 +8,12 @@ import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interface
 })
 export class DemoDatasourceSignaturesComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Datasource get-method signatures`,
     titleId: `datasource-get-signatures`,
     noWorkView: true
-  };
+  } as DemoContext;
 
   sources: DemoSources = [{
     name: DemoSourceType.Datasource,

@@ -42,7 +42,7 @@ export const datasourceGetLimited =
   };
 
 export const datasourceGetObservableInfinite = (demoContext: DemoContext) =>
-  (index: number, count: number) => new Observable((observer: Observer<any>) =>
+  (index: number, count: number) => new Observable((observer: Observer<any[]>) =>
     observer.next(datasourceGetInfinite(demoContext, index, count))
   );
 

@@ -1,0 +1,87 @@
+<div class="demo">
+
+  <app-demo-title [context]="demoContext"></app-demo-title>
+
+  <div class="work">
+    <div class="viewport-wrapper">
+      <div class="actions">
+        <button (click)="doInsert()">Insert</button>
+        <input [(ngModel)]="inputCount" size="2"> items
+        <br>
+        after item #<input [(ngModel)]="inputIndex" size="4"><br>
+        incrementally
+      </div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasource; let index = index">
+          <div class="item">
+            <small>{{index}})</small>
+            {{item}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="viewport-wrapper">
+      <div class="actions">
+        <button (click)="doInsert2()">Insert</button>
+        <input [(ngModel)]="inputCount2" size="2"> items
+        <br>
+        before item #<input [(ngModel)]="inputIndex2" size="4">
+        <br>
+        decrementally
+      </div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasource2; let index = index">
+          <div class="item">
+            <small>{{index}})</small>
+            {{item}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix mb-3"></div>
+  </div>
+
+  <app-demo-sources [sources]="sources"></app-demo-sources>
+
+  <div class="description">
+    <p>
+      <em>Adapter.insert</em> method is dedicated for adding items in the runtime without scrolling.
+      It allows to insert new items before or after specified one.
+      The argument of this method is an object of the following type:
+    </p>
+    <pre>{{argumentsDescription}}</pre>
+    <p>
+      The <em>items</em> option is an array we want to be added to the viewport.
+      This is mandatory field.
+      Both <em>before</em> and <em>after</em> options
+      are predicate functions applying to each item in the current buffer.
+      The first <em>true</em> result of running the predicate determines
+      the item before/after which the new ones should appear.
+      Only one of the <em>before</em> and <em>after</em> fields is allowed.
+    </p>
+    <p>
+      The last option is <em>decrease</em>.
+      The indexes of the items following after the inserted ones increase by default.
+      This behavior can be changed, and setting <em>decrease</em> to <em>true</em>,
+      we are telling the <em>uiScroll</em> that we want to
+      decrease the indexes of the items that are before the inserted ones.
+    </p>
+    <p>
+      The demo shows how the <em>Adapter.insert</em> method can be used in the real life.
+      "Component" tab contains common datasource logic. "Increase" and "Decrease" tabs
+      present inserting logic for both cases we have in this demo.
+      Note that each item there is just a string, and the <em>uiScroll</em> deals
+      with natural indexes, which forces us to subtract <em>MIN</em> value from
+      the <em>index</em> coming into the <em>Datasource.get</em> body.
+    </p>
+    <p>
+      Also, this is very important to maintain consistency
+      between the external <em>Datasource</em> and the internal <em>uiScroll</em> buffer.
+      Both <em>doInsert</em> methods do it.They
+      a) generate new items in a for-loop,
+      b) insert them into the datasource by updating <em>this.data</em>,
+      c) insert them into the internal <em>Buffer</em> via <em>Adapter.insert</em>.
+    </p>
+  </div>
+</div>
+

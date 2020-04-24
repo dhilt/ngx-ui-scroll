@@ -20,7 +20,7 @@ export default class Clip {
 
   static doClip(scroller: Scroller) {
     const { buffer, viewport: { paddings }, logger, state: { clip } } = scroller;
-    const clipped: Array<number> = [];
+    const clipped: number[] = [];
     const size = { backward: 0, forward: 0 };
     clip.callCount++;
     logger.stat(`before clip (${clip.callCount})`);

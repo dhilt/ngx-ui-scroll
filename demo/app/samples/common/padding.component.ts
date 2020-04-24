@@ -11,7 +11,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoPaddingComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'settings',
     title: `padding setting`,
     titleId: `padding`,

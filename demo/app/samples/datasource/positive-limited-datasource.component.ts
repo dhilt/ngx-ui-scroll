@@ -10,17 +10,17 @@ import { doLog } from '../../shared/datasource-get';
 })
 export class DemoPositiveLimitedDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Positive limited datasource`,
     titleId: `positive-limited-indexes`,
     logViewOnly: true,
     log: '',
     count: 0
-  };
+  } as DemoContext;
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       const start = Math.max(1, index); // or 0
       const end = index + count - 1;

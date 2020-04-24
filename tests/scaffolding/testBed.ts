@@ -1,16 +1,18 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ComponentFixtureAutoDetect } from '@angular/core/testing';
 
 import { UiScrollModule } from '../../src/ui-scroll.module';
 
-import { TestComponent } from './testComponent';
+import { ScrollerTestComponent, TwoScrollersTestComponent } from './testComponent';
 import { DatasourceService } from './datasources';
 
-export const configureTestBed = (datasource: any, template: string) =>
+export const configureTestBed = (
+  datasource: any, template: string
+): ComponentFixture<ScrollerTestComponent> =>
   TestBed
     .configureTestingModule({
       imports: [UiScrollModule],
-      declarations: [TestComponent],
+      declarations: [ScrollerTestComponent],
       providers: [{
         provide: ComponentFixtureAutoDetect,
         useValue: true
@@ -20,5 +22,17 @@ export const configureTestBed = (datasource: any, template: string) =>
       }]
     })
     .overrideProvider(DatasourceService, { useValue: new datasource() })
-    .overrideComponent(TestComponent, { set: { template } })
-    .createComponent(TestComponent);
+    .overrideComponent(ScrollerTestComponent, { set: { template } })
+    .createComponent(ScrollerTestComponent);
+
+export const configureTestBedTwo = (): ComponentFixture<TwoScrollersTestComponent> =>
+  TestBed
+    .configureTestingModule({
+      imports: [UiScrollModule],
+      declarations: [TwoScrollersTestComponent],
+      providers: [{
+        provide: ComponentFixtureAutoDetect,
+        useValue: true
+      }]
+    })
+    .createComponent(TwoScrollersTestComponent);

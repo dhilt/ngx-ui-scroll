@@ -10,19 +10,19 @@ import { doLog } from '../../shared/datasource-get';
 })
 export class DemoInverseSettingComponent {
 
-  demoContext: DemoContext = <DemoContext>{
+  demoContext = {
     scope: 'experimental',
     title: `Inverse setting`,
     titleId: `inverse-setting`,
     addClass: `inverse`,
     noInfo: true
-  };
+  } as DemoContext;
 
   MIN = 1;
   MAX = 5;
 
   datasource: IDatasource = {
-    get: (index, count, success) => {
+    get: (index: number, count: number, success: Function) => {
       const data = [];
       const start = Math.max(this.MIN, index);
       const end = Math.min(index + count - 1, this.MAX);

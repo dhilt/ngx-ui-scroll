@@ -12,7 +12,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoFirstLastVisibleItemsComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext: DemoContext = {
     scope: 'adapter',
     title: `First and last visible items`,
     titleId: `first-last-visible-items`,

@@ -1,4 +1,5 @@
 import { Scroller } from '../scroller';
+import { ADAPTER_METHODS } from '../inputs/index';
 import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Reload {
@@ -7,12 +8,12 @@ export default class Reload {
     const scrollPosition = scroller.viewport.scrollPosition;
     scroller.state.setCurrentStartIndex(reloadIndex);
     scroller.buffer.reset(true, scroller.state.startIndex);
-    scroller.viewport.reset(scrollPosition);
     const payload: any = {};
-    if (scroller.state.isLoading) {
+    if (scroller.adapter.isLoading) {
       scroller.purgeScrollTimers();
       payload.finalize = true;
     }
+    scroller.viewport.reset(scrollPosition);
     scroller.workflow.call({
       process: Process.reload,
       status: ProcessStatus.next,

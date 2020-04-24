@@ -1,6 +1,7 @@
 import {
   Init,
   Scroll,
+  Reset,
   Reload,
   Append,
   Check,
@@ -19,17 +20,12 @@ import {
   End
 } from './processes/index';
 
-import { Process, ProcessStatus as Status, ProcessSubject } from './interfaces/index';
-
-interface StateMachineParams {
-  input: ProcessSubject;
-  methods: {
-    run: Function;
-    interrupt: Function;
-    done: Function;
-    onError: Function;
-  };
-}
+import {
+  Process,
+  ProcessStatus as Status,
+  ProcessSubject,
+  StateMachineParams
+} from './interfaces/index';
 
 export const runStateMachine = ({
   input: { process, status, payload = {} },
@@ -44,31 +40,29 @@ export const runStateMachine = ({
   }
   switch (process) {
     case Process.init:
-      if (status === Status.start) {
+      if (status === Status.start) { // App start
         run(Init)();
       }
       if (status === Status.next) {
-        run(Start)(payload.process);
+        run(Start)(process, payload);
       }
       break;
     case Process.scroll:
       if (status === Status.start) {
-        run(Scroll)(payload.event);
+        run(Scroll)(process, payload);
       }
       if (status === Status.next) {
-        if (!payload.keepScroll) {
-          run(Init)(process);
-        } else {
-          run(Start)(process);
-        }
+        run(Init)(process);
       }
       break;
+    case Process.reset:
     case Process.reload:
-      if (status === Status.start) {
-        run(Reload)(payload);
+      const processToRun = process === Process.reset ? Reset : Reload;
+      if (status === Status.start) { // Adapter reload/reset
+        run(processToRun)(payload);
       }
       if (status === Status.next) {
-        interrupt(process);
+        interrupt({ process, ...payload });
         if (payload.finalize) {
           run(End)(process);
         } else {
@@ -78,7 +72,7 @@ export const runStateMachine = ({
       break;
     case Process.append:
       if (status === Status.start) {
-        run(Append)(payload);
+        run(Append)(process, payload);
       }
       if (status === Status.next) {
         run(Init)(process);
@@ -86,7 +80,7 @@ export const runStateMachine = ({
       break;
     case Process.prepend:
       if (status === Status.start) {
-        run(Append)({ ...payload, prepend: true });
+        run(Append)(process, payload);
       }
       if (status === Status.next) {
         run(Init)(process);
@@ -138,6 +132,7 @@ export const runStateMachine = ({
           case Process.append:
           case Process.prepend:
           case Process.check:
+          case Process.insert:
             run(Render)();
             break;
           case Process.remove:
@@ -147,24 +142,22 @@ export const runStateMachine = ({
             run(PreFetch)(payload.process);
             break;
           default:
-            if (payload.noFetch) {
-              run(End)(process);
-            } else {
-              run(PreFetch)();
-            }
+            run(PreFetch)();
         }
       }
       break;
     case Process.preFetch:
-      const userClip = payload.process === Process.userClip;
-      if (status === Status.done && !userClip) {
-        run(End)(process);
-      }
-      if (status === Status.next && !userClip) {
-        run(Fetch)();
-      }
-      if (userClip) {
-        run(PreClip)();
+      switch (payload.process) {
+        case Process.userClip:
+          run(PreClip)();
+          break;
+        default:
+          if (status === Status.next) {
+            run(Fetch)();
+          }
+          if (status === Status.done) {
+            run(End)(process);
+          }
       }
       break;
     case Process.fetch:
@@ -187,6 +180,9 @@ export const runStateMachine = ({
         } else {
           run(PreClip)();
         }
+      }
+      if (status === Status.done) {
+        run(End)(process);
       }
       break;
     case Process.preClip:
@@ -215,16 +211,13 @@ export const runStateMachine = ({
     case Process.end:
       if (status === Status.next) {
         switch (payload.process) {
+          case Process.reset:
           case Process.reload:
             done();
             run(Init)(payload.process);
             break;
           default:
-            if (payload.keepScroll) {
-              run(Scroll)();
-            } else {
-              run(Start)(process);
-            }
+            run(Start)(process);
         }
       } else if (status === Status.done) {
         done();

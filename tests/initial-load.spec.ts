@@ -96,8 +96,8 @@ const getTunedItemSizeCounter =
     const forwardLimit = viewportSize + backwardLimit;
     const itemsCounter = new ItemsCounter();
     const { backward, forward } = itemsCounter;
-    const _backward = <ItemsDirCounter>(previous ? previous.backward : {});
-    const _forward = <ItemsDirCounter>(previous ? previous.forward : {});
+    const countB = previous ? previous.backward.count : 0;
+    const countF = previous ? previous.forward.count : 0;
     let bwd, fwd;
 
     // 1) fetch only in forward direction if this is the first fetch
@@ -105,34 +105,34 @@ const getTunedItemSizeCounter =
     backward.count = previous ? (itemSize ? Math.ceil(backwardLimit / itemSize) : bufferSize) : 0;
     forward.count = itemSize ? Math.ceil(forwardLimit / itemSize) : bufferSize;
     if (previous) {
-      backward.count = Math.max(backward.count, _backward.count);
-      forward.count = Math.max(forward.count, _forward.count);
+      backward.count = Math.max(backward.count, countB);
+      forward.count = Math.max(forward.count, countF);
     }
 
     // when bufferSize is big enough
-    bwd = backward.count - (previous ? _backward.count : 0);
-    fwd = forward.count - (previous ? _forward.count : 0);
+    bwd = backward.count - (previous ? countB : 0);
+    fwd = forward.count - (previous ? countF : 0);
     const bwdDiff = bwd > 0 ? bufferSize - bwd : 0;
     const fwdDiff = fwd > 0 ? bufferSize - fwd : 0;
     if (bwdDiff > 0 && bwd > fwd) {
       backward.count += bwdDiff;
-      forward.count = previous ? _forward.count : forward.count;
+      forward.count = previous ? countF : forward.count;
     }
     if (fwdDiff > 0 && fwd >= bwd) {
       forward.count += fwdDiff;
-      backward.count = previous ? _backward.count : backward.count;
+      backward.count = previous ? countB : backward.count;
     }
 
     if (previous) {
-      bwd = backward.count - _backward.count;
-      fwd = forward.count - _forward.count;
+      bwd = backward.count - countB;
+      fwd = forward.count - countF;
       if (bwd > 0 && bwd > fwd) {
-        backward.count = _backward.count + bwd;
-        forward.count = fwd > 0 ? _forward.count : forward.count;
+        backward.count = countB + bwd;
+        forward.count = fwd > 0 ? countF : forward.count;
       }
       if (fwd > 0 && fwd >= bwd) {
-        forward.count = _forward.count + fwd;
-        backward.count = bwd > 0 ? _backward.count : backward.count;
+        forward.count = countF + fwd;
+        backward.count = bwd > 0 ? countB : backward.count;
       }
     }
 
@@ -152,7 +152,7 @@ const testFixedItemSizeCase = (settings: TestBedConfig, misc: Misc, done: Functi
   expect(misc.padding.backward.getSize()).toEqual(0);
   expect(misc.padding.forward.getSize()).toEqual(0);
 
-  const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
+  const itemSize = settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
   const itemsCounter = getFixedItemSizeCounter(settings, misc, itemSize);
   testItemsCounter(settings, misc, itemsCounter);
   done();
@@ -172,7 +172,7 @@ const testTunedItemSize = (settings: TestBedConfig, misc: Misc, done: Function) 
     const initialItemSize = settings.datasourceSettings.itemSize;
     itemsCounter = getTunedItemSizeCounter(settings, misc, initialItemSize);
   } else {
-    const itemSize = <number>settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
+    const itemSize = settings.templateSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'];
     itemsCounter = getTunedItemSizeCounter(settings, misc, itemSize, misc.shared.itemsCounter);
   }
   testItemsCounter(settings, misc, itemsCounter);

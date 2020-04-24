@@ -1,19 +1,26 @@
 import { Scroller } from '../scroller';
-import { ADAPTER_METHODS_PARAMS, validateOne } from '../utils/index';
+import { ADAPTER_METHODS, AdapterMethods, validateOne } from '../inputs/index';
 import {
   Process,
   ProcessStatus,
   ItemsPredicate,
   ItemsLooper,
   AdapterFixOptions,
-  IAdapterMethodParam as IParam
+  IValidator
 } from '../interfaces/index';
 
-const { FIX } = ADAPTER_METHODS_PARAMS;
+const { FIX } = ADAPTER_METHODS;
+const { Fix: FixParams } = AdapterMethods;
+
+interface IFixParam {
+  validators: IValidator[];
+  call?: Function;
+  value?: any;
+}
 
 interface IFixCall {
   scroller: Scroller;
-  params: IParam[];
+  params: IFixParam[];
   value: any;
 }
 
@@ -32,7 +39,7 @@ export default class Fix {
       return;
     }
 
-    params.forEach((param: IParam) => {
+    params.forEach((param: IFixParam) => {
       if (typeof param.call !== 'function') {
         return;
       }
@@ -46,8 +53,7 @@ export default class Fix {
   }
 
   static setScrollPosition({ scroller: { state, viewport }, value }: IFixCall) {
-    state.syntheticScroll.reset();
-    let result = <number>value;
+    let result = value as number;
     if (value === -Infinity) {
       result = 0;
     } else if (value === Infinity) {
@@ -57,17 +63,17 @@ export default class Fix {
   }
 
   static setMinIndex({ scroller: { buffer, settings }, value }: IFixCall) {
-    settings.minIndex = <number>value;
-    buffer.absMinIndex = <number>value;
+    settings.minIndex = value as number;
+    buffer.absMinIndex = value as number;
   }
 
   static setMaxIndex({ scroller: { buffer, settings }, value }: IFixCall) {
-    settings.maxIndex = <number>value;
-    buffer.absMaxIndex = <number>value;
+    settings.maxIndex = value as number;
+    buffer.absMaxIndex = value as number;
   }
 
   static updateItems({ scroller: { buffer }, value }: IFixCall) {
-    buffer.items.forEach(item => (<ItemsLooper>value)(item.get()));
+    buffer.items.forEach(item => (value as ItemsLooper)(item.get()));
   }
 
   static scrollToItem({ scroller, value, params }: IFixCall) {
@@ -76,43 +82,40 @@ export default class Fix {
       scroller.logger.log(() => `scrollToItem cancelled, item not found`);
       return;
     }
-    const scrollToItemOpt = params.find(({ name }: IParam) => name === FIX.scrollToItemOpt.name);
-    found.scrollTo(scrollToItemOpt ? scrollToItemOpt.value : undefined);
+    const scrollToItemOpt = false; // params.find(({ name }) => name === FixParams.scrollToItemOpt);
+    found.scrollTo(scrollToItemOpt ? scrollToItemOpt.value : void 0);
   }
 
   static getCallMethod(token: string): Function | null {
-    const { scrollPosition, minIndex, maxIndex, updater, scrollToItem, scrollToItemOpt } = FIX;
     switch (token) {
-      case scrollPosition.name:
+      case FixParams.scrollPosition:
         return Fix.setScrollPosition;
-      case minIndex.name:
+      case FixParams.minIndex:
         return Fix.setMinIndex;
-      case maxIndex.name:
+      case FixParams.maxIndex:
         return Fix.setMaxIndex;
-      case updater.name:
+      case FixParams.updater:
         return Fix.updateItems;
-      case scrollToItem.name:
+      case FixParams.scrollToItem:
         return Fix.scrollToItem;
-      case scrollToItemOpt.name:
+      case FixParams.scrollToItemOpt:
         return () => null;
     }
     return null;
   }
 
-  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IParam[] {
+  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {
     if (!options || typeof options !== 'object') {
       return [];
     }
-    return Object.keys(FIX).reduce((acc: IParam[], key: string) => {
-      const param = FIX[key];
-      const { name, validators } = param;
-      const error = `failed: can't set ${name}`;
-      if (options.hasOwnProperty(name)) {
-        const parsed = validateOne(options, name, validators);
+    return Object.entries(FIX).reduce((acc: IFixParam[], [key, prop]) => {
+      const error = `failed: can't set ${key}`;
+      if (options.hasOwnProperty(key)) {
+        const parsed = validateOne(options, key, prop);
         if (parsed.isValid) {
-          const call = Fix.getCallMethod(name);
+          const call = Fix.getCallMethod(key);
           if (call) {
-            return [...acc, { ...param, value: parsed.value, call }];
+            return [...acc, { ...prop, value: parsed.value, call }];
           } else {
             scroller.logger.log(() => `${error}, call method not found`);
           }

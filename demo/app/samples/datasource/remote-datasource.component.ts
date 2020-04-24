@@ -22,14 +22,14 @@ export class RemoteDataService {
 })
 export class DemoRemoteDatasourceComponent {
 
-  demoContext: DemoContext = <DemoContext> {
+  demoContext = {
     scope: 'datasource',
     title: `Remote datasource`,
     titleId: `remote`,
     logViewOnly: true,
     log: '',
     count: 0
-  };
+  } as DemoContext;
 
   datasource: IDatasource = {
     get: (index: number, count: number) => {

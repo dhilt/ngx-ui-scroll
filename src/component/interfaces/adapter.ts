@@ -47,7 +47,6 @@ export interface AdapterFixOptions {
   updater?: ItemsLooper;
   scrollToItem?: ItemsPredicate;
   scrollToItemOpt?: boolean | ScrollIntoViewOptions;
-  safe?: boolean;
 }
 
 export interface IAdapter {

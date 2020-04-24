@@ -12,6 +12,7 @@ const {
   FUNC_WITH_X_AND_MORE_ARGUMENTS,
   ONE_OF_MUST,
   ONE_OF_CAN,
+  OR,
 } = VALIDATORS;
 
 const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
@@ -91,6 +92,8 @@ enum AdapterFixParams {
   minIndex = 'minIndex',
   maxIndex = 'maxIndex',
   updater = 'updater',
+  scrollToItem = 'scrollToItem',
+  scrollToItemOpt = 'scrollToItemOpt',
 }
 
 const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
@@ -105,7 +108,13 @@ const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
   },
   [AdapterFixParams.updater]: {
     validators: [FUNC_WITH_X_ARGUMENTS(1)]
-  }
+  },
+  [AdapterFixParams.scrollToItem]: {
+    validators: [FUNC_WITH_X_ARGUMENTS(1)]
+  },
+  [AdapterFixParams.scrollToItemOpt]: {
+    validators: [OR([BOOLEAN, OBJECT])]
+  },
 };
 
 export const AdapterMethods = {

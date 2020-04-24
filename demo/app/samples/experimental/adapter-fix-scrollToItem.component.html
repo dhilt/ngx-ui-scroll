@@ -1,0 +1,27 @@
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
+
+  <div actions>
+    <div class="comment">Available since v1.6.2, undocumented</div>
+    <button (click)="doScrollTo()">Scroll to</button> item #
+    <input [(ngModel)]="index" size="2">
+    <br>
+    <input type="checkbox" [(ngModel)]="scrollToBottom"> - scroll to bottom
+  </div>
+
+  <div description>
+    <p>
+      What if we want to scroll to a specific item in the viewport?
+      This can be done via <em>scrollToItem</em> option of the <em>Adapter.fix</em> method.
+      This option specifies an item predicate function, and the first item in the Buffer,
+      that satisfies this predicate, will be the item to which the viewport will scroll.
+    </p>
+    <p>
+      Scrolling is performed via <em>element.scrollIntoView()</em> native DOM Element interface's method.
+      According to its specification, it accepts 1 optional argument which can be a Boolean parameter or
+      special Object parameter (details can be found on
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView">MDN</a>).
+      To provide this option, the <em>Adapter.fix</em> method handles another property of its argument object:
+      <em>scrollToItemOpt</em>. The demo shows how to use it.
+    </p>
+  </div>
+</app-demo>

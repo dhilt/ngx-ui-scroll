@@ -1,6 +1,6 @@
-import { Scroller } from '../scroller';
-import { ADAPTER_METHODS, validate } from '../inputs/index';
-import { Direction, ItemsPredicate, Process, ProcessStatus } from '../interfaces/index';
+import { Scroller } from '../../scroller';
+import { ADAPTER_METHODS, validate } from '../../inputs/index';
+import { Direction, ItemsPredicate, Process, ProcessStatus } from '../../interfaces/index';
 
 export default class Remove {
 

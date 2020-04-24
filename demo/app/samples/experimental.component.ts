@@ -14,6 +14,8 @@ export class ExperimentalComponent {
     minIndex?: number;
     maxIndex?: number;
     updater?: (item: ItemAdapter) => any;
+    scrollToItem?: (item: ItemAdapter) => boolean;
+    scrollToItemOpt?: boolean | ScrollIntoViewOptions;
   }`;
 
 }

@@ -11,6 +11,7 @@ const {
   FUNC_WITH_X_AND_MORE_ARGUMENTS,
   ONE_OF_CAN,
   ONE_OF_MUST,
+  OR,
 } = VALIDATORS;
 
 describe('Input Params Validation', () => {
@@ -330,6 +331,24 @@ describe('Validation', () => {
       );
       expect(run({ [token]: {} }, [OBJECT])).toBe(true);
       expect(run({ [token]: { x: 0 } }, [OBJECT])).toBe(true);
+    });
+  });
+
+  describe('[Or]', () => {
+    it('should pass at least 1 of "or" rules', () => {
+      const boolOrObj = [OR([BOOLEAN, OBJECT])];
+      expect(run({}, boolOrObj)).toBe(true);
+      expect(run({}, boolOrObj, true)).toBe(false);
+      [
+        1,
+        null,
+        () => null,
+        'test',
+      ].forEach(input =>
+        expect(run({ [token]: input }, boolOrObj)).toBe(false)
+      );
+      expect(run({ [token]: {} }, boolOrObj)).toBe(true);
+      expect(run({ [token]: true }, boolOrObj)).toBe(true);
     });
   });
 

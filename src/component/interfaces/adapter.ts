@@ -45,7 +45,8 @@ export interface AdapterFixOptions {
   minIndex?: number;
   maxIndex?: number;
   updater?: ItemsLooper;
-  safe?: boolean;
+  scrollToItem?: ItemsPredicate;
+  scrollToItemOpt?: boolean | ScrollIntoViewOptions;
 }
 
 export interface IAdapter {

@@ -52,6 +52,12 @@ export class Item {
     }
   }
 
+  scrollTo(argument?: boolean | ScrollIntoViewOptions) {
+    if (this.element) {
+      this.routines.scrollTo(this.element, argument);
+    }
+  }
+
   updateIndex(index: number) {
     this.$index = index;
     this.nodeId = String(index);

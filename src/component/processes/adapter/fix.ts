@@ -1,37 +1,24 @@
 import { Scroller } from '../../scroller';
-import { ADAPTER_METHODS, AdapterMethods, validateOne } from '../../inputs/index';
+import { ADAPTER_METHODS, AdapterMethods, validate } from '../../inputs/index';
 import {
   Process,
   ProcessStatus,
   ItemsPredicate,
   ItemsLooper,
   AdapterFixOptions,
-  IValidator
+  IValidatedData,
 } from '../../interfaces/index';
 
-const { FIX } = ADAPTER_METHODS;
 const { Fix: FixParams } = AdapterMethods;
-
-interface IFixParam {
-  validators: IValidator[];
-  call?: Function;
-  value?: any;
-}
-
-interface IFixCall {
-  scroller: Scroller;
-  params: IFixParam[];
-  value: any;
-}
 
 export default class Fix {
 
   static run(scroller: Scroller, options: AdapterFixOptions) {
     const { workflow } = scroller;
-    const params = Fix.checkOptions(scroller, options);
-
-    if (params.length !== Object.keys(options).length) {
-      workflow.call({
+    const methodData = validate(options, ADAPTER_METHODS.FIX);
+    if (!methodData.isValid) {
+      scroller.logger.log(() => methodData.showErrors());
+      scroller.workflow.call({
         process: Process.fix,
         status: ProcessStatus.error,
         payload: { error: `Wrong argument of the "Adapter.fix" method call` }
@@ -39,11 +26,10 @@ export default class Fix {
       return;
     }
 
-    params.forEach((param: IFixParam) => {
-      if (typeof param.call !== 'function') {
-        return;
+    Object.entries(methodData.params).forEach(([key, value]) => {
+      if (value.isSet && value.isValid) {
+        Fix.runByType(scroller, key, value.value, methodData);
       }
-      param.call({ scroller, params, value: param.value });
     });
 
     workflow.call({
@@ -52,7 +38,25 @@ export default class Fix {
     });
   }
 
-  static setScrollPosition({ scroller: { state, viewport }, value }: IFixCall) {
+  static runByType(scroller: Scroller, token: string, value: any, methodData: IValidatedData) {
+    switch (token) {
+      case FixParams.scrollPosition:
+        return Fix.setScrollPosition(scroller, value);
+      case FixParams.minIndex:
+        return Fix.setMinIndex(scroller, value);
+      case FixParams.maxIndex:
+        return Fix.setMaxIndex(scroller, value);
+      case FixParams.updater:
+        return Fix.updateItems(scroller, value);
+      case FixParams.scrollToItem:
+        const scrollToItemOpt = methodData.params[FixParams.scrollToItemOpt];
+        return Fix.scrollToItem(scroller, value, scrollToItemOpt ? scrollToItemOpt.value : void 0);
+      case FixParams.scrollToItemOpt:
+        return;
+    }
+  }
+
+  static setScrollPosition({ state, viewport }: Scroller, value: any) {
     let result = value as number;
     if (value === -Infinity) {
       result = 0;
@@ -62,69 +66,27 @@ export default class Fix {
     viewport.setPosition(result);
   }
 
-  static setMinIndex({ scroller: { buffer, settings }, value }: IFixCall) {
+  static setMinIndex({ buffer, settings }: Scroller, value: any) {
     settings.minIndex = value as number;
     buffer.absMinIndex = value as number;
   }
 
-  static setMaxIndex({ scroller: { buffer, settings }, value }: IFixCall) {
+  static setMaxIndex({ buffer, settings }: Scroller, value: any) {
     settings.maxIndex = value as number;
     buffer.absMaxIndex = value as number;
   }
 
-  static updateItems({ scroller: { buffer }, value }: IFixCall) {
+  static updateItems({ buffer }: Scroller, value: any) {
     buffer.items.forEach(item => (value as ItemsLooper)(item.get()));
   }
 
-  static scrollToItem({ scroller, value, params }: IFixCall) {
-    const found = scroller.buffer.items.find(item => (<ItemsPredicate>value)(item.get()));
+  static scrollToItem(scroller: Scroller, value: any, options?: any) {
+    const found = scroller.buffer.items.find(item => (value as ItemsPredicate)(item.get()));
     if (!found) {
       scroller.logger.log(() => `scrollToItem cancelled, item not found`);
       return;
     }
-    const scrollToItemOpt = params.find(({ name }) => name === FixParams.scrollToItemOpt);
-    found.scrollTo(scrollToItemOpt ? scrollToItemOpt.value : void 0);
-  }
-
-  static getCallMethod(token: string): Function | null {
-    switch (token) {
-      case FixParams.scrollPosition:
-        return Fix.setScrollPosition;
-      case FixParams.minIndex:
-        return Fix.setMinIndex;
-      case FixParams.maxIndex:
-        return Fix.setMaxIndex;
-      case FixParams.updater:
-        return Fix.updateItems;
-      case FixParams.scrollToItem:
-        return Fix.scrollToItem;
-      case FixParams.scrollToItemOpt:
-        return () => null;
-    }
-    return null;
-  }
-
-  static checkOptions(scroller: Scroller, options: AdapterFixOptions): IFixParam[] {
-    if (!options || typeof options !== 'object') {
-      return [];
-    }
-    return Object.entries(FIX).reduce((acc: IFixParam[], [key, prop]) => {
-      const error = `failed: can't set ${key}`;
-      if (options.hasOwnProperty(key)) {
-        const parsed = validateOne(options, key, prop);
-        if (parsed.isValid) {
-          const call = Fix.getCallMethod(key);
-          if (call) {
-            return [...acc, { ...prop, value: parsed.value, call }];
-          } else {
-            scroller.logger.log(() => `${error}, call method not found`);
-          }
-        } else {
-          scroller.logger.log(() => `${error}, ${parsed.errors}`);
-        }
-      }
-      return acc;
-    }, []);
+    found.scrollTo(options);
   }
 
 }

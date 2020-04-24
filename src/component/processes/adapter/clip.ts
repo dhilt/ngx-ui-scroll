@@ -1,6 +1,6 @@
-import { Scroller } from '../scroller';
-import { ADAPTER_METHODS, AdapterMethods, validate } from '../inputs/index';
-import { AdapterClipOptions, Process, ProcessStatus } from '../interfaces/index';
+import { Scroller } from '../../scroller';
+import { ADAPTER_METHODS, AdapterMethods, validate } from '../../inputs/index';
+import { AdapterClipOptions, Process, ProcessStatus } from '../../interfaces/index';
 
 export default class UserClip {
 

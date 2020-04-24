@@ -1,7 +1,7 @@
-import { Scroller } from '../scroller';
-import { ADAPTER_METHODS, validate } from '../inputs/index';
-import { Process, ProcessStatus, IDatasource, IDatasourceOptional } from '../interfaces/index';
-import { Datasource } from '../classes/datasource';
+import { Scroller } from '../../scroller';
+import { ADAPTER_METHODS, validate } from '../../inputs/index';
+import { Process, ProcessStatus, IDatasource, IDatasourceOptional } from '../../interfaces/index';
+import { Datasource } from '../../classes/datasource';
 
 export default class Reset {
 

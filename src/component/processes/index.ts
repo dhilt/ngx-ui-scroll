@@ -1,13 +1,13 @@
 import Init from './init';
 import Scroll from './scroll';
-import Reset from './reset';
-import Reload from './reload';
-import Append from './append';
-import Check from './check';
-import Remove from './remove';
-import UserClip from './userClip';
-import Insert from './insert';
-import Fix from './fix';
+import Reset from './adapter/reset';
+import Reload from './adapter/reload';
+import Append from './adapter/append';
+import Check from './adapter/check';
+import Remove from './adapter/remove';
+import UserClip from './adapter/clip';
+import Insert from './adapter/insert';
+import Fix from './adapter/fix';
 import Start from './start';
 import PreFetch from './preFetch';
 import Fetch from './fetch';
@@ -19,6 +19,7 @@ import Clip from './clip';
 import End from './end';
 
 export {
-  Init, Scroll, Reset, Reload, Append, Check, Remove, UserClip, Insert, Fix,
+  Init, Scroll,
+  Reset, Reload, Append, Check, Remove, UserClip, Insert, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 };

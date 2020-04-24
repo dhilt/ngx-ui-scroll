@@ -1,5 +1,5 @@
-import { Scroller } from '../scroller';
-import { ADAPTER_METHODS, AdapterMethods, validateOne } from '../inputs/index';
+import { Scroller } from '../../scroller';
+import { ADAPTER_METHODS, AdapterMethods, validateOne } from '../../inputs/index';
 import {
   Process,
   ProcessStatus,
@@ -7,7 +7,7 @@ import {
   ItemsLooper,
   AdapterFixOptions,
   IValidator
-} from '../interfaces/index';
+} from '../../interfaces/index';
 
 const { FIX } = ADAPTER_METHODS;
 const { Fix: FixParams } = AdapterMethods;
@@ -82,7 +82,7 @@ export default class Fix {
       scroller.logger.log(() => `scrollToItem cancelled, item not found`);
       return;
     }
-    const scrollToItemOpt = false; // params.find(({ name }) => name === FixParams.scrollToItemOpt);
+    const scrollToItemOpt = params.find(({ name }) => name === FixParams.scrollToItemOpt);
     found.scrollTo(scrollToItemOpt ? scrollToItemOpt.value : void 0);
   }
 

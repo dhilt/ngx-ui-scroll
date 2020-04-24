@@ -1,9 +1,9 @@
-import { Scroller } from '../scroller';
-import { ADAPTER_METHODS, validate } from '../inputs/index';
-import { Item } from '../classes/item';
+import { Scroller } from '../../scroller';
+import { ADAPTER_METHODS, validate } from '../../inputs/index';
+import { Item } from '../../classes/item';
 import {
   Process, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IValidatedData
-} from '../interfaces/index';
+} from '../../interfaces/index';
 
 export default class Insert {
 

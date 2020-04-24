@@ -84,4 +84,9 @@ export class Routines {
     return this.horizontal ? element.offsetLeft : element.offsetTop;
   }
 
+  scrollTo(element: HTMLElement, argument?: boolean | ScrollIntoViewOptions) {
+    this.checkElement(element);
+    element.scrollIntoView(argument);
+  }
+
 }

@@ -51,6 +51,7 @@ import { DemoPagesDatasourceComponent } from './samples/datasource/pages-datasou
 import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-fix-position.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
+import { DemoAdapterFixScrollToItemComponent } from './samples/experimental/adapter-fix-scrollToItem.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
 
@@ -101,6 +102,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoAdapterFixPositionComponent,
     DemoInverseSettingComponent,
     DemoAdapterFixUpdaterComponent,
+    DemoAdapterFixScrollToItemComponent,
     WindowComponent,
     TestComponent,
     TestInnerComponent

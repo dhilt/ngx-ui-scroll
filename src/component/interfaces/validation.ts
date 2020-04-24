@@ -11,6 +11,7 @@ export enum ValidatorType {
   funcOfxAndMoreArguments = 'must have at least arg1 arguments',
   oneOfCan = 'can be present only if none of arg1 list is present',
   oneOfMust = 'must be present if none of arg1 list is present',
+  or = 'must satisfy at least 1 validator from arg1 list',
 }
 
 type ValidatorMethod = (value: any, context?: any) => ValidatedValue;

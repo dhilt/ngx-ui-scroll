@@ -4,9 +4,11 @@ import { Settings } from './settings';
 export class Routines {
 
   readonly horizontal: boolean;
+  readonly window: boolean;
 
   constructor(settings: Settings) {
     this.horizontal = settings.horizontal;
+    this.window = settings.windowViewport;
   }
 
   checkElement(element: HTMLElement) {
@@ -28,8 +30,7 @@ export class Routines {
 
   getParams(element: HTMLElement): ClientRect {
     this.checkElement(element);
-    if (element.tagName.toLowerCase() === 'body') {
-      element = element.parentElement as HTMLElement;
+    if (this.window) {
       return {
         'height': element.clientHeight,
         'width': element.clientWidth,

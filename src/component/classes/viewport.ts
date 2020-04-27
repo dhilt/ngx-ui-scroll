@@ -12,9 +12,8 @@ export class Viewport {
   previousPosition: number;
 
   readonly element: HTMLElement;
-  readonly host: HTMLElement;
+  readonly hostElement: HTMLElement;
   readonly scrollEventElement: HTMLElement | Document;
-  readonly scrollable: HTMLElement;
   readonly settings: Settings;
   readonly routines: Routines;
   readonly state: State;
@@ -32,12 +31,10 @@ export class Viewport {
 
     if (settings.windowViewport) {
       this.scrollEventElement = this.element.ownerDocument as Document;
-      this.host = this.scrollEventElement.body;
-      this.scrollable = this.scrollEventElement.scrollingElement as HTMLElement;
+      this.hostElement = this.scrollEventElement.scrollingElement as HTMLElement;
     } else {
-      this.host = this.element.parentElement as HTMLElement;
-      this.scrollEventElement = this.host;
-      this.scrollable = this.element.parentElement as HTMLElement;
+      this.scrollEventElement = this.element.parentElement as HTMLElement;
+      this.hostElement = this.scrollEventElement;
     }
 
     this.paddings = new Paddings(this.element, this.routines, settings);
@@ -68,7 +65,7 @@ export class Viewport {
       return value;
     }
     this.previousPosition = oldPosition;
-    this.routines.setScrollPosition(this.scrollable, value);
+    this.routines.setScrollPosition(this.hostElement, value);
     const position = this.scrollPosition;
     this.logger.log(() => [
       'setting scroll position at', position, ...(position !== value ? [`(${value})`] : [])
@@ -80,7 +77,7 @@ export class Viewport {
     const { scrollState } = this.state;
     scrollState.syntheticPosition = newPos;
     this.logger.log(() => ['setting scroll position at', oldPos, '(meaning', newPos, 'in next repaint)']);
-    this.routines.setScrollPosition(this.scrollable, oldPos);
+    this.routines.setScrollPosition(this.hostElement, oldPos);
     scrollState.syntheticFulfill = false;
     scrollState.animationFrameId =
       requestAnimationFrame(() => {
@@ -95,13 +92,13 @@ export class Viewport {
           ...(diff > 0 ? [`(${(newPos + diff)} - ${diff})`] : []),
           '- synthetic fulfillment'
         ]);
-        this.routines.setScrollPosition(this.scrollable, newPos);
+        this.routines.setScrollPosition(this.hostElement, newPos);
         done();
       });
   }
 
   get scrollPosition(): number {
-    return this.routines.getScrollPosition(this.scrollable);
+    return this.routines.getScrollPosition(this.hostElement);
   }
 
   set scrollPosition(value: number) {
@@ -112,7 +109,7 @@ export class Viewport {
     if (this.disabled) {
       return;
     }
-    const { style } = this.scrollable;
+    const { style } = this.hostElement;
     if (style.overflowY === 'hidden') {
       return;
     }
@@ -126,7 +123,7 @@ export class Viewport {
   }
 
   getSize(): number {
-    return this.routines.getSize(this.host);
+    return this.routines.getSize(this.hostElement);
   }
 
   getScrollableSize(): number {
@@ -138,7 +135,7 @@ export class Viewport {
   }
 
   getEdge(direction: Direction, opposite?: boolean): number {
-    return this.routines.getEdge(this.host, direction, opposite);
+    return this.routines.getEdge(this.hostElement, direction, opposite);
   }
 
   getElementEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {

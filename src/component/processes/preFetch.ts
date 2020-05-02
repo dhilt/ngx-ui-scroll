@@ -41,7 +41,7 @@ export default class PreFetch {
   }
 
   static setStartDelta(scroller: Scroller) {
-    const { buffer, viewport } = scroller;
+    const { buffer, viewport, viewport: { offset } } = scroller;
     viewport.startDelta = 0;
     if (!buffer.hasItemSize) {
       return;
@@ -51,10 +51,12 @@ export default class PreFetch {
       const item = buffer.cache.get(index);
       viewport.startDelta += item ? item.size : buffer.averageSize;
     }
-    if (scroller.settings.windowViewport) {
-      viewport.startDelta += viewport.getOffset();
+    if (offset) {
+      viewport.startDelta += offset;
     }
-    scroller.logger.log(() => `start delta is ${viewport.startDelta}`);
+    scroller.logger.log(() => [
+      `start delta is ${viewport.startDelta}`, ...(offset ? [` (+${offset} offset)`] : [])
+    ]);
   }
 
   static setFetchIndexes(scroller: Scroller) {

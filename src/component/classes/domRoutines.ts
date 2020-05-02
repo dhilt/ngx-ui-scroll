@@ -82,7 +82,7 @@ export class Routines {
 
   getOffset(element: HTMLElement): number {
     this.checkElement(element);
-    return this.horizontal ? element.offsetLeft : element.offsetTop;
+    return (this.horizontal ? element.offsetLeft : element.offsetTop) || 0;
   }
 
   scrollTo(element: HTMLElement, argument?: boolean | ScrollIntoViewOptions) {

@@ -152,7 +152,8 @@ export default class Adjust {
 
     // to fill forward padding gap in case of no minIndex
     if (!isFinite(buffer.absMinIndex)) {
-      const fwdPaddingSizeDiff = state.render.fwdPaddingBefore - viewport.paddings.forward.size;
+      const fwdBefore = Math.max(0, state.render.fwdPaddingBefore - viewport.offset);
+      const fwdPaddingSizeDiff = fwdBefore - viewport.paddings.forward.size;
       const diff = negativeSize - fwdPaddingSizeDiff;
       negativeSize = diff < 0 ? negativeSize : Math.min(negativeSize, diff);
     }

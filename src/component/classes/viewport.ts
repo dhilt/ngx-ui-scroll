@@ -7,6 +7,7 @@ import { Logger } from './logger';
 
 export class Viewport {
 
+  offset: number;
   paddings: Paddings;
   startDelta: number;
   previousPosition: number;
@@ -45,8 +46,9 @@ export class Viewport {
   }
 
   reset(scrollPosition: number) {
+    this.setOffset();
     let newPosition = 0;
-    this.paddings.reset(this.getSize(), this.state.startIndex);
+    this.paddings.reset(this.getSize(), this.state.startIndex, this.offset);
     const negativeSize = this.paddings.backward.size;
     if (negativeSize) {
       newPosition = negativeSize;
@@ -142,8 +144,11 @@ export class Viewport {
     return this.routines.getEdge(element, direction, opposite);
   }
 
-  getOffset(): number {
-    return this.routines.getOffset(this.element);
+  setOffset() {
+    this.offset = this.routines.getOffset(this.element);
+    if (!this.settings.windowViewport) {
+      this.offset -= this.routines.getOffset(this.hostElement);
+    }
   }
 
 }

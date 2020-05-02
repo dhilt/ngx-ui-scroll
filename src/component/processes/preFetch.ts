@@ -43,6 +43,9 @@ export default class PreFetch {
   static setStartDelta(scroller: Scroller) {
     const { buffer, viewport, viewport: { offset } } = scroller;
     viewport.startDelta = 0;
+    if (offset) {
+      viewport.startDelta += offset;
+    }
     if (!buffer.hasItemSize) {
       return;
     }
@@ -50,9 +53,6 @@ export default class PreFetch {
     for (let index = minIndex; index < scroller.state.startIndex; index++) {
       const item = buffer.cache.get(index);
       viewport.startDelta += item ? item.size : buffer.averageSize;
-    }
-    if (offset) {
-      viewport.startDelta += offset;
     }
     scroller.logger.log(() => [
       `start delta is ${viewport.startDelta}`, ...(offset ? [` (+${offset} offset)`] : [])

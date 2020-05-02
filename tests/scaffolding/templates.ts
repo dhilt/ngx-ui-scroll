@@ -25,10 +25,23 @@ export interface TemplateData {
   template: string;
 }
 
+const addPaddingFix = (padding?: number): string => {
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=748518
+  if (!padding) {
+    return '';
+  }
+  const className = 'viewport-ff-padding';
+  const rules = `.${className}:after{content:'';height:${padding}px;display:block;}`;
+  const style = document.createElement('style');
+  style.textContent = rules;
+  document.head.append(style);
+  return ` ${className}`;
+};
+
 export const generateTemplate = (templateSettings?: TemplateSettings): TemplateData => {
   const settings = Object.assign({}, defaultTemplateSettings, templateSettings || {});
   const viewportClass = `${settings.noViewportClass ? '' :
-    'viewport' + (settings.horizontal ? '-horizontal' : '')}`;
+    'viewport' + (settings.horizontal ? '-horizontal' : '')}` + addPaddingFix(settings.viewportPadding);
   const viewportStyle = `${settings.viewportHeight ? 'height:' + settings.viewportHeight + 'px;' : ''}` +
     `${settings.viewportWidth ? 'width:' + settings.viewportWidth + 'px;' : ''}` +
     `${settings.viewportPadding ? 'padding:' + settings.viewportPadding + 'px;' : ''}`;

@@ -1,4 +1,5 @@
 export class RenderModel {
+  positionBefore: number;
   sizeBefore: number;
   sizeAfter: number;
   fwdPaddingBefore: number;
@@ -12,6 +13,7 @@ export class RenderModel {
   }
 
   reset() {
+    this.positionBefore = 0;
     this.sizeBefore = 0;
     this.sizeAfter = 0;
     this.fwdPaddingBefore = 0;

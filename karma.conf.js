@@ -2,6 +2,13 @@
 
 const path = require('path');
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
+const dotenv = require('dotenv');
+
+const config = dotenv.config()
+if (config.error) {
+  console.error(config.error.toString());
+}
+const TEST_SERVER_PORT = process.env.TEST_SERVER_PORT || 9876;
 
 module.exports = function (config) {
 
@@ -116,7 +123,7 @@ module.exports = function (config) {
       fixWebpackSourcePaths: true
     },
 
-    port: 9876,
+    port: TEST_SERVER_PORT,
     colors: true,
     logLevel: config.LOG_ERROR,
     autoWatch: !process.env.TRAVIS,

@@ -45,6 +45,5 @@ firebase.json
 
 # environment
 .env
-/demo/environments/environment.*.ts
 
 temp

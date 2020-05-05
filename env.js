@@ -9,5 +9,5 @@ if (config.error) {
 const DEV_SERVER_PORT = process.env.DEV_SERVER_PORT || 4200;
 
 const child = child_process.exec(`ng serve --port=${DEV_SERVER_PORT}`);
-child.stderr.on('data', err => console.error(err));
-child.stdout.on('data', data => console.log(data));
+child.stderr.on('data', err => console.error(err.toString()));
+child.stdout.on('data', data => console.log(data.toString()));

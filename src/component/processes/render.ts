@@ -43,9 +43,9 @@ export default class Render {
     }
     fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
     render.sizeAfter = viewport.getScrollableSize();
-    // if (scroller.settings.windowViewport && fetch.isPrepend && !render.noSize) {
-    //   Render.processWindowScrollBackJump(scroller);
-    // }
+    if (viewport.scrollAnchoring && fetch.isPrepend && !render.noSize) {
+      Render.processWindowScrollBackJump(scroller);
+    }
     logger.stat('after new items render');
     logger.log(() => render.noSize ? 'viewport size has not been changed' : void 0);
     return true;

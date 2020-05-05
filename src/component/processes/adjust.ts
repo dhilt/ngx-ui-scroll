@@ -106,18 +106,18 @@ export default class Adjust {
     const posDiff = preAdjustPosition - newPosition;
     let { negativeSize } = fetch;
 
-    if (scroller.settings.windowViewport) {
-      if (posDiff) {
-        const winState = state.scrollState.window;
-        if (newPosition === winState.positionToUpdate) {
-          winState.reset();
-          scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
-          Adjust.setScroll(scroller, posDiff);
-          scroller.logger.stat('after scroll position adjustment (window)');
-          return;
-        }
-      }
-    }
+    // if (scroller.settings.windowViewport) {
+    //   if (posDiff) {
+    //     const winState = state.scrollState.window;
+    //     if (newPosition === winState.positionToUpdate) {
+    //       winState.reset();
+    //       scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
+    //       Adjust.setScroll(scroller, posDiff);
+    //       scroller.logger.stat('after scroll position adjustment (window)');
+    //       return;
+    //     }
+    //   }
+    // }
 
     // if backward padding has been changed due to average item size change
     const bwdAverageItemsCountDiff = fetch.isReplace ? 0 :

@@ -1,5 +1,6 @@
 body {
   line-height: 1.4;
+  overflow-anchor: none;
 }
 
 h1 {

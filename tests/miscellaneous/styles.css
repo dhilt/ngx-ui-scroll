@@ -8,6 +8,10 @@ html {
   line-height: 20px;
 }
 
+body {
+  overflow-anchor: none;
+}
+
 .viewport {
   width: 200px;
   height: 200px;

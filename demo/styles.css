@@ -1,5 +1,8 @@
 body {
   line-height: 1.4;
+}
+
+.entire-window {
   overflow-anchor: none;
 }
 

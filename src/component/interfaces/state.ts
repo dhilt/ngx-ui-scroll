@@ -48,7 +48,7 @@ export interface State {
   startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
-  bwdPaddingAverageSizeItemsCount: number;
+  bwdAverageSizeItemsCount: number;
 
   scrollState: ScrollState;
 

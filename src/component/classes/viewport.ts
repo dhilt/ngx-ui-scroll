@@ -54,7 +54,7 @@ export class Viewport {
     if (negativeSize) {
       newPosition = negativeSize;
       const { itemSize } = this.settings;
-      this.state.bwdPaddingAverageSizeItemsCount = itemSize ? negativeSize / itemSize : 0;
+      this.state.bwdAverageSizeItemsCount = itemSize ? negativeSize / itemSize : 0;
     }
     this.scrollPosition = newPosition;
     this.state.scrollState.reset();

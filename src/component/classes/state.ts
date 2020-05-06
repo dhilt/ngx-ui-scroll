@@ -32,7 +32,7 @@ export class State implements IState {
   startIndex: number;
   lastPosition: number;
   preFetchPosition: number;
-  bwdPaddingAverageSizeItemsCount: number;
+  bwdAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
 
@@ -63,7 +63,7 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.render = new RenderModel();
-    this.bwdPaddingAverageSizeItemsCount = 0;
+    this.bwdAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
   }

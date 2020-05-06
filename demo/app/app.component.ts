@@ -22,6 +22,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       ).subscribe((event: Event) => {
         const url = (event as NavigationStart).url;
         this.hasLayout = !(url === '/window' || url === '/test');
+        if (url === '/window') {
+          document.body.classList.add('entire-window');
+        } else {
+          document.body.classList.remove('entire-window');
+        }
       })
     );
     if ('scrollRestoration' in history) {

@@ -2,6 +2,10 @@ body {
   line-height: 1.4;
 }
 
+.entire-window {
+  overflow-anchor: none;
+}
+
 h1 {
   font-size: 42px;
   letter-spacing: -.015em;

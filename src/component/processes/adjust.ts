@@ -106,16 +106,14 @@ export default class Adjust {
     const posDiff = preAdjustPosition - newPosition;
     let { negativeSize } = fetch;
 
-    if (scroller.settings.windowViewport) {
-      if (posDiff) {
-        const winState = state.scrollState.window;
-        if (newPosition === winState.positionToUpdate) {
-          winState.reset();
-          scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
-          Adjust.setScroll(scroller, posDiff);
-          scroller.logger.stat('after scroll position adjustment (window)');
-          return;
-        }
+    if (viewport.scrollAnchoring && posDiff) {
+      const winState = state.scrollState.window;
+      if (newPosition === winState.positionToUpdate) {
+        winState.reset();
+        scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
+        Adjust.setScroll(scroller, posDiff);
+        scroller.logger.stat('after scroll position adjustment (window)');
+        return;
       }
     }
 
@@ -152,7 +150,8 @@ export default class Adjust {
 
     // to fill forward padding gap in case of no minIndex
     if (!isFinite(buffer.absMinIndex)) {
-      const fwdPaddingSizeDiff = state.render.fwdPaddingBefore - viewport.paddings.forward.size;
+      const fwdBefore = Math.max(0, state.render.fwdPaddingBefore - viewport.offset);
+      const fwdPaddingSizeDiff = fwdBefore - viewport.paddings.forward.size;
       const diff = negativeSize - fwdPaddingSizeDiff;
       negativeSize = diff < 0 ? negativeSize : Math.min(negativeSize, diff);
     }

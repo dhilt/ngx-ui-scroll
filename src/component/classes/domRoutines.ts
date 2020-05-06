@@ -4,9 +4,11 @@ import { Settings } from './settings';
 export class Routines {
 
   readonly horizontal: boolean;
+  readonly window: boolean;
 
   constructor(settings: Settings) {
     this.horizontal = settings.horizontal;
+    this.window = settings.windowViewport;
   }
 
   checkElement(element: HTMLElement) {
@@ -28,8 +30,7 @@ export class Routines {
 
   getParams(element: HTMLElement): ClientRect {
     this.checkElement(element);
-    if (element.tagName.toLowerCase() === 'body') {
-      element = element.parentElement as HTMLElement;
+    if (this.window) {
       return {
         'height': element.clientHeight,
         'width': element.clientWidth,
@@ -81,12 +82,19 @@ export class Routines {
 
   getOffset(element: HTMLElement): number {
     this.checkElement(element);
-    return this.horizontal ? element.offsetLeft : element.offsetTop;
+    return (this.horizontal ? element.offsetLeft : element.offsetTop) || 0;
   }
 
   scrollTo(element: HTMLElement, argument?: boolean | ScrollIntoViewOptions) {
     this.checkElement(element);
     element.scrollIntoView(argument);
+  }
+
+  isAnchoringOff(element: HTMLElement): boolean {
+    this.checkElement(element);
+    const styles = getComputedStyle(element);
+    const value = (styles as any).overflowAnchor;
+    return value === void 0 || value === 'none';
   }
 
 }

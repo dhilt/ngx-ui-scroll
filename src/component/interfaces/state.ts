@@ -4,6 +4,7 @@ import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/state/fetch';
 import { ClipModel } from '../classes/state/clip';
 import { RenderModel } from '../classes/state/render';
+import { AdjustModel } from '../classes/state/adjust';
 
 export interface WindowScrollState {
   delta: number;
@@ -45,10 +46,9 @@ export interface State {
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
+  adjust: AdjustModel;
   startIndex: number;
   lastPosition: number;
-  preFetchPosition: number;
-  bwdAverageSizeItemsCount: number;
 
   scrollState: ScrollState;
 

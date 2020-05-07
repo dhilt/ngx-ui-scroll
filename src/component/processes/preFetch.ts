@@ -5,7 +5,7 @@ export default class PreFetch {
 
   static run(scroller: Scroller, process: Process) {
     const { workflow, buffer, state: { fetch } } = scroller;
-    scroller.state.preFetchPosition = scroller.viewport.scrollPosition;
+    fetch.positionBefore = scroller.viewport.scrollPosition;
     fetch.minIndex = buffer.minIndex;
     fetch.averageItemSize = buffer.averageSize || 0;
 
@@ -60,9 +60,10 @@ export default class PreFetch {
   }
 
   static setFetchIndexes(scroller: Scroller) {
-    const { state, viewport } = scroller;
+    const { state: { fetch }, viewport } = scroller;
     const paddingDelta = viewport.getBufferPadding();
-    const relativePosition = state.preFetchPosition - viewport.startDelta;
+    const positionBefore = fetch.positionBefore as number;
+    const relativePosition = positionBefore - viewport.startDelta;
     const startPosition = relativePosition - paddingDelta;
     const endPosition = relativePosition + viewport.getSize() + paddingDelta;
     const firstIndexPosition =

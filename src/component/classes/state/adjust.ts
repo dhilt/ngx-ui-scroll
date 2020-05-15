@@ -1,7 +1,6 @@
 export class AdjustModel {
   positionBefore: number;
   bwdAverageSizeItemsCount: number;
-  bwdPaddingBefore: number;
 
   constructor() {
     this.reset();
@@ -10,6 +9,5 @@ export class AdjustModel {
   reset() {
     this.positionBefore = 0;
     this.bwdAverageSizeItemsCount = 0;
-    this.bwdPaddingBefore = 0;
   }
 }

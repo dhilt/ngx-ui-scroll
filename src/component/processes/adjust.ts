@@ -47,15 +47,13 @@ export default class Adjust {
     if (!firstItem || !lastItem) {
       return false;
     }
-    const forwardPadding = viewport.paddings.forward;
-    const backwardPadding = viewport.paddings.backward;
+    const { forward, backward } = viewport.paddings;
     const firstIndex = firstItem.$index;
     const lastIndex = lastItem.$index;
     const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
     const maxIndex = isFinite(buffer.absMaxIndex) ? buffer.absMaxIndex : buffer.maxIndex;
     const { hasAverageItemSizeChanged, firstIndexBuffer } = fetch;
     let index, bwdSize = 0, fwdSize = 0, itemsCount = 0;
-    adjust.bwdPaddingBefore = backwardPadding.size;
 
     // new backward padding
     for (index = minIndex; index < firstIndex; index++) {
@@ -79,7 +77,7 @@ export default class Adjust {
     }
 
     // lack of items case
-    const bufferSize = viewport.getScrollableSize() - forwardPadding.size - adjust.bwdPaddingBefore;
+    const bufferSize = viewport.getScrollableSize() - forward.size - backward.size;
     const viewportSizeDiff = viewport.getSize() - (bwdSize + bufferSize + fwdSize);
     if (viewportSizeDiff > 0) {
       if (inverse) {
@@ -92,8 +90,8 @@ export default class Adjust {
       );
     }
 
-    forwardPadding.size = fwdSize;
-    backwardPadding.size = bwdSize;
+    backward.size = bwdSize;
+    forward.size = fwdSize;
 
     scroller.logger.stat('after paddings adjustments');
     return true;
@@ -103,19 +101,16 @@ export default class Adjust {
     const { viewport, buffer, state } = scroller;
     const { adjust, fetch, render } = state;
     const { bwdAverageSizeItemsCount } = adjust;
-    const positionNew = viewport.scrollPosition;
-    const posDiff = adjust.positionBefore - positionNew;
+    let positionNew = viewport.scrollPosition;
+    let posDiff = adjust.positionBefore - positionNew;
     let negative = fetch.negativeSize;
 
+    // if scroll anchoring is in game
     if (viewport.scrollAnchoring && posDiff) {
-      const winState = state.scrollState.window;
-      if (positionNew === winState.positionToUpdate) {
-        winState.reset();
-        scroller.logger.log(() => `process window scroll preventive: sum(${positionNew}, ${posDiff})`);
-        Adjust.setScroll(scroller, posDiff);
-        scroller.logger.stat('after scroll position adjustment (window)');
-        return;
-      }
+      Adjust.setScroll(scroller, posDiff);
+      positionNew = viewport.scrollPosition;
+      posDiff = adjust.positionBefore - positionNew;
+      scroller.logger.stat('after scroll position adjustment (anchoring)');
     }
 
     // if backward padding has been changed due to average item size change

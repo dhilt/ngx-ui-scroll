@@ -6,13 +6,6 @@ import { ClipModel } from '../classes/state/clip';
 import { RenderModel } from '../classes/state/render';
 import { AdjustModel } from '../classes/state/adjust';
 
-export interface WindowScrollState {
-  delta: number;
-  positionToUpdate: number;
-
-  reset: Function;
-}
-
 export interface ScrollEventData {
   time: number;
   position: number;
@@ -24,7 +17,6 @@ export interface ScrollState {
   current: ScrollEventData | null;
 
   scrollTimer: ReturnType<typeof setTimeout> | null;
-  window: WindowScrollState;
 
   syntheticPosition: number | null;
   syntheticFulfill: boolean;

@@ -28,9 +28,6 @@ export default class Render {
 
   static processElements(scroller: Scroller): boolean {
     const { state: { fetch, render }, viewport, buffer, logger } = scroller;
-    if (fetch.isPrepend) {
-      render.positionBefore = viewport.scrollPosition;
-    }
     if (!fetch.isReplace) {
       render.sizeBefore = viewport.getScrollableSize();
       render.fwdPaddingBefore = viewport.paddings.forward.size;
@@ -43,9 +40,6 @@ export default class Render {
     }
     fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
     render.sizeAfter = viewport.getScrollableSize();
-    if (viewport.scrollAnchoring && fetch.isPrepend && !render.noSize) {
-      Render.processWindowScrollBackJump(scroller);
-    }
     logger.stat('after new items render');
     logger.log(() => render.noSize ? 'viewport size has not been changed' : void 0);
     return true;
@@ -67,24 +61,6 @@ export default class Render {
       fetch.negativeSize += item.size;
     }
     return true;
-  }
-
-  static processWindowScrollBackJump({ state, viewport, logger }: Scroller) {
-    const { scrollState: { window }, render: { positionBefore, sizeAfter, sizeBefore } } = state;
-    // if new items have been rendered in the area that is before current scroll position
-    // then this position will be updated silently in case of entire window scrollable
-    // so we need to remember the delta and to update scroll position manually right after it is changed silently
-    const inc = positionBefore >= viewport.paddings.backward.size ? 1 : -1;
-    const delta = inc * Math.abs(sizeAfter - sizeBefore);
-    const positionToUpdate = positionBefore - delta;
-    if (delta && positionToUpdate > 0) {
-      window.positionToUpdate = positionToUpdate;
-      window.delta = delta;
-      logger.log(() => {
-        const token = delta < 0 ? 'reduced' : 'increased';
-        return [`next scroll position (if ${positionToUpdate}) should be ${token} by`, Math.abs(delta)];
-      });
-    }
   }
 
 }

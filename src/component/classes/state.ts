@@ -11,6 +11,7 @@ import { Logger } from './logger';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
+import { AdjustModel } from './state/adjust';
 import { ScrollState } from './state/scroll';
 
 export class State implements IState {
@@ -29,10 +30,10 @@ export class State implements IState {
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
+  adjust: AdjustModel;
   startIndex: number;
   lastPosition: number;
-  preFetchPosition: number;
-  bwdPaddingAverageSizeItemsCount: number;
+  bwdAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
 
@@ -63,7 +64,8 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.render = new RenderModel();
-    this.bwdPaddingAverageSizeItemsCount = 0;
+    this.adjust = new AdjustModel();
+    this.bwdAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
   }

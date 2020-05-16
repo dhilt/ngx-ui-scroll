@@ -3,7 +3,9 @@ import { Item } from '../item';
 
 export class FetchModel {
   private _newItemsData: any[] | null;
+
   items: Item[];
+  positionBefore: number | null;
   firstIndexBuffer: number | null;
   lastIndexBuffer: number | null;
   firstIndex: number | null;
@@ -27,14 +29,15 @@ export class FetchModel {
 
   reset() {
     this._newItemsData = null;
-    this.simulate = false;
     this.items = [];
+    this.positionBefore = null;
     this.firstIndex = this.firstIndexBuffer = null;
     this.lastIndex = this.lastIndexBuffer = null;
     this.hasAnotherPack = false;
     this.negativeSize = 0;
     this.hasAverageItemSizeChanged = false;
     this.direction = null;
+    this.simulate = false;
     this.isPrepend = false;
     this.isReplace = false;
   }

@@ -6,14 +6,11 @@ export default class Adjust {
   static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {
-    const { workflow, state, viewport } = scroller;
-    const preAdjustPosition = viewport.scrollPosition;
+    const { workflow, state: { adjust }, viewport } = scroller;
+    adjust.positionBefore = viewport.scrollPosition;
 
     // padding-elements adjustments
-    const setPaddingsResult =
-      Adjust.setPaddings(scroller);
-
-    if (setPaddingsResult === null) {
+    if (!Adjust.setPaddings(scroller)) {
       workflow.call({
         process: Process.adjust,
         status: ProcessStatus.error,
@@ -23,11 +20,11 @@ export default class Adjust {
     }
 
     // scroll position adjustments
-    Adjust.fixScrollPosition(scroller, setPaddingsResult, preAdjustPosition);
+    Adjust.fixScrollPosition(scroller);
 
     // re-set scroll position (if changed) via animation frame
     const { scrollPosition, previousPosition } = viewport;
-    if (preAdjustPosition !== scrollPosition && previousPosition !== scrollPosition) {
+    if (adjust.positionBefore !== scrollPosition && previousPosition !== scrollPosition) {
       viewport.setPositionSafe(previousPosition, scrollPosition, () =>
          workflow.call({
           process: Process.adjust,
@@ -43,35 +40,35 @@ export default class Adjust {
     });
   }
 
-  static setPaddings(scroller: Scroller): null | number {
-    const { viewport, buffer, state: { fetch }, settings: { inverse } } = scroller;
+  static setPaddings(scroller: Scroller): boolean {
+    const { viewport, buffer, state: { adjust, fetch }, settings: { inverse } } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
     const lastItem = buffer.getLastVisibleItem();
     if (!firstItem || !lastItem) {
-      return null;
+      return false;
     }
-    const forwardPadding = viewport.paddings.forward;
-    const backwardPadding = viewport.paddings.backward;
+    const { forward, backward } = viewport.paddings;
     const firstIndex = firstItem.$index;
     const lastIndex = lastItem.$index;
     const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
     const maxIndex = isFinite(buffer.absMaxIndex) ? buffer.absMaxIndex : buffer.maxIndex;
-    const hasAverageItemSizeChanged = fetch.hasAverageItemSizeChanged;
-    let index, bwdSize = 0, fwdSize = 0, bwdPaddingAverageSizeItemsCount = 0;
+    const { hasAverageItemSizeChanged, firstIndexBuffer } = fetch;
+    let index, bwdSize = 0, fwdSize = 0, itemsCount = 0;
 
     // new backward padding
     for (index = minIndex; index < firstIndex; index++) {
       const item = buffer.cache.get(index);
       bwdSize += item ? item.size : buffer.cache.averageSize;
       if (hasAverageItemSizeChanged) {
-        bwdPaddingAverageSizeItemsCount += !item ? 1 : 0;
+        itemsCount += !item ? 1 : 0;
       }
     }
     if (hasAverageItemSizeChanged) {
-      for (index = firstIndex; index < (fetch.firstIndexBuffer as number); index++) {
-        bwdPaddingAverageSizeItemsCount += !buffer.cache.get(index) ? 1 : 0;
+      for (index = firstIndex; index < (firstIndexBuffer as number); index++) {
+        itemsCount += !buffer.cache.get(index) ? 1 : 0;
       }
     }
+    adjust.bwdAverageSizeItemsCount = itemsCount;
 
     // new forward padding
     for (index = lastIndex + 1; index <= maxIndex; index++) {
@@ -80,7 +77,7 @@ export default class Adjust {
     }
 
     // lack of items case
-    const bufferSize = viewport.getScrollableSize() - forwardPadding.size - backwardPadding.size;
+    const bufferSize = viewport.getScrollableSize() - forward.size - backward.size;
     const viewportSizeDiff = viewport.getSize() - (bwdSize + bufferSize + fwdSize);
     if (viewportSizeDiff > 0) {
       if (inverse) {
@@ -93,40 +90,38 @@ export default class Adjust {
       );
     }
 
-    forwardPadding.size = fwdSize;
-    backwardPadding.size = bwdSize;
+    backward.size = bwdSize;
+    forward.size = fwdSize;
 
     scroller.logger.stat('after paddings adjustments');
-    return bwdPaddingAverageSizeItemsCount;
+    return true;
   }
 
-  static fixScrollPosition(scroller: Scroller, bwdPaddingAverageSizeItemsCount: number, preAdjustPosition: number) {
-    const { viewport, buffer, state, state: { fetch, fetch: { items } } } = scroller;
-    const newPosition = viewport.scrollPosition;
-    const posDiff = preAdjustPosition - newPosition;
-    let { negativeSize } = fetch;
+  static fixScrollPosition(scroller: Scroller) {
+    const { viewport, buffer, state } = scroller;
+    const { adjust, fetch, render } = state;
+    const { bwdAverageSizeItemsCount } = adjust;
+    let positionNew = viewport.scrollPosition;
+    let posDiff = adjust.positionBefore - positionNew;
+    let negative = fetch.negativeSize;
 
+    // if scroll anchoring is in game
     if (viewport.scrollAnchoring && posDiff) {
-      const winState = state.scrollState.window;
-      if (newPosition === winState.positionToUpdate) {
-        winState.reset();
-        scroller.logger.log(() => `process window scroll preventive: sum(${newPosition}, ${posDiff})`);
-        Adjust.setScroll(scroller, posDiff);
-        scroller.logger.stat('after scroll position adjustment (window)');
-        return;
-      }
+      Adjust.setScroll(scroller, posDiff);
+      positionNew = viewport.scrollPosition;
+      posDiff = adjust.positionBefore - positionNew;
+      scroller.logger.stat('after scroll position adjustment (anchoring)');
     }
 
     // if backward padding has been changed due to average item size change
-    const bwdAverageItemsCountDiff = fetch.isReplace ? 0 :
-      state.bwdPaddingAverageSizeItemsCount - bwdPaddingAverageSizeItemsCount;
-    const hasBwdParamsChanged = bwdPaddingAverageSizeItemsCount > 0 || bwdAverageItemsCountDiff > 0;
+    const bwdAverageItemsCountDiff = fetch.isReplace ? 0 : state.bwdAverageSizeItemsCount - bwdAverageSizeItemsCount;
+    const hasBwdParamsChanged = bwdAverageSizeItemsCount > 0 || bwdAverageItemsCountDiff > 0;
     if (fetch.hasAverageItemSizeChanged && hasBwdParamsChanged) {
-      const _bwdPaddingAverageSize = bwdPaddingAverageSizeItemsCount * buffer.averageSize;
-      const bwdPaddingAverageSize = bwdPaddingAverageSizeItemsCount * fetch.averageItemSize;
-      const bwdPaddingAverageSizeDiff = _bwdPaddingAverageSize - bwdPaddingAverageSize;
+      const _bwdAverageSize = bwdAverageSizeItemsCount * buffer.averageSize;
+      const bwdAverageSize = bwdAverageSizeItemsCount * fetch.averageItemSize;
+      const bwdAverageSizeDiff = _bwdAverageSize - bwdAverageSize;
       const bwdAverageItemsSizeDiff = bwdAverageItemsCountDiff * fetch.averageItemSize;
-      const bwdDiff = bwdPaddingAverageSizeDiff - bwdAverageItemsSizeDiff;
+      const bwdDiff = bwdAverageSizeDiff - bwdAverageItemsSizeDiff;
       const positionDiff = posDiff + bwdDiff;
       if (positionDiff) {
         if (scroller.settings.changeOverflow) {
@@ -135,32 +130,32 @@ export default class Adjust {
         Adjust.setScroll(scroller, positionDiff);
         scroller.logger.stat('after scroll position adjustment (average)');
       }
-      state.bwdPaddingAverageSizeItemsCount = bwdPaddingAverageSizeItemsCount;
+      state.bwdAverageSizeItemsCount = bwdAverageSizeItemsCount;
     }
 
     // no negative area items
-    if (!items.length || items[0].$index >= fetch.minIndex) {
+    if (!fetch.items.length || fetch.items[0].$index >= fetch.minIndex) {
       return;
     }
 
     // if scrollable area size has not been changed during this cycle
-    if (viewport.getScrollableSize() === state.render.sizeBefore) {
+    if (viewport.getScrollableSize() === render.sizeBefore) {
       return;
     }
 
     // to fill forward padding gap in case of no minIndex
     if (!isFinite(buffer.absMinIndex)) {
-      const fwdBefore = Math.max(0, state.render.fwdPaddingBefore - viewport.offset);
+      const fwdBefore = Math.max(0, render.fwdPaddingBefore - viewport.offset);
       const fwdPaddingSizeDiff = fwdBefore - viewport.paddings.forward.size;
-      const diff = negativeSize - fwdPaddingSizeDiff;
-      negativeSize = diff < 0 ? negativeSize : Math.min(negativeSize, diff);
+      const diff = negative - fwdPaddingSizeDiff;
+      negative = diff < 0 ? negative : Math.min(negative, diff);
     }
 
-    if (negativeSize > 0) {
-      Adjust.setScroll(scroller, negativeSize);
-    } else if (negativeSize < 0) {
-      viewport.paddings.forward.size -= negativeSize;
-      viewport.scrollPosition -= negativeSize;
+    if (negative > 0) {
+      Adjust.setScroll(scroller, negative);
+    } else if (negative < 0) {
+      viewport.paddings.forward.size -= negative;
+      viewport.scrollPosition -= negative;
     }
     scroller.logger.stat('after scroll position adjustment (negative)');
   }

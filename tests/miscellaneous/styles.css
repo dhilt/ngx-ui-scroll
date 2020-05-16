@@ -8,14 +8,9 @@ html {
   line-height: 20px;
 }
 
-body {
-  overflow-anchor: none;
-}
-
 .viewport {
   width: 200px;
   height: 200px;
-  overflow-anchor: none;
   overflow-y: auto;
   display: block;
 }
@@ -23,7 +18,6 @@ body {
 .viewport-horizontal {
   width: 200px;
   height: 100px;
-  overflow-anchor: none;
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;

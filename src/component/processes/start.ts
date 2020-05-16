@@ -4,7 +4,7 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Start {
 
   static run(scroller: Scroller, process: Process, payload?: { process: Process }) {
-    const { state, state: { scrollState, fetch, clip, render }, adapter } = scroller;
+    const { state, state: { scrollState, fetch, clip, render, adjust }, adapter } = scroller;
     const processToPass = payload && payload.process || process;
 
     adapter.loopPending = true;
@@ -15,6 +15,7 @@ export default class Start {
       clip.reset();
     }
     render.reset();
+    adjust.reset();
 
     scroller.workflow.call({
       process: Process.start,

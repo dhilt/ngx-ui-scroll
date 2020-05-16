@@ -36,10 +36,12 @@
     "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
   "angularCompilerOptions": {
-    "enableResourceInlining": true,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
     "skipTemplateCodegen": true,
-    "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
+    "enableResourceInlining": true,
+    "enableIvy": false,
     "flatModuleOutFile": "ngx-ui-scroll.js",
     "flatModuleId": "ngx-ui-scroll"
   }

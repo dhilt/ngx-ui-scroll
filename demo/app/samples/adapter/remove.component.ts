@@ -106,7 +106,6 @@ doRemove(id: number) {
   width: 150px;
   height: 250px;
   overflow-y: auto;
-  overflow-anchor: none;
 }
 .item {
   font-weight: bold;

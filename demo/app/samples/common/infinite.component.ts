@@ -54,7 +54,6 @@ export class DemoInfiniteComponent {
   width: 150px;
   height: 175px;
   overflow-y: auto;
-  overflow-anchor: none;
 }
 .item {
   font-weight: bold;

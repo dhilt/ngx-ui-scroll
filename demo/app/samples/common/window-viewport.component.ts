@@ -39,11 +39,7 @@ export class DemoWindowViewportComponent {
 </div>`
   }, {
     name: DemoSourceType.Styles,
-    text: `body {
-  overflow-anchor: none;
-}
-
-.item {
+    text: `.item {
   font-weight: bold;
   height: 25px;
 }`

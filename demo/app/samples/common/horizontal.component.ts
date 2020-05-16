@@ -54,7 +54,6 @@ export class DemoHorizontalComponent {
     text: `.viewport.horizontal {
   width: 250px;
   height: 100px;
-  overflow-anchor: none;
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;

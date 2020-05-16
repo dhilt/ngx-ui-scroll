@@ -46,6 +46,7 @@
     "ui-scroll",
     "angular-ui-scroll",
     "ngx-ui-scroll",
-    "ui component"
+    "ui",
+    "directive"
   ]
 }

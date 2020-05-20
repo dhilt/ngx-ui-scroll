@@ -7,6 +7,8 @@ import {
 
 export default class Insert {
 
+  static process = Process.insert;
+
   static run(scroller: Scroller, options: AdapterInsertOptions) {
 
     const methodData = validate(options, ADAPTER_METHODS.INSERT);

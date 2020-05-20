@@ -3,6 +3,8 @@ import { Direction, Process, ProcessStatus } from '../interfaces/index';
 
 export default class PreClip {
 
+  static process = Process.preClip;
+
   static run(scroller: Scroller) {
     PreClip.prepareClip(scroller);
 

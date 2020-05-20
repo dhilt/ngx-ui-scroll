@@ -228,7 +228,7 @@ export class Adapter implements IAdapter {
   }
 
   remove(predicate: ItemsPredicate) {
-    this.logger.logAdapterMethod('clip', predicate);
+    this.logger.logAdapterMethod('remove', predicate);
     this.workflow.call({
       process: Process.remove,
       status: ProcessStatus.start,

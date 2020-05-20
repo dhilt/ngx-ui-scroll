@@ -4,6 +4,8 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class PostFetch {
 
+  static process = Process.postFetch;
+
   static run(scroller: Scroller) {
     const { workflow } = scroller;
     if (PostFetch.setItems(scroller)) {

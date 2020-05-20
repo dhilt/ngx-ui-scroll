@@ -3,6 +3,8 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Init {
 
+  static process = Process.init;
+
   static run(scroller: Scroller, process?: Process) {
     const { state, workflow, adapter } = scroller;
     const isInitial = !process || process === Process.reset || process === Process.reload;

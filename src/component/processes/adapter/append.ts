@@ -4,6 +4,8 @@ import { Process, ProcessStatus } from '../../interfaces/index';
 
 export default class Append {
 
+  static process = Process.append;
+
   static run(scroller: Scroller, process: Process, payload: { items: any, eof?: any, bof?: any }) {
     const { workflow } = scroller;
     let { items } = payload;

@@ -13,6 +13,8 @@ const { Fix: FixParams } = AdapterMethods;
 
 export default class Fix {
 
+  static process = Process.fix;
+
   static run(scroller: Scroller, options: AdapterFixOptions) {
     const { workflow } = scroller;
     const methodData = validate(options, ADAPTER_METHODS.FIX);

@@ -3,6 +3,7 @@ import { Direction, Process, ProcessStatus } from '../interfaces/index';
 
 export default class Adjust {
 
+  static process = Process.adjust;
   static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {

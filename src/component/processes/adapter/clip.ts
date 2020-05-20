@@ -4,6 +4,8 @@ import { AdapterClipOptions, Process, ProcessStatus } from '../../interfaces/ind
 
 export default class UserClip {
 
+  static process = Process.userClip;
+
   static run(scroller: Scroller, options?: AdapterClipOptions) {
     const methodData = validate(options, ADAPTER_METHODS.CLIP);
     const { backwardOnly, forwardOnly } = methodData.params;

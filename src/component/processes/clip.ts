@@ -3,6 +3,8 @@ import { Process, ProcessStatus, Direction } from '../interfaces/index';
 
 export default class Clip {
 
+  static process = Process.clip;
+
   static run(scroller: Scroller) {
     const { workflow, state: { clip } } = scroller;
     if (clip.doClip) {

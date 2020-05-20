@@ -3,6 +3,8 @@ import { Process, ProcessStatus, Direction } from '../interfaces/index';
 
 export default class PreFetch {
 
+  static process = Process.preFetch;
+
   static run(scroller: Scroller, process: Process) {
     const { workflow, buffer, state: { fetch } } = scroller;
     fetch.positionBefore = scroller.viewport.scrollPosition;

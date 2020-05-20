@@ -3,6 +3,8 @@ import { Direction, Process, ProcessStatus, ScrollEventData, ScrollerWorkflow } 
 
 export default class Scroll {
 
+  static process = Process.scroll;
+
   static run(scroller: Scroller, process: Process, payload?: { event?: Event }) {
     const { workflow, viewport, state: { scrollState } } = scroller;
     const position = viewport.scrollPosition;

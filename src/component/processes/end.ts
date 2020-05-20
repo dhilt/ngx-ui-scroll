@@ -4,6 +4,8 @@ import { Process, ProcessStatus, Direction } from '../interfaces/index';
 
 export default class End {
 
+  static process = Process.end;
+
   static run(scroller: Scroller, process: Process, payload: any = {}) {
     const { workflow, state, adapter } = scroller;
     const { error } = payload;

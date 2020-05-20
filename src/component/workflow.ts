@@ -113,12 +113,12 @@ export class Workflow {
   }
 
   runProcess() {
-    return (process: any) =>
+    return ({ run, process, name }: any) =>
       (...args: any[]) => {
         if (this.scroller.settings.logProcessRun) {
-          this.scroller.logger.log(() => ['run', process.name, ...args]);
+          this.scroller.logger.log(() => ['run', process || name, ...args]);
         }
-        process.run(this.scroller, ...args);
+        run(this.scroller, ...args);
       };
   }
 

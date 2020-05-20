@@ -4,6 +4,8 @@ import { Item } from '../classes/item';
 
 export default class Render {
 
+  static process = Process.render;
+
   static run(scroller: Scroller) {
     const { workflow, state: { clip, render } } = scroller;
     scroller.logger.stat('before new items render');

@@ -5,6 +5,8 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Fetch {
 
+  static process = Process.fetch;
+
   static run(scroller: Scroller) {
     const { workflow } = scroller;
 

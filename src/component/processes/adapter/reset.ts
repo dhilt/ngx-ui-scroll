@@ -5,6 +5,8 @@ import { Datasource } from '../../classes/datasource';
 
 export default class Reset {
 
+  static process = Process.reset;
+
   static run(scroller: Scroller, params: IDatasourceOptional | null) {
     const { datasource, buffer, viewport: { paddings } } = scroller;
 

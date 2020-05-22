@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
-import { takeUntil, filter, first } from 'rxjs/operators';
+import { takeUntil, filter, take } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
@@ -80,7 +80,7 @@ export class Adapter implements IAdapter {
       new Promise(resolve => {
         this.pending$.pipe(
           filter(pending => !pending),
-          first()
+          take(1)
         ).subscribe(() => resolve());
         method.apply(this, args);
       });

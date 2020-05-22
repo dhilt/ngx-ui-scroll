@@ -34,7 +34,7 @@ const configListBad = [{
 }];
 
 const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (done: Function) => {
-  const { buffer } = misc.scroller;
+  const { buffer, state } = misc.scroller;
   const minIndexToRemove = getMin(config.custom.remove);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
@@ -45,7 +45,7 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (d
         removeItems(result, config.custom.remove)
       );
       // remove items from the UiScroll
-      misc.datasource.adapter.remove(item =>
+      misc.adapter.remove(item =>
         config.custom.remove.some((i: number) =>
           i === (byId ? item.data.id : item.$index)
         )
@@ -65,7 +65,7 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (d
         expect(misc.getElementText(i)).toEqual(`${i} : item #${i + offset}`);
       }
       // no clip before/after remove
-      expect(misc.scroller.state.clip.callCount).toEqual(1);
+      expect(state.clip.callCount).toEqual(1);
       done();
     }
   });
@@ -76,7 +76,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
     if (misc.workflow.cyclesDone === 1) {
       const innerLoopCount = misc.scroller.state.innerLoopCount;
       // call remove with wrong predicate
-      misc.datasource.adapter.remove(config.custom.predicate);
+      misc.adapter.remove(config.custom.predicate);
       setTimeout(() => {
         expect(misc.workflow.cyclesDone).toEqual(1);
         expect(misc.scroller.state.innerLoopCount).toEqual(innerLoopCount);

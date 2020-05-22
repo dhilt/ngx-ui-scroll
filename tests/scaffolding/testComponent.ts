@@ -23,7 +23,7 @@ export class ScrollerTestComponent implements TestComponentInterface {
     private sanitizer: DomSanitizer,
     datasourceService: DatasourceService
   ) {
-    this.datasource = datasourceService as IDatasource;
+    this.datasource = datasourceService;
   }
 
   getItemStyle(item: any) {

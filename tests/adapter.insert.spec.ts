@@ -108,10 +108,9 @@ describe('Adapter Insert Spec', () => {
   const doCheck = (
     prevData: ICheckData, misc: Misc, config: TestBedConfig, shouldInsert: boolean, dynamic?: boolean
   ) => {
-    const { scroller: { datasource: { adapter } } } = misc;
     const { before, decrease, amount, index } = config.custom;
     const newData = getCheckData(misc);
-    expect(adapter.isLoading).toEqual(false);
+    expect(misc.adapter.isLoading).toEqual(false);
     if (!dynamic) {
       expect(newData.bufferSize).toEqual(prevData.bufferSize + (shouldInsert ? amount : 0));
     }
@@ -146,7 +145,7 @@ describe('Adapter Insert Spec', () => {
   const shouldCheckStaticProcess = (
     config: TestBedConfig, shouldInsert: boolean, callback?: Function
 ) => (misc: Misc) => (done: any) => {
-    const { datasource: { adapter } } = misc.scroller;
+    const { adapter } = misc;
     const { before, decrease, amount, index } = config.custom;
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       if (misc.workflow.cyclesDone !== 1) {
@@ -193,20 +192,19 @@ describe('Adapter Insert Spec', () => {
   const shouldCheckDynamicProcess = (
     config: TestBedConfig, shouldInsert: boolean
   ) => (misc: Misc) => (done: any) => {
-    const { datasource: { adapter } } = misc.scroller;
     const { before, decrease, amount, index } = config.custom;
     const doScroll = (dataToCheck: ICheckData) => {
       misc.scrollMin();
       misc.scrollMax();
       let isLoadingCount = 0;
       let spy: any;
-      const sub = adapter.isLoading$.subscribe((isLoading) => {
+      const sub = misc.adapter.isLoading$.subscribe((isLoading) => {
         if (isLoading) {
           return;
         }
         if (isLoadingCount === 0) {
           misc.scrollMin();
-          spy = spyOn(misc.datasource, 'get').and.callThrough();
+          spy = misc.spyOnGet();
         } else if (isLoadingCount === 1) {
           sub.unsubscribe();
           expect(spy.calls.all()[0].args[0]).toBe(MIN - (decrease ? amount : 0));

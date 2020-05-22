@@ -106,7 +106,7 @@ describe('Adapter Append-Prepend Spec', () => {
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
             expect(paddings[direction].size).toEqual(0);
-            misc.scroller.datasource.adapter[token](items);
+            misc.adapter[token](items);
             expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
           } else {
             expect(viewport.getScrollableSize()).toEqual(max * itemSize);
@@ -130,7 +130,7 @@ describe('Adapter Append-Prepend Spec', () => {
             expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
             expect(paddings[oppositeDirection].size).toEqual(0);
             const paddingSize = paddings[direction].size;
-            misc.scroller.datasource.adapter[token](items, true);
+            misc.adapter[token](items, true);
             expect(viewport.getScrollableSize()).toEqual(max * itemSize);
             expect(paddings[direction].size).toEqual(paddingSize + (items.length * itemSize));
             if (isAppend) {
@@ -162,7 +162,7 @@ describe('Adapter Append-Prepend Spec', () => {
             const itemSize = misc.getItemSize();
             if (misc.workflow.cyclesDone === 1) {
               expect(viewport.getScrollableSize()).toEqual(templateSize);
-              misc.scroller.datasource.adapter[token](items, virtualize);
+              misc.adapter[token](items, virtualize);
             } else {
               const viewportSize = Math.max(_amount * itemSize, templateSize);
               const scrollPosition = isAppend ? 0 : Math.min(_amount * itemSize, templateSize);

@@ -53,8 +53,6 @@ export class Adapter implements IAdapter {
   isLoading$: Subject<boolean>;
   loopPending: boolean;
   loopPending$: Subject<boolean>;
-  cyclePending: boolean;
-  cyclePending$: Subject<boolean>;
   firstVisible: ItemAdapter;
   firstVisible$: BehaviorSubject<ItemAdapter>;
   lastVisible: ItemAdapter;

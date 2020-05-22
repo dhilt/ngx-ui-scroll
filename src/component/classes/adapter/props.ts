@@ -37,12 +37,6 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   },
   {
     type: Prop.Scalar,
-    name: 'cyclePending',
-    value: false,
-    observable: 'cyclePending$'
-  },
-  {
-    type: Prop.Scalar,
     name: 'firstVisible',
     value: nullItem,
     observable: 'firstVisible$',
@@ -131,11 +125,6 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Prop.Observable,
     name: 'loopPending$',
-    value: new Subject<boolean>()
-  },
-  {
-    type: Prop.Observable,
-    name: 'cyclePending$',
     value: new Subject<boolean>()
   },
   {

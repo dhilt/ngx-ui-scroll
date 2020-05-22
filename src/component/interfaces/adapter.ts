@@ -58,8 +58,6 @@ export interface IAdapter {
   readonly isLoading$: Subject<boolean>;
   readonly loopPending: boolean;
   readonly loopPending$: Subject<boolean>;
-  readonly cyclePending: boolean;
-  readonly cyclePending$: Subject<boolean>;
   readonly firstVisible: ItemAdapter;
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;

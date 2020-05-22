@@ -1,5 +1,5 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { takeUntil, filter, first } from 'rxjs/operators';
 
 import { Scroller } from '../scroller';
 import { Logger } from './logger';
@@ -65,9 +65,31 @@ export class Adapter implements IAdapter {
   eof$: Subject<boolean>;
   itemsCount: number;
 
+  private pending$: Subject<boolean>;
+  private _pending: boolean;
+  set selfPending (value: boolean) {
+    this._pending = value;
+    this.pending$.next(value);
+  }
+  get selfPending (): boolean {
+    return this._pending;
+  }
+
+  private getPromisifiedMethod(method: Function) {
+    return (...args: any[]) =>
+      new Promise(resolve => {
+        this.pending$.pipe(
+          filter(pending => !pending),
+          first()
+        ).subscribe(() => resolve());
+        method.apply(this, args);
+      });
+  }
+
   constructor(publicContext: IAdapter | null, getWorkflow: WorkflowGetter, logger: Logger) {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
+    this.pending$ = new Subject<boolean>();
 
     // restore original values from the publicContext if present
     const adapterProps = publicContext
@@ -150,13 +172,22 @@ export class Adapter implements IAdapter {
         Object.defineProperty(publicContext, name, {
           get: () => {
             const value = (this as any)[name];
-            return type === AdapterPropType.Function ? value.bind(this) : value;
+            switch (type) {
+              case AdapterPropType.Function:
+                return value.bind(this);
+              case AdapterPropType.FunctionPromise:
+                return this.getPromisifiedMethod(value);
+              default:
+                return value;
+            }
           }
         })
       );
   }
 
-  init(state: State, buffer: Buffer, logger: Logger, dispose$: Subject<void>) {
+  init(
+    state: State, buffer: Buffer, logger: Logger, dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessStatus>
+  ) {
     const _get = (name: string) => {
       switch (name) {
         case 'version':
@@ -179,9 +210,21 @@ export class Adapter implements IAdapter {
     buffer.bofSource.pipe(takeUntil(dispose$)).subscribe(value => this.bof = value);
     this.eof = buffer.eof;
     buffer.eofSource.pipe(takeUntil(dispose$)).subscribe(value => this.eof = value);
+
+    // self-pending
+    if (onAdapterRun$) {
+      onAdapterRun$.pipe(
+        filter(status => status === ProcessStatus.start)
+      ).subscribe(() => this.selfPending = true);
+      onAdapterRun$.pipe(
+        filter(status => status === ProcessStatus.done || status === ProcessStatus.error)
+      ).subscribe(() => this.selfPending = false);
+    }
   }
 
-  dispose() { }
+  dispose() {
+    this.pending$.complete();
+   }
 
   reset(datasource?: IDatasourceOptional) {
     this.logger.logAdapterMethod('reset', datasource);
@@ -245,7 +288,7 @@ export class Adapter implements IAdapter {
     });
   }
 
-  insert(options: AdapterInsertOptions) {
+  insert(options: AdapterInsertOptions): any {
     this.logger.logAdapterMethod('insert', options);
     this.workflow.call({
       process: Process.insert,

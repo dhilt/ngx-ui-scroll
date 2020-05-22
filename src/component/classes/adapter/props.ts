@@ -109,7 +109,7 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.FunctionPromise,
     name: 'insert',
     value: noop
   },

@@ -6,6 +6,7 @@ import { IDatasourceOptional } from './datasource';
 export enum AdapterPropType {
   Scalar,
   Function,
+  FunctionPromise,
   Observable
 }
 
@@ -75,7 +76,7 @@ export interface IAdapter {
   check: () => void;
   remove: (predicate: ItemsPredicate) => void;
   clip: (options?: AdapterClipOptions) => void;
-  insert: (options: AdapterInsertOptions) => void;
+  insert: (options: AdapterInsertOptions) => Promise<void>;
   showLog: () => void;
   fix: (options: AdapterFixOptions) => void; // experimental
 }

@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter, map } from 'rxjs/operators';
 
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
@@ -57,7 +57,13 @@ export class Workflow {
   }
 
   init() {
-    this.scroller.init(this.dispose$);
+    const onAdapterRun$ = this.process$.pipe(
+      takeUntil(this.dispose$),
+      filter(({ process }) => process.startsWith('adapter')),
+      map((({ status }) => status))
+    );
+
+    this.scroller.init(this.dispose$, onAdapterRun$);
     this.isInitialized = true;
 
     // propagate item list to the view
@@ -103,6 +109,7 @@ export class Workflow {
       ]);
     }
     this.scroller.logger.logProcess(data);
+
     if (process === Process.end) {
       this.scroller.finalize();
     }
@@ -162,6 +169,7 @@ export class Workflow {
     state.isInitialWorkflowCycle = false;
     adapter.cyclePending = false;
     adapter.isLoading = false;
+    adapter.selfPending = false;
     this.finalize();
   }
 

@@ -55,8 +55,11 @@ export default class Insert {
     buffer.insertItems(itemsToInsert, from, addition, decrement);
     scroller.logger.log(() => {
       const newBufferLimit = decrement ? buffer.absMinIndex : buffer.absMaxIndex;
+      const isChange = bufferLimit !== newBufferLimit;
       const token = decrement ? 'absMinIndex' : 'absMaxIndex';
-      return `buffer.${token} value has been changed from ${bufferLimit} to ${newBufferLimit}`;
+      return `buffer.${token} value ` + (
+        isChange ? `has been changed from ${bufferLimit} to ${newBufferLimit}` : `has not been changed`
+      );
     });
     fetch.insert(itemsToInsert);
     fetch.firstIndexBuffer = buffer.firstIndex;

@@ -167,8 +167,8 @@ export class Workflow {
     this.scroller.logger.logCycle(false);
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
-    adapter.isLoading = false;
     adapter.selfPending = false;
+    adapter.isLoading = false;
     this.finalize();
   }
 

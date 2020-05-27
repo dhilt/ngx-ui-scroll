@@ -64,13 +64,13 @@ export class Adapter implements IAdapter {
   itemsCount: number;
 
   private pending$: Subject<boolean>;
-  private _pending: boolean;
+  private pending: boolean;
   set selfPending (value: boolean) {
-    this._pending = value;
+    this.pending = value;
     this.pending$.next(value);
   }
   get selfPending (): boolean {
-    return this._pending;
+    return this.pending;
   }
 
   private getPromisifiedMethod(method: Function) {

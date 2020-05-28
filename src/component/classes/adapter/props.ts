@@ -98,7 +98,7 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.FunctionPromise,
     name: 'clip',
     value: noop
   },

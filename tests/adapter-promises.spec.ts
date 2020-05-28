@@ -21,68 +21,117 @@ const configBase: TestBedConfig = {
 
 const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const { workflow } = misc;
-  const { options, immediate, error } = config.custom;
+  const { method, options, newWFCycle, async, error } = config.custom as ICustom;
   misc.adapter.isLoading$
     .pipe(filter(v => !v), take(1))
     .subscribe(() => {
-      misc.adapter.insert(options).then(() => {
-        expect(workflow.cyclesDone).toEqual(immediate ? 1 : 2);
+      expect(workflow.cyclesDone).toEqual(1);
+      (misc.adapter as any)[method](options).then(() => {
+        expect(workflow.cyclesDone).toEqual(newWFCycle ? 2 : 1);
         if (error) {
           expect(workflow.errors.length).toEqual(1);
-          expect(workflow.errors[0].process).toEqual('adapter.insert');
+          expect(workflow.errors[0].process).toEqual(`adapter.${method}`);
         }
         done();
       });
-      expect(workflow.cyclesDone).toEqual(1);
+      expect(workflow.cyclesDone).toEqual(!async && newWFCycle ? 2 : 1);
     });
 };
+
+interface ICustom {
+  method: string; // Adapter method name
+  options: any; // Adapter method params
+  async: boolean; // produces asynchronicity
+  newWFCycle: boolean; // produces additional Workflow cycle
+  error: boolean; // produces error
+}
 
 describe('Adapter Promises Spec', () => {
 
   describe('Promisified method', () => {
-    const delayedConfig = {
-      ...configBase, custom: {
+    const delayedConfigList = [{
+      ...configBase,
+      custom: {
+        method: 'insert',
         options: {
           after: ({ $index }) => $index === 5,
           items: [generateItem(5 + 0.1)]
         } as AdapterInsertOptions,
-        immediate: false
-      }
-    };
-    const immediateConfigSync = {
+        newWFCycle: true,
+        async: true
+      } as ICustom
+    }];
+
+    const immediateConfigSyncList = [{
       ...configBase, custom: {
+        method: 'insert',
         options: {
           after: ({ $index }) => $index === 55,
           items: [generateItem(55 + 0.1)]
         } as AdapterInsertOptions,
-        immediate: true
-      }
-    };
-    const immediateConfigError = {
-      ...configBase, custom: {
+        newWFCycle: false,
+        async: false
+      } as ICustom
+    }, {
+      ...configBase,
+      datasourceSettings: {
+        ...configBase.datasourceSettings,
+        bufferSize: 1 // clip will be skipped
+      },
+      custom: {
+        method: 'clip',
+        options: void 0,
+        newWFCycle: true,
+        async: false
+      } as ICustom
+    }, {
+      ...configBase,
+      datasourceSettings: {
+        ...configBase.datasourceSettings,
+        bufferSize: 40 // clip will happen
+      },
+      custom: {
+        method: 'clip',
+        options: void 0,
+        newWFCycle: true,
+        async: false
+      } as ICustom
+    }];
+
+    const immediateConfigErrorList = [{
+      ...configBase,
+      custom: {
+        method: 'insert',
         options: 'error',
-        immediate: true,
+        newWFCycle: false,
+        async: false,
         error: true
-      }
-    };
+      } as ICustom
+    }];
 
-    makeTest({
-      config: delayedConfig,
-      title: 'should be resolved after the Workflow is stopped',
-      it: checkPromisifiedMethod(delayedConfig)
-    });
+    delayedConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: `should resolve "${config.custom.method}" asynchronously`,
+        it: checkPromisifiedMethod(config)
+      })
+    );
 
-    makeTest({
-      config: immediateConfigSync,
-      title: 'should be resolved immediately (by no async processes)',
-      it: checkPromisifiedMethod(immediateConfigSync)
-    });
+    immediateConfigSyncList.forEach(config =>
+      makeTest({
+        config,
+        title: `should resolve "${config.custom.method}" immediately by no async processes`,
+        it: checkPromisifiedMethod(config)
+      })
+    );
 
-    makeTest({
-      config: immediateConfigError,
-      title: 'should be resolved immediately (by error)',
-      it: checkPromisifiedMethod(immediateConfigError)
-    });
+    immediateConfigErrorList.forEach(config =>
+      makeTest({
+        config,
+        title: `should resolve "${config.custom.method}" immediately due to error`,
+        it: checkPromisifiedMethod(config)
+      })
+    );
   });
 
 });

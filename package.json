@@ -76,7 +76,7 @@
     "tsickle": "0.38.1",
     "tslint": "^5.19.0",
     "tslint-angular": "^3.0.2",
-    "typescript": "3.8.2",
+    "typescript": "3.6.5",
     "uglify-js": "^3.9.3",
     "webpack": "^4.43.0",
     "webpack-filter-warnings-plugin": "^1.2.1"

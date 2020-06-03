@@ -3,7 +3,7 @@ import { filter, take } from 'rxjs/operators';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
-import { AdapterInsertOptions, AdapterAppendOptions } from '../src/component/interfaces';
+import { AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate } from '../src/component/interfaces';
 
 const ITEM_SIZE = 20;
 
@@ -41,6 +41,31 @@ const delayedConfigList = [{
 }, {
   ...configBase,
   custom: {
+    method: 'prepend',
+    options: {
+      items: [generateItem(100.1)]
+    } as AdapterPrependOptions,
+    newWFCycle: true,
+    async: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'check',
+    newWFCycle: true,
+    async: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'remove',
+    options: (({ $index }) => $index > 1) as ItemsPredicate,
+    newWFCycle: true,
+    async: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
     method: 'insert',
     options: {
       after: ({ $index }) => $index === 5,
@@ -59,6 +84,32 @@ const immediateConfigSyncList = [{
       items: [generateItem(100.1)],
       eof: true
     } as AdapterAppendOptions,
+    newWFCycle: false,
+    async: false
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'prepend',
+    options: {
+      items: [generateItem(100.1)],
+      bof: true
+    } as AdapterAppendOptions,
+    newWFCycle: false,
+    async: false
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'check',
+    newWFCycle: false,
+    async: false
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'remove',
+    options: (({ $index }) => $index > 100) as ItemsPredicate,
     newWFCycle: false,
     async: false
   } as ICustom
@@ -112,6 +163,26 @@ const immediateConfigErrorList = [{
 }, {
   ...configBase,
   custom: {
+    method: 'prepend',
+    options: {
+      items: 'error'
+    },
+    newWFCycle: false,
+    async: false,
+    error: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'remove',
+    options: 'error',
+    newWFCycle: false,
+    async: false,
+    error: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
     method: 'insert',
     options: 'error',
     newWFCycle: false,
@@ -127,6 +198,12 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
     .pipe(filter(v => !v), take(1))
     .subscribe(() => {
       expect(workflow.cyclesDone).toEqual(1);
+      if (method === 'check' && async) {
+        misc.adapter.fix({
+          updater: ({ $index }) =>
+            misc.getElement($index).style.height = 5 + 'px'
+        });
+      }
       (misc.adapter as any)[method](options).then(() => {
         expect(workflow.cyclesDone).toEqual(newWFCycle ? 2 : 1);
         if (error) {

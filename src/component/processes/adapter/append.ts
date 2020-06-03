@@ -13,9 +13,9 @@ export default class Append {
     if (!methodData.isValid) {
       scroller.logger.log(() => methodData.showErrors());
       scroller.workflow.call({
-        process: Process.append,
+        process,
         status: ProcessStatus.error,
-        payload: { error: `Wrong argument of the "Adapter.append" method call` }
+        payload: { error: `Wrong argument of the "${process}" method call` }
       });
       return;
     }

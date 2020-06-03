@@ -272,7 +272,7 @@ export class Adapter implements IAdapter {
     });
   }
 
-  check() {
+  check(): any {
     this.logger.logAdapterMethod('check');
     this.workflow.call({
       process: Process.check,
@@ -280,7 +280,7 @@ export class Adapter implements IAdapter {
     });
   }
 
-  remove(predicate: ItemsPredicate) {
+  remove(predicate: ItemsPredicate): any {
     this.logger.logAdapterMethod('remove', predicate);
     this.workflow.call({
       process: Process.remove,

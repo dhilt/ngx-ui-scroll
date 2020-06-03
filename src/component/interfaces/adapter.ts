@@ -29,14 +29,14 @@ export interface ItemAdapter {
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
 export type ItemsLooper = (item: ItemAdapter) => any;
 
-export interface AdapterPrependOptions {
-  items: any[];
-  bof?: boolean;
-}
-
 export interface AdapterAppendOptions {
   items: any[];
   eof?: boolean;
+}
+
+export interface AdapterPrependOptions {
+  items: any[];
+  bof?: boolean;
 }
 
 export interface AdapterClipOptions {
@@ -83,8 +83,8 @@ export interface IAdapter {
   append(items: any, eof?: boolean): Promise<void>; // old signature
   prepend(options: AdapterPrependOptions): Promise<void>;
   prepend(items: any, bof?: boolean): Promise<void>; // old signature
-  check(): void;
-  remove(predicate: ItemsPredicate): void;
+  check(): Promise<void>;
+  remove(predicate: ItemsPredicate): Promise<void>;
   clip(options?: AdapterClipOptions): Promise<void>;
   insert(options: AdapterInsertOptions): Promise<void>;
   showLog(): void;

@@ -29,6 +29,16 @@ export interface ItemAdapter {
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
 export type ItemsLooper = (item: ItemAdapter) => any;
 
+export interface AdapterPrependOptions {
+  items: any[];
+  bof?: boolean;
+}
+
+export interface AdapterAppendOptions {
+  items: any[];
+  eof?: boolean;
+}
+
 export interface AdapterClipOptions {
   forwardOnly?: boolean;
   backwardOnly?: boolean;
@@ -67,14 +77,16 @@ export interface IAdapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   readonly itemsCount: number;
-  reset: (datasource?: IDatasourceOptional) => void;
-  reload: (reloadIndex?: number | string) => void;
-  append: (items: any, eof?: boolean) => void;
-  prepend: (items: any, bof?: boolean) => void;
-  check: () => void;
-  remove: (predicate: ItemsPredicate) => void;
-  clip: (options?: AdapterClipOptions) => void;
-  insert: (options: AdapterInsertOptions) => Promise<void>;
-  showLog: () => void;
-  fix: (options: AdapterFixOptions) => void; // experimental
+  reset(datasource?: IDatasourceOptional): void;
+  reload(reloadIndex?: number | string): void;
+  append(options: AdapterAppendOptions): Promise<void>;
+  append(items: any, eof?: boolean): Promise<void>; // old signature
+  prepend(options: AdapterPrependOptions): Promise<void>;
+  prepend(items: any, bof?: boolean): Promise<void>; // old signature
+  check(): void;
+  remove(predicate: ItemsPredicate): void;
+  clip(options?: AdapterClipOptions): Promise<void>;
+  insert(options: AdapterInsertOptions): Promise<void>;
+  showLog(): void;
+  fix(options: AdapterFixOptions): void; // experimental
 }

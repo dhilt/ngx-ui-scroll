@@ -15,6 +15,8 @@ import {
   ProcessStatus,
   ItemAdapter,
   ItemsPredicate,
+  AdapterPrependOptions,
+  AdapterAppendOptions,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
@@ -32,6 +34,14 @@ const fixScalarWanted = (name: string, container: { [key: string]: boolean }) =>
   if (scalar) {
     container[scalar.name] = true;
   }
+};
+
+const convertAppendArgs = (isAppend: boolean, options: any, eof?: boolean) => {
+  if (!(typeof options === 'object' && options.hasOwnProperty('items'))) {
+    const items = !Array.isArray(options) ? [options] : options;
+    options = isAppend ? { items, eof } : { items, bof: eof };
+  }
+  return options;
 };
 
 export class Adapter implements IAdapter {
@@ -242,21 +252,23 @@ export class Adapter implements IAdapter {
     });
   }
 
-  append(items: any, eof?: boolean) {
-    this.logger.logAdapterMethod('append', items, eof);
+  append(options: AdapterAppendOptions | any, eof?: boolean): any {
+    options = convertAppendArgs(true, options, eof); // support old signature
+    this.logger.logAdapterMethod('append', options.items, options.eof);
     this.workflow.call({
       process: Process.append,
       status: ProcessStatus.start,
-      payload: { items, eof }
+      payload: options
     });
   }
 
-  prepend(items: any, bof?: boolean) {
-    this.logger.logAdapterMethod('prepend', items, bof);
+  prepend(options: AdapterPrependOptions | any, bof?: boolean): any {
+    options = convertAppendArgs(false, options, bof); // support old signature
+    this.logger.logAdapterMethod('prepend', options.items, options.bof);
     this.workflow.call({
       process: Process.prepend,
       status: ProcessStatus.start,
-      payload: { items, bof }
+      payload: options
     });
   }
 
@@ -277,7 +289,7 @@ export class Adapter implements IAdapter {
     });
   }
 
-  clip(options?: AdapterClipOptions) {
+  clip(options?: AdapterClipOptions): any {
     this.logger.logAdapterMethod('clip', options);
     this.workflow.call({
       process: Process.userClip,

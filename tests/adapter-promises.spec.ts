@@ -3,7 +3,7 @@ import { filter, take } from 'rxjs/operators';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
-import { AdapterInsertOptions } from '../src/component/interfaces';
+import { AdapterInsertOptions, AdapterAppendOptions } from '../src/component/interfaces';
 
 const ITEM_SIZE = 20;
 
@@ -16,8 +16,109 @@ const configBase: TestBedConfig = {
     padding: 0.5,
     adapter: true
   },
+  // datasourceDevSettings: { debug: true },
   templateSettings: { viewportHeight: ITEM_SIZE * 10 }
 };
+
+interface ICustom {
+  method: string; // Adapter method name
+  options: any; // Adapter method params
+  async: boolean; // produces asynchronicity
+  newWFCycle: boolean; // produces additional Workflow cycle
+  error: boolean; // produces error
+}
+
+const delayedConfigList = [{
+  ...configBase,
+  custom: {
+    method: 'append',
+    options: {
+      items: [generateItem(100.1)]
+    } as AdapterAppendOptions,
+    newWFCycle: true,
+    async: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'insert',
+    options: {
+      after: ({ $index }) => $index === 5,
+      items: [generateItem(5 + 0.1)]
+    } as AdapterInsertOptions,
+    newWFCycle: true,
+    async: true
+  } as ICustom
+}];
+
+const immediateConfigSyncList = [{
+  ...configBase,
+  custom: {
+    method: 'append',
+    options: {
+      items: [generateItem(100.1)],
+      eof: true
+    } as AdapterAppendOptions,
+    newWFCycle: false,
+    async: false
+  } as ICustom
+}, {
+  ...configBase, custom: {
+    method: 'insert',
+    options: {
+      after: ({ $index }) => $index === 55,
+      items: [generateItem(55 + 0.1)]
+    } as AdapterInsertOptions,
+    newWFCycle: false,
+    async: false
+  } as ICustom
+}, {
+  ...configBase,
+  datasourceSettings: {
+    ...configBase.datasourceSettings,
+    bufferSize: 1 // clip will be skipped
+  },
+  custom: {
+    method: 'clip',
+    options: void 0,
+    newWFCycle: true,
+    async: false
+  } as ICustom
+}, {
+  ...configBase,
+  datasourceSettings: {
+    ...configBase.datasourceSettings,
+    bufferSize: 40 // clip will happen
+  },
+  custom: {
+    method: 'clip',
+    options: void 0,
+    newWFCycle: true,
+    async: false
+  } as ICustom
+}];
+
+const immediateConfigErrorList = [{
+  ...configBase,
+  custom: {
+    method: 'append',
+    options: {
+      items: 'error'
+    },
+    newWFCycle: false,
+    async: false,
+    error: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'insert',
+    options: 'error',
+    newWFCycle: false,
+    async: false,
+    error: true
+  } as ICustom
+}];
 
 const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const { workflow } = misc;
@@ -38,77 +139,9 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
     });
 };
 
-interface ICustom {
-  method: string; // Adapter method name
-  options: any; // Adapter method params
-  async: boolean; // produces asynchronicity
-  newWFCycle: boolean; // produces additional Workflow cycle
-  error: boolean; // produces error
-}
-
 describe('Adapter Promises Spec', () => {
 
   describe('Promisified method', () => {
-    const delayedConfigList = [{
-      ...configBase,
-      custom: {
-        method: 'insert',
-        options: {
-          after: ({ $index }) => $index === 5,
-          items: [generateItem(5 + 0.1)]
-        } as AdapterInsertOptions,
-        newWFCycle: true,
-        async: true
-      } as ICustom
-    }];
-
-    const immediateConfigSyncList = [{
-      ...configBase, custom: {
-        method: 'insert',
-        options: {
-          after: ({ $index }) => $index === 55,
-          items: [generateItem(55 + 0.1)]
-        } as AdapterInsertOptions,
-        newWFCycle: false,
-        async: false
-      } as ICustom
-    }, {
-      ...configBase,
-      datasourceSettings: {
-        ...configBase.datasourceSettings,
-        bufferSize: 1 // clip will be skipped
-      },
-      custom: {
-        method: 'clip',
-        options: void 0,
-        newWFCycle: true,
-        async: false
-      } as ICustom
-    }, {
-      ...configBase,
-      datasourceSettings: {
-        ...configBase.datasourceSettings,
-        bufferSize: 40 // clip will happen
-      },
-      custom: {
-        method: 'clip',
-        options: void 0,
-        newWFCycle: true,
-        async: false
-      } as ICustom
-    }];
-
-    const immediateConfigErrorList = [{
-      ...configBase,
-      custom: {
-        method: 'insert',
-        options: 'error',
-        newWFCycle: false,
-        async: false,
-        error: true
-      } as ICustom
-    }];
-
     delayedConfigList.forEach(config =>
       makeTest({
         config,

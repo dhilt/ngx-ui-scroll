@@ -234,7 +234,7 @@ export class Adapter implements IAdapter {
     this.pending$.complete();
    }
 
-  reset(datasource?: IDatasourceOptional) {
+  reset(datasource?: IDatasourceOptional): any {
     this.logger.logAdapterMethod('reset', datasource);
     this.workflow.call({
       process: Process.reset,
@@ -243,7 +243,7 @@ export class Adapter implements IAdapter {
     });
   }
 
-  reload(reloadIndex?: number | string) {
+  reload(reloadIndex?: number | string): any {
     this.logger.logAdapterMethod('reload', reloadIndex);
     this.workflow.call({
       process: Process.reload,
@@ -307,17 +307,17 @@ export class Adapter implements IAdapter {
     });
   }
 
-  showLog() {
-    this.logger.logAdapterMethod('showLog');
-    this.logger.logForce();
-  }
-
-  fix(options: AdapterFixOptions) {
+  fix(options: AdapterFixOptions): any {
     this.logger.logAdapterMethod('fix', options);
     this.workflow.call({
       process: Process.fix,
       status: ProcessStatus.start,
       payload: options
     });
+  }
+
+  showLog() {
+    this.logger.logAdapterMethod('showLog');
+    this.logger.logForce();
   }
 }

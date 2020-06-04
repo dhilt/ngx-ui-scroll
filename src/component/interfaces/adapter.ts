@@ -77,8 +77,8 @@ export interface IAdapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   readonly itemsCount: number;
-  reset(datasource?: IDatasourceOptional): void;
-  reload(reloadIndex?: number | string): void;
+  reset(datasource?: IDatasourceOptional): Promise<void>;
+  reload(reloadIndex?: number | string): Promise<void>;
   append(options: AdapterAppendOptions): Promise<void>;
   append(items: any, eof?: boolean): Promise<void>; // old signature
   prepend(options: AdapterPrependOptions): Promise<void>;
@@ -87,6 +87,6 @@ export interface IAdapter {
   remove(predicate: ItemsPredicate): Promise<void>;
   clip(options?: AdapterClipOptions): Promise<void>;
   insert(options: AdapterInsertOptions): Promise<void>;
+  fix(options: AdapterFixOptions): Promise<void>; // experimental
   showLog(): void;
-  fix(options: AdapterFixOptions): void; // experimental
 }

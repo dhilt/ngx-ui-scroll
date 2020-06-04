@@ -68,12 +68,12 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     onDemand: true
   },
   {
-    type: Prop.Function,
+    type: Prop.FunctionPromise,
     name: 'reset',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.FunctionPromise,
     name: 'reload',
     value: noop
   },
@@ -108,13 +108,13 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     value: noop
   },
   {
-    type: Prop.Function,
-    name: 'showLog',
+    type: Prop.FunctionPromise,
+    name: 'fix',
     value: noop
   },
   {
     type: Prop.Function,
-    name: 'fix',
+    name: 'showLog',
     value: noop
   },
   {

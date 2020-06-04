@@ -3,7 +3,7 @@ import { filter, take } from 'rxjs/operators';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
-import { AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate } from '../src/component/interfaces';
+import { AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions } from '../src/component/interfaces';
 
 const ITEM_SIZE = 20;
 
@@ -29,6 +29,22 @@ interface ICustom {
 }
 
 const delayedConfigList = [{
+  ...configBase,
+  custom: {
+    method: 'reset',
+    options: void 0,
+    newWFCycle: true,
+    async: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'reload',
+    options: void 0,
+    newWFCycle: true,
+    async: true
+  } as ICustom
+}, {
   ...configBase,
   custom: {
     method: 'append',
@@ -147,6 +163,16 @@ const immediateConfigSyncList = [{
     newWFCycle: true,
     async: false
   } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'fix',
+    options: {
+      minIndex: -99
+    } as AdapterFixOptions,
+    newWFCycle: false,
+    async: false
+  } as ICustom
 }];
 
 const immediateConfigErrorList = [{
@@ -155,6 +181,17 @@ const immediateConfigErrorList = [{
     method: 'append',
     options: {
       items: 'error'
+    },
+    newWFCycle: false,
+    async: false,
+    error: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'reset',
+    options: {
+      get: 'error'
     },
     newWFCycle: false,
     async: false,
@@ -185,6 +222,17 @@ const immediateConfigErrorList = [{
   custom: {
     method: 'insert',
     options: 'error',
+    newWFCycle: false,
+    async: false,
+    error: true
+  } as ICustom
+}, {
+  ...configBase,
+  custom: {
+    method: 'fix',
+    options: {
+      minIndex: 'error'
+    },
     newWFCycle: false,
     async: false,
     error: true

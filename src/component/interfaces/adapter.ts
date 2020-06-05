@@ -5,9 +5,9 @@ import { IDatasourceOptional } from './datasource';
 
 export enum AdapterPropType {
   Scalar,
-  Function,
-  FunctionPromise,
-  Observable
+  Observable,
+  WorkflowRunner,
+  Function
 }
 
 export interface IAdapterProp {

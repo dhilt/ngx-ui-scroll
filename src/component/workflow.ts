@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil, filter, map } from 'rxjs/operators';
+import { takeUntil, filter, map, take } from 'rxjs/operators';
 
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
@@ -94,10 +94,6 @@ export class Workflow {
     if (!this.isInitialized) {
       return;
     }
-    // this.scroller.logger.log(() => {
-    //   const { process, status, payload } = processSubject;
-    //   return ['%ccall%c', ...['color: #77cc77;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])];
-    // });
     this.process$.next(processSubject);
   }
 
@@ -105,7 +101,8 @@ export class Workflow {
     const { status, process, payload } = data;
     if (this.scroller.settings.logProcessRun) {
       this.scroller.logger.log(() => [
-        '%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])
+        '%cfire%c', ...['color: #cc7777;', 'color: #000000;'],
+        process, `"${status}"`, ...(payload !== void 0 ? [payload] : [])
       ]);
     }
     this.scroller.logger.logProcess(data);
@@ -152,12 +149,21 @@ export class Workflow {
       logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
     }
     if (datasource) { // Scroller re-initialization case
-      this.scroller.logger.log('new Scroller instantiation');
-      const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
-      const scroller = new Scroller(element, datasource, version, call, this.scroller);
-      this.scroller.dispose();
-      this.scroller = scroller;
-      this.scroller.init(this.dispose$);
+      const init = () => {
+        this.scroller.logger.log('new Scroller instantiation');
+        const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
+        const scroller = new Scroller(element, datasource, version, call, this.scroller);
+        this.scroller.dispose();
+        this.scroller = scroller;
+        this.scroller.init(this.dispose$);
+      };
+      if (!this.scroller.adapter.isLoading) {
+        init();
+      } else {
+        this.scroller.adapter.isLoading$.pipe(
+          filter(isLoading => !isLoading), take(1)
+        ).subscribe(() => init());
+      }
     }
   }
 

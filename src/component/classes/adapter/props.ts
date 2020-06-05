@@ -68,47 +68,47 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     onDemand: true
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'reset',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'reload',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'append',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'prepend',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'check',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'remove',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'clip',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'insert',
     value: noop
   },
   {
-    type: Prop.FunctionPromise,
+    type: Prop.WorkflowRunner,
     name: 'fix',
     value: noop
   },

@@ -128,7 +128,7 @@ export class Misc {
     if (native) {
       this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
     } else {
-      this.datasource.adapter.fix({ scrollPosition: value });
+      this.adapter.fix({ scrollPosition: value });
     }
   }
 

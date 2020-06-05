@@ -183,7 +183,7 @@ export class Adapter implements IAdapter {
             switch (type) {
               case AdapterPropType.Function:
                 return value.bind(this);
-              case AdapterPropType.FunctionPromise:
+              case AdapterPropType.WorkflowRunner:
                 return this.getPromisifiedMethod(value);
               default:
                 return value;
@@ -234,21 +234,21 @@ export class Adapter implements IAdapter {
     this.pending$.complete();
    }
 
-  reset(datasource?: IDatasourceOptional): any {
-    this.logger.logAdapterMethod('reset', datasource);
+  reset(options?: IDatasourceOptional): any {
+    this.logger.logAdapterMethod('reset', options);
     this.workflow.call({
       process: Process.reset,
       status: ProcessStatus.start,
-      payload: datasource || null
+      payload: options
     });
   }
 
-  reload(reloadIndex?: number | string): any {
-    this.logger.logAdapterMethod('reload', reloadIndex);
+  reload(options?: number | string): any {
+    this.logger.logAdapterMethod('reload', options);
     this.workflow.call({
       process: Process.reload,
       status: ProcessStatus.start,
-      payload: reloadIndex
+      payload: options
     });
   }
 
@@ -280,12 +280,12 @@ export class Adapter implements IAdapter {
     });
   }
 
-  remove(predicate: ItemsPredicate): any {
-    this.logger.logAdapterMethod('remove', predicate);
+  remove(options: ItemsPredicate): any {
+    this.logger.logAdapterMethod('remove', options);
     this.workflow.call({
       process: Process.remove,
       status: ProcessStatus.start,
-      payload: predicate
+      payload: options
     });
   }
 

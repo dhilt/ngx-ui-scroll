@@ -49,14 +49,14 @@ export class State implements IState {
     return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount + 1}`;
   }
 
-  constructor(settings: Settings, version: string, logger: Logger) {
+  constructor(settings: Settings, version: string, logger: Logger, loopCount?: number, cycleCount?: number) {
     this.settings = settings;
     this.version = version;
     this.logger = logger;
     this.initTime = Number(new Date());
-    this.innerLoopCount = 0;
+    this.innerLoopCount = loopCount || 0;
     this.isInitialLoop = false;
-    this.workflowCycleCount = 1;
+    this.workflowCycleCount = cycleCount || 1;
     this.isInitialWorkflowCycle = false;
     this.countDone = 0;
 

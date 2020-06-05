@@ -178,9 +178,9 @@ const immediateConfigSyncList = [{
 const immediateConfigErrorList = [{
   ...configBase,
   custom: {
-    method: 'append',
+    method: 'reset',
     options: {
-      items: 'error'
+      get: 'error'
     },
     newWFCycle: false,
     async: false,
@@ -189,9 +189,9 @@ const immediateConfigErrorList = [{
 }, {
   ...configBase,
   custom: {
-    method: 'reset',
+    method: 'append',
     options: {
-      get: 'error'
+      items: 'error'
     },
     newWFCycle: false,
     async: false,

@@ -88,5 +88,6 @@ export interface IAdapter {
   clip(options?: AdapterClipOptions): Promise<void>;
   insert(options: AdapterInsertOptions): Promise<void>;
   fix(options: AdapterFixOptions): Promise<void>; // experimental
+  relax(callback?: Function): Promise<void>; // experimental
   showLog(): void;
 }

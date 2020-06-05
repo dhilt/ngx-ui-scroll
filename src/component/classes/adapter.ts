@@ -316,6 +316,25 @@ export class Adapter implements IAdapter {
     });
   }
 
+  relax(callback?: Function): Promise<void> {
+    if (!this.isLoading) {
+      if (callback) {
+        callback();
+      }
+      return Promise.resolve();
+    }
+    return new Promise(resolve =>
+      this.isLoading$
+        .pipe(filter(isLoading => !isLoading), take(1))
+        .subscribe(() => {
+          if (callback) {
+            callback();
+          }
+          resolve();
+        })
+    );
+  }
+
   showLog() {
     this.logger.logAdapterMethod('showLog');
     this.logger.logForce();

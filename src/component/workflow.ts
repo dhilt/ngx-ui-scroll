@@ -149,21 +149,14 @@ export class Workflow {
       logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
     }
     if (datasource) { // Scroller re-initialization case
-      const init = () => {
+      this.scroller.adapter.relax(() => {
         this.scroller.logger.log('new Scroller instantiation');
         const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
         const scroller = new Scroller(element, datasource, version, call, this.scroller);
         this.scroller.dispose();
         this.scroller = scroller;
         this.scroller.init(this.dispose$);
-      };
-      if (!this.scroller.adapter.isLoading) {
-        init();
-      } else {
-        this.scroller.adapter.isLoading$.pipe(
-          filter(isLoading => !isLoading), take(1)
-        ).subscribe(() => init());
-      }
+      });
     }
   }
 

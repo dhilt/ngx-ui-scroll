@@ -114,6 +114,11 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   },
   {
     type: Prop.Function,
+    name: 'relax',
+    value: noop
+  },
+  {
+    type: Prop.Function,
     name: 'showLog',
     value: noop
   },

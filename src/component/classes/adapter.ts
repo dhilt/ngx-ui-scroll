@@ -176,21 +176,20 @@ export class Adapter implements IAdapter {
 
     // augment Adapter public context
     adapterProps
-      .forEach(({ name, type }: IAdapterProp) =>
+      .forEach(({ name, type }: IAdapterProp) => {
+        // Observables and methods (Functions/WorkflowRunners) can be defined once, not Scalars
+        let value = (this as any)[name];
+        if (type === AdapterPropType.Function) {
+          value = value.bind(this);
+        } else if (type === AdapterPropType.WorkflowRunner) {
+          value = this.getPromisifiedMethod(value);
+        }
         Object.defineProperty(publicContext, name, {
-          get: () => {
-            const value = (this as any)[name];
-            switch (type) {
-              case AdapterPropType.Function:
-                return value.bind(this);
-              case AdapterPropType.WorkflowRunner:
-                return this.getPromisifiedMethod(value);
-              default:
-                return value;
-            }
-          }
-        })
-      );
+          get: () => type === AdapterPropType.Scalar
+            ? (this as any)[name]
+            : value
+        });
+      });
   }
 
   init(

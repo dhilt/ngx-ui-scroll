@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil, filter, map, take } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';

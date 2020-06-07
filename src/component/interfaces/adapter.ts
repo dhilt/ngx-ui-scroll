@@ -61,9 +61,9 @@ export interface AdapterFixOptions {
 }
 
 interface MethodResultStatus {
-  success: boolean,
-  immediate: boolean,
-  error?: string
+  success: boolean;
+  immediate: boolean;
+  error?: string;
 }
 type MethodResult = Promise<MethodResultStatus>;
 export type AdapterMethodRelax = boolean | MethodResultStatus;

@@ -10,7 +10,7 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { validate, DATASOURCE } from './inputs/index';
 
-import { ScrollerWorkflow, IDatasource, CallWorkflow, ProcessStatus } from './interfaces/index';
+import { ScrollerWorkflow, IDatasource, CallWorkflow, ProcessSubject } from './interfaces/index';
 
 export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
@@ -85,7 +85,7 @@ export class Scroller {
     this.adapter = new Adapter(publicContext, () => this.workflow, this.logger);
   }
 
-  init(dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessStatus>) {
+  init(dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessSubject>) {
     this.viewport.reset(0);
     this.logger.stat('initialization');
     this.adapter.init(this.buffer, this.logger, dispose$, onAdapterRun$);

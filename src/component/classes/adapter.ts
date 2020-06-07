@@ -22,7 +22,8 @@ import {
   AdapterFixOptions,
   State,
   ScrollerWorkflow,
-  IDatasourceOptional
+  IDatasourceOptional,
+  ProcessSubject
 } from '../interfaces/index';
 
 const ADAPTER_PROPS_STUB = ADAPTER_PROPS(EMPTY_ITEM);
@@ -74,14 +75,6 @@ export class Adapter implements IAdapter {
   itemsCount: number;
 
   private pending$: Subject<boolean>;
-  private pending: boolean;
-  set selfPending (value: boolean) {
-    this.pending = value;
-    this.pending$.next(value);
-  }
-  get selfPending (): boolean {
-    return this.pending;
-  }
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]) =>
@@ -193,7 +186,7 @@ export class Adapter implements IAdapter {
   }
 
   init(
-    buffer: Buffer, logger: Logger, dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessStatus>
+    buffer: Buffer, logger: Logger, dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessSubject>
   ) {
     // buffer
     Object.defineProperty(this.demand, 'itemsCount', {
@@ -209,12 +202,21 @@ export class Adapter implements IAdapter {
 
     // self-pending
     if (onAdapterRun$) {
-      onAdapterRun$.pipe(
-        filter(status => status === ProcessStatus.start)
-      ).subscribe(() => this.selfPending = true);
-      onAdapterRun$.pipe(
-        filter(status => status === ProcessStatus.done || status === ProcessStatus.error)
-      ).subscribe(() => this.selfPending = false);
+      onAdapterRun$.subscribe(({ status }) => {
+        let isLoadingSub;
+        if (status === ProcessStatus.start) {
+          this.pending$.next(true);
+          isLoadingSub = this.isLoading$
+            .pipe(filter(isLoading => !isLoading), take(1))
+            .subscribe(() => this.pending$.next(false));
+        }
+        if (status === ProcessStatus.done || status === ProcessStatus.error) {
+          if (isLoadingSub) {
+            isLoadingSub.unsubscribe();
+          }
+          this.pending$.next(false);
+        }
+      });
     }
   }
 

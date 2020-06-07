@@ -59,8 +59,7 @@ export class Workflow {
   init() {
     const onAdapterRun$ = this.process$.pipe(
       takeUntil(this.dispose$),
-      filter(({ process }) => process.startsWith('adapter')),
-      map((({ status }) => status))
+      filter(({ process }) => process.startsWith('adapter'))
     );
 
     this.scroller.init(this.dispose$, onAdapterRun$);
@@ -166,7 +165,6 @@ export class Workflow {
     this.scroller.logger.logCycle(false);
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
-    adapter.selfPending = false;
     adapter.isLoading = false;
     this.finalize();
   }

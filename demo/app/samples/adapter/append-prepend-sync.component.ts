@@ -89,7 +89,7 @@ doAppend() {
     this.data.push(newItem);
     items.push(newItem);
   }
-  this.datasource.adapter.append(items, true);
+  this.datasource.adapter.append({ items, eof: true });
 }
 
 doPrepend() {
@@ -103,7 +103,7 @@ doPrepend() {
     this.data.unshift(newItem);
     items.push(newItem);
   }
-  this.datasource.adapter.prepend(items, true);
+  this.datasource.adapter.prepend({ items, bof: true});
 }`
   }, {
     active: true,
@@ -130,6 +130,9 @@ doPrepend() {
 }`
   }];
 
+  prependCallSample = 'Adapter.prepend({ items, bof })';
+  appendCallSample = 'Adapter.append({ items, eof })';
+
   inputValue = 1;
 
   onInputChanged(target: HTMLInputElement) {
@@ -149,7 +152,7 @@ doPrepend() {
       this.data.push(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.append(items, true);
+    this.datasource.adapter.append({ items, eof: true });
   }
 
   doPrepend() {
@@ -163,7 +166,7 @@ doPrepend() {
       this.data.unshift(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.prepend(items, true);
+    this.datasource.adapter.prepend({ items, bof: true});
   }
 
 }

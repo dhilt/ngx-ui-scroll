@@ -304,9 +304,9 @@ export class Adapter implements IAdapter {
     });
   }
 
-  relax(callback?: Function): Promise<void> {
+  relax(callback?: Function): any {
     if (!this.isLoading) {
-      if (callback) {
+      if (typeof callback === 'function') {
         callback();
       }
       return Promise.resolve();
@@ -315,7 +315,7 @@ export class Adapter implements IAdapter {
       this.isLoading$
         .pipe(filter(isLoading => !isLoading), take(1))
         .subscribe(() => {
-          if (callback) {
+          if (typeof callback === 'function') {
             callback();
           }
           resolve();

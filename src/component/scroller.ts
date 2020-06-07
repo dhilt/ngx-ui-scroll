@@ -46,7 +46,7 @@ export class Scroller {
     this.innerLoopSubscriptions = [];
 
     let $items, cycleCount, loopCount;
-    if (scroller) {
+    if (scroller) { // re-use $items and continue counters
       $items = scroller.buffer.$items;
       cycleCount = scroller.state.workflowCycleCount;
       loopCount = scroller.state.innerLoopCount;
@@ -88,7 +88,7 @@ export class Scroller {
   init(dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessStatus>) {
     this.viewport.reset(0);
     this.logger.stat('initialization');
-    this.adapter.init(this.state, this.buffer, this.logger, dispose$, onAdapterRun$);
+    this.adapter.init(this.buffer, this.logger, dispose$, onAdapterRun$);
   }
 
   bindData(): Observable<void> {

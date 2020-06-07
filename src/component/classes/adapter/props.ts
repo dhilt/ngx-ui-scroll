@@ -8,7 +8,7 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Prop.Scalar,
     name: 'id',
-    value: '',
+    value: 0,
     permanent: true
   },
   {
@@ -21,7 +21,7 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     type: Prop.Scalar,
     name: 'version',
     value: '',
-    onDemand: true
+    permanent: true
   },
   {
     type: Prop.Scalar,

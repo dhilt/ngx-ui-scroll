@@ -7,7 +7,7 @@ export class Datasource implements IDatasource {
   devSettings?: DevSettings;
   adapter: IAdapter;
 
-  constructor(datasource: IDatasource, mockAdapter?: boolean) {
+  constructor(datasource: IDatasource, ...args: any[]) {
     this.get = datasource.get;
     if (datasource.settings) {
       this.settings = datasource.settings;
@@ -15,6 +15,6 @@ export class Datasource implements IDatasource {
     if (datasource.devSettings) {
       this.devSettings = datasource.devSettings;
     }
-    this.adapter = (new AdapterContext(mockAdapter)) as IAdapter;
+    this.adapter = (new AdapterContext(!!args[0])) as IAdapter;
   }
 }

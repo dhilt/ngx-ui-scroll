@@ -110,7 +110,7 @@ export class Adapter implements IAdapter {
     // Scalar permanent props
     adapterProps
       .filter(({ type, permanent }) => type === AdapterPropType.Scalar && permanent)
-      .forEach(({ name, value, wanted }: IAdapterProp) =>
+      .forEach(({ name, value }: IAdapterProp) =>
         Object.defineProperty(this, name, {
           get: () => value
         })
@@ -193,30 +193,19 @@ export class Adapter implements IAdapter {
   }
 
   init(
-    state: State, buffer: Buffer, logger: Logger, dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessStatus>
+    buffer: Buffer, logger: Logger, dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessStatus>
   ) {
-    const _get = (name: string) => {
-      switch (name) {
-        case 'version':
-          return () => state.version;
-        case 'itemsCount':
-          return () => buffer.getVisibleItemsCount();
-      }
-    };
-    ADAPTER_PROPS_STUB // on-demand scalars definition
-      .filter(prop => prop.type === AdapterPropType.Scalar && prop.onDemand)
-      .forEach(({ name }: IAdapterProp) =>
-        Object.defineProperty(this.demand, name, { get: _get(name) })
-      );
-
-    // logger
-    this.logger = logger;
-
-    // others
+    // buffer
+    Object.defineProperty(this.demand, 'itemsCount', {
+      get: () => buffer.getVisibleItemsCount()
+    });
     this.bof = buffer.bof;
     buffer.bofSource.pipe(takeUntil(dispose$)).subscribe(value => this.bof = value);
     this.eof = buffer.eof;
     buffer.eofSource.pipe(takeUntil(dispose$)).subscribe(value => this.eof = value);
+
+    // logger
+    this.logger = logger;
 
     // self-pending
     if (onAdapterRun$) {

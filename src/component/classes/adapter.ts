@@ -10,6 +10,7 @@ import {
   WorkflowGetter,
   AdapterPropType,
   IAdapterProp,
+  AdapterMethodRelax,
   IAdapter,
   Process,
   ProcessStatus,
@@ -74,15 +75,15 @@ export class Adapter implements IAdapter {
   eof$: Subject<boolean>;
   itemsCount: number;
 
-  private pending$: Subject<boolean>;
+  private relax$: Subject<AdapterMethodRelax>;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]) =>
       new Promise(resolve => {
-        this.pending$.pipe(
-          filter(pending => !pending),
+        this.relax$.pipe(
+          filter(value => !!value),
           take(1)
-        ).subscribe(() => resolve());
+        ).subscribe(value => resolve(value));
         method.apply(this, args);
       });
   }
@@ -90,7 +91,7 @@ export class Adapter implements IAdapter {
   constructor(publicContext: IAdapter | null, getWorkflow: WorkflowGetter, logger: Logger) {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
-    this.pending$ = new Subject<boolean>();
+    this.relax$ = new Subject<AdapterMethodRelax>();
 
     // restore original values from the publicContext if present
     const adapterProps = publicContext
@@ -202,26 +203,30 @@ export class Adapter implements IAdapter {
 
     // self-pending
     if (onAdapterRun$) {
-      onAdapterRun$.subscribe(({ status }) => {
+      onAdapterRun$.subscribe(({ status, payload }) => {
         let isLoadingSub;
         if (status === ProcessStatus.start) {
-          this.pending$.next(true);
+          this.relax$.next(false);
           isLoadingSub = this.isLoading$
             .pipe(filter(isLoading => !isLoading), take(1))
-            .subscribe(() => this.pending$.next(false));
+            .subscribe(() => this.relax$.next({ success: true, immediate: false }));
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
           if (isLoadingSub) {
             isLoadingSub.unsubscribe();
           }
-          this.pending$.next(false);
+          this.relax$.next({
+            success: status !== ProcessStatus.error,
+            immediate: true,
+            ...(status === ProcessStatus.error ? { error: payload ? payload.error : 'true' } : {})
+          });
         }
       });
     }
   }
 
   dispose() {
-    this.pending$.complete();
+    this.relax$.complete();
    }
 
   reset(options?: IDatasourceOptional): any {

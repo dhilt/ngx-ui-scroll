@@ -60,6 +60,14 @@ export interface AdapterFixOptions {
   scrollToItemOpt?: boolean | ScrollIntoViewOptions;
 }
 
+interface MethodResultStatus {
+  success: boolean,
+  immediate: boolean,
+  error?: string
+}
+type MethodResult = Promise<MethodResultStatus>;
+export type AdapterMethodRelax = boolean | MethodResultStatus;
+
 export interface IAdapter {
   readonly id: number;
   readonly mock: boolean;
@@ -77,17 +85,17 @@ export interface IAdapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   readonly itemsCount: number;
-  reset(datasource?: IDatasourceOptional): Promise<void>;
-  reload(reloadIndex?: number | string): Promise<void>;
-  append(options: AdapterAppendOptions): Promise<void>;
-  append(items: any, eof?: boolean): Promise<void>; // old signature
-  prepend(options: AdapterPrependOptions): Promise<void>;
-  prepend(items: any, bof?: boolean): Promise<void>; // old signature
-  check(): Promise<void>;
-  remove(predicate: ItemsPredicate): Promise<void>;
-  clip(options?: AdapterClipOptions): Promise<void>;
-  insert(options: AdapterInsertOptions): Promise<void>;
-  fix(options: AdapterFixOptions): Promise<void>; // experimental
-  relax(callback?: Function): Promise<void>; // experimental
+  reset(datasource?: IDatasourceOptional): MethodResult;
+  reload(reloadIndex?: number | string): MethodResult;
+  append(options: AdapterAppendOptions): MethodResult;
+  append(items: any, eof?: boolean): MethodResult; // old signature
+  prepend(options: AdapterPrependOptions): MethodResult;
+  prepend(items: any, bof?: boolean): MethodResult; // old signature
+  check(): MethodResult;
+  remove(predicate: ItemsPredicate): MethodResult;
+  clip(options?: AdapterClipOptions): MethodResult;
+  insert(options: AdapterInsertOptions): MethodResult;
+  fix(options: AdapterFixOptions): MethodResult; // experimental
+  relax(callback?: Function): MethodResult; // experimental
   showLog(): void;
 }

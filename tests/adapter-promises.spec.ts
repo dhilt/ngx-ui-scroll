@@ -252,11 +252,18 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
             misc.getElement($index).style.height = 5 + 'px'
         });
       }
-      (misc.adapter as any)[method](options).then(() => {
+      (misc.adapter as any)[method](options).then(({ success, immediate, error: err }: any) => {
         expect(workflow.cyclesDone).toEqual(newWFCycle ? 2 : 1);
+        expect(immediate).toEqual(!newWFCycle);
+        expect(success).toEqual(!error);
         if (error) {
+          expect(success).toBeFalsy();
           expect(workflow.errors.length).toEqual(1);
           expect(workflow.errors[0].process).toEqual(`adapter.${method}`);
+          expect(err).toBeTruthy();
+        } else {
+          expect(success).toBeTruthy();
+          expect(err).toBeFalsy();
         }
         done();
       });

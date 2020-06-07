@@ -154,7 +154,7 @@ import { Datasource } from 'ngx-ui-scroll';
   });
 ```
 
-Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and other Adapter expressions become legal. Below is the list of read-only properties of the Adapter API.
+Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and other Adapter expressions become available. Below is the list of read-only properties of the Adapter API with descriptions and links to demos.
 
 |Name|Type|Description|
 |:--|:----|:----------|
@@ -171,7 +171,7 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
 |[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "lastVisible" property. |
 
-Below is the list of invocable methods of the Adapter API.
+Below is the list of invocable methods of the Adapter API with description and links to demos.
 
 |Name|Parameters|Description|
 |:--|:----|:----------|
@@ -185,6 +185,18 @@ Below is the list of invocable methods of the Adapter API.
 |[insert](https://dhilt.github.io/ngx-ui-scroll/#/adapter#insert)|(options: {<br>&nbsp;&nbsp;items:&nbsp;any[],<br>&nbsp;&nbsp;before?:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;after?:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;decrease?:&nbsp;boolean<br>})|Inserts items _before_ or _after_ the one that satisfies the predicate condition. Only one of _before_ and _after_ options is allowed. Indexes increase by default. Decreasing strategy can be enabled via _decrease_ option. |
 
 Along with the documented API there are some undocumented features that can be treated as experimental. They are not tested enough and might change over time. Some of them can be found on the [experimental tab](https://dhilt.github.io/ngx-ui-scroll/#/experimental) of the demo app.
+
+All of the Adapter methods return Promise resolving at the moment when the scroller terminates its internal processes triggered by the invocation of the Adapter method. It might be quite important to run some logic after the Adapter finished its job:
+
+```js
+const { adapter } = this.datasource;
+const predicate = ({ $index }) => $index === indexToReplace;
+await adapter.remove(predicate);
+await adapter.insert({ items: [itemToReplace], after: predicate });
+this.notify('Replacement done');
+```
+
+For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#/adapter).
 
 ### Development
 

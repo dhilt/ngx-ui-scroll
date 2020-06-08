@@ -154,7 +154,7 @@ import { Datasource } from 'ngx-ui-scroll';
   });
 ```
 
-Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and other Adapter expressions become legal. Below is the list of read-only properties of the Adapter API.
+Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and other Adapter expressions become available. Below is the list of read-only properties of the Adapter API with descriptions and links to demos.
 
 |Name|Type|Description|
 |:--|:----|:----------|
@@ -171,20 +171,32 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;any;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
 |[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#/adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "lastVisible" property. |
 
-Below is the list of invocable methods of the Adapter API.
+Below is the list of invocable methods of the Adapter API with description and links to demos.
 
 |Name|Parameters|Description|
 |:--|:----|:----------|
 |[reload](https://dhilt.github.io/ngx-ui-scroll/#/adapter#reload)|(startIndex?:&nbsp;number)|Resets the items buffer, resets the viewport params and starts fetching items from "startIndex" (if set). |
 |[reset](https://dhilt.github.io/ngx-ui-scroll/#/adapter#reset)|(datasource?: IDatasource)|Performs hard reset of the uiScroll internal state by re-instantiating all its entities (instead of reusing them when _reload_). If _datasource_ argument is passed, it will be treated as new Datasource. All props of the _datasource_ are optional and the result Datasource will be a combination (merge) of the original one and the one passed as an argument. |
-|[append](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], eof?:&nbsp;boolean)|Adds items or single item to the end of the uiScroll dataset. If eof parameter is not set, items will be added and rendered immediately, they will be placed right after the last item in the uiScroll buffer. If eof parameter is set to true, items will be added and rendered only if the end of the dataset is reached; otherwise, these items will be virtualized. |
-|[prepend](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(items:&nbsp;any&nbsp;&vert;&nbsp;any[], bof?:&nbsp;boolean)|Adds items or single item to the beginning of the uiScroll dataset. If bof parameter is not set, items will be added and rendered immediately, they will be placed right before the first item in the uiScroll buffer. If bof parameter is set to true, items will be added and rendered only if the beginning of the dataset is reached; otherwise, these items will be virtualized. |
+|[append](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(options: {<br>&nbsp;&nbsp;items:&nbsp;any[],<br>&nbsp;&nbsp;eof?:&nbsp;boolean<br>}) <br><br> (items:&nbsp;any&nbsp;&vert;&nbsp;any[], eof?:&nbsp;boolean) &#42;<br><sub>&#42; old signature, deprecated</sub>|Adds items to the end of the uiScroll dataset. If eof parameter is not set, items will be added and rendered immediately, they will be placed right after the last item in the uiScroll buffer. If eof parameter is set to true, items will be added and rendered only if the end of the dataset is reached; otherwise, these items will be virtualized. See also [bof/eof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof) demo. |
+|[prepend](https://dhilt.github.io/ngx-ui-scroll/#/adapter#append-prepend)|(options: {<br>&nbsp;&nbsp;items:&nbsp;any[],<br>&nbsp;&nbsp;bof?:&nbsp;boolean<br>}) <br><br> (items:&nbsp;any&nbsp;&vert;&nbsp;any[], bof?:&nbsp;boolean) &#42;<br><sub>&#42; old signature, deprecated</sub>|Adds items to the beginning of the uiScroll dataset. If bof parameter is not set, items will be added and rendered immediately, they will be placed right before the first item in the uiScroll buffer. If bof parameter is set to true, items will be added and rendered only if the beginning of the dataset is reached; otherwise, these items will be virtualized. See also [bof/eof](https://dhilt.github.io/ngx-ui-scroll/#/adapter#bof-eof) demo. |
 |[check](https://dhilt.github.io/ngx-ui-scroll/#/adapter#check-size)| |Checks if any of current items changed it's size and runs a procedure to provide internal consistency and new items fetching if needed. |
 |[remove](https://dhilt.github.io/ngx-ui-scroll/#/adapter#remove)|(predicate:&nbsp;ItemsPredicate)<br><br>type&nbsp;ItemsPredicate&nbsp;=<br>&nbsp;&nbsp;(item: ItemAdapter)&nbsp;=><br>&nbsp;&nbsp;&nbsp;&nbsp;boolean|Removes items from current buffer. Predicate is a function to be applied to every item presently in the buffer. Predicate must return boolean value. If predicate's return value is true, the item will be removed. _Note!_ Current implementation allows to remove only a continuous series of items per call. If you want to remove, say, 5 and 7 items, you should call the remove method twice. Removing a series of items from 5 to 7 could be done in a single call. |
 |[clip](https://dhilt.github.io/ngx-ui-scroll/#/adapter#clip)|(options: {<br>&nbsp;&nbsp;forwardOnly?:&nbsp;boolean,<br>&nbsp;&nbsp;backwardOnly?:&nbsp;boolean<br>})|Removes out-of-viewport items on demand. The direction in which invisible items should be clipped can be specified by passing an options object. If no options is passed (or both properties are set to _true_), clipping will occur in both directions. |
 |[insert](https://dhilt.github.io/ngx-ui-scroll/#/adapter#insert)|(options: {<br>&nbsp;&nbsp;items:&nbsp;any[],<br>&nbsp;&nbsp;before?:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;after?:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;decrease?:&nbsp;boolean<br>})|Inserts items _before_ or _after_ the one that satisfies the predicate condition. Only one of _before_ and _after_ options is allowed. Indexes increase by default. Decreasing strategy can be enabled via _decrease_ option. |
 
 Along with the documented API there are some undocumented features that can be treated as experimental. They are not tested enough and might change over time. Some of them can be found on the [experimental tab](https://dhilt.github.io/ngx-ui-scroll/#/experimental) of the demo app.
+
+All of the Adapter methods return Promise resolving at the moment when the scroller terminates its internal processes triggered by the invocation of the Adapter method. It might be quite important to run some logic after the Adapter finished its job:
+
+```js
+const { adapter } = this.datasource;
+const predicate = ({ $index }) => $index === indexToReplace;
+await adapter.remove(predicate);
+await adapter.insert({ items: [itemToReplace], after: predicate });
+this.notify('Replacement done');
+```
+
+For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#/adapter).
 
 ### Development
 

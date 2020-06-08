@@ -6,7 +6,7 @@ import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
 import { generateItem } from './items';
 
-import { Direction } from '../../src/component/interfaces';
+import { Direction, DatasourceGet, IAdapter } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { Scroller } from '../../src/component/scroller';
 import { Workflow } from '../../src/component/workflow';
@@ -35,12 +35,13 @@ export class Misc {
 
   fixture: ComponentFixture<TestComponentInterface>;
   testComponent: TestComponentInterface;
-  datasource: Datasource;
   uiScrollElement: DebugElement;
   viewportElement: DebugElement;
   uiScrollComponent: UiScrollComponent;
   workflow: Workflow;
   scroller: Scroller;
+  datasource: Datasource;
+  adapter: IAdapter;
   padding: {
     forward: Padding;
     backward: Padding;
@@ -52,21 +53,27 @@ export class Misc {
   itemWidth = 90;
   shared: any = {};
 
-  constructor(fixture: ComponentFixture<any>) {
+  constructor(fixture: ComponentFixture<TestComponentInterface>) {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
-    this.uiScrollElement = this.fixture.debugElement.query(By.css('[ui-scroll]'));
+    this.uiScrollElement = fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
     this.workflow = this.uiScrollComponent.workflow;
-    this.scroller = this.uiScrollComponent.workflow.scroller;
-    this.datasource = this.scroller.datasource;
-    this.horizontal = this.scroller.settings.horizontal;
-    this.window = this.scroller.settings.windowViewport;
+    this.scroller = this.workflow.scroller;
+    this.datasource = this.testComponent.datasource as Datasource;
+    this.adapter = this.datasource.adapter;
+    const { horizontal, windowViewport } = this.scroller.settings;
+    this.horizontal = horizontal;
+    this.window = windowViewport;
     this.padding = {
-      forward: new Padding(fixture, Direction.forward, this.horizontal),
-      backward: new Padding(fixture, Direction.backward, this.horizontal)
+      forward: new Padding(fixture, Direction.forward, horizontal),
+      backward: new Padding(fixture, Direction.backward, horizontal)
     };
+  }
+
+  spyOnGet(): jasmine.Spy<DatasourceGet> {
+    return spyOn(this.scroller.datasource, 'get').and.callThrough();
   }
 
   getViewportSize(settings: TestBedConfig): number {
@@ -121,7 +128,7 @@ export class Misc {
     if (native) {
       this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
     } else {
-      this.datasource.adapter.fix({ scrollPosition: value });
+      this.adapter.fix({ scrollPosition: value });
     }
   }
 

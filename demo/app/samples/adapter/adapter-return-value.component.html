@@ -1,0 +1,42 @@
+<div class="demo">
+
+  <app-demo-title [context]="demoContext"></app-demo-title>
+
+  <div class="description">
+    <p>
+      Each <em>Adapter</em> method runs the <em>uiScroll Workflow</em>
+      that handles multiple internal processes, some of which may be asynchronous.
+      In order to deal with such asynchronicity,
+      the return value of the <em>Adapter</em> method is a <em>Promise</em>
+      that is resolved when all internal processes
+      triggered by the <em>Adapter</em> are terminated.
+      Return value has following type
+    </p>
+
+    <pre>{{returnValueType}}</pre>
+
+    <p>
+      - <em>success</em>: specifies whether the <em>Adapter</em> method completed successfully or not;
+      for example, if some method is invoked with wrong arguments, no error will be thrown,
+      but we'll get <em>success:&nbsp;false</em> in the result;
+      <br>
+      - <em>error</em>: contains error message in case <em>success</em> is <em>false</em>;
+      <br>
+      - <em>immediate</em>: specifies whether the <em>Adapter</em> method completed immediately or not;
+      for example, if <em>Adapter.remove</em> won't remove any items, then it will be
+      terminated immediately and we'll get <em>immediate:&nbsp;true</em> in the result.
+    </p>
+
+    <pre>{{returnValueSample}}</pre>
+
+    <p>
+      Note, <em>immediate:&nbsp;false</em> does not necessarily mean that the <em>Adapter</em> method
+      worked asynchronously. But, in most cases we'll have async processes,
+      so it is highly recommended to pay special attention to logic that is going to be run
+      after the <em>Adapter</em> method is invoked. Generally such logic needs to be
+      postponed by waiting for the promisified result of the <em>Adapter</em> method invocation.
+    </p>
+
+  </div>
+
+</div>

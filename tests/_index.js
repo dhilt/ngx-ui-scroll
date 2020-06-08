@@ -25,7 +25,7 @@ const testContext = require.context(
   './',
   false,
   /\.spec\.ts/
-  //(bug)\.spec\.ts/
+  //(adapter\-promises)\.spec\.ts/
 );
 
 function requireAll(requireContext) {

@@ -56,7 +56,7 @@ describe('Fast Scroll Spec', () => {
       result = result.then(() => scr(i));
     }
     result.then(() => {
-      if (!misc.datasource.adapter.isLoading) {
+      if (!misc.adapter.isLoading) {
         done();
       } else {
         misc.shared.fin = true;
@@ -65,7 +65,8 @@ describe('Fast Scroll Spec', () => {
   };
 
   const expectations = (config: TestBedConfig, misc: Misc, done: Function) => {
-    const itemsCount = misc.scroller.buffer.size;
+    const { scroller: { buffer } } = misc;
+    const itemsCount = buffer.size;
     const bufferHeight = itemsCount * misc.itemHeight;
     const _size = misc.padding.backward.getSize() + misc.padding.forward.getSize() + bufferHeight;
     const totalItemsHeight = config.custom.items * misc.itemHeight;
@@ -73,11 +74,11 @@ describe('Fast Scroll Spec', () => {
     expect(itemsCount).toBeGreaterThan(0);
     if (itemsCount) {
       if (misc.getScrollPosition() === 0) {
-        const topElement = misc.scroller.buffer.items[0].element;
+        const topElement = buffer.items[0].element;
         const topElementIndex = misc.getElementIndex(topElement);
         expect(topElementIndex).toBe(config.datasourceSettings.startIndex);
       } else {
-        const bottomElement = misc.scroller.buffer.items[misc.scroller.buffer.size - 1].element;
+        const bottomElement = buffer.items[buffer.size - 1].element;
         const bottomElementIndex = misc.getElementIndex(bottomElement);
         expect(bottomElementIndex).toBe(config.datasourceSettings.startIndex + config.custom.items - 1);
       }
@@ -88,10 +89,10 @@ describe('Fast Scroll Spec', () => {
   let expectationsTimer: any;
   const preExpectations = (config: TestBedConfig, misc: Misc, done: Function) => {
     const position = misc.getScrollPosition();
-    const buffer = misc.scroller.buffer;
+    const { scroller: { buffer }, adapter } = misc;
     const index = position === 0 ? 0 : buffer.size - 1;
     const runExpectations = () => {
-      const edgeElement = misc.scroller.buffer.items[index].element;
+      const edgeElement = buffer.items[index].element;
       const edgeElementIndex = misc.getElementIndex(edgeElement);
       const edgeIndex = config.datasourceSettings.startIndex + (position === 0 ? 0 : config.custom.items - 1);
       if (edgeIndex === edgeElementIndex) {
@@ -100,7 +101,7 @@ describe('Fast Scroll Spec', () => {
         misc[position === 0 ? 'scrollMax' : 'scrollMin']();
       }
     };
-    if (!misc.scroller.adapter.loopPending && buffer.size && buffer.items[index] && buffer.items[index].element) {
+    if (!adapter.loopPending && buffer.size && buffer.items[index] && buffer.items[index].element) {
       runExpectations();
     } else {
       expectationsTimer = setTimeout(() => preExpectations(config, misc, done), 25);

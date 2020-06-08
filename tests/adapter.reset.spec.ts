@@ -97,7 +97,7 @@ const newGetConfigList = configList
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
   // need to have a pre-call
-  const { firstVisible, lastVisible } = misc.workflow.scroller.datasource.adapter;
+  const { firstVisible, lastVisible } = misc.adapter;
 };
 
 interface ICheckReset {
@@ -109,13 +109,14 @@ interface ICheckReset {
 }
 
 const setCheck = (misc: Misc): ICheckReset => {
-  const { datasource: { adapter }, settings } = misc.workflow.scroller;
+  const { adapter, workflow } = misc;
+  const { settings } = workflow.scroller;
   return {
     instanceIndex: settings.instanceIndex,
     firstVisible: adapter.firstVisible.$index,
     lastVisible: adapter.lastVisible.$index,
     firstVisibleText: adapter.firstVisible.data.text,
-    interruptionCount: misc.workflow.interruptionCount,
+    interruptionCount: workflow.interruptionCount,
   };
 };
 
@@ -141,7 +142,7 @@ const checkReset = (config: TestBedConfig, misc: Misc, oldCheck: ICheckReset) =>
 const doReset = (config: TestBedConfig, misc: Misc) => {
   const { get, settings, devSettings } = config.custom;
   if (!settings && !get && !devSettings) {
-    misc.datasource.adapter.reset();
+    misc.adapter.reset();
   } else {
     const datasource: IDatasourceOptional = {};
     if (get) {
@@ -153,7 +154,7 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
     if (devSettings) {
       datasource.devSettings = devSettings;
     }
-    misc.datasource.adapter.reset(datasource);
+    misc.adapter.reset(datasource);
   }
   accessFirstLastVisibleItems(misc);
 };
@@ -168,7 +169,7 @@ const shouldReset = (config: TestBedConfig, fail?: boolean) => (misc: Misc) => (
     if (cyclesDone <= cyclesCount) {
       check = setCheck(misc);
       if (interruption) {
-        misc.datasource.adapter.reload();
+        misc.adapter.reload();
         setTimeout(() => doReset(config, misc));
       } else {
         if (cyclesDone < cyclesCount) {

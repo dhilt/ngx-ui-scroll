@@ -7,7 +7,7 @@ export default class Reset {
 
   static process = Process.reset;
 
-  static run(scroller: Scroller, params: IDatasourceOptional | null) {
+  static run(scroller: Scroller, params?: IDatasourceOptional) {
     const { datasource, buffer, viewport: { paddings } } = scroller;
 
     if (params) {

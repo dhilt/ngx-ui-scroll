@@ -1,0 +1,38 @@
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
+
+  <div actions>
+    <div class="comment">Available since v1.7.0, undocumented</div>
+    <button (click)="doReplace()">replace (5, 6, 7) with (5 *)</button>
+  </div>
+
+  <div description>
+    <p>
+      The purpose of <em>Adapter.relax</em> method is to make sure that the <em>uiScroll</em> relaxes
+      and there are no internal processes working at the moment we need to run some logic.
+      Basically, it may be treated as a shortcut for the following approach,
+      which is presented on "Is&nbsp;loading" tab:
+    </p>
+    <pre>{{isLoadingSample}}</pre>
+    <p>
+      The <em>Adapter.relax</em> method accepts 1 optional argument, it is a callback
+      that allow to run necessary logic right before resolving "relax" promise.
+      This might be helpful if we don't want to wait until the end of the call stack.
+      The "Relax cb" tab shows the difference between "await" and "callback" approaches.
+    </p>
+    <p>
+      This sample is quite artificial, because for 2 manual operations (remove and insert)
+      the second one can be done safely by using <a href="#/adapter#return-value">Return value</a> API,
+      which is a part of each <em>Adapter</em> method.
+      This approach is demonstrated on the last tab "Return".
+    </p>
+    <p>
+      But the point is that the first manual operation also might require safe call.
+      If we have a chance that there are some pending processes
+      at the moment we are going to run the <em>Adapter</em> method,
+      then we should wait until these processes are done.
+      The "Is loading" approach is about it. But having the "Relax" shortcut
+      we may make our life easier.
+    </p>
+    <pre>{{relaxSample}}</pre>
+  </div>
+</app-demo>

@@ -11,7 +11,6 @@ export default class Init {
     scroller.logger.logCycle(true);
     state.isInitialWorkflowCycle = isInitial;
     state.isInitialLoop = isInitial;
-    adapter.cyclePending = true;
     adapter.isLoading = true;
     workflow.call({
       process: Process.init,

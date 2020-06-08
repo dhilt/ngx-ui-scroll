@@ -10,7 +10,7 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { validate, DATASOURCE } from './inputs/index';
 
-import { ScrollerWorkflow, IDatasource, CallWorkflow } from './interfaces/index';
+import { ScrollerWorkflow, IDatasource, CallWorkflow, ProcessSubject } from './interfaces/index';
 
 export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
@@ -42,14 +42,20 @@ export class Scroller {
       throw new Error(`${INVALID_DATASOURCE_PREFIX} ${get.errors[0]}`);
     }
 
-    const $items = scroller ? scroller.buffer.$items : void 0;
     this.workflow = { call: callWorkflow };
     this.innerLoopSubscriptions = [];
+
+    let $items, cycleCount, loopCount;
+    if (scroller) { // re-use $items and continue counters
+      $items = scroller.buffer.$items;
+      cycleCount = scroller.state.workflowCycleCount;
+      loopCount = scroller.state.innerLoopCount;
+    }
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
-    this.state = new State(this.settings, version, this.logger);
+    this.state = new State(this.settings, version, this.logger, loopCount, cycleCount);
     this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger, $items);
     this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
     this.logger.object('uiScroll settings object', this.settings, true);
@@ -79,10 +85,10 @@ export class Scroller {
     this.adapter = new Adapter(publicContext, () => this.workflow, this.logger);
   }
 
-  init(dispose$: Subject<void>) {
+  init(dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessSubject>) {
     this.viewport.reset(0);
     this.logger.stat('initialization');
-    this.adapter.init(this.state, this.buffer, this.logger, dispose$);
+    this.adapter.init(this.buffer, this.logger, dispose$, onAdapterRun$);
   }
 
   bindData(): Observable<void> {

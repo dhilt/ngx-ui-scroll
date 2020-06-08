@@ -122,17 +122,17 @@ const getFirstVisibleIndex = (misc: Misc): number => {
 };
 
 const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const { datasource } = misc.fixture.componentInstance;
-  const { datasource: { adapter }, settings, buffer } = misc.scroller;
+  const { adapter, scroller } = misc;
+  const { state, buffer, settings: { minIndex, maxIndex } } = scroller;
   const initialSize = config.datasourceSettings.itemSize;
   const { min, max, size } = config.custom;
   const changedCount = (max - min + 1);
   let firstVisibleIndex = NaN;
-  (datasource as any).setProcessGet((result: any[]) =>
+  (misc.datasource as any).setProcessGet((result: any[]) =>
     result.forEach(item => item.size = initialSize)
   );
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const cycle = misc.scroller.state.workflowCycleCount;
+    const cycle = state.workflowCycleCount;
     const { firstVisible } = adapter; // need to have a pre-call
     if (cycle === 2) {
       updateDOM(misc, { min, max, size, initialSize });
@@ -141,7 +141,7 @@ const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
     } else if (cycle === 3) {
       expect(firstVisible.$index).toEqual(firstVisibleIndex);
       const cacheAmount = buffer.cache.size;
-      const virtualSize = (settings.maxIndex - settings.minIndex + 1 - cacheAmount) * buffer.averageSize;
+      const virtualSize = (maxIndex - minIndex + 1 - cacheAmount) * buffer.averageSize;
       const realSize = changedCount * size + (cacheAmount - changedCount) * initialSize;
       expect(misc.getScrollableSize()).toEqual(virtualSize + realSize);
       done();
@@ -157,7 +157,7 @@ const shouldSimulateFetch = (misc: Misc, value: boolean) => {
 
 const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const { state, datasource: { adapter }, settings } = misc.scroller;
+    const { adapter, scroller: { state, settings } } = misc;
     switch (state.workflowCycleCount) {
       case 2:
         updateDOMElement(misc, settings.startIndex, 50);
@@ -174,7 +174,7 @@ const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: 
   });
 
 const shouldDoubleCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const { state, datasource: { adapter }, settings: { startIndex } } = misc.scroller;
+  const { adapter, scroller: { state, settings: { startIndex } } } = misc;
   const { itemSize } = config.datasourceSettings;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     switch (state.workflowCycleCount) {

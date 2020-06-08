@@ -243,11 +243,10 @@ describe('Zero Size Spec', () => {
       title: 'should continue the Workflow after re-size and check',
       it: (misc: Misc) => (done: Function) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { viewport, adapter } = misc.scroller;
+          const { scroller: { viewport }, adapter, datasource } = misc;
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-            const ds = misc.fixture.componentInstance.datasource;
-            (ds as any).setProcessGet((result: any[]) =>
+            (datasource as any).setProcessGet((result: any[]) =>
               result.forEach(item => item.size = 20)
             );
             adapter.fix({ updater: ({ element, data }) => {

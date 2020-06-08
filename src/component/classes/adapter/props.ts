@@ -8,7 +8,7 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Prop.Scalar,
     name: 'id',
-    value: '',
+    value: 0,
     permanent: true
   },
   {
@@ -21,7 +21,7 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     type: Prop.Scalar,
     name: 'version',
     value: '',
-    onDemand: true
+    permanent: true
   },
   {
     type: Prop.Scalar,
@@ -34,12 +34,6 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     name: 'loopPending',
     value: false,
     observable: 'loopPending$'
-  },
-  {
-    type: Prop.Scalar,
-    name: 'cyclePending',
-    value: false,
-    observable: 'cyclePending$'
   },
   {
     type: Prop.Scalar,
@@ -74,53 +68,58 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     onDemand: true
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'reset',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'reload',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'append',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'prepend',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'check',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'remove',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'clip',
     value: noop
   },
   {
-    type: Prop.Function,
+    type: Prop.WorkflowRunner,
     name: 'insert',
+    value: noop
+  },
+  {
+    type: Prop.WorkflowRunner,
+    name: 'fix',
+    value: noop
+  },
+  {
+    type: Prop.Function,
+    name: 'relax',
     value: noop
   },
   {
     type: Prop.Function,
     name: 'showLog',
-    value: noop
-  },
-  {
-    type: Prop.Function,
-    name: 'fix',
     value: noop
   },
   {
@@ -131,11 +130,6 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Prop.Observable,
     name: 'loopPending$',
-    value: new Subject<boolean>()
-  },
-  {
-    type: Prop.Observable,
-    name: 'cyclePending$',
     value: new Subject<boolean>()
   },
   {

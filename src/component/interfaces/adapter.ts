@@ -5,8 +5,9 @@ import { IDatasourceOptional } from './datasource';
 
 export enum AdapterPropType {
   Scalar,
-  Function,
-  Observable
+  Observable,
+  WorkflowRunner,
+  Function
 }
 
 export interface IAdapterProp {
@@ -27,6 +28,16 @@ export interface ItemAdapter {
 
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
 export type ItemsLooper = (item: ItemAdapter) => any;
+
+export interface AdapterAppendOptions {
+  items: any[];
+  eof?: boolean;
+}
+
+export interface AdapterPrependOptions {
+  items: any[];
+  bof?: boolean;
+}
 
 export interface AdapterClipOptions {
   forwardOnly?: boolean;
@@ -49,6 +60,14 @@ export interface AdapterFixOptions {
   scrollToItemOpt?: boolean | ScrollIntoViewOptions;
 }
 
+interface MethodResultStatus {
+  success: boolean;
+  immediate: boolean;
+  error?: string;
+}
+type MethodResult = Promise<MethodResultStatus>;
+export type AdapterMethodRelax = boolean | MethodResultStatus;
+
 export interface IAdapter {
   readonly id: number;
   readonly mock: boolean;
@@ -57,8 +76,6 @@ export interface IAdapter {
   readonly isLoading$: Subject<boolean>;
   readonly loopPending: boolean;
   readonly loopPending$: Subject<boolean>;
-  readonly cyclePending: boolean;
-  readonly cyclePending$: Subject<boolean>;
   readonly firstVisible: ItemAdapter;
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;
@@ -68,14 +85,17 @@ export interface IAdapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   readonly itemsCount: number;
-  reset: (datasource?: IDatasourceOptional) => void;
-  reload: (reloadIndex?: number | string) => void;
-  append: (items: any, eof?: boolean) => void;
-  prepend: (items: any, bof?: boolean) => void;
-  check: () => void;
-  remove: (predicate: ItemsPredicate) => void;
-  clip: (options?: AdapterClipOptions) => void;
-  insert: (options: AdapterInsertOptions) => void;
-  showLog: () => void;
-  fix: (options: AdapterFixOptions) => void; // experimental
+  reset(datasource?: IDatasourceOptional): MethodResult;
+  reload(reloadIndex?: number | string): MethodResult;
+  append(options: AdapterAppendOptions): MethodResult;
+  append(items: any, eof?: boolean): MethodResult; // old signature
+  prepend(options: AdapterPrependOptions): MethodResult;
+  prepend(items: any, bof?: boolean): MethodResult; // old signature
+  check(): MethodResult;
+  remove(predicate: ItemsPredicate): MethodResult;
+  clip(options?: AdapterClipOptions): MethodResult;
+  insert(options: AdapterInsertOptions): MethodResult;
+  fix(options: AdapterFixOptions): MethodResult; // experimental
+  relax(callback?: Function): MethodResult; // experimental
+  showLog(): void;
 }

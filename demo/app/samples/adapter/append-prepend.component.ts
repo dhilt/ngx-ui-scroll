@@ -71,11 +71,15 @@ generateItems(isPrepend: boolean) {
 }
 
 doPrepend() {
-  this.datasource.adapter.prepend(this.generateItems(true));
+  this.datasource.adapter.prepend({
+    items: this.generateItems(true)
+  });
 }
 
 doAppend() {
-  this.datasource.adapter.append(this.generateItems(false));
+  this.datasource.adapter.append({
+    items: this.generateItems(false)
+  });
 }`
   }, {
     active: true,
@@ -102,6 +106,9 @@ doAppend() {
 }`
   }];
 
+  appendCallSample = 'Adapter.append({ items })';
+  prependCallSample = 'Adapter.prepend({ items })';
+
   onInputChanged(target: HTMLInputElement) {
     const value = parseInt(target.value.trim(), 10);
     target.value = value.toString();
@@ -122,11 +129,15 @@ doAppend() {
   }
 
   doPrepend() {
-    this.datasource.adapter.prepend(this.generateItems(true));
+    this.datasource.adapter.prepend({
+      items: this.generateItems(true)
+    });
   }
 
   doAppend() {
-    this.datasource.adapter.append(this.generateItems(false));
+    this.datasource.adapter.append({
+      items: this.generateItems(false)
+    });
   }
 
 }

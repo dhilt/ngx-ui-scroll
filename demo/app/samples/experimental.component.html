@@ -5,13 +5,23 @@
   We can consider them as experimental features. Most of these features are not tested well
   and may have some side effects or behave imperfectly.
 </p>
+<ul>
+  <li><a href="#/experimental#adapter-relax">relax adapter method</a></li>
+  <li><a href="#/experimental#inverse-setting">inverse setting</a></li>
+  <li>fix adapter method:
+    <a href="#/experimental#adapter-fix-position">position</a>,
+    <a href="#/experimental#adapter-fix-updater">updater</a>,
+    <a href="#/experimental#adapter-fix-scrollToItem">scroll to item</a>
+  </li>
+</ul>
 <p>
   For example, <em>Adapter.fix</em> method. It has different options for different cases
-  which are discussed below. The options are passed as props of its argument object:
+  which are discussed below. These options are passed as an object of the following type:
 </p>
 <pre>{{adapterFixArgumentDescription}}</pre>
 
-<app-adapter-fix-position></app-adapter-fix-position>
+<app-adapter-relax></app-adapter-relax>
 <app-inverse-setting></app-inverse-setting>
+<app-adapter-fix-position></app-adapter-fix-position>
 <app-adapter-fix-updater></app-adapter-fix-updater>
 <app-adapter-fix-scroll-to-item></app-adapter-fix-scroll-to-item>

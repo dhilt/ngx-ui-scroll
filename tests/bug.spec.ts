@@ -1,7 +1,8 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { generateItem, Item } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
-import { Settings, DevSettings, DatasourceGet } from 'src/component/interfaces/index';
+import { configureTestBedSub } from './scaffolding/testBed';
+import { Settings, DevSettings, DatasourceGet } from '../src/component/interfaces/index';
 
 describe('Bug Spec', () => {
 
@@ -159,5 +160,22 @@ describe('Bug Spec', () => {
       }
     })
   );
+
+  describe('early (constructor) subscriptions', () => {
+    let misc: any;
+
+    beforeEach(() => {
+      misc = new Misc(configureTestBedSub());
+    });
+
+    it('should work', (done) => {
+      const { adapter, workflow, testComponent } = misc;
+      spyOn(workflow, 'finalize').and.callFake(() => {
+        expect(testComponent.firstVisible).toEqual(adapter.firstVisible);
+        expect(testComponent.firstVisible.$index).toEqual(1);
+        done();
+      });
+    });
+  });
 
 });

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { IDatasource } from '../../src/component/interfaces';
+import { IDatasource, ItemAdapter } from '../../src/component/interfaces';
 import { Datasource } from '../../src/component/classes/datasource';
 
 import { DatasourceService } from './datasources';
@@ -73,4 +73,26 @@ export class TwoScrollersTestComponent implements TestComponentInterface {
         ({ id: i + index, text: 'item #' + (i + index) + ' *' })
       ))
   });
+}
+
+@Component({
+  template: `<div
+  style="height: 200px; overflow-y: scroll;"
+><div
+  *uiScroll="let item of datasource; let index = index"
+><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`
+})
+export class ScrollerSubTestComponent implements TestComponentInterface {
+  datasource = new Datasource({
+    get: (index, count, success) =>
+      success(Array.from({ length: count }, (j, i) =>
+        ({ id: i + index, text: 'item #' + (i + index) })
+      ))
+  });
+
+  firstVisible: ItemAdapter;
+
+  constructor() {
+    this.datasource.adapter.firstVisible$.subscribe(value => this.firstVisible = value);
+  }
 }

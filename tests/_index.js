@@ -25,7 +25,7 @@ const testContext = require.context(
   './',
   false,
   /\.spec\.ts/
-  //(adapter\-promises)\.spec\.ts/
+  //(dynamic\-height\-scroll)\.spec\.ts/
 );
 
 function requireAll(requireContext) {

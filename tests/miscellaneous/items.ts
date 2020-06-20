@@ -13,10 +13,19 @@ export const generateItem = (index: number, dynamicSize = false, suffix = ''): I
   ...(dynamicSize ? { size: getDynamicSizeByIndex(index) } : {})
 });
 
-const generateItem2 = (id: number, index: number): Item => ({
+const generateItem2 = (id: number, index: number, dynamicSize = false): Item => ({
   id,
-  text: 'item #' + index
+  text: 'item #' + index,
+  ...(dynamicSize ? { size: getDynamicSizeByIndex(index) } : {})
 });
+
+export const generateItems = (amount: number, lastIndex: number): Item[] => {
+  const items = [];
+  for (let i = 1; i <= amount; i++) {
+    items.push(generateItem(lastIndex + i));
+  }
+  return items;
+};
 
 export const removeItems = (items: Item[], idListToRemove: number[]) =>
   items.forEach((item: Item) => {
@@ -36,7 +45,8 @@ export const insertItems = (
   _max: number,
   index: number,
   count: number,
-  decrease: boolean
+  decrease: boolean,
+  dynamicSize?: boolean
 ) => {
   let i = 1;
   const items: Item[] = [];
@@ -47,14 +57,24 @@ export const insertItems = (
   if (start <= end) {
     for (let j = start; j <= end; j++) {
       if (j < index - (decrease ? count : 0)) {
-        items.push(generateItem2(j, decrease ? j + count : j));
+        items.push(generateItem2(j, decrease ? j + count : j, dynamicSize));
       } else if (j < index + (!decrease ? count : 0)) {
-        items.push(generateItem2(j, _max + i++));
+        items.push(generateItem2(j, Math.max(_max, _index - 1) + i++, dynamicSize));
       } else {
-        items.push(generateItem2(j, decrease ? j : j - count));
+        items.push(generateItem2(j, decrease ? j : j - count, dynamicSize));
       }
     }
   }
   _items.length = 0;
   items.forEach((item: Item) => _items.push(item));
 };
+
+export const appendItems = (
+  _items: Item[],
+  _index: number,
+  _count: number,
+  _min: number,
+  _max: number,
+  count: number,
+  dynamicSize?: boolean
+) => insertItems(_items, _index, _count, _min, _max, _max + 1, count, false, dynamicSize);

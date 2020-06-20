@@ -1,7 +1,7 @@
 import { Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { generateItem, Item, insertItems } from './miscellaneous/items';
+import { generateItems, Item, insertItems } from './miscellaneous/items';
 
 describe('Adapter Insert Spec', () => {
 
@@ -79,14 +79,6 @@ describe('Adapter Insert Spec', () => {
     ...configList, configDecreaseList[0], configDecreaseList[1]
   ];
 
-  const generateNewItems = (amount: number): Item[] => {
-    const newItems = [];
-    for (let i = 1; i <= amount; i++) {
-      newItems.push(generateItem(MAX + i));
-    }
-    return newItems;
-  };
-
   interface ICheckData {
     absMin: number;
     absMax: number;
@@ -152,8 +144,7 @@ describe('Adapter Insert Spec', () => {
         return;
       }
       // insert items to the original datasource
-      const { datasource } = misc.fixture.componentInstance;
-      (datasource as any).setProcessGet((
+      (misc.datasource as any).setProcessGet((
         result: any[], _index: number, _count: number, _min: number, _max: number
       ) =>
         insertItems(result, _index, _count, _min, _max, index + (before ? 0 : 1), amount, decrease)
@@ -163,13 +154,13 @@ describe('Adapter Insert Spec', () => {
       if (before) {
         adapter.insert({
           before: ({ $index }) => $index === index,
-          items: generateNewItems(amount),
+          items: generateItems(amount, MAX),
           decrease
         });
       } else {
         adapter.insert({
           after: ({ $index }) => $index === index,
-          items: generateNewItems(amount),
+          items: generateItems(amount, MAX),
           decrease
         });
       }

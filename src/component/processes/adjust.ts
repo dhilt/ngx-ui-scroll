@@ -53,7 +53,7 @@ export default class Adjust {
     const lastIndex = lastItem.$index;
     const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
     const maxIndex = isFinite(buffer.absMaxIndex) ? buffer.absMaxIndex : buffer.maxIndex;
-    const { hasAverageItemSizeChanged, firstIndexBuffer } = fetch;
+    const { hasAverageItemSizeChanged } = fetch;
     let index, bwdSize = 0, fwdSize = 0, itemsCount = 0;
 
     // new backward padding
@@ -65,7 +65,7 @@ export default class Adjust {
       }
     }
     if (hasAverageItemSizeChanged) {
-      for (index = firstIndex; index < (firstIndexBuffer as number); index++) {
+      for (index = firstIndex; index < (fetch.first.indexBuffer as number); index++) {
         itemsCount += !buffer.cache.get(index) ? 1 : 0;
       }
     }

@@ -21,8 +21,8 @@ export default class Check {
 
     if (Number.isFinite(min)) {
       scroller.state.clip.noClip = true;
-      fetch.firstIndexBuffer = buffer.firstIndex;
-      fetch.lastIndexBuffer = buffer.lastIndex;
+      fetch.first.indexBuffer = buffer.firstIndex;
+      fetch.last.indexBuffer = buffer.lastIndex;
       fetch.replace(
         buffer.items.filter(item => item.$index >= min && item.$index <= max)
       );

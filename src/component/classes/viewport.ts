@@ -9,7 +9,6 @@ export class Viewport {
 
   offset: number;
   paddings: Paddings;
-  startDelta: number;
   previousPosition: number;
   scrollAnchoring: boolean;
 
@@ -58,7 +57,6 @@ export class Viewport {
     }
     this.scrollPosition = newPosition;
     this.state.scrollState.reset();
-    this.startDelta = 0;
     this.scrollAnchoring = !this.isAnchoringOff();
   }
 

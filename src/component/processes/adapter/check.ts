@@ -1,12 +1,13 @@
 import { Scroller } from '../../scroller';
-import { Process, ProcessStatus } from '../../interfaces/index';
+import { Process, ProcessStatus, Direction } from '../../interfaces/index';
+import End from '../end';
 
 export default class Check {
 
   static process = Process.check;
 
   static run(scroller: Scroller) {
-    const { workflow, buffer, state: { fetch } } = scroller;
+    const { workflow, buffer, state: { fetch }, viewport } = scroller;
     let min = Infinity, max = -Infinity;
 
     buffer.items.forEach(item => {
@@ -23,6 +24,11 @@ export default class Check {
       scroller.state.clip.noClip = true;
       fetch.first.indexBuffer = buffer.firstIndex;
       fetch.last.indexBuffer = buffer.lastIndex;
+      const { item: first, diff } = End.getEdgeVisibleItem(scroller, Direction.backward);
+      fetch.firstVisibleIndex = first ? first.get().$index : null;
+      if (fetch.firstVisibleIndex !== null) {
+        fetch.firstVisibleItemDelta = - buffer.getSizeByIndex(fetch.firstVisibleIndex) + diff;
+      }
       fetch.replace(
         buffer.items.filter(item => item.$index >= min && item.$index <= max)
       );

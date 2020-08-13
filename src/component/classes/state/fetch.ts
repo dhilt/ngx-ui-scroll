@@ -57,6 +57,8 @@ export class FetchModel {
   hasAnotherPack: boolean;
   callCount: number;
   minIndex: number;
+  firstVisibleIndex: number | null;
+  firstVisibleItemDelta: number | null;
   negativeSize: number;
   averageItemSize: number;
   hasAverageItemSizeChanged: boolean;
@@ -81,6 +83,8 @@ export class FetchModel {
     this.first.reset();
     this.last.reset();
     this.hasAnotherPack = false;
+    this.firstVisibleIndex = null;
+    this.firstVisibleItemDelta = null;
     this.negativeSize = 0;
     this.hasAverageItemSizeChanged = false;
     this.direction = null;

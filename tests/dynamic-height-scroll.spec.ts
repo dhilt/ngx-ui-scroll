@@ -2,6 +2,7 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { Stat } from './miscellaneous/stat';
 import { appendItems, generateItems } from './miscellaneous/items';
+import { filter, take } from 'rxjs/operators';
 
 const configFetch: TestBedConfig = {
   datasourceName: 'limited-1-20-dynamic-size-special',
@@ -68,8 +69,9 @@ const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Functio
   });
   await scroll(misc, Infinity);
   const { countDone } = scroller.state;
-  await scroll(misc, 19438);
-  expect(scroller.state.countDone).toBeLessThan(countDone + 3); // = countDone + 2 ?
+  await scroll(misc, Infinity);
+  // await scroll(misc, 19438);
+  expect(scroller.state.countDone).toEqual(countDone + 1);
   done();
 };
 

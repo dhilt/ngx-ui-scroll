@@ -122,12 +122,12 @@ export default class PreFetch {
   }
 
   static setLastIndex(scroller: Scroller) {
-    const { state, buffer, settings } = scroller;
-    const { positions: { end }, first, last } = state.fetch;
+    const { state: { fetch, startIndex }, buffer, settings } = scroller;
+    const { positions: { relative, end }, first, last } = fetch;
     let lastIndex;
     if (!buffer.hasItemSize) {
       // just to fetch forward bufferSize items if neither averageItemSize nor itemSize are present
-      lastIndex = state.startIndex + settings.bufferSize - 1;
+      lastIndex = startIndex + settings.bufferSize - 1;
       scroller.logger.log(`forcing fetch forward direction [no item size]`);
     } else {
       let index = first.indexBuffer as number;
@@ -135,7 +135,14 @@ export default class PreFetch {
       lastIndex = index;
       while (1) {
         lastIndex = index;
-        position += buffer.getSizeByIndex(index);
+        const size = buffer.getSizeByIndex(index);
+        position += size;
+        if (fetch.firstVisibleIndex === null && position > relative) {
+          fetch.firstVisibleIndex = index;
+          if (!scroller.state.isInitialLoop) {
+            fetch.firstVisibleItemDelta = position - size - relative;
+          }
+        }
         if (position >= end) {
           break;
         }

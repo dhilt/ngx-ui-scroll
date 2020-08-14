@@ -45,6 +45,7 @@ const testContext = require.context(
   //(initial\-load)\.spec\.ts/
   //(min\-max\-indexes)\.spec\.ts/
   //(scroll\-basic)\.spec\.ts/
+  //(scroll\-delay)\.spec\.ts/
   //(scroll\-fast)\.spec\.ts/
   //(validation)\.spec\.ts/
 );

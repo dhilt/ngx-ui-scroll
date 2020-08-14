@@ -48,7 +48,6 @@ export default class End {
     state.fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
-    state.lastPosition = scroller.viewport.scrollPosition;
     scroller.purgeSubscriptions();
     adapter.loopPending = false;
     state.innerLoopCount++;

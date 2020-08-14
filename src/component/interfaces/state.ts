@@ -21,6 +21,7 @@ export interface ScrollState {
   syntheticPosition: number | null;
   syntheticFulfill: boolean;
   animationFrameId: number;
+  positionBeforeAsync: number | null;
 
   reset: Function;
 }
@@ -34,13 +35,12 @@ export interface State {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  startIndex: number;
 
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
   adjust: AdjustModel;
-  startIndex: number;
-  lastPosition: number;
 
   scrollState: ScrollState;
 

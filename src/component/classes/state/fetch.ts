@@ -14,6 +14,7 @@ class Positions {
 
   reset() {
     this.startDelta = 0;
+    this.before = 0;
   }
 }
 

@@ -10,6 +10,7 @@ export default class Start {
     const processToPass = payload && payload.process || process;
 
     adapter.loopPending = true;
+    scrollState.positionBeforeAsync = null;
     if (!fetch.simulate) {
       fetch.reset();
     }

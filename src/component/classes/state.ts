@@ -26,14 +26,12 @@ export class State implements IState {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  startIndex: number;
 
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
   adjust: AdjustModel;
-  startIndex: number;
-  lastPosition: number;
-  bwdAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
 
@@ -65,7 +63,6 @@ export class State implements IState {
     this.clip = new ClipModel();
     this.render = new RenderModel();
     this.adjust = new AdjustModel();
-    this.bwdAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
   }

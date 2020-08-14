@@ -47,15 +47,8 @@ export class Viewport {
 
   reset(scrollPosition: number) {
     this.setOffset();
-    let newPosition = 0;
     this.paddings.reset(this.getSize(), this.state.startIndex, this.offset);
-    const negativeSize = this.paddings.backward.size;
-    if (negativeSize) {
-      newPosition = negativeSize;
-      const { itemSize } = this.settings;
-      this.state.bwdAverageSizeItemsCount = itemSize ? negativeSize / itemSize : 0;
-    }
-    this.scrollPosition = newPosition;
+    this.scrollPosition = this.paddings.backward.size || 0;
     this.state.scrollState.reset();
     this.scrollAnchoring = !this.isAnchoringOff();
   }

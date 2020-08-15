@@ -76,16 +76,16 @@ export class Workflow {
     ).subscribe(this.process.bind(this));
 
     // set up scroll event listener
-    const { scrollEventElement } = this.scroller.viewport;
+    const { scrollEventReceiver } = this.scroller.viewport;
     const onScrollHandler: EventListener =
       event => this.callWorkflow({
         process: Process.scroll,
         status: ProcessStatus.start,
         payload: { event }
       });
-    scrollEventElement.addEventListener('scroll', onScrollHandler);
+    scrollEventReceiver.addEventListener('scroll', onScrollHandler);
     this.dispose$.subscribe(() =>
-      scrollEventElement.removeEventListener('scroll', onScrollHandler)
+      scrollEventReceiver.removeEventListener('scroll', onScrollHandler)
     );
   }
 

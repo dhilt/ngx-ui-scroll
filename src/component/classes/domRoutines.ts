@@ -18,13 +18,20 @@ export class Routines {
   }
 
   getScrollPosition(element: HTMLElement): number {
+    if (this.window) {
+      return window.pageYOffset;
+    }
     this.checkElement(element);
     return element[this.horizontal ? 'scrollLeft' : 'scrollTop'];
   }
 
   setScrollPosition(element: HTMLElement, value: number) {
-    this.checkElement(element);
     value = Math.max(0, value);
+    if (this.window) {
+      window.scrollTo({ [this.horizontal ? 'left' : 'top']: value });
+      return;
+    }
+    this.checkElement(element);
     element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 

@@ -13,12 +13,13 @@ export class Viewport {
   scrollAnchoring: boolean;
 
   readonly element: HTMLElement;
-  readonly hostElement: HTMLElement;
-  readonly scrollEventElement: HTMLElement | Document;
   readonly settings: Settings;
   readonly routines: Routines;
   readonly state: State;
   readonly logger: Logger;
+
+  readonly hostElement: HTMLElement;
+  readonly scrollEventReceiver: HTMLElement | Window;
 
   private disabled: boolean;
 
@@ -31,11 +32,11 @@ export class Viewport {
     this.disabled = false;
 
     if (settings.windowViewport) {
-      this.scrollEventElement = this.element.ownerDocument as Document;
-      this.hostElement = this.scrollEventElement.scrollingElement as HTMLElement;
+      this.hostElement = document.documentElement as HTMLElement;
+      this.scrollEventReceiver = window;
     } else {
-      this.scrollEventElement = this.element.parentElement as HTMLElement;
-      this.hostElement = this.scrollEventElement;
+      this.hostElement = this.element.parentElement as HTMLElement;
+      this.scrollEventReceiver = this.hostElement;
     }
 
     this.paddings = new Paddings(this.element, this.routines, settings);

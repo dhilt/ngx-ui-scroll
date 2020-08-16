@@ -119,7 +119,7 @@ export class Viewport {
   }
 
   getSize(): number {
-    return this.routines.getSize(this.hostElement);
+    return this.routines.getSize(this.hostElement, true);
   }
 
   getScrollableSize(): number {
@@ -130,12 +130,8 @@ export class Viewport {
     return this.getSize() * this.settings.padding;
   }
 
-  getEdge(direction: Direction, opposite?: boolean): number {
-    return this.routines.getEdge(this.hostElement, direction, opposite);
-  }
-
-  getElementEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
-    return this.routines.getEdge(element, direction, opposite);
+  getEdge(direction: Direction): number {
+    return this.routines.getEdge(this.hostElement, direction, true);
   }
 
   setOffset() {

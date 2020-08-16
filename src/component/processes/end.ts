@@ -64,7 +64,7 @@ export default class End {
       bwd ? i <= items.length - 1 : i >= 0;
       i += bwd ? 1 : -1
     ) {
-      const itemEdge = scroller.viewport.getElementEdge(items[i].element, opposite);
+      const itemEdge = scroller.routines.getEdge(items[i].element, opposite);
       diff = itemEdge - viewportEdge;
       if (bwd && diff > 0 || !bwd && diff < 0) {
         item = items[i];

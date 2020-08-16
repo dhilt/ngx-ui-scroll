@@ -7,6 +7,7 @@ export interface TemplateSettings {
   horizontal?: boolean;
   dynamicSize?: string | null;
   viewportPadding?: number;
+  headerHeight?: number;
 }
 
 const defaultTemplateSettings: TemplateSettings = {
@@ -46,9 +47,12 @@ export const generateTemplate = (templateSettings?: TemplateSettings): TemplateD
     `${settings.viewportWidth ? 'width:' + settings.viewportWidth + 'px;' : ''}` +
     `${settings.viewportPadding ? 'padding:' + settings.viewportPadding + 'px;' : ''}`;
   const hasItemStyle = settings.dynamicSize || settings.itemHeight || settings.itemWidth;
+  const header = settings.headerHeight
+    ? `<div style="height:${settings.headerHeight}px;width:100%;background-color:yellow"></div>`
+    : '';
   return {
     settings,
-    template: `<div
+    template: `${header}<div
   class="${viewportClass}"
   style="${viewportStyle}"
 ><div

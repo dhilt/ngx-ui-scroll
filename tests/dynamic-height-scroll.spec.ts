@@ -40,22 +40,15 @@ const testConfigFetch = (config: TestBedConfig, misc: Misc, done: Function) => {
   });
 };
 
-const relax = ({ adapter }: Misc) => new Promise(resolve =>
-  adapter.isLoading$.pipe(
-    filter(isLoading => !isLoading),
-    take(1)
-  ).subscribe(() => resolve())
-);
-
 const scroll = (misc: Misc, position: number) => {
   misc.adapter.fix({ scrollPosition: position });
-  return relax(misc);
+  return misc.relaxNext();
 };
 
 const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Function) => {
   const { workflow, scroller, adapter } = misc;
   const { MAX, AMOUNT } = config.custom;
-  await relax(misc);
+  await misc.relaxNext();
   // append items to the original datasource
   (misc.datasource as any).setProcessGet((
     result: any[], _index: number, _count: number, _min: number, _max: number

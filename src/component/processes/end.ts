@@ -59,7 +59,7 @@ export default class End {
     if (adapter.wanted.firstVisible) {
       const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
       const firstItem = items.find(item =>
-        scroller.viewport.getElementEdge(item.element, Direction.forward) > viewportBackwardEdge
+        scroller.routines.getEdge(item.element, Direction.forward) > viewportBackwardEdge
       );
       if (!firstItem || firstItem.element !== adapter.firstVisible.element) {
         adapter.firstVisible = firstItem ? firstItem.get() : EMPTY_ITEM;
@@ -71,7 +71,7 @@ export default class End {
       const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
       let lastItem = null;
       for (let i = items.length - 1; i >= 0; i--) {
-        const edge = scroller.viewport.getElementEdge(items[i].element, Direction.backward);
+        const edge = scroller.routines.getEdge(items[i].element, Direction.backward);
         if (edge < viewportForwardEdge) {
           lastItem = items[i];
           break;

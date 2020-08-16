@@ -35,9 +35,9 @@ export class Routines {
     element[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
   }
 
-  getParams(element: HTMLElement): ClientRect {
+  getParams(element: HTMLElement, doNotBind?: boolean): ClientRect {
     this.checkElement(element);
-    if (this.window) {
+    if (this.window && doNotBind) {
       return {
         'height': element.clientHeight,
         'width': element.clientWidth,
@@ -50,8 +50,8 @@ export class Routines {
     return element.getBoundingClientRect();
   }
 
-  getSize(element: HTMLElement): number {
-    return this.getParams(element)[this.horizontal ? 'width' : 'height'];
+  getSize(element: HTMLElement, doNotBind?: boolean): number {
+    return this.getParams(element, doNotBind)[this.horizontal ? 'width' : 'height'];
   }
 
   getSizeStyle(element: HTMLElement): number {
@@ -66,14 +66,10 @@ export class Routines {
     element.style[this.horizontal ? 'width' : 'height'] = `${value}px`;
   }
 
-  getRectEdge(params: ClientRect, direction: Direction, opposite?: boolean): number {
-    const forward = !opposite ? Direction.forward : Direction.backward;
-    return params[direction === forward ? (this.horizontal ? 'right' : 'bottom') : (this.horizontal ? 'left' : 'top')];
-  }
-
-  getEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
-    const params = this.getParams(element);
-    return this.getRectEdge(params, direction, opposite);
+  getEdge(element: HTMLElement, direction: Direction, doNotBind?: boolean): number {
+    const params = this.getParams(element, doNotBind);
+    const isFwd = direction === Direction.forward;
+    return params[isFwd ? (this.horizontal ? 'right' : 'bottom') : (this.horizontal ? 'left' : 'top')];
   }
 
   getEdge2(element: HTMLElement, direction: Direction, relativeElement: HTMLElement, opposite: boolean): number {

@@ -1,6 +1,7 @@
 import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
+import { filter, take } from 'rxjs/operators';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
@@ -138,5 +139,14 @@ export class Misc {
 
   scrollMax() {
     this.scrollTo(999999);
+  }
+
+  relaxNext(): Promise<void> {
+    return new Promise(resolve =>
+      this.adapter.isLoading$.pipe(
+        filter(pending => !pending),
+        take(1)
+      ).subscribe(() => resolve())
+    );
   }
 }

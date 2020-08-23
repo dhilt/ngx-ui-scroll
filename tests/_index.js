@@ -48,6 +48,7 @@ const testContext = require.context(
   //(scroll\-delay)\.spec\.ts/
   //(scroll\-fast)\.spec\.ts/
   //(validation)\.spec\.ts/
+  //(viewport)\.spec\.ts/
 );
 
 testContext.keys().map(testContext);

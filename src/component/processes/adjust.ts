@@ -101,8 +101,9 @@ export default class Adjust {
   static fixScrollPosition(scroller: Scroller) {
     const { viewport, buffer, state } = scroller;
     const { adjust, fetch, render, scrollState } = state;
-
     let position = viewport.paddings.backward.size;
+
+    // backward outlet increase
     if (fetch.firstVisibleIndex !== null && buffer.firstIndex !== null) {
       for (let i = buffer.firstIndex; i < fetch.firstVisibleIndex; i++) {
         position += buffer.getSizeByIndex(i);
@@ -116,12 +117,18 @@ export default class Adjust {
       }
     }
 
+    // scroll during slow fetch/render
     if (scrollState.positionBeforeAsync !== null) {
       const diff = render.positionBefore - scrollState.positionBeforeAsync;
       if (diff !== 0) {
         scroller.logger.log(`shift position due to fetch-render difference (${diff})`);
         position += diff;
       }
+    }
+
+    // offset increase
+    if (viewport.offset > 0 && (position || fetch.positions.before)) {
+      position += viewport.offset;
     }
 
     viewport.scrollPosition = position;

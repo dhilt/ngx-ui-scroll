@@ -15,6 +15,17 @@ h1 {
 
 .no-layout .header {
   margin-bottom: 80px;
+  min-width: 275px;
+}
+
+.no-layout .top-visible {
+  position: fixed;
+  left: 140px;
+  top: 120px;
+  padding: 10px;
+  border: 1px #999 solid;
+  white-space: nowrap;
+  background-color: #f7f7f7;
 }
 
 h3 {

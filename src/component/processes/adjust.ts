@@ -7,8 +7,8 @@ export default class Adjust {
   static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {
-    const { workflow, state: { adjust }, viewport } = scroller;
-    adjust.positionBefore = viewport.scrollPosition;
+    const { workflow, viewport } = scroller;
+    const positionBeforeAdjust = viewport.scrollPosition;
 
     // padding-elements adjustments
     if (!Adjust.setPaddings(scroller)) {
@@ -25,7 +25,7 @@ export default class Adjust {
 
     // re-set scroll position (if changed) via animation frame
     const { scrollPosition, previousPosition } = viewport;
-    if (adjust.positionBefore !== scrollPosition && previousPosition !== scrollPosition) {
+    if (positionBeforeAdjust !== scrollPosition && previousPosition !== scrollPosition) {
       viewport.setPositionSafe(previousPosition, scrollPosition, () =>
          workflow.call({
           process: Process.adjust,
@@ -42,7 +42,7 @@ export default class Adjust {
   }
 
   static setPaddings(scroller: Scroller): boolean {
-    const { viewport, buffer, state: { adjust, fetch }, settings: { inverse } } = scroller;
+    const { viewport, buffer, state: { fetch }, settings: { inverse } } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
     const lastItem = buffer.getLastVisibleItem();
     if (!firstItem || !lastItem) {
@@ -54,22 +54,13 @@ export default class Adjust {
     const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
     const maxIndex = isFinite(buffer.absMaxIndex) ? buffer.absMaxIndex : buffer.maxIndex;
     const { hasAverageItemSizeChanged } = fetch;
-    let index, bwdSize = 0, fwdSize = 0, itemsCount = 0;
+    let index, bwdSize = 0, fwdSize = 0;
 
     // new backward padding
     for (index = minIndex; index < firstIndex; index++) {
       const item = buffer.cache.get(index);
       bwdSize += item ? item.size : buffer.cache.averageSize;
-      if (hasAverageItemSizeChanged) {
-        itemsCount += !item ? 1 : 0;
-      }
     }
-    if (hasAverageItemSizeChanged) {
-      for (index = firstIndex; index < (fetch.first.indexBuffer as number); index++) {
-        itemsCount += !buffer.cache.get(index) ? 1 : 0;
-      }
-    }
-    adjust.bwdAverageSizeItemsCount = itemsCount;
 
     // new forward padding
     for (index = lastIndex + 1; index <= maxIndex; index++) {
@@ -100,7 +91,7 @@ export default class Adjust {
 
   static fixScrollPosition(scroller: Scroller) {
     const { viewport, buffer, state } = scroller;
-    const { adjust, fetch, render, scrollState } = state;
+    const { fetch, render, scrollState } = state;
     let position = viewport.paddings.backward.size;
 
     // backward outlet increase
@@ -117,7 +108,7 @@ export default class Adjust {
       }
     }
 
-    // scroll during slow fetch/render
+    // change per slow fetch/render
     if (scrollState.positionBeforeAsync !== null) {
       const diff = render.positionBefore - scrollState.positionBeforeAsync;
       if (diff !== 0) {
@@ -133,25 +124,6 @@ export default class Adjust {
 
     viewport.scrollPosition = position;
     scroller.logger.stat('after scroll position adjustment');
-  }
-
-  static setScroll(scroller: Scroller, delta: number) {
-    const { viewport, settings: { inverse } } = scroller;
-    const viewportSize = viewport.getSize();
-    const forwardPadding = viewport.paddings[Direction.forward];
-    const oldPosition = viewport.scrollPosition;
-    const newPosition = Math.round(oldPosition + delta);
-    for (let i = 0; i < Adjust.MAX_SCROLL_ADJUSTMENTS_COUNT; i++) {
-      viewport.scrollPosition = newPosition;
-      const positionDiff = newPosition - viewport.scrollPosition;
-      const viewportDiff = viewportSize - newPosition;
-      const diff = Math.min(viewportDiff, positionDiff);
-      if (!inverse && diff > 0) {
-        forwardPadding.size += diff;
-      } else {
-        break;
-      }
-    }
   }
 
 }

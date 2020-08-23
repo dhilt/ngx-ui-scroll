@@ -4,7 +4,6 @@ import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/state/fetch';
 import { ClipModel } from '../classes/state/clip';
 import { RenderModel } from '../classes/state/render';
-import { AdjustModel } from '../classes/state/adjust';
 
 export interface ScrollEventData {
   time: number;
@@ -40,7 +39,6 @@ export interface State {
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
-  adjust: AdjustModel;
 
   scrollState: ScrollState;
 

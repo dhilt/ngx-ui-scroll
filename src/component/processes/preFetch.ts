@@ -8,7 +8,6 @@ export default class PreFetch {
   static run(scroller: Scroller, process: Process) {
     const { workflow, buffer, state: { fetch } } = scroller;
     fetch.minIndex = buffer.minIndex;
-    fetch.averageItemSize = buffer.averageSize || 0;
 
     // set first and last indexes of items to fetch
     PreFetch.setPositionsAndIndexes(scroller);

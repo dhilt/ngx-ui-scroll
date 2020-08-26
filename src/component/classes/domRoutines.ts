@@ -93,11 +93,4 @@ export class Routines {
     element.scrollIntoView(argument);
   }
 
-  isAnchoringOff(element: HTMLElement): boolean {
-    this.checkElement(element);
-    const styles = getComputedStyle(element);
-    const value = (styles as any).overflowAnchor;
-    return value === void 0 || value === 'none';
-  }
-
 }

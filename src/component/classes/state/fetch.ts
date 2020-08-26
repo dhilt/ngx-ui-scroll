@@ -61,8 +61,6 @@ export class FetchModel {
   firstVisibleIndex: number | null;
   firstVisibleItemDelta: number | null;
   negativeSize: number;
-  averageItemSize: number;
-  hasAverageItemSizeChanged: boolean;
   direction: Direction | null;
 
   simulate: boolean;
@@ -87,7 +85,6 @@ export class FetchModel {
     this.firstVisibleIndex = null;
     this.firstVisibleItemDelta = null;
     this.negativeSize = 0;
-    this.hasAverageItemSizeChanged = false;
     this.direction = null;
     this.simulate = false;
     this.isPrepend = false;

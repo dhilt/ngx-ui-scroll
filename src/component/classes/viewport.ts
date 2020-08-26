@@ -10,7 +10,6 @@ export class Viewport {
   offset: number;
   paddings: Paddings;
   previousPosition: number;
-  scrollAnchoring: boolean;
 
   readonly element: HTMLElement;
   readonly settings: Settings;
@@ -51,7 +50,6 @@ export class Viewport {
     this.paddings.reset(this.getSize(), this.state.startIndex, this.offset);
     this.scrollPosition = this.paddings.backward.size || 0;
     this.state.scrollState.reset();
-    this.scrollAnchoring = !this.isAnchoringOff();
   }
 
   setPosition(value: number): number {
@@ -139,15 +137,6 @@ export class Viewport {
     if (!this.settings.windowViewport) {
       this.offset -= this.routines.getOffset(this.hostElement);
     }
-  }
-
-  isAnchoringOff(): boolean {
-    if (this.settings.windowViewport) {
-      if (this.routines.isAnchoringOff((this.element.ownerDocument as Document).body)) {
-        return true;
-      }
-    }
-    return this.routines.isAnchoringOff(this.hostElement);
   }
 
 }

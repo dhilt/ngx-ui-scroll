@@ -36,7 +36,6 @@ export default class Render {
     render.positionBefore = viewport.scrollPosition;
     if (!fetch.isReplace) {
       render.sizeBefore = viewport.getScrollableSize();
-      render.fwdPaddingBefore = viewport.paddings.forward.size;
       const success = fetch.items.reduce((acc, item) =>
         acc && Render.processElement(scroller, item)
       , true);
@@ -44,7 +43,7 @@ export default class Render {
         return false;
       }
     }
-    fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
+    buffer.checkAverageSize();
     render.sizeAfter = viewport.getScrollableSize();
     logger.stat('after new items render');
     logger.log(() => render.noSize ? 'viewport size has not been changed' : void 0);

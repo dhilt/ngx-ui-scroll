@@ -24,7 +24,6 @@ export class Buffer {
 
   private startIndex: number;
   private pristine: boolean;
-  readonly minBufferSize: number;
   readonly logger: Logger;
 
   constructor(settings: Settings, startIndex: number, logger: Logger, $items?: BehaviorSubject<Item[]>) {
@@ -36,7 +35,6 @@ export class Buffer {
     this.maxIndexUser = settings.maxIndex;
     this.reset();
     this.startIndex = startIndex;
-    this.minBufferSize = settings.bufferSize;
     this.logger = logger;
   }
 

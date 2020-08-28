@@ -28,7 +28,11 @@ export class Routines {
   setScrollPosition(element: HTMLElement, value: number) {
     value = Math.max(0, value);
     if (this.window) {
-      window.scrollTo({ [this.horizontal ? 'left' : 'top']: value });
+      if (this.horizontal) {
+        window.scrollTo(value, window.scrollY);
+      } else {
+        window.scrollTo(window.scrollX, value);
+      }
       return;
     }
     this.checkElement(element);
@@ -62,7 +66,7 @@ export class Routines {
 
   setSizeStyle(element: HTMLElement, value: number) {
     this.checkElement(element);
-    value = Math.max(0, value);
+    value = Math.max(0, Math.round(value));
     element.style[this.horizontal ? 'width' : 'height'] = `${value}px`;
   }
 

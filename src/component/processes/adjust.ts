@@ -121,7 +121,7 @@ export default class Adjust {
       position += viewport.offset;
     }
 
-    viewport.scrollPosition = position;
+    viewport.scrollPosition = Math.round(position);
     scroller.logger.stat('after scroll position adjustment');
   }
 

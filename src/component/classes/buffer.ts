@@ -1,10 +1,10 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
 import { Logger } from './logger';
+import { Direction } from '../interfaces/index';
 
 export class Buffer {
 

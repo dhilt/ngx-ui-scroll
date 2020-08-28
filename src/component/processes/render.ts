@@ -1,6 +1,6 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
 import { Item } from '../classes/item';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Render {
 

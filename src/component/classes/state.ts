@@ -1,17 +1,10 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-
-import {
-  ItemAdapter,
-  State as IState,
-  ScrollState as IScrollState
-} from '../interfaces/index';
-
 import { Settings } from './settings';
 import { Logger } from './logger';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
 import { ScrollState } from './state/scroll';
+import { State as IState, ScrollState as IScrollState } from '../interfaces/index';
 
 export class State implements IState {
 

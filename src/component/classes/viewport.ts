@@ -1,9 +1,9 @@
-import { Direction } from '../interfaces/index';
 import { Paddings } from './paddings';
 import { Settings } from './settings';
 import { Routines } from './domRoutines';
 import { State } from './state';
 import { Logger } from './logger';
+import { Direction } from '../interfaces/index';
 
 export class Viewport {
 

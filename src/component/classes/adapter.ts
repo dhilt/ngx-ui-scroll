@@ -1,10 +1,9 @@
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
 
-import { Scroller } from '../scroller';
 import { Logger } from './logger';
 import { Buffer } from './buffer';
-import { AdapterContext, EMPTY_ITEM } from './adapter/context';
+import { EMPTY_ITEM } from './adapter/context';
 import { ADAPTER_PROPS } from './adapter/props';
 import {
   WorkflowGetter,
@@ -21,7 +20,6 @@ import {
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
-  State,
   ScrollerWorkflow,
   IDatasourceOptional,
   ProcessSubject
@@ -115,7 +113,7 @@ export class Adapter implements IAdapter {
     // 2) "wanted" container is bound with scalars; get() updates it
     adapterProps
       .filter(prop => prop.type === AdapterPropType.Observable)
-      .forEach(({ name, value, wanted }: IAdapterProp) => {
+      .forEach(({ name, value }: IAdapterProp) => {
         this.source[name] = value;
         Object.defineProperty(this, name, {
           get: () => {
@@ -131,7 +129,7 @@ export class Adapter implements IAdapter {
     // 3) observables (from "source") are triggered on set
     adapterProps
       .filter(prop => prop.type === AdapterPropType.Scalar && !!prop.observable)
-      .forEach(({ type, name, value, observable, wanted }: IAdapterProp) => {
+      .forEach(({ name, value, observable, wanted }: IAdapterProp) => {
         if (wanted) {
           this.wanted[name] = false;
         }

@@ -14,7 +14,6 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 
 import 'rxjs';
-import { config } from 'rxjs';
 
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,

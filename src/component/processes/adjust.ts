@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessStatus } from '../interfaces/index';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Adjust {
 
@@ -42,7 +42,7 @@ export default class Adjust {
   }
 
   static setPaddings(scroller: Scroller): boolean {
-    const { viewport, buffer, state: { fetch }, settings: { inverse } } = scroller;
+    const { viewport, buffer, settings: { inverse } } = scroller;
     const firstItem = buffer.getFirstVisibleItem();
     const lastItem = buffer.getLastVisibleItem();
     if (!firstItem || !lastItem) {

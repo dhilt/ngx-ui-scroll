@@ -23,7 +23,6 @@ import {
 import {
   Process,
   ProcessStatus as Status,
-  ProcessSubject,
   StateMachineParams
 } from './interfaces/index';
 

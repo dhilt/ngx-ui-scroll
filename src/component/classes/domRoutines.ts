@@ -1,5 +1,5 @@
-import { Direction } from '../interfaces/direction';
 import { Settings } from './settings';
+import { Direction } from '../interfaces/direction';
 
 export class Routines {
 

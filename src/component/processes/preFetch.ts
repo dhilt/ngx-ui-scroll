@@ -55,7 +55,7 @@ export default class PreFetch {
   }
 
   static getStartDelta(scroller: Scroller): number { // calculate size before start index
-    const { buffer, viewport, viewport: { offset }, state: { fetch } } = scroller;
+    const { buffer, viewport: { offset }, state } = scroller;
     let startDelta = 0;
     if (offset) {
       startDelta += offset;
@@ -64,7 +64,7 @@ export default class PreFetch {
       return startDelta;
     }
     const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
-    for (let index = minIndex; index < scroller.state.startIndex; index++) {
+    for (let index = minIndex; index < state.startIndex; index++) {
       const item = buffer.cache.get(index);
       startDelta += item ? item.size : buffer.averageSize;
     }

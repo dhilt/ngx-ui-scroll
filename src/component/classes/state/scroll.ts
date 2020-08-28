@@ -1,10 +1,7 @@
 import {
-  Direction,
   ScrollEventData as IScrollEventData,
   ScrollState as IScrollState
 } from '../../interfaces/index';
-
-import { Logger } from '../logger';
 
 export class ScrollState implements IScrollState {
   previous: IScrollEventData | null;

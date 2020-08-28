@@ -1,13 +1,13 @@
 import { Scroller } from '../../scroller';
-import { Process, ProcessStatus, Direction } from '../../interfaces/index';
 import End from '../end';
+import { Process, ProcessStatus, Direction } from '../../interfaces/index';
 
 export default class Check {
 
   static process = Process.check;
 
   static run(scroller: Scroller) {
-    const { workflow, buffer, state: { fetch }, viewport } = scroller;
+    const { workflow, buffer, state: { fetch } } = scroller;
     let min = Infinity, max = -Infinity;
 
     buffer.items.forEach(item => {

@@ -9,7 +9,7 @@ export default class End {
   static process = Process.end;
 
   static run(scroller: Scroller, process: Process, payload: any = {}) {
-    const { workflow, state, adapter } = scroller;
+    const { workflow } = scroller;
     const { error } = payload;
 
     if (!error && process !== Process.reset && process !== Process.reload) {
@@ -94,7 +94,7 @@ export default class End {
   }
 
   static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
-    const { state: { clip, fetch, render, scrollState } } = scroller;
+    const { state: { clip, fetch, render } } = scroller;
     if (error) {
       return false;
     }

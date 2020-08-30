@@ -63,10 +63,8 @@ export default class PreFetch {
     if (!buffer.hasItemSize) {
       return startDelta;
     }
-    const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
-    for (let index = minIndex; index < state.startIndex; index++) {
-      const item = buffer.cache.get(index);
-      startDelta += item ? item.size : buffer.averageSize;
+    for (let index = buffer.finiteAbsMinIndex; index < state.startIndex; index++) {
+      startDelta += buffer.getSizeByIndex(index);
     }
     scroller.logger.log(() => [
       `start delta is ${startDelta}`, ...(offset ? [` (+${offset} offset)`] : [])

@@ -61,7 +61,7 @@ export default class Render {
     item.element.style.position = '';
     item.invisible = false;
     item.setSize();
-    buffer.cache.add(item);
+    buffer.cacheItem(item);
     if (item.$index < fetch.minIndex) {
       fetch.negativeSize += item.size;
     }

@@ -14,7 +14,7 @@ export default class Check {
       const size = item.size;
       item.setSize();
       if (item.size !== size) {
-        buffer.cache.add(item);
+        buffer.cacheItem(item);
         min = Math.min(min, item.$index);
         max = Math.max(max, item.$index);
       }

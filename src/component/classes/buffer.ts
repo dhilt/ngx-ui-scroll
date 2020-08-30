@@ -17,13 +17,12 @@ export class Buffer {
   $items: BehaviorSubject<Item[]>;
   bofSource: Subject<boolean>;
   eofSource: Subject<boolean>;
-
-  cache: Cache;
   minIndexUser: number;
   maxIndexUser: number;
 
   private startIndex: number;
   private pristine: boolean;
+  private cache: Cache;
   readonly logger: Logger;
 
   constructor(settings: Settings, startIndex: number, logger: Logger, $items?: BehaviorSubject<Item[]>) {
@@ -136,6 +135,10 @@ export class Buffer {
     return this._items.length;
   }
 
+  get cacheSize(): number {
+    return this.cache.size;
+  }
+
   get averageSize(): number {
     return this.cache.averageSize;
   }
@@ -158,6 +161,14 @@ export class Buffer {
 
   get lastIndex(): number | null {
     return this.items.length ? this.items[this.items.length - 1].$index : null;
+  }
+
+  get finiteAbsMinIndex(): number {
+    return isFinite(this.absMinIndex) ? this.absMinIndex : this.minIndex;
+  }
+
+  get finiteAbsMaxIndex(): number {
+    return isFinite(this.absMaxIndex) ? this.absMaxIndex : this.maxIndex;
   }
 
   get($index: number): Item | undefined {
@@ -193,7 +204,7 @@ export class Buffer {
         _item.nodeId = String(_item.$index);
       }
     });
-    this.absMaxIndex--; // todo: perhaps we want to reduce absMinIndex in some cases
+    this.absMaxIndex--; // todo: perhaps we want to reduce absMinIndex in some cases, see "decrement" for insert
     this.items = items;
     this.cache.removeItem(item.$index);
   }
@@ -220,6 +231,10 @@ export class Buffer {
     }
     this.items = result;
     this.cache.insertItems(from.$index + addition, count, decrement);
+  }
+
+  cacheItem(item: Item) {
+    this.cache.add(item);
   }
 
   getFirstVisibleItemIndex(): number {

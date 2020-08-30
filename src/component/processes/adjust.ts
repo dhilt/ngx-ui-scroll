@@ -4,7 +4,6 @@ import { Process, ProcessStatus } from '../interfaces/index';
 export default class Adjust {
 
   static process = Process.adjust;
-  static MAX_SCROLL_ADJUSTMENTS_COUNT = 10;
 
   static run(scroller: Scroller) {
     const { workflow, viewport } = scroller;
@@ -21,7 +20,7 @@ export default class Adjust {
     }
 
     // scroll position adjustments
-    Adjust.fixScrollPosition(scroller);
+    Adjust.setScrollPosition(scroller);
 
     // re-set scroll position (if changed) via animation frame
     const { scrollPosition, previousPosition } = viewport;
@@ -49,22 +48,14 @@ export default class Adjust {
       return false;
     }
     const { forward, backward } = viewport.paddings;
-    const firstIndex = firstItem.$index;
-    const lastIndex = lastItem.$index;
-    const minIndex = isFinite(buffer.absMinIndex) ? buffer.absMinIndex : buffer.minIndex;
-    const maxIndex = isFinite(buffer.absMaxIndex) ? buffer.absMaxIndex : buffer.maxIndex;
     let index, bwdSize = 0, fwdSize = 0;
 
-    // new backward padding
-    for (index = minIndex; index < firstIndex; index++) {
-      const item = buffer.cache.get(index);
-      bwdSize += item ? item.size : buffer.cache.averageSize;
+    // new backward and forward paddings size
+    for (index = buffer.finiteAbsMinIndex; index < firstItem.$index; index++) {
+      bwdSize += buffer.getSizeByIndex(index);
     }
-
-    // new forward padding
-    for (index = lastIndex + 1; index <= maxIndex; index++) {
-      const item = buffer.cache.get(index);
-      fwdSize += item ? item.size : buffer.cache.averageSize;
+    for (index = lastItem.$index + 1; index <= buffer.finiteAbsMaxIndex; index++) {
+      fwdSize += buffer.getSizeByIndex(index);
     }
 
     // lack of items case
@@ -88,7 +79,7 @@ export default class Adjust {
     return true;
   }
 
-  static fixScrollPosition(scroller: Scroller) {
+  static setScrollPosition(scroller: Scroller) {
     const { viewport, buffer, state } = scroller;
     const { fetch, render, scrollState } = state;
     let position = viewport.paddings.backward.size;

@@ -1,8 +1,10 @@
 import { Scroller } from '../../scroller';
-import { ADAPTER_METHODS, AdapterMethods, validate } from '../../inputs/index';
+import { ADAPTER_METHODS, validate } from '../../inputs/index';
 import { AdapterClipOptions, Process, ProcessStatus } from '../../interfaces/index';
 
 export default class UserClip {
+
+  static process = Process.userClip;
 
   static run(scroller: Scroller, options?: AdapterClipOptions) {
     const methodData = validate(options, ADAPTER_METHODS.CLIP);

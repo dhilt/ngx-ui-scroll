@@ -7,6 +7,8 @@ import {
 
 export default class Insert {
 
+  static process = Process.insert;
+
   static run(scroller: Scroller, options: AdapterInsertOptions) {
 
     const methodData = validate(options, ADAPTER_METHODS.INSERT);
@@ -53,12 +55,15 @@ export default class Insert {
     buffer.insertItems(itemsToInsert, from, addition, decrement);
     scroller.logger.log(() => {
       const newBufferLimit = decrement ? buffer.absMinIndex : buffer.absMaxIndex;
+      const isChange = bufferLimit !== newBufferLimit;
       const token = decrement ? 'absMinIndex' : 'absMaxIndex';
-      return `buffer.${token} value has been changed from ${bufferLimit} to ${newBufferLimit}`;
+      return `buffer.${token} value ` + (
+        isChange ? `has been changed from ${bufferLimit} to ${newBufferLimit}` : `has not been changed`
+      );
     });
     fetch.insert(itemsToInsert);
-    fetch.firstIndexBuffer = buffer.firstIndex;
-    fetch.lastIndexBuffer = buffer.lastIndex;
+    fetch.first.indexBuffer = buffer.firstIndex;
+    fetch.last.indexBuffer = buffer.lastIndex;
     clip.noClip = true;
     return true;
   }

@@ -14,14 +14,17 @@ import {
   ItemAdapter,
   ItemsPredicate,
   ItemsLooper,
+  AdapterAppendOptions,
+  AdapterPrependOptions,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
+  AdapterMethodRelax,
   IAdapter,
 } from './adapter';
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
-import { WindowScrollState, ScrollEventData, ScrollState, State } from './state';
+import { ScrollEventData, ScrollState, State } from './state';
 import { Process, ProcessStatus, ProcessSubject } from './process';
 import {
   ValidatorType,
@@ -47,16 +50,18 @@ export {
   AdapterPropType,
   IAdapterProp,
   ItemAdapter,
+  AdapterMethodRelax,
   IAdapter,
   ItemsPredicate,
   ItemsLooper,
+  AdapterAppendOptions,
+  AdapterPrependOptions,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
   Settings,
   DevSettings,
   Direction,
-  WindowScrollState,
   ScrollEventData,
   ScrollState,
   State,

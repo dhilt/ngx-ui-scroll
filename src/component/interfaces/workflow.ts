@@ -23,10 +23,10 @@ export interface InterruptParams {
 }
 
 export interface StateMachineMethods {
-  run: (process: any) => any;
-  interrupt: (params: InterruptParams) => any;
-  done: () => any;
-  onError: (process: Process, payload: any) => any;
+  run: (process: any) => (...args: any[]) => void;
+  interrupt: (params: InterruptParams) => void;
+  done: () => void;
+  onError: (process: Process, payload: any) => void;
 }
 
 export interface StateMachineParams {

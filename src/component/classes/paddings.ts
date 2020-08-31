@@ -1,6 +1,6 @@
-import { Direction } from '../interfaces/direction';
 import { Routines } from './domRoutines';
 import { Settings } from './settings';
+import { Direction } from '../interfaces/direction';
 
 export class Padding {
 
@@ -23,7 +23,7 @@ export class Padding {
   }
 
   set size(value: number) {
-    this.routines.setSizeStyle(this.element, Math.round(value));
+    this.routines.setSizeStyle(this.element, value);
   }
 
 }
@@ -45,13 +45,13 @@ export class Paddings {
       : (opposite ? this.backward : this.forward);
   }
 
-  reset(viewportSize: number, startIndex: number) {
-    const positive = this.getPositiveSize(startIndex, viewportSize);
+  reset(viewportSize: number, startIndex: number, offset: number) {
+    const positive = this.getPositiveSize(startIndex, viewportSize, offset);
     const negative = this.getNegativeSize(startIndex);
     if (this.settings.inverse) {
       this.forward.reset(negative);
       this.backward.reset(positive);
-      const diff = viewportSize - this.backward.size;
+      const diff = viewportSize - this.backward.size - offset;
       if (diff > 0) {
         this.backward.size += diff;
         this.forward.size -= diff;
@@ -59,7 +59,7 @@ export class Paddings {
     } else {
       this.forward.reset(positive);
       this.backward.reset(negative);
-      const diff = viewportSize - this.forward.size;
+      const diff = viewportSize - this.forward.size - offset;
       if (diff > 0) {
         this.backward.size -= diff;
         this.forward.size += diff;
@@ -68,11 +68,14 @@ export class Paddings {
 
   }
 
-  getPositiveSize(startIndex: number, viewportSize: number) {
+  getPositiveSize(startIndex: number, viewportSize: number, offset: number) {
     const { settings } = this;
     let positiveSize = viewportSize;
     if (isFinite(settings.maxIndex)) {
       positiveSize = (settings.maxIndex - startIndex + 1) * settings.itemSize;
+    }
+    if (offset) {
+      positiveSize = Math.max(positiveSize - offset, 0);
     }
     return positiveSize;
   }

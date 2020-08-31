@@ -1,7 +1,8 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { generateItem, Item } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
-import { Settings, DevSettings, DatasourceGet } from 'src/component/interfaces/index';
+import { configureTestBedSub } from './scaffolding/testBed';
+import { Settings, DevSettings, DatasourceGet } from '../src/component/interfaces/index';
 
 describe('Bug Spec', () => {
 
@@ -39,7 +40,7 @@ describe('Bug Spec', () => {
         datasourceSettings: { padding: 5, adapter: true }
       },
       it: (misc: Misc) => (done: Function) => {
-        const { state, datasource: { adapter } } = misc.scroller;
+        const { scroller: { state }, adapter } = misc;
         adapter.firstVisible$.subscribe(item => count++);
         let count = 0, checkedCount = 0;
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -76,13 +77,12 @@ describe('Bug Spec', () => {
       },
       title: 'should continue the workflow again and again',
       it: (misc: Misc) => (done: Function) => {
-        const { adapter } = misc.datasource;
         let count = 0;
         const doubleReload = () => {
           count++;
-          adapter.reload();
+          misc.adapter.reload();
           count++;
-          adapter.reload();
+          misc.adapter.reload();
         };
         doubleReload();
         setTimeout(() => {
@@ -152,13 +152,30 @@ describe('Bug Spec', () => {
       },
       it: (misc: Misc) => (done: Function) => {
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { state, datasource: { adapter } } = misc.scroller;
-          expect(misc.scroller.viewport.paddings.backward.size).toEqual(0);
-          expect(misc.scroller.viewport.paddings.forward.size).toEqual(0);
+          const { scroller: { viewport } } = misc;
+          expect(viewport.paddings.backward.size).toEqual(0);
+          expect(viewport.paddings.forward.size).toEqual(0);
           done();
         });
       }
     })
   );
+
+  describe('early (constructor) subscriptions', () => {
+    let misc: any;
+
+    beforeEach(() => {
+      misc = new Misc(configureTestBedSub());
+    });
+
+    it('should work', (done) => {
+      const { adapter, workflow, testComponent } = misc;
+      spyOn(workflow, 'finalize').and.callFake(() => {
+        expect(testComponent.firstVisible).toEqual(adapter.firstVisible);
+        expect(testComponent.firstVisible.$index).toEqual(1);
+        done();
+      });
+    });
+  });
 
 });

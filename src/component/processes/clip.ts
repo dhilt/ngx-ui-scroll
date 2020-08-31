@@ -1,7 +1,9 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, Direction } from '../interfaces/index';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Clip {
+
+  static process = Process.clip;
 
   static run(scroller: Scroller) {
     const { workflow, state: { clip } } = scroller;

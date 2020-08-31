@@ -52,22 +52,21 @@ const getInitialItemsCounter = (config: TestBedConfig, misc: Misc): ItemsCounter
   const result = new ItemsCounter();
   result.average = firstFetchData.average;
 
-  result.set(Direction.forward, {
-    size: firstFetchData.size,
-    count: bufferSize,
-    index: firstFetchEndIndex,
-    padding: Math.max(0, viewportSize - firstFetchData.size)
-  });
   result.set(Direction.backward, {
     size: 0,
     count: 0,
     index: startIndex,
     padding: 0
   });
-
   if (isFinite(minIndex)) {
     result.backward.padding = (startIndex - Math.max(minIndex, ABS_MIN_INDEX)) * result.average;
   }
+  result.set(Direction.forward, {
+    size: firstFetchData.size,
+    count: bufferSize,
+    index: firstFetchEndIndex,
+    padding: Math.max(0, viewportSize - firstFetchData.size - result.backward.padding)
+  });
   if (isFinite(maxIndex)) {
     result.forward.padding = (Math.min(maxIndex, ABS_MAX_INDEX) - result.forward.index) * result.average;
   }
@@ -243,11 +242,10 @@ describe('Zero Size Spec', () => {
       title: 'should continue the Workflow after re-size and check',
       it: (misc: Misc) => (done: Function) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { viewport, adapter } = misc.scroller;
+          const { scroller: { viewport }, adapter, datasource } = misc;
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-            const ds = misc.fixture.componentInstance.datasource;
-            (ds as any).setProcessGet((result: any[]) =>
+            (datasource as any).setProcessGet((result: any[]) =>
               result.forEach(item => item.size = 20)
             );
             adapter.fix({ updater: ({ element, data }) => {

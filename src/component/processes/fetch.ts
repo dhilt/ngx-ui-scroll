@@ -5,6 +5,8 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Fetch {
 
+  static process = Process.fetch;
+
   static run(scroller: Scroller) {
     const { workflow } = scroller;
 
@@ -36,6 +38,10 @@ export default class Fetch {
         fail(result.error);
       }
     } else {
+      const { state: { scrollState }, viewport } = scroller;
+      if (scrollState.positionBeforeAsync === null) {
+        scrollState.positionBeforeAsync = viewport.scrollPosition;
+      }
       scroller.innerLoopSubscriptions.push(
         result.subscribe(
           (data: any[]) => success(data),

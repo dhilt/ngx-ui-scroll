@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
@@ -14,7 +14,6 @@ import {
   InterruptParams,
   StateMachineMethods
 } from './interfaces/index';
-import { Datasource } from './classes/datasource';
 
 export class Workflow {
 
@@ -57,7 +56,12 @@ export class Workflow {
   }
 
   init() {
-    this.scroller.init(this.dispose$);
+    const onAdapterRun$ = this.process$.pipe(
+      takeUntil(this.dispose$),
+      filter(({ process }) => process.startsWith('adapter'))
+    );
+
+    this.scroller.init(this.dispose$, onAdapterRun$);
     this.isInitialized = true;
 
     // propagate item list to the view
@@ -71,16 +75,16 @@ export class Workflow {
     ).subscribe(this.process.bind(this));
 
     // set up scroll event listener
-    const { scrollEventElement } = this.scroller.viewport;
+    const { scrollEventReceiver } = this.scroller.viewport;
     const onScrollHandler: EventListener =
       event => this.callWorkflow({
         process: Process.scroll,
         status: ProcessStatus.start,
         payload: { event }
       });
-    scrollEventElement.addEventListener('scroll', onScrollHandler);
+    scrollEventReceiver.addEventListener('scroll', onScrollHandler);
     this.dispose$.subscribe(() =>
-      scrollEventElement.removeEventListener('scroll', onScrollHandler)
+      scrollEventReceiver.removeEventListener('scroll', onScrollHandler)
     );
   }
 
@@ -88,10 +92,6 @@ export class Workflow {
     if (!this.isInitialized) {
       return;
     }
-    // this.scroller.logger.log(() => {
-    //   const { process, status, payload } = processSubject;
-    //   return ['%ccall%c', ...['color: #77cc77;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])];
-    // });
     this.process$.next(processSubject);
   }
 
@@ -99,10 +99,12 @@ export class Workflow {
     const { status, process, payload } = data;
     if (this.scroller.settings.logProcessRun) {
       this.scroller.logger.log(() => [
-        '%cfire%c', ...['color: #cc7777;', 'color: #000000;'], process, `"${status}"`, ...(payload ? [payload] : [])
+        '%cfire%c', ...['color: #cc7777;', 'color: #000000;'],
+        process, `"${status}"`, ...(payload !== void 0 ? [payload] : [])
       ]);
     }
     this.scroller.logger.logProcess(data);
+
     if (process === Process.end) {
       this.scroller.finalize();
     }
@@ -113,12 +115,12 @@ export class Workflow {
   }
 
   runProcess() {
-    return (process: any) =>
+    return ({ run, process, name }: any) =>
       (...args: any[]) => {
         if (this.scroller.settings.logProcessRun) {
-          this.scroller.logger.log(() => ['run', process.name, ...args]);
+          this.scroller.logger.log(() => ['run', process || name, ...args]);
         }
-        process.run(this.scroller, ...args);
+        run(this.scroller, ...args);
       };
   }
 
@@ -145,12 +147,14 @@ export class Workflow {
       logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
     }
     if (datasource) { // Scroller re-initialization case
-      this.scroller.logger.log('new Scroller instantiation');
-      const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
-      const scroller = new Scroller(element, datasource, version, call, this.scroller);
-      this.scroller.dispose();
-      this.scroller = scroller;
-      this.scroller.init(this.dispose$);
+      this.scroller.adapter.relax(() => {
+        this.scroller.logger.log('new Scroller instantiation');
+        const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
+        const scroller = new Scroller(element, datasource, version, call, this.scroller);
+        this.scroller.dispose();
+        this.scroller = scroller;
+        this.scroller.init(this.dispose$);
+      });
     }
   }
 
@@ -160,7 +164,6 @@ export class Workflow {
     this.scroller.logger.logCycle(false);
     state.workflowCycleCount = this.cyclesDone + 1;
     state.isInitialWorkflowCycle = false;
-    adapter.cyclePending = false;
     adapter.isLoading = false;
     this.finalize();
   }

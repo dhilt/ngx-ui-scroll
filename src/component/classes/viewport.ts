@@ -1,24 +1,24 @@
-import { Direction } from '../interfaces/index';
 import { Paddings } from './paddings';
 import { Settings } from './settings';
 import { Routines } from './domRoutines';
 import { State } from './state';
 import { Logger } from './logger';
+import { Direction } from '../interfaces/index';
 
 export class Viewport {
 
+  offset: number;
   paddings: Paddings;
-  startDelta: number;
   previousPosition: number;
 
   readonly element: HTMLElement;
-  readonly host: HTMLElement;
-  readonly scrollEventElement: HTMLElement | Document;
-  readonly scrollable: HTMLElement;
   readonly settings: Settings;
   readonly routines: Routines;
   readonly state: State;
   readonly logger: Logger;
+
+  readonly hostElement: HTMLElement;
+  readonly scrollEventReceiver: HTMLElement | Window;
 
   private disabled: boolean;
 
@@ -31,13 +31,11 @@ export class Viewport {
     this.disabled = false;
 
     if (settings.windowViewport) {
-      this.scrollEventElement = this.element.ownerDocument as Document;
-      this.host = this.scrollEventElement.body;
-      this.scrollable = this.scrollEventElement.scrollingElement as HTMLElement;
+      this.hostElement = document.documentElement as HTMLElement;
+      this.scrollEventReceiver = window;
     } else {
-      this.host = this.element.parentElement as HTMLElement;
-      this.scrollEventElement = this.host.parentElement as HTMLElement;
-      this.scrollable = this.host.parentElement as HTMLElement;
+      this.hostElement = this.element.parentElement as HTMLElement;
+      this.scrollEventReceiver = this.hostElement;
     }
 
     this.paddings = new Paddings(this.element, this.routines, settings);
@@ -48,17 +46,10 @@ export class Viewport {
   }
 
   reset(scrollPosition: number) {
-    let newPosition = 0;
-    this.paddings.reset(this.getSize(), this.state.startIndex);
-    const negativeSize = this.paddings.backward.size;
-    if (negativeSize) {
-      newPosition = negativeSize;
-      const { itemSize } = this.settings;
-      this.state.bwdPaddingAverageSizeItemsCount = itemSize ? negativeSize / itemSize : 0;
-    }
-    this.scrollPosition = newPosition;
+    this.setOffset();
+    this.paddings.reset(this.getSize(), this.state.startIndex, this.offset);
+    this.scrollPosition = this.paddings.backward.size || 0;
     this.state.scrollState.reset();
-    this.startDelta = 0;
   }
 
   setPosition(value: number): number {
@@ -68,7 +59,7 @@ export class Viewport {
       return value;
     }
     this.previousPosition = oldPosition;
-    this.routines.setScrollPosition(this.scrollable, value);
+    this.routines.setScrollPosition(this.hostElement, value);
     const position = this.scrollPosition;
     this.logger.log(() => [
       'setting scroll position at', position, ...(position !== value ? [`(${value})`] : [])
@@ -80,7 +71,7 @@ export class Viewport {
     const { scrollState } = this.state;
     scrollState.syntheticPosition = newPos;
     this.logger.log(() => ['setting scroll position at', oldPos, '(meaning', newPos, 'in next repaint)']);
-    this.routines.setScrollPosition(this.scrollable, oldPos);
+    this.routines.setScrollPosition(this.hostElement, oldPos);
     scrollState.syntheticFulfill = false;
     scrollState.animationFrameId =
       requestAnimationFrame(() => {
@@ -95,13 +86,13 @@ export class Viewport {
           ...(diff > 0 ? [`(${(newPos + diff)} - ${diff})`] : []),
           '- synthetic fulfillment'
         ]);
-        this.routines.setScrollPosition(this.scrollable, newPos);
+        this.routines.setScrollPosition(this.hostElement, newPos);
         done();
       });
   }
 
   get scrollPosition(): number {
-    return this.routines.getScrollPosition(this.scrollable);
+    return this.routines.getScrollPosition(this.hostElement);
   }
 
   set scrollPosition(value: number) {
@@ -112,7 +103,7 @@ export class Viewport {
     if (this.disabled) {
       return;
     }
-    const { style } = this.scrollable;
+    const { style } = this.hostElement;
     if (style.overflowY === 'hidden') {
       return;
     }
@@ -126,7 +117,7 @@ export class Viewport {
   }
 
   getSize(): number {
-    return this.routines.getSize(this.host);
+    return this.routines.getSize(this.hostElement, true);
   }
 
   getScrollableSize(): number {
@@ -137,16 +128,15 @@ export class Viewport {
     return this.getSize() * this.settings.padding;
   }
 
-  getEdge(direction: Direction, opposite?: boolean): number {
-    return this.routines.getEdge(this.host, direction, opposite);
+  getEdge(direction: Direction): number {
+    return this.routines.getEdge(this.hostElement, direction, true);
   }
 
-  getElementEdge(element: HTMLElement, direction: Direction, opposite?: boolean): number {
-    return this.routines.getEdge(element, direction, opposite);
-  }
-
-  getOffset(): number {
-    return this.routines.getOffset(this.element);
+  setOffset() {
+    this.offset = this.routines.getOffset(this.element);
+    if (!this.settings.windowViewport) {
+      this.offset -= this.routines.getOffset(this.hostElement);
+    }
   }
 
 }

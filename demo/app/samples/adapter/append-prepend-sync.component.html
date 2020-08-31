@@ -11,22 +11,23 @@
 
   <div description>
     <p>
-      Both <em>Adapter.append</em> and <em>Adapter.prepend</em> methods have second argument
+      Along with the <em>items</em> parameter both
+      <em>Adapter.append</em> and <em>Adapter.prepend</em> methods
+      have <em>eof</em>/<em>bof</em> parameter
       which is optional and which allows to prevent rendering of new items in the Viewport when
       the end of the dataset (if we are speaking of <em>append</em>) or
       beginning of the dataset (<em>prepend</em> case) is not reached.
-      The <em>append</em> second argument is called <em>eof</em> (end-of-file),
-      the <em>prepend</em> second argument is called <em>bof</em> (begin-of-file).
+      See also <a href="#/adapter#bof-eof">bof/eof demo</a>.
     </p>
     <p>
-      Let's discuss <em>Adapter.prepend(items, bof)</em> case.
-      So if <em>bof</em> is set to <em>true</em> and the beginning of the dataset is reached
+      Let's discuss <em>{{prependCallSample}}</em> case.
+      If <em>bof</em> is set to <em>true</em> and the beginning of the dataset is reached
       (and no more items can be fetched in backward direction), then
       new items will be injected immediately.
       Otherwise new items will not appear, they will be virtualized:
       viewport backward padding element size will be increased in accordance with
       the number of new items multiplied by the average item size.
-      The same is true for <em>Adapter.append(items, eof)</em>
+      The same is true for <em>{{appendCallSample}}</em>
       adjusted for forward direction and forward padding element.
     </p>
     <p>
@@ -41,6 +42,9 @@
       Practical use of this feature could be versatile, but
       the main idea is to synchronize, say, remote dataset changes with
       the <em>uiScroll</em> state visible to the end user.
+      Another examples of such synchronization could be found in
+      <a href="#/adapter#remove">remove</a> and
+      <a href="#/adapter#insert">insert</a> demos.
     </p>
   </div>
 </app-demo>

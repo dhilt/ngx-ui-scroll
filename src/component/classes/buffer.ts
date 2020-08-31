@@ -1,10 +1,10 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { Direction } from '../interfaces/index';
 import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
 import { Logger } from './logger';
+import { Direction } from '../interfaces/index';
 
 export class Buffer {
 
@@ -17,14 +17,12 @@ export class Buffer {
   $items: BehaviorSubject<Item[]>;
   bofSource: Subject<boolean>;
   eofSource: Subject<boolean>;
-
-  cache: Cache;
   minIndexUser: number;
   maxIndexUser: number;
 
   private startIndex: number;
   private pristine: boolean;
-  readonly minBufferSize: number;
+  private cache: Cache;
   readonly logger: Logger;
 
   constructor(settings: Settings, startIndex: number, logger: Logger, $items?: BehaviorSubject<Item[]>) {
@@ -36,7 +34,6 @@ export class Buffer {
     this.maxIndexUser = settings.maxIndex;
     this.reset();
     this.startIndex = startIndex;
-    this.minBufferSize = settings.bufferSize;
     this.logger = logger;
   }
 
@@ -138,6 +135,10 @@ export class Buffer {
     return this._items.length;
   }
 
+  get cacheSize(): number {
+    return this.cache.size;
+  }
+
   get averageSize(): number {
     return this.cache.averageSize;
   }
@@ -160,6 +161,14 @@ export class Buffer {
 
   get lastIndex(): number | null {
     return this.items.length ? this.items[this.items.length - 1].$index : null;
+  }
+
+  get finiteAbsMinIndex(): number {
+    return isFinite(this.absMinIndex) ? this.absMinIndex : this.minIndex;
+  }
+
+  get finiteAbsMaxIndex(): number {
+    return isFinite(this.absMaxIndex) ? this.absMaxIndex : this.maxIndex;
   }
 
   get($index: number): Item | undefined {
@@ -195,7 +204,7 @@ export class Buffer {
         _item.nodeId = String(_item.$index);
       }
     });
-    this.absMaxIndex--; // todo: perhaps we want to reduce absMinIndex in some cases
+    this.absMaxIndex--; // todo: perhaps we want to reduce absMinIndex in some cases, see "decrement" for insert
     this.items = items;
     this.cache.removeItem(item.$index);
   }
@@ -222,6 +231,10 @@ export class Buffer {
     }
     this.items = result;
     this.cache.insertItems(from.$index + addition, count, decrement);
+  }
+
+  cacheItem(item: Item) {
+    this.cache.add(item);
   }
 
   getFirstVisibleItemIndex(): number {

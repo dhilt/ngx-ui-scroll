@@ -4,6 +4,8 @@ import { Direction, ItemsPredicate, Process, ProcessStatus } from '../../interfa
 
 export default class Remove {
 
+  static process = Process.remove;
+
   static run(scroller: Scroller, predicate: ItemsPredicate) {
     const methodData = validate({ predicate }, ADAPTER_METHODS.REMOVE);
     if (!methodData.isValid) {

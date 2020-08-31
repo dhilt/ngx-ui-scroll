@@ -21,7 +21,7 @@ export class DemoIsLoadingComponent {
   };
 
   datasource = new Datasource({
-    get: datasourceGetCallbackInfinite(this.demoContext, 125)
+    get: datasourceGetCallbackInfinite(this.demoContext, 225)
   });
 
   sources: DemoSources = [{
@@ -32,7 +32,7 @@ export class DemoIsLoadingComponent {
     for (let i = index; i <= index + count - 1; i++) {
       data.push({ id: i, text: 'item #' + i });
     }
-    setTimeout(() => success(data), 125);
+    setTimeout(() => success(data), 225);
   }
 });
 
@@ -67,7 +67,6 @@ for {{isLoadingCounter}} times.
   width: 150px;
   height: 250px;
   overflow-y: auto;
-  overflow-anchor: none;
 }
 .item {
   font-weight: bold;

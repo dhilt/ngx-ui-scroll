@@ -24,9 +24,6 @@ export class DemoAdapterFixScrollToItemComponent {
         data.push({ id: i, text: 'item #' + i });
       }
       success(data);
-    },
-    devSettings: {
-      debug: true
     }
   });
 

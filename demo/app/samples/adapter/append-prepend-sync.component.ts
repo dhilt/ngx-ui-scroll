@@ -89,7 +89,7 @@ doAppend() {
     this.data.push(newItem);
     items.push(newItem);
   }
-  this.datasource.adapter.append(items, true);
+  this.datasource.adapter.append({ items, eof: true });
 }
 
 doPrepend() {
@@ -103,7 +103,7 @@ doPrepend() {
     this.data.unshift(newItem);
     items.push(newItem);
   }
-  this.datasource.adapter.prepend(items, true);
+  this.datasource.adapter.prepend({ items, bof: true});
 }`
   }, {
     active: true,
@@ -123,13 +123,15 @@ doPrepend() {
   width: 150px;
   height: 250px;
   overflow-y: auto;
-  overflow-anchor: none;
 }
 .item {
   font-weight: bold;
   height: 25px;
 }`
   }];
+
+  prependCallSample = 'Adapter.prepend({ items, bof })';
+  appendCallSample = 'Adapter.append({ items, eof })';
 
   inputValue = 1;
 
@@ -150,7 +152,7 @@ doPrepend() {
       this.data.push(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.append(items, true);
+    this.datasource.adapter.append({ items, eof: true });
   }
 
   doPrepend() {
@@ -164,7 +166,7 @@ doPrepend() {
       this.data.unshift(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.prepend(items, true);
+    this.datasource.adapter.prepend({ items, bof: true});
   }
 
 }

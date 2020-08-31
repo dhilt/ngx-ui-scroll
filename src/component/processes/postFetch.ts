@@ -4,6 +4,8 @@ import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class PostFetch {
 
+  static process = Process.postFetch;
+
   static run(scroller: Scroller) {
     const { workflow } = scroller;
     if (PostFetch.setItems(scroller)) {
@@ -25,8 +27,8 @@ export default class PostFetch {
 
   static setBufferLimits(scroller: Scroller) {
     const { buffer, state: { fetch, fetch: { items }, isInitialLoop } } = scroller;
-    const first = fetch.firstIndex as number;
-    const last = fetch.lastIndex as number;
+    const first = fetch.first.index as number;
+    const last = fetch.last.index as number;
     if (!items.length) {
       if (last < buffer.minIndex || isInitialLoop) {
         buffer.absMinIndex = buffer.minIndex;
@@ -57,7 +59,7 @@ export default class PostFetch {
       if (scroller.state.isInitialLoop) {
         // let's treat initial poor fetch as startIndex-bof
         fetchIndex = scroller.state.startIndex;
-      } else if ((fetch.firstIndex as number) < buffer.minIndex) { // normal bof
+      } else if ((fetch.first.index as number) < buffer.minIndex) { // normal bof
         fetchIndex = buffer.minIndex - items.length;
       }
     }

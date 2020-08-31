@@ -141,7 +141,7 @@ export class TestComponent {
       height: 25
     };
     this.data.unshift(item);
-    this.datasource.adapter.prepend(item);
+    this.datasource.adapter.prepend(item, true);
   }
 
   doScrollHome() {

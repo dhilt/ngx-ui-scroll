@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { TabsModule } from 'ngx-bootstrap';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 
 import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
 
@@ -28,6 +28,7 @@ import { DemoInfiniteComponent } from './samples/common/infinite.component';
 import { DemoHorizontalComponent } from './samples/common/horizontal.component';
 import { DemoDifferentHeightsComponent } from './samples/common/different-heights.component';
 import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
+import { DemoAdapterReturnValueComponent } from './samples/adapter/adapter-return-value.component';
 import { DemoResetComponent } from './samples/adapter/reset.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
@@ -48,8 +49,9 @@ import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/pos
 import { RemoteDataService, DemoRemoteDatasourceComponent } from './samples/datasource/remote-datasource.component';
 import { DemoInvertedDatasourceComponent } from './samples/datasource/inverted-datasource.component';
 import { DemoPagesDatasourceComponent } from './samples/datasource/pages-datasource.component';
-import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-fix-position.component';
+import { DemoAdapterRelaxComponent } from './samples/experimental/adapter-relax.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
+import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-fix-position.component';
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
 import { DemoAdapterFixScrollToItemComponent } from './samples/experimental/adapter-fix-scrollToItem.component';
 import { WindowComponent } from './samples/window.component';
@@ -79,6 +81,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoHorizontalComponent,
     DemoDifferentHeightsComponent,
     DemoWindowViewportComponent,
+    DemoAdapterReturnValueComponent,
     DemoResetComponent,
     DemoReloadComponent,
     DemoIsLoadingComponent,
@@ -99,8 +102,9 @@ import { AppRoutingModule } from './app-routing.module';
     DemoRemoteDatasourceComponent,
     DemoInvertedDatasourceComponent,
     DemoPagesDatasourceComponent,
-    DemoAdapterFixPositionComponent,
+    DemoAdapterRelaxComponent,
     DemoInverseSettingComponent,
+    DemoAdapterFixPositionComponent,
     DemoAdapterFixUpdaterComponent,
     DemoAdapterFixScrollToItemComponent,
     WindowComponent,

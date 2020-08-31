@@ -85,8 +85,8 @@ doRemoveDatasource(id: number) {
   this.MAX = this.data[this.data.length - 1].id;
 }
 
-doRemove(id: number) {
-  this.datasource.adapter.remove(({ data }) => data.id === id);
+async doRemove(id: number) {
+  await this.datasource.adapter.remove(({ data }) => data.id === id);
   this.doRemoveDatasource(id);
 }`
   }, {
@@ -106,7 +106,6 @@ doRemove(id: number) {
   width: 150px;
   height: 250px;
   overflow-y: auto;
-  overflow-anchor: none;
 }
 .item {
   font-weight: bold;
@@ -137,8 +136,8 @@ doRemove(id: number) {
     this.MAX = this.data[this.data.length - 1].id;
   }
 
-  doRemove(id: number) {
-    this.datasource.adapter.remove(({ data }) => data.id === id);
+  async doRemove(id: number) {
+    await this.datasource.adapter.remove(({ data }) => data.id === id);
     this.doRemoveDatasource(id);
   }
 

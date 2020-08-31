@@ -5,13 +5,6 @@ import { FetchModel } from '../classes/state/fetch';
 import { ClipModel } from '../classes/state/clip';
 import { RenderModel } from '../classes/state/render';
 
-export interface WindowScrollState {
-  delta: number;
-  positionToUpdate: number;
-
-  reset: Function;
-}
-
 export interface ScrollEventData {
   time: number;
   position: number;
@@ -23,11 +16,11 @@ export interface ScrollState {
   current: ScrollEventData | null;
 
   scrollTimer: ReturnType<typeof setTimeout> | null;
-  window: WindowScrollState;
 
   syntheticPosition: number | null;
   syntheticFulfill: boolean;
   animationFrameId: number;
+  positionBeforeAsync: number | null;
 
   reset: Function;
 }
@@ -41,14 +34,11 @@ export interface State {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  startIndex: number;
 
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
-  startIndex: number;
-  lastPosition: number;
-  preFetchPosition: number;
-  bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: ScrollState;
 

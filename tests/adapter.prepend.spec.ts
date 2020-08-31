@@ -21,15 +21,16 @@ const configList: TestBedConfig[] = [{
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
 const shouldPrepend = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  const { buffer } = misc.scroller;
   let indexToPrepend = -Infinity;
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
-      indexToPrepend = misc.scroller.buffer.getIndexToPrepend();
-      misc.datasource.adapter.prepend({ id: indexToPrepend, text: 'item #' + indexToPrepend });
+      indexToPrepend = buffer.getIndexToPrepend();
+      misc.adapter.prepend({ id: indexToPrepend, text: 'item #' + indexToPrepend });
     } else {
-      const firstIndex = misc.scroller.buffer.firstIndex;
+      const firstIndex = buffer.firstIndex;
       expect(firstIndex).toEqual(indexToPrepend);
       expect(misc.padding.backward.getSize()).toEqual(0);
       done();
@@ -38,20 +39,21 @@ const shouldPrepend = (config: TestBedConfig) => (misc: Misc) => (done: Function
 };
 
 const shouldPrependMany = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+  const { buffer } = misc.scroller;
   let indexToPrepend = -Infinity;
   const NEW_ITEMS_COUNT = 50;
 
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
-      indexToPrepend = misc.scroller.buffer.getIndexToPrepend();
+      indexToPrepend = buffer.getIndexToPrepend();
       const itemsToPrepend = Array.from(Array(NEW_ITEMS_COUNT), (_, x) => ({
         id: indexToPrepend - x,
         text: `!item #${indexToPrepend - x}`
       }));
-      misc.datasource.adapter.prepend(itemsToPrepend);
+      misc.adapter.prepend(itemsToPrepend);
     } else {
-      const firstIndex = misc.scroller.buffer.firstIndex;
+      const firstIndex = buffer.firstIndex;
       expect(firstIndex).toEqual(indexToPrepend - NEW_ITEMS_COUNT + 1);
       expect(misc.padding.backward.getSize()).toEqual(0);
       done();

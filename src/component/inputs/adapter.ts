@@ -37,6 +37,25 @@ const RELOAD_METHOD_PARAMS: ICommonProps<AdapterReloadParams> = {
   },
 };
 
+enum AdapterAppendParams {
+  items = 'items',
+  bof = 'bof',
+  eof = 'eof',
+}
+
+const APPEND_METHOD_PARAMS: ICommonProps<AdapterAppendParams> = {
+  [AdapterAppendParams.items]: {
+    validators: [ITEM_LIST],
+    mandatory: true
+  },
+  [AdapterAppendParams.bof]: {
+    validators: [BOOLEAN, ONE_OF_CAN([AdapterAppendParams.eof])]
+  },
+  [AdapterAppendParams.eof]: {
+    validators: [BOOLEAN, ONE_OF_CAN([AdapterAppendParams.bof])]
+  }
+};
+
 enum AdapterRemoveParams {
   predicate = 'predicate',
 }
@@ -128,6 +147,7 @@ export const AdapterMethods = {
 export const ADAPTER_METHODS = {
   RESET: RESET_METHOD_PARAMS,
   RELOAD: RELOAD_METHOD_PARAMS,
+  APPEND: APPEND_METHOD_PARAMS,
   REMOVE: REMOVE_METHOD_PARAMS,
   CLIP: CLIP_METHOD_PARAMS,
   INSERT: INSERT_METHOD_PARAMS,

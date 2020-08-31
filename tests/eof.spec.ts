@@ -41,12 +41,12 @@ describe('EOF/BOF Spec', () => {
   };
 
   const initializeBofEofContainer = (misc: Misc) => {
-    const { adapter } = misc.datasource;
-    misc.shared.bofEofContainer = {
+    const { adapter, shared } = misc;
+    shared.bofEofContainer = {
       bof: { count: 0, value: adapter.bof },
       eof: { count: 0, value: adapter.eof }
     };
-    const { bof, eof } = misc.shared.bofEofContainer;
+    const { bof, eof } = shared.bofEofContainer;
     bof.subscription = adapter.bof$.subscribe(value => {
       bof.count++;
       bof.value = value;
@@ -73,13 +73,13 @@ describe('EOF/BOF Spec', () => {
     }
     expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
 
-    const { datasource: { adapter }, buffer: { eof, bof } } = misc.scroller;
+    const { adapter, scroller: { buffer: { eof, bof } }, shared } = misc;
     expect(bof).toEqual(!_forward);
     expect(bof).toEqual(adapter.bof);
-    expect(bof).toEqual(misc.shared.bofEofContainer.bof.value);
+    expect(bof).toEqual(shared.bofEofContainer.bof.value);
     expect(eof).toEqual(adapter.eof);
     expect(eof).toEqual(_forward);
-    expect(eof).toEqual(misc.shared.bofEofContainer.eof.value);
+    expect(eof).toEqual(shared.bofEofContainer.eof.value);
   };
 
   const _makeTest = (data: MakeTestConfig) => makeTest({
@@ -115,7 +115,7 @@ describe('EOF/BOF Spec', () => {
         title: `should reset ${operation} after scroll`,
         it: (misc: Misc) => (done: Function) =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
-            const { buffer, datasource: { adapter } } = misc.scroller;
+            const { scroller: { buffer }, adapter } = misc;
             const { bofEofContainer } = misc.shared;
             if (misc.workflow.cyclesDone === 1) {
               expect(buffer[operation]).toEqual(true);

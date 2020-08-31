@@ -1,17 +1,10 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-
-import {
-  ItemAdapter,
-  State as IState,
-  ScrollState as IScrollState
-} from '../interfaces/index';
-
 import { Settings } from './settings';
 import { Logger } from './logger';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
 import { ScrollState } from './state/scroll';
+import { State as IState, ScrollState as IScrollState } from '../interfaces/index';
 
 export class State implements IState {
 
@@ -25,14 +18,11 @@ export class State implements IState {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  startIndex: number;
 
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
-  startIndex: number;
-  lastPosition: number;
-  preFetchPosition: number;
-  bwdPaddingAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
 
@@ -48,14 +38,14 @@ export class State implements IState {
     return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount + 1}`;
   }
 
-  constructor(settings: Settings, version: string, logger: Logger) {
+  constructor(settings: Settings, version: string, logger: Logger, loopCount?: number, cycleCount?: number) {
     this.settings = settings;
     this.version = version;
     this.logger = logger;
     this.initTime = Number(new Date());
-    this.innerLoopCount = 0;
+    this.innerLoopCount = loopCount || 0;
     this.isInitialLoop = false;
-    this.workflowCycleCount = 1;
+    this.workflowCycleCount = cycleCount || 1;
     this.isInitialWorkflowCycle = false;
     this.countDone = 0;
 
@@ -63,7 +53,6 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.render = new RenderModel();
-    this.bwdPaddingAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
   }
@@ -72,8 +61,7 @@ export class State implements IState {
     const { startIndex, minIndex, maxIndex } = this.settings;
     let index = Number(newStartIndex);
     if (Number.isNaN(index)) {
-      this.logger.log(() =>
-        `fallback startIndex to settings.startIndex (${startIndex})`);
+      this.logger.log(() => `fallback startIndex to settings.startIndex (${startIndex})`);
       index = startIndex;
     }
     if (index < minIndex) {

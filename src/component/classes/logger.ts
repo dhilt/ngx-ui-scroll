@@ -37,7 +37,7 @@ export class Logger {
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
     this.getFetchRange = (): string => {
-      const { firstIndex: first, lastIndex: last } = scroller.state.fetch;
+      const { first: { index: first }, last: { index: last } } = scroller.state.fetch;
       return first !== null && last !== null && !Number.isNaN(first) && !Number.isNaN(last)
         ? `[${first}..${last}]`
         : 'no';
@@ -98,7 +98,7 @@ export class Logger {
     if (!this.debug) {
       return;
     }
-    const { process, status } = data;
+    const { process, status, payload } = data;
 
     // inner loop start-end log
     const loopLog: string[] = [];
@@ -110,7 +110,8 @@ export class Logger {
       process === Process.end
     ) {
       loopLog.push(`%c---=== loop ${this.getLoop()} done`);
-      if (status === Status.next) {
+      const parent = payload && payload.process;
+      if (status === Status.next && (parent !== Process.reset && parent !== Process.reload)) {
         loopLog[0] += `, loop ${this.getLoopNext()} start`;
       }
     }

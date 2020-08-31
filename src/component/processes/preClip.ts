@@ -3,6 +3,8 @@ import { Direction, Process, ProcessStatus } from '../interfaces/index';
 
 export default class PreClip {
 
+  static process = Process.preClip;
+
   static run(scroller: Scroller) {
     PreClip.prepareClip(scroller);
 
@@ -18,8 +20,8 @@ export default class PreClip {
     if (PreClip.shouldNotClip(scroller)) {
       return;
     }
-    const firstIndex = fetch.firstIndexBuffer as number;
-    const lastIndex = fetch.lastIndexBuffer as number;
+    const firstIndex = fetch.first.indexBuffer as number;
+    const lastIndex = fetch.last.indexBuffer as number;
     scroller.logger.log(() =>
       `looking for ${direction ? 'anti-' + direction + ' ' : ''}items ` +
       `that are out of [${firstIndex}..${lastIndex}] range`);

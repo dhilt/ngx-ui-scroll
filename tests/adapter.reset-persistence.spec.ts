@@ -84,19 +84,20 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
   accessFirstLastVisibleItems(misc);
 };
 
-const shouldPersistVersion = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldPersistPermanentProp = (token: string, config: TestBedConfig, misc: Misc, done: Function) => {
   const outer = misc.testComponent.datasource;
   const inner = misc.workflow.scroller.datasource;
-  const version = misc.workflow.scroller.state.version;
-  expect(version).toBeTruthy();
-  const versionProp = ADAPTER_PROPS_STUB.find(({ name }) => name === 'version');
-  expect(versionProp).toBeTruthy();
-  const versionDefault = (versionProp as any).value;
-  const check = (isDefault?: boolean) => {
+  const value = (misc.workflow.scroller.adapter as any)[token];
+  expect(value).toBeTruthy();
+  const prop = ADAPTER_PROPS_STUB.find(({ name }) => name === token);
+  expect(prop).toBeTruthy();
+  const propDefault = (prop as any).value;
+  expect(propDefault).toBeFalsy();
+  const check = () => {
     expect(outer.adapter as IAdapter).toEqual(inner.adapter);
-    expect(inner.adapter.version).toEqual(isDefault ? versionDefault : version);
+    expect((inner.adapter as any)[token]).toEqual(value);
   };
-  check(true);
+  check();
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     if (misc.workflow.cyclesDone === 1) {
       check();
@@ -107,6 +108,12 @@ const shouldPersistVersion = (config: TestBedConfig) => (misc: Misc) => (done: F
     }
   });
 };
+
+const shouldPersistId = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
+  shouldPersistPermanentProp('id', config, misc, done);
+
+const shouldPersistVersion = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
+  shouldPersistPermanentProp('version', config, misc, done);
 
 const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const outer = misc.testComponent.datasource;
@@ -248,7 +255,15 @@ describe('Adapter Reset Persistence Spec', () => {
     token + (config.custom.isNew ? ' (new)' : '');
 
   configList.forEach(config => {
-    describe('version scalar on-demand prop', () =>
+    describe('id scalar permanent prop', () =>
+      makeTest({
+        config,
+        title: title(config),
+        it: shouldPersistId(config)
+      })
+    );
+
+    describe('version scalar permanent prop', () =>
       makeTest({
         config,
         title: title(config),

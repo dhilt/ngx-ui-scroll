@@ -1,7 +1,7 @@
 import { Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { generateItem, Item, insertItems } from './miscellaneous/items';
+import { generateItems, Item, insertItems } from './miscellaneous/items';
 
 describe('Adapter Insert Spec', () => {
 
@@ -79,14 +79,6 @@ describe('Adapter Insert Spec', () => {
     ...configList, configDecreaseList[0], configDecreaseList[1]
   ];
 
-  const generateNewItems = (amount: number): Item[] => {
-    const newItems = [];
-    for (let i = 1; i <= amount; i++) {
-      newItems.push(generateItem(MAX + i));
-    }
-    return newItems;
-  };
-
   interface ICheckData {
     absMin: number;
     absMax: number;
@@ -108,10 +100,9 @@ describe('Adapter Insert Spec', () => {
   const doCheck = (
     prevData: ICheckData, misc: Misc, config: TestBedConfig, shouldInsert: boolean, dynamic?: boolean
   ) => {
-    const { scroller: { datasource: { adapter } } } = misc;
     const { before, decrease, amount, index } = config.custom;
     const newData = getCheckData(misc);
-    expect(adapter.isLoading).toEqual(false);
+    expect(misc.adapter.isLoading).toEqual(false);
     if (!dynamic) {
       expect(newData.bufferSize).toEqual(prevData.bufferSize + (shouldInsert ? amount : 0));
     }
@@ -146,15 +137,14 @@ describe('Adapter Insert Spec', () => {
   const shouldCheckStaticProcess = (
     config: TestBedConfig, shouldInsert: boolean, callback?: Function
 ) => (misc: Misc) => (done: any) => {
-    const { datasource: { adapter } } = misc.scroller;
+    const { adapter } = misc;
     const { before, decrease, amount, index } = config.custom;
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
       if (misc.workflow.cyclesDone !== 1) {
         return;
       }
       // insert items to the original datasource
-      const { datasource } = misc.fixture.componentInstance;
-      (datasource as any).setProcessGet((
+      (misc.datasource as any).setProcessGet((
         result: any[], _index: number, _count: number, _min: number, _max: number
       ) =>
         insertItems(result, _index, _count, _min, _max, index + (before ? 0 : 1), amount, decrease)
@@ -164,13 +154,13 @@ describe('Adapter Insert Spec', () => {
       if (before) {
         adapter.insert({
           before: ({ $index }) => $index === index,
-          items: generateNewItems(amount),
+          items: generateItems(amount, MAX),
           decrease
         });
       } else {
         adapter.insert({
           after: ({ $index }) => $index === index,
-          items: generateNewItems(amount),
+          items: generateItems(amount, MAX),
           decrease
         });
       }
@@ -193,20 +183,19 @@ describe('Adapter Insert Spec', () => {
   const shouldCheckDynamicProcess = (
     config: TestBedConfig, shouldInsert: boolean
   ) => (misc: Misc) => (done: any) => {
-    const { datasource: { adapter } } = misc.scroller;
     const { before, decrease, amount, index } = config.custom;
     const doScroll = (dataToCheck: ICheckData) => {
       misc.scrollMin();
       misc.scrollMax();
       let isLoadingCount = 0;
       let spy: any;
-      const sub = adapter.isLoading$.subscribe((isLoading) => {
+      const sub = misc.adapter.isLoading$.subscribe((isLoading) => {
         if (isLoading) {
           return;
         }
         if (isLoadingCount === 0) {
           misc.scrollMin();
-          spy = spyOn(misc.datasource, 'get').and.callThrough();
+          spy = misc.spyOnGet();
         } else if (isLoadingCount === 1) {
           sub.unsubscribe();
           expect(spy.calls.all()[0].args[0]).toBe(MIN - (decrease ? amount : 0));

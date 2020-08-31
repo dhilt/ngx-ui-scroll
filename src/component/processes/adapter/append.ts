@@ -87,8 +87,8 @@ export default class Append {
 
     (prepend ? fetch.prepend : fetch.append).call(fetch, newItems);
     (prepend ? buffer.prepend : buffer.append).call(buffer, newItems);
-    fetch.firstIndexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToAdd;
-    fetch.lastIndexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToAdd;
+    fetch.first.indexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToAdd;
+    fetch.last.indexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToAdd;
 
     state.clip.noClip = true;
     return true;

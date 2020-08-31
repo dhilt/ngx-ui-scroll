@@ -62,8 +62,8 @@ export default class Insert {
       );
     });
     fetch.insert(itemsToInsert);
-    fetch.firstIndexBuffer = buffer.firstIndex;
-    fetch.lastIndexBuffer = buffer.lastIndex;
+    fetch.first.indexBuffer = buffer.firstIndex;
+    fetch.last.indexBuffer = buffer.lastIndex;
     clip.noClip = true;
     return true;
   }

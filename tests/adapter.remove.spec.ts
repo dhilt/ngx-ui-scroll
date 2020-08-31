@@ -40,8 +40,7 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => (d
     const cycles = misc.workflow.cyclesDone;
     if (cycles === 1) {
       // remove item from the original datasource
-      const { datasource } = misc.fixture.componentInstance;
-      (datasource as any).setProcessGet((result: any[]) =>
+      (misc.datasource as any).setProcessGet((result: any[]) =>
         removeItems(result, config.custom.remove)
       );
       // remove items from the UiScroll

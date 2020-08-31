@@ -1,6 +1,6 @@
-import { Direction } from '../interfaces/direction';
 import { Routines } from './domRoutines';
 import { Settings } from './settings';
+import { Direction } from '../interfaces/direction';
 
 export class Padding {
 
@@ -23,7 +23,7 @@ export class Padding {
   }
 
   set size(value: number) {
-    this.routines.setSizeStyle(this.element, Math.round(value));
+    this.routines.setSizeStyle(this.element, value);
   }
 
 }

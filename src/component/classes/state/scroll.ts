@@ -1,10 +1,7 @@
 import {
-  Direction,
   ScrollEventData as IScrollEventData,
   ScrollState as IScrollState
 } from '../../interfaces/index';
-
-import { Logger } from '../logger';
 
 export class ScrollState implements IScrollState {
   previous: IScrollEventData | null;
@@ -15,6 +12,7 @@ export class ScrollState implements IScrollState {
   syntheticPosition: number | null;
   syntheticFulfill: boolean;
   animationFrameId: number;
+  positionBeforeAsync: number | null;
 
   constructor() {
     this.reset();
@@ -27,5 +25,6 @@ export class ScrollState implements IScrollState {
     this.syntheticPosition = null;
     this.syntheticFulfill = false;
     this.animationFrameId = 0;
+    this.positionBeforeAsync = null;
   }
 }

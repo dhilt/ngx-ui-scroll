@@ -14,7 +14,6 @@ import {
   InterruptParams,
   StateMachineMethods
 } from './interfaces/index';
-import { Datasource } from './classes/datasource';
 
 export class Workflow {
 

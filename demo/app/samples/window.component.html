@@ -3,6 +3,10 @@
   <a class="navbar-link" routerLink="/">Home</a>
 </div>
 
+<div class="top-visible">
+  Top visible: {{(datasource.adapter.firstVisible$ | async)?.$index}}
+</div>
+
 <div *ngIf="init">
   <div *uiScroll="let item of datasource" style="height: 20px;">
     <b>{{item.text}}</b>

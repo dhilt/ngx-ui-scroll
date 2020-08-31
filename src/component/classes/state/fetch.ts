@@ -1,21 +1,66 @@
-import { Direction } from '../../interfaces/index';
 import { Item } from '../item';
+import { Direction } from '../../interfaces/index';
+
+class Positions {
+  startDelta: number;
+  before: number;
+  relative: number;
+  start: number;
+  end: number;
+
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.startDelta = 0;
+    this.before = 0;
+  }
+}
+
+class First {
+  index: number | null;
+  indexBuffer: number | null;
+  position: number | null;
+
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.index = null;
+    this.indexBuffer = null;
+    this.position = null;
+  }
+}
+
+class Last {
+  index: number | null;
+  indexBuffer: number | null;
+
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.index = null;
+    this.indexBuffer = null;
+  }
+}
 
 export class FetchModel {
   private _newItemsData: any[] | null;
 
   items: Item[];
-  positionBefore: number | null;
-  firstIndexBuffer: number | null;
-  lastIndexBuffer: number | null;
-  firstIndex: number | null;
-  lastIndex: number | null;
+  positions: Positions;
+  first: First;
+  last: Last;
   hasAnotherPack: boolean;
   callCount: number;
   minIndex: number;
+  firstVisibleIndex: number | null;
+  firstVisibleItemDelta: number | null;
   negativeSize: number;
-  averageItemSize: number;
-  hasAverageItemSizeChanged: boolean;
   direction: Direction | null;
 
   simulate: boolean;
@@ -24,18 +69,22 @@ export class FetchModel {
 
   constructor() {
     this.callCount = 0;
+    this.positions = new Positions();
+    this.first = new First();
+    this.last = new Last();
     this.reset();
   }
 
   reset() {
     this._newItemsData = null;
     this.items = [];
-    this.positionBefore = null;
-    this.firstIndex = this.firstIndexBuffer = null;
-    this.lastIndex = this.lastIndexBuffer = null;
+    this.positions.reset();
+    this.first.reset();
+    this.last.reset();
     this.hasAnotherPack = false;
+    this.firstVisibleIndex = null;
+    this.firstVisibleItemDelta = null;
     this.negativeSize = 0;
-    this.hasAverageItemSizeChanged = false;
     this.direction = null;
     this.simulate = false;
     this.isPrepend = false;
@@ -62,11 +111,11 @@ export class FetchModel {
   }
 
   get index(): number | null {
-    return this.firstIndex;
+    return this.first.index;
   }
 
   get count(): number {
-    return this.firstIndex !== null && this.lastIndex !== null ? this.lastIndex - this.firstIndex + 1 : 0;
+    return this.first.index !== null && this.last.index !== null ? this.last.index - this.first.index + 1 : 0;
   }
 
   startSimulate(items: Item[]) {
@@ -85,29 +134,29 @@ export class FetchModel {
 
   append(items: Item[]) {
     this.startSimulate(items);
-    this.lastIndex = items[items.length - 1].$index;
-    this.firstIndex = items[0].$index;
+    this.last.index = items[items.length - 1].$index;
+    this.first.index = items[0].$index;
     this.direction = Direction.forward;
   }
 
   prepend(items: Item[]) {
     this.startSimulate(items);
-    this.lastIndex = items[0].$index;
-    this.firstIndex = items[items.length - 1].$index;
+    this.last.index = items[0].$index;
+    this.first.index = items[items.length - 1].$index;
     this.direction = Direction.backward;
     this.isPrepend = true;
   }
 
   replace(items: Item[]) {
     this.startSimulate(items);
-    this.lastIndex = items[0].$index;
-    this.firstIndex = items[items.length - 1].$index;
+    this.last.index = items[0].$index;
+    this.first.index = items[items.length - 1].$index;
     this.isReplace = true;
   }
 
   insert(items: Item[]) {
     this.startSimulate(items);
-    this.lastIndex = items[0].$index;
-    this.firstIndex = items[items.length - 1].$index;
+    this.last.index = items[0].$index;
+    this.first.index = items[items.length - 1].$index;
   }
 }

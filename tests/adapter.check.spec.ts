@@ -140,9 +140,8 @@ const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
       adapter.check();
     } else if (cycle === 3) {
       expect(firstVisible.$index).toEqual(firstVisibleIndex);
-      const cacheAmount = buffer.cache.size;
-      const virtualSize = (maxIndex - minIndex + 1 - cacheAmount) * buffer.averageSize;
-      const realSize = changedCount * size + (cacheAmount - changedCount) * initialSize;
+      const virtualSize = (maxIndex - minIndex + 1 - buffer.cacheSize) * buffer.averageSize;
+      const realSize = changedCount * size + (buffer.cacheSize - changedCount) * initialSize;
       expect(misc.getScrollableSize()).toEqual(virtualSize + realSize);
       done();
     }

@@ -6,7 +6,7 @@ export default class Scroll {
   static process = Process.scroll;
 
   static run(scroller: Scroller, process: Process, payload?: { event?: Event }) {
-    const { workflow, viewport, state: { scrollState } } = scroller;
+    const { workflow, viewport } = scroller;
     const position = viewport.scrollPosition;
 
     if (Scroll.onSynthetic(scroller, position)) {
@@ -40,7 +40,7 @@ export default class Scroll {
 
   static onThrottle(scroller: Scroller, position: number, done: Function) {
     const { state: { scrollState }, settings: { throttle }, logger } = scroller;
-    scrollState.current = Scroll.getScrollEvent(scroller, position, scrollState.previous);
+    scrollState.current = Scroll.getScrollEvent(position, scrollState.previous);
     const { direction, time } = scrollState.current;
     const timeDiff = scrollState.previous ? time - scrollState.previous.time : Infinity;
     const delta = throttle - timeDiff;
@@ -63,7 +63,7 @@ export default class Scroll {
     if (!alreadyDelayed) {
       scrollState.scrollTimer = setTimeout(() => {
         logger.log(() => {
-          const curr = Scroll.getScrollEvent(scroller, scroller.viewport.scrollPosition, scrollState.current);
+          const curr = Scroll.getScrollEvent(scroller.viewport.scrollPosition, scrollState.current);
           return [
             curr.direction === Direction.backward ? '\u2934' : '\u2935',
             curr.position,
@@ -78,10 +78,9 @@ export default class Scroll {
     }
   }
 
-  static getScrollEvent(scroller: Scroller, position: number, previous: ScrollEventData | null): ScrollEventData {
+  static getScrollEvent(position: number, previous: ScrollEventData | null): ScrollEventData {
     const time = Number(new Date());
     let direction: Direction | null = Direction.forward;
-    const { scrollState } = scroller.state;
     if (previous) {
       if (position === previous.position) {
         direction = previous.direction;

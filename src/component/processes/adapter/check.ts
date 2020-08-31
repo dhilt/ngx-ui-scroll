@@ -1,5 +1,6 @@
 import { Scroller } from '../../scroller';
-import { Process, ProcessStatus } from '../../interfaces/index';
+import End from '../end';
+import { Process, ProcessStatus, Direction } from '../../interfaces/index';
 
 export default class Check {
 
@@ -13,7 +14,7 @@ export default class Check {
       const size = item.size;
       item.setSize();
       if (item.size !== size) {
-        buffer.cache.add(item);
+        buffer.cacheItem(item);
         min = Math.min(min, item.$index);
         max = Math.max(max, item.$index);
       }
@@ -21,8 +22,13 @@ export default class Check {
 
     if (Number.isFinite(min)) {
       scroller.state.clip.noClip = true;
-      fetch.firstIndexBuffer = buffer.firstIndex;
-      fetch.lastIndexBuffer = buffer.lastIndex;
+      fetch.first.indexBuffer = buffer.firstIndex;
+      fetch.last.indexBuffer = buffer.lastIndex;
+      const { item: first, diff } = End.getEdgeVisibleItem(scroller, Direction.backward);
+      fetch.firstVisibleIndex = first ? first.get().$index : null;
+      if (fetch.firstVisibleIndex !== null) {
+        fetch.firstVisibleItemDelta = - buffer.getSizeByIndex(fetch.firstVisibleIndex) + diff;
+      }
       fetch.replace(
         buffer.items.filter(item => item.$index >= min && item.$index <= max)
       );

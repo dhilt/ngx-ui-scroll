@@ -1,26 +1,28 @@
 import { Scroller } from '../scroller';
 import { EMPTY_ITEM } from '../classes/adapter/context';
-import { Process, ProcessStatus, Direction } from '../interfaces/index';
+import { Process, ProcessStatus, Direction, ScrollerWorkflow } from '../interfaces/index';
+
+const isInterrupted = (workflow: ScrollerWorkflow ) => (workflow.call as any).interrupted;
 
 export default class End {
 
   static process = Process.end;
 
   static run(scroller: Scroller, process: Process, payload: any = {}) {
-    const { workflow, state, adapter } = scroller;
+    const { workflow } = scroller;
     const { error } = payload;
 
     if (!error && process !== Process.reset && process !== Process.reload) {
       // set out params, accessible via Adapter
-      End.calculateParams(scroller);
+      End.calculateParams(scroller, workflow);
     }
 
     // explicit interruption for we don't want go through the workflow loop finalizing
-    if ((workflow.call as any).interrupted) {
+    if (isInterrupted(workflow)) {
       workflow.call({
         process,
         status: ProcessStatus.done,
-        payload
+        payload,
       });
       return;
     }
@@ -46,45 +48,53 @@ export default class End {
     state.fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
-    state.lastPosition = scroller.viewport.scrollPosition;
     scroller.purgeSubscriptions();
     adapter.loopPending = false;
     state.innerLoopCount++;
   }
 
-  static calculateParams(scroller: Scroller) {
-    const { buffer: { items }, adapter } = scroller;
+  static getEdgeVisibleItem(scroller: Scroller, direction: Direction) {
+    const { items } = scroller.buffer;
+    const bwd = direction === Direction.backward;
+    const opposite = bwd ? Direction.forward : Direction.backward;
+    const viewportEdge = scroller.viewport.getEdge(direction);
+    let item, diff = 0;
+    for (
+      let i = bwd ? 0 : items.length - 1;
+      bwd ? i <= items.length - 1 : i >= 0;
+      i += bwd ? 1 : -1
+    ) {
+      const itemEdge = scroller.routines.getEdge(items[i].element, opposite);
+      diff = itemEdge - viewportEdge;
+      if (bwd && diff > 0 || !bwd && diff < 0) {
+        item = items[i];
+        break;
+      }
+    }
+    return { item, diff };
+  }
 
-    // first visible item
+  static calculateParams(scroller: Scroller, workflow: ScrollerWorkflow) {
+    const { adapter } = scroller;
+
     if (adapter.wanted.firstVisible) {
-      const viewportBackwardEdge = scroller.viewport.getEdge(Direction.backward);
-      const firstItem = items.find(item =>
-        scroller.routines.getEdge(item.element, Direction.forward) > viewportBackwardEdge
-      );
-      if (!firstItem || firstItem.element !== adapter.firstVisible.element) {
-        adapter.firstVisible = firstItem ? firstItem.get() : EMPTY_ITEM;
+      const { item } = End.getEdgeVisibleItem(scroller, Direction.backward);
+      if (!item || item.element !== adapter.firstVisible.element) {
+        adapter.firstVisible = item ? item.get() : EMPTY_ITEM;
       }
     }
 
-    // last visible item
-    if (adapter.wanted.lastVisible) {
-      const viewportForwardEdge = scroller.viewport.getEdge(Direction.forward);
-      let lastItem = null;
-      for (let i = items.length - 1; i >= 0; i--) {
-        const edge = scroller.routines.getEdge(items[i].element, Direction.backward);
-        if (edge < viewportForwardEdge) {
-          lastItem = items[i];
-          break;
-        }
-      }
-      if (!lastItem || lastItem.element !== adapter.lastVisible.element) {
-        adapter.lastVisible = lastItem ? lastItem.get() : EMPTY_ITEM;
+    // the workflow can be interrupter on firstVisible change
+    if (adapter.wanted.lastVisible && !isInterrupted(workflow)) {
+      const { item } = End.getEdgeVisibleItem(scroller, Direction.forward);
+      if (!item || item.element !== adapter.lastVisible.element) {
+        adapter.lastVisible = item ? item.get() : EMPTY_ITEM;
       }
     }
   }
 
   static getNext(scroller: Scroller, process: Process, error: boolean): boolean {
-    const { state: { clip, fetch, render, scrollState } } = scroller;
+    const { state: { clip, fetch, render } } = scroller;
     if (error) {
       return false;
     }

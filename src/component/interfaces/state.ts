@@ -4,7 +4,6 @@ import { Direction, ItemAdapter } from './index';
 import { FetchModel } from '../classes/state/fetch';
 import { ClipModel } from '../classes/state/clip';
 import { RenderModel } from '../classes/state/render';
-import { AdjustModel } from '../classes/state/adjust';
 
 export interface ScrollEventData {
   time: number;
@@ -21,6 +20,7 @@ export interface ScrollState {
   syntheticPosition: number | null;
   syntheticFulfill: boolean;
   animationFrameId: number;
+  positionBeforeAsync: number | null;
 
   reset: Function;
 }
@@ -34,13 +34,11 @@ export interface State {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  startIndex: number;
 
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
-  adjust: AdjustModel;
-  startIndex: number;
-  lastPosition: number;
 
   scrollState: ScrollState;
 

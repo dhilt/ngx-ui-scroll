@@ -1,35 +1,10 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { Stat } from './miscellaneous/stat';
+import { appendItems, generateItems } from './miscellaneous/items';
+import { filter, take } from 'rxjs/operators';
 
-const INTERVAL = 0;
-
-// ------ config1 ------ //
-
-const config1: TestBedConfig = {
-  datasourceName: 'limited--99-100-dynamic-size',
-  datasourceSettings: {
-    startIndex: 1, padding: 0.1, bufferSize: 10, minIndex: -99, maxIndex: 100, itemSize: 20, adapter: true
-  },
-  timeout: 10000,
-  templateSettings: { viewportHeight: 600, dynamicSize: 'size' }
-};
-
-const startScroll = (misc: Misc) =>
-  misc.shared.interval = setInterval(() => {
-    const position = misc.getScrollPosition();
-    misc.scrollTo(position - 5);
-  }, INTERVAL);
-
-const stopScroll = (misc: Misc) => clearInterval(misc.shared.interval);
-
-const testConfig1 = (config: TestBedConfig, misc: Misc, done: Function) => {
-  done();
-};
-
-// ------ config2 ------ //
-
-const config2: TestBedConfig = {
+const configFetch: TestBedConfig = {
   datasourceName: 'limited-1-20-dynamic-size-special',
   datasourceSettings: {
     startIndex: 1, padding: 0.5, bufferSize: 5, minIndex: 1, maxIndex: 20, itemSize: 20, adapter: true
@@ -37,7 +12,19 @@ const config2: TestBedConfig = {
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 };
 
-const testConfig2 = (config: TestBedConfig, misc: Misc, done: Function) => {
+const configAppend: TestBedConfig = {
+  datasourceName: 'limited--99-100-dynamic-size-processor',
+  datasourceSettings: {
+    startIndex: 50, maxIndex: 100, minIndex: -99, padding: 0.5, bufferSize: 5, itemSize: 20, adapter: true
+  },
+  templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
+  custom: {
+    MAX: 100,
+    AMOUNT: 50
+  }
+};
+
+const testConfigFetch = (config: TestBedConfig, misc: Misc, done: Function) => {
   const { scroller, shared } = misc;
   let initialFetchCount = 0;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -53,34 +40,46 @@ const testConfig2 = (config: TestBedConfig, misc: Misc, done: Function) => {
   });
 };
 
+const scroll = (misc: Misc, position: number) => {
+  misc.adapter.fix({ scrollPosition: position });
+  return misc.relaxNext();
+};
+
+const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Function) => {
+  const { workflow, scroller, adapter } = misc;
+  const { MAX, AMOUNT } = config.custom;
+  await misc.relaxNext();
+  // append items to the original datasource
+  (misc.datasource as any).setProcessGet((
+    result: any[], _index: number, _count: number, _min: number, _max: number
+  ) =>
+    appendItems(result, _index, _count, _min, _max, AMOUNT, true)
+  );
+  // append items to the UiScroll
+  await adapter.append({
+    items: generateItems(AMOUNT, MAX),
+    eof: true
+  });
+  await scroll(misc, Infinity);
+  const { countDone } = scroller.state;
+  await scroll(misc, Infinity);
+  // await scroll(misc, 19438);
+  expect(scroller.state.countDone).toEqual(countDone + 1);
+  done();
+};
+
 describe('Dynamic Size Scroll Spec', () => {
 
-  // configList.forEach(config =>
-  //   makeTest({
-  //     config,
-  //     title: 'should scroll properly',
-  //     it: (misc: Misc) => (done: Function) => {
-  //       let initialFetchCount = 0;
-  //       spyOn(misc.workflow, 'finalize').and.callFake(() => {
-  //         const cycle = misc.scroller.state.workflowCycleCount;
-  //         if (cycle === 2) {
-  //           initialFetchCount = misc.scroller.state.fetch.callCount;
-  //           startScroll(misc);
-  //         } else if (misc.scroller.state.fetch.callCount < initialFetchCount + 4) {
-  //           // ...
-  //         } else {
-  //           stopScroll(misc);
-  //           testConfig1(config, misc, done);
-  //         }
-  //       });
-  //     }
-  //   })
-  // );
+  makeTest({
+    config: configFetch,
+    title: 'should fetch properly',
+    it: (misc: Misc) => (done: Function) => testConfigFetch(configFetch, misc, done)
+  });
 
   makeTest({
-    config: config2,
-    title: 'should fetch properly',
-    it: (misc: Misc) => (done: Function) => testConfig2(config2, misc, done)
+    config: configAppend,
+    title: 'should append properly',
+    it: (misc: Misc) => (done: Function) => testConfigAppend(configAppend, misc, done)
   });
 
 });

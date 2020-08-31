@@ -1,5 +1,5 @@
-import { Settings as ISettings, DevSettings as IDevSettings, ICommonProps } from '../interfaces/index';
 import { SETTINGS, DEV_SETTINGS, validate } from '../inputs/index';
+import { Settings as ISettings, DevSettings as IDevSettings, ICommonProps } from '../interfaces/index';
 
 export class Settings implements ISettings, IDevSettings {
 

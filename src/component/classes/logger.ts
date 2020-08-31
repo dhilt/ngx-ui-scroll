@@ -37,7 +37,7 @@ export class Logger {
         'range: ' + (first && last ? `[${first.$index}..${last.$index}]` : 'no');
     };
     this.getFetchRange = (): string => {
-      const { firstIndex: first, lastIndex: last } = scroller.state.fetch;
+      const { first: { index: first }, last: { index: last } } = scroller.state.fetch;
       return first !== null && last !== null && !Number.isNaN(first) && !Number.isNaN(last)
         ? `[${first}..${last}]`
         : 'no';

@@ -1,5 +1,5 @@
 import { ADAPTER_PROPS } from './props';
-import { ItemAdapter, AdapterPropType } from '../../interfaces/index';
+import { ItemAdapter } from '../../interfaces/index';
 import version from '../../../ui-scroll.version';
 
 let instanceCount = 0;

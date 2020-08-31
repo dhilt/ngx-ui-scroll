@@ -1,14 +1,17 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
 import { Item } from '../classes/item';
+import { Process, ProcessStatus } from '../interfaces/index';
 
 export default class Render {
 
   static process = Process.render;
 
   static run(scroller: Scroller) {
-    const { workflow, state: { clip, render } } = scroller;
+    const { workflow, state: { clip, render, scrollState }, viewport } = scroller;
     scroller.logger.stat('before new items render');
+    if (scrollState.positionBeforeAsync === null) {
+      scrollState.positionBeforeAsync = viewport.scrollPosition;
+    }
     scroller.innerLoopSubscriptions.push(
       scroller.bindData().subscribe(() => {
         if (Render.processElements(scroller)) {
@@ -30,9 +33,9 @@ export default class Render {
 
   static processElements(scroller: Scroller): boolean {
     const { state: { fetch, render }, viewport, buffer, logger } = scroller;
+    render.positionBefore = viewport.scrollPosition;
     if (!fetch.isReplace) {
       render.sizeBefore = viewport.getScrollableSize();
-      render.fwdPaddingBefore = viewport.paddings.forward.size;
       const success = fetch.items.reduce((acc, item) =>
         acc && Render.processElement(scroller, item)
       , true);
@@ -40,7 +43,7 @@ export default class Render {
         return false;
       }
     }
-    fetch.hasAverageItemSizeChanged = buffer.checkAverageSize();
+    buffer.checkAverageSize();
     render.sizeAfter = viewport.getScrollableSize();
     logger.stat('after new items render');
     logger.log(() => render.noSize ? 'viewport size has not been changed' : void 0);
@@ -58,7 +61,7 @@ export default class Render {
     item.element.style.position = '';
     item.invisible = false;
     item.setSize();
-    buffer.cache.add(item);
+    buffer.cacheItem(item);
     if (item.$index < fetch.minIndex) {
       fetch.negativeSize += item.size;
     }

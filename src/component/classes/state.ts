@@ -1,18 +1,10 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-
-import {
-  ItemAdapter,
-  State as IState,
-  ScrollState as IScrollState
-} from '../interfaces/index';
-
 import { Settings } from './settings';
 import { Logger } from './logger';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
-import { AdjustModel } from './state/adjust';
 import { ScrollState } from './state/scroll';
+import { State as IState, ScrollState as IScrollState } from '../interfaces/index';
 
 export class State implements IState {
 
@@ -26,14 +18,11 @@ export class State implements IState {
   workflowCycleCount: number;
   isInitialWorkflowCycle: boolean;
   countDone: number;
+  startIndex: number;
 
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
-  adjust: AdjustModel;
-  startIndex: number;
-  lastPosition: number;
-  bwdAverageSizeItemsCount: number;
 
   scrollState: IScrollState;
 
@@ -64,8 +53,6 @@ export class State implements IState {
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.render = new RenderModel();
-    this.adjust = new AdjustModel();
-    this.bwdAverageSizeItemsCount = 0;
 
     this.scrollState = new ScrollState();
   }
@@ -74,8 +61,7 @@ export class State implements IState {
     const { startIndex, minIndex, maxIndex } = this.settings;
     let index = Number(newStartIndex);
     if (Number.isNaN(index)) {
-      this.logger.log(() =>
-        `fallback startIndex to settings.startIndex (${startIndex})`);
+      this.logger.log(() => `fallback startIndex to settings.startIndex (${startIndex})`);
       index = startIndex;
     }
     if (index < minIndex) {

@@ -13,7 +13,7 @@ const baseConfig: TestBedConfig = {
   timeout: 4000
 };
 
-const reloadIndexList = [-99, -98, -90, -75, -50, -35, -20, -10, -5, -2, -1, 0, 1, 2, 5, 10, 20, 35, 50, 75, 90];
+const reloadIndexList = [-99, -98, -90, -75, /*-50*/, -35, -20, -10, -5, -2, -1, 0, 1, 2, 5, 10, 20, 35, 50, 75, 90];
 const configList: TestBedConfig[] = reloadIndexList.map(index => ({
   ...baseConfig, custom: { reloadIndex: index }
 }));

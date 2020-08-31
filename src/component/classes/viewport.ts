@@ -1,17 +1,15 @@
-import { Direction } from '../interfaces/index';
 import { Paddings } from './paddings';
 import { Settings } from './settings';
 import { Routines } from './domRoutines';
 import { State } from './state';
 import { Logger } from './logger';
+import { Direction } from '../interfaces/index';
 
 export class Viewport {
 
   offset: number;
   paddings: Paddings;
-  startDelta: number;
   previousPosition: number;
-  scrollAnchoring: boolean;
 
   readonly element: HTMLElement;
   readonly settings: Settings;
@@ -49,18 +47,9 @@ export class Viewport {
 
   reset(scrollPosition: number) {
     this.setOffset();
-    let newPosition = 0;
     this.paddings.reset(this.getSize(), this.state.startIndex, this.offset);
-    const negativeSize = this.paddings.backward.size;
-    if (negativeSize) {
-      newPosition = negativeSize;
-      const { itemSize } = this.settings;
-      this.state.bwdAverageSizeItemsCount = itemSize ? negativeSize / itemSize : 0;
-    }
-    this.scrollPosition = newPosition;
+    this.scrollPosition = this.paddings.backward.size || 0;
     this.state.scrollState.reset();
-    this.startDelta = 0;
-    this.scrollAnchoring = !this.isAnchoringOff();
   }
 
   setPosition(value: number): number {
@@ -148,15 +137,6 @@ export class Viewport {
     if (!this.settings.windowViewport) {
       this.offset -= this.routines.getOffset(this.hostElement);
     }
-  }
-
-  isAnchoringOff(): boolean {
-    if (this.settings.windowViewport) {
-      if (this.routines.isAnchoringOff((this.element.ownerDocument as Document).body)) {
-        return true;
-      }
-    }
-    return this.routines.isAnchoringOff(this.hostElement);
   }
 
 }

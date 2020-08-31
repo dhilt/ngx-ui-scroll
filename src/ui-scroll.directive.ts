@@ -7,6 +7,7 @@ import { IDatasource } from './component/interfaces/datasource';
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
 export class UiScrollDirective implements OnInit {
   private datasource: IDatasource;
+  private isTable: boolean;
 
   constructor(
     private templateRef: TemplateRef<any>,
@@ -19,13 +20,19 @@ export class UiScrollDirective implements OnInit {
     this.datasource = datasource;
   }
 
+  @Input() set uiScrollTable(value: any) {
+    this.isTable = !!value;
+  }
+
   ngOnInit() {
     const compFactory = this.resolver.resolveComponentFactory(UiScrollComponent);
-    const componentRef = this.viewContainer.createComponent(
-      compFactory, void 0, this.viewContainer.injector
-    );
+    const componentRef = compFactory.create(this.viewContainer.injector);
     componentRef.instance.datasource = this.datasource;
     componentRef.instance.template = this.templateRef;
+    componentRef.instance.isTable = this.isTable;
     componentRef.instance.version = version;
+    componentRef.instance.parentElement = this.templateRef.elementRef.nativeElement.parentElement;
+    this.viewContainer.createEmbeddedView(componentRef.instance.uiScrollTemplateRef);
+    setTimeout(() => componentRef.changeDetectorRef.detectChanges()); // 😢
   }
 }

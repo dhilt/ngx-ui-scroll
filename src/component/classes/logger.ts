@@ -64,6 +64,15 @@ export class Logger {
           if (v === -Infinity) {
             return '-Infinity';
           }
+          if (v instanceof Element) {
+            return 'HTMLElement';
+          }
+          if (v instanceof HTMLDocument) {
+            return 'HTMLDocument';
+          }
+          if (typeof v === 'function') {
+            return 'Function';
+          }
           return v;
         })
           .replace(/"/g, '')

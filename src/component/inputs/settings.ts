@@ -1,7 +1,7 @@
 import { VALIDATORS } from './validation';
 import { ICommonProps } from '../interfaces/index';
 
-const { NUMBER, INTEGER, INTEGER_UNLIMITED, MORE_OR_EQUAL, BOOLEAN } = VALIDATORS;
+const { NUMBER, INTEGER, INTEGER_UNLIMITED, MORE_OR_EQUAL, BOOLEAN, ELEMENT, FUNC, OR } = VALIDATORS;
 
 enum Settings {
   adapter = 'adapter',
@@ -14,6 +14,7 @@ enum Settings {
   infinite = 'infinite',
   horizontal = 'horizontal',
   windowViewport = 'windowViewport',
+  viewportElement = 'viewportElement',
   inverse = 'inverse',
 }
 
@@ -77,6 +78,10 @@ export const SETTINGS: ICommonProps<Settings> = {
   [Settings.windowViewport]: {
     validators: [BOOLEAN],
     defaultValue: false
+  },
+  [Settings.viewportElement]: {
+    validators: [OR([ELEMENT, FUNC])],
+    defaultValue: null
   },
   [Settings.inverse]: {
     validators: [BOOLEAN],

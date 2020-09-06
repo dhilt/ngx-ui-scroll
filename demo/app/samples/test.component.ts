@@ -47,7 +47,8 @@ export class TestComponent {
       // minIndex: MIN,
       // maxIndex: MAX,
       itemSize: 100,
-      startIndex: 1
+      startIndex: 1,
+      viewportElement: () => document.getElementById('my-viewport')
     },
     devSettings: {
       debug: true,

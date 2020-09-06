@@ -42,16 +42,18 @@
 </div>
 
 <div class="viewport" style="height: 600px" id="my-viewport">
-  <div
-    *uiScroll="let item of datasource"
-    (click)="doToggleItem(item)"
-    [style.height]="item.height + 'px'"
-  >
-    <app-samples-test-inner>
-      {{item.text}}
-      <span [style.color]="item.color">
-        {{item.isSelected ? '********' : ''}}
-      </span>
-    </app-samples-test-inner>
+  <div>
+    <div
+      *uiScroll="let item of datasource"
+      (click)="doToggleItem(item)"
+      [style.height]="item.height + 'px'"
+    >
+      <app-samples-test-inner>
+        {{item.text}}
+        <span [style.color]="item.color">
+          {{item.isSelected ? '********' : ''}}
+        </span>
+      </app-samples-test-inner>
+    </div>
   </div>
 </div>

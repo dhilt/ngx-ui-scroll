@@ -1,0 +1,30 @@
+<app-demo
+  [context]="demoContext"
+  [sources]="sources"
+>
+
+  <div actions class="comment">Available since v1.8.1, undocumented</div>
+
+  <div description>
+    <p>
+      As it follows the doc, the viewport is a scrollable area with a finite height.
+      By default, the nearest ancestor of the <em>*uiScroll</em> container is treated as the Viewport.
+      With the <em>viewportElement</em> setting we may change the default behavior
+      and make another html element to be our Viewport.
+    </p>
+    <p>
+      The value of <em>viewportElement</em> setting can be an html element or
+      a function synchronously returning an html element.
+      The second option is useful if the Viewport is a part of the template of the same component
+      that contains the <em>uiScroll</em>, and the <em>Datasource</em> is initialized before
+      the view is ready (before <em>ngOnInit</em>).
+    </p>
+    <p>
+      This sample shows a declarative way and uses
+      <em>ViewChild</em> decorator and <em>#viewport</em> syntax
+      to access the 3d ancestor of the <em>uiScroll</em> base container.
+      This also could be achieved via native javascript methods, for example
+    </p>
+    <pre>{{nativeSample}}</pre>
+  </div>
+</app-demo>

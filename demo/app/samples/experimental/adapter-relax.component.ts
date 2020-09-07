@@ -82,7 +82,7 @@ doReplace() {
 `
 }, {
     name: 'Return',
-    text: `  async doReplace() {
+    text: `async doReplace() {
   const { adapter } = this.datasource;
   await adapter.remove(({ $index }) =>
     $index > 4 && $index < 8

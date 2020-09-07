@@ -170,10 +170,30 @@ button:hover {
   margin-top: 29px;
 }
 
-@media all and (max-width: 1000px) {
-  .demo-examples {
+.demo-examples {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.demo-examples div {
+  flex: 25%;
+  padding: 20px;
+}
+
+@media screen and (max-width: 1000px) {
+  .demo-examples div {
+    flex: 50%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .demo-examples div {
     flex-direction: column;
   }
+}
+
+.demo-examples a {
+  white-space: nowrap;
 }
 
 .demo .actions {

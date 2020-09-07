@@ -26,5 +26,10 @@
       This also could be achieved via native javascript methods, for example
     </p>
     <pre>{{nativeSample}}</pre>
+    <p>
+      Note, using this feature is potentially dangerous, because any html element
+      can be set as the Viewport this way. For example, the engine does not check
+      whether this element is an ancestor of the <em>uiScroll</em> element or not.
+    </p>
   </div>
 </app-demo>

@@ -25,15 +25,15 @@
     <div class="log">
       <div style="line-height: 25px; margin-bottom: 2px;">
         Version of ngx-ui-scroll: {{datasource.adapter.version}}
-        <br />
+        <br>
         First visible: #{{datasource.adapter.firstVisible.$index}}
-        <br />
+        <br>
         Last visible: #{{(datasource.adapter.lastVisible$ | async)?.$index}}
-        <br />
+        <br>
         Items in DOM: {{datasource.adapter.itemsCount}}
-        <br />
+        <br>
         Is loading: {{datasource.adapter.isLoading}}
-        <br />
+        <br>
       </div>
       <div style="display: flex; align-items: center; margin-bottom: 2px;">
         Datasource delay (ms):&nbsp;
@@ -70,8 +70,9 @@
   and some of Adapter properties and methods usage.
   Other samples with all necessary details and explanations can be found at
   <a href="#/datasource">Datasource</a>,
-  <a href="#/settings">Settings</a> and
-  <a href="#/adapter">Adapter</a>
+  <a href="#/settings">Settings</a>,
+  <a href="#/adapter">Adapter</a> and
+  <a href="#/experimental">Experimental</a>
   sections. Below is the list of all examples available per these sections.
 </p>
 
@@ -80,9 +81,9 @@
   Example list
 </h3>
 <div style="display: flex" class="demo-examples">
-  <div style="margin: 0 20px 33px 0;">
+  <div>
     <h5>Datasource</h5>
-    <a href="#/datasource#datasource-get-signatures">Datasource get-method signatures</a><br/>
+    <a href="#/datasource#datasource-get-signatures">Get-method signatures</a><br/>
     <a href="#/datasource#unlimited-bidirectional">Unlimited bidirectional datasource</a><br/>
     <a href="#/datasource#limited">Limited datasource</a><br/>
     <a href="#/datasource#positive-limited-indexes">Positive limited datasource</a><br/>
@@ -90,33 +91,42 @@
     <a href="#/datasource#inverted-indexes">Inverted datasource</a><br/>
     <a href="#/datasource#pages">Pages datasource</a><br/>
   </div>
-  <div style="margin: 0 20px 33px 0;">
+  <div>
     <h5>Settings</h5>
     <a href="#/settings#no-settings">No settings</a><br/>
     <a href="#/settings#buffer-size">BufferSize setting</a><br/>
     <a href="#/settings#padding">padding setting</a><br/>
     <a href="#/settings#item-size">itemSize setting</a><br/>
     <a href="#/settings#start-index">startIndex setting</a><br/>
-    <a href="#/settings#min-max-indexes">minIndex / maxIndex settings</a><br/>
+    <a href="#/settings#min-max-indexes">minIndex / maxIndex</a><br/>
     <a href="#/settings#infinite-mode">Infinite mode</a><br/>
     <a href="#/settings#horizontal-mode">Horizontal mode</a><br/>
     <a href="#/settings#different-item-heights">Different item heights</a><br/>
     <a href="#/settings#window-viewport">Entire window scrollable</a><br/>
   </div>
-  <div style="margin: 0 0 33px 0;">
+  <div>
     <h5>Adapter</h5>
     <a href="#/adapter#reload">Reload</a><br/>
     <a href="#/adapter#reset">Reset</a><br/>
     <a href="#/adapter#is-loading">Is loading?</a><br/>
-    <a href="#/adapter#is-loading-advanced">Is loading, advanced</a><br />
+    <a href="#/adapter#is-loading-advanced">Is loading, advanced</a><br>
     <a href="#/adapter#items-count">Buffer items counter</a><br/>
     <a href="#/adapter#bof-eof">Begin / end of file</a><br/>
     <a href="#/adapter#first-last-visible-items">First and last visible items</a><br/>
     <a href="#/adapter#append-prepend">Append / prepend</a><br/>
     <a href="#/adapter#append-prepend-sync">Append / prepend sync</a><br/>
-    <a href="#/adapter#check-size">Check size</a><br />
-    <a href="#/adapter#remove">Remove</a><br />
-    <a href="#/adapter#clip">Clip</a><br />
-    <a href="#/adapter#insert">Insert</a><br />
+    <a href="#/adapter#check-size">Check size</a><br>
+    <a href="#/adapter#remove">Remove</a><br>
+    <a href="#/adapter#clip">Clip</a><br>
+    <a href="#/adapter#insert">Insert</a><br>
+  </div>
+  <div>
+    <h5>Experimental</h5>
+    <a href="#/experimental#adapter-relax">Adapter relax method</a><br>
+    <a href="#/experimental#viewportElement-setting">viewportElement setting</a><br>
+    <a href="#/experimental#inverse-setting">inverse setting</a><br>
+    <a href="#/experimental#adapter-fix-position">Adapter fix-position method</a><br>
+    <a href="#/experimental#adapter-fix-updater">Adapter fix-updater method</a><br>
+    <a href="#/experimental#adapter-fix-scrollToItem">Adapter fix-scrollToItem method</a><br>
   </div>
 </div>

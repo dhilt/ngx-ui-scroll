@@ -50,6 +50,7 @@ import { RemoteDataService, DemoRemoteDatasourceComponent } from './samples/data
 import { DemoInvertedDatasourceComponent } from './samples/datasource/inverted-datasource.component';
 import { DemoPagesDatasourceComponent } from './samples/datasource/pages-datasource.component';
 import { DemoAdapterRelaxComponent } from './samples/experimental/adapter-relax.component';
+import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
 import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-fix-position.component';
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
@@ -103,6 +104,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoInvertedDatasourceComponent,
     DemoPagesDatasourceComponent,
     DemoAdapterRelaxComponent,
+    DemoViewportElementSettingComponent,
     DemoInverseSettingComponent,
     DemoAdapterFixPositionComponent,
     DemoAdapterFixUpdaterComponent,

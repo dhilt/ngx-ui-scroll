@@ -86,6 +86,14 @@ const onObject = (value: any): ValidatedValue => {
   return { value, isSet: true, isValid: !errors.length, errors };
 };
 
+const onHtmlElement = (value: any): ValidatedValue => {
+  const errors = [];
+  if (!(value instanceof Element) && !(value instanceof HTMLDocument)) {
+    errors.push('must be an html element');
+  }
+  return { value, isSet: true, isValid: !errors.length, errors };
+};
+
 const onItemList = (value: any): ValidatedValue => {
   let parsedValue = value;
   const errors = [];
@@ -202,6 +210,10 @@ export const VALIDATORS = {
   ITEM_LIST: {
     type: ValidatorType.itemList,
     method: onItemList
+  },
+  ELEMENT: {
+    type: ValidatorType.element,
+    method: onHtmlElement
   },
   FUNC: {
     type: ValidatorType.function,

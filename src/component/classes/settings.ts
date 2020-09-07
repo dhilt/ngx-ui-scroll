@@ -1,4 +1,4 @@
-import { SETTINGS, DEV_SETTINGS, validate } from '../inputs/index';
+import { SETTINGS, DEV_SETTINGS, validate, validateOne, VALIDATORS } from '../inputs/index';
 import { Settings as ISettings, DevSettings as IDevSettings, ICommonProps } from '../interfaces/index';
 
 export class Settings implements ISettings, IDevSettings {
@@ -14,6 +14,7 @@ export class Settings implements ISettings, IDevSettings {
   infinite: boolean;
   horizontal: boolean;
   windowViewport: boolean;
+  viewportElement: HTMLElement | Function | null;
   inverse: boolean; // if true, bwd padding element will have a priority when filling the viewport (if lack of items)
 
   // development settings
@@ -29,6 +30,7 @@ export class Settings implements ISettings, IDevSettings {
   // internal settings, managed by scroller itself
   instanceIndex: number;
   initializeDelay: number;
+  viewport: HTMLElement | null;
 
   constructor(
     settings: ISettings | undefined, devSettings: IDevSettings | undefined, instanceIndex: number
@@ -37,6 +39,7 @@ export class Settings implements ISettings, IDevSettings {
     this.parseInput(devSettings, DEV_SETTINGS);
     this.instanceIndex = instanceIndex;
     this.initializeDelay = this.getInitializeDelay();
+    this.viewport = this.getViewport();
     // todo: min/max indexes must be ignored if infinite mode is enabled ??
   }
 
@@ -59,5 +62,17 @@ export class Settings implements ISettings, IDevSettings {
       result = Math.max(result, this.initDelay);
     }
     return result;
+  }
+
+  getViewport(): HTMLElement | null {
+    if (typeof this.viewportElement !== 'function') {
+      return this.viewportElement;
+    }
+    const value = this.viewportElement();
+    const result = validateOne({ value }, 'value', { validators: [VALIDATORS.ELEMENT] });
+    if (!result.isValid) {
+      return null; // fallback to default (null) if Function didn't return HTML element synchronously
+    }
+    return result.value;
   }
 }

@@ -18,7 +18,7 @@ import { makeTest } from './scaffolding/runner';
 const defaultSettings = Object.entries(SETTINGS).reduce((acc, [key, prop]) => ({
   ...acc,
   [key]: prop.defaultValue
-}), {} as any);
+}), {} as Settings);
 
 describe('Component', () => {
 
@@ -187,6 +187,27 @@ describe('Settings', () => {
     title: 'should fallback horizontal to the default',
     it: (misc: Misc) => (done: Function) => {
       expect(misc.scroller.settings.horizontal).toEqual(defaultSettings.horizontal);
+      done();
+    }
+  });
+
+  makeTest({
+    config: { datasourceSettings: { viewportElement: { nodeType: 1 } } },
+    title: 'should fallback viewportElement to the default',
+    it: ({ scroller: { settings } }: Misc) => (done: Function) => {
+      expect(settings.viewportElement).toEqual(settings.viewport);
+      expect(settings.viewport).toEqual(defaultSettings.viewportElement);
+      done();
+    }
+  });
+
+  makeTest({
+    config: { datasourceSettings: { viewportElement: document.createElement('div') } },
+    title: 'should pass HTML element as a value of viewportElement',
+    it: ({ scroller: { settings } }: Misc) => (done: Function) => {
+      expect(settings.viewportElement).toEqual(settings.viewport);
+      const nodeType = settings.viewport ? settings.viewport.nodeType : null;
+      expect(nodeType).toEqual(1);
       done();
     }
   });

@@ -6,6 +6,7 @@ export enum ValidatorType {
   itemList = 'must be an array of items',
   boolean = 'must be a boolean',
   object = 'must be an object',
+  element = 'must be an html element',
   function = 'must be a function',
   funcOfxArguments = 'must have arg1 arguments',
   funcOfxAndMoreArguments = 'must have at least arg1 arguments',

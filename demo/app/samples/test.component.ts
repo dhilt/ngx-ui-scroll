@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
@@ -31,6 +31,8 @@ export class TestInnerComponent {
 })
 export class TestComponent {
 
+  @ViewChild('viewport', { static: true }) viewportRef: ElementRef<HTMLElement>;
+
   reloadIndex = 1;
   sizeIndex = 1;
   sizeValue = 10;
@@ -47,7 +49,9 @@ export class TestComponent {
       // minIndex: MIN,
       // maxIndex: MAX,
       itemSize: 100,
-      startIndex: 1
+      startIndex: 1,
+      viewportElement: () => this.viewportRef.nativeElement
+      // viewportElement: () => document.getElementById('my-viewport')
     },
     devSettings: {
       debug: true,

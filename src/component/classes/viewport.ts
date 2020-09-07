@@ -34,7 +34,7 @@ export class Viewport {
       this.hostElement = document.documentElement as HTMLElement;
       this.scrollEventReceiver = window;
     } else {
-      this.hostElement = this.element.parentElement as HTMLElement;
+      this.hostElement = settings.viewport || this.element.parentElement as HTMLElement;
       this.scrollEventReceiver = this.hostElement;
     }
 

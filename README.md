@@ -80,7 +80,7 @@ where the viewport is a scrollable area of finite height:
 }
 ```
 
-If the height of the viewport is not constrained, it will pull the entire content of the datasource and no scrollbar will appear. Also, in order to support Safari and IE browsers, the library has its own implementation of the scroll anchoring feature applicable to the case of virtual scrolling. Previous versions of the library (prior to 1.6.4) had the requirement that the value of "overflow-anchor" css property should be set to "none" for the viewport element.
+If the height of the viewport is not constrained, it will pull the entire content of the datasource and no scrollbar will appear. Previous versions of the library (prior to 1.6.4) had the requirement that the value of "overflow-anchor" css property should be set to "none" for the viewport element.
 
 \*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters. The directive calls `Datasource.get` method each time a user scrolls to the edge of visible element list. That's the API provided by the \*uiScroll.
 

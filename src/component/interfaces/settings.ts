@@ -9,6 +9,7 @@ export interface Settings {
   infinite?: boolean;
   horizontal?: boolean;
   windowViewport?: boolean;
+  viewportElement?: HTMLElement | Function | null;
   inverse?: boolean;
 }
 

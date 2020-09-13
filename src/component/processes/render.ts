@@ -12,7 +12,7 @@ export default class Render {
     if (scrollState.positionBeforeAsync === null) {
       scrollState.positionBeforeAsync = viewport.scrollPosition;
     }
-    render.animationFrameId = requestAnimationFrame(() => {
+    render.renderTimer = setTimeout(() => {
       if (Render.processElements(scroller)) {
         workflow.call({
           process: Process.render,

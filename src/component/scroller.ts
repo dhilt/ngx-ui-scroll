@@ -94,9 +94,9 @@ export class Scroller {
       fetch.subscription.unsubscribe();
       fetch.subscription = null;
     }
-    if (render.animationFrameId) {
-      cancelAnimationFrame(render.animationFrameId);
-      render.animationFrameId = 0;
+    if (render.renderTimer) {
+      clearTimeout(render.renderTimer);
+      render.renderTimer = null;
     }
   }
 

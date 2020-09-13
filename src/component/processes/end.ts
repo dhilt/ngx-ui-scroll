@@ -48,7 +48,7 @@ export default class End {
     state.fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
-    scroller.purgeSubscriptions();
+    scroller.innerLoopCleanup();
     adapter.loopPending = false;
     state.innerLoopCount++;
   }

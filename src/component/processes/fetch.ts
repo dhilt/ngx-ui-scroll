@@ -38,15 +38,13 @@ export default class Fetch {
         fail(result.error);
       }
     } else {
-      const { state: { scrollState }, viewport } = scroller;
+      const { state: { scrollState, fetch }, viewport } = scroller;
       if (scrollState.positionBeforeAsync === null) {
         scrollState.positionBeforeAsync = viewport.scrollPosition;
       }
-      scroller.innerLoopSubscriptions.push(
-        result.subscribe(
-          (data: any[]) => success(data),
-          (error: any) => fail(error)
-        )
+      fetch.subscription = result.subscribe(
+        (data: any[]) => success(data),
+        (error: any) => fail(error)
       );
     }
   }

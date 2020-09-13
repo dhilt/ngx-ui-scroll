@@ -13,6 +13,7 @@ export default class Render {
       scrollState.positionBeforeAsync = viewport.scrollPosition;
     }
     render.renderTimer = setTimeout(() => {
+      render.renderTimer = null;
       if (Render.processElements(scroller)) {
         workflow.call({
           process: Process.render,
@@ -26,7 +27,7 @@ export default class Render {
           payload: { error: `Can't associate item with element` }
         });
       }
-    });
+    }, 0);
   }
 
   static processElements(scroller: Scroller): boolean {

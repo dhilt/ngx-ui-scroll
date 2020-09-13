@@ -6,38 +6,29 @@ export default class Adjust {
   static process = Process.adjust;
 
   static run(scroller: Scroller) {
-    const { workflow, viewport } = scroller;
-    const positionBeforeAdjust = viewport.scrollPosition;
+    const { workflow, viewport, state: { scrollState } } = scroller;
+    scrollState.positionBeforeAdjust = viewport.scrollPosition;
 
     // padding-elements adjustments
     if (!Adjust.setPaddings(scroller)) {
-      workflow.call({
+      return workflow.call({
         process: Process.adjust,
         status: ProcessStatus.error,
         payload: { error: `Can't get visible item` }
       });
-      return;
     }
+    scrollState.positionAfterAdjust = viewport.scrollPosition;
 
     // scroll position adjustments
-    Adjust.setScrollPosition(scroller);
+    const position = Adjust.calculatePosition(scroller);
 
-    // re-set scroll position (if changed) via animation frame
-    const { scrollPosition, previousPosition } = viewport;
-    if (positionBeforeAdjust !== scrollPosition && previousPosition !== scrollPosition) {
-      viewport.setPositionSafe(previousPosition, scrollPosition, () =>
-         workflow.call({
-          process: Process.adjust,
-          status: ProcessStatus.done
-        })
-      );
-      return;
-    }
-
-    workflow.call({
-      process: Process.adjust,
-      status: ProcessStatus.done
-    });
+    // set new position using animation frame
+    Adjust.setPosition(scroller, position, () =>
+      workflow.call({
+        process: Process.adjust,
+        status: ProcessStatus.done
+      })
+    );
   }
 
   static setPaddings(scroller: Scroller): boolean {
@@ -79,7 +70,7 @@ export default class Adjust {
     return true;
   }
 
-  static setScrollPosition(scroller: Scroller) {
+  static calculatePosition(scroller: Scroller): number {
     const { viewport, buffer, state } = scroller;
     const { fetch, render, scrollState } = state;
     let position = viewport.paddings.backward.size;
@@ -112,8 +103,30 @@ export default class Adjust {
       position += viewport.offset;
     }
 
-    viewport.scrollPosition = Math.round(position);
-    scroller.logger.stat('after scroll position adjustment');
+    return Math.round(position);
+  }
+
+  static setPosition(scroller: Scroller, position: number, done: Function) {
+    const { state: { scrollState }, viewport } = scroller;
+    if (!scrollState.hasPositionChanged(position)) {
+      return done();
+    }
+    scrollState.syntheticPosition = position;
+    scrollState.syntheticFulfill = false;
+
+    scrollState.animationFrameId = requestAnimationFrame(() => {
+      const inertiaDiff = (scrollState.positionAfterAdjust as number) - viewport.scrollPosition;
+      let diffLog = '';
+      if (inertiaDiff > 0) {
+        position -= inertiaDiff;
+        scrollState.syntheticPosition = position;
+        diffLog = ` (-${inertiaDiff})`;
+      }
+      scrollState.syntheticFulfill = true;
+      viewport.scrollPosition = position;
+      scroller.logger.stat('after scroll adjustment' + diffLog);
+      done();
+    });
   }
 
 }

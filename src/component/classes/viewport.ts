@@ -9,7 +9,6 @@ export class Viewport {
 
   offset: number;
   paddings: Paddings;
-  previousPosition: number;
 
   readonly element: HTMLElement;
   readonly settings: Settings;
@@ -43,6 +42,10 @@ export class Viewport {
     if (settings.windowViewport && 'scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
+
+    if (settings.dismissOverflowAnchor) {
+      this.hostElement.style.overflowAnchor = 'none';
+    }
   }
 
   reset(scrollPosition: number) {
@@ -58,37 +61,12 @@ export class Viewport {
       this.logger.log(() => ['setting scroll position at', value, '[cancelled]']);
       return value;
     }
-    this.previousPosition = oldPosition;
     this.routines.setScrollPosition(this.hostElement, value);
     const position = this.scrollPosition;
     this.logger.log(() => [
       'setting scroll position at', position, ...(position !== value ? [`(${value})`] : [])
     ]);
     return position;
-  }
-
-  setPositionSafe(oldPos: number, newPos: number, done: Function) {
-    const { scrollState } = this.state;
-    scrollState.syntheticPosition = newPos;
-    this.logger.log(() => ['setting scroll position at', oldPos, '(meaning', newPos, 'in next repaint)']);
-    this.routines.setScrollPosition(this.hostElement, oldPos);
-    scrollState.syntheticFulfill = false;
-    scrollState.animationFrameId =
-      requestAnimationFrame(() => {
-        const diff = oldPos - this.scrollPosition;
-        if (diff > 0) {
-          newPos -= diff;
-          scrollState.syntheticPosition = newPos;
-        }
-        scrollState.syntheticFulfill = true;
-        this.logger.log(() => [
-          'setting scroll position at', newPos,
-          ...(diff > 0 ? [`(${(newPos + diff)} - ${diff})`] : []),
-          '- synthetic fulfillment'
-        ]);
-        this.routines.setScrollPosition(this.hostElement, newPos);
-        done();
-      });
   }
 
   get scrollPosition(): number {

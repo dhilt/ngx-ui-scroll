@@ -11,7 +11,7 @@ export default class Reload {
     scroller.buffer.reset(true, scroller.state.startIndex);
     const payload: any = {};
     if (scroller.adapter.isLoading) {
-      scroller.purgeScrollTimers();
+      scroller.scrollCleanup();
       payload.finalize = true;
     }
     scroller.viewport.reset(scrollPosition);

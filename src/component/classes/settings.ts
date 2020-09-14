@@ -26,6 +26,7 @@ export class Settings implements ISettings, IDevSettings {
   initDelay: number; // if set, the Workflow initialization will be postponed (ms)
   initWindowDelay: number; // if set and the entire window is scrollable, the Workflow init will be postponed (ms)
   changeOverflow: boolean; // if true, scroll will be disabled per each item's average size change
+  dismissOverflowAnchor: boolean; // if true, the viewport will receive "overflowAnchor: none"
 
   // internal settings, managed by scroller itself
   instanceIndex: number;

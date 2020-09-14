@@ -50,14 +50,14 @@ const shouldSlow = (config: TestBedConfig) => (misc: Misc) => (done: Function) =
     const { cyclesDone } = misc.workflow;
     if (cyclesDone === 1) {
       startPosition = misc.scroller.viewport.scrollPosition;
-      timer = setInterval(() => {
+      timer = setInterval(() => requestAnimationFrame(() => {
         count++;
         endPosition = startPosition + count * 5;
         misc.scrollTo(endPosition);
         if (count === COUNT) {
           clearInterval(timer);
         }
-      }, 25);
+      }), 25);
     } else if (cyclesDone === 2) {
       clearInterval(timer);
       expect(endPosition).toBeGreaterThan(startPosition);

@@ -12,23 +12,22 @@ export default class Render {
     if (scrollState.positionBeforeAsync === null) {
       scrollState.positionBeforeAsync = viewport.scrollPosition;
     }
-    scroller.innerLoopSubscriptions.push(
-      scroller.bindData().subscribe(() => {
-        if (Render.processElements(scroller)) {
-          workflow.call({
-            process: Process.render,
-            status: render.noSize ? ProcessStatus.done : ProcessStatus.next,
-            payload: { noClip: clip.noClip }
-          });
-        } else {
-          workflow.call({
-            process: Process.render,
-            status: ProcessStatus.error,
-            payload: { error: `Can't associate item with element` }
-          });
-        }
-      })
-    );
+    render.renderTimer = setTimeout(() => {
+      render.renderTimer = null;
+      if (Render.processElements(scroller)) {
+        workflow.call({
+          process: Process.render,
+          status: render.noSize ? ProcessStatus.done : ProcessStatus.next,
+          payload: { noClip: clip.noClip }
+        });
+      } else {
+        workflow.call({
+          process: Process.render,
+          status: ProcessStatus.error,
+          payload: { error: `Can't associate item with element` }
+        });
+      }
+    }, 0);
   }
 
   static processElements(scroller: Scroller): boolean {

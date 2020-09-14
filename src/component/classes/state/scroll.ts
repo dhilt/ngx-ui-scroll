@@ -13,6 +13,8 @@ export class ScrollState implements IScrollState {
   syntheticFulfill: boolean;
   animationFrameId: number;
   positionBeforeAsync: number | null;
+  positionBeforeAdjust: number | null;
+  positionAfterAdjust: number | null;
 
   constructor() {
     this.reset();
@@ -26,5 +28,13 @@ export class ScrollState implements IScrollState {
     this.syntheticFulfill = false;
     this.animationFrameId = 0;
     this.positionBeforeAsync = null;
+    this.positionBeforeAdjust = null;
+    this.positionAfterAdjust = null;
+  }
+
+  hasPositionChanged(position: number): boolean {
+    const before = this.positionBeforeAdjust;
+    const after = this.positionAfterAdjust;
+    return before === null || before !== position || after === null || after !== position;
   }
 }

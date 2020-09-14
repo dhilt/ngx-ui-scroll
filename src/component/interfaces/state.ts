@@ -21,8 +21,11 @@ export interface ScrollState {
   syntheticFulfill: boolean;
   animationFrameId: number;
   positionBeforeAsync: number | null;
+  positionBeforeAdjust: number | null;
+  positionAfterAdjust: number | null;
 
   reset: Function;
+  hasPositionChanged: (position: number) => boolean;
 }
 
 export interface State {

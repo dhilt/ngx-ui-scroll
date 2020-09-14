@@ -1,3 +1,5 @@
+import { Subscription } from 'rxjs';
+
 import { Item } from '../item';
 import { Direction } from '../../interfaces/index';
 
@@ -62,6 +64,7 @@ export class FetchModel {
   firstVisibleItemDelta: number | null;
   negativeSize: number;
   direction: Direction | null;
+  subscription: Subscription | null;
 
   simulate: boolean;
   isPrepend: boolean;
@@ -86,6 +89,7 @@ export class FetchModel {
     this.firstVisibleItemDelta = null;
     this.negativeSize = 0;
     this.direction = null;
+    this.subscription = null;
     this.simulate = false;
     this.isPrepend = false;
     this.isReplace = false;

@@ -28,8 +28,6 @@ export class Scroller {
   public state: State;
   public adapter: Adapter;
 
-  public innerLoopSubscriptions: Subscription[];
-
   constructor(
     element: HTMLElement,
     datasource: Datasource | IDatasource,
@@ -43,7 +41,6 @@ export class Scroller {
     }
 
     this.workflow = { call: callWorkflow };
-    this.innerLoopSubscriptions = [];
 
     let $items, cycleCount, loopCount;
     if (scroller) { // re-use $items and continue counters
@@ -91,21 +88,19 @@ export class Scroller {
     this.adapter.init(this.buffer, this.logger, dispose$, onAdapterRun$);
   }
 
-  bindData(): Observable<void> {
-    return new Observable((observer: Observer<void>) => {
-      setTimeout(() => {
-        observer.next();
-        observer.complete();
-      });
-    });
+  innerLoopCleanup() {
+    const { state: { fetch, render } } = this;
+    if (fetch.subscription) {
+      fetch.subscription.unsubscribe();
+      fetch.subscription = null;
+    }
+    if (render.renderTimer) {
+      clearTimeout(render.renderTimer);
+      render.renderTimer = null;
+    }
   }
 
-  purgeSubscriptions() {
-    this.innerLoopSubscriptions.forEach((item: Subscription) => item.unsubscribe());
-    this.innerLoopSubscriptions = [];
-  }
-
-  purgeScrollTimers() {
+  scrollCleanup() {
     const { state: { scrollState } } = this;
     if (scrollState.scrollTimer) {
       clearTimeout(scrollState.scrollTimer);
@@ -122,8 +117,8 @@ export class Scroller {
       this.adapter.dispose();
     }
     this.buffer.dispose(forever);
-    this.purgeSubscriptions();
-    this.purgeScrollTimers();
+    this.innerLoopCleanup();
+    this.scrollCleanup();
   }
 
   finalize() {

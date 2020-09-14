@@ -42,6 +42,10 @@ export class Viewport {
     if (settings.windowViewport && 'scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
+
+    if (settings.dismissOverflowAnchor) {
+      this.hostElement.style.overflowAnchor = 'none';
+    }
   }
 
   reset(scrollPosition: number) {

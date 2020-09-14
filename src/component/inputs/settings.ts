@@ -27,6 +27,7 @@ enum DevSettings {
   initDelay = 'initDelay',
   initWindowDelay = 'initWindowDelay',
   changeOverflow = 'changeOverflow',
+  dismissOverflowAnchor = 'dismissOverflowAnchor',
 }
 
 export const MIN = {
@@ -121,5 +122,9 @@ export const DEV_SETTINGS: ICommonProps<DevSettings> = {
   [DevSettings.changeOverflow]: {
     validators: [BOOLEAN],
     defaultValue: false
+  },
+  [DevSettings.dismissOverflowAnchor]: {
+    validators: [BOOLEAN],
+    defaultValue: true
   },
 };

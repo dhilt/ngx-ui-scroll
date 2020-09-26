@@ -47,6 +47,7 @@ export default class Clip {
       `, range: [${clipped[0]}..${clipped[clipped.length - 1]}]`
     ]);
     logger.stat('after clip');
+    clip.reset();
   }
 
 }

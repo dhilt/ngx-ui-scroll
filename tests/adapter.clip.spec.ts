@@ -145,5 +145,14 @@ describe('Adapter Clip Spec', () => {
     })
   );
 
+  makeTest({
+    config: { datasourceSettings: { adapter: true } },
+    title: `should resolve immediately before scroller initialization`,
+    it: (misc: Misc) => async (done: Function) => {
+      await misc.adapter.clip();
+      done();
+    }
+  });
+
 });
 

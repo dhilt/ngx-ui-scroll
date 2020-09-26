@@ -73,23 +73,28 @@ export class Adapter implements IAdapter {
   eof$: Subject<boolean>;
   itemsCount: number;
 
-  private relax$: Subject<AdapterMethodRelax>;
+  private relax$: Subject<AdapterMethodRelax> | null;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]) =>
       new Promise(resolve => {
-        this.relax$.pipe(
-          filter(value => !!value),
-          take(1)
-        ).subscribe(value => resolve(value));
+        if (this.relax$) {
+          this.relax$.pipe(
+            filter(value => !!value),
+            take(1)
+          ).subscribe(value => resolve(value));
+        }
         method.apply(this, args);
+        if (!this.relax$) {
+          resolve();
+        }
       });
   }
 
   constructor(publicContext: IAdapter | null, getWorkflow: WorkflowGetter, logger: Logger) {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
-    this.relax$ = new Subject<AdapterMethodRelax>();
+    this.relax$ = null;
 
     // restore original values from the publicContext if present
     const adapterProps = publicContext
@@ -201,19 +206,23 @@ export class Adapter implements IAdapter {
 
     // self-pending
     if (onAdapterRun$) {
+      if (!this.relax$) {
+        this.relax$ = new Subject<AdapterMethodRelax>();
+      }
+      const relax$ = this.relax$;
       onAdapterRun$.subscribe(({ status, payload }) => {
         let isLoadingSub;
         if (status === ProcessStatus.start) {
-          this.relax$.next(false);
+          relax$.next(false);
           isLoadingSub = this.isLoading$
             .pipe(filter(isLoading => !isLoading), take(1))
-            .subscribe(() => this.relax$.next({ success: true, immediate: false }));
+            .subscribe(() => relax$.next({ success: true, immediate: false }));
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
           if (isLoadingSub) {
             isLoadingSub.unsubscribe();
           }
-          this.relax$.next({
+          relax$.next({
             success: status !== ProcessStatus.error,
             immediate: true,
             ...(status === ProcessStatus.error ? { error: payload ? payload.error : 'true' } : {})
@@ -224,7 +233,9 @@ export class Adapter implements IAdapter {
   }
 
   dispose() {
-    this.relax$.complete();
+    if (this.relax$) {
+      this.relax$.complete();
+    }
    }
 
   reset(options?: IDatasourceOptional): any {

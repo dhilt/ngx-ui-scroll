@@ -225,6 +225,10 @@ export const datasourceStore: IDatasourceStore = {
     get: limitedDatasourceSpecialGet(1, 100, (i: number) => i >= 6 ? 0 : 20)
   },
 
+  'limited--99-100-processor': {
+    get: limitedDatasourceGet(-99, 100, false, DatasourceType.Callback, 0, true)
+  },
+
   'limited--99-100-dynamic-size-processor': {
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0, true)
   },

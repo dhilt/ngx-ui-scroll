@@ -7,6 +7,7 @@ export default class Clip {
 
   static run(scroller: Scroller) {
     const { workflow, state: { clip } } = scroller;
+
     if (clip.doClip) {
       Clip.doClip(scroller);
     } else {
@@ -21,33 +22,40 @@ export default class Clip {
   }
 
   static doClip(scroller: Scroller) {
-    const { buffer, viewport: { paddings }, logger, state: { clip } } = scroller;
-    const clipped: number[] = [];
+    const { buffer, viewport, logger, state: { clip } } = scroller;
     const size = { backward: 0, forward: 0 };
-    clip.callCount++;
-    logger.stat(`before clip (${clip.callCount})`);
-    buffer.items = buffer.items.filter(item => {
-      if (item.toRemove) {
-        item.hide();
-        size[item.removeDirection] += item.size;
-        const padding = paddings.byDirection(item.removeDirection);
-        padding.size += item.size;
-        clipped.push(item.$index);
-        if (clip.simulate && !clip.force) {
-          buffer.removeItem(item);
-        }
+    const { paddings, scrollPosition: position } = viewport;
+    const isAdapterRemove = clip.simulate && !clip.force;
+
+    logger.stat(`before clip (${++clip.callCount})`);
+
+    const itemsToRemove = buffer.items.filter(item => {
+      if (!item.toRemove) {
         return false;
       }
+      item.hide();
+      size[item.removeDirection] += item.size;
+      const padding = paddings.byDirection(item.removeDirection);
+      padding.size += item.size;
       return true;
     });
+
+    if (isAdapterRemove) { // with indexes shifting
+      buffer.removeItems(itemsToRemove);
+    } else { // common clip
+      buffer.items = buffer.items.filter(({ toRemove }) => !toRemove);
+    }
+
     logger.log(() => [
-      `clipped ${clipped.length} items` +
+      `clipped ${itemsToRemove.length} items` +
       (size.backward ? `, +${size.backward} fwd px` : '') +
       (size.forward ? `, +${size.forward} bwd px` : '') +
-      `, range: [${clipped[0]}..${clipped[clipped.length - 1]}]`
+      `, range: [${itemsToRemove[0].$index}..${itemsToRemove[itemsToRemove.length - 1].$index}]`
     ]);
+
+    viewport.scrollPosition = position;
+
     logger.stat('after clip');
-    clip.reset();
   }
 
 }

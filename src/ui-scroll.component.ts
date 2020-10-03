@@ -58,7 +58,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
           return;
         }
         this.items = items;
-        this.changeDetector.markForCheck();
+        this.changeDetector.detectChanges();
       }
     );
   }

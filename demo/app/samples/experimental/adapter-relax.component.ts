@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoContext, DemoSources } from '../../shared/interfaces';
 import { Datasource } from '../../../../public_api';
-import { doLog } from '../../shared/datasource-get';
 
 @Component({
   selector: 'app-adapter-relax',

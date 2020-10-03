@@ -53,32 +53,11 @@ export default class End {
     state.innerLoopCount++;
   }
 
-  static getEdgeVisibleItem(scroller: Scroller, direction: Direction) {
-    const { items } = scroller.buffer;
-    const bwd = direction === Direction.backward;
-    const opposite = bwd ? Direction.forward : Direction.backward;
-    const viewportEdge = scroller.viewport.getEdge(direction);
-    let item, diff = 0;
-    for (
-      let i = bwd ? 0 : items.length - 1;
-      bwd ? i <= items.length - 1 : i >= 0;
-      i += bwd ? 1 : -1
-    ) {
-      const itemEdge = scroller.routines.getEdge(items[i].element, opposite);
-      diff = itemEdge - viewportEdge;
-      if (bwd && diff > 0 || !bwd && diff < 0) {
-        item = items[i];
-        break;
-      }
-    }
-    return { item, diff };
-  }
-
   static calculateParams(scroller: Scroller, workflow: ScrollerWorkflow) {
-    const { adapter } = scroller;
+    const { adapter, viewport, buffer: { items } } = scroller;
 
     if (adapter.wanted.firstVisible) {
-      const { item } = End.getEdgeVisibleItem(scroller, Direction.backward);
+      const { item } = viewport.getEdgeVisibleItem(items, Direction.backward);
       if (!item || item.element !== adapter.firstVisible.element) {
         adapter.firstVisible = item ? item.get() : EMPTY_ITEM;
       }
@@ -86,7 +65,7 @@ export default class End {
 
     // the workflow can be interrupter on firstVisible change
     if (adapter.wanted.lastVisible && !isInterrupted(workflow)) {
-      const { item } = End.getEdgeVisibleItem(scroller, Direction.forward);
+      const { item } = viewport.getEdgeVisibleItem(items, Direction.forward);
       if (!item || item.element !== adapter.lastVisible.element) {
         adapter.lastVisible = item ? item.get() : EMPTY_ITEM;
       }

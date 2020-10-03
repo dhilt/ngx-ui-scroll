@@ -103,6 +103,10 @@ export class Misc {
     return index !== null && this.getElementText(index) === index + ' : ' + generateItem(index).text;
   }
 
+  checkElementContent(index: number, id: number): boolean {
+    return this.getElementText(index) === index + ' : ' + generateItem(id).text;
+  }
+
   checkElementId(element: HTMLElement, index: number): boolean {
     return element.getAttribute('data-sid') === `${index}`;
   }
@@ -147,6 +151,12 @@ export class Misc {
         filter(pending => !pending),
         take(1)
       ).subscribe(() => resolve())
+    );
+  }
+
+  delay(ms: number): Promise<void> {
+    return new Promise(resolve =>
+      setTimeout(() => resolve(), ms)
     );
   }
 }

@@ -1,6 +1,7 @@
 import { Paddings } from './paddings';
 import { Settings } from './settings';
 import { Routines } from './domRoutines';
+import { Item } from './item';
 import { State } from './state';
 import { Logger } from './logger';
 import { Direction } from '../interfaces/index';
@@ -115,6 +116,26 @@ export class Viewport {
     if (!this.settings.windowViewport) {
       this.offset -= this.routines.getOffset(this.hostElement);
     }
+  }
+
+  getEdgeVisibleItem(items: Item[], direction: Direction) {
+    const bwd = direction === Direction.backward;
+    const opposite = bwd ? Direction.forward : Direction.backward;
+    const viewportEdge = this.getEdge(direction);
+    let item, diff = 0;
+    for (
+      let i = bwd ? 0 : items.length - 1;
+      bwd ? i <= items.length - 1 : i >= 0;
+      i += bwd ? 1 : -1
+    ) {
+      const itemEdge = this.routines.getEdge(items[i].element, opposite);
+      diff = itemEdge - viewportEdge;
+      if (bwd && diff > 0 || !bwd && diff < 0) {
+        item = items[i];
+        break;
+      }
+    }
+    return { item, diff };
   }
 
 }

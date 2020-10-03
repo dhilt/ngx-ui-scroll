@@ -1,5 +1,5 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { generateItem, Item } from './miscellaneous/items';
+import { makeTest } from './scaffolding/runner';
+import { generateItem, Item, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { configureTestBedSub } from './scaffolding/testBed';
 import { Settings, DevSettings, DatasourceGet } from '../src/component/interfaces/index';
@@ -175,6 +175,49 @@ describe('Bug Spec', () => {
         expect(testComponent.firstVisible.$index).toEqual(1);
         done();
       });
+    });
+  });
+
+  describe('replace via remove and insert', () => {
+    const MIN = 2, MAX = 5;
+    const startIndex = MIN - 1;
+
+    makeTest({
+      title: 'should keep firstVisible',
+      config: {
+        datasourceName: 'limited--99-100-processor',
+        datasourceSettings: { adapter: true, startIndex }
+      },
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        expect(misc.adapter.firstVisible.$index).toEqual(startIndex);
+
+        // remove item from the original datasource
+        (misc.datasource as any).setProcessGet((result: any[]) =>
+          removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i))
+        );
+        await misc.adapter.remove(({ $index }) =>
+          $index >= MIN && $index <= MAX
+        );
+        // no need to insert new item to the original DS in this test
+        await misc.adapter.insert({
+          items: [{ id: `${MAX}*`, text: `item #${MAX} *` }],
+          after: ({ $index }) => $index === startIndex }
+        );
+
+        expect(misc.adapter.firstVisible.$index).toEqual(startIndex);
+        misc.scroller.buffer.items.forEach((item) => {
+          let id = item.$index.toString();
+          if (item.$index === MIN) {
+            id = `${MAX}*`;
+          } else if (item.$index > MIN) {
+            id = (item.$index + (MAX - MIN)).toString();
+          }
+          expect(item.data.id.toString()).toEqual(id);
+        });
+
+        done();
+      }
     });
   });
 

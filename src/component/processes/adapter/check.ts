@@ -1,5 +1,4 @@
 import { Scroller } from '../../scroller';
-import End from '../end';
 import { Process, ProcessStatus, Direction } from '../../interfaces/index';
 
 export default class Check {
@@ -7,7 +6,7 @@ export default class Check {
   static process = Process.check;
 
   static run(scroller: Scroller) {
-    const { workflow, buffer, state: { fetch } } = scroller;
+    const { workflow, buffer, state: { fetch }, viewport } = scroller;
     let min = Infinity, max = -Infinity;
 
     buffer.items.forEach(item => {
@@ -24,7 +23,7 @@ export default class Check {
       scroller.state.clip.noClip = true;
       fetch.first.indexBuffer = buffer.firstIndex;
       fetch.last.indexBuffer = buffer.lastIndex;
-      const { item: first, diff } = End.getEdgeVisibleItem(scroller, Direction.backward);
+      const { item: first, diff } = viewport.getEdgeVisibleItem(buffer.items, Direction.backward);
       fetch.firstVisibleIndex = first ? first.get().$index : null;
       if (fetch.firstVisibleIndex !== null) {
         fetch.firstVisibleItemDelta = - buffer.getSizeByIndex(fetch.firstVisibleIndex) + diff;

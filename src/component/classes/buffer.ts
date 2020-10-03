@@ -196,17 +196,28 @@ export class Buffer {
     this.items = [...items, ...this.items];
   }
 
-  removeItem(item: Item) {
-    const items = this.items.filter(({ $index }: Item) => $index !== item.$index);
-    items.forEach((_item: Item) => {
-      if (_item.$index > item.$index) {
-        _item.$index--;
-        _item.nodeId = String(_item.$index);
+  removeItems(items: Item[], immutableTop: boolean = true) {
+    // todo: implement immutableTop option
+    const result: Item[] = [];
+    const toRemove: number[] = [];
+    this.items.forEach(item => {
+      if (items.some(({ $index }) => $index === item.$index)) {
+        toRemove.push(item.$index);
+        return;
       }
+      const diff = immutableTop
+        ? toRemove.reduce((acc, index) => acc - (item.$index > index ? 1 : 0), 0)
+        : toRemove.reduce((acc, index) => acc + (item.$index < index ? 1 : 0), 0);
+      item.updateIndex(item.$index + diff);
+      result.push(item);
     });
-    this.absMaxIndex--; // todo: perhaps we want to reduce absMinIndex in some cases, see "decrement" for insert
-    this.items = items;
-    this.cache.removeItem(item.$index);
+    if (immutableTop) {
+      this.absMaxIndex -= toRemove.length;
+    } else {
+      this.absMinIndex += toRemove.length;
+    }
+    this.items = result;
+    this.cache.removeItems(toRemove, immutableTop);
   }
 
   insertItems(items: Item[], from: Item, addition: number, decrement: boolean) {

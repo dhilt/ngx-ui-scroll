@@ -18,19 +18,38 @@ export default class Remove {
       return;
     }
 
-    scroller.buffer.items.forEach(item => {
-      if (predicate(item.get())) {
-        item.toRemove = true;
-        item.removeDirection = Direction.forward; // will alway increase fwd padding
-        scroller.state.clip.doClip = true;
-        scroller.state.clip.simulate = true;
-      }
-    });
+    const shouldRemove = Remove.runPredicate(scroller, predicate);
+
+    if (shouldRemove) {
+      const { clip } = scroller.state;
+      clip.doClip = true;
+      clip.simulate = true;
+    }
 
     scroller.workflow.call({
       process: Process.remove,
-      status: scroller.state.clip.doClip ? ProcessStatus.next : ProcessStatus.done
+      status: shouldRemove ? ProcessStatus.next : ProcessStatus.done
     });
+  }
+
+  static runPredicate(scroller: Scroller, predicate: ItemsPredicate): boolean {
+    const { viewport, buffer: { items } } = scroller;
+    let result = false;
+    let firstVisibleIndex: null | number = null;
+    items.forEach(item => {
+      if (predicate(item.get())) {
+        item.toRemove = true;
+        if (firstVisibleIndex === null) {
+          const firstVisible = viewport.getEdgeVisibleItem(items, Direction.backward);
+          firstVisibleIndex = firstVisible.item ? firstVisible.item.get().$index : null;
+        }
+        item.removeDirection = firstVisibleIndex !== null && item.$index < firstVisibleIndex
+          ? Direction.backward
+          : Direction.forward;
+        result = true;
+      }
+    });
+    return result;
   }
 
 }

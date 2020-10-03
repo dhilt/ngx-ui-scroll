@@ -135,18 +135,18 @@ export class Cache {
     return this.items.size;
   }
 
-  removeItem($index: number) {
+  removeItems(toRemove: number[], immutableTop: boolean) {
     const items = new Map<number, ItemCache>();
     let min = Infinity, max = -Infinity;
-    this.items.delete($index);
     this.items.forEach((item: ItemCache) => {
-      if (item.$index < $index) {
-        items.set(item.$index, item);
-      } else {
-        // decrement indexes that are greater than $index
-        item.changeIndex(item.$index - 1);
-        items.set(item.$index - 1, item);
+      if (toRemove.some(index => index === item.$index)) {
+        return;
       }
+      const diff = immutableTop
+        ? toRemove.reduce((acc, index) => acc - (item.$index > index ? 1 : 0), 0)
+        : toRemove.reduce((acc, index) => acc + (item.$index < index ? 1 : 0), 0);
+      item.changeIndex(item.$index + diff);
+      items.set(item.$index, item);
       min = item.$index < min ? item.$index : min;
       max = item.$index > max ? item.$index : max;
     });

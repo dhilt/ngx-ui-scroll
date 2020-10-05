@@ -221,4 +221,24 @@ describe('Bug Spec', () => {
     });
   });
 
+  describe('double clip', () =>
+    makeTest({
+      title: 'should clip once',
+      config: {
+        datasourceName: 'default',
+        datasourceSettings: { adapter: true, bufferSize: 50 }
+      },
+      it: (misc: Misc) => async (done: Function) => {
+        const { clip } = misc.scroller.state;
+        await misc.relaxNext();
+        expect(clip.callCount).toEqual(0);
+        await misc.adapter.clip();
+        expect(clip.callCount).toEqual(1);
+        await misc.adapter.clip();
+        expect(clip.callCount).toEqual(1);
+        done();
+      }
+    })
+  );
+
 });

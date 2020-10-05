@@ -19,9 +19,13 @@ export class ClipModel {
     this.reset();
   }
 
-  reset() {
+  reset(isForce?: boolean) {
     this.doClip = false;
-    this.forceReset();
+    if (!isForce) {
+      this.forceReset();
+    } else {
+      this.simulate = false;
+    }
   }
 
   forceReset() {

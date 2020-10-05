@@ -14,8 +14,8 @@ export default class Start {
     if (!fetch.simulate) {
       fetch.reset();
     }
-    if (!clip.simulate && !clip.force) {
-      clip.reset();
+    if (!clip.simulate) {
+      clip.reset(clip.force);
     }
     render.reset();
 

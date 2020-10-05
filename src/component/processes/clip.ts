@@ -46,12 +46,14 @@ export default class Clip {
       buffer.items = buffer.items.filter(({ toRemove }) => !toRemove);
     }
 
-    logger.log(() => [
-      `clipped ${itemsToRemove.length} items` +
-      (size.backward ? `, +${size.backward} fwd px` : '') +
-      (size.forward ? `, +${size.forward} bwd px` : '') +
-      `, range: [${itemsToRemove[0].$index}..${itemsToRemove[itemsToRemove.length - 1].$index}]`
-    ]);
+    logger.log(() => itemsToRemove.length
+      ? [
+        `clipped ${itemsToRemove.length} items` +
+        (size.backward ? `, +${size.backward} fwd px` : '') +
+        (size.forward ? `, +${size.forward} bwd px` : '') +
+        `, range: [${itemsToRemove[0].$index}..${itemsToRemove[itemsToRemove.length - 1].$index}]`
+      ]
+      : 'clipped 0 items');
 
     viewport.scrollPosition = position;
 

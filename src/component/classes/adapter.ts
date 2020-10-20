@@ -74,6 +74,7 @@ export class Adapter implements IAdapter {
   itemsCount: number;
 
   private relax$: Subject<AdapterMethodRelax> | null;
+  private relaxRun: Promise<void> | null;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]) =>
@@ -95,6 +96,7 @@ export class Adapter implements IAdapter {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
     this.relax$ = null;
+    this.relaxRun = null;
 
     // restore original values from the publicContext if present
     const adapterProps = publicContext
@@ -320,7 +322,7 @@ export class Adapter implements IAdapter {
     });
   }
 
-  relax(callback?: Function): any {
+  relaxUnchained(callback?: Function): Promise<void> {
     if (!this.isLoading) {
       if (typeof callback === 'function') {
         callback();
@@ -337,6 +339,15 @@ export class Adapter implements IAdapter {
           resolve();
         })
     );
+  }
+
+  relax(callback?: Function): any {
+    this.logger.logAdapterMethod('relax', callback);
+    return this.relaxRun = this.relaxRun
+      ? this.relaxRun.then(() => this.relaxUnchained(callback))
+      : this.relaxUnchained(callback).then(() => {
+        this.relaxRun = null;
+      });
   }
 
   showLog() {

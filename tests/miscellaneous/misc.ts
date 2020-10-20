@@ -1,7 +1,7 @@
 import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
-import { filter, take } from 'rxjs/operators';
+import { debounceTime, filter, take } from 'rxjs/operators';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
@@ -145,11 +145,18 @@ export class Misc {
     this.scrollTo(999999);
   }
 
-  relaxNext(): Promise<void> {
+  relaxNext(debounce?: boolean): Promise<void> {
     return new Promise(resolve =>
-      this.adapter.isLoading$.pipe(
-        filter(pending => !pending),
-        take(1)
+      (debounce
+        ? this.adapter.isLoading$.pipe(
+          filter(pending => !pending),
+          debounceTime(30),
+          take(1)
+        )
+        : this.adapter.isLoading$.pipe(
+          filter(pending => !pending),
+          take(1)
+        )
       ).subscribe(() => resolve())
     );
   }

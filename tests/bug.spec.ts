@@ -241,4 +241,34 @@ describe('Bug Spec', () => {
     })
   );
 
+  describe('concurrent sequences of the Adapter calls', () => {
+    const START = 100;
+    const COUNT = 25;
+    const doAppendAndScroll = async (_misc: Misc, index: number): Promise<any> => {
+      const { adapter } = _misc;
+      await adapter.relax();
+      await adapter.append(generateItem(index));
+      await adapter.fix({ scrollPosition: Infinity });
+    };
+
+    makeTest({
+      title: 'should run a sequence within sequence',
+      config: {
+        datasourceName: 'limited-1-100-no-delay',
+        datasourceSettings: { adapter: true, startIndex: START }
+      },
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        const scrollPosition = misc.getScrollPosition();
+        for (let i = 0; i < COUNT; i++) {
+          doAppendAndScroll(misc, START + i + 1);
+        }
+        await misc.adapter.relax();
+        const newScrollPosition = scrollPosition + misc.getItemSize() * COUNT;
+        expect(misc.getScrollPosition()).toEqual(newScrollPosition);
+        done();
+      }
+    });
+  });
+
 });

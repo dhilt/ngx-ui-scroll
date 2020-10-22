@@ -31,11 +31,12 @@
 
     <p>
       Note, <em>immediate:&nbsp;false</em> does not necessarily mean that the <em>Adapter</em> method
-      worked asynchronously. But, in most cases we'll have async processes,
-      so it is highly recommended to pay special attention to logic that is going to be run
-      after the <em>Adapter</em> method is invoked. Generally such logic needs to be
-      postponed by waiting for the promisified result of the <em>Adapter</em> method invocation.
+      worked asynchronously. But in any case, if there is any logic that needs to be run after
+      the Adapter method completes its job, it is highly recommended
+      to implement an explicit sequence like this:
     </p>
+
+    <pre>{{explicitSequenceSample}}</pre>
 
   </div>
 

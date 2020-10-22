@@ -7,32 +7,47 @@
 
   <div description>
     <p>
+      If we need to run any logic that should not interfere with the Scroller internal processes,
+      it should be protected by the "relax" promise:
+    </p>
+    <pre>{{relaxSample}}</pre>
+    <p>
+      In this demo we simulate items replacement
+      by performing a sequence of 2 <em>Adapter</em> methods: remove and insert.
+      A few existed items (5, 6, 7) are being replaced with a new one (5*).
+      Removing is an asynchronous operation, and we can't perform
+      "insert" before "remove" is done (it will produce an error).
+      Thus, both operations must be run in sequence.
+      Also, we should be wary of any async processes
+      before running the Adapter methods chain.
+      So the algorithm for this demo can be written be as follows: 
+    </p>
+    <ul>
+      <li>wait for scroller stops</li>
+      <li>run remove</li>
+      <li>wait for remove is done</li>
+      <li>run insert</li>
+    </ul>
+    <p>
       The purpose of the <em>Adapter.relax</em> method is to make sure that the <em>uiScroll</em> relaxes
-      and there are no internal processes working at the moment we need to run some logic.
-      Basically, it may be treated as a shortcut for the following approach,
-      which is presented on "Is&nbsp;loading" tab:
+      and there are no pending internal tasks running on the Scroller's end.
+      The first tab "Relax" demonstrates how the desired sequence can be implemented with
+      the <em>Adapter.relax</em> method.
+      This method returns a promise which becomes resolved when the Scroller stops.
+      Basically, this may be treated as a shortcut for the following approach,
+      which is presented on the "Is&nbsp;loading" tab:
     </p>
     <pre>{{isLoadingSample}}</pre>
     <p>
-      The <em>Adapter.relax</em> method accepts 1 optional argument, it is a callback
-      that allow to run necessary logic right before resolving "relax" promise.
-      This might be helpful if we don't want to wait until the end of the call stack.
-      The "Relax cb" tab shows the difference between "await" and "callback" approaches.
+      All the tabs are equivalent. The third tab "Callback" uses a callback signature of
+      the <em>Adapter.relax</em> method. The method accepts callback as an optional argument,
+      and this allows to run necessary logic right before resolving the "relax" promise.
+      This might be helpful if we don't want to wait until the end of current call stack.
     </p>
     <p>
-      This sample is quite artificial, because for 2 manual operations (remove and insert)
-      the second one can be done safely by using <a href="#/adapter#return-value">Return value</a> API,
-      which is a part of each <em>Adapter</em> method.
-      This approach is demonstrated on the last tab "Return".
+      At last, we may use <a href="#/adapter#return-value">Return value API</a>
+      (which is a part of each <em>Adapter</em> method)
+      and get rid of the second "relax". This approach is demonstrated on the last tab "Return".
     </p>
-    <p>
-      But the point is that the first manual operation also might require safe call.
-      If we have a chance that there are some pending processes
-      at the moment we are going to run the <em>Adapter</em> method,
-      then we should wait until these processes are done.
-      The "Is loading" approach is about it. But having the "Relax" shortcut
-      we may make our life easier.
-    </p>
-    <pre>{{relaxSample}}</pre>
   </div>
 </app-demo>

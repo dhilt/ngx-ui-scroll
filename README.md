@@ -186,14 +186,15 @@ Below is the list of invocable methods of the Adapter API with description and l
 
 Along with the documented API there are some undocumented features that can be treated as experimental. They are not tested enough and might change over time. Some of them can be found on the [experimental tab](https://dhilt.github.io/ngx-ui-scroll/#/experimental) of the demo app.
 
-All of the Adapter methods return Promise resolving at the moment when the scroller terminates its internal processes triggered by the invocation of the Adapter method. It might be quite important to run some logic after the Adapter finished its job:
+All of the Adapter methods return Promise resolving at the moment when the scroller terminates its internal processes triggered by the invocation of the Adapter method. It might be quite important to run some logic after the Adapter finished its job. Also, it is recommended to protect the first Adapter call by the [relax method](https://dhilt.github.io/ngx-ui-scroll/#/experimental#adapter-relax). Below is an example of how an explicit sequence of the Adapter methods can be implemented:
 
 ```js
 const { adapter } = this.datasource;
 const predicate = ({ $index }) => $index === indexToReplace;
+await adapter.relax();
 await adapter.remove(predicate);
-await adapter.insert({ items: [itemToReplace], after: predicate });
-this.notify('Replacement done');
+await adapter.insert({ items: [itemToReplace], before: predicate });
+console.log('Replacement done');
 ```
 
 For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#/adapter).

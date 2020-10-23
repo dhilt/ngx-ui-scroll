@@ -12,8 +12,8 @@ const fixedItemSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -99, padding: 0.3, itemSize: 25 },
   templateSettings: { viewportHeight: 200, itemHeight: 25 }
 }, {
-  datasourceSettings: { startIndex: -77, padding: 0.62, itemSize: 90, horizontal: true },
-  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
+  datasourceSettings: { startIndex: -77, padding: 0.62, itemSize: 100, horizontal: true },
+  templateSettings: { viewportWidth: 450, itemWidth: 100, horizontal: true }
 }, {
   datasourceSettings: { startIndex: 1, padding: 0.5, itemSize: 20, windowViewport: true },
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
@@ -23,8 +23,8 @@ const fixedItemSizeAndBigBufferSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, padding: 0.1, itemSize: 20, bufferSize: 20 },
   templateSettings: { viewportHeight: 100, itemHeight: 20 }
 }, {
-  datasourceSettings: { startIndex: -50, padding: 0.1, itemSize: 90, bufferSize: 10, horizontal: true },
-  templateSettings: { viewportWidth: 200, itemWidth: 90, horizontal: true }
+  datasourceSettings: { startIndex: -50, padding: 0.1, itemSize: 100, bufferSize: 10, horizontal: true },
+  templateSettings: { viewportWidth: 200, itemWidth: 100, horizontal: true }
 }];
 
 const tunedItemSizeConfigList: TestBedConfig[] = [{
@@ -35,7 +35,7 @@ const tunedItemSizeConfigList: TestBedConfig[] = [{
   templateSettings: { viewportHeight: 120, itemHeight: 20 }
 }, {
   datasourceSettings: { startIndex: -77, padding: 0.82, itemSize: 200, horizontal: true },
-  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
+  templateSettings: { viewportWidth: 450, itemWidth: 100, horizontal: true }
 }, {
   datasourceSettings: { startIndex: -47, padding: 0.3, itemSize: 60, windowViewport: true },
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 40 }

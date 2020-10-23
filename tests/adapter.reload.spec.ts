@@ -121,8 +121,8 @@ const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   const itemsPerViewport = Math.ceil(viewport.getSize() / buffer.averageSize);
 
   expect(firstItem ? firstItem.$index : null).toEqual(firstIndex);
-  expect(misc.getElementText(firstIndex)).toEqual(`${firstIndex} : item #${firstIndex}`);
-  expect(misc.getElementText(nextIndex)).toEqual(`${nextIndex} : item #${nextIndex}`);
+  expect(misc.checkElementContentByIndex(firstIndex)).toEqual(true);
+  expect(misc.checkElementContentByIndex(nextIndex)).toEqual(true);
   expect(firstVisible.$index).toEqual(startIndex);
   expect(lastVisible.$index).toEqual(startIndex + itemsPerViewport - 1);
   expect(misc.workflow.interruptionCount).toEqual(config.custom.interruptionCount);

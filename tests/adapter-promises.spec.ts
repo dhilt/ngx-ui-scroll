@@ -239,6 +239,17 @@ const immediateConfigErrorList = [{
   } as ICustom
 }];
 
+const concurrentSequencesConfigList: TestBedConfig[] = [{
+  datasourceName: 'limited-1-100-no-delay',
+  datasourceSettings: { adapter: true, startIndex: 100 },
+  custom: { count: 25 }
+}, {
+  datasourceName: 'limited-51-200-no-delay',
+  datasourceSettings: { adapter: true, startIndex: 200, horizontal: true },
+  templateSettings: { viewportWidth: 450, itemWidth: 100, horizontal: true },
+  custom: { count: 30 }
+}];
+
 const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const { workflow } = misc;
   const { method, options, newWFCycle, async, error } = config.custom as ICustom;
@@ -271,6 +282,26 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
     });
 };
 
+const doAppendAndScroll = async (misc: Misc, index: number): Promise<any> => {
+  const { adapter } = misc;
+  await adapter.relax();
+  await adapter.append(generateItem(index));
+  await adapter.fix({ scrollPosition: Infinity });
+};
+
+const checkConcurrentSequences = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+  const { datasourceSettings: { startIndex }, custom: { count }} = config;
+  const scrollPosition = misc.getScrollPosition();
+  for (let i = 0; i < count; i++) {
+    doAppendAndScroll(misc, startIndex + i + 1);
+  }
+  await misc.adapter.relax();
+  const newScrollPosition = scrollPosition + misc.getItemSize() * count;
+  expect(misc.getScrollPosition()).toEqual(newScrollPosition);
+  done();
+};
+
 describe('Adapter Promises Spec', () => {
 
   describe('Promisified method', () => {
@@ -295,6 +326,16 @@ describe('Adapter Promises Spec', () => {
         config,
         title: `should resolve "${config.custom.method}" immediately due to error`,
         it: checkPromisifiedMethod(config)
+      })
+    );
+  });
+
+  describe('Concurrent sequences', () => {
+    concurrentSequencesConfigList.forEach(config =>
+      makeTest({
+        title: `should run a sequence within sequence`,
+        config,
+        it: checkConcurrentSequences(config)
       })
     );
   });

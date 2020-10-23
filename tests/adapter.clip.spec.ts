@@ -10,8 +10,8 @@ const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: -158, bufferSize: 11, padding: 0.68, itemSize: 20 },
   templateSettings: { viewportHeight: 77, itemHeight: 20 }
 }, {
-  datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 1, horizontal: true, itemSize: 90 },
-  templateSettings: { viewportWidth: 450, itemWidth: 90, horizontal: true }
+  datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 1, horizontal: true, itemSize: 100 },
+  templateSettings: { viewportWidth: 450, itemWidth: 100, horizontal: true }
 }, {
   datasourceSettings: { startIndex: -274, bufferSize: 3, padding: 1.22, horizontal: true, itemSize: 75 },
   templateSettings: { viewportWidth: 320, itemWidth: 75, horizontal: true }

@@ -51,7 +51,7 @@ export class Misc {
   window: boolean;
 
   itemHeight = 20;
-  itemWidth = 90;
+  itemWidth = 100;
   shared: any = {};
 
   constructor(fixture: ComponentFixture<TestComponentInterface>) {
@@ -100,11 +100,11 @@ export class Misc {
   }
 
   checkElementContentByIndex(index: number | null): boolean {
-    return index !== null && this.getElementText(index) === index + ' : ' + generateItem(index).text;
+    return index !== null && this.getElementText(index) === index + ': ' + generateItem(index).text;
   }
 
   checkElementContent(index: number, id: number): boolean {
-    return this.getElementText(index) === index + ' : ' + generateItem(id).text;
+    return this.getElementText(index) === index + ': ' + generateItem(id).text;
   }
 
   checkElementId(element: HTMLElement, index: number): boolean {

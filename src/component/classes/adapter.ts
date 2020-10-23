@@ -47,6 +47,7 @@ const convertAppendArgs = (isAppend: boolean, options: any, eof?: boolean) => {
 export class Adapter implements IAdapter {
   private logger: Logger;
   private getWorkflow: WorkflowGetter;
+  private reloadCounter: number;
   private source: { [key: string]: any } = {}; // for observables
   private box: { [key: string]: any } = {}; // for scalars over observables
   private demand: { [key: string]: any } = {}; // for scalars on demand
@@ -54,6 +55,10 @@ export class Adapter implements IAdapter {
 
   get workflow(): ScrollerWorkflow {
     return this.getWorkflow();
+  }
+
+  get reloadCount(): number {
+    return this.reloadCounter;
   }
 
   id: number;
@@ -97,6 +102,7 @@ export class Adapter implements IAdapter {
     this.logger = logger;
     this.relax$ = null;
     this.relaxRun = null;
+    this.reloadCounter = 0;
 
     // restore original values from the publicContext if present
     const adapterProps = publicContext
@@ -250,7 +256,8 @@ export class Adapter implements IAdapter {
   }
 
   reload(options?: number | string): any {
-    this.logger.logAdapterMethod('reload', options);
+    this.reloadCounter++;
+    this.logger.logAdapterMethod(`reload`, options, `, #${this.reloadCounter}`);
     this.workflow.call({
       process: Process.reload,
       status: ProcessStatus.start,
@@ -260,7 +267,7 @@ export class Adapter implements IAdapter {
 
   append(options: AdapterAppendOptions | any, eof?: boolean): any {
     options = convertAppendArgs(true, options, eof); // support old signature
-    this.logger.logAdapterMethod('append', options.items, options.eof);
+    this.logger.logAdapterMethod('append', [options.items, options.eof]);
     this.workflow.call({
       process: Process.append,
       status: ProcessStatus.start,
@@ -270,7 +277,7 @@ export class Adapter implements IAdapter {
 
   prepend(options: AdapterPrependOptions | any, bof?: boolean): any {
     options = convertAppendArgs(false, options, bof); // support old signature
-    this.logger.logAdapterMethod('prepend', options.items, options.bof);
+    this.logger.logAdapterMethod('prepend', [options.items, options.bof]);
     this.workflow.call({
       process: Process.prepend,
       status: ProcessStatus.start,

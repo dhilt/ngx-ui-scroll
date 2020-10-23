@@ -56,7 +56,6 @@ export class Adapter implements IAdapter {
   get workflow(): ScrollerWorkflow {
     return this.getWorkflow();
   }
-
   get reloadCount(): number {
     return this.reloadCounter;
   }
@@ -213,7 +212,7 @@ export class Adapter implements IAdapter {
     this.logger = logger;
 
     // self-pending
-    if (onAdapterRun$) {
+    if (onAdapterRun$) { // passed on the very first init only
       if (!this.relax$) {
         this.relax$ = new Subject<AdapterMethodRelax>();
       }
@@ -223,7 +222,7 @@ export class Adapter implements IAdapter {
         if (status === ProcessStatus.start) {
           relax$.next(false);
           isLoadingSub = this.isLoading$
-            .pipe(filter(isLoading => !isLoading), take(1))
+            .pipe(filter(isLoading => !isLoading), take(1), takeUntil(dispose$))
             .subscribe(() => relax$.next({ success: true, immediate: false }));
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
@@ -244,6 +243,7 @@ export class Adapter implements IAdapter {
     if (this.relax$) {
       this.relax$.complete();
     }
+    Object.values(this.source).forEach(observable => observable.complete());
    }
 
   reset(options?: IDatasourceOptional): any {

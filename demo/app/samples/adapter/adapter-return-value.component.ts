@@ -17,7 +17,7 @@ export class DemoAdapterReturnValueComponent {
   returnValueType = `  Promise<{
     success: boolean,
     immediate: boolean,
-    error?: string
+    details: string | null
   }>`;
 
   returnValueSample = `

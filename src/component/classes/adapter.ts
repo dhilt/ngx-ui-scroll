@@ -9,6 +9,7 @@ import {
   WorkflowGetter,
   AdapterPropType,
   IAdapterProp,
+  MethodResult,
   AdapterMethodRelax,
   IAdapter,
   Process,
@@ -59,6 +60,9 @@ export class Adapter implements IAdapter {
   get reloadCount(): number {
     return this.reloadCounter;
   }
+  get reloadId(): string {
+    return this.id + '.' + this.reloadCounter;
+  }
 
   id: number;
   mock: boolean;
@@ -78,7 +82,7 @@ export class Adapter implements IAdapter {
   itemsCount: number;
 
   private relax$: Subject<AdapterMethodRelax> | null;
-  private relaxRun: Promise<void> | null;
+  private relaxRun: MethodResult | null;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]) =>
@@ -223,7 +227,7 @@ export class Adapter implements IAdapter {
           relax$.next(false);
           isLoadingSub = this.isLoading$
             .pipe(filter(isLoading => !isLoading), take(1), takeUntil(dispose$))
-            .subscribe(() => relax$.next({ success: true, immediate: false }));
+            .subscribe(() => relax$.next({ success: true, immediate: false, details: null }));
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
           if (isLoadingSub) {
@@ -232,7 +236,7 @@ export class Adapter implements IAdapter {
           relax$.next({
             success: status !== ProcessStatus.error,
             immediate: true,
-            ...(status === ProcessStatus.error ? { error: payload ? payload.error : 'true' } : {})
+            details: status === ProcessStatus.error && payload ? payload.error : null
           });
         }
       });
@@ -257,7 +261,7 @@ export class Adapter implements IAdapter {
 
   reload(options?: number | string): any {
     this.reloadCounter++;
-    this.logger.logAdapterMethod(`reload`, options, `, #${this.reloadCounter}`);
+    this.logger.logAdapterMethod(`reload`, options, ` of ${this.reloadId}`);
     this.workflow.call({
       process: Process.reload,
       status: ProcessStatus.start,
@@ -329,31 +333,48 @@ export class Adapter implements IAdapter {
     });
   }
 
-  relaxUnchained(callback?: Function): Promise<void> {
+  relaxUnchained(callback: Function | undefined, reloadId: string): MethodResult {
     if (!this.isLoading) {
-      if (typeof callback === 'function') {
+      if (typeof callback === 'function' && reloadId === this.reloadId) {
         callback();
       }
-      return Promise.resolve();
     }
-    return new Promise(resolve =>
-      this.isLoading$
-        .pipe(filter(isLoading => !isLoading), take(1))
-        .subscribe(() => {
-          if (typeof callback === 'function') {
-            callback();
-          }
-          resolve();
-        })
-    );
+    return (
+      new Promise(resolve => {
+        if (!this.isLoading) {
+          resolve(true);
+          return;
+        }
+        this.isLoading$
+          .pipe(filter(isLoading => !isLoading), take(1))
+          .subscribe(() => {
+            if (typeof callback === 'function' && reloadId === this.reloadId) {
+              callback();
+            }
+            resolve(false);
+          });
+      })
+    )
+      .then((immediate: any) => {
+        this.logger.log(() =>
+          reloadId !== this.reloadId ? `relax promise cancelled due to ${reloadId} != ${this.reloadId}` : void 0
+        );
+        return {
+          immediate,
+          success: reloadId === this.reloadId,
+          details: reloadId !== this.reloadId ? 'Interrupted by reload or reset' : null
+        };
+      });
   }
 
   relax(callback?: Function): any {
-    this.logger.logAdapterMethod('relax', callback);
+    const reloadId = this.reloadId;
+    this.logger.logAdapterMethod('relax', callback, ` of ${reloadId}`);
     return this.relaxRun = this.relaxRun
-      ? this.relaxRun.then(() => this.relaxUnchained(callback))
-      : this.relaxUnchained(callback).then(() => {
+      ? this.relaxRun.then(() => this.relaxUnchained(callback, reloadId))
+      : this.relaxUnchained(callback, reloadId).then((result) => {
         this.relaxRun = null;
+        return result;
       });
   }
 

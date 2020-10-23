@@ -1,6 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { IValidator, ValidatedValue } from './validation';
 import { IDatasourceOptional } from './datasource';
 
 export enum AdapterPropType {
@@ -63,9 +62,9 @@ export interface AdapterFixOptions {
 interface MethodResultStatus {
   success: boolean;
   immediate: boolean;
-  error?: string;
+  details: string | null;
 }
-type MethodResult = Promise<MethodResultStatus>;
+export type MethodResult = Promise<MethodResultStatus>;
 export type AdapterMethodRelax = boolean | MethodResultStatus;
 
 export interface IAdapter {

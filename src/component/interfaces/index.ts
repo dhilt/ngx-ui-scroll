@@ -19,6 +19,7 @@ import {
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
+  MethodResult,
   AdapterMethodRelax,
   IAdapter,
 } from './adapter';
@@ -50,6 +51,7 @@ export {
   AdapterPropType,
   IAdapterProp,
   ItemAdapter,
+  MethodResult,
   AdapterMethodRelax,
   IAdapter,
   ItemsPredicate,

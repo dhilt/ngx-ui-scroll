@@ -250,6 +250,11 @@ const concurrentSequencesConfigList: TestBedConfig[] = [{
   custom: { count: 30 }
 }];
 
+const concurrentSequencesInterruptConfigList = [{
+  ...concurrentSequencesConfigList[0],
+  custom: { count: 15, interrupt: true }
+}];
+
 const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const { workflow } = misc;
   const { method, options, newWFCycle, async, error } = config.custom as ICustom;
@@ -263,7 +268,7 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
             misc.getElement($index).style.height = 5 + 'px'
         });
       }
-      (misc.adapter as any)[method](options).then(({ success, immediate, error: err }: any) => {
+      (misc.adapter as any)[method](options).then(({ success, immediate, details: err }: any) => {
         expect(workflow.cyclesDone).toEqual(newWFCycle ? 2 : 1);
         expect(immediate).toEqual(!newWFCycle);
         expect(success).toEqual(!error);
@@ -284,21 +289,31 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
 
 const doAppendAndScroll = async (misc: Misc, index: number): Promise<any> => {
   const { adapter } = misc;
-  await adapter.relax();
-  await adapter.append(generateItem(index));
-  await adapter.fix({ scrollPosition: Infinity });
+  const { success } = await adapter.relax();
+  if (success) {
+    await adapter.append(generateItem(index));
+    await adapter.fix({ scrollPosition: Infinity });
+  }
 };
 
 const checkConcurrentSequences = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
-  const { datasourceSettings: { startIndex }, custom: { count }} = config;
+  const { datasourceSettings: { startIndex }, custom: { count, interrupt }} = config;
   const scrollPosition = misc.getScrollPosition();
   for (let i = 0; i < count; i++) {
     doAppendAndScroll(misc, startIndex + i + 1);
   }
+  if (interrupt) {
+    await misc.adapter.reload();
+  }
   await misc.adapter.relax();
-  const newScrollPosition = scrollPosition + misc.getItemSize() * count;
-  expect(misc.getScrollPosition()).toEqual(newScrollPosition);
+  if (interrupt) {
+    expect(misc.workflow.cyclesDone).toEqual(2);
+  } else {
+    const newScrollPosition = scrollPosition + misc.getItemSize() * count;
+    expect(misc.getScrollPosition()).toEqual(newScrollPosition);
+    expect(misc.workflow.cyclesDone).toEqual(count + 1);
+  }
   done();
 };
 
@@ -334,6 +349,14 @@ describe('Adapter Promises Spec', () => {
     concurrentSequencesConfigList.forEach(config =>
       makeTest({
         title: `should run a sequence within sequence`,
+        config,
+        it: checkConcurrentSequences(config)
+      })
+    );
+
+    concurrentSequencesInterruptConfigList.forEach(config =>
+      makeTest({
+        title: `should reset all promises if reload`,
         config,
         it: checkConcurrentSequences(config)
       })

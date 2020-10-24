@@ -9,8 +9,7 @@ import {
   WorkflowGetter,
   AdapterPropType,
   IAdapterProp,
-  MethodResult,
-  AdapterMethodRelax,
+  AdapterMethodResult,
   IAdapter,
   Process,
   ProcessStatus,
@@ -81,8 +80,8 @@ export class Adapter implements IAdapter {
   eof$: Subject<boolean>;
   itemsCount: number;
 
-  private relax$: Subject<AdapterMethodRelax> | null;
-  private relaxRun: MethodResult | null;
+  private relax$: Subject<boolean | AdapterMethodResult> | null;
+  private relaxRun: Promise<AdapterMethodResult> | null;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]) =>
@@ -218,7 +217,7 @@ export class Adapter implements IAdapter {
     // self-pending
     if (onAdapterRun$) { // passed on the very first init only
       if (!this.relax$) {
-        this.relax$ = new Subject<AdapterMethodRelax>();
+        this.relax$ = new Subject<boolean | AdapterMethodResult>();
       }
       const relax$ = this.relax$;
       onAdapterRun$.subscribe(({ status, payload }) => {
@@ -333,13 +332,12 @@ export class Adapter implements IAdapter {
     });
   }
 
-  relaxUnchained(callback: Function | undefined, reloadId: string): MethodResult {
+  async relaxUnchained(callback: Function | undefined, reloadId: string): Promise<AdapterMethodResult> {
+    const runCallback = () => typeof callback === 'function' && reloadId === this.reloadId && callback();
     if (!this.isLoading) {
-      if (typeof callback === 'function' && reloadId === this.reloadId) {
-        callback();
-      }
+      runCallback();
     }
-    return (
+    const immediate: boolean = await (
       new Promise(resolve => {
         if (!this.isLoading) {
           resolve(true);
@@ -348,23 +346,18 @@ export class Adapter implements IAdapter {
         this.isLoading$
           .pipe(filter(isLoading => !isLoading), take(1))
           .subscribe(() => {
-            if (typeof callback === 'function' && reloadId === this.reloadId) {
-              callback();
-            }
+            runCallback();
             resolve(false);
           });
       })
-    )
-      .then((immediate: any) => {
-        this.logger.log(() =>
-          reloadId !== this.reloadId ? `relax promise cancelled due to ${reloadId} != ${this.reloadId}` : void 0
-        );
-        return {
-          immediate,
-          success: reloadId === this.reloadId,
-          details: reloadId !== this.reloadId ? 'Interrupted by reload or reset' : null
-        };
-      });
+    );
+    const success = reloadId === this.reloadId;
+    this.logger.log(() => !success ? `relax promise cancelled due to ${reloadId} != ${this.reloadId}` : void 0);
+    return {
+      immediate,
+      success,
+      details: !success ? 'Interrupted by reload or reset' : null
+    };
   }
 
   relax(callback?: Function): any {

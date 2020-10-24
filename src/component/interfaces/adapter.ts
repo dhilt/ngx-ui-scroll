@@ -59,13 +59,12 @@ export interface AdapterFixOptions {
   scrollToItemOpt?: boolean | ScrollIntoViewOptions;
 }
 
-interface MethodResultStatus {
+export interface AdapterMethodResult {
   success: boolean;
   immediate: boolean;
   details: string | null;
 }
-export type MethodResult = Promise<MethodResultStatus>;
-export type AdapterMethodRelax = boolean | MethodResultStatus;
+type MethodResult = Promise<AdapterMethodResult>;
 
 export interface IAdapter {
   readonly id: number;

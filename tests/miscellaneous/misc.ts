@@ -1,7 +1,7 @@
 import { ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
-import { filter, take } from 'rxjs/operators';
+import { debounceTime, filter, take } from 'rxjs/operators';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
@@ -51,7 +51,7 @@ export class Misc {
   window: boolean;
 
   itemHeight = 20;
-  itemWidth = 90;
+  itemWidth = 100;
   shared: any = {};
 
   constructor(fixture: ComponentFixture<TestComponentInterface>) {
@@ -100,11 +100,11 @@ export class Misc {
   }
 
   checkElementContentByIndex(index: number | null): boolean {
-    return index !== null && this.getElementText(index) === index + ' : ' + generateItem(index).text;
+    return index !== null && this.getElementText(index) === index + ': ' + generateItem(index).text;
   }
 
   checkElementContent(index: number, id: number): boolean {
-    return this.getElementText(index) === index + ' : ' + generateItem(id).text;
+    return this.getElementText(index) === index + ': ' + generateItem(id).text;
   }
 
   checkElementId(element: HTMLElement, index: number): boolean {
@@ -145,11 +145,18 @@ export class Misc {
     this.scrollTo(999999);
   }
 
-  relaxNext(): Promise<void> {
+  relaxNext(debounce?: boolean): Promise<void> {
     return new Promise(resolve =>
-      this.adapter.isLoading$.pipe(
-        filter(pending => !pending),
-        take(1)
+      (debounce
+        ? this.adapter.isLoading$.pipe(
+          filter(pending => !pending),
+          debounceTime(30),
+          take(1)
+        )
+        : this.adapter.isLoading$.pipe(
+          filter(pending => !pending),
+          take(1)
+        )
       ).subscribe(() => resolve())
     );
   }

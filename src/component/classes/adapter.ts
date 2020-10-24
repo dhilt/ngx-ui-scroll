@@ -9,7 +9,7 @@ import {
   WorkflowGetter,
   AdapterPropType,
   IAdapterProp,
-  AdapterMethodRelax,
+  AdapterMethodResult,
   IAdapter,
   Process,
   ProcessStatus,
@@ -47,6 +47,7 @@ const convertAppendArgs = (isAppend: boolean, options: any, eof?: boolean) => {
 export class Adapter implements IAdapter {
   private logger: Logger;
   private getWorkflow: WorkflowGetter;
+  private reloadCounter: number;
   private source: { [key: string]: any } = {}; // for observables
   private box: { [key: string]: any } = {}; // for scalars over observables
   private demand: { [key: string]: any } = {}; // for scalars on demand
@@ -54,6 +55,12 @@ export class Adapter implements IAdapter {
 
   get workflow(): ScrollerWorkflow {
     return this.getWorkflow();
+  }
+  get reloadCount(): number {
+    return this.reloadCounter;
+  }
+  get reloadId(): string {
+    return this.id + '.' + this.reloadCounter;
   }
 
   id: number;
@@ -73,7 +80,8 @@ export class Adapter implements IAdapter {
   eof$: Subject<boolean>;
   itemsCount: number;
 
-  private relax$: Subject<AdapterMethodRelax> | null;
+  private relax$: Subject<boolean | AdapterMethodResult> | null;
+  private relaxRun: Promise<AdapterMethodResult> | null;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]) =>
@@ -95,6 +103,8 @@ export class Adapter implements IAdapter {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
     this.relax$ = null;
+    this.relaxRun = null;
+    this.reloadCounter = 0;
 
     // restore original values from the publicContext if present
     const adapterProps = publicContext
@@ -205,9 +215,9 @@ export class Adapter implements IAdapter {
     this.logger = logger;
 
     // self-pending
-    if (onAdapterRun$) {
+    if (onAdapterRun$) { // passed on the very first init only
       if (!this.relax$) {
-        this.relax$ = new Subject<AdapterMethodRelax>();
+        this.relax$ = new Subject<boolean | AdapterMethodResult>();
       }
       const relax$ = this.relax$;
       onAdapterRun$.subscribe(({ status, payload }) => {
@@ -215,8 +225,8 @@ export class Adapter implements IAdapter {
         if (status === ProcessStatus.start) {
           relax$.next(false);
           isLoadingSub = this.isLoading$
-            .pipe(filter(isLoading => !isLoading), take(1))
-            .subscribe(() => relax$.next({ success: true, immediate: false }));
+            .pipe(filter(isLoading => !isLoading), take(1), takeUntil(dispose$))
+            .subscribe(() => relax$.next({ success: true, immediate: false, details: null }));
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
           if (isLoadingSub) {
@@ -225,7 +235,7 @@ export class Adapter implements IAdapter {
           relax$.next({
             success: status !== ProcessStatus.error,
             immediate: true,
-            ...(status === ProcessStatus.error ? { error: payload ? payload.error : 'true' } : {})
+            details: status === ProcessStatus.error && payload ? payload.error : null
           });
         }
       });
@@ -236,6 +246,7 @@ export class Adapter implements IAdapter {
     if (this.relax$) {
       this.relax$.complete();
     }
+    Object.values(this.source).forEach(observable => observable.complete());
    }
 
   reset(options?: IDatasourceOptional): any {
@@ -248,7 +259,8 @@ export class Adapter implements IAdapter {
   }
 
   reload(options?: number | string): any {
-    this.logger.logAdapterMethod('reload', options);
+    this.reloadCounter++;
+    this.logger.logAdapterMethod(`reload`, options, ` of ${this.reloadId}`);
     this.workflow.call({
       process: Process.reload,
       status: ProcessStatus.start,
@@ -258,7 +270,7 @@ export class Adapter implements IAdapter {
 
   append(options: AdapterAppendOptions | any, eof?: boolean): any {
     options = convertAppendArgs(true, options, eof); // support old signature
-    this.logger.logAdapterMethod('append', options.items, options.eof);
+    this.logger.logAdapterMethod('append', [options.items, options.eof]);
     this.workflow.call({
       process: Process.append,
       status: ProcessStatus.start,
@@ -268,7 +280,7 @@ export class Adapter implements IAdapter {
 
   prepend(options: AdapterPrependOptions | any, bof?: boolean): any {
     options = convertAppendArgs(false, options, bof); // support old signature
-    this.logger.logAdapterMethod('prepend', options.items, options.bof);
+    this.logger.logAdapterMethod('prepend', [options.items, options.bof]);
     this.workflow.call({
       process: Process.prepend,
       status: ProcessStatus.start,
@@ -320,23 +332,43 @@ export class Adapter implements IAdapter {
     });
   }
 
-  relax(callback?: Function): any {
+  async relaxUnchained(callback: Function | undefined, reloadId: string): Promise<AdapterMethodResult> {
+    const runCallback = () => typeof callback === 'function' && reloadId === this.reloadId && callback();
     if (!this.isLoading) {
-      if (typeof callback === 'function') {
-        callback();
-      }
-      return Promise.resolve();
+      runCallback();
     }
-    return new Promise(resolve =>
-      this.isLoading$
-        .pipe(filter(isLoading => !isLoading), take(1))
-        .subscribe(() => {
-          if (typeof callback === 'function') {
-            callback();
-          }
-          resolve();
-        })
+    const immediate: boolean = await (
+      new Promise(resolve => {
+        if (!this.isLoading) {
+          resolve(true);
+          return;
+        }
+        this.isLoading$
+          .pipe(filter(isLoading => !isLoading), take(1))
+          .subscribe(() => {
+            runCallback();
+            resolve(false);
+          });
+      })
     );
+    const success = reloadId === this.reloadId;
+    this.logger.log(() => !success ? `relax promise cancelled due to ${reloadId} != ${this.reloadId}` : void 0);
+    return {
+      immediate,
+      success,
+      details: !success ? 'Interrupted by reload or reset' : null
+    };
+  }
+
+  relax(callback?: Function): any {
+    const reloadId = this.reloadId;
+    this.logger.logAdapterMethod('relax', callback, ` of ${reloadId}`);
+    return this.relaxRun = this.relaxRun
+      ? this.relaxRun.then(() => this.relaxUnchained(callback, reloadId))
+      : this.relaxUnchained(callback, reloadId).then((result) => {
+        this.relaxRun = null;
+        return result;
+      });
   }
 
   showLog() {

@@ -29,9 +29,9 @@ export class DemoAdapterRelaxComponent {
   sources: DemoSources = [{
     active: true,
     name: 'Relax',
-    text: `
-async doReplace() {
+    text: `async doReplace() {
   const { adapter } = this.datasource;
+  await adapter.relax();
   adapter.remove(({ $index }) =>
     $index > 4 && $index < 8
   );
@@ -44,38 +44,46 @@ async doReplace() {
 `
 }, {
     name: 'Is loading',
-    text: `
-doReplace() {
+    text: `relax(cb: Function) {
   const { adapter } = this.datasource;
-  adapter.remove(({ $index }) =>
-    $index > 4 && $index < 8
-  );
-  const insert = () => adapter.insert({
-    items: [{ id: '5*', text: 'item #5 *' }],
-    after: ({ $index }) => $index === 4 }
-  );
   if (!adapter.isLoading) {
-    insert();
+    cb();
   } else {
     adapter.isLoading$
       .pipe(filter(isLoading => !isLoading), take(1))
-      .subscribe(() => insert());
+      .subscribe(() => cb());
   }
+}
+
+doReplace() {
+  const { adapter } = this.datasource;
+  this.relax(() =>
+    adapter.remove(({ $index }) =>
+      $index > 4 && $index < 8
+    )
+  );
+  this.relax(() =>
+    adapter.insert({
+      items: [{ id: '5*', text: 'item #5 *' }],
+      after: ({ $index }) => $index === 4
+    })
+  );
 }
 `
 }, {
-    name: 'Relax cb',
-    text: `
-doReplace() {
+    name: 'Callback',
+    text: `doReplace() {
   const { adapter } = this.datasource;
-  adapter.remove(({ $index }) =>
-    $index > 4 && $index < 8
+  adapter.relax(() =>
+    adapter.remove(({ $index }) =>
+      $index > 4 && $index < 8
+    )
   );
   adapter.relax(() =>
     adapter.insert({
       items: [{ id: '5*', text: 'item #5 *' }],
-      after: ({ $index }) => $index === 4 }
-    );
+      after: ({ $index }) => $index === 4
+    })
   );
 }
 `
@@ -83,13 +91,14 @@ doReplace() {
     name: 'Return',
     text: `async doReplace() {
   const { adapter } = this.datasource;
+  await adapter.relax();
   await adapter.remove(({ $index }) =>
     $index > 4 && $index < 8
   );
   adapter.insert({
     items: [{ id: '5*', text: 'item #5 *' }],
-    after: ({ $index }) => $index === 4 }
-  );
+    after: ({ $index }) => $index === 4
+  });
 }
 `
 }];
@@ -110,6 +119,7 @@ doReplace() {
   async doReplace() {
     const { adapter } = this.datasource;
     const newItem = { id: '5*', text: 'item #5 *' };
+    await adapter.relax();
     adapter.remove(({ $index }) => $index > 4 && $index < 8);
     await adapter.relax();
     adapter.insert({ items: [newItem], after: ({ $index }) => $index === 4 });

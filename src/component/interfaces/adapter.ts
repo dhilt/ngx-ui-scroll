@@ -1,6 +1,5 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { IValidator, ValidatedValue } from './validation';
 import { IDatasourceOptional } from './datasource';
 
 export enum AdapterPropType {
@@ -60,13 +59,12 @@ export interface AdapterFixOptions {
   scrollToItemOpt?: boolean | ScrollIntoViewOptions;
 }
 
-interface MethodResultStatus {
+export interface AdapterMethodResult {
   success: boolean;
   immediate: boolean;
-  error?: string;
+  details: string | null;
 }
-type MethodResult = Promise<MethodResultStatus>;
-export type AdapterMethodRelax = boolean | MethodResultStatus;
+type MethodResult = Promise<AdapterMethodResult>;
 
 export interface IAdapter {
   readonly id: number;

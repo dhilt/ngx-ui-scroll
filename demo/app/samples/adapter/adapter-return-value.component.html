@@ -20,7 +20,7 @@
       for example, if some method is invoked with wrong arguments, no error will be thrown,
       but we'll get <em>success:&nbsp;false</em> in the result;
       <br>
-      - <em>error</em>: contains error message in case <em>success</em> is <em>false</em>;
+      - <em>details</em>: contains error message in case <em>success</em> is <em>false</em>;
       <br>
       - <em>immediate</em>: specifies whether the <em>Adapter</em> method completed immediately or not;
       for example, if <em>Adapter.remove</em> won't remove any items, then it will be
@@ -31,11 +31,12 @@
 
     <p>
       Note, <em>immediate:&nbsp;false</em> does not necessarily mean that the <em>Adapter</em> method
-      worked asynchronously. But, in most cases we'll have async processes,
-      so it is highly recommended to pay special attention to logic that is going to be run
-      after the <em>Adapter</em> method is invoked. Generally such logic needs to be
-      postponed by waiting for the promisified result of the <em>Adapter</em> method invocation.
+      worked asynchronously. But in any case, if there is any logic that needs to be run after
+      the Adapter method completes its job, it is highly recommended
+      to implement an explicit sequence like this:
     </p>
+
+    <pre>{{explicitSequenceSample}}</pre>
 
   </div>
 

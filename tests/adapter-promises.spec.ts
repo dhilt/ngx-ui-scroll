@@ -239,6 +239,22 @@ const immediateConfigErrorList = [{
   } as ICustom
 }];
 
+const concurrentSequencesConfigList: TestBedConfig[] = [{
+  datasourceName: 'limited-1-100-no-delay',
+  datasourceSettings: { adapter: true, startIndex: 100 },
+  custom: { count: 25 }
+}, {
+  datasourceName: 'limited-51-200-no-delay',
+  datasourceSettings: { adapter: true, startIndex: 200, horizontal: true },
+  templateSettings: { viewportWidth: 450, itemWidth: 100, horizontal: true },
+  custom: { count: 30 }
+}];
+
+const concurrentSequencesInterruptConfigList = [{
+  ...concurrentSequencesConfigList[0],
+  custom: { count: 15, interrupt: true }
+}];
+
 const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const { workflow } = misc;
   const { method, options, newWFCycle, async, error } = config.custom as ICustom;
@@ -252,7 +268,7 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
             misc.getElement($index).style.height = 5 + 'px'
         });
       }
-      (misc.adapter as any)[method](options).then(({ success, immediate, error: err }: any) => {
+      (misc.adapter as any)[method](options).then(({ success, immediate, details: err }: any) => {
         expect(workflow.cyclesDone).toEqual(newWFCycle ? 2 : 1);
         expect(immediate).toEqual(!newWFCycle);
         expect(success).toEqual(!error);
@@ -269,6 +285,36 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
       });
       expect(workflow.cyclesDone).toEqual(!async && newWFCycle ? 2 : 1);
     });
+};
+
+const doAppendAndScroll = async (misc: Misc, index: number): Promise<any> => {
+  const { adapter } = misc;
+  const { success } = await adapter.relax();
+  if (success) {
+    await adapter.append(generateItem(index));
+    await adapter.fix({ scrollPosition: Infinity });
+  }
+};
+
+const checkConcurrentSequences = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+  const { datasourceSettings: { startIndex }, custom: { count, interrupt }} = config;
+  const scrollPosition = misc.getScrollPosition();
+  for (let i = 0; i < count; i++) {
+    doAppendAndScroll(misc, startIndex + i + 1);
+  }
+  if (interrupt) {
+    await misc.adapter.reload();
+  }
+  await misc.adapter.relax();
+  if (interrupt) {
+    expect(misc.workflow.cyclesDone).toEqual(2);
+  } else {
+    const newScrollPosition = scrollPosition + misc.getItemSize() * count;
+    expect(misc.getScrollPosition()).toEqual(newScrollPosition);
+    expect(misc.workflow.cyclesDone).toEqual(count + 1);
+  }
+  done();
 };
 
 describe('Adapter Promises Spec', () => {
@@ -295,6 +341,24 @@ describe('Adapter Promises Spec', () => {
         config,
         title: `should resolve "${config.custom.method}" immediately due to error`,
         it: checkPromisifiedMethod(config)
+      })
+    );
+  });
+
+  describe('Concurrent sequences', () => {
+    concurrentSequencesConfigList.forEach(config =>
+      makeTest({
+        title: `should run a sequence within sequence`,
+        config,
+        it: checkConcurrentSequences(config)
+      })
+    );
+
+    concurrentSequencesInterruptConfigList.forEach(config =>
+      makeTest({
+        title: `should reset all promises if reload`,
+        config,
+        it: checkConcurrentSequences(config)
       })
     );
   });

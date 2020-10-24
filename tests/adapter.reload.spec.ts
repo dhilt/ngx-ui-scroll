@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
-const customDefault = { startIndex: null, scrollCount: 0, preLoad: false, interruptionCount: 0 };
+const customDefault = { startIndex: null, scrollCount: 0, preLoad: false, reloadCount: 1, interruptionCount: 0 };
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
@@ -58,6 +58,7 @@ const doubleReloadConfigList: TestBedConfig[] = configList.map((config, i) => ({
   ...config,
   custom: {
     ...config.custom,
+    reloadCount: 2,
     interruptionCount: 1,
     startIndex: [10, 365, -14][i]
   }
@@ -75,6 +76,7 @@ doubleReloadConfigList.push({
   },
   templateSettings: { viewportHeight: 600 },
   custom: {
+    reloadCount: 2,
     interruptionCount: 1,
     startIndex: 999
   }
@@ -84,6 +86,7 @@ const onRenderReloadConfigList = configList.map((config, i) => ({
   ...config,
   custom: {
     ...config.custom,
+    reloadCount: 2,
     interruptionCount: 1,
     startIndex: [500, -25, null][i]
   }
@@ -121,11 +124,12 @@ const checkExpectation = (config: TestBedConfig, misc: Misc) => {
   const itemsPerViewport = Math.ceil(viewport.getSize() / buffer.averageSize);
 
   expect(firstItem ? firstItem.$index : null).toEqual(firstIndex);
-  expect(misc.getElementText(firstIndex)).toEqual(`${firstIndex} : item #${firstIndex}`);
-  expect(misc.getElementText(nextIndex)).toEqual(`${nextIndex} : item #${nextIndex}`);
+  expect(misc.checkElementContentByIndex(firstIndex)).toEqual(true);
+  expect(misc.checkElementContentByIndex(nextIndex)).toEqual(true);
   expect(firstVisible.$index).toEqual(startIndex);
   expect(lastVisible.$index).toEqual(startIndex + itemsPerViewport - 1);
   expect(misc.workflow.interruptionCount).toEqual(config.custom.interruptionCount);
+  expect(misc.scroller.adapter.reloadCount).toEqual(config.custom.reloadCount);
 };
 
 const accessFirstLastVisibleItems = (misc: Misc) => {

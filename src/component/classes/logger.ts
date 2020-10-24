@@ -143,14 +143,13 @@ export class Logger {
     }
   }
 
-  logAdapterMethod = (methodName: string, methodArg?: any, methodSecondArg?: any) => {
+  logAdapterMethod = (methodName: string, args?: any, add?: string) => {
     if (!this.debug) {
       return;
     }
-    const params = [
-      ...(methodArg ? [methodArg] : []),
-      ...(methodSecondArg ? [methodSecondArg] : [])
-    ]
+    const params = (
+      args === void 0 ? [] : (Array.isArray(args) ? args : [args])
+    )
       .map((arg: any) => {
         if (typeof arg === 'function') {
           return 'func';
@@ -162,7 +161,7 @@ export class Logger {
         return '{ ' + Object.keys(arg).join(', ') + ' }';
       })
       .join(', ');
-    this.log(`adapter: ${methodName}(${params || ''})`);
+    this.log(`adapter: ${methodName}(${params || ''})${add || ''}`);
   }
 
   log(...args: any[]) {

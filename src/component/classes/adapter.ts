@@ -250,7 +250,8 @@ export class Adapter implements IAdapter {
    }
 
   reset(options?: IDatasourceOptional): any {
-    this.logger.logAdapterMethod('reset', options);
+    this.reloadCounter++;
+    this.logger.logAdapterMethod(`reset`, options, ` of ${this.reloadId}`);
     this.workflow.call({
       process: Process.reset,
       status: ProcessStatus.start,

@@ -8,11 +8,7 @@ export default class Clip {
   static run(scroller: Scroller) {
     const { workflow, state: { clip } } = scroller;
 
-    if (clip.doClip) {
-      Clip.doClip(scroller);
-    } else {
-      scroller.logger.log(() => 'no clip');
-    }
+    Clip.doClip(scroller);
 
     workflow.call({
       process: Process.clip,

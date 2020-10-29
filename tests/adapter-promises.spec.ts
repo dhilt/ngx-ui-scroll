@@ -252,7 +252,10 @@ const concurrentSequencesConfigList: TestBedConfig[] = [{
 
 const concurrentSequencesInterruptConfigList = [{
   ...concurrentSequencesConfigList[0],
-  custom: { count: 15, interrupt: true }
+  custom: { count: 99, interrupt: 'reload' }
+}, {
+  ...concurrentSequencesConfigList[1],
+  custom: { count: 99, interrupt: 'reset' }
 }];
 
 const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
@@ -303,8 +306,10 @@ const checkConcurrentSequences = (config: TestBedConfig) => (misc: Misc) => asyn
   for (let i = 0; i < count; i++) {
     doAppendAndScroll(misc, startIndex + i + 1);
   }
-  if (interrupt) {
+  if (interrupt === 'reload') {
     await misc.adapter.reload();
+  } else if (interrupt === 'reset') {
+    await misc.adapter.reset();
   }
   await misc.adapter.relax();
   if (interrupt) {
@@ -356,7 +361,7 @@ describe('Adapter Promises Spec', () => {
 
     concurrentSequencesInterruptConfigList.forEach(config =>
       makeTest({
-        title: `should reset all promises if reload`,
+        title: `should reset all promises after Adapter.${config.custom.interrupt}`,
         config,
         it: checkConcurrentSequences(config)
       })

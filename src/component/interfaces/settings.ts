@@ -11,6 +11,7 @@ export interface Settings {
   windowViewport?: boolean;
   viewportElement?: HTMLElement | Function | null;
   inverse?: boolean;
+  onBeforeClip?: Function | null;
 }
 
 export interface DevSettings {

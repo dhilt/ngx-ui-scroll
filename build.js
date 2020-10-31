@@ -14,7 +14,9 @@ const FESM5_DIR = `${NPM_DIR}/fesm5`;
 const BUNDLES_DIR = `${NPM_DIR}/bundles`;
 const OUT_DIR = `${NPM_DIR}/package`;
 const OUT_DIR_ESM5 = `${NPM_DIR}/package/esm5`;
-const OUT_DIR_ESM5_ABS = `${__dirname}/${OUT_DIR_ESM5}`;
+
+// NOTE: Added .replace(/(\s+)/g, '\\$1') to escape any spaces if present in __dirname (otherwise the build fails)
+const OUT_DIR_ESM5_ABS = `${__dirname.replace(/(\s+)/g, '\\$1')}/${OUT_DIR_ESM5}`;
 
 /* Package version */
 shell.echo(`Setup package version`);

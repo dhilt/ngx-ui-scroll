@@ -91,7 +91,7 @@ export const SETTINGS: ICommonProps<Settings> = {
   },
   [Settings.onBeforeClip]: {
     validators: [FUNC],
-    defaultValue: void 0
+    defaultValue: null
   },
 };
 

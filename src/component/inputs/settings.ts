@@ -16,6 +16,7 @@ enum Settings {
   windowViewport = 'windowViewport',
   viewportElement = 'viewportElement',
   inverse = 'inverse',
+  onBeforeClip = 'onBeforeClip',
 }
 
 enum DevSettings {
@@ -87,6 +88,10 @@ export const SETTINGS: ICommonProps<Settings> = {
   [Settings.inverse]: {
     validators: [BOOLEAN],
     defaultValue: false
+  },
+  [Settings.onBeforeClip]: {
+    validators: [FUNC],
+    defaultValue: void 0
   },
 };
 

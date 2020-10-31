@@ -40,6 +40,10 @@ export default class Clip {
       return true;
     });
 
+    if (scroller.settings.onBeforeClip) {
+      scroller.settings.onBeforeClip(itemsToRemove);
+    }
+
     if (isAdapterRemove) { // with indexes shifting
       buffer.removeItems(itemsToRemove);
     } else { // common clip

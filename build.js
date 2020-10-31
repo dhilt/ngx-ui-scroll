@@ -14,7 +14,9 @@ const FESM5_DIR = `${NPM_DIR}/fesm5`;
 const BUNDLES_DIR = `${NPM_DIR}/bundles`;
 const OUT_DIR = `${NPM_DIR}/package`;
 const OUT_DIR_ESM5 = `${NPM_DIR}/package/esm5`;
-const OUT_DIR_ESM5_ABS = `${__dirname}/${OUT_DIR_ESM5}`;
+
+// NOTE: Added .replace(/(\s+)/g, '\\$1') to escape any spaces if present in __dirname (otherwise the build fails)
+const OUT_DIR_ESM5_ABS = `${__dirname.replace(/(\s+)/g, '\\$1')}/${OUT_DIR_ESM5}`;
 
 /* Package version */
 shell.echo(`Setup package version`);
@@ -46,7 +48,7 @@ shell.cp(`-Rf`, [`src`, `*.ts`, `*.json`], `${OUT_DIR}`);
 
 /* AoT compilation */
 shell.echo(`Start AoT compilation`);
-if (shell.exec(`ngc -p ${OUT_DIR}/tsconfig-build.json`).code !== 0) {
+if (shell.exec(`./node_modules/.bin/ngc -p ${OUT_DIR}/tsconfig-build.json`).code !== 0) {
   shell.echo(chalk.red(`Error: AoT compilation failed`));
   shell.exit(1);
 }
@@ -63,8 +65,10 @@ if (shell.exec(`rollup -c rollup.es.config.js -i ${NPM_DIR}/${PACKAGE}.js -o ${F
   shell.exit(1);
 }
 
-shell.echo(`Produce ESM5/FESM5 versions`);
-shell.exec(`ngc -p ${OUT_DIR}/tsconfig-build.json --target es5 -d false --outDir ${OUT_DIR_ESM5_ABS} --sourceMap`);
+console.log('OUT_DIR_ESM5_ABS', OUT_DIR_ESM5_ABS);
+
+shell.echo(`Produce ESM5/FESM5 versions`, `./node_modules/.bin/ngc -p ${OUT_DIR}/tsconfig-build.json --target es5 -d false --outDir ${OUT_DIR_ESM5_ABS} --sourceMap`);
+shell.exec(`./node_modules/.bin/ngc -p ${OUT_DIR}/tsconfig-build.json --target es5 -d false --outDir ${OUT_DIR_ESM5_ABS} --sourceMap`);
 shell.cp(`-Rf`, [`${OUT_DIR_ESM5}/src/`, `${OUT_DIR_ESM5}/*.js`, `${OUT_DIR_ESM5}/*.js.map`], `${ESM5_DIR}`);
 if (shell.exec(`rollup -c rollup.es.config.js -i ${OUT_DIR_ESM5}/${PACKAGE}.js -o ${FESM5_DIR}/${PACKAGE}.js`).code !== 0) {
   shell.echo(chalk.red(`Error: FESM5 version failed`));

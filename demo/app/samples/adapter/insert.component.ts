@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, Subject, merge, Subscription } from 'rxjs';
 
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 

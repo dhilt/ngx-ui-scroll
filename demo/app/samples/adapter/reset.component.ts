@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
-import { Datasource, IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-reset',

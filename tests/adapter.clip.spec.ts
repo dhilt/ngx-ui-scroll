@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { testItemsCounter, ItemsCounter } from './miscellaneous/itemsCounter';
-import { AdapterClipOptions } from 'src/component/interfaces';
+import { AdapterClipOptions, ItemAdapter } from '../src/component/interfaces/index';
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
@@ -152,6 +152,34 @@ describe('Adapter Clip Spec', () => {
       await misc.adapter.clip();
       done();
     }
+  });
+
+  describe('onBeforeClip', () => {
+    const clippedIndexes: number[] = [];
+    const config: TestBedConfig = {
+      datasourceSettings: {
+        adapter: true,
+        onBeforeClip: (items: ItemAdapter[]) =>
+          items.forEach(({ $index }) => clippedIndexes.push($index))
+      }
+    };
+    makeTest({
+      config,
+      title: `should call properly`,
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        const { adapter } = misc;
+        const indexList: number[] = [], indexListAfterScroll: number[] = [];
+        adapter.fix({ updater: ({ $index }) => indexList.push($index) });
+        adapter.fix({ scrollPosition: Infinity });
+        await misc.relaxNext();
+        adapter.fix({ updater: ({ $index }) => indexListAfterScroll.push($index) });
+        const removedIndexes = indexList.filter(index => indexListAfterScroll.indexOf(index) < 0);
+        const isEqual = (JSON.stringify(removedIndexes.sort()) === JSON.stringify(clippedIndexes.sort()));
+        expect(isEqual).toBe(true);
+        done();
+      }
+    });
   });
 
 });

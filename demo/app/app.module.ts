@@ -55,6 +55,7 @@ import { DemoInverseSettingComponent } from './samples/experimental/inverse-sett
 import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-fix-position.component';
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
 import { DemoAdapterFixScrollToItemComponent } from './samples/experimental/adapter-fix-scrollToItem.component';
+import { DemoOnBeforeClipSettingComponent } from './samples/experimental/onBeforeClip-setting.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
 
@@ -109,6 +110,7 @@ import { AppRoutingModule } from './app-routing.module';
     DemoAdapterFixPositionComponent,
     DemoAdapterFixUpdaterComponent,
     DemoAdapterFixScrollToItemComponent,
+    DemoOnBeforeClipSettingComponent,
     WindowComponent,
     TestComponent,
     TestInnerComponent

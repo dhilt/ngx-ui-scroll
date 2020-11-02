@@ -1,0 +1,26 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+
+  <div actions>
+    <div class="comment">Available since v1.9.0, undocumented</div>
+    <button (click)="datasource.adapter.clip()">Clip</button>
+  </div>
+
+  <div description>
+    <p>
+      <em>onBeforeClip</em> setting allows to run some code at the moment when
+      1 or more items are to clip out of the viewport.
+      The code will run synchronously. Clipping cannot be cancelled.
+      It is like to <em>OnDestroy</em> Angular lifecycle hook,
+      but it is triggered before the elements are removed from DOM.
+    </p>
+    <p>
+      The log in this demo shows exactly what the <em>onBeforeClip</em> method sends to the console.
+      The argument of the callback is the array of items of <em>ItemAdapter</em> type:
+    </p>
+    <pre>{{argumentDescription}}</pre>
+  </div>
+</app-demo>

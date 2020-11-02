@@ -20,7 +20,7 @@ import { ExperimentalComponent } from './samples/experimental.component';
 import { WindowComponent } from './samples/window.component';
 import { TestComponent, TestInnerComponent } from './samples/test.component';
 
-import  demos from './demos';
+import demos from './demos';
 
 import { RemoteDataService } from './samples/datasource/remote-datasource.component';
 import { AppRoutingModule } from './app-routing.module';

@@ -17,6 +17,7 @@ import { DemoRemoteDatasourceComponent } from './samples/datasource/remote-datas
 import { DemoInvertedDatasourceComponent } from './samples/datasource/inverted-datasource.component';
 import { DemoPagesDatasourceComponent } from './samples/datasource/pages-datasource.component';
 
+import { DemoAdapterRelaxComponent } from './samples/adapter/adapter-relax.component';
 import { DemoAdapterReturnValueComponent } from './samples/adapter/adapter-return-value.component';
 import { DemoResetComponent } from './samples/adapter/reset.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
@@ -32,7 +33,6 @@ import { DemoCheckSizeComponent } from './samples/adapter/check-size.component';
 import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
 
-import { DemoAdapterRelaxComponent } from './samples/experimental/adapter-relax.component';
 import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
 import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-fix-position.component';
@@ -64,6 +64,7 @@ const datasource = [
 ];
 
 const adapter = [
+  DemoAdapterRelaxComponent,
   DemoAdapterReturnValueComponent,
   DemoResetComponent,
   DemoReloadComponent,
@@ -81,7 +82,6 @@ const adapter = [
 ];
 
 const experimental = [
-  DemoAdapterRelaxComponent,
   DemoViewportElementSettingComponent,
   DemoInverseSettingComponent,
   DemoAdapterFixPositionComponent,

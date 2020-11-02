@@ -10,7 +10,7 @@ import { Datasource } from '../../../../public_api';
 export class DemoAdapterRelaxComponent {
 
   demoContext = {
-    scope: 'experimental',
+    scope: 'adapter',
     title: `Adapter relax`,
     titleId: `adapter-relax`,
     noInfo: true

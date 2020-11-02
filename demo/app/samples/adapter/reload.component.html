@@ -24,5 +24,12 @@
       the default value 1 will be used.
       See also <a href="#/settings#start-index">startIndex setting description</a>.
     </p>
+    <p>
+      The <em>Adapter.reload</em> method is safe and needs not to be protected
+      with the <em>Adapter.relax</em> (though it could be protected if the UX demands).
+      This method interrupts the <em>uiScroll</em> flow and synchronously terminates
+      any pending processes on the Scroller's end.
+      The same is true also for the <em>Adapter.reset</em> method.
+    </p>
   </div>
 </app-demo>

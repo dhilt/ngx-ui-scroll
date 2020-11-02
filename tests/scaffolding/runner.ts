@@ -65,9 +65,7 @@ const generateMetaTitle = (data: MakeTestConfig): string => {
   if (data.meta) {
     result.push(data.meta);
   }
-  let title = result.join(', ');
-  title = title ? '⤷ ' + title : '';
-  return title;
+  return '⤷ ' + (result.join(', ') || 'default params');
 };
 
 const windowOnError = window.onerror;
@@ -86,7 +84,7 @@ const turnErrorLogOn = () => {
   isErrorLogOf = false;
 };
 
-export const makeTest = (data: MakeTestConfig) => {
+export const makeTest = (data: MakeTestConfig) =>
   describe(generateMetaTitle(data), () => {
     let _it, timeout = 2000;
     if (data.config) {
@@ -143,4 +141,3 @@ export const makeTest = (data: MakeTestConfig) => {
     }
     (it as Function)(data.title, _it, timeout);
   });
-};

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, Subject, merge, Subscription } from 'rxjs';
+import { merge } from 'rxjs';
 
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';

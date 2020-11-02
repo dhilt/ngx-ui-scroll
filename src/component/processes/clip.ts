@@ -36,8 +36,8 @@ export default class Clip {
       return true;
     });
 
-    if (scroller.settings.onBeforeClip) {
-      scroller.settings.onBeforeClip(itemsToRemove);
+    if (scroller.settings.onBeforeClip && itemsToRemove.length) {
+      scroller.settings.onBeforeClip(itemsToRemove.map(item => item.get()));
     }
 
     if (isAdapterRemove) { // with indexes shifting

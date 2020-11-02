@@ -27,6 +27,7 @@ export interface ItemAdapter {
 
 export type ItemsPredicate = (item: ItemAdapter) => boolean;
 export type ItemsLooper = (item: ItemAdapter) => any;
+export type ItemsProcessor = (items: ItemAdapter[]) => void;
 
 export interface AdapterAppendOptions {
   items: any[];

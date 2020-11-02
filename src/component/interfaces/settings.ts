@@ -1,3 +1,5 @@
+import { ItemsProcessor } from './adapter';
+
 export interface Settings {
   adapter?: boolean;
   startIndex?: number;
@@ -11,7 +13,7 @@ export interface Settings {
   windowViewport?: boolean;
   viewportElement?: HTMLElement | Function | null;
   inverse?: boolean;
-  onBeforeClip?: Function | null;
+  onBeforeClip?: ItemsProcessor | null;
 }
 
 export interface DevSettings {

@@ -12,7 +12,7 @@ export class DemoAdapterRelaxComponent {
   demoContext = {
     scope: 'adapter',
     title: `Adapter relax`,
-    titleId: `adapter-relax`,
+    titleId: `relax`,
     noInfo: true
   } as DemoContext;
 

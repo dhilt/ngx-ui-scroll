@@ -32,6 +32,7 @@ const testContext = require.context(
   //(adapter\.prepend)\.spec\.ts/
   //(adapter\.reload)\.spec\.ts/
   //(adapter\.remove)\.spec\.ts/
+  //(adapter\.replace)\.spec\.ts/
   //(adapter\.reset\-persistence)\.spec\.ts/
   //(adapter\.reset)\.spec\.ts/
   //(bug)\.spec\.ts/

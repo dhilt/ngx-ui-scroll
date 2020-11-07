@@ -8,6 +8,7 @@ import {
   Remove,
   UserClip,
   Insert,
+  Replace,
   Fix,
   Start,
   PreFetch,
@@ -112,6 +113,14 @@ export const runStateMachine = ({
     case Process.insert:
       if (status === Status.start) {
         run(Insert)(payload);
+      }
+      if (status === Status.next) {
+        run(Init)(process);
+      }
+      break;
+    case Process.replace:
+      if (status === Status.start) {
+        run(Replace)(payload);
       }
       if (status === Status.next) {
         run(Init)(process);

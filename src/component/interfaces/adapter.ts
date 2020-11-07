@@ -51,6 +51,11 @@ export interface AdapterInsertOptions {
   decrease?: boolean;
 }
 
+export interface AdapterReplaceOptions {
+  items: any[];
+  predicate: ItemsPredicate;
+}
+
 export interface AdapterFixOptions {
   scrollPosition?: number;
   minIndex?: number;

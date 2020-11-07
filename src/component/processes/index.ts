@@ -7,6 +7,7 @@ import Check from './adapter/check';
 import Remove from './adapter/remove';
 import UserClip from './adapter/clip';
 import Insert from './adapter/insert';
+import Replace from './adapter/replace';
 import Fix from './adapter/fix';
 import Start from './start';
 import PreFetch from './preFetch';
@@ -20,6 +21,6 @@ import End from './end';
 
 export {
   Init, Scroll,
-  Reset, Reload, Append, Check, Remove, UserClip, Insert, Fix,
+  Reset, Reload, Append, Check, Remove, UserClip, Insert, Replace, Fix,
   Start, PreFetch, Fetch, PostFetch, Render, PreClip, Clip, Adjust, End
 };

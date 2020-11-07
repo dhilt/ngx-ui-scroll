@@ -106,6 +106,21 @@ const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
   }
 };
 
+enum AdapterReplaceParams {
+  items = 'items',
+  predicate = 'predicate',
+}
+
+const REPLACE_METHOD_PARAMS: ICommonProps<AdapterReplaceParams> = {
+  [AdapterInsertParams.items]: {
+    validators: [ITEM_LIST],
+    mandatory: true
+  },
+  [AdapterReplaceParams.predicate]: {
+    validators: [FUNC_WITH_X_ARGUMENTS(1)]
+  }
+};
+
 enum AdapterFixParams {
   scrollPosition = 'scrollPosition',
   minIndex = 'minIndex',
@@ -151,5 +166,6 @@ export const ADAPTER_METHODS = {
   REMOVE: REMOVE_METHOD_PARAMS,
   CLIP: CLIP_METHOD_PARAMS,
   INSERT: INSERT_METHOD_PARAMS,
+  REPLACE: REPLACE_METHOD_PARAMS,
   FIX: FIX_METHOD_PARAMS,
 };

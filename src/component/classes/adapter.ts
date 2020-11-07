@@ -19,10 +19,11 @@ import {
   AdapterAppendOptions,
   AdapterClipOptions,
   AdapterInsertOptions,
+  AdapterReplaceOptions,
   AdapterFixOptions,
   ScrollerWorkflow,
   IDatasourceOptional,
-  ProcessSubject
+  ProcessSubject,
 } from '../interfaces/index';
 
 const ADAPTER_PROPS_STUB = ADAPTER_PROPS(EMPTY_ITEM);
@@ -109,9 +110,9 @@ export class Adapter implements IAdapter {
     // restore original values from the publicContext if present
     const adapterProps = publicContext
       ? ADAPTER_PROPS_STUB.map(prop => ({
-          ...prop,
-          value: (publicContext as any)[prop.name]
-        }))
+        ...prop,
+        value: (publicContext as any)[prop.name]
+      }))
       : ADAPTER_PROPS(EMPTY_ITEM);
 
     // Scalar permanent props
@@ -247,7 +248,7 @@ export class Adapter implements IAdapter {
       this.relax$.complete();
     }
     Object.values(this.source).forEach(observable => observable.complete());
-   }
+  }
 
   reset(options?: IDatasourceOptional): any {
     this.reloadCounter++;
@@ -319,6 +320,15 @@ export class Adapter implements IAdapter {
     this.logger.logAdapterMethod('insert', options);
     this.workflow.call({
       process: Process.insert,
+      status: ProcessStatus.start,
+      payload: options
+    });
+  }
+
+  replace(options: AdapterReplaceOptions): any {
+    this.logger.logAdapterMethod('replace', options);
+    this.workflow.call({
+      process: Process.replace,
       status: ProcessStatus.start,
       payload: options
     });

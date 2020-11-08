@@ -28,6 +28,20 @@ const configList: TestBedConfig[] = [{
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
+const configListInterrupted = [{
+  ...configList[0],
+  custom: {
+    remove: [2, 3],
+    removeWithInterruption: [2, 3, 5, 6]
+  }
+}, {
+  ...configList[1],
+  custom: {
+    remove: [54],
+    removeWithInterruption: [54, 56, 57, 58]
+  }
+}];
+
 const configListBad = [{
   ...configList[0],
   custom: { ...configList[0].custom, predicate: null }
@@ -61,7 +75,7 @@ const configListOut = [{
 const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => async (done: Function | null) => {
   await misc.relaxNext();
   const bufferSizeBeforeRemove = misc.scroller.buffer.size;
-  const { remove: indexList } = config.custom;
+  const { remove: indexList, removeWithInterruption: indexListFull } = config.custom;
 
   if (done) {
     const loopPendingSub = misc.adapter.loopPending$.subscribe(loopPending => {
@@ -78,7 +92,7 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
   );
   // remove items from the UiScroll
   await misc.adapter.remove(item =>
-    indexList.some((i: number) =>
+    (indexListFull || indexList).some((i: number) =>
       i === (byId ? item.data.id : item.$index)
     )
   );
@@ -159,6 +173,14 @@ describe('Adapter Remove Spec', () => {
         config,
         title: 'should remove by id',
         it: shouldRemove(config, true)
+      })
+    );
+
+    configListInterrupted.forEach(config =>
+      makeTest({
+        config,
+        title: 'should remove only first uninterrupted portion',
+        it: shouldRemove(config)
       })
     );
 

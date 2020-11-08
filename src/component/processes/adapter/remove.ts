@@ -36,7 +36,8 @@ export default class Remove {
     const { viewport, buffer: { items } } = scroller;
     let result = false;
     let firstVisibleIndex: null | number = null;
-    items.forEach(item => {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
       if (predicate(item.get())) {
         item.toRemove = true;
         if (firstVisibleIndex === null) {
@@ -47,8 +48,11 @@ export default class Remove {
           ? Direction.backward
           : Direction.forward;
         result = true;
+      } else if (result === true) {
+        // allow only first strict uninterrupted sequence
+        break;
       }
-    });
+    }
     return result;
   }
 

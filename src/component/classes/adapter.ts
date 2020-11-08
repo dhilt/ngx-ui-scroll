@@ -17,6 +17,7 @@ import {
   ItemsPredicate,
   AdapterPrependOptions,
   AdapterAppendOptions,
+  AdapterRemoveOptions,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterFixOptions,
@@ -37,9 +38,17 @@ const fixScalarWanted = (name: string, container: { [key: string]: boolean }) =>
 };
 
 const convertAppendArgs = (isAppend: boolean, options: any, eof?: boolean) => {
-  if (!(typeof options === 'object' && options.hasOwnProperty('items'))) {
+  if (!(options !== null && typeof options === 'object' && options.hasOwnProperty('items'))) {
     const items = !Array.isArray(options) ? [options] : options;
     options = isAppend ? { items, eof } : { items, bof: eof };
+  }
+  return options;
+};
+
+const convertRemoveArgs = (options: AdapterRemoveOptions | ItemsPredicate) => {
+  if (!(options !== null && typeof options === 'object' && options.hasOwnProperty('predicate'))) {
+    const predicate = options as ItemsPredicate;
+    options = { predicate };
   }
   return options;
 };
@@ -109,9 +118,9 @@ export class Adapter implements IAdapter {
     // restore original values from the publicContext if present
     const adapterProps = publicContext
       ? ADAPTER_PROPS_STUB.map(prop => ({
-          ...prop,
-          value: (publicContext as any)[prop.name]
-        }))
+        ...prop,
+        value: (publicContext as any)[prop.name]
+      }))
       : ADAPTER_PROPS(EMPTY_ITEM);
 
     // Scalar permanent props
@@ -247,7 +256,7 @@ export class Adapter implements IAdapter {
       this.relax$.complete();
     }
     Object.values(this.source).forEach(observable => observable.complete());
-   }
+  }
 
   reset(options?: IDatasourceOptional): any {
     this.reloadCounter++;
@@ -297,7 +306,8 @@ export class Adapter implements IAdapter {
     });
   }
 
-  remove(options: ItemsPredicate): any {
+  remove(options: AdapterRemoveOptions | ItemsPredicate): any {
+    options = convertRemoveArgs(options); // support old signature
     this.logger.logAdapterMethod('remove', options);
     this.workflow.call({
       process: Process.remove,

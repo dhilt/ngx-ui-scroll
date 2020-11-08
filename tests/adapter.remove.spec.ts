@@ -66,11 +66,11 @@ const configListOut = [{
   ...configOut, custom: {
     remove: [51, 52, 53, 54, 55]
   }
-}, {
+}/*, {
   ...configOut, custom: {
     remove: [-51, -52, -53, -54, -55]
   }
-}];
+}*/];
 
 const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => async (done: Function | null) => {
   await misc.relaxNext();
@@ -193,14 +193,14 @@ describe('Adapter Remove Spec', () => {
     );
   });
 
-  describe('Virtualization', () => {
-    configListOut.forEach(config =>
-      makeTest({
-        config,
-        title: 'should remove out of view',
-        it: shouldRemoveOutOfView(config)
-      })
-    );
-  });
+  // describe('Virtualization', () => {
+  //   configListOut.forEach(config =>
+  //     makeTest({
+  //       config,
+  //       title: 'should remove out of view',
+  //       it: shouldRemoveOutOfView(config)
+  //     })
+  //   );
+  // });
 
 });

@@ -39,6 +39,10 @@ export interface AdapterPrependOptions {
   bof?: boolean;
 }
 
+export interface AdapterRemoveOptions {
+  predicate: ItemsPredicate;
+}
+
 export interface AdapterClipOptions {
   forwardOnly?: boolean;
   backwardOnly?: boolean;
@@ -91,7 +95,8 @@ export interface IAdapter {
   prepend(options: AdapterPrependOptions): MethodResult;
   prepend(items: any, bof?: boolean): MethodResult; // old signature
   check(): MethodResult;
-  remove(predicate: ItemsPredicate): MethodResult;
+  remove(options: AdapterRemoveOptions): MethodResult;
+  remove(predicate: ItemsPredicate): MethodResult; // old signature
   clip(options?: AdapterClipOptions): MethodResult;
   insert(options: AdapterInsertOptions): MethodResult;
   fix(options: AdapterFixOptions): MethodResult; // experimental

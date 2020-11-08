@@ -1,13 +1,13 @@
 import { Scroller } from '../../scroller';
 import { ADAPTER_METHODS, validate } from '../../inputs/index';
-import { Direction, ItemsPredicate, Process, ProcessStatus } from '../../interfaces/index';
+import { Direction, AdapterRemoveOptions, ItemsPredicate, Process, ProcessStatus } from '../../interfaces/index';
 
 export default class Remove {
 
   static process = Process.remove;
 
-  static run(scroller: Scroller, predicate: ItemsPredicate) {
-    const methodData = validate({ predicate }, ADAPTER_METHODS.REMOVE);
+  static run(scroller: Scroller, options: AdapterRemoveOptions) {
+    const methodData = validate(options, ADAPTER_METHODS.REMOVE);
     if (!methodData.isValid) {
       scroller.logger.log(() => methodData.showErrors());
       scroller.workflow.call({
@@ -18,7 +18,8 @@ export default class Remove {
       return;
     }
 
-    const shouldRemove = Remove.runPredicate(scroller, predicate);
+    const { predicate } = methodData.params;
+    const shouldRemove = Remove.runPredicate(scroller, predicate.value as ItemsPredicate);
 
     if (shouldRemove) {
       const { clip } = scroller.state;
@@ -36,6 +37,8 @@ export default class Remove {
     const { viewport, buffer: { items } } = scroller;
     let result = false;
     let firstVisibleIndex: null | number = null;
+
+    // removing buffered (real) items
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       if (predicate(item.get())) {
@@ -53,6 +56,10 @@ export default class Remove {
         break;
       }
     }
+
+    // removing virtual items
+    // ...
+
     return result;
   }
 

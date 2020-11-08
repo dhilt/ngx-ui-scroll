@@ -194,7 +194,7 @@ describe('Bug Spec', () => {
 
         // remove item from the original datasource
         (misc.datasource as any).setProcessGet((result: any[]) =>
-          removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i))
+          removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i), 100)
         );
         await misc.adapter.remove(({ $index }) =>
           $index >= MIN && $index <= MAX
@@ -202,8 +202,8 @@ describe('Bug Spec', () => {
         // no need to insert new item to the original DS in this test
         await misc.adapter.insert({
           items: [{ id: `${MAX}*`, text: `item #${MAX} *` }],
-          after: ({ $index }) => $index === startIndex }
-        );
+          after: ({ $index }) => $index === startIndex
+        });
 
         expect(misc.adapter.firstVisible.$index).toEqual(startIndex);
         misc.scroller.buffer.items.forEach((item) => {

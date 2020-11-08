@@ -27,7 +27,7 @@ export const generateItems = (amount: number, lastIndex: number): Item[] => {
   return items;
 };
 
-export const removeItems = (items: Item[], idListToRemove: number[]) =>
+export const removeItems = (items: Item[], idListToRemove: number[], max: number) => {
   items.forEach((item: Item) => {
     const id = item.id;
     if (id < getMin(idListToRemove)) {
@@ -36,6 +36,8 @@ export const removeItems = (items: Item[], idListToRemove: number[]) =>
     const offset = idListToRemove.length;
     Object.assign(item, generateItem(item.id + offset));
   });
+  [...items].reverse().forEach(({ id }) => id > max ? items.pop() : null);
+};
 
 export const insertItems = (
   _items: Item[],

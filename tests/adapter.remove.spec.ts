@@ -39,21 +39,42 @@ const configListBad = [{
   custom: { ...configList[0].custom, predicate: (x: any, y: any) => null }
 }];
 
-const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => async (done: Function) => {
+const configOut = {
+  ...configList[0],
+  datasourceSettings: {
+    ...configList[0].datasourceSettings,
+    minIndex: -99,
+    maxIndex: 100
+  }
+};
+
+const configListOut = [{
+  ...configOut, custom: {
+    remove: [51, 52, 53, 54, 55]
+  }
+}, {
+  ...configOut, custom: {
+    remove: [-51, -52, -53, -54, -55]
+  }
+}];
+
+const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => async (done: Function | null) => {
   await misc.relaxNext();
   const bufferSizeBeforeRemove = misc.scroller.buffer.size;
   const { remove: indexList } = config.custom;
 
-  const loopPendingSub = misc.adapter.loopPending$.subscribe(loopPending => {
-    if (!loopPending) { // when the first loop after the Remove is done
-      expect(misc.scroller.buffer.size).toEqual(bufferSizeBeforeRemove - indexList.length);
-      loopPendingSub.unsubscribe();
-    }
-  });
+  if (done) {
+    const loopPendingSub = misc.adapter.loopPending$.subscribe(loopPending => {
+      if (!loopPending) { // when the first loop after the Remove is done
+        expect(misc.scroller.buffer.size).toEqual(bufferSizeBeforeRemove - indexList.length);
+        loopPendingSub.unsubscribe();
+      }
+    });
+  }
 
   // remove item from the original datasource
   (misc.datasource as any).setProcessGet((result: any[]) =>
-    removeItems(result, indexList)
+    removeItems(result, indexList, 100)
   );
   // remove items from the UiScroll
   await misc.adapter.remove(item =>
@@ -61,6 +82,10 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
       i === (byId ? item.data.id : item.$index)
     )
   );
+
+  if (!done) {
+    return;
+  }
 
   const { firstIndex, lastIndex, items } = misc.scroller.buffer;
   expect(misc.scroller.state.clip.callCount).toEqual(1);
@@ -97,30 +122,63 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
   });
 };
 
+const shouldRemoveOutOfView = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await shouldRemove(config)(misc)(null);
+  const { datasourceSettings: { minIndex, maxIndex, itemSize } } = config;
+  const size = (maxIndex - minIndex + 1) * itemSize;
+  expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
+  const min = Math.min(...config.custom.remove);
+  const prev = min - 1, len = config.custom.remove.length;
+  const scrollPosition = Math.abs(minIndex - prev) * itemSize;
+  misc.adapter.fix({ scrollPosition });
+  await misc.relaxNext();
+  expect(misc.adapter.firstVisible.$index).toBe(prev);
+  expect(misc.checkElementContent(prev, prev)).toBe(true);
+  expect(misc.checkElementContent(min, min + len)).toBe(true);
+  misc.adapter.fix({ scrollPosition: Infinity });
+  await misc.relaxNext();
+  expect(misc.adapter.lastVisible.$index).toBe(maxIndex - len);
+  expect(misc.checkElementContent(maxIndex - len, maxIndex)).toBe(true);
+  expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
+  done();
+};
+
 describe('Adapter Remove Spec', () => {
 
-  configList.forEach(config =>
-    makeTest({
-      config,
-      title: 'should remove by index',
-      it: shouldRemove(config)
-    })
-  );
+  describe('Common cases', () => {
+    configList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should remove by index',
+        it: shouldRemove(config)
+      })
+    );
 
-  configList.forEach(config =>
-    makeTest({
-      config,
-      title: 'should remove by id',
-      it: shouldRemove(config, true)
-    })
-  );
+    configList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should remove by id',
+        it: shouldRemove(config, true)
+      })
+    );
 
-  configListBad.forEach(config =>
-    makeTest({
-      config,
-      title: 'should break due to wrong predicate',
-      it: shouldBreak(config)
-    })
-  );
+    configListBad.forEach(config =>
+      makeTest({
+        config,
+        title: 'should break due to wrong predicate',
+        it: shouldBreak(config)
+      })
+    );
+  });
+
+  describe('Virtualization', () => {
+    configListOut.forEach(config =>
+      makeTest({
+        config,
+        title: 'should remove out of view',
+        it: shouldRemoveOutOfView(config)
+      })
+    );
+  });
 
 });

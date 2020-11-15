@@ -18,13 +18,14 @@ export default class Remove {
       return;
     }
 
-    const { predicate } = methodData.params;
-    const shouldRemove = Remove.runPredicate(scroller, predicate.value as ItemsPredicate);
+    const { predicate, increase } = methodData.params;
+    const shouldRemove = Remove.runPredicateOverBuffer(scroller, predicate.value as ItemsPredicate);
+    const { clip } = scroller.state;
 
     if (shouldRemove) {
-      const { clip } = scroller.state;
       clip.doClip = true;
       clip.simulate = true;
+      clip.increase = increase.value as boolean;
     }
 
     scroller.workflow.call({
@@ -33,7 +34,7 @@ export default class Remove {
     });
   }
 
-  static runPredicate(scroller: Scroller, predicate: ItemsPredicate): boolean {
+  static runPredicateOverBuffer(scroller: Scroller, predicate: ItemsPredicate): boolean {
     const { viewport, buffer: { items } } = scroller;
     let result = false;
     let firstVisibleIndex: null | number = null;
@@ -56,9 +57,6 @@ export default class Remove {
         break;
       }
     }
-
-    // removing virtual items
-    // ...
 
     return result;
   }

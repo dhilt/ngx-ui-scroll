@@ -35,23 +35,24 @@ export default class Clip {
       padding.size += item.size;
       return true;
     });
+    const indexesToRemove = itemsToRemove.map(({ $index }) => $index);
 
     if (scroller.settings.onBeforeClip && itemsToRemove.length) {
       scroller.settings.onBeforeClip(itemsToRemove.map(item => item.get()));
     }
 
     if (isAdapterRemove) { // with indexes shifting
-      buffer.removeItems(itemsToRemove);
+      buffer.removeItems(indexesToRemove, !clip.increase);
     } else { // common clip
       buffer.items = buffer.items.filter(({ toRemove }) => !toRemove);
     }
 
-    logger.log(() => itemsToRemove.length
+    logger.log(() => indexesToRemove.length
       ? [
-        `clipped ${itemsToRemove.length} items` +
+        `clipped ${indexesToRemove.length} items` +
         (size.backward ? `, +${size.backward} fwd px` : '') +
         (size.forward ? `, +${size.forward} bwd px` : '') +
-        `, range: [${itemsToRemove[0].$index}..${itemsToRemove[itemsToRemove.length - 1].$index}]`
+        `, range: [${indexesToRemove[0]}..${indexesToRemove[indexesToRemove.length - 1]}]`
       ]
       : 'clipped 0 items');
 

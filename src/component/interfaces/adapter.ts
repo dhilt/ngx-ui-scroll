@@ -41,6 +41,7 @@ export interface AdapterPrependOptions {
 
 export interface AdapterRemoveOptions {
   predicate: ItemsPredicate;
+  increase?: boolean;
 }
 
 export interface AdapterClipOptions {
@@ -95,8 +96,7 @@ export interface IAdapter {
   prepend(options: AdapterPrependOptions): MethodResult;
   prepend(items: any, bof?: boolean): MethodResult; // old signature
   check(): MethodResult;
-  remove(options: AdapterRemoveOptions): MethodResult;
-  remove(predicate: ItemsPredicate): MethodResult; // old signature
+  remove(args: AdapterRemoveOptions | ItemsPredicate): MethodResult; // + old signature
   clip(options?: AdapterClipOptions): MethodResult;
   insert(options: AdapterInsertOptions): MethodResult;
   fix(options: AdapterFixOptions): MethodResult; // experimental

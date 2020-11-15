@@ -194,7 +194,7 @@ describe('Bug Spec', () => {
 
         // remove item from the original datasource
         (misc.datasource as any).setProcessGet((result: any[]) =>
-          removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i), 100)
+          removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i), -99, 100)
         );
         await misc.adapter.remove(({ $index }) =>
           $index >= MIN && $index <= MAX

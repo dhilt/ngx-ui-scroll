@@ -2,6 +2,7 @@ export class ClipModel {
   noClip: boolean;
   doClip: boolean;
   simulate: boolean;
+  increase: boolean;
   callCount: number;
   forceForward: boolean;
   forceBackward: boolean;
@@ -26,6 +27,7 @@ export class ClipModel {
     } else {
       this.simulate = false;
     }
+    this.increase = false;
   }
 
   forceReset() {

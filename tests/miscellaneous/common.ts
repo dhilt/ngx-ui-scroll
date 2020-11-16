@@ -16,3 +16,4 @@ export const configListDestructiveFilter = (configList: TestBedConfig[], filterI
   );
 
 export const getMin = (list: number[]) => list.sort((a: number, b: number) => a - b)[0];
+export const getMax = (list: number[]) => list.sort((a: number, b: number) => b - a)[0];

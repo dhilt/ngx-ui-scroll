@@ -1,6 +1,4 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-
-import { Direction, ItemAdapter } from './index';
+import { Direction } from './index';
 import { FetchModel } from '../classes/state/fetch';
 import { ClipModel } from '../classes/state/clip';
 import { RenderModel } from '../classes/state/render';

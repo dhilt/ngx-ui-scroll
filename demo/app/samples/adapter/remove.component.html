@@ -1,6 +1,6 @@
 <ng-template #itemTemplate let-item="item">
   {{item.text}}
-  <span class="remove" (click)="doRemove(item.id)">[remove]</span>
+  <span class="remove" (click)="removeById(item.id)">[remove]</span>
 </ng-template>
 
 <app-demo
@@ -9,28 +9,49 @@
   [sources]="sources"
   [itemTemplate]="itemTemplate"
 >
+  <div actions>
+    <input [(ngModel)]="inputValue" (change)="onInputChanged($event.target)" size="3">
+    <button (click)="removeByIndex(inputValue)">Remove by index</button>
+  </div>
   <div description>
     <p>
-      <em>Adapter.remove</em> method allows to remove items
-      from current <em>uiScroll</em> buffer. This method accepts 1 argument
-      which is a predicate function applying to each item in the current buffer.
+      <em>Adapter.remove</em> method allows to remove items from current buffer.
+      The argument of this method is an object of the following type:
+    </p>
+    <pre>{{argumentsDescription}}</pre>
+    <p>
+      The <em>predicate</em> option is a function applying to each item in the buffer.
       If the return value is true, the item will be removed.
-      In this demo we have pretty simple predicate:
+      Only a continuous series of items can be removed at a time.
+      So, if you need to remove items 1, 2, 3 and 5,
+      you need to call this method twice: once for 1, 2, 3 and then for 5.
+    </p>
+    <p>
+      The argument of the predicate has <em>ItemAdapter</em> type, and
+      in this demo we have two versions of <em>predicate</em> using for
+      removing by id and by index:
     </p>
     <pre>{{predicateDescription}}</pre>
     <p>
-      Since the argument of the predicate has <em>ItemAdapter</em> type,
-      the <em>data</em> contains id-text objects defined at the component level.
-      The argument of <em>doRemove</em> method comes from the template
-      as the <em>id</em> of the item the user clicked on.
+      Indexes are adjusted each time we perform a removing from the buffer.
+      It is impossible to remove item with id = 5 twice,
+      because there is only one item with id = 5.
+      But we may remove item with index = 5 as many times
+      as many items we have after this index. Indexes decrease by default.
+    </p>
+    <p>
+      The second option is <em>increase</em>.
+      It is for changing the default indexes adjustment strategy.
+      By setting it to <em>true</em>, we tell the <em>uiScroll</em>
+      that we want to increase indexes of the items before the removed one(s).
     </p>
     <p>
       The very important thing is to synchronize our datasource with the changes
       we are making over the <em>uiScroll</em> buffer via <em>Adapter.remove</em>.
       Generally this is the App component responsibility,
-      and in this demo it happens via <em>doRemoveDatasource(id)</em> method.
-      It removes item with given <em>id</em> from the initial dataset,
-      and decrements <em>id</em> of all items whose ids are greater than the given one.
+      and in this demo it is done by the <em>removeFromDatasource</em> method.
+      It removes 1 item from the initial dataset,
+      and decrements the value of the right border.
     </p>
   </div>
 </app-demo>

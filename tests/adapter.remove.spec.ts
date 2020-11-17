@@ -3,27 +3,23 @@ import { Misc } from './miscellaneous/misc';
 import { removeItems } from './miscellaneous/items';
 import { Process } from '../src/component/interfaces/index';
 
+const baseConfig: TestBedConfig = {
+  datasourceName: 'limited--99-100-dynamic-size-processor',
+  templateSettings: { viewportHeight: 100 }
+};
+
 const configList: TestBedConfig[] = [{
-  datasourceName: 'limited--99-100-dynamic-size-processor',
+  ...baseConfig,
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
-  templateSettings: { viewportHeight: 100 },
-  custom: {
-    remove: [3, 4, 5]
-  }
+  custom: { remove: [3, 4, 5] }
 }, {
-  datasourceName: 'limited--99-100-dynamic-size-processor',
+  ...baseConfig,
   datasourceSettings: { startIndex: 55, bufferSize: 8, padding: 1, itemSize: 20 },
-  templateSettings: { viewportHeight: 100 },
-  custom: {
-    remove: [54, 55, 56, 57, 58]
-  }
+  custom: { remove: [54, 55, 56, 57, 58] }
 }, {
-  datasourceName: 'limited--99-100-dynamic-size-processor',
+  ...baseConfig,
   datasourceSettings: { startIndex: 10, bufferSize: 5, padding: 0.2, itemSize: 20 },
-  templateSettings: { viewportHeight: 100 },
-  custom: {
-    remove: [7, 8, 9]
-  }
+  custom: { remove: [7, 8, 9] }
 }];
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
@@ -47,6 +43,16 @@ const configListIncrease = configList.map(config => ({
   custom: {
     ...config.custom,
     increase: true
+  }
+}));
+
+const configListIndexes = [
+  configList[0], configListInterrupted[1], configListIncrease[2]
+].map(config => ({
+  ...config,
+  custom: {
+    ...config.custom,
+    useIndexes: true
   }
 }));
 
@@ -81,19 +87,26 @@ const configListOut = [{
 }*/];
 
 const doRemove = async (config: TestBedConfig, misc: Misc, byId = false) => {
-  const { remove: indexList, removeWithInterruption: indexListFull, increase } = config.custom;
+  const { remove: indexList, removeWithInterruption: indexListFull, increase, useIndexes } = config.custom;
   // remove item from the original datasource
   (misc.datasource as any).setProcessGet((result: any[]) =>
     removeItems(result, indexList, -99, 100, increase)
   );
   // remove items from the UiScroll
-  await misc.adapter.remove({
-    predicate: item =>
-      (indexListFull || indexList).some((i: number) =>
-        i === (byId ? item.data.id : item.$index)
-      ),
-    increase
-  });
+  if (useIndexes) {
+    await misc.adapter.remove({
+      indexes: indexListFull || indexList,
+      increase
+    });
+  } else {
+    await misc.adapter.remove({
+      predicate: item =>
+        (indexListFull || indexList).some((i: number) =>
+          i === (byId ? item.data.id : item.$index)
+        ),
+      increase
+    });
+  }
 };
 
 const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => async (done: Function) => {
@@ -117,20 +130,15 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
 
   const { firstIndex, lastIndex, items } = misc.scroller.buffer;
   expect(misc.scroller.state.clip.callCount).toEqual(1);
-  if (firstIndex === null || lastIndex === null) {
-    return done();
+  if (firstIndex !== null && lastIndex !== null) {
+    // check all items contents
+    items.forEach(({ $index, data: { id } }) => {
+      const diff = indexList.reduce((acc: number, index: number) =>
+        acc + (increase ? (id < index ? -1 : 0) : (id > index ? 1 : 0)), 0
+      );
+      expect(misc.checkElementContent($index, $index + diff)).toEqual(true);
+    });
   }
-
-  // check all items contents
-  items.forEach(({ $index, data: { id } }) => {
-    const diff = increase
-      ? indexList.reduce((acc: number, index: number) => acc - (id < index ? 1 : 0), 0)
-      : indexList.reduce((acc: number, index: number) => acc + (id > index ? 1 : 0), 0);
-    expect(misc.checkElementContent($index, $index + diff)).toEqual(true);
-  });
-
-  // check first visible, the first `${startIndex} : item #${startIndex}` must persist
-  // expect(misc.adapter.firstVisible.data.id).toEqual(config.datasourceSettings.startIndex);
 
   done();
 };
@@ -161,7 +169,7 @@ const shouldRemoveOutOfView = (config: TestBedConfig) => (misc: Misc) => async (
   const min = Math.min(...config.custom.remove);
   const prev = min - 1, len = config.custom.remove.length;
   const scrollPosition = Math.abs(minIndex - prev) * itemSize;
-  misc.adapter.fix({ scrollPosition });
+  misc.adapter.fix({ scrollPosition }); // scroll to the 1st item before removed
   await misc.relaxNext();
   expect(misc.adapter.firstVisible.$index).toBe(prev);
   expect(misc.checkElementContent(prev, prev)).toBe(true);
@@ -176,7 +184,7 @@ const shouldRemoveOutOfView = (config: TestBedConfig) => (misc: Misc) => async (
 
 describe('Adapter Remove Spec', () => {
 
-  describe('Common cases', () => {
+  describe('Buffer', () => {
     configList.forEach(config =>
       makeTest({
         config,
@@ -209,6 +217,16 @@ describe('Adapter Remove Spec', () => {
       })
     );
 
+    configListIndexes.forEach(config =>
+      makeTest({
+        config,
+        title: 'should remove using "indexes" option',
+        it: shouldRemove(config)
+      })
+    );
+  });
+
+  describe('Wrong', () => {
     configListBad.forEach(config =>
       makeTest({
         config,

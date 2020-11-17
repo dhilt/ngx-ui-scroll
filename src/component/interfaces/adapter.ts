@@ -40,7 +40,8 @@ export interface AdapterPrependOptions {
 }
 
 export interface AdapterRemoveOptions {
-  predicate: ItemsPredicate;
+  predicate?: ItemsPredicate;
+  indexes?: number[];
   increase?: boolean;
 }
 

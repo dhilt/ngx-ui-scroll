@@ -17,16 +17,13 @@ export default class Remove {
       });
       return;
     }
+    const params: AdapterRemoveOptions = {
+      predicate: methodData.params.predicate.value,
+      indexes: methodData.params.indexes.value,
+      increase: methodData.params.increase.value
+    };
 
-    const { predicate, increase } = methodData.params;
-    const shouldRemove = Remove.runPredicateOverBuffer(scroller, predicate.value as ItemsPredicate);
-    const { clip } = scroller.state;
-
-    if (shouldRemove) {
-      clip.doClip = true;
-      clip.simulate = true;
-      clip.increase = increase.value as boolean;
-    }
+    const shouldRemove = Remove.removeBufferedItems(scroller, params);
 
     scroller.workflow.call({
       process: Process.remove,
@@ -34,12 +31,29 @@ export default class Remove {
     });
   }
 
+  static removeBufferedItems(scroller: Scroller, options: AdapterRemoveOptions): boolean {
+    const { predicate, indexes, increase } = options;
+    let shouldRemove = false;
+    if (predicate) {
+      shouldRemove = Remove.runPredicateOverBuffer(scroller, predicate);
+    }
+    if (indexes) {
+      const indexPredicate: ItemsPredicate = ({ $index }) => indexes.indexOf($index) >= 0;
+      shouldRemove = Remove.runPredicateOverBuffer(scroller, indexPredicate);
+    }
+    if (shouldRemove) {
+      const { clip } = scroller.state;
+      clip.doClip = true;
+      clip.simulate = true;
+      clip.increase = !!increase;
+    }
+    return shouldRemove;
+  }
+
   static runPredicateOverBuffer(scroller: Scroller, predicate: ItemsPredicate): boolean {
     const { viewport, buffer: { items } } = scroller;
     let result = false;
     let firstVisibleIndex: null | number = null;
-
-    // removing buffered (real) items
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       if (predicate(item.get())) {
@@ -57,7 +71,6 @@ export default class Remove {
         break;
       }
     }
-
     return result;
   }
 

@@ -24,30 +24,36 @@ export default class Remove {
     };
 
     const shouldRemove = Remove.removeBufferedItems(scroller, params);
+    const shouldRemoveVirtual = Remove.removeVirtualItems(scroller, params);
+
+    if (shouldRemove || shouldRemoveVirtual) {
+      const { clip } = scroller.state;
+      clip.simulate = true;
+      clip.increase = !!params.increase;
+      if (shouldRemove) {
+        clip.doClip = true;
+      } else {
+        clip.virtual.only = true;
+      }
+    }
 
     scroller.workflow.call({
       process: Process.remove,
-      status: shouldRemove ? ProcessStatus.next : ProcessStatus.done
+      status: shouldRemove || shouldRemoveVirtual ? ProcessStatus.next : ProcessStatus.done
     });
   }
 
   static removeBufferedItems(scroller: Scroller, options: AdapterRemoveOptions): boolean {
-    const { predicate, indexes, increase } = options;
-    let shouldRemove = false;
+    const { predicate, indexes } = options;
+    let result = false;
     if (predicate) {
-      shouldRemove = Remove.runPredicateOverBuffer(scroller, predicate);
+      result = Remove.runPredicateOverBuffer(scroller, predicate);
     }
     if (indexes) {
       const indexPredicate: ItemsPredicate = ({ $index }) => indexes.indexOf($index) >= 0;
-      shouldRemove = Remove.runPredicateOverBuffer(scroller, indexPredicate);
+      result = Remove.runPredicateOverBuffer(scroller, indexPredicate);
     }
-    if (shouldRemove) {
-      const { clip } = scroller.state;
-      clip.doClip = true;
-      clip.simulate = true;
-      clip.increase = !!increase;
-    }
-    return shouldRemove;
+    return result;
   }
 
   static runPredicateOverBuffer(scroller: Scroller, predicate: ItemsPredicate): boolean {
@@ -69,6 +75,28 @@ export default class Remove {
       } else if (result === true) {
         // allow only first strict uninterrupted sequence
         break;
+      }
+    }
+    return result;
+  }
+
+  static removeVirtualItems(scroller: Scroller, options: AdapterRemoveOptions): boolean {
+    const { indexes } = options;
+    let result = false;
+    if (!indexes) {
+      return false;
+    }
+    const { state: { clip } } = scroller;
+    const { finiteAbsMinIndex, firstIndex, finiteAbsMaxIndex, lastIndex } = scroller.buffer;
+    for (let i = indexes.length - 1; i >= 0; i--) {
+      const index = indexes[i];
+      if (index >= finiteAbsMinIndex && firstIndex !== null && index < firstIndex) {
+        clip.virtual.backward.push(index);
+        result = true;
+      }
+      if (index <= finiteAbsMaxIndex && lastIndex !== null && index > lastIndex) {
+        clip.virtual.forward.push(index);
+        result = true;
       }
     }
     return result;

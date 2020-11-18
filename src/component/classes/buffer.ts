@@ -196,9 +196,9 @@ export class Buffer {
     this.items = [...items, ...this.items];
   }
 
-  removeItems(indexes: number[], immutableTop: boolean = true) {
+  removeItems(indexes: number[], immutableTop: boolean, virtual = false) {
     const result: Item[] = [];
-    const toRemove: number[] = [];
+    const toRemove: number[] = virtual ? indexes : [];
     const length = this.items.length;
     for (
       let i = immutableTop ? 0 : length - 1;
@@ -206,7 +206,7 @@ export class Buffer {
       immutableTop ? i++ : i--
     ) {
       const item = this.items[i];
-      if (indexes.indexOf(item.$index) >= 0) {
+      if (!virtual && indexes.indexOf(item.$index) >= 0) {
         toRemove.push(item.$index);
         continue;
       }
@@ -215,10 +215,12 @@ export class Buffer {
         : (item.$index < index ? 1 : 0)
       ), 0);
       item.updateIndex(item.$index + diff);
-      if (immutableTop) {
-        result.push(item);
-      } else {
-        result.unshift(item);
+      if (!virtual) {
+        if (immutableTop) {
+          result.push(item);
+        } else {
+          result.unshift(item);
+        }
       }
     }
     if (immutableTop) {
@@ -226,7 +228,9 @@ export class Buffer {
     } else {
       this.absMinIndex += toRemove.length;
     }
-    this.items = result;
+    if (!virtual) {
+      this.items = result;
+    }
     this.cache.removeItems(toRemove, immutableTop);
   }
 

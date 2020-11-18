@@ -195,11 +195,10 @@ export const runStateMachine = ({
       break;
     case Process.clip:
       if (status === Status.next) {
-        if (payload.process === Process.end) {
-          run(End)(process);
-        } else {
-          run(Adjust)();
-        }
+        run(Adjust)();
+      }
+      if (status === Status.done) {
+        run(End)(process);
       }
       break;
     case Process.adjust:

@@ -28,13 +28,13 @@ const configListInterrupted = [{
   ...configList[0],
   custom: {
     remove: [2, 3],
-    removeWithInterruption: [2, 3, 5, 6]
+    interrupted: [2, 3, 5, 6]
   }
 }, {
   ...configList[1],
   custom: {
     remove: [54],
-    removeWithInterruption: [54, 56, 57, 58]
+    interrupted: [54, 56, 57, 58]
   }
 }];
 
@@ -67,41 +67,57 @@ const configListBad = [{
   custom: { ...configList[0].custom, predicate: (x: any, y: any) => null }
 }];
 
-const configOut = {
+const baseConfigOut: TestBedConfig = {
   ...configList[0],
   datasourceSettings: {
     ...configList[0].datasourceSettings,
+    startIndex: 1,
     minIndex: -99,
     maxIndex: 100
   }
 };
 
-const configListOut = [{
-  ...configOut, custom: {
-    remove: [51, 52, 53, 54, 55]
+const configListOut: TestBedConfig[] = [{
+  ...baseConfigOut, custom: {
+    remove: [51, 52, 53, 54, 55],
+    useIndexes: true,
+    text: 'forward'
   }
-}/*, {
-  ...configOut, custom: {
-    remove: [-51, -52, -53, -54, -55]
+}, {
+  ...baseConfigOut, custom: {
+    remove: [-51, -52, -53, -54, -55],
+    useIndexes: true,
+    text: 'backward'
   }
-}*/];
+}, {
+  ...baseConfigOut, custom: {
+    removeBwd: [-51, -52, -53, -54, -55],
+    removeFwd: [51, 52, 53, 54, 55],
+    useIndexes: true,
+    text: 'backward and forward'
+  }
+}];
 
 const doRemove = async (config: TestBedConfig, misc: Misc, byId = false) => {
-  const { remove: indexList, removeWithInterruption: indexListFull, increase, useIndexes } = config.custom;
+  const { increase, useIndexes, remove, removeBwd, removeFwd } = config.custom;
+  const indexList = remove || [...removeBwd, ...removeFwd];
+  const indexListInterrupted = config.custom.interrupted;
   // remove item from the original datasource
   (misc.datasource as any).setProcessGet((result: any[]) =>
-    removeItems(result, indexList, -99, 100, increase)
+    [removeBwd, removeFwd, remove].forEach(list =>
+      list && removeItems(result, list, -99, 100, increase)
+    )
   );
   // remove items from the UiScroll
   if (useIndexes) {
     await misc.adapter.remove({
-      indexes: indexListFull || indexList,
+      indexes: indexListInterrupted || indexList,
       increase
     });
   } else {
     await misc.adapter.remove({
       predicate: item =>
-        (indexListFull || indexList).some((i: number) =>
+        (indexListInterrupted || indexList).some((i: number) =>
           i === (byId ? item.data.id : item.$index)
         ),
       increase
@@ -161,23 +177,29 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
 };
 
 const shouldRemoveOutOfView = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  const { datasourceSettings: { minIndex, maxIndex, itemSize } } = config;
+  const { remove, removeBwd, removeFwd } = config.custom;
+  const indexList = remove || [...removeBwd, ...removeFwd];
   await misc.relaxNext();
   await doRemove(config, misc);
-  const { datasourceSettings: { minIndex, maxIndex, itemSize } } = config;
-  const size = (maxIndex - minIndex + 1) * itemSize;
+  const size = (maxIndex - minIndex + 1 - indexList.length) * itemSize;
   expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
-  const min = Math.min(...config.custom.remove);
-  const prev = min - 1, len = config.custom.remove.length;
+
+  // let's scroll to the first row before the removed
+  const min = Math.min(...(removeBwd || remove));
+  const prev = min - 1;
   const scrollPosition = Math.abs(minIndex - prev) * itemSize;
-  misc.adapter.fix({ scrollPosition }); // scroll to the 1st item before removed
+  misc.adapter.fix({ scrollPosition });
   await misc.relaxNext();
   expect(misc.adapter.firstVisible.$index).toBe(prev);
   expect(misc.checkElementContent(prev, prev)).toBe(true);
-  expect(misc.checkElementContent(min, min + len)).toBe(true);
+  expect(misc.checkElementContent(min, min + (removeBwd || remove).length)).toBe(true);
+
+  // check if the very last row had been shifted
   misc.adapter.fix({ scrollPosition: Infinity });
   await misc.relaxNext();
-  expect(misc.adapter.lastVisible.$index).toBe(maxIndex - len);
-  expect(misc.checkElementContent(maxIndex - len, maxIndex)).toBe(true);
+  expect(misc.adapter.lastVisible.$index).toBe(maxIndex - indexList.length);
+  expect(misc.checkElementContent(maxIndex - indexList.length, maxIndex)).toBe(true);
   expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
   done();
 };
@@ -236,14 +258,14 @@ describe('Adapter Remove Spec', () => {
     );
   });
 
-  // describe('Virtualization', () => {
-  //   configListOut.forEach(config =>
-  //     makeTest({
-  //       config,
-  //       title: 'should remove out of view',
-  //       it: shouldRemoveOutOfView(config)
-  //     })
-  //   );
-  // });
+  describe('Virtual', () => {
+    configListOut.forEach(config =>
+      makeTest({
+        config,
+        title: `should remove out of view (${config.custom.text})`,
+        it: shouldRemoveOutOfView(config)
+      })
+    );
+  });
 
 });

@@ -36,6 +36,7 @@ export default class Clip {
   static onBuffered(scroller: Scroller) {
     const { buffer, viewport: { paddings }, logger, state: { clip } } = scroller;
     const size = { backward: 0, forward: 0 };
+    const removeViaAdapter = clip.simulate && !clip.force;
 
     const itemsToRemove = buffer.items.filter(item => {
       if (!item.toRemove) {
@@ -43,8 +44,10 @@ export default class Clip {
       }
       item.hide();
       size[item.removeDirection] += item.size;
-      const padding = paddings.byDirection(item.removeDirection);
-      padding.size += item.size;
+      if (!removeViaAdapter) { // do not adjust paddings in case of Adapter remove
+        const padding = paddings.byDirection(item.removeDirection);
+        padding.size += item.size;
+      }
       return true;
     });
 
@@ -53,17 +56,20 @@ export default class Clip {
     }
 
     const indexesToRemove = itemsToRemove.map(({ $index }) => $index);
-    if (clip.simulate && !clip.force) { // remove via Adapter
+    if (removeViaAdapter) {
       buffer.removeItems(indexesToRemove, !clip.increase, false);
-    } else { // common clip
+    } else { // common clip case
       buffer.items = buffer.items.filter(({ toRemove }) => !toRemove);
     }
 
     logger.log(() => indexesToRemove.length
       ? [
         `clipped ${indexesToRemove.length} item(s) from Buffer` +
-        (size.backward ? `, +${size.backward} fwd px` : '') +
-        (size.forward ? `, +${size.forward} bwd px` : '') +
+        (
+          removeViaAdapter
+            ? ` (via adapter), -${size.backward + size.forward}px`
+            : (size.backward ? `, +${size.backward} fwd px` : '') + (size.forward ? `, +${size.forward} bwd px` : '')
+        ) +
         `, range: [${indexesToRemove[0]}..${indexesToRemove[indexesToRemove.length - 1]}]`
       ]
       : 'clipped 0 items from Buffer');

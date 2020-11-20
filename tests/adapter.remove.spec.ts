@@ -2,9 +2,10 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { removeItems } from './miscellaneous/items';
 import { Process } from '../src/component/interfaces/index';
+import { configListDestructiveFilter } from './miscellaneous/common';
 
 const baseConfig: TestBedConfig = {
-  datasourceName: 'limited--99-100-dynamic-size-processor',
+  datasourceName: 'limited--99-100-processor',
   templateSettings: { viewportHeight: 100 }
 };
 
@@ -77,7 +78,7 @@ const baseConfigOut: TestBedConfig = {
   }
 };
 
-const configListOut: TestBedConfig[] = [{
+const configListOutFixed: TestBedConfig[] = [{
   ...baseConfigOut, custom: {
     remove: [51, 52, 53, 54, 55],
     useIndexes: true,
@@ -95,6 +96,16 @@ const configListOut: TestBedConfig[] = [{
     removeFwd: [51, 52, 53, 54, 55],
     useIndexes: true,
     text: 'backward and forward'
+  }
+}];
+
+const configListOutDynamic: TestBedConfig[] = [{
+  datasourceName: 'limited--99-100-dynamic-size-processor',
+  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
+  datasourceSettings: { startIndex: 1, maxIndex: 100, bufferSize: 10, padding: 0.2, adapter: true },
+  custom: {
+    remove: [100], // must be the last index in the datasource
+    useIndexes: true
   }
 }];
 
@@ -130,6 +141,9 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
   const bufferSizeBeforeRemove = misc.scroller.buffer.size;
   const { remove: indexList, increase } = config.custom;
   const { minIndex, maxIndex } = misc.scroller.buffer;
+  const viewportSizeBeforeRemove = misc.getScrollableSize();
+  const sizeToRemove = indexList.length * misc.getItemSize();
+  const deltaSize = viewportSizeBeforeRemove - sizeToRemove;
 
   const loopPendingSub = misc.adapter.loopPending$.subscribe(loopPending => {
     if (!loopPending) { // when the first loop after the Remove is done
@@ -138,6 +152,7 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
       expect(size).toEqual(bufferSizeBeforeRemove - len);
       expect(min).toBe(minIndex + (increase ? len : 0));
       expect(max).toBe(maxIndex - (increase ? 0 : len));
+      expect(deltaSize).toEqual(misc.getScrollableSize());
       loopPendingSub.unsubscribe();
     }
   });
@@ -176,7 +191,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
   });
 };
 
-const shouldRemoveOutOfView = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const shouldRemoveOutOfViewFixed = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   const { datasourceSettings: { minIndex, maxIndex, itemSize } } = config;
   const { remove, removeBwd, removeFwd } = config.custom;
   const indexList = remove || [...removeBwd, ...removeFwd];
@@ -201,6 +216,38 @@ const shouldRemoveOutOfView = (config: TestBedConfig) => (misc: Misc) => async (
   expect(misc.adapter.lastVisible.$index).toBe(maxIndex - indexList.length);
   expect(misc.checkElementContent(maxIndex - indexList.length, maxIndex)).toBe(true);
   expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
+  done();
+};
+
+const shouldRemoveOutOfViewDynamic = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+
+  // scroll to the very bottom
+  const position = misc.getScrollPosition();
+  await misc.scrollDownRecursively();
+  expect(misc.adapter.eof).toEqual(true);
+  const indexToRemove = config.custom.remove[0];
+  const { scroller: { viewport }, adapter } = misc;
+  expect(adapter.lastVisible.$index).toBe(indexToRemove);
+  const sizeToRemove = misc.routines.getSize(adapter.lastVisible.element as HTMLElement);
+  expect(sizeToRemove).toBeGreaterThan(0);
+
+  // scroll back to start item
+  misc.scrollTo(position);
+  await misc.relaxNext();
+  const viewportSizeBeforeRemove = misc.getScrollableSize();
+
+  // remove invisible lat row
+  await doRemove(config, misc);
+  const viewportSizeAfterRemove = viewportSizeBeforeRemove - sizeToRemove;
+  expect(viewportSizeAfterRemove).toBe(misc.getScrollableSize());
+
+  // scroll to the very bottom again
+  misc.scrollMax();
+  await misc.relaxNext();
+  expect(adapter.lastVisible.$index).toBe(indexToRemove - 1);
+  expect(viewport.paddings.forward.size).toBe(0);
+
   done();
 };
 
@@ -248,22 +295,30 @@ describe('Adapter Remove Spec', () => {
     );
   });
 
-  describe('Wrong', () => {
+  describe('Wrong', () =>
     configListBad.forEach(config =>
       makeTest({
         config,
         title: 'should break due to wrong predicate',
         it: shouldBreak(config)
       })
-    );
-  });
+    )
+  );
 
   describe('Virtual', () => {
-    configListOut.forEach(config =>
+    configListOutFixed.forEach(config =>
       makeTest({
         config,
-        title: `should remove out of view (${config.custom.text})`,
-        it: shouldRemoveOutOfView(config)
+        title: `should remove fix-sized items out of view (${config.custom.text})`,
+        it: shouldRemoveOutOfViewFixed(config)
+      })
+    );
+
+    configListOutDynamic.forEach(config =>
+      makeTest({
+        config,
+        title: `should remove dynamic-sized items out of view`,
+        it: shouldRemoveOutOfViewDynamic(config)
       })
     );
   });

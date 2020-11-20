@@ -193,7 +193,7 @@ All of the Adapter methods return Promise resolving at the moment when the scrol
 const { adapter } = this.datasource;
 const predicate = ({ $index }) => $index === indexToReplace;
 await adapter.relax();
-await adapter.remove(predicate);
+await adapter.remove({ predicate });
 await adapter.insert({ items: [itemToReplace], before: predicate });
 console.log('Replacement done');
 ```

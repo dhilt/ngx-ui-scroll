@@ -196,9 +196,9 @@ describe('Bug Spec', () => {
         (misc.datasource as any).setProcessGet((result: any[]) =>
           removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i), -99, 100)
         );
-        await misc.adapter.remove(({ $index }) =>
-          $index >= MIN && $index <= MAX
-        );
+        await misc.adapter.remove({
+          predicate: ({ $index }) => $index >= MIN && $index <= MAX
+        });
         // no need to insert new item to the original DS in this test
         await misc.adapter.insert({
           items: [{ id: `${MAX}*`, text: `item #${MAX} *` }],

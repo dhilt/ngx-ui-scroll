@@ -2,7 +2,6 @@ import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { removeItems } from './miscellaneous/items';
 import { Process } from '../src/component/interfaces/index';
-import { configListDestructiveFilter } from './miscellaneous/common';
 
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-processor',
@@ -179,7 +178,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
     if (misc.workflow.cyclesDone === 1) {
       const innerLoopCount = misc.scroller.state.innerLoopCount;
       // call remove with wrong predicate
-      misc.adapter.remove(config.custom.predicate);
+      misc.adapter.remove({ predicate: config.custom.predicate });
       setTimeout(() => {
         expect(misc.workflow.cyclesDone).toEqual(1);
         expect(misc.scroller.state.innerLoopCount).toEqual(innerLoopCount);

@@ -5,7 +5,7 @@ export default class PreFetch {
 
   static process = Process.preFetch;
 
-  static run(scroller: Scroller, process: Process) {
+  static run(scroller: Scroller, process?: Process) {
     const { workflow, buffer, state: { fetch } } = scroller;
     fetch.minIndex = buffer.minIndex;
 

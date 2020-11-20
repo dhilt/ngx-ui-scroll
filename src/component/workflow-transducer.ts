@@ -126,29 +126,27 @@ export const runStateMachine = ({
       }
       break;
     case Process.start:
-      if (status === Status.next) {
-        switch (payload.process) {
-          case Process.append:
-          case Process.prepend:
-          case Process.check:
-          case Process.insert:
-            run(Render)();
-            break;
-          case Process.remove:
-            run(Clip)();
-            break;
-          case Process.userClip:
-            run(PreFetch)(payload.process);
-            break;
-          default:
-            run(PreFetch)();
-        }
+      switch (payload.process) {
+        case Process.append:
+        case Process.prepend:
+        case Process.check:
+        case Process.insert:
+          run(Render)();
+          break;
+        case Process.remove:
+          run(Clip)(payload.process);
+          break;
+        case Process.userClip:
+          run(PreFetch)(payload.process);
+          break;
+        default:
+          run(PreFetch)();
       }
       break;
     case Process.preFetch:
       switch (payload.process) {
         case Process.userClip:
-          run(PreClip)();
+          run(PreClip)(payload.process);
           break;
         default:
           if (status === Status.next) {
@@ -160,9 +158,7 @@ export const runStateMachine = ({
       }
       break;
     case Process.fetch:
-      if (status === Status.next) {
-        run(PostFetch)();
-      }
+      run(PostFetch)();
       break;
     case Process.postFetch:
       if (status === Status.next) {
@@ -185,26 +181,23 @@ export const runStateMachine = ({
       }
       break;
     case Process.preClip:
-      if (status === Status.next) {
-        if (payload.doClip) {
-          run(Clip)();
-        } else {
-          run(Adjust)();
-        }
+      if (payload.doClip) {
+        run(Clip)(payload.process);
+      } else {
+        run(Adjust)();
       }
       break;
     case Process.clip:
-      if (status === Status.next) {
-        run(Adjust)();
-      }
-      if (status === Status.done) {
-        run(End)(process);
+      switch (payload.process) {
+        case Process.remove:
+          run(End)(process);
+          break;
+        default:
+          run(Adjust)();
       }
       break;
     case Process.adjust:
-      if (status === Status.done) {
-        run(End)(process);
-      }
+      run(End)(process);
       break;
     case Process.end:
       if (status === Status.next) {
@@ -217,7 +210,8 @@ export const runStateMachine = ({
           default:
             run(Start)(process);
         }
-      } else if (status === Status.done) {
+      }
+      if (status === Status.done) {
         done();
       }
       break;

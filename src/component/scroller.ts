@@ -46,7 +46,7 @@ export class Scroller {
     if (scroller) { // re-use $items and continue counters
       $items = scroller.buffer.$items;
       cycleCount = scroller.state.cycle.count;
-      loopCount = scroller.state.cycle.innerLoop.count;
+      loopCount = scroller.state.cycle.innerLoop.total;
     }
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);

@@ -49,7 +49,7 @@ export default class End {
     clip.forceReset();
     scroller.innerLoopCleanup();
     adapter.loopPending = false;
-    state.cycle.innerLoop.count++;
+    state.cycle.innerLoop.done();
   }
 
   static calculateParams(scroller: Scroller, workflow: ScrollerWorkflow) {

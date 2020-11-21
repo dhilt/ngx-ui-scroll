@@ -176,12 +176,12 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
 const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     if (misc.workflow.cyclesDone === 1) {
-      const innerLoopCount = misc.scroller.state.cycle.innerLoop.count;
+      const innerLoopCount = misc.innerLoopCount;
       // call remove with wrong predicate
       misc.adapter.remove({ predicate: config.custom.predicate });
       setTimeout(() => {
         expect(misc.workflow.cyclesDone).toEqual(1);
-        expect(misc.scroller.state.cycle.innerLoop.count).toEqual(innerLoopCount);
+        expect(misc.innerLoopCount).toEqual(innerLoopCount);
         expect(misc.workflow.errors.length).toEqual(1);
         expect(misc.workflow.errors[0].process).toEqual(Process.remove);
         done();

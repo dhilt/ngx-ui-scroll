@@ -11,8 +11,7 @@ export default class Init {
     const { state, workflow, adapter } = scroller;
     const isInitial = initProcesses.includes(process);
     scroller.logger.logCycle(true);
-    state.cycle.isInitial = isInitial;
-    state.cycle.innerLoop.isInitial = isInitial;
+    state.cycle.start(isInitial, process);
     adapter.isLoading = true;
     workflow.call({
       process: Process.init,

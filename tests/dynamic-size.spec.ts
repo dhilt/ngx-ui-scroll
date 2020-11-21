@@ -77,7 +77,6 @@ const getInitialItemsCounter = (config: TestBedConfig, misc: Misc): ItemsCounter
 
 const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsCounter): ItemsCounter | null => {
   const { bufferSize, startIndex, padding, minIndex, maxIndex } = misc.scroller.settings;
-  const loopCount = misc.scroller.state.cycle.innerLoop.count;
   const viewportSize = misc.getViewportSize(config);
   const backwardLimit = viewportSize * padding;
   const forwardLimit = viewportSize + backwardLimit;
@@ -95,7 +94,7 @@ const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsC
 
   itemsCounter.set(Direction.backward, previous.backward);
   itemsCounter.set(Direction.forward, previous.forward);
-  if (_bwdItemsToFill > 0 && (loopCount > 2 || _bwdItemsToFill > _fwdItemsToFill)) {
+  if (_bwdItemsToFill > 0 && (misc.innerLoopCount > 2 || _bwdItemsToFill > _fwdItemsToFill)) {
     itemsCounter.set(Direction.backward, {
       count: startIndex - bwdIndex,
       index: bwdIndex,
@@ -127,10 +126,8 @@ const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsC
 };
 
 const testInitialLoad = (config: TestBedConfig, misc: Misc, done: Function) => {
-  const loopCount = misc.scroller.state.cycle.innerLoop.count;
-
   let itemsCounter: ItemsCounter | null;
-  if (loopCount === 1) {
+  if (misc.innerLoopCount === 1) {
     itemsCounter = getInitialItemsCounter(config, misc);
   } else {
     itemsCounter = getNextItemsCounter(config, misc, misc.shared.itemsCounter);
@@ -211,7 +208,7 @@ describe('Zero Size Spec', () => {
       title: 'should stop the Workflow after the first loop',
       it: (misc: Misc) => (done: Function) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          expect(misc.scroller.state.cycle.innerLoop.count).toEqual(1);
+          expect(misc.innerLoopCount).toEqual(1);
           done();
         })
     })
@@ -226,7 +223,7 @@ describe('Zero Size Spec', () => {
       title: 'should stop the Workflow after the second loop',
       it: (misc: Misc) => (done: Function) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          expect(misc.scroller.state.cycle.innerLoop.count).toEqual(2);
+          expect(misc.innerLoopCount).toEqual(2);
           done();
         })
     })

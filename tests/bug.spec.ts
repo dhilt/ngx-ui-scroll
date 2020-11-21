@@ -16,12 +16,11 @@ describe('Bug Spec', () => {
       },
       it: (misc: Misc) => (done: Function) => {
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { innerLoop } = misc.scroller.state.cycle;
-          if (innerLoop.count === 1) {
+          if (misc.innerLoopCount === 1) {
             misc.scrollMax();
-          } else if (innerLoop.count === 2) {
+          } else if (misc.innerLoopCount === 2) {
             misc.scrollMin();
-          } else if (innerLoop.count === 3) {
+          } else if (misc.innerLoopCount === 3) {
             misc.scrollMax();
           } else {
             done();

@@ -46,7 +46,7 @@ const scroll = (misc: Misc, position: number) => {
 };
 
 const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Function) => {
-  const { workflow, scroller, adapter } = misc;
+  const { scroller, adapter } = misc;
   const { MAX, AMOUNT } = config.custom;
   await misc.relaxNext();
   // append items to the original datasource
@@ -61,10 +61,10 @@ const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Functio
     eof: true
   });
   await scroll(misc, Infinity);
-  const innerLoopCount = scroller.state.cycle.innerLoop.count;
+  const innerLoopCount = misc.innerLoopCount;
   await scroll(misc, Infinity);
   // await scroll(misc, 19438);
-  expect(scroller.state.cycle.innerLoop.count).toEqual(innerLoopCount + 1);
+  expect(misc.innerLoopCount).toEqual(innerLoopCount + 1);
   done();
 };
 

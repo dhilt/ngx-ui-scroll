@@ -56,6 +56,10 @@ export class Misc {
   itemWidth = 100;
   shared: any = {};
 
+  get innerLoopCount(): number {
+    return this.scroller.state.cycle.innerLoop.total;
+  }
+
   constructor(fixture: ComponentFixture<TestComponentInterface>) {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;

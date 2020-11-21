@@ -5,15 +5,14 @@ export default class Clip {
 
   static process = Process.clip;
 
-  static run(scroller: Scroller, process?: Process) {
+  static run(scroller: Scroller) {
     const { workflow } = scroller;
 
     Clip.doClip(scroller);
-
     workflow.call({
       process: Process.clip,
       status: ProcessStatus.next,
-      payload: { ...(process ? { process } : {}) }
+      payload: { process: scroller.state.cycle.initiator }
     });
   }
 

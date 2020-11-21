@@ -5,15 +5,14 @@ export default class PreClip {
 
   static process = Process.preClip;
 
-  static run(scroller: Scroller, process?: Process) {
+  static run(scroller: Scroller) {
     PreClip.prepareClip(scroller);
 
     scroller.workflow.call({
       process: Process.preClip,
       status: ProcessStatus.next,
       payload: {
-        doClip: scroller.state.clip.doClip,
-        ...(process ? { process } : {})
+        doClip: scroller.state.clip.doClip
       }
     });
   }

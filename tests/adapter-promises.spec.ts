@@ -3,7 +3,9 @@ import { filter, take } from 'rxjs/operators';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
-import { AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions } from '../src/component/interfaces';
+import {
+  AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions
+} from '../src/component/interfaces';
 
 const ITEM_SIZE = 20;
 

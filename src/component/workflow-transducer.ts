@@ -134,7 +134,7 @@ export const runStateMachine = ({
           run(Render)();
           break;
         case Process.remove:
-          run(Clip)(payload.process);
+          run(Clip)();
           break;
         case Process.userClip:
           run(PreFetch)(payload.process);
@@ -170,10 +170,16 @@ export const runStateMachine = ({
       break;
     case Process.render:
       if (status === Status.next) {
-        if (payload.noClip) {
-          run(Adjust)();
-        } else {
-          run(PreClip)();
+        switch (payload.process) {
+          case Process.append:
+          case Process.prepend:
+          case Process.check:
+          case Process.insert:
+          case Process.remove:
+            run(Adjust)();
+            break;
+          default:
+            run(PreClip)();
         }
       }
       if (status === Status.done) {
@@ -182,7 +188,7 @@ export const runStateMachine = ({
       break;
     case Process.preClip:
       if (payload.doClip) {
-        run(Clip)(payload.process);
+        run(Clip)();
       } else {
         run(Adjust)();
       }

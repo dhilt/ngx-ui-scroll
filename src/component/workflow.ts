@@ -118,7 +118,10 @@ export class Workflow {
     return ({ run, process, name }: any) =>
       (...args: any[]) => {
         if (this.scroller.settings.logProcessRun) {
-          this.scroller.logger.log(() => ['run', process || name, ...args]);
+          this.scroller.logger.log(() => [
+            '%crun%c', ...['color: #333399;', 'color: #000000;'],
+            process || name, ...args
+          ]);
         }
         run(this.scroller, ...args);
       };

@@ -172,7 +172,7 @@ const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function)
 
   if (config.custom.preLoad) {
     spyOn(misc.scroller, 'finalize').and.callFake(() => {
-      if (misc.scroller.state.innerLoopCount === 2) {
+      if (misc.scroller.state.cycle.innerLoop.count === 2) {
         doReload(config, misc);
       }
     });
@@ -189,7 +189,7 @@ const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done:
     }
   });
   spyOn(misc.scroller, 'finalize').and.callFake(() => {
-    if (misc.scroller.state.innerLoopCount === 1) {
+    if (misc.scroller.state.cycle.innerLoop.count === 1) {
       setTimeout(() => doReload(config, misc));
     }
   });
@@ -205,7 +205,7 @@ const shouldReloadOnFetchAsync = (config: TestBedConfig) => (misc: Misc) => (don
     }
   });
   spyOn(misc.scroller, 'finalize').and.callFake(() => {
-    if (misc.scroller.state.innerLoopCount === 1) {
+    if (misc.scroller.state.cycle.innerLoop.count === 1) {
       setTimeout(() => doReload(config, misc), 75);
     }
   });

@@ -40,7 +40,7 @@ export const runStateMachine = ({
   switch (process) {
     case Process.init:
       if (status === Status.start) { // App start
-        run(Init)();
+        run(Init)(process);
       }
       if (status === Status.next) {
         run(Start)(process, payload);

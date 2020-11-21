@@ -46,7 +46,7 @@ export default class PreClip {
       scroller.logger.log(`skipping clip [empty buffer]`);
       return true;
     }
-    if (state.isInitialWorkflowCycle) {
+    if (state.cycle.isInitial) {
       scroller.logger.log(`skipping clip [initial cycle]`);
       return true;
     }

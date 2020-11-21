@@ -126,11 +126,12 @@ export class Workflow {
 
   onError(process: Process, payload: any) {
     const message: string = payload && payload.error || '';
+    const { time, cycle } = this.scroller.state;
     this.errors.push({
       process,
       message,
-      time: this.scroller.state.time,
-      loop: this.scroller.state.loopNext
+      time,
+      loop: cycle.loopIdNext
     });
     this.scroller.logger.logError(message);
   }
@@ -162,8 +163,7 @@ export class Workflow {
     const { state, adapter } = this.scroller;
     this.cyclesDone++;
     this.scroller.logger.logCycle(false);
-    state.workflowCycleCount = this.cyclesDone + 1;
-    state.isInitialWorkflowCycle = false;
+    state.cycle.done(this.cyclesDone + 1);
     adapter.isLoading = false;
     this.finalize();
   }

@@ -45,14 +45,14 @@ export class Scroller {
     let $items, cycleCount, loopCount;
     if (scroller) { // re-use $items and continue counters
       $items = scroller.buffer.$items;
-      cycleCount = scroller.state.workflowCycleCount;
-      loopCount = scroller.state.innerLoopCount;
+      cycleCount = scroller.state.cycle.count;
+      loopCount = scroller.state.cycle.innerLoop.count;
     }
 
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
-    this.state = new State(this.settings, version, this.logger, loopCount, cycleCount);
+    this.state = new State(version, this.settings, this.logger, loopCount, cycleCount);
     this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger, $items);
     this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
     this.logger.object('uiScroll settings object', this.settings, true);

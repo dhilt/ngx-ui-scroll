@@ -2,7 +2,7 @@ import { Scroller } from '../scroller';
 import { EMPTY_ITEM } from '../classes/adapter/context';
 import { Process, ProcessStatus, Direction, ScrollerWorkflow } from '../interfaces/index';
 
-const isInterrupted = (workflow: ScrollerWorkflow ) => (workflow.call as any).interrupted;
+const isInterrupted = (workflow: ScrollerWorkflow) => (workflow.call as any).interrupted;
 
 export default class End {
 
@@ -43,14 +43,13 @@ export default class End {
 
   static endWorkflowLoop(scroller: Scroller, next: boolean) {
     const { state, state: { clip }, adapter } = scroller;
-    state.countDone++;
-    state.isInitialLoop = false;
+    state.cycle.innerLoop.isInitial = false;
     state.fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
     scroller.innerLoopCleanup();
     adapter.loopPending = false;
-    state.innerLoopCount++;
+    state.cycle.innerLoop.count++;
   }
 
   static calculateParams(scroller: Scroller, workflow: ScrollerWorkflow) {

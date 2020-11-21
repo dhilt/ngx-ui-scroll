@@ -77,7 +77,7 @@ const getInitialItemsCounter = (config: TestBedConfig, misc: Misc): ItemsCounter
 
 const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsCounter): ItemsCounter | null => {
   const { bufferSize, startIndex, padding, minIndex, maxIndex } = misc.scroller.settings;
-  const loopCount = misc.scroller.state.innerLoopCount;
+  const loopCount = misc.scroller.state.cycle.innerLoop.count;
   const viewportSize = misc.getViewportSize(config);
   const backwardLimit = viewportSize * padding;
   const forwardLimit = viewportSize + backwardLimit;
@@ -127,7 +127,7 @@ const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsC
 };
 
 const testInitialLoad = (config: TestBedConfig, misc: Misc, done: Function) => {
-  const loopCount = misc.scroller.state.innerLoopCount;
+  const loopCount = misc.scroller.state.cycle.innerLoop.count;
 
   let itemsCounter: ItemsCounter | null;
   if (loopCount === 1) {
@@ -211,7 +211,7 @@ describe('Zero Size Spec', () => {
       title: 'should stop the Workflow after the first loop',
       it: (misc: Misc) => (done: Function) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          expect(misc.scroller.state.innerLoopCount).toEqual(1);
+          expect(misc.scroller.state.cycle.innerLoop.count).toEqual(1);
           done();
         })
     })
@@ -226,7 +226,7 @@ describe('Zero Size Spec', () => {
       title: 'should stop the Workflow after the second loop',
       it: (misc: Misc) => (done: Function) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          expect(misc.scroller.state.innerLoopCount).toEqual(2);
+          expect(misc.scroller.state.cycle.innerLoop.count).toEqual(2);
           done();
         })
     })
@@ -248,10 +248,12 @@ describe('Zero Size Spec', () => {
             (datasource as any).setProcessGet((result: any[]) =>
               result.forEach(item => item.size = 20)
             );
-            adapter.fix({ updater: ({ element, data }) => {
-              data.size = 20;
-              (element as any).children[0].style.height = '20px';
-            }});
+            adapter.fix({
+              updater: ({ element, data }) => {
+                data.size = 20;
+                (element as any).children[0].style.height = '20px';
+              }
+            });
             adapter.check();
           } else {
             expect(viewport.getScrollableSize()).toBeGreaterThan(0);

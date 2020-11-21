@@ -117,7 +117,7 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
   }
   expect(misc.getScrollableSize()).toEqual(totalSize);
 
-  expect(misc.scroller.state.innerLoopCount).toEqual(innerLoopCount);
+  expect(misc.scroller.state.cycle.innerLoop.count).toEqual(innerLoopCount);
 
   done();
 };

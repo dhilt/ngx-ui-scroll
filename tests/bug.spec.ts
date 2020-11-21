@@ -16,12 +16,12 @@ describe('Bug Spec', () => {
       },
       it: (misc: Misc) => (done: Function) => {
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { state } = misc.scroller;
-          if (state.countDone === 1) {
+          const { innerLoop } = misc.scroller.state.cycle;
+          if (innerLoop.count === 1) {
             misc.scrollMax();
-          } else if (state.countDone === 2) {
+          } else if (innerLoop.count === 2) {
             misc.scrollMin();
-          } else if (state.countDone === 3) {
+          } else if (innerLoop.count === 3) {
             misc.scrollMax();
           } else {
             done();
@@ -44,7 +44,7 @@ describe('Bug Spec', () => {
         adapter.firstVisible$.subscribe(item => count++);
         let count = 0, checkedCount = 0;
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const cycleCount = state.workflowCycleCount;
+          const cycleCount = state.cycle.count;
           expect(adapter.bof).toEqual(true);
           expect(adapter.eof).toEqual(true);
           if (cycleCount === 2) {
@@ -90,7 +90,7 @@ describe('Bug Spec', () => {
           setTimeout(() => {
             doubleReload();
             spyOn(misc.workflow, 'finalize').and.callFake(() => {
-              expect(misc.scroller.state.workflowCycleCount).toEqual(count);
+              expect(misc.scroller.state.cycle.count).toEqual(count);
               done();
             });
           }, 25);

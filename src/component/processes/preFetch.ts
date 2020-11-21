@@ -77,7 +77,7 @@ export default class PreFetch {
     const { positions: { start }, first } = state.fetch;
     let firstIndex = state.startIndex;
     let firstIndexPosition = 0;
-    if (scroller.state.isInitialLoop) {
+    if (state.cycle.innerLoop.isInitial) {
       scroller.logger.log(`skipping fetch backward direction [initial loop]`);
     } else if (!buffer.hasItemSize) {
       scroller.logger.log(`skipping fetch backward direction [no item size]`);
@@ -119,7 +119,7 @@ export default class PreFetch {
   }
 
   static setLastIndex(scroller: Scroller) {
-    const { state: { fetch, startIndex }, buffer, settings } = scroller;
+    const { state: { fetch, startIndex, cycle }, buffer, settings } = scroller;
     const { positions: { relative, end }, first, last } = fetch;
     let lastIndex;
     if (!buffer.hasItemSize) {
@@ -136,7 +136,7 @@ export default class PreFetch {
         position += size;
         if (fetch.firstVisibleIndex === null && position > relative) {
           fetch.firstVisibleIndex = index;
-          if (!scroller.state.isInitialLoop) {
+          if (!cycle.innerLoop.isInitial) {
             fetch.firstVisibleItemDelta = position - size - relative;
           }
         }

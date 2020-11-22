@@ -43,7 +43,7 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       if (status === Status.next) {
-        run(Start)(process, payload);
+        run(Start)();
       }
       break;
     case Process.scroll:
@@ -137,7 +137,7 @@ export const runStateMachine = ({
           run(Clip)();
           break;
         case Process.userClip:
-          run(PreFetch)(payload.process);
+          run(PreFetch)();
           break;
         default:
           run(PreFetch)();
@@ -146,7 +146,7 @@ export const runStateMachine = ({
     case Process.preFetch:
       switch (payload.process) {
         case Process.userClip:
-          run(PreClip)(payload.process);
+          run(PreClip)();
           break;
         default:
           if (status === Status.next) {
@@ -214,7 +214,7 @@ export const runStateMachine = ({
             run(Init)(payload.process);
             break;
           default:
-            run(Start)(process);
+            run(Start)();
         }
       }
       if (status === Status.done) {

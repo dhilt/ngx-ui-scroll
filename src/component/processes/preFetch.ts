@@ -5,8 +5,8 @@ export default class PreFetch {
 
   static process = Process.preFetch;
 
-  static run(scroller: Scroller, process?: Process) {
-    const { workflow, buffer, state: { fetch } } = scroller;
+  static run(scroller: Scroller) {
+    const { workflow, buffer, state: { fetch, cycle } } = scroller;
     fetch.minIndex = buffer.minIndex;
 
     // set first and last indexes of items to fetch
@@ -33,7 +33,7 @@ export default class PreFetch {
     workflow.call({
       process: Process.preFetch,
       status: fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
-      payload: { ...(process ? { process } : {}) }
+      payload: { process: cycle.initiator }
     });
   }
 

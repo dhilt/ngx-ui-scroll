@@ -5,6 +5,10 @@ class InnerLoopModel {
   count: number;
   isInitial: boolean;
 
+  get first(): boolean {
+    return this.count === 0;
+  }
+
   constructor(total: number) {
     this.total = total;
     this.isInitial = false;

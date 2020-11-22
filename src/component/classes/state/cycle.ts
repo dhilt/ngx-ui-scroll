@@ -26,6 +26,7 @@ export class WorkflowCycleModel {
   isInitial: boolean;
   initiator: Process;
   innerLoop: InnerLoopModel;
+  interrupter: Process | null;
 
   get loopId(): string {
     return `${this.instanceIndex}-${this.count}-${this.innerLoop.total}`;
@@ -51,5 +52,6 @@ export class WorkflowCycleModel {
     this.initiator = initiator;
     this.innerLoop.isInitial = isInitial;
     this.innerLoop.count = 0;
+    this.interrupter = null;
   }
 }

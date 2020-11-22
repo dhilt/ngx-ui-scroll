@@ -33,7 +33,7 @@ export const runStateMachine = ({
   if (status === Status.error) {
     onError(process, payload);
     if (!process.startsWith('adapter')) {
-      run(End)(process, payload);
+      run(End)(payload);
     }
     return;
   }
@@ -63,7 +63,7 @@ export const runStateMachine = ({
       if (status === Status.next) {
         interrupt({ process, ...payload });
         if (payload.finalize) {
-          run(End)(process);
+          run(End)();
         } else {
           run(Init)(process);
         }
@@ -153,7 +153,7 @@ export const runStateMachine = ({
             run(Fetch)();
           }
           if (status === Status.done) {
-            run(End)(process);
+            run(End)();
           }
       }
       break;
@@ -165,7 +165,7 @@ export const runStateMachine = ({
         run(Render)();
       }
       if (status === Status.done) {
-        run(End)(process);
+        run(End)();
       }
       break;
     case Process.render:
@@ -183,7 +183,7 @@ export const runStateMachine = ({
         }
       }
       if (status === Status.done) {
-        run(End)(process);
+        run(End)();
       }
       break;
     case Process.preClip:
@@ -196,14 +196,14 @@ export const runStateMachine = ({
     case Process.clip:
       switch (payload.process) {
         case Process.remove:
-          run(End)(process);
+          run(End)();
           break;
         default:
           run(Adjust)();
       }
       break;
     case Process.adjust:
-      run(End)(process);
+      run(End)();
       break;
     case Process.end:
       if (status === Status.next) {

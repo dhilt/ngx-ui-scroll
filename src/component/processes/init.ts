@@ -15,8 +15,7 @@ export default class Init {
     adapter.isLoading = true;
     workflow.call({
       process: Process.init,
-      status: ProcessStatus.next,
-      payload: { process }
+      status: ProcessStatus.next
     });
   }
 

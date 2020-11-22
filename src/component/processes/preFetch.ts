@@ -26,13 +26,9 @@ export default class PreFetch {
     // set fetch direction
     PreFetch.setFetchDirection(scroller);
 
-    if (fetch.shouldFetch) {
-      scroller.logger.log(() => `going to fetch ${fetch.count} items started from index ${fetch.index}`);
-    }
-
     workflow.call({
       process: Process.preFetch,
-      status: fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
+      status: PreFetch.getStatus(scroller),
       payload: { process: cycle.initiator }
     });
   }
@@ -242,6 +238,19 @@ export default class PreFetch {
       fetch.direction = direction;
       scroller.logger.log(() => `fetch direction is "${direction}"`);
     }
+  }
+
+  static getStatus(scroller: Scroller): ProcessStatus {
+    const { cycle, fetch } = scroller.state;
+    if (cycle.initiator === Process.userClip) {
+      scroller.logger.log(() => `going to skip fetch due to "${Process.userClip}" process`);
+      return ProcessStatus.next;
+    }
+    if (fetch.shouldFetch) {
+      scroller.logger.log(() => `going to fetch ${fetch.count} items started from index ${fetch.index}`);
+      return ProcessStatus.next;
+    }
+    return ProcessStatus.done;
   }
 
 }

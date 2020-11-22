@@ -144,17 +144,17 @@ export const runStateMachine = ({
       }
       break;
     case Process.preFetch:
-      switch (payload.process) {
-        case Process.userClip:
-          run(PreClip)();
-          break;
-        default:
-          if (status === Status.next) {
+      if (status === Status.next) {
+        switch (payload.process) {
+          case Process.userClip:
+            run(PreClip)();
+            break;
+          default:
             run(Fetch)();
-          }
-          if (status === Status.done) {
-            run(End)();
-          }
+        }
+      }
+      if (status === Status.done) {
+        run(End)();
       }
       break;
     case Process.fetch:

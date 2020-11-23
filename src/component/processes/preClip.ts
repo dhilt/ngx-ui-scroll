@@ -18,14 +18,14 @@ export default class PreClip {
   }
 
   static prepareClip(scroller: Scroller) {
-    const { state: { fetch, fetch: { direction } } } = scroller;
+    const { state: { fetch, clip } } = scroller;
     if (PreClip.shouldNotClip(scroller)) {
       return;
     }
     const firstIndex = fetch.first.indexBuffer as number;
     const lastIndex = fetch.last.indexBuffer as number;
     scroller.logger.log(() =>
-      `looking for ${direction ? 'anti-' + direction + ' ' : ''}items ` +
+      `looking for ${fetch.direction ? 'anti-' + fetch.direction + ' ' : ''}items ` +
       `that are out of [${firstIndex}..${lastIndex}] range`);
     if (PreClip.isBackward(scroller, firstIndex)) {
       PreClip.prepareClipByDirection(scroller, Direction.backward, firstIndex);
@@ -33,14 +33,18 @@ export default class PreClip {
     if (PreClip.isForward(scroller, lastIndex)) {
       PreClip.prepareClipByDirection(scroller, Direction.forward, lastIndex);
     }
-    if (!scroller.state.clip.doClip) {
+    if (!clip.doClip) {
       scroller.logger.log(`skipping clip [no items to clip]`);
     }
     return;
   }
 
   static shouldNotClip(scroller: Scroller): boolean {
-    const { buffer, state } = scroller;
+    const { settings, buffer, state } = scroller;
+    if (settings.infinite) {
+      scroller.logger.log(`skipping clip [infinite mode]`);
+      return true;
+    }
     if (!buffer.size) {
       scroller.logger.log(`skipping clip [empty buffer]`);
       return true;

@@ -240,4 +240,20 @@ describe('Bug Spec', () => {
     })
   );
 
+  describe('infinite mode', () =>
+    makeTest({
+      title: 'should stop after scroll',
+      config: {
+        datasourceName: 'default-delay-25',
+        datasourceSettings: { adapter: true, bufferSize: 50, infinite: true },
+      },
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        misc.scrollMin();
+        await misc.relaxNext();
+        done();
+      }
+    })
+  );
+
 });

@@ -239,11 +239,12 @@ const shouldRemoveOutOfViewDynamic = (config: TestBedConfig) => (misc: Misc) => 
   // remove invisible lat row
   await doRemove(config, misc);
   const viewportSizeAfterRemove = viewportSizeBeforeRemove - sizeToRemove;
-  expect(viewportSizeAfterRemove).toBe(misc.getScrollableSize());
+  expect(misc.getScrollableSize()).toBe(viewportSizeAfterRemove);
 
   // scroll to the very bottom again
   misc.scrollMax();
   await misc.relaxNext();
+  expect(misc.getScrollableSize()).toBe(viewportSizeAfterRemove);
   expect(adapter.lastVisible.$index).toBe(indexToRemove - 1);
   expect(viewport.paddings.forward.size).toBe(0);
 

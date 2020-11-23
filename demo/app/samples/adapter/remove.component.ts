@@ -136,7 +136,8 @@ async removeByIndex(index: number) {
   }];
 
   argumentsDescription = `  AdapterRemoveOptions {
-    predicate: ItemsPredicate;
+    predicate?: ItemsPredicate;
+    indexes?: number[];
     increase?: boolean;
   }`;
   predicateDescription = `  adapter.remove({ predicate: ({ data }) => data.id === id });

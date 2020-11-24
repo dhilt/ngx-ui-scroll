@@ -28,6 +28,13 @@
     </p>
     <pre>{{predicateDescription}}</pre>
     <p>
+      Indexes are adjusted each time we perform a removing via Adapter.
+      It is impossible to remove item with id = 5 twice,
+      because there is only one item with id = 5.
+      But we may remove item with index = 5 as many times
+      as many items we have after this index. 
+    </p>
+    <p>
       Only a continuous series of items can be removed at a time using <em>predicate</em>.
       So, if you need to remove items 1, 2, 3 and 5,
       you need to call this method twice: once for 1, 2, 3 and then for 5.
@@ -39,7 +46,7 @@
       This method works with both buffered and virtual items.
       For example, if we have [1..10] buffered items (they are rendered)
       and [11..100] virtual items (emulated via forward padding element
-      which size corresponds to 90 virtual items) and the we perform
+      which size corresponds to 90 virtual items) and then we perform
       <em>Adapter.remove(&#123; indexes: [100] &#125;)</em>, we'll have
       the following:
     </p>
@@ -51,13 +58,6 @@
         so the scrollable area becomes slightly smaller
       </li>
     </ul>
-    <p>
-      Indexes are adjusted each time we perform a removing via Adapter.
-      It is impossible to remove item with id = 5 twice,
-      because there is only one item with id = 5.
-      But we may remove item with index = 5 as many times
-      as many items we have after this index. 
-    </p>
     <p>
       Indexes decrease by default, and the next option (<em>increase</em>)
       allows to change the default indexes adjustment strategy.

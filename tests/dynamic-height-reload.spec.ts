@@ -20,7 +20,7 @@ const configList: TestBedConfig[] = reloadIndexList.map(index => ({
 
 const testIt = (config: TestBedConfig, misc: Misc, done: Function) => {
   const { adapter } = misc;
-  const cycle = misc.scroller.state.workflowCycleCount;
+  const cycle = misc.scroller.state.cycle.count;
   const reloadIndex = config.custom.reloadIndex;
   const { firstVisible } = adapter; // need to have a pre-call
   if (cycle === 2) {

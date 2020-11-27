@@ -46,7 +46,9 @@ const convertAppendArgs = (isAppend: boolean, options: any, eof?: boolean) => {
 };
 
 const convertRemoveArgs = (options: AdapterRemoveOptions | ItemsPredicate) => {
-  if (!(options !== null && typeof options === 'object' && options.hasOwnProperty('predicate'))) {
+  if (!(options !== null && typeof options === 'object' && (
+    options.hasOwnProperty('predicate') || options.hasOwnProperty('indexes'))
+  )) {
     const predicate = options as ItemsPredicate;
     options = { predicate };
   }

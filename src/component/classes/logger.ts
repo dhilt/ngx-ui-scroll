@@ -12,8 +12,8 @@ export class Logger {
   readonly getStat: Function;
   readonly getFetchRange: Function;
   readonly getWorkflowCycleData: Function;
-  readonly getLoop: Function;
-  readonly getLoopNext: Function;
+  readonly getLoopId: Function;
+  readonly getLoopIdNext: Function;
   readonly getScrollPosition: Function;
   private logs: any[] = [];
 
@@ -42,10 +42,10 @@ export class Logger {
         ? `[${first}..${last}]`
         : 'no';
     };
-    this.getLoop = (): string => scroller.state.loop;
-    this.getLoopNext = (): string => scroller.state.loopNext;
+    this.getLoopId = (): string => scroller.state.cycle.loopId;
+    this.getLoopIdNext = (): string => scroller.state.cycle.loopIdNext;
     this.getWorkflowCycleData = (): string =>
-      `${settings.instanceIndex}-${scroller.state.workflowCycleCount}`;
+      `${settings.instanceIndex}-${scroller.state.cycle.count}`;
     this.getScrollPosition = (element: HTMLElement) => scroller.routines.getScrollPosition(element);
     this.log(() => `uiScroll Workflow has been started (v${version}, instance ${settings.instanceIndex})`);
   }
@@ -114,14 +114,14 @@ export class Logger {
     if (
       process === Process.init && status === Status.next
     ) {
-      loopLog.push(`%c---=== loop ${this.getLoopNext()} start`);
+      loopLog.push(`%c---=== loop ${this.getLoopIdNext()} start`);
     } else if (
       process === Process.end
     ) {
-      loopLog.push(`%c---=== loop ${this.getLoop()} done`);
+      loopLog.push(`%c---=== loop ${this.getLoopId()} done`);
       const parent = payload && payload.process;
       if (status === Status.next && (parent !== Process.reset && parent !== Process.reload)) {
-        loopLog[0] += `, loop ${this.getLoopNext()} start`;
+        loopLog[0] += `, loop ${this.getLoopIdNext()} start`;
       }
     }
     if (loopLog.length) {
@@ -139,7 +139,7 @@ export class Logger {
   logError(str: string) {
     if (this.debug) {
       const logStyles = ['color: #a00;', 'color: #000'];
-      this.log(() => ['error:%c' + (str ? ` ${str}` : '') + `%c (loop ${this.getLoopNext()})`, ...logStyles]);
+      this.log(() => ['error:%c' + (str ? ` ${str}` : '') + `%c (loop ${this.getLoopIdNext()})`, ...logStyles]);
     }
   }
 

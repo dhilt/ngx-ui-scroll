@@ -58,13 +58,16 @@ const APPEND_METHOD_PARAMS: ICommonProps<AdapterAppendParams> = {
 
 enum AdapterRemoveParams {
   predicate = 'predicate',
+  indexes = 'indexes',
   increase = 'increase',
 }
 
 const REMOVE_METHOD_PARAMS: ICommonProps<AdapterRemoveParams> = {
   [AdapterRemoveParams.predicate]: {
-    validators: [FUNC_WITH_X_ARGUMENTS(1)],
-    mandatory: true
+    validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST([AdapterRemoveParams.indexes])]
+  },
+  [AdapterRemoveParams.indexes]: {
+    validators: [ITEM_LIST, ONE_OF_MUST([AdapterRemoveParams.predicate])]
   },
   [AdapterRemoveParams.increase]: {
     validators: [BOOLEAN],

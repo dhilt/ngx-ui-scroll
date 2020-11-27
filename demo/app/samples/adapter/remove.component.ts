@@ -136,11 +136,12 @@ async removeByIndex(index: number) {
   }];
 
   argumentsDescription = `  AdapterRemoveOptions {
-    predicate: ItemsPredicate;
+    predicate?: ItemsPredicate;
+    indexes?: number[];
     increase?: boolean;
   }`;
-  predicateDescription = `  adapter.remove(({ data }) => data.id === id);
-  adapter.remove(({ $index }) => $index === index);`;
+  predicateDescription = `  adapter.remove({ predicate: ({ data }) => data.id === id });
+  adapter.remove({ predicate: ({ $index }) => $index === index });`;
 
   onInputChanged(target: HTMLInputElement) {
     const value = parseInt(target.value.trim(), 10);

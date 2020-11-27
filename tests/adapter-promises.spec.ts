@@ -3,7 +3,9 @@ import { filter, take } from 'rxjs/operators';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
-import { AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions } from '../src/component/interfaces';
+import {
+  AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions
+} from '../src/component/interfaces';
 
 const ITEM_SIZE = 20;
 
@@ -301,7 +303,7 @@ const doAppendAndScroll = async (misc: Misc, index: number): Promise<any> => {
 
 const checkConcurrentSequences = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
-  const { datasourceSettings: { startIndex }, custom: { count, interrupt }} = config;
+  const { datasourceSettings: { startIndex }, custom: { count, interrupt } } = config;
   const scrollPosition = misc.getScrollPosition();
   for (let i = 0; i < count; i++) {
     doAppendAndScroll(misc, startIndex + i + 1);

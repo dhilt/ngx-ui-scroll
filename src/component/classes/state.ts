@@ -1,5 +1,6 @@
 import { Settings } from './settings';
 import { Logger } from './logger';
+import { WorkflowCycleModel } from './state/cycle';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
 import { RenderModel } from './state/render';
@@ -8,17 +9,14 @@ import { State as IState, ScrollState as IScrollState } from '../interfaces/inde
 
 export class State implements IState {
 
-  private settings: Settings;
   readonly version: string;
+  private settings: Settings;
   private logger: Logger;
 
   initTime: number;
-  innerLoopCount: number;
-  isInitialLoop: boolean;
-  workflowCycleCount: number;
-  isInitialWorkflowCycle: boolean;
-  countDone: number;
   startIndex: number;
+
+  cycle: WorkflowCycleModel;
 
   fetch: FetchModel;
   clip: ClipModel;
@@ -30,26 +28,16 @@ export class State implements IState {
     return Number(new Date()) - this.initTime;
   }
 
-  get loop(): string {
-    return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount}`;
-  }
-
-  get loopNext(): string {
-    return `${this.settings.instanceIndex}-${this.workflowCycleCount}-${this.innerLoopCount + 1}`;
-  }
-
-  constructor(settings: Settings, version: string, logger: Logger, loopCount?: number, cycleCount?: number) {
-    this.settings = settings;
+  constructor(version: string, settings: Settings, logger: Logger, loopCount?: number, cycleCount?: number) {
     this.version = version;
+    this.settings = settings;
     this.logger = logger;
-    this.initTime = Number(new Date());
-    this.innerLoopCount = loopCount || 0;
-    this.isInitialLoop = false;
-    this.workflowCycleCount = cycleCount || 1;
-    this.isInitialWorkflowCycle = false;
-    this.countDone = 0;
 
+    this.initTime = Number(new Date());
     this.setCurrentStartIndex(settings.startIndex);
+
+    this.cycle = new WorkflowCycleModel(this.settings.instanceIndex, cycleCount || 1, loopCount || 0);
+
     this.fetch = new FetchModel();
     this.clip = new ClipModel();
     this.render = new RenderModel();

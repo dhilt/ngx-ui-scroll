@@ -118,7 +118,10 @@ export class Workflow {
     return ({ run, process, name }: any) =>
       (...args: any[]) => {
         if (this.scroller.settings.logProcessRun) {
-          this.scroller.logger.log(() => ['run', process || name, ...args]);
+          this.scroller.logger.log(() => [
+            '%crun%c', ...['color: #333399;', 'color: #000000;'],
+            process || name, ...args
+          ]);
         }
         run(this.scroller, ...args);
       };
@@ -126,11 +129,12 @@ export class Workflow {
 
   onError(process: Process, payload: any) {
     const message: string = payload && payload.error || '';
+    const { time, cycle } = this.scroller.state;
     this.errors.push({
       process,
       message,
-      time: this.scroller.state.time,
-      loop: this.scroller.state.loopNext
+      time,
+      loop: cycle.loopIdNext
     });
     this.scroller.logger.logError(message);
   }
@@ -141,8 +145,8 @@ export class Workflow {
       // we are going to create a new reference for the scroller.workflow object
       // calling the old version of the scroller.workflow by any outstanding async processes will be skipped
       workflow.call = (p: ProcessSubject) => logger.log('[skip wf call]');
-      (workflow.call as any).interrupted = true;
-      this.scroller.workflow = { call: this.callWorkflow } as ScrollerWorkflow;
+      workflow.call.interrupted = true;
+      this.scroller.workflow = { call: this.callWorkflow };
       this.interruptionCount++;
       logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
     }
@@ -162,8 +166,7 @@ export class Workflow {
     const { state, adapter } = this.scroller;
     this.cyclesDone++;
     this.scroller.logger.logCycle(false);
-    state.workflowCycleCount = this.cyclesDone + 1;
-    state.isInitialWorkflowCycle = false;
+    state.cycle.done(this.cyclesDone + 1);
     adapter.isLoading = false;
     this.finalize();
   }

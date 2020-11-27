@@ -5,8 +5,8 @@ export default class PreFetch {
 
   static process = Process.preFetch;
 
-  static run(scroller: Scroller, process: Process) {
-    const { workflow, buffer, state: { fetch } } = scroller;
+  static run(scroller: Scroller) {
+    const { workflow, buffer, state: { fetch, cycle } } = scroller;
     fetch.minIndex = buffer.minIndex;
 
     // set first and last indexes of items to fetch
@@ -26,14 +26,10 @@ export default class PreFetch {
     // set fetch direction
     PreFetch.setFetchDirection(scroller);
 
-    if (fetch.shouldFetch) {
-      scroller.logger.log(() => `going to fetch ${fetch.count} items started from index ${fetch.index}`);
-    }
-
     workflow.call({
       process: Process.preFetch,
-      status: fetch.shouldFetch ? ProcessStatus.next : ProcessStatus.done,
-      payload: { ...(process ? { process } : {}) }
+      status: PreFetch.getStatus(scroller),
+      payload: { process: cycle.initiator }
     });
   }
 
@@ -77,7 +73,7 @@ export default class PreFetch {
     const { positions: { start }, first } = state.fetch;
     let firstIndex = state.startIndex;
     let firstIndexPosition = 0;
-    if (scroller.state.isInitialLoop) {
+    if (state.cycle.innerLoop.isInitial) {
       scroller.logger.log(`skipping fetch backward direction [initial loop]`);
     } else if (!buffer.hasItemSize) {
       scroller.logger.log(`skipping fetch backward direction [no item size]`);
@@ -119,7 +115,7 @@ export default class PreFetch {
   }
 
   static setLastIndex(scroller: Scroller) {
-    const { state: { fetch, startIndex }, buffer, settings } = scroller;
+    const { state: { fetch, startIndex, cycle }, buffer, settings } = scroller;
     const { positions: { relative, end }, first, last } = fetch;
     let lastIndex;
     if (!buffer.hasItemSize) {
@@ -136,7 +132,7 @@ export default class PreFetch {
         position += size;
         if (fetch.firstVisibleIndex === null && position > relative) {
           fetch.firstVisibleIndex = index;
-          if (!scroller.state.isInitialLoop) {
+          if (!cycle.innerLoop.isInitial) {
             fetch.firstVisibleItemDelta = position - size - relative;
           }
         }
@@ -242,6 +238,19 @@ export default class PreFetch {
       fetch.direction = direction;
       scroller.logger.log(() => `fetch direction is "${direction}"`);
     }
+  }
+
+  static getStatus(scroller: Scroller): ProcessStatus {
+    const { cycle, fetch } = scroller.state;
+    if (cycle.initiator === Process.userClip) {
+      scroller.logger.log(() => `going to skip fetch due to "${Process.userClip}" process`);
+      return ProcessStatus.next;
+    }
+    if (fetch.shouldFetch) {
+      scroller.logger.log(() => `going to fetch ${fetch.count} items started from index ${fetch.index}`);
+      return ProcessStatus.next;
+    }
+    return ProcessStatus.done;
   }
 
 }

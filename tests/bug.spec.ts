@@ -16,12 +16,11 @@ describe('Bug Spec', () => {
       },
       it: (misc: Misc) => (done: Function) => {
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { state } = misc.scroller;
-          if (state.countDone === 1) {
+          if (misc.innerLoopCount === 1) {
             misc.scrollMax();
-          } else if (state.countDone === 2) {
+          } else if (misc.innerLoopCount === 2) {
             misc.scrollMin();
-          } else if (state.countDone === 3) {
+          } else if (misc.innerLoopCount === 3) {
             misc.scrollMax();
           } else {
             done();
@@ -44,7 +43,7 @@ describe('Bug Spec', () => {
         adapter.firstVisible$.subscribe(item => count++);
         let count = 0, checkedCount = 0;
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const cycleCount = state.workflowCycleCount;
+          const cycleCount = state.cycle.count;
           expect(adapter.bof).toEqual(true);
           expect(adapter.eof).toEqual(true);
           if (cycleCount === 2) {
@@ -90,7 +89,7 @@ describe('Bug Spec', () => {
           setTimeout(() => {
             doubleReload();
             spyOn(misc.workflow, 'finalize').and.callFake(() => {
-              expect(misc.scroller.state.workflowCycleCount).toEqual(count);
+              expect(misc.scroller.state.cycle.count).toEqual(count);
               done();
             });
           }, 25);
@@ -196,9 +195,9 @@ describe('Bug Spec', () => {
         (misc.datasource as any).setProcessGet((result: any[]) =>
           removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i), -99, 100)
         );
-        await misc.adapter.remove(({ $index }) =>
-          $index >= MIN && $index <= MAX
-        );
+        await misc.adapter.remove({
+          predicate: ({ $index }) => $index >= MIN && $index <= MAX
+        });
         // no need to insert new item to the original DS in this test
         await misc.adapter.insert({
           items: [{ id: `${MAX}*`, text: `item #${MAX} *` }],
@@ -236,6 +235,22 @@ describe('Bug Spec', () => {
         expect(clip.callCount).toEqual(1);
         await misc.adapter.clip();
         expect(clip.callCount).toEqual(1);
+        done();
+      }
+    })
+  );
+
+  describe('infinite mode', () =>
+    makeTest({
+      title: 'should stop after scroll',
+      config: {
+        datasourceName: 'default-delay-25',
+        datasourceSettings: { adapter: true, bufferSize: 50, infinite: true },
+      },
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        misc.scrollMin();
+        await misc.relaxNext();
         done();
       }
     })

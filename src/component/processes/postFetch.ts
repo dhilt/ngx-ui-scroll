@@ -26,14 +26,14 @@ export default class PostFetch {
   }
 
   static setBufferLimits(scroller: Scroller) {
-    const { buffer, state: { fetch, fetch: { items }, isInitialLoop } } = scroller;
+    const { buffer, state: { fetch, fetch: { items }, cycle: { innerLoop } } } = scroller;
     const first = fetch.first.index as number;
     const last = fetch.last.index as number;
     if (!items.length) {
-      if (last < buffer.minIndex || isInitialLoop) {
+      if (last < buffer.minIndex || innerLoop.isInitial) {
         buffer.absMinIndex = buffer.minIndex;
       }
-      if (first > buffer.maxIndex || isInitialLoop) {
+      if (first > buffer.maxIndex || innerLoop.isInitial) {
         buffer.absMaxIndex = buffer.maxIndex;
       }
     } else {
@@ -48,7 +48,7 @@ export default class PostFetch {
   }
 
   static setItems(scroller: Scroller): boolean {
-    const { buffer, state: { fetch } } = scroller;
+    const { buffer, state: { fetch, cycle } } = scroller;
     const items = fetch.newItemsData;
     if (!items || !items.length) { // empty result
       return true;
@@ -56,7 +56,7 @@ export default class PostFetch {
     // eof/bof case, need to shift fetch index if bof
     let fetchIndex = fetch.index as number;
     if (items.length < fetch.count) {
-      if (scroller.state.isInitialLoop) {
+      if (cycle.innerLoop.isInitial) {
         // let's treat initial poor fetch as startIndex-bof
         fetchIndex = scroller.state.startIndex;
       } else if ((fetch.first.index as number) < buffer.minIndex) { // normal bof

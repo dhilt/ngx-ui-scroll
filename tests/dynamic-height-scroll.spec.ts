@@ -28,7 +28,7 @@ const testConfigFetch = (config: TestBedConfig, misc: Misc, done: Function) => {
   const { scroller, shared } = misc;
   let initialFetchCount = 0;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const cycle = scroller.state.workflowCycleCount;
+    const cycle = scroller.state.cycle.count;
     if (cycle === 2) {
       shared.stat = new Stat(scroller);
       initialFetchCount = scroller.state.fetch.callCount;
@@ -46,7 +46,7 @@ const scroll = (misc: Misc, position: number) => {
 };
 
 const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Function) => {
-  const { workflow, scroller, adapter } = misc;
+  const { scroller, adapter } = misc;
   const { MAX, AMOUNT } = config.custom;
   await misc.relaxNext();
   // append items to the original datasource
@@ -61,10 +61,10 @@ const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Functio
     eof: true
   });
   await scroll(misc, Infinity);
-  const { countDone } = scroller.state;
+  const innerLoopCount = misc.innerLoopCount;
   await scroll(misc, Infinity);
   // await scroll(misc, 19438);
-  expect(scroller.state.countDone).toEqual(countDone + 1);
+  expect(misc.innerLoopCount).toEqual(innerLoopCount + 1);
   done();
 };
 

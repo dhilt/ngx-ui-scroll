@@ -82,7 +82,7 @@ const configList: TestBedConfig[] = [
 const moreProcessesConfigList = configList
   .filter((v, i) => i === 1 || i === 4)
   .map((v, i) => ({
-    ...v, custom: { ...v.custom, prepend: i % 2  === 0 }
+    ...v, custom: { ...v.custom, prepend: i % 2 === 0 }
   }));
 
 const updateDOMElement = (misc: Misc, index: number, size: number) => {
@@ -132,7 +132,7 @@ const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
     result.forEach(item => item.size = initialSize)
   );
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const cycle = state.workflowCycleCount;
+    const cycle = state.cycle.count;
     const { firstVisible } = adapter; // need to have a pre-call
     if (cycle === 2) {
       updateDOM(misc, { min, max, size, initialSize });
@@ -157,7 +157,7 @@ const shouldSimulateFetch = (misc: Misc, value: boolean) => {
 const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const { adapter, scroller: { state, settings } } = misc;
-    switch (state.workflowCycleCount) {
+    switch (state.cycle.count) {
       case 2:
         updateDOMElement(misc, settings.startIndex, 50);
         adapter.check();
@@ -176,7 +176,7 @@ const shouldDoubleCheck = (config: TestBedConfig) => (misc: Misc) => (done: Func
   const { adapter, scroller: { state, settings: { startIndex } } } = misc;
   const { itemSize } = config.datasourceSettings;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    switch (state.workflowCycleCount) {
+    switch (state.cycle.count) {
       case 2:
         updateDOMElement(misc, startIndex, 50);
         adapter.check();

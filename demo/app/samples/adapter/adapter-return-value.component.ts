@@ -21,7 +21,7 @@ export class DemoAdapterReturnValueComponent {
   }>`;
 
   returnValueSample = `
-  const { immediate } = await adapter.remove(predicate);
+  const { immediate } = await adapter.remove({ predicate });
   if (immediate) {
     console.log('No items were removed');
   }`;

@@ -12,6 +12,7 @@ import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { Scroller } from '../../src/component/scroller';
 import { Workflow } from '../../src/component/workflow';
 import { Datasource } from '../../src/component/classes/datasource';
+import { Routines } from '../../src/component/classes/domRoutines';
 
 export class Padding {
   direction: Direction;
@@ -43,6 +44,7 @@ export class Misc {
   scroller: Scroller;
   datasource: Datasource;
   adapter: IAdapter;
+  routines: Routines;
   padding: {
     forward: Padding;
     backward: Padding;
@@ -54,6 +56,10 @@ export class Misc {
   itemWidth = 100;
   shared: any = {};
 
+  get innerLoopCount(): number {
+    return this.scroller.state.cycle.innerLoop.total;
+  }
+
   constructor(fixture: ComponentFixture<TestComponentInterface>) {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
@@ -64,6 +70,7 @@ export class Misc {
     this.scroller = this.workflow.scroller;
     this.datasource = this.testComponent.datasource as Datasource;
     this.adapter = this.datasource.adapter;
+    this.routines = new Routines(this.scroller.settings);
     const { horizontal, windowViewport } = this.scroller.settings;
     this.horizontal = horizontal;
     this.window = windowViewport;
@@ -77,7 +84,7 @@ export class Misc {
     return spyOn(this.scroller.datasource, 'get').and.callThrough();
   }
 
-  getViewportSize(settings: TestBedConfig): number {
+  getViewportSize(settings?: TestBedConfig): number {
     return this.scroller.viewport.getSize();
     // return settings.templateSettings[this.horizontal ? 'viewportWidth' : 'viewportHeight'];
   }
@@ -159,6 +166,16 @@ export class Misc {
         )
       ).subscribe(() => resolve())
     );
+  }
+
+  async scrollDownRecursively(): Promise<void> {
+    const positionMax = this.getScrollableSize() - this.getViewportSize();
+    if (this.getScrollPosition() !== positionMax) {
+      this.scrollMax();
+      await this.relaxNext();
+      return this.scrollDownRecursively();
+    }
+    return;
   }
 
   delay(ms: number): Promise<void> {

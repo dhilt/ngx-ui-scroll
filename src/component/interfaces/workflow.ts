@@ -1,7 +1,10 @@
 import { Process, ProcessSubject } from './process';
-import { IDatasource, IDatasourceOptional } from './datasource';
+import { IDatasource } from './datasource';
 
-export type CallWorkflow = (process: ProcessSubject) => any;
+export interface CallWorkflow {
+  (process: ProcessSubject): any;
+  interrupted?: boolean;
+}
 
 export interface ScrollerWorkflow {
   call: CallWorkflow;

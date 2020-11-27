@@ -5,9 +5,8 @@ export default class Start {
 
   static process = Process.start;
 
-  static run(scroller: Scroller, process: Process, payload?: { process: Process }) {
-    const { state: { scrollState, fetch, clip, render }, adapter } = scroller;
-    const processToPass = payload && payload.process || process;
+  static run(scroller: Scroller) {
+    const { state: { cycle, scrollState, fetch, clip, render }, adapter } = scroller;
 
     adapter.loopPending = true;
     scrollState.positionBeforeAsync = null;
@@ -22,7 +21,7 @@ export default class Start {
     scroller.workflow.call({
       process: Process.start,
       status: ProcessStatus.next,
-      payload: { process: processToPass }
+      payload: { ...(cycle.innerLoop.first ? { process: cycle.initiator } : {}) }
     });
   }
 

@@ -36,6 +36,7 @@ const testContext = require.context(
   //(adapter\.reset\-persistence)\.spec\.ts/
   //(adapter\.reset)\.spec\.ts/
   //(bug)\.spec\.ts/
+  //(cache)\.spec\.ts/
   //(common)\.spec\.ts/
   //(datasource\-get)\.spec\.ts/
   //(dynamic\-height\-reload)\.spec\.ts/

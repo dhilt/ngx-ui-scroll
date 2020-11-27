@@ -84,7 +84,7 @@ datasource = new Datasource ({
   }
 });
 
-findElement(index: number) {
+findElement(index: number): HTMLElement | null {
   const viewportElement = document.getElementById(this.demoContext.viewportId);
   return viewportElement
     ? viewportElement.querySelector(\`[data-sid="\${index}"]\`)
@@ -92,13 +92,14 @@ findElement(index: number) {
 }
 
 doChangeSize() {
-  const index = Number(this.startIndex - 5);
+  const DELTA = 5;
+  const index = Number(this.startIndex - DELTA);
   if (!isNaN(index)) {
-    for (let i = index; i < index + 10; i++) {
+    for (let i = index; i < index + DELTA * 2; i++) {
       const element = this.findElement(i);
       if (element) {
-        (<HTMLElement>element).style.height = this.sizeValue + 'px';
-        const item = this.data.find(_item => _item.id === i);
+        element.style.height = this.sizeValue + 'px';
+        const item = this.data.find(({ id }) => id === i);
         if (item) {
           item.height = this.sizeValue;
         }
@@ -108,41 +109,29 @@ doChangeSize() {
 }
 
 autoscroll(index: number) {
-  const { adapter } = this.datasource;
-  let isLoadingSubscription: Subscription;
-  const done = () => isLoadingSubscription && isLoadingSubscription.unsubscribe();
-  isLoadingSubscription = adapter.isLoading$.subscribe(isLoading => {
-    if (isLoading) {
-      return;
-    }
-    const element = this.findElement(index);
-    const viewportElement = document.getElementById(this.demoContext.viewportId);
-    if (!element || !viewportElement) {
-      done();
-      return;
-    }
-    const elementTop = element.getBoundingClientRect().top;
-    const viewportTop = viewportElement.getBoundingClientRect().top;
-    const toScroll = viewportTop - elementTop;
-    const diff = viewportElement.scrollTop - toScroll;
-    if (viewportElement.scrollTop === diff) {
-      done();
-    } else {
-      adapter.fix({ scrollPosition: diff });
-      if (viewportElement.scrollTop === diff) {
-        done();
-      }
-    }
-  });
+  const element = this.findElement(index);
+  const viewportElement = document.getElementsByClassName('viewport')[0];
+  if (!element || !viewportElement) {
+    return;
+  }
+  const elementTop = element.getBoundingClientRect().top;
+  const viewportTop = viewportElement.getBoundingClientRect().top;
+  const toScroll = viewportTop - elementTop;
+  const diff = viewportElement.scrollTop - toScroll;
+  if (viewportElement.scrollTop === diff) {
+    return;
+  }
+  this.datasource.adapter.fix({ scrollPosition: diff });
 }
 
-doCheck() {
-  let firstVisibleIndex;
+async doCheck() {
+  await this.datasource.adapter.relax();
+  let firstVisibleIndex: number | undefined;
   if (this.needAutoscroll) {
     firstVisibleIndex = this.datasource.adapter.firstVisible.$index;
   }
   this.doChangeSize();
-  this.datasource.adapter.check();
+  await this.datasource.adapter.check();
   if (firstVisibleIndex !== undefined) {
     this.autoscroll(firstVisibleIndex);
   }
@@ -175,7 +164,7 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
 }`
   }];
 
-  findElement(index: number) {
+  findElement(index: number): HTMLElement | null {
     const viewportElement = document.getElementById(this.demoContext.viewportId);
     return viewportElement
       ? viewportElement.querySelector(`[data-sid="${index}"]`)
@@ -183,13 +172,14 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
   }
 
   doChangeSize() {
-    const index = Number(this.startIndex - 5);
+    const DELTA = 5;
+    const index = Number(this.startIndex - DELTA);
     if (!isNaN(index)) {
-      for (let i = index; i < index + 10; i++) {
+      for (let i = index; i < index + DELTA * 2; i++) {
         const element = this.findElement(i);
         if (element) {
-          (<HTMLElement>element).style.height = this.sizeValue + 'px';
-          const item = this.data.find(_item => _item.id === i);
+          element.style.height = this.sizeValue + 'px';
+          const item = this.data.find(({ id }) => id === i);
           if (item) {
             item.height = this.sizeValue;
           }
@@ -199,41 +189,29 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
   }
 
   autoscroll(index: number) {
-    const { adapter } = this.datasource;
-    let isLoadingSubscription: Subscription;
-    const done = () => isLoadingSubscription && isLoadingSubscription.unsubscribe();
-    isLoadingSubscription = adapter.isLoading$.subscribe(isLoading => {
-      if (isLoading) {
-        return;
-      }
-      const element = this.findElement(index);
-      const viewportElement = document.getElementById(this.demoContext.viewportId);
-      if (!element || !viewportElement) {
-        done();
-        return;
-      }
-      const elementTop = element.getBoundingClientRect().top;
-      const viewportTop = viewportElement.getBoundingClientRect().top;
-      const toScroll = viewportTop - elementTop;
-      const diff = viewportElement.scrollTop - toScroll;
-      if (viewportElement.scrollTop === diff) {
-        done();
-      } else {
-        adapter.fix({ scrollPosition: diff });
-        if (viewportElement.scrollTop === diff) {
-          done();
-        }
-      }
-    });
+    const element = this.findElement(index);
+    const viewportElement = document.getElementById(this.demoContext.viewportId);
+    if (!element || !viewportElement) {
+      return;
+    }
+    const elementTop = element.getBoundingClientRect().top;
+    const viewportTop = viewportElement.getBoundingClientRect().top;
+    const toScroll = viewportTop - elementTop;
+    const diff = viewportElement.scrollTop - toScroll;
+    if (viewportElement.scrollTop === diff) {
+      return;
+    }
+    this.datasource.adapter.fix({ scrollPosition: diff });
   }
 
-  doCheck() {
-    let firstVisibleIndex;
+  async doCheck() {
+    await this.datasource.adapter.relax();
+    let firstVisibleIndex: number | undefined;
     if (this.needAutoscroll) {
       firstVisibleIndex = this.datasource.adapter.firstVisible.$index;
     }
     this.doChangeSize();
-    this.datasource.adapter.check();
+    await this.datasource.adapter.check();
     if (firstVisibleIndex !== void 0) {
       this.autoscroll(firstVisibleIndex);
     }

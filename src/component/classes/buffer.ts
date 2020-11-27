@@ -196,27 +196,41 @@ export class Buffer {
     this.items = [...items, ...this.items];
   }
 
-  removeItems(items: Item[], immutableTop: boolean = true) {
-    // todo: implement immutableTop option
+  removeItems(indexes: number[], immutableTop: boolean, virtual = false) {
     const result: Item[] = [];
-    const toRemove: number[] = [];
-    this.items.forEach(item => {
-      if (items.some(({ $index }) => $index === item.$index)) {
+    const toRemove: number[] = virtual ? indexes : [];
+    const length = this.items.length;
+    for (
+      let i = immutableTop ? 0 : length - 1;
+      immutableTop ? i < length : i >= 0;
+      immutableTop ? i++ : i--
+    ) {
+      const item = this.items[i];
+      if (!virtual && indexes.indexOf(item.$index) >= 0) {
         toRemove.push(item.$index);
-        return;
+        continue;
       }
-      const diff = immutableTop
-        ? toRemove.reduce((acc, index) => acc - (item.$index > index ? 1 : 0), 0)
-        : toRemove.reduce((acc, index) => acc + (item.$index < index ? 1 : 0), 0);
+      const diff = toRemove.reduce((acc, index) => acc + (immutableTop
+        ? (item.$index > index ? -1 : 0)
+        : (item.$index < index ? 1 : 0)
+      ), 0);
       item.updateIndex(item.$index + diff);
-      result.push(item);
-    });
+      if (!virtual) {
+        if (immutableTop) {
+          result.push(item);
+        } else {
+          result.unshift(item);
+        }
+      }
+    }
     if (immutableTop) {
       this.absMaxIndex -= toRemove.length;
     } else {
       this.absMinIndex += toRemove.length;
     }
-    this.items = result;
+    if (!virtual) {
+      this.items = result;
+    }
     this.cache.removeItems(toRemove, immutableTop);
   }
 

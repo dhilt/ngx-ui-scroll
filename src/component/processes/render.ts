@@ -7,7 +7,7 @@ export default class Render {
   static process = Process.render;
 
   static run(scroller: Scroller) {
-    const { workflow, state: { clip, render, scrollState }, viewport } = scroller;
+    const { workflow, state: { cycle, render, scrollState }, viewport } = scroller;
     scroller.logger.stat('before new items render');
     if (scrollState.positionBeforeAsync === null) {
       scrollState.positionBeforeAsync = viewport.scrollPosition;
@@ -18,7 +18,7 @@ export default class Render {
         workflow.call({
           process: Process.render,
           status: render.noSize ? ProcessStatus.done : ProcessStatus.next,
-          payload: { noClip: clip.noClip }
+          payload: { process: cycle.initiator }
         });
       } else {
         workflow.call({
@@ -35,10 +35,9 @@ export default class Render {
     render.positionBefore = viewport.scrollPosition;
     if (!fetch.isReplace) {
       render.sizeBefore = viewport.getScrollableSize();
-      const success = fetch.items.reduce((acc, item) =>
-        acc && Render.processElement(scroller, item)
-      , true);
-      if (!success) {
+      if (
+        fetch.items.map(item => Render.processElement(scroller, item)).some(x => !x)
+      ) {
         return false;
       }
     }

@@ -24,6 +24,7 @@ export class DemoRemoveComponent {
   MIN = -50;
   MAX = 50;
   data: any[];
+  inputValue = 5;
 
   constructor() {
     this.data = [];
@@ -34,12 +35,12 @@ export class DemoRemoveComponent {
 
   datasource = new Datasource({
     get: (index: number, count: number, success: Function) => {
-      const data = [];
-      for (let i = index; i < index + count; i++) {
-        const found = this.data.find(item => item.id === i);
-        if (found) {
-          data.push(found);
-        }
+      let data = [];
+      const shift = -Math.min(this.MIN, 0);
+      const start = Math.max(index + shift, 0);
+      const end = Math.min(index + count - 1, this.MAX) + shift;
+      if (start <= end) {
+        data = this.data.slice(start, end + 1);
       }
       doLog(this.demoContext, index, count, data.length);
       success(data);
@@ -51,6 +52,7 @@ export class DemoRemoveComponent {
     text: `MIN = -50;
 MAX = 50;
 data: any[];
+inputValue = 5;
 
 constructor() {
   this.data = [];
@@ -60,43 +62,55 @@ constructor() {
 }
 
 datasource = new Datasource({
-  get: (index, count, success) => {
-    const data = [];
-    for (let i = index; i < index + count; i++) {
-      const found = this.data.find(item => item.id === i);
-      if (found) {
-        data.push(found);
-      }
-    }
-    success(data);
+  get: (index: number, count: number, success: Function) => {
+    const shift = -Math.min(this.MIN, 0);
+    const start = Math.max(index + shift, 0);
+    const end = Math.min(index + count - 1, this.MAX) + shift;
+    success(start <= end
+      ? this.data.slice(start, end + 1)
+      : []
+    );
   }
 });
 
-doRemoveDatasource(id: number) {
-  this.data = this.data.reduce((acc, item) => {
-    if (item.id !== id) {
-      if (item.id > id) {
-        item.id--;
-      }
-      acc.push(item);
-    }
-    return acc;
-  }, []);
-  this.MAX = this.data[this.data.length - 1].id;
+removeFromDatasource(toRemove: number, byIndex = false) {
+  const indexToRemove = byIndex
+    ? toRemove - Math.min(this.MIN, 0) // shift!
+    : this.data.findIndex(({ id }) => id === toRemove);
+  if (indexToRemove >= 0) {
+    this.data.splice(indexToRemove, 1);
+  }
+  this.MAX--;
 }
 
-async doRemove(id: number) {
-  await this.datasource.adapter.remove(({ data }) => data.id === id);
-  this.doRemoveDatasource(id);
+async removeById(id: number) {
+  this.removeFromDatasource(id);
+  await this.datasource.adapter.remove({
+    predicate: ({ data }) => data.id === id
+  });
+}
+
+async removeByIndex(index: number) {
+  this.removeFromDatasource(index, true);
+  await this.datasource.adapter.remove({
+    predicate: ({ $index }) => $index === index
+  });
 }`
   }, {
     active: true,
     name: DemoSourceType.Template,
-    text: `<div class="viewport">
+    text: `<input [(ngModel)]="inputValue" size="3">
+<button (click)="removeByIndex(inputValue)">
+  Remove by index
+</button>
+
+<div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">
       {{item.text}}
-      <span class="remove" (click)="doRemove(item.id)">[remove]</span>
+      <span class="remove" (click)="removeById(item.id)">
+        [remove]
+      </span>
     </div>
   </div>
 </div>`
@@ -121,24 +135,42 @@ async doRemove(id: number) {
 }`
   }];
 
-  predicateDescription = `  this.datasource.adapter.remove(({ data }) => data.id === id);`;
+  argumentsDescription = `  AdapterRemoveOptions {
+    predicate?: ItemsPredicate;
+    indexes?: number[];
+    increase?: boolean;
+  }`;
+  predicateDescription = `  adapter.remove({ predicate: ({ data }) => data.id === id });
+  adapter.remove({ predicate: ({ $index }) => $index === index });`;
 
-  doRemoveDatasource(id: number) {
-    this.data = this.data.reduce((acc, item) => {
-      if (item.id !== id) {
-        if (item.id > id) {
-          item.id--;
-        }
-        acc.push(item);
-      }
-      return acc;
-    }, []);
-    this.MAX = this.data[this.data.length - 1].id;
+  onInputChanged(target: HTMLInputElement) {
+    const value = parseInt(target.value.trim(), 10);
+    target.value = value.toString();
+    this.inputValue = value;
   }
 
-  async doRemove(id: number) {
-    await this.datasource.adapter.remove(({ data }) => data.id === id);
-    this.doRemoveDatasource(id);
+  removeFromDatasource(toRemove: number, byIndex = false) {
+    const indexToRemove = byIndex
+      ? toRemove - Math.min(this.MIN, 0) // shift!
+      : this.data.findIndex(({ id }) => id === toRemove);
+    if (indexToRemove >= 0) {
+      this.data.splice(indexToRemove, 1);
+    }
+    this.MAX--;
+  }
+
+  async removeById(id: number) {
+    this.removeFromDatasource(id);
+    await this.datasource.adapter.remove({
+      predicate: ({ data }) => data.id === id
+    });
+  }
+
+  async removeByIndex(index: number) {
+    this.removeFromDatasource(index, true);
+    await this.datasource.adapter.remove({
+      predicate: ({ $index }) => $index === index
+    });
   }
 
 }

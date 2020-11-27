@@ -145,10 +145,11 @@ const getTunedItemSizeCounter =
   };
 
 const testFixedItemSizeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+  const { fetch, clip } = misc.scroller.state;
   expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(misc.scroller.state.fetch.callCount).toEqual(2);
-  expect(misc.scroller.state.innerLoopCount).toEqual(3);
-  expect(misc.scroller.state.clip.callCount).toEqual(0);
+  expect(fetch.callCount).toEqual(2);
+  expect(misc.innerLoopCount).toEqual(3);
+  expect(clip.callCount).toEqual(0);
   expect(misc.padding.backward.getSize()).toEqual(0);
   expect(misc.padding.forward.getSize()).toEqual(0);
 
@@ -159,7 +160,7 @@ const testFixedItemSizeCase = (settings: TestBedConfig, misc: Misc, done: Functi
 };
 
 const testTunedItemSize = (settings: TestBedConfig, misc: Misc, done: Function) => {
-  const loopCount = misc.scroller.state.innerLoopCount;
+  const loopCount = misc.innerLoopCount;
   if (loopCount === 4) {
     expect(misc.workflow.cyclesDone).toEqual(0);
     expect(misc.scroller.state.fetch.callCount).toEqual(3);

@@ -24,7 +24,7 @@ const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
   },
   [DatasourceProps.devSettings]: {
     validators: [OBJECT]
-  }
+  },
 };
 
 enum AdapterReloadParams {
@@ -53,17 +53,25 @@ const APPEND_METHOD_PARAMS: ICommonProps<AdapterAppendParams> = {
   },
   [AdapterAppendParams.eof]: {
     validators: [BOOLEAN, ONE_OF_CAN([AdapterAppendParams.bof])]
-  }
+  },
 };
 
 enum AdapterRemoveParams {
   predicate = 'predicate',
+  indexes = 'indexes',
+  increase = 'increase',
 }
 
 const REMOVE_METHOD_PARAMS: ICommonProps<AdapterRemoveParams> = {
   [AdapterRemoveParams.predicate]: {
-    validators: [FUNC_WITH_X_ARGUMENTS(1)],
-    mandatory: true
+    validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST([AdapterRemoveParams.indexes])]
+  },
+  [AdapterRemoveParams.indexes]: {
+    validators: [ITEM_LIST, ONE_OF_MUST([AdapterRemoveParams.predicate])]
+  },
+  [AdapterRemoveParams.increase]: {
+    validators: [BOOLEAN],
+    defaultValue: false
   },
 };
 
@@ -103,7 +111,7 @@ const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
   },
   [AdapterInsertParams.decrease]: {
     validators: [BOOLEAN]
-  }
+  },
 };
 
 enum AdapterReplaceParams {

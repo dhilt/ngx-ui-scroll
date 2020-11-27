@@ -1,5 +1,5 @@
 import { getDynamicSizeByIndex } from './dynamicSize';
-import { getMin } from './common';
+import { getMin, getMax } from './common';
 
 export interface Item {
   id: number;
@@ -27,15 +27,24 @@ export const generateItems = (amount: number, lastIndex: number): Item[] => {
   return items;
 };
 
-export const removeItems = (items: Item[], idListToRemove: number[]) =>
+export const removeItems = (items: Item[], idListToRemove: number[], min: number, max: number, increase?: boolean) => {
   items.forEach((item: Item) => {
     const id = item.id;
-    if (id < getMin(idListToRemove)) {
+    if (
+      (!increase && id < getMin(idListToRemove)) ||
+      (increase && id > getMax(idListToRemove))
+    ) {
       return;
     }
-    const offset = idListToRemove.length;
+    const offset = (increase ? -1 : 1) * idListToRemove.length;
     Object.assign(item, generateItem(item.id + offset));
   });
+  [...items].reverse().forEach(({ id }) =>
+    !increase
+      ? (id > max ? items.pop() : null)
+      : (id < min ? items.shift() : null)
+  );
+};
 
 export const insertItems = (
   _items: Item[],

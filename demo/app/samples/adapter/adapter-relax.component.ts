@@ -32,17 +32,17 @@ export class DemoAdapterRelaxComponent {
     text: `async doReplace() {
   const { adapter } = this.datasource;
   await adapter.relax();
-  adapter.remove(({ $index }) =>
-    $index > 4 && $index < 8
-  );
+  adapter.remove({
+    predicate: ({ $index }) => $index > 4 && $index < 8
+  });
   await adapter.relax();
   adapter.insert({
     items: [{ id: '5*', text: 'item #5 *' }],
-    after: ({ $index }) => $index === 4 }
-  );
+    after: ({ $index }) => $index === 4
+  });
 }
 `
-}, {
+  }, {
     name: 'Is loading',
     text: `relax(cb: Function) {
   const { adapter } = this.datasource;
@@ -58,9 +58,9 @@ export class DemoAdapterRelaxComponent {
 doReplace() {
   const { adapter } = this.datasource;
   this.relax(() =>
-    adapter.remove(({ $index }) =>
-      $index > 4 && $index < 8
-    )
+    adapter.remove({
+      predicate: ({ $index }) => $index > 4 && $index < 8
+    })
   );
   this.relax(() =>
     adapter.insert({
@@ -70,14 +70,14 @@ doReplace() {
   );
 }
 `
-}, {
+  }, {
     name: 'Callback',
     text: `doReplace() {
   const { adapter } = this.datasource;
   adapter.relax(() =>
-    adapter.remove(({ $index }) =>
-      $index > 4 && $index < 8
-    )
+    adapter.remove({
+      predicate: ({ $index }) => $index > 4 && $index < 8
+    })
   );
   adapter.relax(() =>
     adapter.insert({
@@ -87,21 +87,21 @@ doReplace() {
   );
 }
 `
-}, {
+  }, {
     name: 'Return',
     text: `async doReplace() {
   const { adapter } = this.datasource;
   await adapter.relax();
-  await adapter.remove(({ $index }) =>
-    $index > 4 && $index < 8
-  );
+  await adapter.remove({
+    predicate: ({ $index }) => $index > 4 && $index < 8
+  });
   adapter.insert({
     items: [{ id: '5*', text: 'item #5 *' }],
     after: ({ $index }) => $index === 4
   });
 }
 `
-}];
+  }];
 
   isLoadingSample = `
   if (!adapter.isLoading) {
@@ -120,9 +120,14 @@ doReplace() {
     const { adapter } = this.datasource;
     const newItem = { id: '5*', text: 'item #5 *' };
     await adapter.relax();
-    adapter.remove(({ $index }) => $index > 4 && $index < 8);
+    adapter.remove({
+      predicate: ({ $index }) => $index > 4 && $index < 8
+    });
     await adapter.relax();
-    adapter.insert({ items: [newItem], after: ({ $index }) => $index === 4 });
+    adapter.insert({
+      items: [newItem],
+      after: ({ $index }) => $index === 4
+    });
   }
 
 }

@@ -8,7 +8,7 @@ export default class Reset {
   static process = Process.reset;
 
   static run(scroller: Scroller, params?: IDatasourceOptional) {
-    const { datasource, buffer, viewport: { paddings } } = scroller;
+    const { datasource, buffer, viewport: { paddings }, state } = scroller;
 
     if (params) {
       const methodData = validate(params, ADAPTER_METHODS.RESET);
@@ -34,13 +34,16 @@ export default class Reset {
     paddings.backward.reset();
     paddings.forward.reset();
 
+    const payload: any = { datasource };
+    if (scroller.adapter.isLoading) {
+      payload.finalize = true;
+      state.cycle.interrupter = Process.reset;
+    }
+
     scroller.workflow.call({
       process: Process.reset,
       status: ProcessStatus.next,
-      payload: {
-        finalize: scroller.adapter.isLoading,
-        datasource
-      }
+      payload
     });
   }
 

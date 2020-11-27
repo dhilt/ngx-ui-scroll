@@ -7,6 +7,11 @@
     <p>
       <em>Adapter.clip</em> is another <em>Adapter</em> API method
       allowing to remove out-of-viewport items on demand.
+      Not to be confused with <em>Adapter.remove</em>, as
+      this method has no impact on the <em>Datasource</em>.
+      It just cleans up the DOM.
+    </p>
+    <p>
       Commonly, the <em>uiScroll</em> runs the clipping procedure
       each time new items are fetched after scrolling.
       Also, the <em>uiScroll</em> clips old items from a side of the viewport

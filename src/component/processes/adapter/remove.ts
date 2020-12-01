@@ -11,8 +11,17 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
       return;
     }
 
+    const shouldRemove = Remove.removeItems(scroller, params);
+
+    scroller.workflow.call({
+      process: Remove.process,
+      status: shouldRemove ? ProcessStatus.next : ProcessStatus.done
+    });
+  }
+
+  static removeItems(scroller: Scroller, params: AdapterRemoveOptions, sequenceOnly = false): boolean {
     const shouldRemove = Remove.removeBufferedItems(scroller, params);
-    const shouldRemoveVirtual = Remove.removeVirtualItems(scroller, params);
+    const shouldRemoveVirtual = Remove.removeVirtualItems(scroller, params, sequenceOnly);
 
     if (shouldRemove || shouldRemoveVirtual) {
       const { clip } = scroller.state;
@@ -25,10 +34,7 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
       }
     }
 
-    scroller.workflow.call({
-      process: Remove.process,
-      status: shouldRemove || shouldRemoveVirtual ? ProcessStatus.next : ProcessStatus.done
-    });
+    return shouldRemove || shouldRemoveVirtual;
   }
 
   static removeBufferedItems(scroller: Scroller, options: AdapterRemoveOptions): boolean {
@@ -68,26 +74,32 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
     return result;
   }
 
-  static removeVirtualItems(scroller: Scroller, options: AdapterRemoveOptions): boolean {
-    const { indexes } = options;
-    let result = false;
+  static removeVirtualItems(scroller: Scroller, { indexes }: AdapterRemoveOptions, sequenceOnly: boolean): boolean {
     if (!indexes) {
       return false;
     }
+    let last = null;
     const { state: { clip } } = scroller;
     const { finiteAbsMinIndex, firstIndex, finiteAbsMaxIndex, lastIndex } = scroller.buffer;
-    for (let i = indexes.length - 1; i >= 0; i--) {
+    for (let i = 0, len = indexes.length; i < len; i++) {
+      let dir = null;
       const index = indexes[i];
       if (index >= finiteAbsMinIndex && firstIndex !== null && index < firstIndex) {
-        clip.virtual.backward.push(index);
-        result = true;
+        dir = Direction.backward;
       }
       if (index <= finiteAbsMaxIndex && lastIndex !== null && index > lastIndex) {
-        clip.virtual.forward.push(index);
-        result = true;
+        dir = Direction.forward;
+      }
+      if (dir !== null) {
+        if (sequenceOnly && last !== null && Math.abs(last - index) > 1) {
+          // allow only first strict uninterrupted sequence
+          break;
+        }
+        clip.virtual[dir].push(index);
+        last = index;
       }
     }
-    return result;
+    return last !== null;
   }
 
 }

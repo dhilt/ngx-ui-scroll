@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { removeItems } from './miscellaneous/items';
-import { AdapterProcess } from '../src/component/interfaces/index';
+import { AdapterProcess, ItemsPredicate } from '../src/component/interfaces/index';
 
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-processor',
@@ -55,6 +55,14 @@ const configListIndexes = [
     useIndexes: true
   }
 }));
+
+const configListEmpty = [{
+  ...configList[0],
+  custom: { ...configList[0].custom, predicate: (({ $index }) => $index > 999) as ItemsPredicate }
+}, {
+  ...configList[1],
+  custom: { ...configList[1].custom, indexes: [999] }
+}];
 
 const configListBad = [{
   ...configList[0],
@@ -173,21 +181,31 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
   done();
 };
 
-const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    if (misc.workflow.cyclesDone === 1) {
-      const innerLoopCount = misc.innerLoopCount;
-      // call remove with wrong predicate
-      misc.adapter.remove({ predicate: config.custom.predicate });
-      setTimeout(() => {
-        expect(misc.workflow.cyclesDone).toEqual(1);
-        expect(misc.innerLoopCount).toEqual(innerLoopCount);
-        expect(misc.workflow.errors.length).toEqual(1);
-        expect(misc.workflow.errors[0].process).toEqual(AdapterProcess.remove);
-        done();
-      }, 40);
-    }
-  });
+const shouldSkip = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+  const innerLoopCount = misc.innerLoopCount;
+  const { predicate, indexes } = config.custom;
+  if (predicate) {
+    await misc.adapter.remove({ predicate });
+  } else if (indexes) {
+    await misc.adapter.remove({ indexes });
+  }
+  expect(misc.workflow.cyclesDone).toEqual(1);
+  expect(misc.innerLoopCount).toEqual(innerLoopCount);
+  expect(misc.workflow.errors.length).toEqual(0);
+  done();
+};
+
+const shouldBreak = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+  const innerLoopCount = misc.innerLoopCount;
+  // call remove with wrong predicate
+  await misc.adapter.remove({ predicate: config.custom.predicate });
+  expect(misc.workflow.cyclesDone).toEqual(1);
+  expect(misc.innerLoopCount).toEqual(innerLoopCount);
+  expect(misc.workflow.errors.length).toEqual(1);
+  expect(misc.workflow.errors[0].process).toEqual(AdapterProcess.remove);
+  done();
 };
 
 const shouldRemoveOutOfViewFixed = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
@@ -295,15 +313,23 @@ describe('Adapter Remove Spec', () => {
     );
   });
 
-  describe('Wrong', () =>
+  describe('Empty', () => {
+    configListEmpty.forEach(config =>
+      makeTest({
+        config,
+        title: `should not remove due to empty ${config.custom.predicate ? 'predicate' : 'indexes'}`,
+        it: shouldSkip(config)
+      })
+    );
+
     configListBad.forEach(config =>
       makeTest({
         config,
         title: 'should break due to wrong predicate',
         it: shouldBreak(config)
       })
-    )
-  );
+    );
+  });
 
   describe('Virtual', () => {
     configListOutFixed.forEach(config =>

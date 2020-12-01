@@ -113,7 +113,8 @@ const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
     validators: [FUNC_WITH_X_ARGUMENTS(1), ONE_OF_MUST([AdapterInsertParams.before])]
   },
   [AdapterInsertParams.decrease]: {
-    validators: [BOOLEAN]
+    validators: [BOOLEAN],
+    defaultValue: false
   },
 };
 

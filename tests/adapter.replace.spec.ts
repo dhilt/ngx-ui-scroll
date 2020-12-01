@@ -63,7 +63,6 @@ const getDatasourceClass = (settings: Settings) =>
       if (itemToReplace) {
         Object.assign(itemToReplace, item);
       }
-      // console.log('RUN', this.data);
     }
   };
 
@@ -79,15 +78,11 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
   newItem.text += '*';
 
   replaceOne(indexToReplace, newItem);
-  await adapter.remove(({ $index }) => $index === indexToReplace);
-  await adapter.insert({
-    before: ({ $index }) => $index === indexToReplace,
+
+  await adapter.replace({
+    predicate: ({ $index }) => $index === indexToReplace,
     items: [newItem]
   });
-  // await adapter.replace({
-  //   predicate: ({ $index }) => $index === indexToReplace,
-  //   items: [newItem]
-  // });
 
   await misc.scrollMinMax();
   adapter.fix({ scrollPosition });

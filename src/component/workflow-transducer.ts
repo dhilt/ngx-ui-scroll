@@ -135,6 +135,7 @@ export const runStateMachine = ({
         case AdapterProcess.append:
         case AdapterProcess.check:
         case AdapterProcess.insert:
+        case AdapterProcess.replace:
           run(Render)();
           break;
         case AdapterProcess.remove:
@@ -180,6 +181,9 @@ export const runStateMachine = ({
           case AdapterProcess.insert:
           case AdapterProcess.remove:
             run(Adjust)();
+            break;
+          case AdapterProcess.replace:
+            run(Clip)();
             break;
           default:
             run(PreClip)();

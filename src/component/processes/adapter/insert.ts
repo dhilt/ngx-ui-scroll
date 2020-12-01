@@ -2,36 +2,34 @@ import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
 import { Item } from '../../classes/item';
 import {
-  AdapterProcess, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IValidatedData
+  AdapterProcess, ProcessStatus, AdapterInsertOptions, ItemsPredicate
 } from '../../interfaces/index';
 
 export default class Insert extends getBaseAdapterProcess(AdapterProcess.insert) {
 
   static run(scroller: Scroller, options: AdapterInsertOptions) {
 
-    const { data } = Insert.parseInput(scroller, options);
-    if (!data.isValid) {
+    const { params } = Insert.parseInput(scroller, options);
+    if (!params) {
       return;
     }
 
-    const next = Insert.doInsert(scroller, data);
+    const shouldInsert = Insert.doInsert(scroller, params);
 
     scroller.workflow.call({
       process: Insert.process,
-      status: next ? ProcessStatus.next : ProcessStatus.done
+      status: shouldInsert ? ProcessStatus.next : ProcessStatus.done
     });
   }
 
-  static doInsert(scroller: Scroller, { params }: IValidatedData): boolean {
-    const { buffer } = scroller;
+  static doInsert(scroller: Scroller, params: AdapterInsertOptions): boolean {
     const { before, after, items, decrease } = params;
-    const method: ItemsPredicate = before.isSet ? before.value : after.value;
-    const found = buffer.items.find(item => method(item.get()));
+    const method = (before || after) as ItemsPredicate;
+    const found = scroller.buffer.items.find(item => method(item.get()));
     if (!found) {
       return false;
     }
-    const decrement = decrease.isSet && decrease.value;
-    return Insert.simulateFetch(scroller, found, items.value, before.isSet, decrement);
+    return Insert.simulateFetch(scroller, found, items, !!before, !!decrease);
   }
 
   static simulateFetch(

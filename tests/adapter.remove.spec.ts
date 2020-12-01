@@ -145,9 +145,8 @@ const doRemove = async (config: TestBedConfig, misc: Misc, byId = false) => {
 
 const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
-  const bufferSizeBeforeRemove = misc.scroller.buffer.size;
+  const { size: bufferSizeBeforeRemove, minIndex, maxIndex, absMinIndex, absMaxIndex } = misc.scroller.buffer;
   const { remove: indexList, increase } = config.custom;
-  const { minIndex, maxIndex } = misc.scroller.buffer;
   const viewportSizeBeforeRemove = misc.getScrollableSize();
   const sizeToRemove = indexList.length * misc.getItemSize();
   const deltaSize = viewportSizeBeforeRemove - sizeToRemove;
@@ -155,10 +154,12 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
   const loopPendingSub = misc.adapter.loopPending$.subscribe(loopPending => {
     if (!loopPending) { // when the first loop after the Remove is done
       const len = indexList.length;
-      const { minIndex: min, maxIndex: max, size } = misc.scroller.buffer;
+      const { size, minIndex: min, maxIndex: max, absMinIndex: absMin, absMaxIndex: absMax } = misc.scroller.buffer;
       expect(size).toEqual(bufferSizeBeforeRemove - len);
       expect(min).toBe(minIndex + (increase ? len : 0));
       expect(max).toBe(maxIndex - (increase ? 0 : len));
+      expect(absMin).toBe(absMinIndex + (increase ? len : 0));
+      expect(absMax).toBe(absMaxIndex - (increase ? 0 : len));
       expect(deltaSize).toEqual(misc.getScrollableSize());
       loopPendingSub.unsubscribe();
     }

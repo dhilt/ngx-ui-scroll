@@ -11,7 +11,7 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
       return;
     }
 
-    const shouldRemove = Remove.removeItems(scroller, params);
+    const shouldRemove = Remove.doRemove(scroller, params);
 
     scroller.workflow.call({
       process: Remove.process,
@@ -19,7 +19,7 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
     });
   }
 
-  static removeItems(scroller: Scroller, params: AdapterRemoveOptions, sequenceOnly = false): boolean {
+  static doRemove(scroller: Scroller, params: AdapterRemoveOptions, sequenceOnly = false): boolean {
     const shouldRemove = Remove.removeBufferedItems(scroller, params);
     const shouldRemoveVirtual = Remove.removeVirtualItems(scroller, params, sequenceOnly);
 

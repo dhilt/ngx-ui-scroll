@@ -3,6 +3,26 @@ import { generateItem, Item } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { Settings, DevSettings, DatasourceGet } from '../src/component/interfaces/index';
 
+const baseSettings: Settings = {
+  startIndex: 1,
+  minIndex: 1,
+  maxIndex: 100,
+  adapter: true,
+  itemSize: 20
+};
+
+const configList: TestBedConfig[] = [{
+  datasourceSettings: { ...baseSettings },
+  custom: {
+    indexToReplace: 3 // visible replace
+  }
+}, {
+  datasourceSettings: { ...baseSettings },
+  custom: {
+    indexToReplace: 50 // invisible replace
+  }
+}];
+
 const getDatasourceClass = (settings: Settings) =>
   class {
     private data: Item[] = [];
@@ -47,6 +67,8 @@ const getDatasourceClass = (settings: Settings) =>
     }
   };
 
+configList.forEach(config => config.datasourceClass = getDatasourceClass(config.datasourceSettings));
+
 const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
   const { adapter } = misc;
@@ -62,7 +84,12 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
     before: ({ $index }) => $index === indexToReplace,
     items: [newItem]
   });
+  // await adapter.replace({
+  //   predicate: ({ $index }) => $index === indexToReplace,
+  //   items: [newItem]
+  // });
 
+  await misc.scrollMinMax();
   adapter.fix({ scrollPosition });
   await misc.relaxNext();
 
@@ -72,28 +99,6 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
 };
 
 describe('Adapter Replace Spec', () => {
-
-  const baseSettings: Settings = {
-    startIndex: 1,
-    minIndex: 1,
-    maxIndex: 100,
-    adapter: true,
-    itemSize: 20
-  };
-
-  const configList: TestBedConfig[] = [{
-    datasourceSettings: { ...baseSettings },
-    custom: {
-      indexToReplace: 3 // visible replace
-    }
-  }, {
-    datasourceSettings: { ...baseSettings },
-    custom: {
-      indexToReplace: 50 // invisible replace
-    }
-  }];
-
-  configList.forEach(config => config.datasourceClass = getDatasourceClass(config.datasourceSettings));
 
   describe('simple replacement', () =>
     configList.forEach(config =>
@@ -105,4 +110,4 @@ describe('Adapter Replace Spec', () => {
     )
   );
 
-}); 
+});

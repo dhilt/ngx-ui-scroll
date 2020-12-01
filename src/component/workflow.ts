@@ -5,12 +5,12 @@ import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
 import {
   IDatasource,
+  CommonProcess,
   Process,
   ProcessStatus as Status,
   ProcessSubject,
   ProcessStatus,
   WorkflowError,
-  ScrollerWorkflow,
   InterruptParams,
   StateMachineMethods
 } from './interfaces/index';
@@ -32,7 +32,7 @@ export class Workflow {
     this.isInitialized = false;
     this.dispose$ = new Subject();
     this.process$ = new BehaviorSubject({
-      process: Process.init,
+      process: CommonProcess.init,
       status: Status.start
     } as ProcessSubject);
     this.propagateChanges = run;
@@ -78,7 +78,7 @@ export class Workflow {
     const { scrollEventReceiver } = this.scroller.viewport;
     const onScrollHandler: EventListener =
       event => this.callWorkflow({
-        process: Process.scroll,
+        process: CommonProcess.scroll,
         status: ProcessStatus.start,
         payload: { event }
       });
@@ -105,7 +105,7 @@ export class Workflow {
     }
     this.scroller.logger.logProcess(data);
 
-    if (process === Process.end) {
+    if (process === CommonProcess.end) {
       this.scroller.finalize();
     }
     runStateMachine({

@@ -1,4 +1,4 @@
-import { Process, IDatasourceOptional, Direction } from '../src/component/interfaces';
+import { AdapterProcess, IDatasourceOptional, Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources';
 import { Misc } from './miscellaneous/misc';
@@ -181,7 +181,7 @@ const shouldReset = (config: TestBedConfig, fail?: boolean) => (misc: Misc) => (
         } else {
           doReset(config, misc);
           if (fail) {
-            expect(misc.workflow.errors.some(e => e.process === Process.reset)).toEqual(true);
+            expect(misc.workflow.errors.some(e => e.process === AdapterProcess.reset)).toEqual(true);
             done();
           }
         }

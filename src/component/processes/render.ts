@@ -1,10 +1,9 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
 import { Item } from '../classes/item';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { CommonProcess, ProcessStatus } from '../interfaces/index';
 
-export default class Render {
-
-  static process = Process.render;
+export default class Render extends getBaseProcess(CommonProcess.render) {
 
   static run(scroller: Scroller) {
     const { workflow, state: { cycle, render, scrollState }, viewport } = scroller;
@@ -16,13 +15,13 @@ export default class Render {
       render.renderTimer = null;
       if (Render.processElements(scroller)) {
         workflow.call({
-          process: Process.render,
+          process: Render.process,
           status: render.noSize ? ProcessStatus.done : ProcessStatus.next,
           payload: { process: cycle.initiator }
         });
       } else {
         workflow.call({
-          process: Process.render,
+          process: Render.process,
           status: ProcessStatus.error,
           payload: { error: `Can't associate item with element` }
         });

@@ -1,11 +1,10 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { CommonProcess, AdapterProcess, Process, ProcessStatus } from '../interfaces/index';
 
-const initProcesses = [Process.init, Process.reset, Process.reload];
+const initProcesses = [CommonProcess.init, AdapterProcess.reset, AdapterProcess.reload];
 
-export default class Init {
-
-  static process = Process.init;
+export default class Init extends getBaseProcess(CommonProcess.init) {
 
   static run(scroller: Scroller, process: Process) {
     const { state, workflow, adapter } = scroller;
@@ -14,7 +13,7 @@ export default class Init {
     state.cycle.start(isInitial, process);
     adapter.isLoading = true;
     workflow.call({
-      process: Process.init,
+      process: Init.process,
       status: ProcessStatus.next
     });
   }

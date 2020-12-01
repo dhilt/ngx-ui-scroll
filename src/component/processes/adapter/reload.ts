@@ -1,9 +1,8 @@
+import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { Process, ProcessStatus } from '../../interfaces/index';
+import { AdapterProcess, ProcessStatus } from '../../interfaces/index';
 
-export default class Reload {
-
-  static process = Process.reload;
+export default class Reload extends getBaseAdapterProcess(AdapterProcess.reload) {
 
   static run(scroller: Scroller, reloadIndex: any) {
     const { viewport, state, buffer } = scroller;
@@ -17,11 +16,11 @@ export default class Reload {
     if (scroller.adapter.isLoading) {
       scroller.scrollCleanup();
       payload.finalize = true;
-      state.cycle.interrupter = Process.reload;
+      state.cycle.interrupter = Reload.process;
     }
 
     scroller.workflow.call({
-      process: Process.reload,
+      process: Reload.process,
       status: ProcessStatus.next,
       payload
     });

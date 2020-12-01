@@ -1,11 +1,10 @@
 import { Observable, Observer } from 'rxjs';
 
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { CommonProcess, ProcessStatus } from '../interfaces/index';
 
-export default class Fetch {
-
-  static process = Process.fetch;
+export default class Fetch extends getBaseProcess(CommonProcess.fetch) {
 
   static run(scroller: Scroller) {
     const { workflow } = scroller;
@@ -17,14 +16,14 @@ export default class Fetch {
       );
       scroller.state.fetch.newItemsData = data;
       workflow.call({
-        process: Process.fetch,
+        process: Fetch.process,
         status: ProcessStatus.next
       });
     }
 
     function fail(error: string) {
       workflow.call({
-        process: Process.fetch,
+        process: Fetch.process,
         status: ProcessStatus.error,
         payload: { error }
       });

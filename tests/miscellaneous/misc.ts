@@ -175,7 +175,20 @@ export class Misc {
       await this.relaxNext();
       return this.scrollDownRecursively();
     }
-    return;
+  }
+
+  async scrollMinMax(): Promise<void> {
+    if (this.getScrollPosition() !== 0) {
+      this.scrollMin();
+      await this.relaxNext();
+      this.scrollMax();
+      await this.relaxNext();
+    } else {
+      this.scrollMax();
+      await this.relaxNext();
+      this.scrollMin();
+      await this.relaxNext();
+    }
   }
 
   delay(ms: number): Promise<void> {

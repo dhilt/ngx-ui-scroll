@@ -105,7 +105,8 @@ export interface IAdapter {
   remove(args: AdapterRemoveOptions | ItemsPredicate): MethodResult; // + old signature
   clip(options?: AdapterClipOptions): MethodResult;
   insert(options: AdapterInsertOptions): MethodResult;
+  replace(options: AdapterReplaceOptions): MethodResult;
   fix(options: AdapterFixOptions): MethodResult; // experimental
-  relax(callback?: Function): MethodResult; // experimental
+  relax(callback?: Function): MethodResult;
   showLog(): void;
 }

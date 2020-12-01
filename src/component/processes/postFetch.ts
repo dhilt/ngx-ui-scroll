@@ -1,24 +1,23 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
 import { Item } from '../classes/item';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { CommonProcess, ProcessStatus } from '../interfaces/index';
 
-export default class PostFetch {
-
-  static process = Process.postFetch;
+export default class PostFetch extends getBaseProcess(CommonProcess.postFetch) {
 
   static run(scroller: Scroller) {
     const { workflow } = scroller;
     if (PostFetch.setItems(scroller)) {
       PostFetch.setBufferLimits(scroller);
       workflow.call({
-        process: Process.postFetch,
+        process: PostFetch.process,
         status: scroller.state.fetch.hasNewItems
           ? ProcessStatus.next
           : ProcessStatus.done
       });
     } else {
       workflow.call({
-        process: Process.postFetch,
+        process: PostFetch.process,
         status: ProcessStatus.error,
         payload: { error: `Can't set buffer items` }
       });

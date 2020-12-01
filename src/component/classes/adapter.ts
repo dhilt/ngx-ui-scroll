@@ -11,7 +11,7 @@ import {
   IAdapterProp,
   AdapterMethodResult,
   IAdapter,
-  Process,
+  AdapterProcess,
   ProcessStatus,
   ItemAdapter,
   ItemsPredicate,
@@ -38,10 +38,10 @@ const fixScalarWanted = (name: string, container: { [key: string]: boolean }) =>
   }
 };
 
-const convertAppendArgs = (isAppend: boolean, options: any, eof?: boolean) => {
+const convertAppendArgs = (prepend: boolean, options: any, eof?: boolean) => {
   if (!(options !== null && typeof options === 'object' && options.hasOwnProperty('items'))) {
     const items = !Array.isArray(options) ? [options] : options;
-    options = isAppend ? { items, eof } : { items, bof: eof };
+    options = prepend ? { items, bof: eof } : { items, eof };
   }
   return options;
 };
@@ -265,7 +265,7 @@ export class Adapter implements IAdapter {
     this.reloadCounter++;
     this.logger.logAdapterMethod(`reset`, options, ` of ${this.reloadId}`);
     this.workflow.call({
-      process: Process.reset,
+      process: AdapterProcess.reset,
       status: ProcessStatus.start,
       payload: options
     });
@@ -275,36 +275,36 @@ export class Adapter implements IAdapter {
     this.reloadCounter++;
     this.logger.logAdapterMethod(`reload`, options, ` of ${this.reloadId}`);
     this.workflow.call({
-      process: Process.reload,
+      process: AdapterProcess.reload,
       status: ProcessStatus.start,
       payload: options
     });
   }
 
   append(options: AdapterAppendOptions | any, eof?: boolean): any {
-    options = convertAppendArgs(true, options, eof); // support old signature
+    options = convertAppendArgs(false, options, eof); // support old signature
     this.logger.logAdapterMethod('append', [options.items, options.eof]);
     this.workflow.call({
-      process: Process.append,
+      process: AdapterProcess.append,
       status: ProcessStatus.start,
-      payload: options
+      payload: { prepend: false, options }
     });
   }
 
   prepend(options: AdapterPrependOptions | any, bof?: boolean): any {
-    options = convertAppendArgs(false, options, bof); // support old signature
+    options = convertAppendArgs(true, options, bof); // support old signature
     this.logger.logAdapterMethod('prepend', [options.items, options.bof]);
     this.workflow.call({
-      process: Process.prepend,
+      process: AdapterProcess.append,
       status: ProcessStatus.start,
-      payload: options
+      payload: { prepend: true, options }
     });
   }
 
   check(): any {
     this.logger.logAdapterMethod('check');
     this.workflow.call({
-      process: Process.check,
+      process: AdapterProcess.check,
       status: ProcessStatus.start
     });
   }
@@ -313,7 +313,7 @@ export class Adapter implements IAdapter {
     options = convertRemoveArgs(options); // support old signature
     this.logger.logAdapterMethod('remove', options);
     this.workflow.call({
-      process: Process.remove,
+      process: AdapterProcess.remove,
       status: ProcessStatus.start,
       payload: options
     });
@@ -322,7 +322,7 @@ export class Adapter implements IAdapter {
   clip(options?: AdapterClipOptions): any {
     this.logger.logAdapterMethod('clip', options);
     this.workflow.call({
-      process: Process.userClip,
+      process: AdapterProcess.clip,
       status: ProcessStatus.start,
       payload: options
     });
@@ -331,7 +331,7 @@ export class Adapter implements IAdapter {
   insert(options: AdapterInsertOptions): any {
     this.logger.logAdapterMethod('insert', options);
     this.workflow.call({
-      process: Process.insert,
+      process: AdapterProcess.insert,
       status: ProcessStatus.start,
       payload: options
     });
@@ -340,7 +340,7 @@ export class Adapter implements IAdapter {
   replace(options: AdapterReplaceOptions): any {
     this.logger.logAdapterMethod('replace', options);
     this.workflow.call({
-      process: Process.replace,
+      process: AdapterProcess.replace,
       status: ProcessStatus.start,
       payload: options
     });
@@ -349,7 +349,7 @@ export class Adapter implements IAdapter {
   fix(options: AdapterFixOptions): any {
     this.logger.logAdapterMethod('fix', options);
     this.workflow.call({
-      process: Process.fix,
+      process: AdapterProcess.fix,
       status: ProcessStatus.start,
       payload: options
     });

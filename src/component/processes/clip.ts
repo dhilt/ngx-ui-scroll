@@ -1,18 +1,18 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessStatus } from '../interfaces/index';
+import { Direction, CommonProcess, ProcessStatus } from '../interfaces/index';
 
-export default class Clip {
-
-  static process = Process.clip;
+export default class Clip extends getBaseProcess(CommonProcess.clip) {
 
   static run(scroller: Scroller) {
-    const { workflow } = scroller;
+    const { workflow, state } = scroller;
 
     Clip.doClip(scroller);
+
     workflow.call({
-      process: Process.clip,
+      process: Clip.process,
       status: ProcessStatus.next,
-      payload: { process: scroller.state.cycle.initiator }
+      payload: { process: state.cycle.initiator }
     });
   }
 

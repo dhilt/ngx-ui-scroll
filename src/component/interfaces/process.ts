@@ -1,16 +1,6 @@
-export enum Process {
+export enum CommonProcess {
   init = 'init',
   scroll = 'scroll',
-  reset = 'adapter.reset',
-  reload = 'adapter.reload',
-  append = 'adapter.append',
-  prepend = 'adapter.prepend',
-  check = 'adapter.check',
-  remove = 'adapter.remove',
-  replace = 'adapter.replace',
-  userClip = 'adapter.clip',
-  insert = 'adapter.insert',
-  fix = 'adapter.fix',
   start = 'start',
   preFetch = 'preFetch',
   fetch = 'fetch',
@@ -19,8 +9,21 @@ export enum Process {
   preClip = 'preClip',
   clip = 'clip',
   adjust = 'adjust',
-  end = 'end'
+  end = 'end',
 }
+export enum AdapterProcess {
+  reset = 'adapter.reset',
+  reload = 'adapter.reload',
+  append = 'adapter.append',
+  check = 'adapter.check',
+  remove = 'adapter.remove',
+  replace = 'adapter.replace',
+  clip = 'adapter.clip',
+  insert = 'adapter.insert',
+  fix = 'adapter.fix',
+}
+
+export type Process = CommonProcess | AdapterProcess;
 
 export enum ProcessStatus {
   start = 'start',
@@ -34,3 +37,7 @@ export interface ProcessSubject {
   status: ProcessStatus;
   payload?: any;
 }
+
+export type AdapterProcessMap<T> = {
+  [key in AdapterProcess]: T;
+};

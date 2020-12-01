@@ -109,6 +109,11 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   },
   {
     type: Prop.WorkflowRunner,
+    name: 'replace',
+    value: noop
+  },
+  {
+    type: Prop.WorkflowRunner,
     name: 'fix',
     value: noop
   },

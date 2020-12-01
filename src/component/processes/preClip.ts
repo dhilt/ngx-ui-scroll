@@ -1,15 +1,14 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessStatus } from '../interfaces/index';
+import { Direction, CommonProcess, ProcessStatus } from '../interfaces/index';
 
-export default class PreClip {
-
-  static process = Process.preClip;
+export default class PreClip extends getBaseProcess(CommonProcess.preClip) {
 
   static run(scroller: Scroller) {
     PreClip.prepareClip(scroller);
 
     scroller.workflow.call({
-      process: Process.preClip,
+      process: PreClip.process,
       status: ProcessStatus.next,
       payload: {
         doClip: scroller.state.clip.doClip

@@ -1,9 +1,8 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { CommonProcess, ProcessStatus } from '../interfaces/index';
 
-export default class Adjust {
-
-  static process = Process.adjust;
+export default class Adjust extends getBaseProcess(CommonProcess.adjust) {
 
   static run(scroller: Scroller) {
     const { workflow, viewport, state: { scrollState } } = scroller;
@@ -12,7 +11,7 @@ export default class Adjust {
     // padding-elements adjustments
     if (!Adjust.setPaddings(scroller)) {
       return workflow.call({
-        process: Process.adjust,
+        process: Adjust.process,
         status: ProcessStatus.error,
         payload: { error: `Can't get visible item` }
       });
@@ -25,7 +24,7 @@ export default class Adjust {
     // set new position using animation frame
     Adjust.setPosition(scroller, position, () =>
       workflow.call({
-        process: Process.adjust,
+        process: Adjust.process,
         status: ProcessStatus.done
       })
     );

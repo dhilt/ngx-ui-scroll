@@ -22,7 +22,8 @@ import {
 } from './processes/index';
 
 import {
-  Process,
+  CommonProcess,
+  AdapterProcess,
   ProcessStatus as Status,
   StateMachineParams
 } from './interfaces/index';
@@ -39,7 +40,7 @@ export const runStateMachine = ({
     return;
   }
   switch (process) {
-    case Process.init:
+    case CommonProcess.init:
       if (status === Status.start) { // App start
         run(Init)(process);
       }
@@ -47,19 +48,22 @@ export const runStateMachine = ({
         run(Start)();
       }
       break;
-    case Process.scroll:
+    case CommonProcess.scroll:
       if (status === Status.start) {
-        run(Scroll)(process, payload);
+        run(Scroll)(payload);
       }
       if (status === Status.next) {
         run(Init)(process);
       }
       break;
-    case Process.reset:
-    case Process.reload:
-      const processToRun = process === Process.reset ? Reset : Reload;
-      if (status === Status.start) { // Adapter reload/reset
-        run(processToRun)(payload);
+    case AdapterProcess.reset:
+    case AdapterProcess.reload:
+      if (status === Status.start) {
+        if (process === AdapterProcess.reset) {
+          run(Reset)(payload);
+        } else {
+          run(Reload)(payload);
+        }
       }
       if (status === Status.next) {
         interrupt({ process, ...payload });
@@ -70,23 +74,15 @@ export const runStateMachine = ({
         }
       }
       break;
-    case Process.append:
+    case AdapterProcess.append:
       if (status === Status.start) {
-        run(Append)(process, payload);
+        run(Append)(payload);
       }
       if (status === Status.next) {
         run(Init)(process);
       }
       break;
-    case Process.prepend:
-      if (status === Status.start) {
-        run(Append)(process, payload);
-      }
-      if (status === Status.next) {
-        run(Init)(process);
-      }
-      break;
-    case Process.check:
+    case AdapterProcess.check:
       if (status === Status.start) {
         run(Check)();
       }
@@ -94,7 +90,7 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       break;
-    case Process.remove:
+    case AdapterProcess.remove:
       if (status === Status.start) {
         run(Remove)(payload);
       }
@@ -102,7 +98,7 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       break;
-    case Process.userClip:
+    case AdapterProcess.clip:
       if (status === Status.start) {
         run(UserClip)(payload);
       }
@@ -110,7 +106,7 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       break;
-    case Process.insert:
+    case AdapterProcess.insert:
       if (status === Status.start) {
         run(Insert)(payload);
       }
@@ -118,7 +114,7 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       break;
-    case Process.replace:
+    case AdapterProcess.replace:
       if (status === Status.start) {
         run(Replace)(payload);
       }
@@ -126,7 +122,7 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       break;
-    case Process.fix:
+    case AdapterProcess.fix:
       if (status === Status.start) {
         run(Fix)(payload);
       }
@@ -134,28 +130,27 @@ export const runStateMachine = ({
         run(Init)(process);
       }
       break;
-    case Process.start:
+    case CommonProcess.start:
       switch (payload.process) {
-        case Process.append:
-        case Process.prepend:
-        case Process.check:
-        case Process.insert:
+        case AdapterProcess.append:
+        case AdapterProcess.check:
+        case AdapterProcess.insert:
           run(Render)();
           break;
-        case Process.remove:
+        case AdapterProcess.remove:
           run(Clip)();
           break;
-        case Process.userClip:
+        case AdapterProcess.clip:
           run(PreFetch)();
           break;
         default:
           run(PreFetch)();
       }
       break;
-    case Process.preFetch:
+    case CommonProcess.preFetch:
       if (status === Status.next) {
         switch (payload.process) {
-          case Process.userClip:
+          case AdapterProcess.clip:
             run(PreClip)();
             break;
           default:
@@ -166,10 +161,10 @@ export const runStateMachine = ({
         run(End)();
       }
       break;
-    case Process.fetch:
+    case CommonProcess.fetch:
       run(PostFetch)();
       break;
-    case Process.postFetch:
+    case CommonProcess.postFetch:
       if (status === Status.next) {
         run(Render)();
       }
@@ -177,14 +172,13 @@ export const runStateMachine = ({
         run(End)();
       }
       break;
-    case Process.render:
+    case CommonProcess.render:
       if (status === Status.next) {
         switch (payload.process) {
-          case Process.append:
-          case Process.prepend:
-          case Process.check:
-          case Process.insert:
-          case Process.remove:
+          case AdapterProcess.append:
+          case AdapterProcess.check:
+          case AdapterProcess.insert:
+          case AdapterProcess.remove:
             run(Adjust)();
             break;
           default:
@@ -195,30 +189,30 @@ export const runStateMachine = ({
         run(End)();
       }
       break;
-    case Process.preClip:
+    case CommonProcess.preClip:
       if (payload.doClip) {
         run(Clip)();
       } else {
         run(Adjust)();
       }
       break;
-    case Process.clip:
+    case CommonProcess.clip:
       switch (payload.process) {
-        case Process.remove:
+        case AdapterProcess.remove:
           run(End)();
           break;
         default:
           run(Adjust)();
       }
       break;
-    case Process.adjust:
+    case CommonProcess.adjust:
       run(End)();
       break;
-    case Process.end:
+    case CommonProcess.end:
       if (status === Status.next) {
         switch (payload.process) {
-          case Process.reset:
-          case Process.reload:
+          case AdapterProcess.reset:
+          case AdapterProcess.reload:
             done();
             run(Init)(payload.process);
             break;

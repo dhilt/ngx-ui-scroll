@@ -1,6 +1,6 @@
 import { VALIDATORS } from './validation';
 import { DatasourceProps } from './datasource';
-import { ICommonProps } from '../interfaces/index';
+import { ICommonProps, AdapterProcessMap, AdapterProcess as Process } from '../interfaces/index';
 
 const {
   INTEGER,
@@ -14,6 +14,9 @@ const {
   ONE_OF_CAN,
   OR,
 } = VALIDATORS;
+
+enum AdapterNoParams { }
+const NO_METHOD_PARAMS: ICommonProps<AdapterNoParams> = {};
 
 const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
   [DatasourceProps.get]: {
@@ -159,21 +162,26 @@ const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
   },
 };
 
-export const AdapterMethods = {
-  Reset: AdapterInsertParams,
-  Reload: AdapterReloadParams,
-  Clip: AdapterClipParams,
-  Insert: AdapterInsertParams,
-  Fix: AdapterFixParams,
+export const AdapterMethods: AdapterProcessMap<any> = {
+  [Process.reset]: DatasourceProps,
+  [Process.reload]: AdapterReloadParams,
+  [Process.append]: AdapterAppendParams,
+  [Process.check]: AdapterNoParams,
+  [Process.remove]: AdapterRemoveParams,
+  [Process.clip]: AdapterClipParams,
+  [Process.insert]: AdapterInsertParams,
+  [Process.replace]: AdapterReplaceParams,
+  [Process.fix]: AdapterFixParams,
 };
 
-export const ADAPTER_METHODS = {
-  RESET: RESET_METHOD_PARAMS,
-  RELOAD: RELOAD_METHOD_PARAMS,
-  APPEND: APPEND_METHOD_PARAMS,
-  REMOVE: REMOVE_METHOD_PARAMS,
-  CLIP: CLIP_METHOD_PARAMS,
-  INSERT: INSERT_METHOD_PARAMS,
-  REPLACE: REPLACE_METHOD_PARAMS,
-  FIX: FIX_METHOD_PARAMS,
+export const ADAPTER_METHODS: AdapterProcessMap<ICommonProps<any>> = {
+  [Process.reset]: RESET_METHOD_PARAMS,
+  [Process.reload]: RELOAD_METHOD_PARAMS,
+  [Process.append]: APPEND_METHOD_PARAMS,
+  [Process.check]: NO_METHOD_PARAMS,
+  [Process.remove]: REMOVE_METHOD_PARAMS,
+  [Process.clip]: CLIP_METHOD_PARAMS,
+  [Process.insert]: INSERT_METHOD_PARAMS,
+  [Process.replace]: REPLACE_METHOD_PARAMS,
+  [Process.fix]: FIX_METHOD_PARAMS,
 };

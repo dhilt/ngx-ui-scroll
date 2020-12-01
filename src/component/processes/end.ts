@@ -1,12 +1,11 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
 import { EMPTY_ITEM } from '../classes/adapter/context';
-import { Process, ProcessStatus, Direction, ScrollerWorkflow } from '../interfaces/index';
+import { CommonProcess, ProcessStatus, Direction, ScrollerWorkflow } from '../interfaces/index';
 
 const isInterrupted = ({ call }: ScrollerWorkflow): boolean => !!call.interrupted;
 
-export default class End {
-
-  static process = Process.end;
+export default class End extends getBaseProcess(CommonProcess.end) {
 
   static run(scroller: Scroller, { error }: any = {}) {
     const { workflow, state: { cycle: { interrupter } } } = scroller;
@@ -18,14 +17,14 @@ export default class End {
 
     // explicit interruption for we don't want to go through the inner loop finalizing
     if (isInterrupted(workflow)) {
-      workflow.call({ process: Process.end, status: ProcessStatus.done });
+      workflow.call({ process: End.process, status: ProcessStatus.done });
       return;
     }
 
     const next = End.finalizeInnerLoop(scroller, error);
 
     workflow.call({
-      process: Process.end,
+      process: End.process,
       status: next ? ProcessStatus.next : ProcessStatus.done,
       payload: { ...(interrupter ? { process: interrupter } : {}) }
     });

@@ -202,17 +202,6 @@ const immediateConfigErrorList = [{
 }, {
   ...configBase,
   custom: {
-    method: 'prepend',
-    options: {
-      items: 'error'
-    },
-    newWFCycle: false,
-    async: false,
-    error: true
-  } as ICustom
-}, {
-  ...configBase,
-  custom: {
     method: 'remove',
     options: 'error',
     newWFCycle: false,

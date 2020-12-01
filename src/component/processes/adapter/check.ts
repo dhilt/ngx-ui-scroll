@@ -1,9 +1,8 @@
+import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { Process, ProcessStatus, Direction } from '../../interfaces/index';
+import { AdapterProcess, ProcessStatus, Direction } from '../../interfaces/index';
 
-export default class Check {
-
-  static process = Process.check;
+export default class Check extends getBaseAdapterProcess(AdapterProcess.check) {
 
   static run(scroller: Scroller) {
     const { workflow, buffer, state: { fetch }, viewport } = scroller;
@@ -36,7 +35,7 @@ export default class Check {
     scroller.logger.stat('check');
 
     workflow.call({
-      process: Process.check,
+      process: Check.process,
       status: Number.isFinite(min) ? ProcessStatus.next : ProcessStatus.done
     });
   }

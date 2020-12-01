@@ -1,9 +1,8 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus } from '../interfaces/index';
+import { CommonProcess, ProcessStatus } from '../interfaces/index';
 
-export default class Start {
-
-  static process = Process.start;
+export default class Start extends getBaseProcess(CommonProcess.start) {
 
   static run(scroller: Scroller) {
     const { state: { cycle, scrollState, fetch, clip, render }, adapter } = scroller;
@@ -19,7 +18,7 @@ export default class Start {
     render.reset();
 
     scroller.workflow.call({
-      process: Process.start,
+      process: Start.process,
       status: ProcessStatus.next,
       payload: { ...(cycle.innerLoop.first ? { process: cycle.initiator } : {}) }
     });

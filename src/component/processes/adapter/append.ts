@@ -1,45 +1,38 @@
+import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { ADAPTER_METHODS, validate } from '../../inputs/index';
 import { Item } from '../../classes/item';
-import { Process, ProcessStatus, AdapterAppendOptions } from '../../interfaces/index';
+import { AdapterProcess, ProcessStatus, AdapterAppendOptions, AdapterPrependOptions } from '../../interfaces/index';
 
-export default class Append {
+type AdapterAppendPrependOptions = AdapterAppendOptions & AdapterPrependOptions;
 
-  static process = Process.append;
+export default class Append extends getBaseAdapterProcess(AdapterProcess.append) {
 
-  static run(scroller: Scroller, process: Process, options: AdapterAppendOptions) {
+  static run(scroller: Scroller, { prepend, options }: { prepend: boolean, options: AdapterAppendPrependOptions }) {
 
-    const methodData = validate(options, ADAPTER_METHODS.APPEND);
-    if (!methodData.isValid) {
-      scroller.logger.log(() => methodData.showErrors());
-      scroller.workflow.call({
-        process,
-        status: ProcessStatus.error,
-        payload: { error: `Wrong argument of the "${process}" method call` }
-      });
+    const { params } = Append.parseInput(scroller, options);
+    if (!params) {
       return;
     }
-
-    const { items, bof, eof } = methodData.params;
-    const prepend = process === Process.prepend;
-    const _eof = !!(prepend ? bof.value : eof.value);
+    const { items, bof, eof } = params;
+    const _eof = !!(prepend ? bof : eof);
 
     // virtual prepend case: shift abs min index and update viewport params
     if (
       (prepend && _eof && !scroller.buffer.bof) ||
       (!prepend && _eof && !scroller.buffer.eof)
     ) {
-      Append.doVirtualize(scroller, items.value, prepend);
+      Append.doVirtualize(scroller, items, prepend);
       scroller.workflow.call({
-        process,
+        process: Append.process,
         status: ProcessStatus.done
       });
       return;
     }
 
-    Append.simulateFetch(scroller, items.value, _eof, prepend);
+    Append.simulateFetch(scroller, items, _eof, prepend);
+
     scroller.workflow.call({
-      process,
+      process: Append.process,
       status: ProcessStatus.next
     });
   }

@@ -1,31 +1,23 @@
+import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { ADAPTER_METHODS, validate } from '../../inputs/index';
 import { Item } from '../../classes/item';
 import {
-  Process, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IValidatedData
+  AdapterProcess, ProcessStatus, AdapterInsertOptions, ItemsPredicate, IValidatedData
 } from '../../interfaces/index';
 
-export default class Insert {
-
-  static process = Process.insert;
+export default class Insert extends getBaseAdapterProcess(AdapterProcess.insert) {
 
   static run(scroller: Scroller, options: AdapterInsertOptions) {
 
-    const methodData = validate(options, ADAPTER_METHODS.INSERT);
-    if (!methodData.isValid) {
-      scroller.logger.log(() => methodData.showErrors());
-      scroller.workflow.call({
-        process: Process.insert,
-        status: ProcessStatus.error,
-        payload: { error: `Wrong argument of the "Adapter.insert" method call` }
-      });
+    const { data } = Insert.parseInput(scroller, options);
+    if (!data.isValid) {
       return;
     }
 
-    const next = Insert.doInsert(scroller, methodData);
+    const next = Insert.doInsert(scroller, data);
 
     scroller.workflow.call({
-      process: Process.insert,
+      process: Insert.process,
       status: next ? ProcessStatus.next : ProcessStatus.done
     });
   }

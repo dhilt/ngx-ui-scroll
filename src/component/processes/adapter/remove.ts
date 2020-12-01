@@ -1,27 +1,15 @@
+import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { ADAPTER_METHODS, validate } from '../../inputs/index';
-import { Direction, AdapterRemoveOptions, ItemsPredicate, Process, ProcessStatus } from '../../interfaces/index';
+import { Direction, AdapterRemoveOptions, ItemsPredicate, AdapterProcess, ProcessStatus } from '../../interfaces/index';
 
-export default class Remove {
-
-  static process = Process.remove;
+export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove) {
 
   static run(scroller: Scroller, options: AdapterRemoveOptions) {
-    const methodData = validate(options, ADAPTER_METHODS.REMOVE);
-    if (!methodData.isValid) {
-      scroller.logger.log(() => methodData.showErrors());
-      scroller.workflow.call({
-        process: Process.remove,
-        status: ProcessStatus.error,
-        payload: { error: `Wrong argument of the "Adapter.remove" method call` }
-      });
+
+    const { params } = Remove.parseInput(scroller, options);
+    if (!params) {
       return;
     }
-    const params: AdapterRemoveOptions = {
-      predicate: methodData.params.predicate.value,
-      indexes: methodData.params.indexes.value,
-      increase: methodData.params.increase.value
-    };
 
     const shouldRemove = Remove.removeBufferedItems(scroller, params);
     const shouldRemoveVirtual = Remove.removeVirtualItems(scroller, params);
@@ -38,7 +26,7 @@ export default class Remove {
     }
 
     scroller.workflow.call({
-      process: Process.remove,
+      process: Remove.process,
       status: shouldRemove || shouldRemoveVirtual ? ProcessStatus.next : ProcessStatus.done
     });
   }

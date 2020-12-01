@@ -1,9 +1,8 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus, Direction } from '../interfaces/index';
+import { CommonProcess, AdapterProcess, ProcessStatus, Direction } from '../interfaces/index';
 
-export default class PreFetch {
-
-  static process = Process.preFetch;
+export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
 
   static run(scroller: Scroller) {
     const { workflow, buffer, state: { fetch, cycle } } = scroller;
@@ -27,7 +26,7 @@ export default class PreFetch {
     PreFetch.setFetchDirection(scroller);
 
     workflow.call({
-      process: Process.preFetch,
+      process: PreFetch.process,
       status: PreFetch.getStatus(scroller),
       payload: { process: cycle.initiator }
     });
@@ -242,8 +241,8 @@ export default class PreFetch {
 
   static getStatus(scroller: Scroller): ProcessStatus {
     const { cycle, fetch } = scroller.state;
-    if (cycle.initiator === Process.userClip) {
-      scroller.logger.log(() => `going to skip fetch due to "${Process.userClip}" process`);
+    if (cycle.initiator === AdapterProcess.clip) {
+      scroller.logger.log(() => `going to skip fetch due to "${AdapterProcess.clip}" process`);
       return ProcessStatus.next;
     }
     if (fetch.shouldFetch) {

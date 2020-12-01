@@ -1,20 +1,17 @@
+import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { ADAPTER_METHODS, validate } from '../../inputs/index';
-import { AdapterClipOptions, Process, ProcessStatus } from '../../interfaces/index';
+import { AdapterClipOptions, AdapterProcess, ProcessStatus } from '../../interfaces/index';
 
-export default class UserClip {
-
-  static process = Process.userClip;
+export default class UserClip extends getBaseAdapterProcess(AdapterProcess.clip) {
 
   static run(scroller: Scroller, options?: AdapterClipOptions) {
-    const methodData = validate(options, ADAPTER_METHODS.CLIP);
-    const { backwardOnly, forwardOnly } = methodData.params;
+    const { params } = UserClip.parseInput(scroller, options);
 
-    scroller.state.clip.forceForward = !backwardOnly.value;
-    scroller.state.clip.forceBackward = !forwardOnly.value;
+    scroller.state.clip.forceForward = !(params && params.backwardOnly);
+    scroller.state.clip.forceBackward = !(params && params.forwardOnly);
 
     scroller.workflow.call({
-      process: Process.userClip,
+      process: UserClip.process,
       status: ProcessStatus.next
     });
   }

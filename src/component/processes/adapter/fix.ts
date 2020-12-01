@@ -1,7 +1,8 @@
+import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { ADAPTER_METHODS, AdapterMethods, validate } from '../../inputs/index';
+import { AdapterMethods } from '../../inputs/index';
 import {
-  Process,
+  AdapterProcess,
   ProcessStatus,
   ItemsPredicate,
   ItemsLooper,
@@ -9,33 +10,26 @@ import {
   IValidatedData,
 } from '../../interfaces/index';
 
-const { Fix: FixParams } = AdapterMethods;
+const { [AdapterProcess.fix]: FixParams } = AdapterMethods;
 
-export default class Fix {
-
-  static process = Process.fix;
+export default class Fix extends getBaseAdapterProcess(AdapterProcess.fix) {
 
   static run(scroller: Scroller, options: AdapterFixOptions) {
     const { workflow } = scroller;
-    const methodData = validate(options, ADAPTER_METHODS.FIX);
-    if (!methodData.isValid) {
-      scroller.logger.log(() => methodData.showErrors());
-      scroller.workflow.call({
-        process: Process.fix,
-        status: ProcessStatus.error,
-        payload: { error: `Wrong argument of the "Adapter.fix" method call` }
-      });
+
+    const { data, params } = Fix.parseInput(scroller, options);
+    if (!params) {
       return;
     }
 
-    Object.entries(methodData.params).forEach(([key, value]) => {
+    Object.entries(data.params).forEach(([key, value]) => {
       if (value.isSet && value.isValid) {
-        Fix.runByType(scroller, key, value.value, methodData);
+        Fix.runByType(scroller, key, value.value, data);
       }
     });
 
     workflow.call({
-      process: Process.fix,
+      process: Fix.process,
       status: ProcessStatus.done
     });
   }

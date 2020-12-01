@@ -28,7 +28,7 @@ import {
 import { Settings, DevSettings } from './settings';
 import { Direction } from './direction';
 import { ScrollEventData, ScrollState, State } from './state';
-import { Process, ProcessStatus, ProcessSubject } from './process';
+import { CommonProcess, AdapterProcess, Process, ProcessStatus, ProcessSubject, AdapterProcessMap } from './process';
 import {
   ValidatorType,
   ValidatedValue,
@@ -71,9 +71,12 @@ export {
   ScrollEventData,
   ScrollState,
   State,
+  CommonProcess,
+  AdapterProcess,
   Process,
   ProcessStatus,
   ProcessSubject,
+  AdapterProcessMap,
   ValidatorType,
   ValidatedValue,
   IValidator,

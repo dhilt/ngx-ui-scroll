@@ -1,5 +1,5 @@
 import { Scroller } from '../scroller';
-import { Process, ProcessStatus as Status, ProcessSubject } from '../interfaces/index';
+import { CommonProcess, AdapterProcess, ProcessStatus as Status, ProcessSubject } from '../interfaces/index';
 
 type LogType = [any?, ...any[]];
 
@@ -112,15 +112,15 @@ export class Logger {
     // inner loop start-end log
     const loopLog: string[] = [];
     if (
-      process === Process.init && status === Status.next
+      process === CommonProcess.init && status === Status.next
     ) {
       loopLog.push(`%c---=== loop ${this.getLoopIdNext()} start`);
     } else if (
-      process === Process.end
+      process === CommonProcess.end
     ) {
       loopLog.push(`%c---=== loop ${this.getLoopId()} done`);
       const parent = payload && payload.process;
-      if (status === Status.next && (parent !== Process.reset && parent !== Process.reload)) {
+      if (status === Status.next && (parent !== AdapterProcess.reset && parent !== AdapterProcess.reload)) {
         loopLog[0] += `, loop ${this.getLoopIdNext()} start`;
       }
     }

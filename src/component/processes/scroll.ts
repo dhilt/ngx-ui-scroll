@@ -1,11 +1,10 @@
+import { getBaseProcess } from './_base';
 import { Scroller } from '../scroller';
-import { Direction, Process, ProcessStatus, ScrollEventData, ScrollerWorkflow } from '../interfaces/index';
+import { Direction, CommonProcess, ProcessStatus, ScrollEventData, ScrollerWorkflow } from '../interfaces/index';
 
-export default class Scroll {
+export default class Scroll extends getBaseProcess(CommonProcess.scroll) {
 
-  static process = Process.scroll;
-
-  static run(scroller: Scroller, process: Process, payload?: { event?: Event }) {
+  static run(scroller: Scroller, payload?: { event?: Event }) {
     const { workflow, viewport } = scroller;
     const position = viewport.scrollPosition;
 
@@ -102,7 +101,7 @@ export default class Scroll {
     }
 
     workflow.call({
-      process: Process.scroll,
+      process: Scroll.process,
       status: ProcessStatus.next
     });
   }

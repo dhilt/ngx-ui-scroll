@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { removeItems } from './miscellaneous/items';
-import { Process } from '../src/component/interfaces/index';
+import { AdapterProcess } from '../src/component/interfaces/index';
 
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-processor',
@@ -183,7 +183,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
         expect(misc.workflow.cyclesDone).toEqual(1);
         expect(misc.innerLoopCount).toEqual(innerLoopCount);
         expect(misc.workflow.errors.length).toEqual(1);
-        expect(misc.workflow.errors[0].process).toEqual(Process.remove);
+        expect(misc.workflow.errors[0].process).toEqual(AdapterProcess.remove);
         done();
       }, 40);
     }

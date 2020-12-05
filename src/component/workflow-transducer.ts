@@ -141,9 +141,6 @@ export const runStateMachine = ({
         case AdapterProcess.remove:
           run(Clip)();
           break;
-        case AdapterProcess.clip:
-          run(PreFetch)();
-          break;
         default:
           run(PreFetch)();
       }

@@ -136,6 +136,10 @@ export class Misc {
     return this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'];
   }
 
+  getMaxScrollPosition(): number {
+    return this.getScrollableSize() - this.getViewportSize();
+  }
+
   scrollTo(value: number, native?: boolean) {
     if (native) {
       this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;

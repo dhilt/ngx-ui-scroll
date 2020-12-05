@@ -3,7 +3,7 @@ import { generateItem, Item } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { Settings, DevSettings, DatasourceGet } from '../src/component/interfaces/index';
 
-const baseSettings: Settings = {
+const baseSettings = {
   startIndex: 1,
   minIndex: 1,
   maxIndex: 100,
@@ -14,12 +14,20 @@ const baseSettings: Settings = {
 const configList: TestBedConfig[] = [{
   datasourceSettings: { ...baseSettings },
   custom: {
-    indexToReplace: 3 // visible replace
+    indexToReplace: baseSettings.minIndex + 1,
+    token: 'middle'
   }
 }, {
   datasourceSettings: { ...baseSettings },
   custom: {
-    indexToReplace: 50 // invisible replace
+    indexToReplace: baseSettings.minIndex,
+    token: 'first'
+  }
+}, {
+  datasourceSettings: { ...baseSettings, startIndex: baseSettings.maxIndex },
+  custom: {
+    indexToReplace: baseSettings.maxIndex,
+    token: 'last'
   }
 }];
 
@@ -40,6 +48,7 @@ const getDatasourceClass = (settings: Settings) =>
       }
 
       this.settings = { ...settings };
+      // this.devSettings = { debug: true, logProcessRun: true };
 
       this.get = (index: number, count: number, success: Function) => {
         const data = [];
@@ -71,34 +80,45 @@ configList.forEach(config => config.datasourceClass = getDatasourceClass(config.
 const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
   const { adapter } = misc;
-  const { custom: { indexToReplace }, datasourceSettings: { minIndex, itemSize } } = config;
+  const { custom: { indexToReplace, token }, datasourceSettings: { minIndex, itemSize } } = config;
   const replaceOne = (misc.datasource as any).replaceOne.bind(misc.datasource);
-  const scrollPosition = (indexToReplace - 1 + minIndex - 1) * itemSize;
+  const maxScrollPosition = misc.getMaxScrollPosition();
+  const position = token === 'last' ? maxScrollPosition : (indexToReplace - 1 + minIndex - 1) * itemSize;
   const newItem = generateItem(indexToReplace);
   newItem.text += '*';
 
+  // replace at the Datasource level
   replaceOne(indexToReplace, newItem);
 
+  // replace at the Viewport level (Adapter)
   await adapter.replace({
     predicate: ({ $index }) => $index === indexToReplace,
     items: [newItem]
   });
 
   await misc.scrollMinMax();
-  adapter.fix({ scrollPosition });
-  await misc.relaxNext();
 
-  expect(adapter.firstVisible.$index).toEqual(indexToReplace);
+  // scroll to replaced item
+  if (misc.getScrollPosition() !== position) {
+    adapter.fix({ scrollPosition: position });
+    await misc.relaxNext();
+  }
+
+  if (token === 'last') {
+    expect(adapter.lastVisible.$index).toEqual(indexToReplace);
+  } else {
+    expect(adapter.firstVisible.$index).toEqual(indexToReplace);
+  }
   expect(misc.getElementText(indexToReplace)).toEqual(indexToReplace + ': ' + newItem.text);
   done();
 };
 
 describe('Adapter Replace Spec', () => {
 
-  describe('simple replacement', () =>
+  describe('single replacement', () =>
     configList.forEach(config =>
       makeTest({
-        title: 'should work',
+        title: `should work (${config.custom.token})`,
         config,
         it: shouldReplace(config)
       })

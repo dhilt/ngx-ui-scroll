@@ -15,17 +15,18 @@ export const getBaseAdapterProcess = (process: AdapterProcess) =>
     static process: AdapterProcess = process;
 
     static parseInput<T>(scroller: Scroller, options: T): IParseInput<T> {
-      const inputData = validate(options, ADAPTER_METHODS[process]);
-      const result: IParseInput<T> = { data: inputData };
+      const result: IParseInput<T> = {
+        data: validate(options, ADAPTER_METHODS[process])
+      };
 
-      if (inputData.isValid) {
-        result.params = Object.entries(inputData.params)
+      if (result.data.isValid) {
+        result.params = Object.entries(result.data.params)
           .reduce((acc, [key, { value }]) => ({
             ...acc,
             [key]: value
           }), {} as T);
       } else {
-        scroller.logger.log(() => inputData.showErrors());
+        scroller.logger.log(() => result.data.showErrors());
         scroller.workflow.call({
           process,
           status: ProcessStatus.error,

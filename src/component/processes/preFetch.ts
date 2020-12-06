@@ -50,7 +50,7 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
   }
 
   static getStartDelta(scroller: Scroller): number { // calculate size before start index
-    const { buffer, viewport: { offset }, state } = scroller;
+    const { buffer, viewport: { offset } } = scroller;
     let startDelta = 0;
     if (offset) {
       startDelta += offset;
@@ -58,7 +58,7 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
     if (!buffer.hasItemSize) {
       return startDelta;
     }
-    for (let index = buffer.finiteAbsMinIndex; index < state.startIndex; index++) {
+    for (let index = buffer.finiteAbsMinIndex; index < buffer.startIndex; index++) {
       startDelta += buffer.getSizeByIndex(index);
     }
     scroller.logger.log(() => [
@@ -70,7 +70,7 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
   static setFirstIndex(scroller: Scroller) {
     const { state, buffer } = scroller;
     const { positions: { start }, first } = state.fetch;
-    let firstIndex = state.startIndex;
+    let firstIndex = buffer.startIndex;
     let firstIndexPosition = 0;
     if (state.cycle.innerLoop.isInitial) {
       scroller.logger.log(`skipping fetch backward direction [initial loop]`);
@@ -114,12 +114,12 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
   }
 
   static setLastIndex(scroller: Scroller) {
-    const { state: { fetch, startIndex, cycle }, buffer, settings } = scroller;
+    const { state: { fetch, cycle }, buffer, settings } = scroller;
     const { positions: { relative, end }, first, last } = fetch;
     let lastIndex;
     if (!buffer.hasItemSize) {
       // just to fetch forward bufferSize items if neither averageItemSize nor itemSize are present
-      lastIndex = startIndex + settings.bufferSize - 1;
+      lastIndex = buffer.startIndex + settings.bufferSize - 1;
       scroller.logger.log(`forcing fetch forward direction [no item size]`);
     } else {
       let index = first.indexBuffer as number;

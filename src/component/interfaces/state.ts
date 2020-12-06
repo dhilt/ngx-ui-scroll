@@ -29,17 +29,11 @@ export interface ScrollState {
 
 export interface State {
   version: string;
-
   initTime: number;
-  startIndex: number;
-
   cycle: WorkflowCycleModel;
-
   fetch: FetchModel;
   clip: ClipModel;
   render: RenderModel;
-
   scrollState: ScrollState;
-
   time: number;
 }

@@ -216,4 +216,31 @@ describe('Bug Spec', () => {
     })
   );
 
+  describe('remove with increase', () =>
+    makeTest({
+      title: 'should shift startIndex',
+      config: {
+        datasourceName: 'limited-1-100-no-delay',
+        datasourceSettings: { adapter: true, bufferSize: 5, startIndex: 1, minIndex: 1, maxIndex: 100 },
+      },
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        const { settings: { minIndex, maxIndex }, buffer, buffer: { startIndex } } = misc.scroller;
+        const toRemove = [1, 2, 3, 4, 5];
+        await misc.adapter.remove({
+          predicate: ({ $index }) => toRemove.includes($index),
+          increase: true
+        });
+        (misc.datasource as any).setProcessGet((result: IndexedItem[]) =>
+          removeItems(result, toRemove, minIndex, maxIndex, true)
+        );
+        expect(buffer.startIndex).toBe(startIndex + toRemove.length);
+        await misc.scrollMinMax();
+        const maxItemsCount = Math.ceil(misc.getViewportSize() * 2 / misc.getItemSize());
+        expect(buffer.size).toBeLessThan(maxItemsCount);
+        done();
+      }
+    })
+  );
+
 });

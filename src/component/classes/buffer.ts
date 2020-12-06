@@ -19,22 +19,23 @@ export class Buffer {
   eofSource: Subject<boolean>;
   minIndexUser: number;
   maxIndexUser: number;
+  startIndexUser: number;
+  startIndex: number;
 
-  private startIndex: number;
   private pristine: boolean;
   private cache: Cache;
   readonly logger: Logger;
 
-  constructor(settings: Settings, startIndex: number, logger: Logger, $items?: BehaviorSubject<Item[]>) {
+  constructor(settings: Settings, logger: Logger, $items?: BehaviorSubject<Item[]>) {
+    this.logger = logger;
     this.$items = $items || new BehaviorSubject<Item[]>([]);
     this.bofSource = new Subject<boolean>();
     this.eofSource = new Subject<boolean>();
     this.cache = new Cache(settings.itemSize, logger);
+    this.startIndexUser = settings.startIndex;
     this.minIndexUser = settings.minIndex;
     this.maxIndexUser = settings.maxIndex;
     this.reset();
-    this.startIndex = startIndex;
-    this.logger = logger;
   }
 
   dispose(forever?: boolean) {
@@ -54,12 +55,30 @@ export class Buffer {
     this.cache.reset();
     this.absMinIndex = this.minIndexUser;
     this.absMaxIndex = this.maxIndexUser;
-    if (typeof startIndex !== 'undefined') {
-      this.startIndex = startIndex;
-    }
+    this.setCurrentStartIndex(startIndex);
     this._bof = false;
     this._eof = false;
     this.pristine = false;
+  }
+
+  setCurrentStartIndex(newStartIndex?: any) {
+    const min = this.minIndexUser;
+    const max = this.maxIndexUser;
+    const start = this.startIndexUser;
+    let index = Number(newStartIndex);
+    if (Number.isNaN(index)) {
+      this.logger.log(() => `fallback startIndex to settings.startIndex (${start})`);
+      index = start;
+    }
+    if (index < min) {
+      this.logger.log(() => `setting startIndex to settings.minIndex (${min}) because ${index} < ${min}`);
+      index = min;
+    }
+    if (index > max) {
+      this.logger.log(() => `setting startIndex to settings.maxIndex (${max}) because ${index} > ${max}`);
+      index = max;
+    }
+    this.startIndex = index;
   }
 
   set items(items: Item[]) {
@@ -227,6 +246,7 @@ export class Buffer {
       this.absMaxIndex -= toRemove.length;
     } else {
       this.absMinIndex += toRemove.length;
+      this.startIndex += toRemove.length;
     }
     if (!virtual) {
       this.items = result;

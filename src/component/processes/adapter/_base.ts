@@ -14,7 +14,7 @@ export const getBaseAdapterProcess = (process: AdapterProcess) =>
 
     static process: AdapterProcess = process;
 
-    static parseInput<T>(scroller: Scroller, options: T): IParseInput<T> {
+    static parseInput<T>(scroller: Scroller, options: T, ignoreErrors = false): IParseInput<T> {
       const result: IParseInput<T> = {
         data: validate(options, ADAPTER_METHODS[process])
       };
@@ -27,11 +27,13 @@ export const getBaseAdapterProcess = (process: AdapterProcess) =>
           }), {} as T);
       } else {
         scroller.logger.log(() => result.data.showErrors());
-        scroller.workflow.call({
-          process,
-          status: ProcessStatus.error,
-          payload: { error: `Wrong argument of the "${process}" method call` }
-        });
+        if (!ignoreErrors) {
+          scroller.workflow.call({
+            process,
+            status: ProcessStatus.error,
+            payload: { error: `Wrong argument of the "${process}" method call` }
+          });
+        }
       }
 
       return result;

@@ -68,10 +68,30 @@ export const getDatasourceReplacementsClass = (settings: Settings) =>
       };
     }
 
-    replaceOne(idToReplace: number, item: Item) {
+    replaceOneToOne(idToReplace: number, item: Item) {
       const itemToReplace = this.data.find(({ id }) => id === idToReplace);
       if (itemToReplace) {
         Object.assign(itemToReplace, item);
       }
+    }
+
+    replaceManyToOne(idsToReplace: number[], item: Item) {
+      idsToReplace.sort((a, b) => a - b);
+      const minId = idsToReplace[0];
+      const maxId = idsToReplace.slice(1).reduce((acc, id) =>
+        // only continuous series allowed
+        id === acc + 1 ? id : acc, minId
+      );
+      const diff = maxId - minId;
+      this.data = this.data.reduce((acc, _item: Item) => {
+        if (_item.id < minId) {
+          acc.push(_item);
+        } else if (_item.id === minId) {
+          acc.push(item);
+        } else if (_item.id > maxId) {
+          acc.push({ ..._item, id: _item.id - diff });
+        }
+        return acc;
+      }, [] as Item[]);
     }
   };

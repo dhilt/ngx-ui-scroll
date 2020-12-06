@@ -147,7 +147,7 @@ const onFunctionWithXAndMoreArguments = (argsCount: number) => (value: any): Val
 
 const onOneOf = (tokens: string[], must: boolean) => (value: any, context: any): ValidatedValue => {
   const errors = [];
-  const isSet = typeof value !== 'undefined';
+  const isSet = value !== void 0;
   let noOneIsPresent = !isSet;
   if (!Array.isArray(tokens) || !tokens.length) {
     errors.push(`token list must be passed`);

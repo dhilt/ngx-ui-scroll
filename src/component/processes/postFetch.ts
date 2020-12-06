@@ -57,7 +57,7 @@ export default class PostFetch extends getBaseProcess(CommonProcess.postFetch) {
     if (items.length < fetch.count) {
       if (cycle.innerLoop.isInitial) {
         // let's treat initial poor fetch as startIndex-bof
-        fetchIndex = scroller.state.startIndex;
+        fetchIndex = buffer.startIndex;
       } else if ((fetch.first.index as number) < buffer.minIndex) { // normal bof
         fetchIndex = buffer.minIndex - items.length;
       }

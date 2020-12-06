@@ -124,7 +124,7 @@ const checkReset = (config: TestBedConfig, misc: Misc, oldCheck: ICheckReset) =>
   const { settings, get, interruption } = config.custom;
   let firstIndex = oldCheck.firstVisible;
   let lastIndex = oldCheck.lastVisible;
-  if (settings && typeof settings.startIndex !== 'undefined') {
+  if (settings && settings.startIndex !== void 0) {
     firstIndex = settings.startIndex;
     lastIndex = firstIndex + (oldCheck.lastVisible - oldCheck.firstVisible);
   }

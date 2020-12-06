@@ -1,4 +1,4 @@
-import { Observable, Subscription, Observer, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';
@@ -52,8 +52,8 @@ export class Scroller {
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
-    this.state = new State(version, this.settings, this.logger, loopCount, cycleCount);
-    this.buffer = new Buffer(this.settings, this.state.startIndex, this.logger, $items);
+    this.state = new State(version, this.settings, loopCount, cycleCount);
+    this.buffer = new Buffer(this.settings, this.logger, $items);
     this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
     this.logger.object('uiScroll settings object', this.settings, true);
 
@@ -83,7 +83,7 @@ export class Scroller {
   }
 
   init(dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessSubject>) {
-    this.viewport.reset(0);
+    this.viewport.reset(this.buffer.startIndex, 0);
     this.logger.stat('initialization');
     this.adapter.init(this.buffer, this.logger, dispose$, onAdapterRun$);
   }

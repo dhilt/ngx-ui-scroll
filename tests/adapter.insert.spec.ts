@@ -1,7 +1,6 @@
-import { Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { generateItems, Item, insertItems } from './miscellaneous/items';
+import { generateItems, insertItems, IndexedItem } from './miscellaneous/items';
 
 describe('Adapter Insert Spec', () => {
 
@@ -25,28 +24,28 @@ describe('Adapter Insert Spec', () => {
   };
 
   const configList: TestBedConfig[] = [{
-      ...configBase
+    ...configBase
   }, {
-      ...configBase,
-      custom: {
-        ...configBase.custom,
-        before: true
-      }
-    }, {
-      ...configBase,
-      datasourceSettings: {
-        ...configBase.datasourceSettings,
-        startIndex: MAX
-      },
-      custom: { before: false, index: MAX, amount: 3, desc: ' (append case)' }
-    }, {
-      ...configBase,
-      datasourceSettings: {
-        ...configBase.datasourceSettings,
-        startIndex: MIN
-      },
-      custom: { before: true, index: 1, amount: 3, desc: ' (prepend case)' }
+    ...configBase,
+    custom: {
+      ...configBase.custom,
+      before: true
     }
+  }, {
+    ...configBase,
+    datasourceSettings: {
+      ...configBase.datasourceSettings,
+      startIndex: MAX
+    },
+    custom: { before: false, index: MAX, amount: 3, desc: ' (append case)' }
+  }, {
+    ...configBase,
+    datasourceSettings: {
+      ...configBase.datasourceSettings,
+      startIndex: MIN
+    },
+    custom: { before: true, index: 1, amount: 3, desc: ' (prepend case)' }
+  }
   ];
 
   const configOutList: TestBedConfig[] = [{
@@ -136,7 +135,7 @@ describe('Adapter Insert Spec', () => {
 
   const shouldCheckStaticProcess = (
     config: TestBedConfig, shouldInsert: boolean, callback?: Function
-) => (misc: Misc) => (done: any) => {
+  ) => (misc: Misc) => (done: any) => {
     const { adapter } = misc;
     const { before, decrease, amount, index } = config.custom;
     spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -145,7 +144,7 @@ describe('Adapter Insert Spec', () => {
       }
       // insert items to the original datasource
       (misc.datasource as any).setProcessGet((
-        result: any[], _index: number, _count: number, _min: number, _max: number
+        result: IndexedItem[], _index: number, _count: number, _min: number, _max: number
       ) =>
         insertItems(result, _index, _count, _min, _max, index + (before ? 0 : 1), amount, decrease)
       );

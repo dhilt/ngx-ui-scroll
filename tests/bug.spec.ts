@@ -1,8 +1,7 @@
 import { makeTest } from './scaffolding/runner';
-import { generateItem, Item, removeItems } from './miscellaneous/items';
+import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { configureTestBedSub } from './scaffolding/testBed';
-import { Settings, DevSettings, DatasourceGet } from '../src/component/interfaces/index';
 
 describe('Bug Spec', () => {
 
@@ -102,60 +101,22 @@ describe('Bug Spec', () => {
     makeTest({
       title: 'should not extend forward padding element',
       config: {
-        datasourceClass: class {
-          private messages: Item[] = [];
-          private MIN = 0;
-          private START = 0;
-          private COUNT = 7;
-
-          settings: Settings;
-          devSettings: DevSettings;
-          get: DatasourceGet;
-
-          constructor() {
-            const inverse = true;
-
-            for (let i = this.MIN; i < this.MIN + this.COUNT; ++i) {
-              const item = generateItem(i);
-              if (i === 4) {
-                item.size = 93;
-              }
-              this.messages.push(item);
-            }
-
-            this.settings = {
-              startIndex: inverse ? this.MIN - this.START - 1 : this.START,
-              bufferSize: this.COUNT,
-              adapter: true,
-              itemSize: 20,
-              inverse
-            };
-
-            this.get = (index: number, count: number, success: Function) => {
-              const data = [];
-              const start = inverse ? -index - count + this.MIN : index;
-              const end = start + count - 1;
-              if (start <= end) {
-                for (let i = start; i <= end; i++) {
-                  if (!this.messages[i]) {
-                    continue;
-                  }
-                  data.push(this.messages[i]);
-                }
-              }
-              success(inverse ? data.reverse() : data);
-            };
-          }
+        datasourceName: 'limited-1-10-with-big-item-4',
+        datasourceSettings: {
+          startIndex: -1,
+          bufferSize: 7,
+          adapter: true,
+          itemSize: 20,
+          inverse: true
         },
         templateSettings: { viewportHeight: 200, dynamicSize: 'size' }
       },
-      it: (misc: Misc) => (done: Function) => {
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { scroller: { viewport } } = misc;
-          expect(viewport.paddings.backward.size).toEqual(0);
-          expect(viewport.paddings.forward.size).toEqual(0);
-          done();
-        });
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        const { paddings } = misc.scroller.viewport;
+        expect(paddings.backward.size).toEqual(0);
+        expect(paddings.forward.size).toEqual(0);
+        done();
       }
     })
   );
@@ -167,13 +128,12 @@ describe('Bug Spec', () => {
       misc = new Misc(configureTestBedSub());
     });
 
-    it('should work', (done) => {
-      const { adapter, workflow, testComponent } = misc;
-      spyOn(workflow, 'finalize').and.callFake(() => {
-        expect(testComponent.firstVisible).toEqual(adapter.firstVisible);
-        expect(testComponent.firstVisible.$index).toEqual(1);
-        done();
-      });
+    it('should work', async (done) => {
+      const { adapter, testComponent } = misc;
+      await misc.relaxNext();
+      expect(testComponent.firstVisible).toEqual(adapter.firstVisible);
+      expect(testComponent.firstVisible.$index).toEqual(1);
+      done();
     });
   });
 
@@ -192,7 +152,7 @@ describe('Bug Spec', () => {
         expect(misc.adapter.firstVisible.$index).toEqual(startIndex);
 
         // remove item from the original datasource
-        (misc.datasource as any).setProcessGet((result: any[]) =>
+        (misc.datasource as any).setProcessGet((result: IndexedItem[]) =>
           removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i), -99, 100)
         );
         await misc.adapter.remove({

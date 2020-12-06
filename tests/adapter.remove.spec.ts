@@ -1,6 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { removeItems } from './miscellaneous/items';
+import { IndexedItem, removeItems } from './miscellaneous/items';
 import { AdapterProcess, ItemsPredicate } from '../src/component/interfaces/index';
 
 const baseConfig: TestBedConfig = {
@@ -121,7 +121,7 @@ const doRemove = async (config: TestBedConfig, misc: Misc, byId = false) => {
   const indexList = remove || [...removeBwd, ...removeFwd];
   const indexListInterrupted = config.custom.interrupted;
   // remove item from the original datasource
-  (misc.datasource as any).setProcessGet((result: any[]) =>
+  (misc.datasource as any).setProcessGet((result: IndexedItem[]) =>
     [removeBwd, removeFwd, remove].forEach(list =>
       list && removeItems(result, list, -99, 100, increase)
     )

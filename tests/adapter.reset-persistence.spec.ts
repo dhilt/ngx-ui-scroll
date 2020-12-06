@@ -5,7 +5,7 @@ import { ADAPTER_PROPS } from '../src/component/classes/adapter/props';
 import { IDatasourceOptional, IAdapter, IDatasource } from '../src/component/interfaces';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { datasourceStore } from './scaffolding/datasources';
+import { datasourceStore } from './scaffolding/datasources/store';
 import { Misc } from './miscellaneous/misc';
 
 const ADAPTER_PROPS_STUB = ADAPTER_PROPS(null);

@@ -7,28 +7,35 @@ export interface Item {
   size?: number;
 }
 
-export const generateItem = (index: number, dynamicSize = false, suffix = ''): Item => ({
-  id: index,
-  text: 'item #' + index + suffix,
-  ...(dynamicSize ? { size: getDynamicSizeByIndex(index) } : {})
-});
+export interface IndexedItem {
+  $index: number;
+  data: Item;
+}
 
-const generateItem2 = (id: number, index: number, dynamicSize = false): Item => ({
+type DynamicSize = boolean | number;
+
+const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSize, suffix = ''): Item => ({
   id,
-  text: 'item #' + index,
-  ...(dynamicSize ? { size: getDynamicSizeByIndex(index) } : {})
+  text: 'item #' + index + suffix,
+  ...(
+    typeof dynamicSize === 'number'
+      ? { size: dynamicSize as number }
+      : (
+        dynamicSize
+          ? { size: getDynamicSizeByIndex(index) }
+          : {}
+      )
+  )
 });
 
-export const generateItems = (amount: number, lastIndex: number): Item[] => {
-  const items = [];
-  for (let i = 1; i <= amount; i++) {
-    items.push(generateItem(lastIndex + i));
-  }
-  return items;
-};
+export const generateItem = (index: number, dynamicSize: DynamicSize = false, suffix = ''): Item =>
+  generateItemWithId(index, index, dynamicSize, suffix);
 
-export const removeItems = (items: Item[], idListToRemove: number[], min: number, max: number, increase?: boolean) => {
-  items.forEach((item: Item) => {
+export const generateItems = (length: number, lastIndex: number): Item[] =>
+  Array.from({ length }).map((j, i) => generateItem(lastIndex + i + 1));
+
+export const removeItems = (items: IndexedItem[], idListToRemove: number[], min: number, max: number, increase?: boolean) => {
+  items.forEach(({ data: item }) => {
     const id = item.id;
     if (
       (!increase && id < getMin(idListToRemove)) ||
@@ -39,7 +46,7 @@ export const removeItems = (items: Item[], idListToRemove: number[], min: number
     const offset = (increase ? -1 : 1) * idListToRemove.length;
     Object.assign(item, generateItem(item.id + offset));
   });
-  [...items].reverse().forEach(({ id }) =>
+  [...items].reverse().forEach(({ data: { id } }) =>
     !increase
       ? (id > max ? items.pop() : null)
       : (id < min ? items.shift() : null)
@@ -47,7 +54,7 @@ export const removeItems = (items: Item[], idListToRemove: number[], min: number
 };
 
 export const insertItems = (
-  _items: Item[],
+  _items: IndexedItem[],
   _index: number,
   _count: number,
   _min: number,
@@ -55,31 +62,33 @@ export const insertItems = (
   index: number,
   count: number,
   decrease: boolean,
-  dynamicSize?: boolean
+  dynamicSize?: DynamicSize
 ) => {
   let i = 1;
-  const items: Item[] = [];
+  const items: IndexedItem[] = [];
   const min = _min - (decrease ? count : 0);
   const max = _max + (!decrease ? count : 0);
   const start = Math.max(min, _index);
   const end = Math.min(_index + _count - 1, max);
   if (start <= end) {
-    for (let j = start; j <= end; j++) {
-      if (j < index - (decrease ? count : 0)) {
-        items.push(generateItem2(j, decrease ? j + count : j, dynamicSize));
-      } else if (j < index + (!decrease ? count : 0)) {
-        items.push(generateItem2(j, Math.max(_max, _index - 1) + i++, dynamicSize));
+    for (let id = start; id <= end; id++) {
+      let newIndex;
+      if (id < index - (decrease ? count : 0)) {
+        newIndex = decrease ? id + count : id;
+      } else if (id < index + (!decrease ? count : 0)) {
+        newIndex = Math.max(_max, _index - 1) + i++;
       } else {
-        items.push(generateItem2(j, decrease ? j : j - count, dynamicSize));
+        newIndex = decrease ? id : id - count;
       }
+      items.push({ $index: newIndex, data: generateItemWithId(id, newIndex, dynamicSize) });
     }
   }
   _items.length = 0;
-  items.forEach((item: Item) => _items.push(item));
+  items.forEach(item => _items.push(item));
 };
 
 export const appendItems = (
-  _items: Item[],
+  _items: IndexedItem[],
   _index: number,
   _count: number,
   _min: number,

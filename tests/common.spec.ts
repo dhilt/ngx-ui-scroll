@@ -1,7 +1,6 @@
 import { async, ComponentFixture } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { BehaviorSubject } from 'rxjs';
 
 import { UiScrollComponent } from '../src/ui-scroll.component';
 import { Workflow } from '../src/component/workflow';
@@ -10,7 +9,7 @@ import { INVALID_DATASOURCE_PREFIX } from '../src/component/scroller';
 import { Settings, Direction, IAdapter } from '../src/component/interfaces';
 
 import { configureTestBed, configureTestBedTwo } from './scaffolding/testBed';
-import { defaultDatasourceClass, generateDatasourceClass } from './scaffolding/datasources';
+import { generateDatasourceClass } from './scaffolding/datasources/class';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 import { makeTest } from './scaffolding/runner';
@@ -30,7 +29,7 @@ describe('Component', () => {
       return;
     }
     reconfigure = false;
-    const fixture = configureTestBed(defaultDatasourceClass, defaultTemplate);
+    const fixture = configureTestBed(generateDatasourceClass('initial'), defaultTemplate);
     misc = new Misc(fixture);
   }));
 

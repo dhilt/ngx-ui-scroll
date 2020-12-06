@@ -3,7 +3,7 @@ import { ComponentFixtureAutoDetect } from '@angular/core/testing';
 import { Type } from '@angular/core';
 
 import { UiScrollModule } from '../../src/ui-scroll.module';
-import { DatasourceService } from './datasources';
+import { DatasourceService } from './datasources/class';
 import { ScrollerTestComponent, TwoScrollersTestComponent, ScrollerSubTestComponent } from './testComponent';
 
 export const configureTestBed = (

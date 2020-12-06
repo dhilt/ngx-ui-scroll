@@ -5,7 +5,7 @@ import { Settings, DevSettings } from '../../src/component/interfaces';
 import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
-import { generateDatasourceClass } from './datasources';
+import { generateDatasourceClass } from './datasources/class';
 
 export interface TestBedConfig {
   datasourceClass?: any;

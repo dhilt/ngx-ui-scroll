@@ -1,6 +1,6 @@
 import { AdapterProcess, IDatasourceOptional, Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { datasourceStore } from './scaffolding/datasources';
+import { datasourceStore } from './scaffolding/datasources/store';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
 

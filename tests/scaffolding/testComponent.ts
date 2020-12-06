@@ -4,7 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { IDatasource, ItemAdapter } from '../../src/component/interfaces';
 import { Datasource } from '../../src/component/classes/datasource';
 
-import { DatasourceService } from './datasources';
+import { DatasourceService } from './datasources/class';
 import { defaultTemplate, TemplateSettings } from './templates';
 
 export interface TestComponentInterface {

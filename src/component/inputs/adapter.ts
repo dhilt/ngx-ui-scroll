@@ -1,5 +1,5 @@
 import { VALIDATORS } from './validation';
-import { DatasourceProps } from './datasource';
+import { DatasourceProps as AdapterResetParams } from './datasource';
 import { ICommonProps, AdapterProcessMap, AdapterProcess as Process } from '../interfaces/index';
 
 const {
@@ -18,14 +18,14 @@ const {
 enum AdapterNoParams { }
 const NO_METHOD_PARAMS: ICommonProps<AdapterNoParams> = {};
 
-const RESET_METHOD_PARAMS: ICommonProps<DatasourceProps> = {
-  [DatasourceProps.get]: {
+const RESET_METHOD_PARAMS: ICommonProps<AdapterResetParams> = {
+  [AdapterResetParams.get]: {
     validators: [FUNC_WITH_X_AND_MORE_ARGUMENTS(2)]
   },
-  [DatasourceProps.settings]: {
+  [AdapterResetParams.settings]: {
     validators: [OBJECT]
   },
-  [DatasourceProps.devSettings]: {
+  [AdapterResetParams.devSettings]: {
     validators: [OBJECT]
   },
 };
@@ -164,7 +164,7 @@ const FIX_METHOD_PARAMS: ICommonProps<AdapterFixParams> = {
 };
 
 export const AdapterMethods: AdapterProcessMap<any> = {
-  [Process.reset]: DatasourceProps,
+  [Process.reset]: AdapterResetParams,
   [Process.reload]: AdapterReloadParams,
   [Process.append]: AdapterAppendParams,
   [Process.check]: AdapterNoParams,

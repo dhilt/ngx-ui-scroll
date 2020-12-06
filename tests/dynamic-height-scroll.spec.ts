@@ -1,8 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { Stat } from './miscellaneous/stat';
-import { appendItems, generateItems } from './miscellaneous/items';
-import { filter, take } from 'rxjs/operators';
+import { appendItems, generateItems, IndexedItem } from './miscellaneous/items';
 
 const configFetch: TestBedConfig = {
   datasourceName: 'limited-1-20-dynamic-size-special',
@@ -46,17 +45,16 @@ const scroll = (misc: Misc, position: number) => {
 };
 
 const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Function) => {
-  const { scroller, adapter } = misc;
   const { MAX, AMOUNT } = config.custom;
   await misc.relaxNext();
   // append items to the original datasource
   (misc.datasource as any).setProcessGet((
-    result: any[], _index: number, _count: number, _min: number, _max: number
+    result: IndexedItem[], _index: number, _count: number, _min: number, _max: number
   ) =>
     appendItems(result, _index, _count, _min, _max, AMOUNT, true)
   );
   // append items to the UiScroll
-  await adapter.append({
+  await misc.adapter.append({
     items: generateItems(AMOUNT, MAX),
     eof: true
   });

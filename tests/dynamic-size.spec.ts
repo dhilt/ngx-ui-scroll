@@ -8,6 +8,7 @@ import {
   getDynamicSizeData,
   getDynamicSumSize
 } from './miscellaneous/dynamicSize';
+import { IndexedItem } from './miscellaneous/items';
 
 const configList: TestBedConfig[] = [{
   datasourceName: 'limited--50-99-dynamic-size',
@@ -242,8 +243,8 @@ describe('Zero Size Spec', () => {
           const { scroller: { viewport }, adapter, datasource } = misc;
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-            (datasource as any).setProcessGet((result: any[]) =>
-              result.forEach(item => item.size = 20)
+            (datasource as any).setProcessGet((result: IndexedItem[]) =>
+              result.forEach(({ data }) => data.size = 20)
             );
             adapter.fix({
               updater: ({ element, data }) => {

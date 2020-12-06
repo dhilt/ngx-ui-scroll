@@ -1,8 +1,10 @@
 import { getBaseAdapterProcess } from './_base';
 import { Scroller } from '../../scroller';
-import { AdapterProcess, ProcessStatus, AdapterReplaceOptions, AdapterInsertOptions } from '../../interfaces/index';
 import Remove from './remove';
 import Insert from './insert';
+import {
+  AdapterProcess, ProcessStatus, AdapterReplaceOptions, AdapterInsertOptions, AdapterRemoveOptions
+} from '../../interfaces/index';
 
 export default class Replace extends getBaseAdapterProcess(AdapterProcess.replace) {
 
@@ -12,8 +14,7 @@ export default class Replace extends getBaseAdapterProcess(AdapterProcess.replac
       return;
     }
 
-    const shouldRemove = Remove.doRemove(scroller, params, true);
-    if (!shouldRemove) {
+    if (!Replace.doRemove(scroller, params)) {
       scroller.logger.log(() => 'no items to replace (not found)');
       return scroller.workflow.call({
         process: Replace.process,
@@ -21,13 +22,7 @@ export default class Replace extends getBaseAdapterProcess(AdapterProcess.replac
       });
     }
 
-    const insertOptions: AdapterInsertOptions = {
-      items: params.items,
-      before: params.predicate,
-      decrease: false
-    };
-    const shouldInsert = Insert.doInsert(scroller, insertOptions);
-    if (!shouldInsert) {
+    if (!Replace.doInsert(scroller, params)) {
       return scroller.workflow.call({
         process: Replace.process,
         status: ProcessStatus.done
@@ -38,6 +33,23 @@ export default class Replace extends getBaseAdapterProcess(AdapterProcess.replac
       process: Replace.process,
       status: ProcessStatus.next
     });
+  }
+
+  static doRemove(scroller: Scroller, params: AdapterReplaceOptions) {
+    const removeOptions: AdapterRemoveOptions = {
+      predicate: params.predicate,
+      increase: params.increase
+    };
+    return Remove.doRemove(scroller, removeOptions, true);
+  }
+
+  static doInsert(scroller: Scroller, params: AdapterReplaceOptions) {
+    const insertOptions: AdapterInsertOptions = {
+      items: params.items,
+      after: params.predicate,
+      decrease: params.increase
+    };
+    return Insert.doInsert(scroller, insertOptions);
   }
 
 }

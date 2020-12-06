@@ -60,6 +60,7 @@ export interface AdapterInsertOptions {
 export interface AdapterReplaceOptions {
   items: any[];
   predicate: ItemsPredicate;
+  increase?: boolean;
 }
 
 export interface AdapterFixOptions {

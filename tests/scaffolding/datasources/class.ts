@@ -75,7 +75,7 @@ export const getDatasourceReplacementsClass = (settings: Settings) =>
       }
     }
 
-    replaceManyToOne(idsToReplace: number[], item: Item) {
+    replaceManyToOne(idsToReplace: number[], item: Item, increase: boolean) {
       idsToReplace.sort((a, b) => a - b);
       const minId = idsToReplace[0];
       const maxId = idsToReplace.slice(1).reduce((acc, id) =>
@@ -84,12 +84,12 @@ export const getDatasourceReplacementsClass = (settings: Settings) =>
       );
       const diff = maxId - minId;
       this.data = this.data.reduce((acc, _item: Item) => {
-        if (_item.id < minId) {
+        if ((!increase && _item.id < minId) || (increase && _item.id > maxId)) {
           acc.push(_item);
-        } else if (_item.id === minId) {
+        } else if ((increase && _item.id === minId) || (!increase && _item.id === maxId)) {
           acc.push(item);
-        } else if (_item.id > maxId) {
-          acc.push({ ..._item, id: _item.id - diff });
+        } else if ((!increase && _item.id > maxId) || (increase && _item.id < minId)) {
+          acc.push({ ..._item, id: _item.id + (increase ? 1 : -1) * diff });
         }
         return acc;
       }, [] as Item[]);

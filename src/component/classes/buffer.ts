@@ -271,6 +271,7 @@ export class Buffer {
     ];
     if (decrement) {
       this.absMinIndex -= count;
+      this.startIndex -= count;
     } else {
       this.absMaxIndex += count;
     }

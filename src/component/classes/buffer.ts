@@ -246,6 +246,7 @@ export class Buffer {
       this.absMaxIndex -= toRemove.length;
     } else {
       this.absMinIndex += toRemove.length;
+      this.startIndex += toRemove.length;
     }
     if (!virtual) {
       this.items = result;

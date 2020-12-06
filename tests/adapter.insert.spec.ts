@@ -143,7 +143,7 @@ describe('Adapter Insert Spec', () => {
         return;
       }
       // insert items to the original datasource
-      (misc.datasource as any).setProcessGet((
+      misc.setDatasourceProcessor((
         result: IndexedItem[], _index: number, _count: number, _min: number, _max: number
       ) =>
         insertItems(result, _index, _count, _min, _max, index + (before ? 0 : 1), amount, decrease)

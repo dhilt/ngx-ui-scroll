@@ -8,7 +8,6 @@ import {
   getDynamicSizeData,
   getDynamicSumSize
 } from './miscellaneous/dynamicSize';
-import { IndexedItem } from './miscellaneous/items';
 
 const configList: TestBedConfig[] = [{
   datasourceName: 'limited--50-99-dynamic-size',
@@ -219,14 +218,16 @@ describe('Zero Size Spec', () => {
     makeTest({
       config: {
         ...config,
-        datasourceName: 'limited-1-100-zero-size-started-from-6'
+        datasourceName: 'limited-1-100-processor'
       },
       title: 'should stop the Workflow after the second loop',
-      it: (misc: Misc) => (done: Function) =>
+      it: (misc: Misc) => (done: Function) => {
+        misc.setItemProcessor(({ $index, data }) => data.size = $index >= 6 ? 0 : 20);
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           expect(misc.innerLoopCount).toEqual(2);
           done();
-        })
+        });
+      }
     })
   );
 
@@ -240,12 +241,10 @@ describe('Zero Size Spec', () => {
       title: 'should continue the Workflow after re-size and check',
       it: (misc: Misc) => (done: Function) =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { scroller: { viewport }, adapter, datasource } = misc;
+          const { scroller: { viewport }, adapter } = misc;
           if (misc.workflow.cyclesDone === 1) {
             expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-            (datasource as any).setProcessGet((result: IndexedItem[]) =>
-              result.forEach(({ data }) => data.size = 20)
-            );
+            misc.setItemProcessor(({ data }) => data.size = 20);
             adapter.fix({
               updater: ({ element, data }) => {
                 data.size = 20;

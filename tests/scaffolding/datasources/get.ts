@@ -1,6 +1,7 @@
 import { Observable, Observer } from 'rxjs';
 
 import { generateItem, IndexedItem, Item } from '../../miscellaneous/items';
+import { DynamicSizeArg } from '../../miscellaneous/dynamicSize';
 
 const datasourceGetInfinite = (index: number, count: number, suffix?: string) => {
   const data = [];
@@ -11,7 +12,7 @@ const datasourceGetInfinite = (index: number, count: number, suffix?: string) =>
 };
 
 export const getLimitedData = (
-  index: number, count: number, min: number, max: number, dynamicSize: boolean | number, inverse: boolean, processor?: any
+  index: number, count: number, min: number, max: number, dynamicSize: DynamicSizeArg, inverse: boolean, processor?: any
 ): Item[] => {
   const result: IndexedItem[] = [];
   const start = inverse ? -index - count : index;
@@ -64,7 +65,7 @@ export const infiniteDatasourceGet = (type?: DatasourceType, delay?: number, suf
   };
 
 export const limitedDatasourceGet = (
-  min: number, max: number, dynamicSize: boolean, type: DatasourceType, delay: number, process?: boolean
+  min: number, max: number, dynamicSize: DynamicSizeArg, type: DatasourceType, delay: number, process?: boolean
 ) =>
   (index: number, count: number, success?: (data: any[]) => any, reject?: Function, processor?: () => any) => {
     switch (type) {
@@ -83,16 +84,4 @@ export const limitedDatasourceGet = (
             getLimitedData(index, count, min, max, dynamicSize, false, process && processor)), delay
           ));
     }
-  };
-
-export const limitedDatasourceSpecialGet = (
-  min: number, max: number, getSizeByIndex?: Function | number
-) => (
-  index: number, count: number, success: Function, reject?: Function, processor?: Function
-) => {
-    const dynamicSize = typeof getSizeByIndex === 'number' ? getSizeByIndex as number : false;
-    if (typeof getSizeByIndex === 'function') {
-      processor = (items: IndexedItem[]) => items.forEach(({ $index, data }) => data.size = getSizeByIndex($index));
-    }
-    success(getLimitedData(index, count, min, max, dynamicSize, false, processor));
   };

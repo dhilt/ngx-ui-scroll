@@ -5,7 +5,7 @@ import { debounceTime, filter, take } from 'rxjs/operators';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
-import { generateItem } from './items';
+import { generateItem, IndexedItem } from './items';
 
 import { Direction, DatasourceGet, IAdapter } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
@@ -198,6 +198,19 @@ export class Misc {
   delay(ms: number): Promise<void> {
     return new Promise(resolve =>
       setTimeout(() => resolve(), ms)
+    );
+  }
+
+  setDatasourceProcessor(processor: Function) {
+    const setProcessor = (this.datasource as any).setProcessGet;
+    if (typeof processor === 'function') {
+      setProcessor.call(this.datasource, processor);
+    }
+  }
+
+  setItemProcessor(itemUpdater: (item: IndexedItem) => any) {
+    this.setDatasourceProcessor((result: IndexedItem[]) =>
+      result.forEach(itemUpdater)
     );
   }
 }

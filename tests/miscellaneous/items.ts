@@ -1,4 +1,4 @@
-import { getDynamicSizeByIndex } from './dynamicSize';
+import { DynamicSizeArg, getDynamicSizeByIndex } from './dynamicSize';
 import { getMin, getMax } from './common';
 
 export interface Item {
@@ -12,9 +12,7 @@ export interface IndexedItem {
   data: Item;
 }
 
-type DynamicSize = boolean | number;
-
-const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSize, suffix = ''): Item => ({
+const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSizeArg, suffix = ''): Item => ({
   id,
   text: 'item #' + index + suffix,
   ...(
@@ -28,7 +26,7 @@ const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSize
   )
 });
 
-export const generateItem = (index: number, dynamicSize: DynamicSize = false, suffix = ''): Item =>
+export const generateItem = (index: number, dynamicSize: DynamicSizeArg = false, suffix = ''): Item =>
   generateItemWithId(index, index, dynamicSize, suffix);
 
 export const generateItems = (length: number, lastIndex: number): Item[] =>
@@ -62,7 +60,7 @@ export const insertItems = (
   index: number,
   count: number,
   decrease: boolean,
-  dynamicSize?: DynamicSize
+  dynamicSize?: DynamicSizeArg
 ) => {
   let i = 1;
   const items: IndexedItem[] = [];

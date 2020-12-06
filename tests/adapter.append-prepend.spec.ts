@@ -1,5 +1,5 @@
 import { Direction } from '../src/component/interfaces';
-import { makeTest, TestBedConfig, OperationConfig } from './scaffolding/runner';
+import { makeTest, OperationConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { Item } from './miscellaneous/items';
 
@@ -80,7 +80,7 @@ describe('Adapter Append-Prepend Spec', () => {
     [Operation.append]: [...Array(total).keys()].map((i: number) => ({
       id: max - total + i + 1,
       text: 'item #' + (max - total + i + 1)
-     })),
+    })),
     [Operation.prepend]: [...Array(total).keys()].map((i: number) => ({
       id: min + i,
       text: 'item #' + (min + i)

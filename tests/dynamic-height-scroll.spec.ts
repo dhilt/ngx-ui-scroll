@@ -4,7 +4,7 @@ import { Stat } from './miscellaneous/stat';
 import { appendItems, generateItems, IndexedItem } from './miscellaneous/items';
 
 const configFetch: TestBedConfig = {
-  datasourceName: 'limited-1-20-dynamic-size-special',
+  datasourceName: 'limited-1-20-dynamic-size-processor',
   datasourceSettings: {
     startIndex: 1, padding: 0.5, bufferSize: 5, minIndex: 1, maxIndex: 20, itemSize: 20, adapter: true
   },
@@ -25,6 +25,7 @@ const configAppend: TestBedConfig = {
 
 const testConfigFetch = (config: TestBedConfig, misc: Misc, done: Function) => {
   const { scroller, shared } = misc;
+  misc.setItemProcessor(({ $index, data }) => $index === 1 && (data.size = 200));
   let initialFetchCount = 0;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycle = scroller.state.cycle.count;
@@ -48,7 +49,7 @@ const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Functio
   const { MAX, AMOUNT } = config.custom;
   await misc.relaxNext();
   // append items to the original datasource
-  (misc.datasource as any).setProcessGet((
+  misc.setDatasourceProcessor((
     result: IndexedItem[], _index: number, _count: number, _min: number, _max: number
   ) =>
     appendItems(result, _index, _count, _min, _max, AMOUNT, true)

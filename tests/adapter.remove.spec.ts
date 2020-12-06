@@ -121,7 +121,7 @@ const doRemove = async (config: TestBedConfig, misc: Misc, byId = false) => {
   const indexList = remove || [...removeBwd, ...removeFwd];
   const indexListInterrupted = config.custom.interrupted;
   // remove item from the original datasource
-  (misc.datasource as any).setProcessGet((result: IndexedItem[]) =>
+  misc.setDatasourceProcessor((result: IndexedItem[]) =>
     [removeBwd, removeFwd, remove].forEach(list =>
       list && removeItems(result, list, -99, 100, increase)
     )

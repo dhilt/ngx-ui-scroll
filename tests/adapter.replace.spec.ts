@@ -102,6 +102,12 @@ const manyToManyConfigList = [
   })),
 ];
 
+const manyToManyIncreaseConfigList = manyToManyConfigList
+  .filter((i, j) => [0, 5, 8].includes(j))
+  .map(config => ({
+    ...config, custom: { ...config.custom, increase: true } as ICustom
+  }));
+
 const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
   const { adapter } = misc;
@@ -111,7 +117,7 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
   const viewportSize = misc.getScrollableSize();
   const sizeToChange = diff * misc.getItemSize();
   const maxScrollPosition = misc.getMaxScrollPosition() + sizeToChange;
-  const newIndexFirst = indexes[increase ? indexes.length - 1 : 0];
+  const newIndexFirst = indexes[0] - (increase ? diff : 0);
   const newIndexLast = newIndexFirst + amount - 1;
   const newAbsMinIndex = increase ? minIndex - diff : minIndex;
   const position = token === 'last' ? maxScrollPosition : (newIndexFirst - newAbsMinIndex) * itemSize;
@@ -198,7 +204,17 @@ describe('Adapter Replace Spec', () => {
   );
 
   describe('many-to-many replacement', () =>
-    manyToManyConfigList.filter((i, j) => j >= 0).forEach(config =>
+    manyToManyConfigList.forEach(config =>
+      makeTest({
+        title: getTitle(config),
+        config,
+        it: shouldReplace(config)
+      })
+    )
+  );
+
+  describe('many-to-many increase replacement', () =>
+    manyToManyIncreaseConfigList.forEach(config =>
       makeTest({
         title: getTitle(config),
         config,

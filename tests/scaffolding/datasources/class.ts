@@ -76,20 +76,30 @@ export const getDatasourceReplacementsClass = (settings: Settings) =>
     }
 
     replaceManyToOne(idsToReplace: number[], item: Item, increase: boolean) {
+      this.replaceManyToMany(idsToReplace, [item], increase);
+    }
+
+    replaceManyToMany(idsToReplace: number[], items: Item[], increase: boolean) {
       idsToReplace.sort((a, b) => a - b);
-      const minId = idsToReplace[0];
-      const maxId = idsToReplace.slice(1).reduce((acc, id) =>
-        // only continuous series allowed
-        id === acc + 1 ? id : acc, minId
+      const minRem = idsToReplace[0];
+      const maxRem = idsToReplace.slice(1).reduce((acc, id) =>
+        id === acc + 1 ? id : acc, minRem // only continuous series allowed
       );
-      const diff = maxId - minId;
-      this.data = this.data.reduce((acc, _item: Item) => {
-        if ((!increase && _item.id < minId) || (increase && _item.id > maxId)) {
-          acc.push(_item);
-        } else if ((increase && _item.id === minId) || (!increase && _item.id === maxId)) {
+      const itemsToRemove = maxRem - minRem + 1;
+      const diff = itemsToRemove - items.length;
+
+      let inserted = false;
+      this.data = this.data.reduce((acc, item: Item) => {
+        if ((!increase && item.id < minRem) || (increase && item.id > maxRem)) {
+          // below (or above if increase): persist
           acc.push(item);
-        } else if ((!increase && _item.id > maxId) || (increase && _item.id < minId)) {
-          acc.push({ ..._item, id: _item.id + (increase ? 1 : -1) * diff });
+        } else if ((!increase && item.id > maxRem) || (increase && item.id < minRem)) {
+          // above (or below if increase): shift
+          acc.push({ ...item, id: item.id + (!increase ? -1 : 1) * diff });
+        } else if (!inserted) {
+          // in the middle: replace
+          acc.push(...items);
+          inserted = true;
         }
         return acc;
       }, [] as Item[]);

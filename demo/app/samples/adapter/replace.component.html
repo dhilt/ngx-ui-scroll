@@ -1,0 +1,44 @@
+<ng-template #itemTemplate let-item="item" let-index="index">
+  <span class="index">{{index}})</span> {{item.text}}
+</ng-template>
+
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+  [itemTemplate]="itemTemplate"
+>
+  <div actions>
+    <button (click)="doReplace()">3, 4, 5 to X, Y</button>
+  </div>
+  <div description>
+    <p>
+      <em>Adapter.replace</em> method allows to perform many-to-many in-Buffer replacement.
+      It acts as a combination of insert and remove operations working in a single run,
+      which means minimal latency in comparison to applying
+      <em>Adapter.insert</em> and <em>Adapter.remove</em> methods one by one.
+      The argument of this method is an object of the following type:
+    </p>
+    <pre>{{argumentsDescription}}</pre>
+    <p>
+      The <em>predicate</em> and <em>increase</em> options are exactly the same as in
+      the <a href="#adapter#remove">Adapter-remove</a> case.
+      The <em>indexes</em> options is exactly the same as in
+      the <a href="#adapter#insert">Adapter-insert</a> case.
+    </p>
+    <p>
+      Current limitations of the <em>Adapter.replace</em> method:
+      no virtual replacements and only continues series are allowed.
+      So only a portion of items that are currently in the <em>uiScroll</em> Buffer
+      can be replaced with this method.
+      And this portion must consist of a continuous list of items.
+    </p>
+    <p>
+      In this demo we are replacing 3 items with indexes [3, 4, 5] with 2 new items.
+      Switching to "increase" strategy is not implemented here,
+      in order to keep natural indexes flow as simple as possible.
+      Note, before running the "replace" operation over the <em>uiScroll</em> Buffer,
+      the Datasource gets the update as well.
+    </p>
+  </div>
+</app-demo>

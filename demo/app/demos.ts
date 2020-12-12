@@ -31,6 +31,7 @@ import { DemoIsLoadingExtendedComponent } from './samples/adapter/is-loading-ext
 import { DemoInsertComponent } from './samples/adapter/insert.component';
 import { DemoCheckSizeComponent } from './samples/adapter/check-size.component';
 import { DemoRemoveComponent } from './samples/adapter/remove.component';
+import { DemoReplaceComponent } from './samples/adapter/replace.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
 
 import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
@@ -78,6 +79,7 @@ const adapter = [
   DemoInsertComponent,
   DemoCheckSizeComponent,
   DemoRemoveComponent,
+  DemoReplaceComponent,
   DemoClipComponent,
 ];
 

@@ -11,14 +11,14 @@
   <div class="work" *ngIf="!context.noWorkView">
     <div class="viewport-wrapper">
       <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId}}">
-        <div *uiScroll="let item of datasource">
+        <div *uiScroll="let item of datasource; let index = index">
           <div
             class="item {{context.addClass || ''}}"
             [style.height]="item.hasOwnProperty('height') ? item.height + 'px' : null"
           >
             <ng-template
               [ngTemplateOutlet]="itemTemplate || defaultItemTemplate"
-              [ngTemplateOutletContext]="{item: item}"
+              [ngTemplateOutletContext]="{item: item, index: index}"
             ></ng-template>
           </div>
         </div>

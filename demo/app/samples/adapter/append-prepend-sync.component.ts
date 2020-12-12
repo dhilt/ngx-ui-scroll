@@ -78,7 +78,8 @@ datasource = new Datasource({
   }
 });
 
-doAppend() {
+async doAppend() {
+  await this.datasource.adapter.relax();
   const items = [];
   for (let i = 0; i < this.inputValue; i++) {
     this.MAX++;
@@ -89,10 +90,11 @@ doAppend() {
     this.data.push(newItem);
     items.push(newItem);
   }
-  this.datasource.adapter.append({ items, eof: true });
+  await this.datasource.adapter.append({ items, eof: true });
 }
 
-doPrepend() {
+async doPrepend() {
+  await this.datasource.adapter.relax();
   const items = [];
   for (let i = 0; i < this.inputValue; i++) {
     this.MIN--;
@@ -103,7 +105,7 @@ doPrepend() {
     this.data.unshift(newItem);
     items.push(newItem);
   }
-  this.datasource.adapter.prepend({ items, bof: true});
+  await this.datasource.adapter.prepend({ items, bof: true});
 }`
   }, {
     active: true,
@@ -141,7 +143,8 @@ doPrepend() {
     this.inputValue = value;
   }
 
-  doAppend() {
+  async doAppend() {
+    await this.datasource.adapter.relax();
     const items = [];
     for (let i = 0; i < this.inputValue; i++) {
       this.MAX++;
@@ -152,10 +155,11 @@ doPrepend() {
       this.data.push(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.append({ items, eof: true });
+    await this.datasource.adapter.append({ items, eof: true });
   }
 
-  doPrepend() {
+  async doPrepend() {
+    await this.datasource.adapter.relax();
     const items = [];
     for (let i = 0; i < this.inputValue; i++) {
       this.MIN--;
@@ -166,7 +170,7 @@ doPrepend() {
       this.data.unshift(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.prepend({ items, bof: true});
+    await this.datasource.adapter.prepend({ items, bof: true });
   }
 
 }

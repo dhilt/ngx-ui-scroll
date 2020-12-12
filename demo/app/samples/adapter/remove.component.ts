@@ -84,6 +84,7 @@ removeFromDatasource(toRemove: number, byIndex = false) {
 }
 
 async removeById(id: number) {
+  await this.datasource.adapter.relax();
   this.removeFromDatasource(id);
   await this.datasource.adapter.remove({
     predicate: ({ data }) => data.id === id
@@ -91,6 +92,7 @@ async removeById(id: number) {
 }
 
 async removeByIndex(index: number) {
+  await this.datasource.adapter.relax();
   this.removeFromDatasource(index, true);
   await this.datasource.adapter.remove({
     predicate: ({ $index }) => $index === index
@@ -160,6 +162,7 @@ async removeByIndex(index: number) {
   }
 
   async removeById(id: number) {
+    await this.datasource.adapter.relax();
     this.removeFromDatasource(id);
     await this.datasource.adapter.remove({
       predicate: ({ data }) => data.id === id
@@ -167,6 +170,7 @@ async removeByIndex(index: number) {
   }
 
   async removeByIndex(index: number) {
+    await this.datasource.adapter.relax();
     this.removeFromDatasource(index, true);
     await this.datasource.adapter.remove({
       predicate: ({ $index }) => $index === index

@@ -42,8 +42,9 @@ export class DemoClipComponent {
   }
 });
 
-doClip() {
-  this.datasource.adapter.clip();
+async doClip() {
+  await this.datasource.adapter.relax();
+  await this.datasource.adapter.clip();
 }`
   }, {
     active: true,
@@ -75,8 +76,9 @@ doClip() {
 
   clipOptionsSample = `{ forwardOnly: true }`;
 
-  doClip() {
-    this.datasource.adapter.clip();
+  async doClip() {
+    await this.datasource.adapter.relax();
+    await this.datasource.adapter.clip();
   }
 
 }

@@ -70,14 +70,16 @@ generateItems(isPrepend: boolean) {
     return items;
 }
 
-doPrepend() {
-  this.datasource.adapter.prepend({
+async doPrepend() {
+  await this.datasource.adapter.relax();
+  await this.datasource.adapter.prepend({
     items: this.generateItems(true)
   });
 }
 
-doAppend() {
-  this.datasource.adapter.append({
+async doAppend() {
+  await this.datasource.adapter.relax();
+  await this.datasource.adapter.append({
     items: this.generateItems(false)
   });
 }`
@@ -128,14 +130,16 @@ doAppend() {
     return items;
   }
 
-  doPrepend() {
-    this.datasource.adapter.prepend({
+  async doPrepend() {
+    await this.datasource.adapter.relax();
+    await this.datasource.adapter.prepend({
       items: this.generateItems(true)
     });
   }
 
-  doAppend() {
-    this.datasource.adapter.append({
+  async doAppend() {
+    await this.datasource.adapter.relax();
+    await this.datasource.adapter.append({
       items: this.generateItems(false)
     });
   }

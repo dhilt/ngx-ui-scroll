@@ -21,21 +21,28 @@
     </p>
     <pre>{{argumentsDescription}}</pre>
     <p>
-      The <em>predicate</em> and <em>increase</em> options are exactly the same as in
+      The <em>predicate</em> option is exactly the same as in
       the <a href="#adapter#remove">Adapter-remove</a> case.
       The <em>indexes</em> options is exactly the same as in
       the <a href="#adapter#insert">Adapter-insert</a> case.
+      The <em>fixRight</em> option allows to change
+      the default indexing strategy.
+      The default <em>fixRight</em> value is <em>false</em>,
+      which means the indexes of the items following the replaced ones
+      will be changed during the replacement.
+      Otherwise, if <em>fixRight</em> is set <em>true</em>,
+      the indexes of the items preceding the replaced ones will be changed.
     </p>
     <p>
       Current limitations of the <em>Adapter.replace</em> method:
-      no virtual replacements and only continues series are allowed.
+      no virtual replacements are possible and only continues series are allowed.
       So only a portion of items that are currently in the <em>uiScroll</em> Buffer
       can be replaced with this method.
       And this portion must consist of a continuous list of items.
     </p>
     <p>
       In this demo we are replacing 3 items with indexes [3, 4, 5] with 2 new items.
-      Switching to "increase" strategy is not implemented here,
+      Switching to "fixRight" strategy is not implemented here,
       in order to keep natural indexes flow as simple as possible.
       Note, before running the "replace" operation over the <em>uiScroll</em> Buffer,
       the Datasource gets the update as well.

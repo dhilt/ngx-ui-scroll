@@ -123,7 +123,7 @@ async doReplace() {
   argumentsDescription = `  AdapterReplaceOptions {
     predicate: ItemsPredicate;
     items: any[];
-    increase?: boolean;
+    fixRight?: boolean;
   }`;
 
   async doReplace() {

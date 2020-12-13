@@ -38,7 +38,7 @@ export default class Replace extends getBaseAdapterProcess(AdapterProcess.replac
   static doRemove(scroller: Scroller, params: AdapterReplaceOptions) {
     const removeOptions: AdapterRemoveOptions = {
       predicate: params.predicate,
-      increase: params.increase
+      increase: params.fixRight
     };
     return Remove.doRemove(scroller, removeOptions, true);
   }
@@ -47,7 +47,7 @@ export default class Replace extends getBaseAdapterProcess(AdapterProcess.replac
     const insertOptions: AdapterInsertOptions = {
       items: params.items,
       after: params.predicate,
-      decrease: params.increase
+      decrease: params.fixRight
     };
     return Insert.doInsert(scroller, insertOptions);
   }

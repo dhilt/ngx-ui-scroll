@@ -15,7 +15,7 @@ interface ICustom {
   token: 'first' | 'last' | 'middle';
   indexesToReplace: number[]; // indexes to remove
   amount: number; // how many items to insert
-  increase?: boolean;
+  fixRight?: boolean;
 }
 
 const configList: TestBedConfig[] = [{
@@ -86,7 +86,7 @@ const manyToOneIncreaseConfigList = manyToOneConfigList.map(config => ({
   ...config,
   custom: {
     ...config.custom,
-    increase: true
+    fixRight: true
   } as ICustom
 }));
 
@@ -105,21 +105,21 @@ const manyToManyConfigList = [
 const manyToManyIncreaseConfigList = manyToManyConfigList
   .filter((i, j) => [0, 5, 8].includes(j))
   .map(config => ({
-    ...config, custom: { ...config.custom, increase: true } as ICustom
+    ...config, custom: { ...config.custom, fixRight: true } as ICustom
   }));
 
 const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
   const { adapter } = misc;
-  const { indexesToReplace: indexes, amount, token, increase } = config.custom;
+  const { indexesToReplace: indexes, amount, token, fixRight } = config.custom;
   const { datasourceSettings: { minIndex, itemSize } } = config;
   const diff = amount - indexes.length; // inserted - removed
   const viewportSize = misc.getScrollableSize();
   const sizeToChange = diff * misc.getItemSize();
   const maxScrollPosition = misc.getMaxScrollPosition() + sizeToChange;
-  const newIndexFirst = indexes[0] - (increase ? diff : 0);
+  const newIndexFirst = indexes[0] - (fixRight ? diff : 0);
   const newIndexLast = newIndexFirst + amount - 1;
-  const newAbsMinIndex = increase ? minIndex - diff : minIndex;
+  const newAbsMinIndex = fixRight ? minIndex - diff : minIndex;
   const position = token === 'last' ? maxScrollPosition : (newIndexFirst - newAbsMinIndex) * itemSize;
   const items = Array.from({ length: amount }).map((j, i) => generateItem(newIndexFirst + i, false, '*'));
 
@@ -127,16 +127,16 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
   if (indexes.length === 1 && amount === 1) {
     (misc.datasource as any).replaceOneToOne(indexes[0], items[0]);
   } else if (indexes.length > 1 && amount === 1) {
-    (misc.datasource as any).replaceManyToOne(indexes, items[0], increase);
+    (misc.datasource as any).replaceManyToOne(indexes, items[0], fixRight);
   } else if (indexes.length > 1 && amount > 1) {
-    (misc.datasource as any).replaceManyToMany(indexes, items, increase);
+    (misc.datasource as any).replaceManyToMany(indexes, items, fixRight);
   }
 
   // replace at the Viewport level (scroller)
   await adapter.replace({
     predicate: ({ $index }) => indexes.includes($index),
     items,
-    increase
+    fixRight
   });
 
   // refresh the view via scroll to edges
@@ -159,9 +159,9 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
 
   // check the item next to the last replaced one
   if (token === 'last') {
-    expect(misc.checkElementContent(newIndexFirst - 1, newIndexFirst - (increase ? 1 - diff : 1))).toEqual(true);
+    expect(misc.checkElementContent(newIndexFirst - 1, newIndexFirst - (fixRight ? 1 - diff : 1))).toEqual(true);
   } else {
-    expect(misc.checkElementContent(newIndexLast + 1, newIndexLast + (increase ? 1 : 1 - diff))).toEqual(true);
+    expect(misc.checkElementContent(newIndexLast + 1, newIndexLast + (fixRight ? 1 : 1 - diff))).toEqual(true);
   }
 
   expect(misc.getScrollableSize()).toBe(viewportSize + sizeToChange);
@@ -193,7 +193,7 @@ describe('Adapter Replace Spec', () => {
     )
   );
 
-  describe('many-to-one increase replacement', () =>
+  describe('many-to-one fixRight replacement', () =>
     manyToOneIncreaseConfigList.forEach(config =>
       makeTest({
         title: getTitle(config),
@@ -213,7 +213,7 @@ describe('Adapter Replace Spec', () => {
     )
   );
 
-  describe('many-to-many increase replacement', () =>
+  describe('many-to-many fixRight replacement', () =>
     manyToManyIncreaseConfigList.forEach(config =>
       makeTest({
         title: getTitle(config),

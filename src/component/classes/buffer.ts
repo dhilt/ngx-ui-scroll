@@ -254,29 +254,29 @@ export class Buffer {
     this.cache.removeItems(toRemove, immutableTop);
   }
 
-  insertItems(items: Item[], from: Item, addition: number, decrement: boolean) {
+  insertItems(items: Item[], from: Item, addition: number, immutableTop: boolean) {
     const count = items.length;
     const index = this.items.indexOf(from) + addition;
     const itemsBefore = this.items.slice(0, index);
     const itemsAfter = this.items.slice(index);
-    if (decrement) {
-      itemsBefore.forEach((item: Item) => item.updateIndex(item.$index - count));
-    } else {
+    if (immutableTop) {
       itemsAfter.forEach((item: Item) => item.updateIndex(item.$index + count));
+    } else {
+      itemsBefore.forEach((item: Item) => item.updateIndex(item.$index - count));
     }
     const result = [
       ...itemsBefore,
       ...items,
       ...itemsAfter
     ];
-    if (decrement) {
+    if (immutableTop) {
+      this.absMaxIndex += count;
+    } else {
       this.absMinIndex -= count;
       this.startIndex -= count;
-    } else {
-      this.absMaxIndex += count;
     }
     this.items = result;
-    this.cache.insertItems(from.$index + addition, count, decrement);
+    this.cache.insertItems(from.$index + addition, count, immutableTop);
   }
 
   cacheItem(item: Item) {

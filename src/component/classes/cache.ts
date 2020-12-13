@@ -155,19 +155,19 @@ export class Cache {
     this.maxIndex = max;
   }
 
-  insertItems(index: number, count: number, decrement: boolean) {
+  insertItems(index: number, count: number, immutableTop: boolean) {
     // we do not insert new items here, we just shift indexes of the existed items
-    // new items adding must be performed via Cache.add execution
+    // new items adding must be performed via Cache.add
     const items = new Map<number, ItemCache>();
     this.items.forEach((item: ItemCache) => {
       const { $index } = item;
       if ($index < index) {
-        if (decrement) {
+        if (!immutableTop) {
           item.changeIndex($index - count);
         }
         items.set(item.$index, item);
       } else {
-        if (!decrement) {
+        if (immutableTop) {
           item.changeIndex($index + count);
         }
         items.set(item.$index, item);

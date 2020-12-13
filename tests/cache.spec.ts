@@ -22,7 +22,7 @@ describe('Cache Spec', () => {
       });
 
     beforeEach(() => {
-      cache = new Cache(NaN, loggerMock as any);
+      cache = new Cache(NaN, true, loggerMock as any);
       items.forEach(item => cache.add(item));
     });
 

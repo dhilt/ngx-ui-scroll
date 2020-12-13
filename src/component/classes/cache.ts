@@ -4,14 +4,14 @@ import { Logger } from './logger';
 export class ItemCache {
   $index: number;
   nodeId: string;
-  data: any; // todo: cache data only if it is permitted by settings
+  data: any;
   size: number;
   position: number;
 
-  constructor(item: Item) {
+  constructor(item: Item, saveData: boolean) {
     this.$index = item.$index;
     this.nodeId = item.nodeId;
-    this.data = item.data;
+    this.data = saveData ? item.data : null;
     this.size = item.size;
   }
 
@@ -51,11 +51,13 @@ export class Cache {
   private items: Map<number, ItemCache>;
   readonly logger: Logger;
   readonly itemSize: number;
+  readonly saveData: boolean;
 
-  constructor(itemSize: number, logger: Logger) {
+  constructor(itemSize: number, saveData: boolean, logger: Logger) {
     this.averageSizeFloat = itemSize;
     this.averageSize = itemSize;
     this.itemSize = itemSize;
+    this.saveData = saveData;
     this.items = new Map<number, ItemCache>();
     this.recalculateAverage = new RecalculateAverage();
     this.reset();
@@ -107,7 +109,7 @@ export class Cache {
         itemCache.size = item.size;
       }
     } else {
-      itemCache = new ItemCache(item);
+      itemCache = new ItemCache(item, this.saveData);
       this.items.set(item.$index, itemCache);
       if (this.averageSize !== itemCache.size) {
         this.recalculateAverage.newItems.push({ $index: item.$index, size: itemCache.size });

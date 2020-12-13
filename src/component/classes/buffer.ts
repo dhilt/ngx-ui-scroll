@@ -31,7 +31,7 @@ export class Buffer {
     this.$items = $items || new BehaviorSubject<Item[]>([]);
     this.bofSource = new Subject<boolean>();
     this.eofSource = new Subject<boolean>();
-    this.cache = new Cache(settings.itemSize, logger);
+    this.cache = new Cache(settings.itemSize, settings.cacheData, logger);
     this.startIndexUser = settings.startIndex;
     this.minIndexUser = settings.minIndex;
     this.maxIndexUser = settings.maxIndex;

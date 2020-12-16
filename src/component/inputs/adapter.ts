@@ -121,6 +121,7 @@ const INSERT_METHOD_PARAMS: ICommonProps<AdapterInsertParams> = {
 enum AdapterReplaceParams {
   items = 'items',
   predicate = 'predicate',
+  fixRight = 'fixRight',
 }
 
 const REPLACE_METHOD_PARAMS: ICommonProps<AdapterReplaceParams> = {
@@ -129,7 +130,12 @@ const REPLACE_METHOD_PARAMS: ICommonProps<AdapterReplaceParams> = {
     mandatory: true
   },
   [AdapterReplaceParams.predicate]: {
-    validators: [FUNC_WITH_X_ARGUMENTS(1)]
+    validators: [FUNC_WITH_X_ARGUMENTS(1)],
+    mandatory: true
+  },
+  [AdapterReplaceParams.fixRight]: {
+    validators: [BOOLEAN],
+    defaultValue: false
   }
 };
 

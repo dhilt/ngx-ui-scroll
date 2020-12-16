@@ -28,7 +28,10 @@
       <em>minIndex</em> should be >= <em>MIN</em> and
       <em>maxIndex</em> should be <= <em>MAX</em>.
       An example of limited <em>Datasource.get</em> implementation can be found
-      <a href="/#/datasource#limited">here</a>.
+      <a
+        [routerLink]="['/', datasourceLimitedDemoConfig.scope]"
+        fragment="{{datasourceLimitedDemoConfig.id}}"
+      >here</a>.
     </p>
     <p>
       The <em>uiScroll</em> can accept only one of min/max indexes settings.

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { DemoSources, DemoSourceType } from '../shared/interfaces';
+import { globalScope as scopes, demoList as demos } from '../routes';
 
 import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -12,6 +13,8 @@ export class HomeComponent {
 
   reloadIndex = 999;
   delay = 25;
+  scopes: typeof scopes;
+  demos: typeof demos;
 
   datasource = new Datasource({
     get: (index: number, count: number, success: Function) => {
@@ -105,6 +108,8 @@ Index to reload:
   }];
 
   constructor() {
+    this.scopes = scopes;
+    this.demos = demos;
   }
 
   doReload() {

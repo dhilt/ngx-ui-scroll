@@ -21,8 +21,11 @@
       If <em>index</em> argument is not set,
       <em>settings.startIndex</em> will be used as the first index.
       If neither <em>index</em> argument not <em>startIndex</em> setting is present,
-      the default value 1 will be used.
-      See also <a href="#/settings#start-index">startIndex setting description</a>.
+      the default value 1 will be used. See also
+      <a
+        [routerLink]="['/', startIndexDemoConfig.scope]"
+        fragment="{{startIndexDemoConfig.id}}"
+      >startIndex setting description</a>.
     </p>
     <p>
       The <em>Adapter.reload</em> method is safe and needs not to be protected

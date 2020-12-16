@@ -1,5 +1,5 @@
 import { VALIDATORS, validateOne, validate } from '../src/component/inputs';
-import { ValidatorType, IValidator } from 'src/component/interfaces';
+import { IValidator } from 'src/component/interfaces';
 
 const {
   INTEGER,
@@ -317,10 +317,10 @@ describe('Validation', () => {
         true,
         '',
         () => null,
-        function () {},
+        function () { },
         [],
         null,
-        class {},
+        class { },
         new Map(),
         new Set(),
         Symbol(),

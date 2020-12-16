@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
-import { IDatasource } from '../../../../public_api';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
+
+import { IDatasource } from '../../../../public_api';
 
 @Component({
   selector: 'app-positive-limited-datasource',
@@ -11,13 +13,13 @@ import { doLog } from '../../shared/datasource-get';
 export class DemoPositiveLimitedDatasourceComponent {
 
   demoContext = {
-    scope: 'datasource',
-    title: `Positive limited datasource`,
-    titleId: `positive-limited-indexes`,
+    config: demos.datasource.map.positiveLimitedIndexes,
     logViewOnly: true,
     log: '',
     count: 0
-  } as DemoContext;
+  };
+
+  settingsScope = demos.settings.map;
 
   datasource: IDatasource = {
     get: (index: number, count: number, success: Function) => {

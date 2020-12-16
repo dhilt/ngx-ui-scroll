@@ -27,6 +27,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         } else {
           document.body.classList.remove('entire-window');
         }
+        if (!url.includes('#')) {
+          window.scrollTo(0, 0);
+        }
       })
     );
     if ('scrollRestoration' in history) {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Subscription } from 'rxjs';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
@@ -13,9 +13,7 @@ import { Datasource } from '../../../../public_api';
 export class DemoCheckSizeComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Check size`,
-    titleId: `check-size`,
+    config: demos.adapter.map.check,
     viewportId: `check-size-viewport`,
     count: 0,
     log: ''
@@ -85,7 +83,7 @@ datasource = new Datasource ({
 });
 
 findElement(index: number): HTMLElement | null {
-  const viewportElement = document.getElementById(this.demoContext.viewportId);
+  const viewportElement = document.getElementsByClassName('viewport')[0];
   return viewportElement
     ? viewportElement.querySelector(\`[data-sid="\${index}"]\`)
     : null;
@@ -165,7 +163,8 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
   }];
 
   findElement(index: number): HTMLElement | null {
-    const viewportElement = document.getElementById(this.demoContext.viewportId);
+    const viewportId = this.demoContext.viewportId || this.demoContext.config.id;
+    const viewportElement = document.getElementById(viewportId);
     return viewportElement
       ? viewportElement.querySelector(`[data-sid="${index}"]`)
       : null;
@@ -190,7 +189,8 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
 
   autoscroll(index: number) {
     const element = this.findElement(index);
-    const viewportElement = document.getElementById(this.demoContext.viewportId);
+    const viewportId = this.demoContext.viewportId || this.demoContext.config.id;
+    const viewportElement = document.getElementById(viewportId);
     if (!element || !viewportElement) {
       return;
     }

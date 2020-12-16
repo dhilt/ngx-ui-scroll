@@ -1,6 +1,5 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { IndexedItem } from './miscellaneous/items';
 
 const MIN_INDEX = -99;
 const MAX_INDEX = 100;
@@ -98,12 +97,11 @@ const updateDOMElement = (misc: Misc, index: number, size: number) => {
 };
 
 const updateDOM = (misc: Misc, { min, max, size, initialSize }: any) => {
-  const { datasource } = misc.fixture.componentInstance;
   for (let i = min; i <= max; i++) {
     updateDOMElement(misc, i, size);
     // persist new sizes on the datasource level
-    (datasource as any).setProcessGet((result: IndexedItem[]) =>
-      result.forEach(({ data }) => data.size = data.id >= min && data.id <= max ? size : initialSize)
+    misc.setItemProcessor(({ data }) =>
+      data.size = data.id >= min && data.id <= max ? size : initialSize
     );
   }
 };
@@ -129,9 +127,7 @@ const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
   const { min, max, size } = config.custom;
   const changedCount = (max - min + 1);
   let firstVisibleIndex = NaN;
-  (misc.datasource as any).setProcessGet((result: IndexedItem[]) =>
-    result.forEach(({ data }) => data.size = initialSize)
-  );
+  misc.setItemProcessor(({ data }) => data.size = initialSize);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycle = state.cycle.count;
     const { firstVisible } = adapter; // need to have a pre-call

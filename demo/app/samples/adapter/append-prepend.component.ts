@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoAppendPrependComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Append / prepend`,
-    titleId: `append-prepend`,
+    config: demos.adapter.map.appendPrepend,
     viewportId: `append-prepend-viewport`,
     count: 0,
     log: ''
@@ -70,14 +69,16 @@ generateItems(isPrepend: boolean) {
     return items;
 }
 
-doPrepend() {
-  this.datasource.adapter.prepend({
+async doPrepend() {
+  await this.datasource.adapter.relax();
+  await this.datasource.adapter.prepend({
     items: this.generateItems(true)
   });
 }
 
-doAppend() {
-  this.datasource.adapter.append({
+async doAppend() {
+  await this.datasource.adapter.relax();
+  await this.datasource.adapter.append({
     items: this.generateItems(false)
   });
 }`
@@ -128,14 +129,16 @@ doAppend() {
     return items;
   }
 
-  doPrepend() {
-    this.datasource.adapter.prepend({
+  async doPrepend() {
+    await this.datasource.adapter.relax();
+    await this.datasource.adapter.prepend({
       items: this.generateItems(true)
     });
   }
 
-  doAppend() {
-    this.datasource.adapter.append({
+  async doAppend() {
+    await this.datasource.adapter.relax();
+    await this.datasource.adapter.append({
       items: this.generateItems(false)
     });
   }

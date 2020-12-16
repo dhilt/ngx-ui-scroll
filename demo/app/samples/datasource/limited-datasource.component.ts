@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
-import { IDatasource } from '../../../../public_api';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
+
+import { IDatasource } from '../../../../public_api';
 
 @Component({
   selector: 'app-limited-datasource',
@@ -11,13 +13,13 @@ import { doLog } from '../../shared/datasource-get';
 export class DemoLimitedDatasourceComponent {
 
   demoContext = {
-    scope: 'datasource',
-    title: `Limited datasource`,
-    titleId: `limited`,
+    config: demos.datasource.map.limited,
     logViewOnly: true,
     log: '',
     count: 0
-  } as DemoContext;
+  };
+
+  minMaxDemoConfig = demos.settings.map.minMaxIndexes;
 
   MIN = -99;
   MAX = 900;

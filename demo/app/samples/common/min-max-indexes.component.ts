@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,13 +13,13 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoMinMaxIndexesComponent {
 
   demoContext: DemoContext = {
-    scope: 'settings',
-    title: `minIndex / maxIndex settings`,
-    titleId: `min-max-indexes`,
+    config: demos.settings.map.minMaxIndexes,
     viewportId: `min-max-indexes-viewport`,
     count: 0,
     log: ''
   };
+
+  datasourceLimitedDemoConfig = demos.datasource.map.limited;
 
   datasource: IDatasource = {
     get: datasourceGetCallbackInfinite(this.demoContext),

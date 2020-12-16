@@ -42,7 +42,7 @@ export default class Insert extends getBaseAdapterProcess(AdapterProcess.insert)
     const itemsToInsert = items.map((item: any, i: number) =>
       new Item(from.$index + i + addition - (decrement ? count : 0), item, routines)
     );
-    buffer.insertItems(itemsToInsert, from, addition, decrement);
+    buffer.insertItems(itemsToInsert, from, addition, !decrement);
     scroller.logger.log(() => {
       const newBufferLimit = decrement ? buffer.absMinIndex : buffer.absMaxIndex;
       const isChange = bufferLimit !== newBufferLimit;

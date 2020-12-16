@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../routes';
+
 @Component({
   selector: 'app-datasource',
   templateUrl: './datasource.component.html'
 })
 export class DatasourceComponent {
+
+  demos = demos;
 
   constructor() {
   }

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+
 import { Datasource } from '../../../../public_api';
 
 @Component({
@@ -10,11 +12,11 @@ import { Datasource } from '../../../../public_api';
 export class DemoAdapterFixUpdaterComponent {
 
   demoContext = {
-    scope: 'experimental',
-    title: `Adapter fix updater`,
-    titleId: `adapter-fix-updater`,
+    config: demos.experimental.map.adapterFixUpdater,
     noInfo: true
-  } as DemoContext;
+  };
+
+  adapterScope = demos.adapter;
 
   datasource = new Datasource({
     get: (index: number, count: number, success: Function) => {
@@ -104,7 +106,7 @@ countItems() {
   countItems() {
     let count = 0;
     this.datasource.adapter.fix({
-      updater: ({}) => count++
+      updater: ({ }) => count++
     });
     return count;
   }

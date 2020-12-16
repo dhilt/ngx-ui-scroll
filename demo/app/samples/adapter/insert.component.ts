@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -10,12 +11,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoInsertComponent {
 
-  demoContext = {
-    scope: 'adapter',
-    title: `Insert`,
-    titleId: `insert`,
-    viewportId: `insert-viewport`
-  } as DemoContext;
+  demoConfig = demos.adapter.map.insert;
 
   MIN = 1;
   MAX = 100;
@@ -106,8 +102,9 @@ datasource = new Datasource({
   `
   }, {
     name: 'Increase',
-      text: `
-doInsert() {
+    text: `
+async doInsert() {
+  await this.datasource.adapter.relax();
   const count = Number(this.inputCount); // first input
   const itemData = 'item #' + this.inputIndex; // second input
   const index = this.data.indexOf(itemData);
@@ -125,7 +122,7 @@ doInsert() {
     ...items,
     ...this.data.slice(index)
   ];
-  this.datasource.adapter.insert({
+  await this.datasource.adapter.insert({
     after: ({ data }) => data === itemData,
     items
   });
@@ -134,7 +131,8 @@ doInsert() {
   }, {
     name: 'Decrease',
     text: `
-doInsert() {
+async doInsert() {
+  await this.datasource.adapter.relax();
   const count = Number(this.inputCount); // first input
   const itemData = 'item #' + this.inputIndex; // second input
   const index = this.data.indexOf(itemData);
@@ -152,7 +150,7 @@ doInsert() {
     ...items,
     ...this.data.slice(index)
   ];
-  this.datasource.adapter.insert({
+  await this.datasource.adapter.insert({
     before: ({ data }) => data === itemData,
     items,
     decrease: true
@@ -168,7 +166,8 @@ doInsert() {
     decrease?: boolean;
   }`;
 
-  doInsert() {
+  async doInsert() {
+    await this.datasource.adapter.relax();
     const itemData = `item #${this.inputIndex}`;
     const index = this.data.indexOf(itemData);
     const count = Number(this.inputCount);
@@ -186,13 +185,14 @@ doInsert() {
       ...items,
       ...this.data.slice(index)
     ];
-    this.datasource.adapter.insert({
+    await this.datasource.adapter.insert({
       after: ({ data }) => data === itemData,
       items
     });
   }
 
-  doInsert2() {
+  async doInsert2() {
+    await this.datasource2.adapter.relax();
     const itemData = `item #${this.inputIndex2}`;
     const index = this.data.indexOf(itemData);
     const count = Number(this.inputCount2);
@@ -210,7 +210,7 @@ doInsert() {
       ...items,
       ...this.data2.slice(index)
     ];
-    this.datasource2.adapter.insert({
+    await this.datasource2.adapter.insert({
       before: ({ data }) => data === itemData,
       items,
       decrease: true

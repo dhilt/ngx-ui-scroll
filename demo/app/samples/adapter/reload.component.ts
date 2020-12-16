@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,13 +13,13 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoReloadComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Reload`,
-    titleId: `reload`,
+    config: demos.adapter.map.reload,
     viewportId: `reload-viewport`,
     count: 0,
     log: ''
   };
+
+  startIndexDemoConfig = demos.settings.map.startIndex;
 
   datasource = new Datasource({
     get: datasourceGetCallbackInfinite(this.demoContext)

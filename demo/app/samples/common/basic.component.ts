@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoBasicComponent {
 
   demoContext: DemoContext = {
-    scope: 'settings',
-    title: `No settings`,
-    titleId: `no-settings`,
+    config: demos.settings.map.noSettings,
     viewportId: `no-settings-viewport`,
     count: 0,
     log: ''

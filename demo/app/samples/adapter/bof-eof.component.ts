@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { merge } from 'rxjs';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
@@ -13,9 +14,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoBofEofComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Begin / end of file`,
-    titleId: `bof-eof`,
+    config: demos.adapter.map.bofEof,
     viewportId: `bof-eof-viewport`,
     count: 0,
     log: ''

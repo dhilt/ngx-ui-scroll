@@ -260,6 +260,11 @@ input[type=checkbox], input[type=radio] {
   overflow: hidden;
 }
 
+.demo .work .item .index {
+  font-weight: normal;
+  font-size: smaller;
+}
+
 .demo .work .viewport.remove {
   width: 200px;
 }

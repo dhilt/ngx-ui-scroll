@@ -1,6 +1,6 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { ItemsCounter, ItemsDirCounter, testItemsCounter } from './miscellaneous/itemsCounter';
+import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
 
 const fixedItemSizeConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, padding: 2, itemSize: 15 },

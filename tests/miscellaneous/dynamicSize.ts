@@ -2,6 +2,8 @@ const INITIAL_ITEM_SIZE = 20;
 const MIN_ITEM_SIZE = 1;
 const MAX_ITEM_SIZE = 100;
 
+export type DynamicSizeArg = boolean | number;
+
 export interface DynamicSizeData {
   size: number;
   average: number;

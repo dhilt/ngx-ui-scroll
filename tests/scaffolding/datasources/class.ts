@@ -68,10 +68,40 @@ export const getDatasourceReplacementsClass = (settings: Settings) =>
       };
     }
 
-    replaceOne(idToReplace: number, item: Item) {
+    replaceOneToOne(idToReplace: number, item: Item) {
       const itemToReplace = this.data.find(({ id }) => id === idToReplace);
       if (itemToReplace) {
         Object.assign(itemToReplace, item);
       }
+    }
+
+    replaceManyToOne(idsToReplace: number[], item: Item, increase: boolean) {
+      this.replaceManyToMany(idsToReplace, [item], increase);
+    }
+
+    replaceManyToMany(idsToReplace: number[], items: Item[], increase: boolean) {
+      idsToReplace.sort((a, b) => a - b);
+      const minRem = idsToReplace[0];
+      const maxRem = idsToReplace.slice(1).reduce((acc, id) =>
+        id === acc + 1 ? id : acc, minRem // only continuous series allowed
+      );
+      const itemsToRemove = maxRem - minRem + 1;
+      const diff = itemsToRemove - items.length;
+
+      let inserted = false;
+      this.data = this.data.reduce((acc, item: Item) => {
+        if ((!increase && item.id < minRem) || (increase && item.id > maxRem)) {
+          // below (or above if increase): persist
+          acc.push(item);
+        } else if ((!increase && item.id > maxRem) || (increase && item.id < minRem)) {
+          // above (or below if increase): shift
+          acc.push({ ...item, id: item.id + (!increase ? -1 : 1) * diff });
+        } else if (!inserted) {
+          // in the middle: replace
+          acc.push(...items);
+          inserted = true;
+        }
+        return acc;
+      }, [] as Item[]);
     }
   };

@@ -1,4 +1,7 @@
-<h3 id="{{context.titleId}}">
-  {{context.title}}
-  <a href="#/{{context.scope}}#{{context.titleId}}">#</a>
+<h3 id="{{config.id}}">
+  {{config.name}}
+  <a
+    [routerLink]="['../', config.scope]" 
+    fragment="{{config.id}}"
+  >#</a>
 </h3>

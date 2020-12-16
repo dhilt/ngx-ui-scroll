@@ -109,9 +109,10 @@ describe('Bug Spec', () => {
           itemSize: 20,
           inverse: true
         },
-        templateSettings: { viewportHeight: 200, dynamicSize: 'size' }
+        templateSettings: { viewportHeight: 300, dynamicSize: 'size' }
       },
       it: (misc: Misc) => async (done: Function) => {
+        misc.setItemProcessor(({ $index, data }) => $index === 4 && (data.size = 120));
         await misc.relaxNext();
         const { paddings } = misc.scroller.viewport;
         expect(paddings.backward.size).toEqual(0);
@@ -152,7 +153,7 @@ describe('Bug Spec', () => {
         expect(misc.adapter.firstVisible.$index).toEqual(startIndex);
 
         // remove item from the original datasource
-        (misc.datasource as any).setProcessGet((result: IndexedItem[]) =>
+        misc.setDatasourceProcessor((result: IndexedItem[]) =>
           removeItems(result, Array.from({ length: MAX - MIN + 1 }).map((j, i) => MIN + i), -99, 100)
         );
         await misc.adapter.remove({

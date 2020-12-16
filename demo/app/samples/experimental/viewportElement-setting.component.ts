@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-viewport-element-setting',
@@ -9,11 +10,9 @@ import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interface
 export class DemoViewportElementSettingComponent {
 
   demoContext = {
-    scope: 'experimental',
-    title: `Viewport element setting`,
-    titleId: `viewportElement-setting`,
+    config: demos.experimental.map.viewportElementSetting,
     noWorkView: true
-  } as DemoContext;
+  };
 
   sources: DemoSources = [{
     name: DemoSourceType.Datasource,

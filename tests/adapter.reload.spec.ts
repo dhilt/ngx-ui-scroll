@@ -146,9 +146,8 @@ const doReload = ({ custom }: TestBedConfig, { adapter }: Misc) => {
 };
 
 const doReloadOnFirstDatasourceGetCall = (config: TestBedConfig, misc: Misc) => {
-  const { datasource } = misc.fixture.componentInstance;
   let reloaded = false;
-  (datasource as any).setProcessGet(() => {
+  misc.setDatasourceProcessor(() => {
     if (!reloaded) {
       reloaded = true;
       doReload(config, misc);

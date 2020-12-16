@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoPaddingComponent {
 
   demoContext: DemoContext = {
-    scope: 'settings',
-    title: `padding setting`,
-    titleId: `padding`,
+    config: demos.settings.map.padding,
     viewportId: `padding-viewport`,
     count: 0,
     log: ''

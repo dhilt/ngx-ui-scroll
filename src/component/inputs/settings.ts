@@ -27,6 +27,7 @@ enum DevSettings {
   throttle = 'throttle',
   initDelay = 'initDelay',
   initWindowDelay = 'initWindowDelay',
+  cacheData = 'cacheData',
   changeOverflow = 'changeOverflow',
   dismissOverflowAnchor = 'dismissOverflowAnchor',
 }
@@ -58,7 +59,7 @@ export const SETTINGS: ICommonProps<Settings> = {
     defaultValue: Infinity
   },
   [Settings.itemSize]: {
-    validators: [INTEGER, MORE_OR_EQUAL(MIN[Settings.itemSize],  true)],
+    validators: [INTEGER, MORE_OR_EQUAL(MIN[Settings.itemSize], true)],
     defaultValue: NaN
   },
   [Settings.bufferSize]: {
@@ -123,6 +124,10 @@ export const DEV_SETTINGS: ICommonProps<DevSettings> = {
   [DevSettings.initWindowDelay]: {
     validators: [INTEGER, MORE_OR_EQUAL(MIN[DevSettings.initWindowDelay], true)],
     defaultValue: 40
+  },
+  [DevSettings.cacheData]: {
+    validators: [BOOLEAN],
+    defaultValue: false
   },
   [DevSettings.changeOverflow]: {
     validators: [BOOLEAN],

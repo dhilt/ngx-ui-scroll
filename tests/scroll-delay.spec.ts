@@ -1,6 +1,4 @@
-import { Direction } from '../src/component/interfaces';
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { debounce } from './miscellaneous/debounce';
 import { Misc } from './miscellaneous/misc';
 
 const configThrottle: TestBedConfig = {

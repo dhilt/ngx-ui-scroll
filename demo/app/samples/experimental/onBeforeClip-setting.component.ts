@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -11,13 +12,11 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoOnBeforeClipSettingComponent {
 
   demoContext = {
-    scope: 'experimental',
-    title: `onBeforeClip setting`,
-    titleId: 'onBeforeClip-setting',
+    config: demos.experimental.map.onBeforeClipSetting,
     viewportId: 'onBeforeClip-setting-viewport',
     log: '',
     count: 0
-  } as DemoContext;
+  };
 
   datasource = new Datasource({
     get: (index, count, success) => {

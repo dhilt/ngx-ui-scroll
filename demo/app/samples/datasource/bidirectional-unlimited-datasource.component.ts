@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
+
 import { IDatasource } from '../../../../public_api';
 
 @Component({
@@ -11,13 +13,11 @@ import { IDatasource } from '../../../../public_api';
 export class DemoBidirectionalUnlimitedDatasourceComponent {
 
   demoContext = {
-    scope: 'datasource',
-    title: `Unlimited bidirectional datasource`,
-    titleId: `unlimited-bidirectional`,
+    config: demos.datasource.map.unlimitedBidirectional,
     logViewOnly: true,
     log: '',
     count: 0
-  } as DemoContext;
+  };
 
   datasource: IDatasource = {
     get: (index: number, count: number, success: Function) => {

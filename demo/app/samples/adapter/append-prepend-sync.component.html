@@ -16,8 +16,11 @@
       have <em>eof</em>/<em>bof</em> parameter
       which is optional and which allows to prevent rendering of new items in the Viewport when
       the end of the dataset (if we are speaking of <em>append</em>) or
-      beginning of the dataset (<em>prepend</em> case) is not reached.
-      See also <a href="#/adapter#bof-eof">bof/eof demo</a>.
+      beginning of the dataset (<em>prepend</em> case) is not reached. See also
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterScope.map.bofEof.id}}"
+      >bof/eof demo</a>.
     </p>
     <p>
       Let's discuss <em>{{prependCallSample}}</em> case.
@@ -43,8 +46,14 @@
       the main idea is to synchronize, say, remote dataset changes with
       the <em>uiScroll</em> state visible to the end user.
       Another examples of such synchronization could be found in
-      <a href="#/adapter#remove">remove</a> and
-      <a href="#/adapter#insert">insert</a> demos.
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterScope.map.remove.id}}"
+      >remove</a> and
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterScope.map.insert.id}}"
+      >insert</a>.
     </p>
   </div>
 </app-demo>

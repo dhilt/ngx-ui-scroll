@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { demos } from '../routes';
 
 @Component({
   selector: 'app-experimental',
@@ -8,6 +9,9 @@ export class ExperimentalComponent {
 
   constructor() {
   }
+
+  scope = demos.experimental.map;
+  base = '../' + demos.experimental.id;
 
   adapterFixArgumentDescription = `  interface AdapterFixOptions {
     scrollPosition?: number;

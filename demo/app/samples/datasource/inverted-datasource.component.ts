@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+
 import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
@@ -9,12 +11,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoInvertedDatasourceComponent {
 
-  context = {
-    scope: 'datasource',
-    title: `Inverted datasource`,
-    titleId: `inverted-indexes`,
-    noWorkView: true
-  } as DemoContext;
+  demoConfig = demos.datasource.map.invertedIndexes;
 
   MIN = 1;
 

@@ -1,5 +1,5 @@
 import { IDatasource } from '../../../src/component/interfaces';
-import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet, limitedDatasourceSpecialGet } from './get';
+import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet } from './get';
 
 interface IDatasourceStore {
   [key: string]: IDatasource;
@@ -81,20 +81,20 @@ export const datasourceStore: IDatasourceStore = {
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0)
   },
 
-  'limited-1-20-dynamic-size-special': {
-    get: limitedDatasourceSpecialGet(1, 20, (i: number) => i === 1 ? 200 : 20)
+  'limited-1-20-dynamic-size-processor': {
+    get: limitedDatasourceGet(1, 20, true, DatasourceType.Callback, 0, true)
   },
 
   'limited-1-10-with-big-item-4': {
-    get: limitedDatasourceSpecialGet(1, 10, (i: number) => i === 4 ? 93 : 20)
+    get: limitedDatasourceGet(1, 10, false, DatasourceType.Callback, 0, true)
   },
 
   'limited-1-100-zero-size': {
-    get: limitedDatasourceSpecialGet(1, 100, 0)
+    get: limitedDatasourceGet(1, 100, 0, DatasourceType.Callback, 0, true)
   },
 
-  'limited-1-100-zero-size-started-from-6': {
-    get: limitedDatasourceSpecialGet(1, 100, (i: number) => i >= 6 ? 0 : 20)
+  'limited-1-100-processor': {
+    get: limitedDatasourceGet(1, 100, false, DatasourceType.Callback, 0, true)
   },
 
   'limited--99-100-processor': {

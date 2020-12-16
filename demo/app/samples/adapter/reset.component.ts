@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoResetComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Reset`,
-    titleId: `reset`,
+    config: demos.adapter.map.reset,
     viewportId: `reset-viewport`,
     count: 0,
     log: ''
@@ -52,7 +51,7 @@ doReset() {
   }, {
     active: true,
     name: DemoSourceType.Template,
-      text: `<button (click)="doReset()">Reset</button>
+    text: `<button (click)="doReset()">Reset</button>
 <input [(ngModel)]="startIndex" size="3"> - new start index
 <input [(ngModel)]="bufferSize" size="3"> - new buffer size
 

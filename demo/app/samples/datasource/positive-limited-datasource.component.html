@@ -10,12 +10,18 @@
       This is a particular case of limited datasource discussed above
       with only <em>MIN</em> value set up. Also, positive limitation
       could be alternatively achieved by assigning 1 (or 0) value to
-      <a href="#/#min-max-indexes">minIndex setting</a>.
+      <a
+        [routerLink]="['/', settingsScope.minMaxIndexes.scope]"
+        fragment="{{settingsScope.minMaxIndexes.id}}"
+      >minIndex and maxIndex settings</a>.
     </p>
     <p>
       Note that if 0 index is the left boundary of the dataset,
       then it seems reasonable to assign 0 value to
-      <a href="#/#start-index">startIndex setting</a> too,
+      <a
+        [routerLink]="['/', settingsScope.startIndex.scope]"
+        fragment="{{settingsScope.startIndex.id}}"
+      >startIndex setting</a> too,
       because the default <em>startIndex</em> value is 1.
     </p>
   </div>

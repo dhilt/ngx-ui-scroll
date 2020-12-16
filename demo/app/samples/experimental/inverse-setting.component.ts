@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+
 import { IDatasource } from '../../../../public_api';
 
 @Component({
@@ -10,12 +12,10 @@ import { IDatasource } from '../../../../public_api';
 export class DemoInverseSettingComponent {
 
   demoContext = {
-    scope: 'experimental',
-    title: `Inverse setting`,
-    titleId: `inverse-setting`,
+    config: demos.experimental.map.inverseSetting,
     addClass: `inverse`,
     noInfo: true
-  } as DemoContext;
+  };
 
   MIN = 1;
   MAX = 5;

@@ -2,7 +2,7 @@
 
 <div class="demo">
 
-  <app-demo-title [context]="context"></app-demo-title>
+  <app-demo-title [config]="context.config"></app-demo-title>
 
   <div class="actions">
     <ng-content select="[actions]"></ng-content>
@@ -10,7 +10,7 @@
 
   <div class="work" *ngIf="!context.noWorkView">
     <div class="viewport-wrapper">
-      <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId}}">
+      <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId || context.config.id}}">
         <div *uiScroll="let item of datasource; let index = index">
           <div
             class="item {{context.addClass || ''}}"

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+
 import { Datasource } from '../../../../public_api';
 
 @Component({
@@ -10,11 +12,9 @@ import { Datasource } from '../../../../public_api';
 export class DemoAdapterFixPositionComponent {
 
   demoContext = {
-    scope: 'experimental',
-    title: `Adapter fix scroll position`,
-    titleId: `adapter-fix-position`,
+    config: demos.experimental.map.adapterFixPosition,
     noInfo: true
-  } as DemoContext;
+  };
 
   datasource = new Datasource({
     get: (index: number, count: number, success: Function) => {

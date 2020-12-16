@@ -1,3 +1,5 @@
+import { IDemo } from '../routes';
+
 export enum DemoSourceType {
   Component = 'Component',
   Template = 'Template',
@@ -16,10 +18,8 @@ export type DemoSources = DemoSource[];
 
 export interface DemoContext {
   // static data
-  scope?: string;
-  title: string;
-  titleId: string;
-  viewportId: string;
+  config: IDemo;
+  viewportId?: string;
   addClass?: string;
   noWorkView?: boolean;
   logViewOnly?: boolean;

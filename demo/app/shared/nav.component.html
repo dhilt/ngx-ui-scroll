@@ -41,10 +41,10 @@
     <div class="main-menu">
       <a class="navbar-brand" href="https://github.com/dhilt/ngx-ui-scroll">ngx-ui-scroll</a>
       <a class="navbar-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Home</a>
-      <a class="navbar-link" routerLink="/datasource" routerLinkActive="active">Datasource</a>
-      <a class="navbar-link" routerLink="/settings" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Settings</a>
-      <a class="navbar-link" routerLink="/adapter" routerLinkActive="active">Adapter</a>
-      <a class="navbar-link" routerLink="/experimental" routerLinkActive="active">Experimental</a>
+      <a class="navbar-link" [routerLink]="[demos.datasource.id]" routerLinkActive="active">{{demos.datasource.name}}</a>
+      <a class="navbar-link" [routerLink]="[demos.settings.id]" routerLinkActive="active">{{demos.settings.name}}</a>
+      <a class="navbar-link" [routerLink]="[demos.adapter.id]" routerLinkActive="active">{{demos.adapter.name}}</a>
+      <a class="navbar-link" [routerLink]="[demos.experimental.id]" routerLinkActive="active">{{demos.experimental.name}}</a>
     </div>
     <br>
     <span class="copyrights">

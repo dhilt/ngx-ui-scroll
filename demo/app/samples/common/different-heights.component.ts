@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackLimited } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoDifferentHeightsComponent {
 
   demoContext: DemoContext = {
-    scope: 'settings',
-    title: `Different item heights`,
-    titleId: `different-item-heights`,
+    config: demos.settings.map.differentItemHeights,
     viewportId: `different-heights-viewport`,
     count: 0,
     log: ''

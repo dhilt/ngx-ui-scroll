@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoHorizontalComponent {
 
   demoContext: DemoContext = {
-    scope: 'settings',
-    title: `Horizontal mode`,
-    titleId: `horizontal-mode`,
+    config: demos.settings.map.horizontalMode,
     viewportId: `horizontal-viewport`,
     addClass: `horizontal`,
     count: 0,

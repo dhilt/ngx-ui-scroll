@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 
-import { DemoContext } from '../interfaces';
+import { IDemo } from '../../routes';
 
 @Component({
   selector: 'app-demo-title',
   templateUrl: './demo-title.component.html'
 })
 export class DemoTitleComponent {
-  @Input() context: DemoContext;
+  @Input() config: IDemo;
 }

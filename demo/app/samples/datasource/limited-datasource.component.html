@@ -13,7 +13,10 @@
     </p>
     <p>
       Another option of how to limit the datasource is to use
-      <a href="#/#min-max-indexes">minIndex and maxIndex settings</a>;
+      <a
+        [routerLink]="['/', minMaxDemoConfig.scope]"
+        fragment="{{minMaxDemoConfig.id}}"
+      >minIndex and maxIndex settings</a>;
       this way the implementation of the <em>Datasource.get</em> method could remain unlimited
       as the <em>uiScroll</em> will not request for items that are out of
       [<em>minIndex</em>; <em>maxIndex</em>] range.

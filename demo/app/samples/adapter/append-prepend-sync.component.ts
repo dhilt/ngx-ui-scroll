@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
@@ -12,13 +13,13 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoAppendPrependSyncComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Append / prepend sync`,
-    titleId: `append-prepend-sync`,
+    config: demos.adapter.map.appendPrependSync,
     viewportId: `append-prepend-sync-viewport`,
     count: 0,
     log: ''
   };
+
+  adapterScope = demos.adapter;
 
   MIN = 100;
   MAX = 200;

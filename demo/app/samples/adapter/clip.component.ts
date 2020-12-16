@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoClipComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Clip`,
-    titleId: `clip`,
+    config: demos.adapter.map.clip,
     viewportId: `clip-viewport`,
     count: 0,
     log: ''

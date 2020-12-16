@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoStartIndexComponent {
 
   demoContext: DemoContext = {
-    scope: 'settings',
-    title: `startIndex setting`,
-    titleId: `start-index`,
+    config: demos.settings.map.startIndex,
     viewportId: `start-index-viewport`,
     count: 0,
     log: ''

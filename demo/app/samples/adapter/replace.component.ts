@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
@@ -16,14 +17,14 @@ interface Item {
 export class DemoReplaceComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Replace`,
-    titleId: `replace`,
+    config: demos.adapter.map.replace,
     viewportId: `replace-viewport`,
     addClass: `replace`,
     count: 0,
     log: ''
   };
+
+  adapterScope = demos.adapter;
 
   MAX = 100;
   data: Item[];

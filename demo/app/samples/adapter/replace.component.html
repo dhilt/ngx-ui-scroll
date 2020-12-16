@@ -22,9 +22,15 @@
     <pre>{{argumentsDescription}}</pre>
     <p>
       The <em>predicate</em> option is exactly the same as in
-      the <a href="#adapter#remove">Adapter-remove</a> case.
-      The <em>indexes</em> options is exactly the same as in
-      the <a href="#adapter#insert">Adapter-insert</a> case.
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterScope.map.remove.id}}"
+      >Adapter-remove</a> and case.
+      The <em>indexes</em> options is exactly the same as in the
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterScope.map.insert.id}}"
+      >Adapter-insert</a> case.
       The <em>fixRight</em> option allows to change
       the default indexing strategy.
       The default <em>fixRight</em> value is <em>false</em>,

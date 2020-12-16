@@ -25,7 +25,7 @@
   The constructor argument in&nbsp;the second case should be&nbsp;an object of <em>IDatasource</em> type.
   Instantiating via operator <em>new</em> is&nbsp;needed for
   the <em>Adapter</em> to&nbsp;be&nbsp;available on&nbsp;the result <em>datasource</em> object
-  (for details see <a href="#adapter">Adapter demo page</a>).
+  (for details see <a [routerLink]="['/', demos.adapter.id]">Adapter demo page</a>).
   Both of&nbsp;<em>IDatasource</em> and <em>Datasource</em> definitions
   could be&nbsp;imported from <em>UiScrollModule</em>:
 </p>
@@ -39,7 +39,7 @@
 </ul>
 <p>
   With the help of&nbsp;<em>settings</em> object the scroller could be&nbsp;configured,
-  as&nbsp;it&nbsp;is&nbsp; described on&nbsp;<a href="#settings">Settings demo page</a>.
+  as&nbsp;it&nbsp;is&nbsp; described on&nbsp;<a [routerLink]="['/', demos.settings.id]">Settings demo page</a>.
   Here we&nbsp;are going to&nbsp;discuss the <em>Datasource.get</em> method implementation.
 </p>
 

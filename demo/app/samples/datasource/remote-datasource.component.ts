@@ -2,7 +2,9 @@ import { Component, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+
 import { IDatasource } from '../../../../public_api';
 
 @Injectable()
@@ -23,13 +25,11 @@ export class RemoteDataService {
 export class DemoRemoteDatasourceComponent {
 
   demoContext = {
-    scope: 'datasource',
-    title: `Remote datasource`,
-    titleId: `remote`,
+    config: demos.datasource.map.remote,
     logViewOnly: true,
     log: '',
     count: 0
-  } as DemoContext;
+  };
 
   datasource: IDatasource = {
     get: (index: number, count: number) => {

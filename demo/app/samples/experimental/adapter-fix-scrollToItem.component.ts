@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+
 import { Datasource } from '../../../../public_api';
 
 @Component({
@@ -10,9 +12,7 @@ import { Datasource } from '../../../../public_api';
 export class DemoAdapterFixScrollToItemComponent {
 
   demoContext: DemoContext = <DemoContext>{
-    scope: 'experimental',
-    title: `Adapter fix scrollToItem`,
-    titleId: `adapter-fix-scrollToItem`,
+    config: demos.experimental.map.adapterFixScrollToItem,
     noInfo: true
   };
 
@@ -47,7 +47,7 @@ export class DemoAdapterFixScrollToItemComponent {
 </div>`
   }, {
     name: DemoSourceType.Component,
-      text: `index = '5'
+    text: `index = '5'
 scrollToBottom = false;
 
 datasource = new Datasource({

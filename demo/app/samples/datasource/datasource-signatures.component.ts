@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-datasource-signatures',
@@ -9,11 +10,9 @@ import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interface
 export class DemoDatasourceSignaturesComponent {
 
   demoContext = {
-    scope: 'datasource',
-    title: `Datasource get-method signatures`,
-    titleId: `datasource-get-signatures`,
+    config: demos.datasource.map.datasourceGetSignatures,
     noWorkView: true
-  } as DemoContext;
+  };
 
   sources: DemoSources = [{
     name: DemoSourceType.Datasource,

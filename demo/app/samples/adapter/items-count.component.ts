@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -12,9 +13,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoItemsCountComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `Buffer items counter`,
-    titleId: `items-count`,
+    config: demos.adapter.map.itemsCount,
     viewportId: `items-count-viewport`,
     count: 0,
     log: ''

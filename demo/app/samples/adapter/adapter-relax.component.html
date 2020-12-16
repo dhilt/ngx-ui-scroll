@@ -44,7 +44,11 @@
       This might be helpful if we don't want to wait until the end of current call stack.
     </p>
     <p>
-      At last, we may use <a href="#/adapter#return-value">Return value API</a>
+      At last, we may use
+      <a
+        [routerLink]="['/', adapterReturnValueDemoConfig.scope]"
+        fragment="{{adapterReturnValueDemoConfig.id}}"
+      >Return value API</a>
       (which is a part of each <em>Adapter</em> method)
       and get rid of the second "relax". This approach is demonstrated on the last tab "Return".
     </p>

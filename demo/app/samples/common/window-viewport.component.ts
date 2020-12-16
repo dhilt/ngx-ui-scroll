@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 @Component({
@@ -9,9 +10,7 @@ import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interface
 export class DemoWindowViewportComponent {
 
   demoContext: DemoContext = {
-    scope: 'settings',
-    title: `Entire window scrollable`,
-    titleId: `window-viewport`,
+    config: demos.settings.map.windowViewport,
     viewportId: `window-viewport-viewport`,
     noWorkView: true,
     count: 0,

@@ -1,18 +1,14 @@
 import { Component } from '@angular/core';
 
-import { DemoContext } from '../../shared/interfaces';
+import { demos } from '../../routes';
 
 @Component({
   selector: 'app-demo-adapter-return-value',
   templateUrl: './adapter-return-value.component.html'
 })
 export class DemoAdapterReturnValueComponent {
-  demoContext = {
-    scope: 'adapter',
-    title: `Return value`,
-    titleId: `return-value`,
-    noWorkView: true
-  } as DemoContext;
+
+  demoConfig = demos.adapter.map.returnValue;
 
   returnValueType = `  Promise<{
     success: boolean,

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { combineLatest } from 'rxjs';
 
+import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
@@ -13,9 +14,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoFirstLastVisibleItemsComponent {
 
   demoContext: DemoContext = {
-    scope: 'adapter',
-    title: `First and last visible items`,
-    titleId: `first-last-visible-items`,
+    config: demos.adapter.map.firstLastVisible,
     viewportId: `first-last-visible-items-viewport`,
     count: 0,
     log: ''

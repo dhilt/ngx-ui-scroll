@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources } from '../../shared/interfaces';
+
 import { Datasource } from '../../../../public_api';
 
 @Component({
@@ -10,11 +12,11 @@ import { Datasource } from '../../../../public_api';
 export class DemoAdapterRelaxComponent {
 
   demoContext = {
-    scope: 'adapter',
-    title: `Adapter relax`,
-    titleId: `relax`,
+    config: demos.adapter.map.relax,
     noInfo: true
-  } as DemoContext;
+  };
+
+  adapterReturnValueDemoConfig = demos.adapter.map.returnValue;
 
   datasource = new Datasource({
     get: (index: number, count: number, success: Function) => {

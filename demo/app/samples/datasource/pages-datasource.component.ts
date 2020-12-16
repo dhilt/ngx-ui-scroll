@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { demos } from '../../routes';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+
 import { IDatasource } from '../../../../public_api';
 
 @Component({
@@ -10,12 +12,10 @@ import { IDatasource } from '../../../../public_api';
 export class DemoPagesDatasourceComponent {
 
   demoContext = {
-    scope: 'datasource',
-    title: `Pages datasource`,
-    titleId: `pages`,
+    config: demos.datasource.map.pages,
     logViewOnly: true,
     log: ''
-  } as DemoContext;
+  };
 
   private getCount = 0;
   private pagesCount = 30;
@@ -65,7 +65,7 @@ export class DemoPagesDatasourceComponent {
       }
       this.demoContext.log = `${this.getCount}.3 requesting pages: ${logPages.join(', ')}\n` + this.demoContext.log;
       this.demoContext.log = `${this.getCount}.4 ` + (!pagesResult.length ? 'empty result' :
-          `pages result [${pagesResult[0].index}..${pagesResult[pagesResult.length - 1].index}]`
+        `pages result [${pagesResult[0].index}..${pagesResult[pagesResult.length - 1].index}]`
       ) + '\n' + this.demoContext.log;
 
       // slicing pages result to satisfy start/end indexes
@@ -73,7 +73,7 @@ export class DemoPagesDatasourceComponent {
       const end = start + endIndex - startIndex + 1;
       const data = pagesResult.slice(start, end);
       this.demoContext.log = (!data.length ? '' :
-          `${this.getCount}.5 sliced result [${data[0].index}..${data[data.length - 1].index}]\n`
+        `${this.getCount}.5 sliced result [${data[0].index}..${data[data.length - 1].index}]\n`
       ) + this.demoContext.log;
 
       success(data);
@@ -142,9 +142,9 @@ getDataPage(page: number) {
   return this.data[page];
 }`
   },
-    {
-      name: DemoSourceType.Component + ' (async)',
-      text: `datasource: IDatasource = {
+  {
+    name: DemoSourceType.Component + ' (async)',
+    text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const startIndex = Math.max(index, 0);
     const endIndex = index + count - 1;
@@ -180,7 +180,7 @@ constructor(
   private remoteDataService: RemoteDataService
 ) {
 }`
-    }];
+  }];
 
   getDataPage(page: number) {
     if (page < 0 || page >= this.pagesCount) {

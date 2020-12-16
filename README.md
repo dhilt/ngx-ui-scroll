@@ -1,9 +1,13 @@
 [![Build Status](https://travis-ci.com/dhilt/ngx-ui-scroll.svg?branch=master)](https://travis-ci.com/dhilt/ngx-ui-scroll)
-[![npm version](https://badge.fury.io/js/ngx-ui-scroll.svg)](https://www.npmjs.com/package/ngx-ui-scroll) 
+[![npm version](https://badge.fury.io/js/ngx-ui-scroll.svg)](https://www.npmjs.com/package/ngx-ui-scroll)
 
 # NgxUiScroll
 
 Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/).
+
+<p dir="rtl">
+<small>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b> 👉 <br>make open-source world better</small> 
+</p>
 
 - [Motivation](#motivation)
 - [Features](#features)
@@ -13,11 +17,13 @@ Unlimited bidirectional scrolling over limited viewport. A directive for [Angula
 - [Adapter API](#adapter-api)
 - [Development](#development)
 
+<br>
+
 ### Motivation
 
-Scrolling large data sets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve this case is to render only a small portion of the data set visible to a user. Other data set elements that are not visible to a user are virtualized with upward and downward empty padding elements which should give us a consistent viewport with consistent scrollbar parameters.
+Scrolling large datasets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve the performance is to render only a small portion of the dataset visible to a user. Other dataset elements that are not visible to a user are virtualized with upward and downward empty padding elements which should provide a consistent viewport with consistent scrollbar parameters.
 
-The \*uiScroll is structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the data set and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if a user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
+The \*uiScroll is a structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the dataset and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if a user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
@@ -80,7 +86,7 @@ where the viewport is a scrollable area of finite height:
 }
 ```
 
-If the height of the viewport is not constrained, it will pull the entire content of the datasource and no scrollbar will appear. Previous versions of the library (prior to 1.6.4) had the requirement that the value of "overflow-anchor" css property should be set to "none" for the viewport element.
+If the height of the viewport is not constrained, it will pull the entire content of the datasource and no scrollbar will appear.
 
 \*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters. The directive calls `Datasource.get` method each time a user scrolls to the edge of visible element list. That's the API provided by the \*uiScroll.
 
@@ -135,15 +141,15 @@ Settings are being applied during the uiScroll initialization and have an impact
 |[bufferSize](https://dhilt.github.io/ngx-ui-scroll/settings#buffer-size)|number,<br>integer|5| Fixes minimal size of the pack of the datasource items to be requested per single _Datasource.get_ call. Can't be less than 1. |
 |[padding](https://dhilt.github.io/ngx-ui-scroll/settings#padding)|number,<br>float|0.5| Determines viewport outlets relative to the viewport's size that need to be filled. For example, 0.5 means that we'll have as many items at a moment as needed to fill out 100% of the visible part of the viewport, + 50% of the viewport size in backward direction and + 50% in forward direction. The value can't be less than 0.01. |
 |[startIndex](https://dhilt.github.io/ngx-ui-scroll/settings#start-index)|number,<br>integer|1| Specifies item index to be requested/rendered first. Can be any, but real datasource boundaries should be taken into account. |
-|[minIndex](https://dhilt.github.io/ngx-ui-scroll/settings#min-max-indexes)|number,<br>integer|-Infinity| Fixes absolute minimal index of the data set. The datasource left boundary. |
-|[maxIndex](https://dhilt.github.io/ngx-ui-scroll/settings#min-max-indexes)|number,<br>integer|+Infinity| Fixes absolute maximal index of the data set. The datasource right boundary. |
+|[minIndex](https://dhilt.github.io/ngx-ui-scroll/settings#min-max-indexes)|number,<br>integer|-Infinity| Fixes absolute minimal index of the dataset. The datasource left boundary. |
+|[maxIndex](https://dhilt.github.io/ngx-ui-scroll/settings#min-max-indexes)|number,<br>integer|+Infinity| Fixes absolute maximal index of the dataset. The datasource right boundary. |
 |[infinite](https://dhilt.github.io/ngx-ui-scroll/settings#infinite-mode)|boolean|false| Allows to run "infinite" mode, when items rendered once are never removed. |
 |[horizontal](https://dhilt.github.io/ngx-ui-scroll/settings#horizontal-mode)|boolean|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
 |[windowViewport](https://dhilt.github.io/ngx-ui-scroll/settings#window-viewport)|boolean|false| Allows to run "entire window scrollable" mode, when the entire window becomes the scrollable viewport. |
 
 ### Adapter API
 
-The uiScroll has API to assess its parameters and provide some manipulations run-time. This API is available via special Adapter object. The datasource needs to be instantiated via operator "new" for the Adapter object to be added to it:
+The uiScroll has API to assess its parameters and provide some manipulations at runtime. This API is available via special Adapter object. The datasource needs to be instantiated via operator "new" for the Adapter object to be added to it:
 
 ```javascript
 import { Datasource } from 'ngx-ui-scroll';
@@ -227,7 +233,7 @@ import { Datasource } from 'ngx-ui-scroll';
   });
 ```
 
-Like the experimental features, the development settings are not documented. Information about them can be obtained directly from the [source code](https://github.com/dhilt/ngx-ui-scroll/blob/master/src/component/classes/settings.ts). The uiScroll has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
+The development settings are not documented. Information about them can be obtained directly from the [source code](https://github.com/dhilt/ngx-ui-scroll/blob/master/src/component/classes/settings.ts). The uiScroll has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
 
 At last, any participation is welcome, so feel free to submit new [Issues](https://github.com/dhilt/ngx-ui-scroll/issues) and open [Pull Requests](https://github.com/dhilt/ngx-ui-scroll/pulls).
 

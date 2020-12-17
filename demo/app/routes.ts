@@ -267,22 +267,4 @@ const demoList = Object.values(demos).map(scope => ({
   map: Object.values(scope.map).map(demo => demo)
 }));
 
-interface IRedirect {
-  from: string;
-  to: string;
-}
-
-const getHashRedirect = (scopeId: string, demoId?: string): IRedirect => ({
-  from: '#/' + scopeId + (demoId ? '#' + demoId : ''),
-  to: '/' + scopeId + (demoId ? '#' + demoId : '')
-});
-
-const redirects = Object.values(demos).reduce((acc: IRedirect[], scope) => [
-  ...acc,
-  getHashRedirect(scope.id),
-  ...Object.values(scope.map).map(({ id }) =>
-    getHashRedirect(scope.id, id)
-  )
-], []);
-
-export { IDemo, globalScope, demos, demoList, redirects };
+export { IDemo, globalScope, demos, demoList };

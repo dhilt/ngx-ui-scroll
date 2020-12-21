@@ -122,14 +122,14 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
       lastIndex = buffer.startIndex + settings.bufferSize - 1;
       scroller.logger.log(`forcing fetch forward direction [no item size]`);
     } else {
-      let index = first.indexBuffer as number;
-      let position = first.position as number;
+      let index = first.indexBuffer;
+      let position = first.position;
       lastIndex = index;
       while (1) {
         lastIndex = index;
         const size = buffer.getSizeByIndex(index);
         position += size;
-        if (fetch.firstVisibleIndex === null && position > relative) {
+        if (isNaN(fetch.firstVisibleIndex) && position > relative) {
           fetch.firstVisibleIndex = index;
           if (!cycle.innerLoop.isInitial) {
             fetch.firstVisibleItemDelta = position - size - relative;
@@ -152,8 +152,8 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
       return;
     }
     const { fetch } = scroller.state;
-    const firstIndex = fetch.first.index as number;
-    const lastIndex = fetch.last.index as number;
+    const firstIndex = fetch.first.index;
+    const lastIndex = fetch.last.index;
     const packs: number[][] = [[]];
     let p = 0;
     for (let i = firstIndex; i <= lastIndex; i++) {
@@ -184,13 +184,13 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
     if (!buffer.size) {
       return;
     }
-    const fetchFirst = fetch.first.index as number;
-    const bufferLast = buffer.lastIndex as number;
+    const fetchFirst = fetch.first.index;
+    const bufferLast = buffer.lastIndex;
     if (fetchFirst > bufferLast) {
       fetch.first.index = fetch.first.indexBuffer = bufferLast + 1;
     }
-    const bufferFirst = buffer.firstIndex as number;
-    const fetchLast = fetch.last.index as number;
+    const bufferFirst = buffer.firstIndex;
+    const fetchLast = fetch.last.index;
     if (fetchLast < bufferFirst) {
       fetch.last.index = fetch.last.indexBuffer = bufferFirst - 1;
     }
@@ -204,8 +204,8 @@ export default class PreFetch extends getBaseProcess(CommonProcess.preFetch) {
     if (!fetch.shouldFetch) {
       return;
     }
-    const firstIndex = fetch.first.index as number;
-    const lastIndex = fetch.last.index as number;
+    const firstIndex = fetch.first.index;
+    const lastIndex = fetch.last.index;
     const diff = scroller.settings.bufferSize - (lastIndex - firstIndex + 1);
     if (diff <= 0) {
       return;

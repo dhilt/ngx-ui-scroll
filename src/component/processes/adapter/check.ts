@@ -23,8 +23,8 @@ export default class Check extends getBaseAdapterProcess(AdapterProcess.check) {
       fetch.first.indexBuffer = buffer.firstIndex;
       fetch.last.indexBuffer = buffer.lastIndex;
       const { item: first, diff } = viewport.getEdgeVisibleItem(buffer.items, Direction.backward);
-      fetch.firstVisibleIndex = first ? first.get().$index : null;
-      if (fetch.firstVisibleIndex !== null) {
+      fetch.firstVisibleIndex = first ? first.get().$index : NaN;
+      if (!isNaN(fetch.firstVisibleIndex)) {
         fetch.firstVisibleItemDelta = - buffer.getSizeByIndex(fetch.firstVisibleIndex) + diff;
       }
       fetch.replace(

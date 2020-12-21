@@ -152,7 +152,6 @@ describe('Adapter Append-Prepend Spec', () => {
         title: `should ${token} to empty datasource` + (virtualize ? ' (virtualization)' : ''),
         it: (misc: Misc) => (done: any) => {
           const { viewport, buffer } = misc.scroller;
-          const { paddings } = viewport;
           const _config = configEmpty[token];
           const { amount: _amount } = _config.custom;
           const templateSize = _config.templateSettings.viewportHeight;

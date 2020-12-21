@@ -38,7 +38,7 @@ export class Logger {
     };
     this.getFetchRange = (): string => {
       const { first: { index: first }, last: { index: last } } = scroller.state.fetch;
-      return first !== null && last !== null && !Number.isNaN(first) && !Number.isNaN(last)
+      return !Number.isNaN(first) && !Number.isNaN(last)
         ? `[${first}..${last}]`
         : 'no';
     };

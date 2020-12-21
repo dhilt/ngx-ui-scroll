@@ -75,7 +75,7 @@ export default class Adjust extends getBaseProcess(CommonProcess.adjust) {
     let position = viewport.paddings.backward.size;
 
     // backward outlet increase
-    if (fetch.firstVisibleIndex !== null && buffer.firstIndex !== null) {
+    if (!isNaN(fetch.firstVisibleIndex) && !isNaN(buffer.firstIndex)) {
       for (let i = buffer.firstIndex; i < fetch.firstVisibleIndex; i++) {
         position += buffer.getSizeByIndex(i);
       }

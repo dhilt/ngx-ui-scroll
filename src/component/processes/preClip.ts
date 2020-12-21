@@ -21,8 +21,8 @@ export default class PreClip extends getBaseProcess(CommonProcess.preClip) {
     if (PreClip.shouldNotClip(scroller)) {
       return;
     }
-    const firstIndex = fetch.first.indexBuffer as number;
-    const lastIndex = fetch.last.indexBuffer as number;
+    const firstIndex = fetch.first.indexBuffer;
+    const lastIndex = fetch.last.indexBuffer;
     scroller.logger.log(() =>
       `looking for ${fetch.direction ? 'anti-' + fetch.direction + ' ' : ''}items ` +
       `that are out of [${firstIndex}..${lastIndex}] range`);

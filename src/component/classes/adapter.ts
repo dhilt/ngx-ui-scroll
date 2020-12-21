@@ -229,6 +229,8 @@ export class Adapter implements IAdapter {
     });
     Object.defineProperty(this.demand, 'bufferInfo', {
       get: (): IBufferInfo => ({
+        firstIndex: buffer.firstIndex,
+        lastIndex: buffer.lastIndex,
         minIndex: buffer.minIndex,
         maxIndex: buffer.maxIndex,
         absMinIndex: buffer.absMinIndex,

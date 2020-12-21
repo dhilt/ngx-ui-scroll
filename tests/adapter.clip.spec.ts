@@ -64,38 +64,29 @@ export const getItemsCounter = (
   return itemsCounter;
 };
 
-const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  let indexToAppend = -Infinity;
+const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   const NEW_ITEMS_COUNT = 50;
   const { itemSize } = config.datasourceSettings;
   const { adapter, scroller: { buffer } } = misc;
-  let firstIndex: number, lastIndex: number;
   const clipSettings = getClipArgument(config);
+  await misc.relaxNext();
 
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const cycles = misc.workflow.cyclesDone;
-    if (cycles === 1) {
-      indexToAppend = buffer.getIndexToAppend();
-      const itemsToAppend = Array.from(Array(NEW_ITEMS_COUNT), (_, x) => ({
-        id: indexToAppend - x,
-        text: `!item #${indexToAppend - x}`
-      }));
-      adapter.append(itemsToAppend);
-    } else if (cycles === 2) {
-      firstIndex = buffer.firstIndex as number;
-      lastIndex = buffer.lastIndex as number;
-      expect(lastIndex).toEqual(indexToAppend + NEW_ITEMS_COUNT - 1);
-      expect(misc.padding.backward.getSize()).toEqual(0);
-      adapter.clip(clipSettings);
-    } else if (firstIndex !== null) {
-      // user clip requires additional reflow to remove DOM elements
-      setTimeout(() => {
-        const itemsCounter = getItemsCounter(config, misc, itemSize, firstIndex, lastIndex, clipSettings);
-        testItemsCounter(config, misc, itemsCounter);
-        done();
-      });
-    }
-  });
+  const indexToAppend = buffer.getIndexToAppend();
+  const itemsToAppend = Array.from(Array(NEW_ITEMS_COUNT), (_, x) => ({
+    id: indexToAppend - x,
+    text: `!item #${indexToAppend - x}`
+  }));
+  await adapter.append(itemsToAppend);
+
+  const firstIndex = buffer.firstIndex;
+  const lastIndex = buffer.lastIndex;
+  expect(lastIndex).toEqual(indexToAppend + NEW_ITEMS_COUNT - 1);
+  expect(misc.padding.backward.getSize()).toEqual(0);
+  await adapter.clip(clipSettings);
+
+  const itemsCounter = getItemsCounter(config, misc, itemSize, firstIndex, lastIndex, clipSettings);
+  testItemsCounter(config, misc, itemsCounter);
+  done();
 };
 
 const getClipArgument = ({ custom }: TestBedConfig): any => {
@@ -149,7 +140,9 @@ describe('Adapter Clip Spec', () => {
     config: { datasourceSettings: { adapter: true } },
     title: `should resolve immediately before scroller initialization`,
     it: (misc: Misc) => async (done: Function) => {
-      await misc.adapter.clip();
+      const result = await misc.adapter.clip();
+      expect(result.immediate).toBe(true);
+      expect(result.success).toBe(false); // Adapter is not initialized
       done();
     }
   });

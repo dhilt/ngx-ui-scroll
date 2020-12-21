@@ -30,6 +30,8 @@ export type ItemsLooper = (item: ItemAdapter) => any;
 export type ItemsProcessor = (items: ItemAdapter[]) => void;
 
 export interface IBufferInfo {
+  firstIndex: number;
+  lastIndex: number;
   minIndex: number;
   maxIndex: number;
   absMinIndex: number;

@@ -5,6 +5,8 @@ import { AdapterPropType as Prop, IAdapterProp, IBufferInfo } from '../../interf
 const noop = () => null;
 
 const bufferInfoDefault: IBufferInfo = {
+  firstIndex: NaN,
+  lastIndex: NaN,
   minIndex: NaN,
   maxIndex: NaN,
   absMinIndex: -Infinity,

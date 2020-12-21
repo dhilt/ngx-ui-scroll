@@ -103,6 +103,7 @@ export interface IAdapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   readonly itemsCount: number;
+  readonly bufferInfo: IBufferInfo;
   reset(datasource?: IDatasourceOptional): MethodResult;
   reload(reloadIndex?: number | string): MethodResult;
   append(options: AdapterAppendOptions): MethodResult;

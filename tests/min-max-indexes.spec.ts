@@ -25,6 +25,8 @@ const configList: TestBedConfig[] = [{
   templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
 }];
 
+configList.forEach(config => config.datasourceSettings.adapter = true);
+
 const noItemSizeConfigList = configList.map(
   ({ datasourceSettings: { itemSize, ...restDatasourceSettings }, ...config }) => ({
     ...config, datasourceSettings: { ...restDatasourceSettings }
@@ -65,6 +67,13 @@ const forwardGapConfigList: TestBedConfig[] = startIndexAroundMaxIndexConfigList
   ({ datasourceSettings: { minIndex, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
 );
 
+const checkMinMaxIndexes = (misc: Misc) => {
+  const elements = misc.getElements();
+  const { minIndex, maxIndex } = misc.adapter.bufferInfo;
+  expect(minIndex).toEqual(misc.getElementIndex(elements[0]));
+  expect(maxIndex).toEqual(misc.getElementIndex(elements[elements.length - 1]));
+};
+
 const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
   const { maxIndex, minIndex, itemSize: _itemSize, startIndex, padding } = settings.datasourceSettings;
   const { bufferSize } = misc.scroller.settings;
@@ -96,6 +105,9 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
     const negativeItemsSize = negativeItemsAmount * itemSize;
     const bwdPaddingSize = negativeSize - negativeItemsSize;
     expect(misc.padding.backward.getSize()).toEqual(bwdPaddingSize);
+    expect(misc.adapter.bufferInfo.absMinIndex).toEqual(minIndex);
+  } else {
+    expect(misc.adapter.bufferInfo.absMinIndex).toEqual(-Infinity);
   }
 
   if (hasMaxIndex) {
@@ -103,6 +115,9 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
     const positiveItemsSize = positiveItemsAmount * itemSize;
     const fwdPaddingSize = positiveSize - positiveItemsSize;
     expect(misc.padding.forward.getSize()).toEqual(fwdPaddingSize);
+    expect(misc.adapter.bufferInfo.absMaxIndex).toEqual(maxIndex);
+  } else {
+    expect(misc.adapter.bufferInfo.absMaxIndex).toEqual(Infinity);
   }
 
   let totalSize;
@@ -115,9 +130,10 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
     const knownSize = (maxIndex - startIndex + 1) * itemSize;
     totalSize = knownSize + negativeItemsAmount * itemSize;
   }
-  expect(misc.getScrollableSize()).toEqual(totalSize);
 
+  expect(misc.getScrollableSize()).toEqual(totalSize);
   expect(misc.innerLoopCount).toEqual(innerLoopCount);
+  checkMinMaxIndexes(misc);
 
   done();
 };
@@ -150,6 +166,11 @@ const _testStartIndexEdgeCase = (settings: TestBedConfig, misc: Misc, done: Func
   expect(misc.getScrollableSize()).toEqual(totalSize);
   expect(misc.padding.backward.getSize()).toEqual(bwdPaddingSize);
   expect(misc.padding.forward.getSize()).toEqual(fwdPaddingSize);
+
+  expect(misc.adapter.bufferInfo.absMinIndex).toEqual(minIndex);
+  expect(misc.adapter.bufferInfo.absMaxIndex).toEqual(maxIndex);
+  checkMinMaxIndexes(misc);
+
   done();
 };
 

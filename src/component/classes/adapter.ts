@@ -98,6 +98,7 @@ export class Adapter implements IAdapter {
   eof: boolean;
   eof$: Subject<boolean>;
   itemsCount: number;
+  bufferInfo: IBufferInfo;
 
   private initialized: boolean;
   private relax$: Subject<AdapterMethodResult> | null;

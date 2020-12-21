@@ -29,6 +29,13 @@ export type ItemsPredicate = (item: ItemAdapter) => boolean;
 export type ItemsLooper = (item: ItemAdapter) => any;
 export type ItemsProcessor = (items: ItemAdapter[]) => void;
 
+export interface IBufferInfo {
+  minIndex: number;
+  maxIndex: number;
+  absMinIndex: number;
+  absMaxIndex: number;
+}
+
 export interface AdapterAppendOptions {
   items: any[];
   eof?: boolean;

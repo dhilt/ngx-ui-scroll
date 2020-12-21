@@ -25,6 +25,7 @@ import {
   ScrollerWorkflow,
   IDatasourceOptional,
   ProcessSubject,
+  IBufferInfo,
 } from '../interfaces/index';
 
 const ADAPTER_PROPS_STUB = ADAPTER_PROPS(EMPTY_ITEM);
@@ -217,6 +218,14 @@ export class Adapter implements IAdapter {
     // buffer
     Object.defineProperty(this.demand, 'itemsCount', {
       get: () => buffer.getVisibleItemsCount()
+    });
+    Object.defineProperty(this.demand, 'bufferInfo', {
+      get: (): IBufferInfo => ({
+        minIndex: buffer.minIndex,
+        maxIndex: buffer.maxIndex,
+        absMinIndex: buffer.absMinIndex,
+        absMaxIndex: buffer.absMaxIndex,
+      })
     });
     this.bof = buffer.bof;
     buffer.bofSource.pipe(takeUntil(dispose$)).subscribe(value => this.bof = value);

@@ -1,6 +1,7 @@
 import { filter, take } from 'rxjs/operators';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { configureTestBedSub } from './scaffolding/testBed';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
 import {
@@ -358,5 +359,18 @@ describe('Adapter Promises Spec', () => {
       })
     );
   });
+
+  describe('Call before init', () =>
+
+    ['relax', 'reload', 'reset', 'check'].forEach(method =>
+      it(`should immediately return with no success ("${method}")`, async (done) => {
+        const misc = new Misc(configureTestBedSub());
+        const result = await (misc.adapter as any)[method]();
+        expect(result.success).toBe(false);
+        expect(result.immediate).toBe(true);
+        done();
+      })
+    )
+  );
 
 });

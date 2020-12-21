@@ -57,6 +57,12 @@ const convertRemoveArgs = (options: AdapterRemoveOptions | ItemsPredicate) => {
   return options;
 };
 
+const adapterMethodPreResult: AdapterMethodResult = {
+  success: false,
+  immediate: true,
+  details: 'Adapter is not initialized'
+};
+
 export class Adapter implements IAdapter {
   private logger: Logger;
   private getWorkflow: WorkflowGetter;
@@ -93,21 +99,21 @@ export class Adapter implements IAdapter {
   eof$: Subject<boolean>;
   itemsCount: number;
 
-  private relax$: Subject<boolean | AdapterMethodResult> | null;
+  private initialized: boolean;
+  private relax$: Subject<AdapterMethodResult> | null;
   private relaxRun: Promise<AdapterMethodResult> | null;
 
   private getPromisifiedMethod(method: Function) {
-    return (...args: any[]) =>
+    return (...args: any[]): Promise<AdapterMethodResult> =>
       new Promise(resolve => {
         if (this.relax$) {
-          this.relax$.pipe(
-            filter(value => !!value),
-            take(1)
-          ).subscribe(value => resolve(value));
+          this.relax$
+            .pipe(take(1))
+            .subscribe(value => resolve(value));
         }
         method.apply(this, args);
-        if (!this.relax$) {
-          resolve();
+        if (!this.initialized) {
+          resolve(adapterMethodPreResult);
         }
       });
   }
@@ -115,6 +121,7 @@ export class Adapter implements IAdapter {
   constructor(publicContext: IAdapter | null, getWorkflow: WorkflowGetter, logger: Logger) {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
+    this.initialized = false;
     this.relax$ = null;
     this.relaxRun = null;
     this.reloadCounter = 0;
@@ -238,13 +245,12 @@ export class Adapter implements IAdapter {
     // self-pending
     if (onAdapterRun$) { // passed on the very first init only
       if (!this.relax$) {
-        this.relax$ = new Subject<boolean | AdapterMethodResult>();
+        this.relax$ = new Subject<AdapterMethodResult>();
       }
       const relax$ = this.relax$;
       onAdapterRun$.subscribe(({ status, payload }) => {
         let isLoadingSub;
         if (status === ProcessStatus.start) {
-          relax$.next(false);
           isLoadingSub = this.isLoading$
             .pipe(filter(isLoading => !isLoading), take(1), takeUntil(dispose$))
             .subscribe(() => relax$.next({ success: true, immediate: false, details: null }));
@@ -261,6 +267,8 @@ export class Adapter implements IAdapter {
         }
       });
     }
+
+    this.initialized = true;
   }
 
   dispose() {
@@ -392,9 +400,12 @@ export class Adapter implements IAdapter {
     };
   }
 
-  relax(callback?: Function): any {
+  relax(callback?: Function): Promise<AdapterMethodResult> {
     const reloadId = this.reloadId;
     this.logger.logAdapterMethod('relax', callback, ` of ${reloadId}`);
+    if (!this.initialized) {
+      return Promise.resolve(adapterMethodPreResult);
+    }
     return this.relaxRun = this.relaxRun
       ? this.relaxRun.then(() => this.relaxUnchained(callback, reloadId))
       : this.relaxUnchained(callback, reloadId).then((result) => {

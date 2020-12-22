@@ -29,6 +29,15 @@ export type ItemsPredicate = (item: ItemAdapter) => boolean;
 export type ItemsLooper = (item: ItemAdapter) => any;
 export type ItemsProcessor = (items: ItemAdapter[]) => void;
 
+export interface IBufferInfo {
+  firstIndex: number;
+  lastIndex: number;
+  minIndex: number;
+  maxIndex: number;
+  absMinIndex: number;
+  absMaxIndex: number;
+}
+
 export interface AdapterAppendOptions {
   items: any[];
   eof?: boolean;
@@ -96,6 +105,7 @@ export interface IAdapter {
   readonly eof: boolean;
   readonly eof$: Subject<boolean>;
   readonly itemsCount: number;
+  readonly bufferInfo: IBufferInfo;
   reset(datasource?: IDatasourceOptional): MethodResult;
   reload(reloadIndex?: number | string): MethodResult;
   append(options: AdapterAppendOptions): MethodResult;

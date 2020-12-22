@@ -21,32 +21,32 @@ class Positions {
 }
 
 class First {
-  index: number | null;
-  indexBuffer: number | null;
-  position: number | null;
+  index: number;
+  indexBuffer: number;
+  position: number;
 
   constructor() {
     this.reset();
   }
 
   reset() {
-    this.index = null;
-    this.indexBuffer = null;
-    this.position = null;
+    this.index = NaN;
+    this.indexBuffer = NaN;
+    this.position = NaN;
   }
 }
 
 class Last {
-  index: number | null;
-  indexBuffer: number | null;
+  index: number;
+  indexBuffer: number;
 
   constructor() {
     this.reset();
   }
 
   reset() {
-    this.index = null;
-    this.indexBuffer = null;
+    this.index = NaN;
+    this.indexBuffer = NaN;
   }
 }
 
@@ -60,8 +60,8 @@ export class FetchModel {
   hasAnotherPack: boolean;
   callCount: number;
   minIndex: number;
-  firstVisibleIndex: number | null;
-  firstVisibleItemDelta: number | null;
+  firstVisibleIndex: number;
+  firstVisibleItemDelta: number;
   negativeSize: number;
   direction: Direction | null;
   subscription: Subscription | null;
@@ -85,8 +85,8 @@ export class FetchModel {
     this.first.reset();
     this.last.reset();
     this.hasAnotherPack = false;
-    this.firstVisibleIndex = null;
-    this.firstVisibleItemDelta = null;
+    this.firstVisibleIndex = NaN;
+    this.firstVisibleItemDelta = NaN;
     this.negativeSize = 0;
     this.direction = null;
     this.subscription = null;
@@ -114,12 +114,12 @@ export class FetchModel {
     return !!((this._newItemsData && this._newItemsData.length));
   }
 
-  get index(): number | null {
+  get index(): number {
     return this.first.index;
   }
 
   get count(): number {
-    return this.first.index !== null && this.last.index !== null ? this.last.index - this.first.index + 1 : 0;
+    return !isNaN(this.first.index) && !isNaN(this.last.index) ? this.last.index - this.first.index + 1 : 0;
   }
 
   startSimulate(items: Item[]) {

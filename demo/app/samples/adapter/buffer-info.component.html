@@ -1,0 +1,25 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    firstIndex: {{datasource.adapter.bufferInfo.firstIndex}} /
+    lastIndex: {{datasource.adapter.bufferInfo.lastIndex}}<br>
+    minIndex: {{datasource.adapter.bufferInfo.minIndex}} /
+    maxIndex: {{datasource.adapter.bufferInfo.maxIndex}}<br>
+  </div>
+  <div description>
+    <p>
+      <em>Adapter.bufferInfo</em> is a read-only property which exposes
+      an object of the following type:
+    </p>
+    <pre>{{bufferInfoType}}</pre>
+    <p>
+      <em>firstIndex</em> & <em>lastIndex</em>
+      are the first and the last indexes in the current Buffer,
+      <em>minIndex</em> & <em>maxIndex</em> are min and max indexes that were present in the Buffer,
+      <em>absMinIndex</em> & <em>absMaxIndex</em> are min and max indexes that can be present in the Buffer.
+    </p>
+  </div>
+</app-demo>

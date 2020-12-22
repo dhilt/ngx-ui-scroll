@@ -65,9 +65,20 @@ const forwardGapConfigList: TestBedConfig[] = startIndexAroundMaxIndexConfigList
   ({ datasourceSettings: { minIndex, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
 );
 
-const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const checkMinMaxIndexes = (misc: Misc) => {
+  const elements = misc.getElements();
+  const { firstIndex, lastIndex, minIndex, maxIndex } = misc.scroller.adapter.bufferInfo;
+  expect(firstIndex).toEqual(minIndex);
+  expect(lastIndex).toEqual(maxIndex);
+  expect(minIndex).toEqual(misc.getElementIndex(elements[0]));
+  expect(maxIndex).toEqual(misc.getElementIndex(elements[elements.length - 1]));
+};
+
+const _testCommonCase = (settings: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+
   const { maxIndex, minIndex, itemSize: _itemSize, startIndex, padding } = settings.datasourceSettings;
-  const { bufferSize } = misc.scroller.settings;
+  const { settings: { bufferSize }, adapter } = misc.scroller;
   const viewportSize = misc.getViewportSize(settings);
   const viewportSizeDelta = viewportSize * padding;
   const itemSize = _itemSize || misc.scroller.buffer.averageSize;
@@ -96,6 +107,9 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
     const negativeItemsSize = negativeItemsAmount * itemSize;
     const bwdPaddingSize = negativeSize - negativeItemsSize;
     expect(misc.padding.backward.getSize()).toEqual(bwdPaddingSize);
+    expect(adapter.bufferInfo.absMinIndex).toEqual(minIndex);
+  } else {
+    expect(adapter.bufferInfo.absMinIndex).toEqual(-Infinity);
   }
 
   if (hasMaxIndex) {
@@ -103,6 +117,9 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
     const positiveItemsSize = positiveItemsAmount * itemSize;
     const fwdPaddingSize = positiveSize - positiveItemsSize;
     expect(misc.padding.forward.getSize()).toEqual(fwdPaddingSize);
+    expect(adapter.bufferInfo.absMaxIndex).toEqual(maxIndex);
+  } else {
+    expect(adapter.bufferInfo.absMaxIndex).toEqual(Infinity);
   }
 
   let totalSize;
@@ -115,15 +132,19 @@ const _testCommonCase = (settings: TestBedConfig, misc: Misc, done: Function) =>
     const knownSize = (maxIndex - startIndex + 1) * itemSize;
     totalSize = knownSize + negativeItemsAmount * itemSize;
   }
-  expect(misc.getScrollableSize()).toEqual(totalSize);
 
+  expect(misc.getScrollableSize()).toEqual(totalSize);
   expect(misc.innerLoopCount).toEqual(innerLoopCount);
+  checkMinMaxIndexes(misc);
 
   done();
 };
 
-const _testStartIndexEdgeCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const _testStartIndexEdgeCase = (settings: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+
   const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
+  const { adapter } = misc.scroller;
   const viewportSize = misc.getViewportSize(settings);
   const totalSize = (maxIndex - minIndex + 1) * itemSize;
   const viewportSizeDelta = viewportSize * padding;
@@ -150,10 +171,16 @@ const _testStartIndexEdgeCase = (settings: TestBedConfig, misc: Misc, done: Func
   expect(misc.getScrollableSize()).toEqual(totalSize);
   expect(misc.padding.backward.getSize()).toEqual(bwdPaddingSize);
   expect(misc.padding.forward.getSize()).toEqual(fwdPaddingSize);
+
+  expect(adapter.bufferInfo.absMinIndex).toEqual(minIndex);
+  expect(adapter.bufferInfo.absMaxIndex).toEqual(maxIndex);
+  checkMinMaxIndexes(misc);
+
   done();
 };
 
-const _testForwardGapCase = (settings: TestBedConfig, misc: Misc, done: Function) => {
+const _testForwardGapCase = (settings: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
   const viewportSize = misc.getViewportSize(settings);
   const viewportChildren = misc.scroller.viewport.element.children;
   const lastChild = viewportChildren[viewportChildren.length - 2];
@@ -167,95 +194,74 @@ const _testForwardGapCase = (settings: TestBedConfig, misc: Misc, done: Function
 
 describe('Min/max Indexes Spec', () => {
 
-  describe('Common cases', () => {
+  describe('Common cases', () =>
     configList.forEach(config =>
       makeTest({
         config,
         title: 'should fill the viewport and the paddings',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testCommonCase(config, misc, done)
-          )
+        it: _testCommonCase(config)
       })
-    );
-  });
+    )
+  );
 
-  describe('No maxIndex cases', () => {
+  describe('No maxIndex cases', () =>
     noMaxIndexConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should fill the viewport and backward padding',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testCommonCase(config, misc, done)
-          )
+        it: _testCommonCase(config)
       })
-    );
-  });
+    )
+  );
 
-  describe('No minIndex cases', () => {
+  describe('No minIndex cases', () =>
     noMinIndexConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should fill the viewport and forward padding',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testCommonCase(config, misc, done)
-          )
+        it: _testCommonCase(config)
       })
-    );
-  });
+    )
+  );
 
-  describe('No itemSize cases', () => {
+  describe('No itemSize cases', () =>
     noItemSizeConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should fill the viewport and the paddings',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testCommonCase(config, misc, done)
-          )
+        it: _testCommonCase(config)
       })
-    );
-  });
+    )
+  );
 
-  describe('startIndex\'s around minIndex', () => {
+  describe('startIndex\'s around minIndex', () =>
     startIndexAroundMinIndexConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should reset backward padding',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testStartIndexEdgeCase(config, misc, done)
-          )
+        it: _testStartIndexEdgeCase(config)
       })
-    );
-  });
+    )
+  );
 
-  describe('startIndex\'s around maxIndex', () => {
+  describe('startIndex\'s around maxIndex', () =>
     startIndexAroundMaxIndexConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should reset forward padding',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testStartIndexEdgeCase(config, misc, done)
-          )
+        it: _testStartIndexEdgeCase(config)
       })
-    );
-  });
+    )
+  );
 
-  describe('startIndex\'s around maxIndex and no minIndex', () => {
+  describe('startIndex\'s around maxIndex and no minIndex', () =>
     forwardGapConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should fill forward padding gap',
-        it: (misc: Misc) => (done: Function) =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            _testForwardGapCase(config, misc, done)
-          )
+        it: _testForwardGapCase(config)
       })
-    );
-  });
+    )
+  );
 
 });

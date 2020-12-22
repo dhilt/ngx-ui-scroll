@@ -63,13 +63,13 @@ export default class Fix extends getBaseAdapterProcess(AdapterProcess.fix) {
   }
 
   static setMinIndex({ buffer, settings }: Scroller, value: any) {
-    settings.minIndex = value as number;
-    buffer.absMinIndex = value as number;
+    settings.minIndex = value;
+    buffer.absMinIndex = value;
   }
 
   static setMaxIndex({ buffer, settings }: Scroller, value: any) {
-    settings.maxIndex = value as number;
-    buffer.absMaxIndex = value as number;
+    settings.maxIndex = value;
+    buffer.absMaxIndex = value;
   }
 
   static updateItems({ buffer }: Scroller, value: any) {

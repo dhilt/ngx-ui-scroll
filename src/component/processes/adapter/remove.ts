@@ -53,16 +53,16 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
   static runPredicateOverBuffer(scroller: Scroller, predicate: ItemsPredicate): boolean {
     const { viewport, buffer: { items } } = scroller;
     let result = false;
-    let firstVisibleIndex: null | number = null;
+    let firstVisibleIndex = NaN;
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       if (predicate(item.get())) {
         item.toRemove = true;
-        if (firstVisibleIndex === null) {
+        if (isNaN(firstVisibleIndex)) {
           const firstVisible = viewport.getEdgeVisibleItem(items, Direction.backward);
-          firstVisibleIndex = firstVisible.item ? firstVisible.item.get().$index : null;
+          firstVisibleIndex = firstVisible.item ? firstVisible.item.get().$index : NaN;
         }
-        item.removeDirection = firstVisibleIndex !== null && item.$index < firstVisibleIndex
+        item.removeDirection = !isNaN(firstVisibleIndex) && item.$index < firstVisibleIndex
           ? Direction.backward
           : Direction.forward;
         result = true;
@@ -78,20 +78,20 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
     if (!indexes) {
       return false;
     }
-    let last = null;
+    let last = NaN;
     const { state: { clip } } = scroller;
     const { finiteAbsMinIndex, firstIndex, finiteAbsMaxIndex, lastIndex } = scroller.buffer;
     for (let i = 0, len = indexes.length; i < len; i++) {
       let dir = null;
       const index = indexes[i];
-      if (index >= finiteAbsMinIndex && firstIndex !== null && index < firstIndex) {
+      if (index >= finiteAbsMinIndex && !isNaN(firstIndex) && index < firstIndex) {
         dir = Direction.backward;
       }
-      if (index <= finiteAbsMaxIndex && lastIndex !== null && index > lastIndex) {
+      if (index <= finiteAbsMaxIndex && !isNaN(lastIndex) && index > lastIndex) {
         dir = Direction.forward;
       }
       if (dir !== null) {
-        if (sequenceOnly && last !== null && Math.abs(last - index) > 1) {
+        if (sequenceOnly && !isNaN(last) && Math.abs(last - index) > 1) {
           // allow only first strict uninterrupted sequence
           break;
         }
@@ -99,7 +99,7 @@ export default class Remove extends getBaseAdapterProcess(AdapterProcess.remove)
         last = index;
       }
     }
-    return last !== null;
+    return !isNaN(last);
   }
 
 }

@@ -106,8 +106,9 @@ export class Misc {
     return element ? element.innerText.trim() : null;
   }
 
-  checkElementContentByIndex(index: number | null): boolean {
-    return index !== null && this.getElementText(index) === index + ': ' + generateItem(index).text;
+  checkElementContentByIndex(index: number): boolean {
+    const i = Number(index);
+    return !isNaN(i) && this.getElementText(i) === i + ': ' + generateItem(i).text;
   }
 
   checkElementContent(index: number, id: number): boolean {
@@ -144,7 +145,7 @@ export class Misc {
     if (native) {
       this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
     } else {
-      this.adapter.fix({ scrollPosition: value });
+      this.scroller.adapter.fix({ scrollPosition: value });
     }
   }
 
@@ -159,12 +160,12 @@ export class Misc {
   relaxNext(debounce?: boolean): Promise<void> {
     return new Promise(resolve =>
       (debounce
-        ? this.adapter.isLoading$.pipe(
+        ? this.scroller.adapter.isLoading$.pipe(
           filter(pending => !pending),
           debounceTime(30),
           take(1)
         )
-        : this.adapter.isLoading$.pipe(
+        : this.scroller.adapter.isLoading$.pipe(
           filter(pending => !pending),
           take(1)
         )

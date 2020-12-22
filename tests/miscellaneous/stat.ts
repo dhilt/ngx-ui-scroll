@@ -6,6 +6,7 @@ export class Stat {
   paddingFwd: number;
   paddingBwd: number;
   itemsCount: number;
+  itemsCountByIndexes: number;
   averageSize: number;
 
   constructor({ viewport, buffer }: Scroller) {
@@ -14,6 +15,7 @@ export class Stat {
     this.paddingFwd = viewport.paddings.forward.size;
     this.paddingBwd = viewport.paddings.backward.size;
     this.itemsCount = buffer.size;
+    this.itemsCountByIndexes = buffer.maxIndex - buffer.minIndex + 1;
     this.averageSize = buffer.averageSize;
   }
 
@@ -23,6 +25,7 @@ export class Stat {
     expect(this.paddingFwd).toEqual(stat.paddingFwd);
     expect(this.paddingBwd).toEqual(stat.paddingBwd);
     expect(this.itemsCount).toEqual(stat.itemsCount);
+    expect(this.itemsCountByIndexes).toEqual(stat.itemsCount);
     expect(this.averageSize).toEqual(stat.averageSize);
   }
 }

@@ -174,12 +174,12 @@ export class Buffer {
     return isFinite(this.cache.maxIndex) ? this.cache.maxIndex : this.startIndex;
   }
 
-  get firstIndex(): number | null {
-    return this.items.length ? this.items[0].$index : null;
+  get firstIndex(): number {
+    return this.items.length ? this.items[0].$index : NaN;
   }
 
-  get lastIndex(): number | null {
-    return this.items.length ? this.items[this.items.length - 1].$index : null;
+  get lastIndex(): number {
+    return this.items.length ? this.items[this.items.length - 1].$index : NaN;
   }
 
   get finiteAbsMinIndex(): number {

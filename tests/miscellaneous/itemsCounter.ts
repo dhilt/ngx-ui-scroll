@@ -2,14 +2,7 @@ import { Direction } from '../../src/component/interfaces';
 import { Misc } from './misc';
 import { TestBedConfig } from '../scaffolding/runner';
 
-interface IItemsDirCounter {
-  count?: number;
-  index?: number;
-  padding?: number;
-  size?: number;
-}
-
-export class ItemsDirCounter implements IItemsDirCounter {
+export class ItemsDirCounter {
   count: number;
   index: number;
   padding: number;
@@ -18,6 +11,8 @@ export class ItemsDirCounter implements IItemsDirCounter {
   constructor(count = 0, padding = 0) {
     this.count = count;
     this.padding = padding;
+    this.index = NaN;
+    this.size = NaN;
   }
 }
 
@@ -46,7 +41,7 @@ export class ItemsCounter {
     return token === Direction.backward ? this.backward : this.forward;
   }
 
-  set(token: Direction, value: IItemsDirCounter) {
+  set(token: Direction, value: ItemsDirCounter) {
     if (token === Direction.backward) {
       Object.assign(this.backward, value);
     } else {
@@ -63,14 +58,15 @@ export const testItemsCounter = (settings: TestBedConfig, misc: Misc, itemsCount
   const fwdPadding = itemsCounter.forward.padding;
   const average = itemsCounter.average;
   const elements = misc.getElements();
+  const { viewport, buffer, adapter: { bufferInfo } } = misc.scroller;
 
   let sizePaddings = 0;
   if (!isNaN(Number(bwdPadding))) {
-    expect(bwdPadding).toEqual(misc.scroller.viewport.paddings.backward.size);
+    expect(bwdPadding).toEqual(viewport.paddings.backward.size);
     sizePaddings += bwdPadding;
   }
   if (!isNaN(Number(fwdPadding))) {
-    expect(fwdPadding).toEqual(misc.scroller.viewport.paddings.forward.size);
+    expect(fwdPadding).toEqual(viewport.paddings.forward.size);
     sizePaddings += fwdPadding;
   }
   if (!isNaN(Number(bwdSize)) && !isNaN(Number(fwdSize))) {
@@ -78,11 +74,13 @@ export const testItemsCounter = (settings: TestBedConfig, misc: Misc, itemsCount
     expect(bwdSize + fwdSize + sizePaddings).toEqual(size);
   }
   if (!isNaN(Number(average))) {
-    expect(average).toEqual(misc.scroller.buffer.averageSize);
+    expect(average).toEqual(buffer.averageSize);
   }
   expect(elements.length).toEqual(itemsCounter.total);
-  expect(misc.scroller.buffer.items.length).toEqual(itemsCounter.total);
+  expect(buffer.items.length).toEqual(itemsCounter.total);
   expect(misc.getElementIndex(elements[0])).toEqual(itemsCounter.backward.index);
   expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(itemsCounter.forward.index);
   expect(misc.checkElementContentByIndex(startIndex)).toEqual(true);
+  expect(bufferInfo.firstIndex).toEqual(itemsCounter.backward.index);
+  expect(bufferInfo.lastIndex).toEqual(itemsCounter.forward.index);
 };

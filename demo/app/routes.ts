@@ -163,6 +163,11 @@ const adapterScope = {
     name: 'Buffer items counter',
     scope: globalScope.adapter.id
   },
+  bufferInfo: {
+    id: 'buffer-info',
+    name: 'Buffer info',
+    scope: globalScope.adapter.id
+  },
   bofEof: {
     id: 'bof-eof',
     name: 'Begin/end of file',

@@ -6,8 +6,7 @@
 Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/).
 
 <p dir="rtl">
-<small>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b> 👉 <br>make open-source world better</small> 
-</p>
+<sub>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b></sub><sub> 👉 <br>make open-source world better</sub></p>
 
 - [Motivation](#motivation)
 - [Features](#features)
@@ -168,6 +167,7 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 |[isLoading](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|boolean|Indicates whether the uiScroll is working ot not. |
 |[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|Subject&lt;boolean&gt;|An Observable version of "isLoading" property. |
 |[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|
+|[bufferInfo](https://dhilt.github.io/ngx-ui-scroll/#adapter#buffer-info)|IBufferInfo {<br>&nbsp;&nbsp;firstIndex:&nbsp;number;<br>&nbsp;&nbsp;lastIndex:&nbsp;number;<br>&nbsp;&nbsp;minIndex:&nbsp;number;<br>&nbsp;&nbsp;maxIndex:&nbsp;number;<br>&nbsp;&nbsp;absMinIndex:&nbsp;number;<br>&nbsp;&nbsp;absMaxIndex:&nbsp;number;<br>}|<li>firstIndex & lastIndex are the first and the last indexes in the current Buffer.</li><li>minIndex & maxIndex are min and max indexes that were present in the Buffer.</li><li>absMinIndex & absMaxIndex are min and max indexes that can be present in the Buffer.</li>|
 |[bof](https://dhilt.github.io/ngx-ui-scroll/#adapter#bof-eof)|boolean|Indicates whether the beginning of the dataset is reached or not.|
 |[bof$](https://dhilt.github.io/ngx-ui-scroll/#adapter#bof-eof)|Subject&lt;boolean&gt;|An Observable version of "bof" property.|
 |[eof](https://dhilt.github.io/ngx-ui-scroll/#adapter#bof-eof)|boolean|Indicates whether the end of the dataset is reached or not.|

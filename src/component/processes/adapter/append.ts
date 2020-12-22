@@ -80,8 +80,8 @@ export default class Append extends getBaseAdapterProcess(AdapterProcess.append)
 
     (prepend ? fetch.prepend : fetch.append).call(fetch, newItems);
     (prepend ? buffer.prepend : buffer.append).call(buffer, newItems);
-    fetch.first.indexBuffer = buffer.firstIndex !== null ? buffer.firstIndex : indexToAdd;
-    fetch.last.indexBuffer = buffer.lastIndex !== null ? buffer.lastIndex : indexToAdd;
+    fetch.first.indexBuffer = !isNaN(buffer.firstIndex) ? buffer.firstIndex : indexToAdd;
+    fetch.last.indexBuffer = !isNaN(buffer.lastIndex) ? buffer.lastIndex : indexToAdd;
 
     state.clip.noClip = true;
     return true;

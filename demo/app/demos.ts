@@ -23,6 +23,7 @@ import { DemoResetComponent } from './samples/adapter/reset.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
 import { DemoItemsCountComponent } from './samples/adapter/items-count.component';
+import { DemoBufferInfoComponent } from './samples/adapter/buffer-info.component';
 import { DemoBofEofComponent } from './samples/adapter/bof-eof.component';
 import { DemoFirstLastVisibleItemsComponent } from './samples/adapter/first-last-visible-items.component';
 import { DemoAppendPrependComponent } from './samples/adapter/append-prepend.component';
@@ -71,6 +72,7 @@ const adapter = [
   DemoReloadComponent,
   DemoIsLoadingComponent,
   DemoItemsCountComponent,
+  DemoBufferInfoComponent,
   DemoBofEofComponent,
   DemoFirstLastVisibleItemsComponent,
   DemoAppendPrependComponent,

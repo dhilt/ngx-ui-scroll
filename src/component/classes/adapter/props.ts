@@ -1,8 +1,17 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { AdapterPropType as Prop, IAdapterProp } from '../../interfaces/index';
+import { AdapterPropType as Prop, IAdapterProp, IBufferInfo } from '../../interfaces/index';
 
 const noop = () => null;
+
+const bufferInfoDefault: IBufferInfo = {
+  firstIndex: NaN,
+  lastIndex: NaN,
+  minIndex: NaN,
+  maxIndex: NaN,
+  absMinIndex: -Infinity,
+  absMaxIndex: +Infinity,
+};
 
 export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
@@ -65,6 +74,12 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     type: Prop.Scalar,
     name: 'itemsCount',
     value: 0,
+    onDemand: true
+  },
+  {
+    type: Prop.Scalar,
+    name: 'bufferInfo',
+    value: bufferInfoDefault,
     onDemand: true
   },
   {

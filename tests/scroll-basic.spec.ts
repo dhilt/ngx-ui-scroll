@@ -120,12 +120,14 @@ const getInitialItemsCounter = (misc: Misc): ItemsCounter => {
   result.set(Direction.forward, {
     count: edgeItem.$index - startIndex + 1,
     index: edgeItem.$index,
-    padding: 0
+    padding: 0,
+    size: 0
   });
   result.set(Direction.backward, {
     count: startIndex - oppositeItem.$index,
     index: oppositeItem.$index,
-    padding: 0
+    padding: 0,
+    size: NaN
   });
   return result;
 };
@@ -170,11 +172,15 @@ const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: Item
   const result = new ItemsCounter(direction);
   result.set(direction, {
     index: newDirIndex,
-    padding: 0
+    padding: 0,
+    count: NaN,
+    size: NaN
   });
   result.set(opposite, {
     index: newOppIndex,
-    padding: newOppPadding
+    padding: newOppPadding,
+    count: NaN,
+    size: NaN
   });
   return result;
 };

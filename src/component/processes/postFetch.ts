@@ -26,8 +26,8 @@ export default class PostFetch extends getBaseProcess(CommonProcess.postFetch) {
 
   static setBufferLimits(scroller: Scroller) {
     const { buffer, state: { fetch, fetch: { items }, cycle: { innerLoop } } } = scroller;
-    const first = fetch.first.index as number;
-    const last = fetch.last.index as number;
+    const first = fetch.first.index;
+    const last = fetch.last.index;
     if (!items.length) {
       if (last < buffer.minIndex || innerLoop.isInitial) {
         buffer.absMinIndex = buffer.minIndex;
@@ -53,12 +53,12 @@ export default class PostFetch extends getBaseProcess(CommonProcess.postFetch) {
       return true;
     }
     // eof/bof case, need to shift fetch index if bof
-    let fetchIndex = fetch.index as number;
+    let fetchIndex = fetch.index;
     if (items.length < fetch.count) {
       if (cycle.innerLoop.isInitial) {
         // let's treat initial poor fetch as startIndex-bof
         fetchIndex = buffer.startIndex;
-      } else if ((fetch.first.index as number) < buffer.minIndex) { // normal bof
+      } else if (fetch.first.index < buffer.minIndex) { // normal bof
         fetchIndex = buffer.minIndex - items.length;
       }
     }

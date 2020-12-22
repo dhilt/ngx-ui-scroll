@@ -67,6 +67,6 @@ maxIndex: {{datasource.adapter.bufferInfo.maxIndex}} <br>
   maxIndex: number;
   absMinIndex: number;
   absMaxIndex: number;
-}`
+}`;
 
 }

@@ -1,5 +1,3 @@
-import { Observable } from 'rxjs';
-
 import { Emitter } from './event-bus';
 import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';
@@ -11,7 +9,7 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { validate, DATASOURCE } from './inputs/index';
 
-import { ScrollerWorkflow, IDatasource, CallWorkflow, ProcessSubject } from './interfaces/index';
+import { ScrollerWorkflow, IDatasource, CallWorkflow } from './interfaces/index';
 
 export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
@@ -83,10 +81,10 @@ export class Scroller {
     this.adapter = new Adapter(publicContext, () => this.workflow, this.logger);
   }
 
-  init(events: Emitter, onAdapterRun$?: Observable<ProcessSubject>) {
+  init(events: Emitter) {
     this.viewport.reset(this.buffer.startIndex, 0);
     this.logger.stat('initialization');
-    this.adapter.init(this.buffer, this.logger, events, onAdapterRun$);
+    this.adapter.init(this.buffer, this.logger, events);
   }
 
   innerLoopCleanup() {

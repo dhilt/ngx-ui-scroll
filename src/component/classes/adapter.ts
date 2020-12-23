@@ -1,5 +1,5 @@
-import { BehaviorSubject, Subject, Observable, Subscription } from 'rxjs';
-import { takeUntil, filter, take } from 'rxjs/operators';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
 import { Logger } from './logger';
 import { Buffer } from './buffer';
@@ -24,7 +24,6 @@ import {
   AdapterFixOptions,
   ScrollerWorkflow,
   IDatasourceOptional,
-  ProcessSubject,
   IBufferInfo,
 } from '../interfaces/index';
 import { Emitter, EVENTS } from '../event-bus';
@@ -221,9 +220,7 @@ export class Adapter implements IAdapter {
       });
   }
 
-  init(
-    buffer: Buffer, logger: Logger, events: Emitter, onAdapterRun$?: Observable<ProcessSubject>
-  ) {
+  init(buffer: Buffer, logger: Logger, events: Emitter) {
     const subs: Subscription[] = [];
 
     // buffer
@@ -243,19 +240,19 @@ export class Adapter implements IAdapter {
     this.bof = buffer.bof;
     const bofSub = buffer.bofSource.subscribe(value => this.bof = value);
     this.eof = buffer.eof;
-    const eofSub = buffer.eofSource.subscribe(value => this.eof = value)
+    const eofSub = buffer.eofSource.subscribe(value => this.eof = value);
     subs.push(bofSub, eofSub);
 
     // logger
     this.logger = logger;
 
-    // self-pending
-    if (onAdapterRun$) { // being passed only on the very first init
+    // self-pending; set up only on the very first init
+    if (!events.all.has(EVENTS.WORKFLOW.RUN_ADAPTER)) {
       if (!this.relax$) {
         this.relax$ = new Subject<AdapterMethodResult>();
       }
       const relax$ = this.relax$;
-      const runSub = onAdapterRun$.subscribe(({ status, payload }) => {
+      events.on(EVENTS.WORKFLOW.RUN_ADAPTER, ({ status, payload }) => {
         let loadSub;
         if (status === ProcessStatus.start) {
           loadSub = this.isLoading$
@@ -274,7 +271,6 @@ export class Adapter implements IAdapter {
           });
         }
       });
-      subs.push(runSub);
     }
 
     events.on(EVENTS.WORKFLOW.DISPOSE, () =>

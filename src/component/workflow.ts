@@ -1,6 +1,3 @@
-import { BehaviorSubject } from 'rxjs';
-import { filter } from 'rxjs/operators';
-
 import eventBus, { Emitter, EVENTS } from './event-bus';
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
@@ -21,7 +18,6 @@ export class Workflow {
   isInitialized: boolean;
   events: Emitter;
   scroller: Scroller;
-  process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
   interruptionCount: number;
   errors: WorkflowError[];
@@ -32,10 +28,6 @@ export class Workflow {
   constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
     this.events = eventBus();
-    this.process$ = new BehaviorSubject({
-      process: CommonProcess.init,
-      status: Status.start
-    } as ProcessSubject);
     this.propagateChanges = run;
     this.callWorkflow = this.callWorkflow.bind(this);
     this.scroller = new Scroller(element, datasource, version, this.callWorkflow);
@@ -57,11 +49,7 @@ export class Workflow {
   }
 
   init() {
-    const onAdapterRun$ = this.process$.pipe(
-      filter(({ process }) => process.startsWith('adapter'))
-    );
-
-    this.scroller.init(this.events, onAdapterRun$);
+    this.scroller.init(this.events);
     this.isInitialized = true;
 
     // propagate item list to the view
@@ -69,8 +57,11 @@ export class Workflow {
       this.propagateChanges(items)
     );
 
-    // run the workflow process
-    const processSub = this.process$.subscribe(this.process.bind(this));
+    // run the Workflow
+    this.callWorkflow({
+      process: CommonProcess.init,
+      status: Status.start
+    });
 
     // set up scroll event listener
     const { scrollEventReceiver } = this.scroller.viewport;
@@ -85,7 +76,6 @@ export class Workflow {
     // disposing
     this.events.on(EVENTS.WORKFLOW.DISPOSE, () => {
       itemsSub.unsubscribe();
-      processSub.unsubscribe();
       scrollEventReceiver.removeEventListener('scroll', onScrollHandler);
     });
   }
@@ -94,7 +84,10 @@ export class Workflow {
     if (!this.isInitialized) {
       return;
     }
-    this.process$.next(processSubject);
+    if (processSubject.process && processSubject.process.startsWith('adapter')) {
+      this.events.emit(EVENTS.WORKFLOW.RUN_ADAPTER, processSubject);
+    }
+    this.process(processSubject);
   }
 
   process(data: ProcessSubject) {

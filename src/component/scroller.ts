@@ -9,7 +9,7 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { validate, DATASOURCE } from './inputs/index';
 
-import { ScrollerWorkflow, IDatasource, CallWorkflow } from './interfaces/index';
+import { ScrollerWorkflow, IDatasource } from './interfaces/index';
 
 export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
@@ -31,7 +31,7 @@ export class Scroller {
     element: HTMLElement,
     datasource: Datasource | IDatasource,
     version: string,
-    callWorkflow: CallWorkflow,
+    workflow: ScrollerWorkflow,
     scroller?: Scroller // for re-initialization
   ) {
     const { params: { get } } = validate(datasource, DATASOURCE);
@@ -39,11 +39,10 @@ export class Scroller {
       throw new Error(`${INVALID_DATASOURCE_PREFIX} ${get.errors[0]}`);
     }
 
-    this.workflow = { call: callWorkflow };
+    this.workflow = workflow;
 
-    let $items, cycleCount, loopCount;
-    if (scroller) { // re-use $items and continue counters
-      $items = scroller.buffer.$items;
+    let cycleCount, loopCount;
+    if (scroller) { // continue counters
       cycleCount = scroller.state.cycle.count;
       loopCount = scroller.state.cycle.innerLoop.total;
     }
@@ -52,7 +51,7 @@ export class Scroller {
     this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
     this.state = new State(version, this.settings, loopCount, cycleCount);
-    this.buffer = new Buffer(this.settings, this.logger, $items);
+    this.buffer = new Buffer(this.settings, this.workflow.onDataChanged, this.logger);
     this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
     this.logger.object('uiScroll settings object', this.settings, true);
 
@@ -115,7 +114,7 @@ export class Scroller {
     if (this.adapter && forever) {
       this.adapter.dispose();
     }
-    this.buffer.dispose(forever);
+    this.buffer.dispose();
     this.innerLoopCleanup();
     this.scrollCleanup();
   }

@@ -1,6 +1,7 @@
 import eventBus, { Emitter, EVENTS } from './event-bus';
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
+import { Item } from './classes/item';
 import {
   IDatasource,
   CommonProcess,
@@ -10,7 +11,8 @@ import {
   ProcessStatus,
   WorkflowError,
   InterruptParams,
-  StateMachineMethods
+  StateMachineMethods,
+  ScrollerWorkflow,
 } from './interfaces/index';
 
 export class Workflow {
@@ -29,8 +31,7 @@ export class Workflow {
     this.isInitialized = false;
     this.events = eventBus();
     this.propagateChanges = run;
-    this.callWorkflow = this.callWorkflow.bind(this);
-    this.scroller = new Scroller(element, datasource, version, this.callWorkflow);
+    this.scroller = new Scroller(element, datasource, version, this.getUpdater());
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];
@@ -52,11 +53,6 @@ export class Workflow {
     this.scroller.init(this.events);
     this.isInitialized = true;
 
-    // propagate item list to the view
-    const itemsSub = this.scroller.buffer.$items.subscribe(items =>
-      this.propagateChanges(items)
-    );
-
     // run the Workflow
     this.callWorkflow({
       process: CommonProcess.init,
@@ -75,9 +71,13 @@ export class Workflow {
 
     // disposing
     this.events.on(EVENTS.WORKFLOW.DISPOSE, () => {
-      itemsSub.unsubscribe();
+      this.events.all.clear();
       scrollEventReceiver.removeEventListener('scroll', onScrollHandler);
     });
+  }
+
+  changeItems(items: Item[]) {
+    this.propagateChanges(items);
   }
 
   callWorkflow(processSubject: ProcessSubject) {
@@ -88,6 +88,13 @@ export class Workflow {
       this.events.emit(EVENTS.WORKFLOW.RUN_ADAPTER, processSubject);
     }
     this.process(processSubject);
+  }
+
+  getUpdater(): ScrollerWorkflow {
+    return {
+      call: this.callWorkflow.bind(this),
+      onDataChanged: this.changeItems.bind(this),
+    };
   }
 
   process(data: ProcessSubject) {
@@ -141,15 +148,15 @@ export class Workflow {
       // calling the old version of the scroller.workflow by any outstanding async processes will be skipped
       workflow.call = (p: ProcessSubject) => logger.log('[skip wf call]');
       workflow.call.interrupted = true;
-      this.scroller.workflow = { call: this.callWorkflow };
+      this.scroller.workflow = this.getUpdater();
       this.interruptionCount++;
       logger.log(() => `workflow had been interrupted by the ${process} process (${this.interruptionCount})`);
     }
     if (datasource) { // Scroller re-initialization case
       this.scroller.adapter.relax(() => {
         this.scroller.logger.log('new Scroller instantiation');
-        const { viewport: { element }, state: { version }, workflow: { call } } = this.scroller;
-        const scroller = new Scroller(element, datasource, version, call, this.scroller);
+        const { viewport: { element }, state: { version }, workflow } = this.scroller;
+        const scroller = new Scroller(element, datasource, version, workflow, this.scroller);
         this.scroller.dispose();
         this.scroller = scroller;
         this.scroller.init(this.events);

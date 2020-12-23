@@ -1,13 +1,17 @@
 import { Process, ProcessSubject } from './process';
 import { IDatasource } from './datasource';
+import { Item } from '../classes/item';
 
-export interface CallWorkflow {
+interface CallWorkflow {
   (process: ProcessSubject): any;
   interrupted?: boolean;
 }
 
+export type OnDataChanged = (items: Item[]) => void;
+
 export interface ScrollerWorkflow {
   call: CallWorkflow;
+  onDataChanged: OnDataChanged;
 }
 
 export type WorkflowGetter = () => ScrollerWorkflow;

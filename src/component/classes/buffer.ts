@@ -1,10 +1,10 @@
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
 import { Logger } from './logger';
-import { Direction } from '../interfaces/index';
+import { Direction, OnDataChanged } from '../interfaces/index';
 
 export class Buffer {
 
@@ -14,7 +14,7 @@ export class Buffer {
   private _bof: boolean;
   private _eof: boolean;
 
-  $items: BehaviorSubject<Item[]>;
+  changeItems: OnDataChanged;
   bofSource: Subject<boolean>;
   eofSource: Subject<boolean>;
   minIndexUser: number;
@@ -26,9 +26,9 @@ export class Buffer {
   private cache: Cache;
   readonly logger: Logger;
 
-  constructor(settings: Settings, logger: Logger, $items?: BehaviorSubject<Item[]>) {
+  constructor(settings: Settings, onDataChanged: OnDataChanged, logger: Logger) {
     this.logger = logger;
-    this.$items = $items || new BehaviorSubject<Item[]>([]);
+    this.changeItems = onDataChanged;
     this.bofSource = new Subject<boolean>();
     this.eofSource = new Subject<boolean>();
     this.cache = new Cache(settings.itemSize, settings.cacheData, logger);
@@ -38,12 +38,9 @@ export class Buffer {
     this.reset();
   }
 
-  dispose(forever?: boolean) {
+  dispose() {
     this.bofSource.complete();
     this.eofSource.complete();
-    if (forever) {
-      this.$items.complete();
-    }
   }
 
   reset(reload?: boolean, startIndex?: number) {
@@ -83,7 +80,7 @@ export class Buffer {
 
   set items(items: Item[]) {
     this._items = items;
-    this.$items.next(items);
+    this.changeItems(items);
     if (!this.pristine) {
       this.checkBOF();
       this.checkEOF();

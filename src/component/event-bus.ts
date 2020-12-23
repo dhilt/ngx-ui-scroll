@@ -42,7 +42,6 @@ export default function mitt(all: EventHandlerMap = new Map()): Emitter {
 
 export const EVENTS = {
   WORKFLOW: {
-    RUN: 'workflow.run',
     RUN_ADAPTER: 'workflow.runAdapter',
     DISPOSE: 'workflow.dispose',
   },

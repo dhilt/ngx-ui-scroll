@@ -1,5 +1,6 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
+import { Emitter } from './event-bus';
 import { Datasource } from './classes/datasource';
 import { Settings } from './classes/settings';
 import { Logger } from './classes/logger';
@@ -82,10 +83,10 @@ export class Scroller {
     this.adapter = new Adapter(publicContext, () => this.workflow, this.logger);
   }
 
-  init(dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessSubject>) {
+  init(events: Emitter, onAdapterRun$?: Observable<ProcessSubject>) {
     this.viewport.reset(this.buffer.startIndex, 0);
     this.logger.stat('initialization');
-    this.adapter.init(this.buffer, this.logger, dispose$, onAdapterRun$);
+    this.adapter.init(this.buffer, this.logger, events, onAdapterRun$);
   }
 
   innerLoopCleanup() {

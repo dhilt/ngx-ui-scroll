@@ -39,3 +39,9 @@ export default function mitt(all: EventHandlerMap = new Map()): Emitter {
     }
   };
 }
+
+export const EVENTS = {
+  WORKFLOW: {
+    DISPOSE: 'workflow.dispose',
+  },
+};

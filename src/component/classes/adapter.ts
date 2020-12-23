@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { BehaviorSubject, Subject, Observable, Subscription } from 'rxjs';
 import { takeUntil, filter, take } from 'rxjs/operators';
 
 import { Logger } from './logger';
@@ -27,6 +27,7 @@ import {
   ProcessSubject,
   IBufferInfo,
 } from '../interfaces/index';
+import { Emitter, EVENTS } from '../event-bus';
 
 const ADAPTER_PROPS_STUB = ADAPTER_PROPS(EMPTY_ITEM);
 
@@ -221,8 +222,10 @@ export class Adapter implements IAdapter {
   }
 
   init(
-    buffer: Buffer, logger: Logger, dispose$: Subject<void>, onAdapterRun$?: Observable<ProcessSubject>
+    buffer: Buffer, logger: Logger, events: Emitter, onAdapterRun$?: Observable<ProcessSubject>
   ) {
+    const subs: Subscription[] = [];
+
     // buffer
     Object.defineProperty(this.demand, 'itemsCount', {
       get: () => buffer.getVisibleItemsCount()
@@ -238,29 +241,31 @@ export class Adapter implements IAdapter {
       })
     });
     this.bof = buffer.bof;
-    buffer.bofSource.pipe(takeUntil(dispose$)).subscribe(value => this.bof = value);
+    const bofSub = buffer.bofSource.subscribe(value => this.bof = value);
     this.eof = buffer.eof;
-    buffer.eofSource.pipe(takeUntil(dispose$)).subscribe(value => this.eof = value);
+    const eofSub = buffer.eofSource.subscribe(value => this.eof = value)
+    subs.push(bofSub, eofSub);
 
     // logger
     this.logger = logger;
 
     // self-pending
-    if (onAdapterRun$) { // passed on the very first init only
+    if (onAdapterRun$) { // being passed only on the very first init
       if (!this.relax$) {
         this.relax$ = new Subject<AdapterMethodResult>();
       }
       const relax$ = this.relax$;
-      onAdapterRun$.subscribe(({ status, payload }) => {
-        let isLoadingSub;
+      const runSub = onAdapterRun$.subscribe(({ status, payload }) => {
+        let loadSub;
         if (status === ProcessStatus.start) {
-          isLoadingSub = this.isLoading$
-            .pipe(filter(isLoading => !isLoading), take(1), takeUntil(dispose$))
+          loadSub = this.isLoading$
+            .pipe(filter(isLoading => !isLoading), take(1))
             .subscribe(() => relax$.next({ success: true, immediate: false, details: null }));
+          subs.push(loadSub);
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
-          if (isLoadingSub) {
-            isLoadingSub.unsubscribe();
+          if (loadSub) {
+            loadSub.unsubscribe();
           }
           relax$.next({
             success: status !== ProcessStatus.error,
@@ -269,7 +274,12 @@ export class Adapter implements IAdapter {
           });
         }
       });
+      subs.push(runSub);
     }
+
+    events.on(EVENTS.WORKFLOW.DISPOSE, () =>
+      subs.forEach(sub => sub ? sub.unsubscribe() : null)
+    );
 
     this.initialized = true;
   }

@@ -1,6 +1,7 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
+import eventBus, { Emitter, EVENTS } from './event-bus';
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
 import {
@@ -18,6 +19,7 @@ import {
 export class Workflow {
 
   isInitialized: boolean;
+  events: Emitter;
   scroller: Scroller;
   process$: BehaviorSubject<ProcessSubject>;
   cyclesDone: number;
@@ -26,11 +28,10 @@ export class Workflow {
 
   readonly propagateChanges: Function;
   private stateMachineMethods: StateMachineMethods;
-  private dispose$: Subject<void>;
 
   constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
-    this.dispose$ = new Subject();
+    this.events = eventBus();
     this.process$ = new BehaviorSubject({
       process: CommonProcess.init,
       status: Status.start
@@ -57,22 +58,19 @@ export class Workflow {
 
   init() {
     const onAdapterRun$ = this.process$.pipe(
-      takeUntil(this.dispose$),
       filter(({ process }) => process.startsWith('adapter'))
     );
 
-    this.scroller.init(this.dispose$, onAdapterRun$);
+    this.scroller.init(this.events, onAdapterRun$);
     this.isInitialized = true;
 
     // propagate item list to the view
-    this.scroller.buffer.$items.pipe(
-      takeUntil(this.dispose$)
-    ).subscribe(items => this.propagateChanges(items));
+    const itemsSub = this.scroller.buffer.$items.subscribe(items =>
+      this.propagateChanges(items)
+    );
 
     // run the workflow process
-    this.process$.pipe(
-      takeUntil(this.dispose$)
-    ).subscribe(this.process.bind(this));
+    const processSub = this.process$.subscribe(this.process.bind(this));
 
     // set up scroll event listener
     const { scrollEventReceiver } = this.scroller.viewport;
@@ -83,9 +81,13 @@ export class Workflow {
         payload: { event }
       });
     scrollEventReceiver.addEventListener('scroll', onScrollHandler);
-    this.dispose$.subscribe(() =>
-      scrollEventReceiver.removeEventListener('scroll', onScrollHandler)
-    );
+
+    // disposing
+    this.events.on(EVENTS.WORKFLOW.DISPOSE, () => {
+      itemsSub.unsubscribe();
+      processSub.unsubscribe();
+      scrollEventReceiver.removeEventListener('scroll', onScrollHandler);
+    });
   }
 
   callWorkflow(processSubject: ProcessSubject) {
@@ -157,7 +159,7 @@ export class Workflow {
         const scroller = new Scroller(element, datasource, version, call, this.scroller);
         this.scroller.dispose();
         this.scroller = scroller;
-        this.scroller.init(this.dispose$);
+        this.scroller.init(this.events);
       });
     }
   }
@@ -172,8 +174,7 @@ export class Workflow {
   }
 
   dispose() {
-    this.dispose$.next();
-    this.dispose$.complete();
+    this.events.emit(EVENTS.WORKFLOW.DISPOSE);
     this.scroller.dispose(true);
     this.isInitialized = false;
   }

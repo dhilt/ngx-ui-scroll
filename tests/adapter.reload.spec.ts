@@ -181,7 +181,7 @@ const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function)
 const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    expect(misc.scroller.state.fetch.subscription).toEqual(null);
+    expect(misc.scroller.state.fetch.cancel).toEqual(null);
     if (misc.workflow.cyclesDone === 2) {
       checkExpectation(config, misc);
       done();
@@ -197,7 +197,7 @@ const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done:
 const shouldReloadOnFetchAsync = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    expect(misc.scroller.state.fetch.subscription).toEqual(null);
+    expect(misc.scroller.state.fetch.cancel).toEqual(null);
     if (misc.workflow.cyclesDone === 2) {
       checkExpectation(config, misc);
       done();
@@ -214,7 +214,7 @@ const shouldReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Misc) 
   accessFirstLastVisibleItems(misc);
   doReload(config, misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    expect(misc.scroller.state.fetch.subscription).toEqual(null);
+    expect(misc.scroller.state.fetch.cancel).toEqual(null);
     if (misc.workflow.cyclesDone === 1) {
       checkExpectation(config, misc);
       done();

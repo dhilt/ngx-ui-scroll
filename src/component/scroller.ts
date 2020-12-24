@@ -88,9 +88,9 @@ export class Scroller {
 
   innerLoopCleanup() {
     const { state: { fetch, render } } = this;
-    if (fetch.subscription) {
-      fetch.subscription.unsubscribe();
-      fetch.subscription = null;
+    if (fetch.cancel) {
+      fetch.cancel();
+      fetch.cancel = null;
     }
     if (render.renderTimer) {
       clearTimeout(render.renderTimer);

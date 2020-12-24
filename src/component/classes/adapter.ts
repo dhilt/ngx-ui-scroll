@@ -30,15 +30,6 @@ import { Emitter, EVENTS } from '../event-bus';
 
 const ADAPTER_PROPS_STUB = ADAPTER_PROPS(EMPTY_ITEM);
 
-const fixScalarWanted = (name: string, container: { [key: string]: boolean }) => {
-  const scalar = ADAPTER_PROPS_STUB.find(
-    ({ observable, wanted }: IAdapterProp) => wanted && observable === name
-  );
-  if (scalar) {
-    container[scalar.name] = true;
-  }
-};
-
 const convertAppendArgs = (prepend: boolean, options: any, eof?: boolean) => {
   if (!(options !== null && typeof options === 'object' && options.hasOwnProperty('items'))) {
     const items = !Array.isArray(options) ? [options] : options;
@@ -108,7 +99,7 @@ export class Adapter implements IAdapter {
     return (...args: any[]): Promise<AdapterMethodResult> =>
       new Promise(resolve => {
         if (this.initialized) {
-          this.onRelaxed = (value) => resolve(value);
+          this.onRelaxed = resolve;
         }
         method.apply(this, args);
         if (!this.initialized) {
@@ -151,7 +142,12 @@ export class Adapter implements IAdapter {
         this.source[name] = value;
         Object.defineProperty(this, name, {
           get: () => {
-            fixScalarWanted(name, this.wanted);
+            const scalarWanted = ADAPTER_PROPS_STUB.find(
+              ({ wanted, observable }) => wanted && observable === name
+            );
+            if (scalarWanted) {
+              this.wanted[scalarWanted.name] = true;
+            }
             return this.source[name];
           }
         });
@@ -176,7 +172,7 @@ export class Adapter implements IAdapter {
             }
           },
           get: () => {
-            if (wanted && !this.wanted[name]) {
+            if (wanted) {
               this.wanted[name] = true;
             }
             return this.box[name];
@@ -200,10 +196,9 @@ export class Adapter implements IAdapter {
       return;
     }
 
-    // augment Adapter public context
+    // Adapter public context augmentation
     adapterProps
       .forEach(({ name, type }: IAdapterProp) => {
-        // Observables and methods (Functions/WorkflowRunners) can be defined once, not Scalars
         let value = (this as any)[name];
         if (type === AdapterPropType.Function) {
           value = value.bind(this);
@@ -212,8 +207,8 @@ export class Adapter implements IAdapter {
         }
         Object.defineProperty(publicContext, name, {
           get: () => type === AdapterPropType.Scalar
-            ? (this as any)[name]
-            : value
+            ? (this as any)[name] // Scalars should be taken in runtime
+            : value // Observables and methods (Functions/WorkflowRunners) can be defined once
         });
       });
   }
@@ -236,10 +231,9 @@ export class Adapter implements IAdapter {
       })
     });
     this.bof = buffer.bof;
-    const bofSub = buffer.bofSource.subscribe(value => this.bof = value);
+    buffer.onBofChanged = bof => this.bof = bof;
     this.eof = buffer.eof;
-    const eofSub = buffer.eofSource.subscribe(value => this.eof = value);
-    subs.push(bofSub, eofSub);
+    buffer.onEofChanged = eof => this.eof = eof;
 
     // logger
     this.logger = logger;

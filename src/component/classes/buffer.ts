@@ -1,5 +1,3 @@
-import { Subject } from 'rxjs';
-
 import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
@@ -15,8 +13,8 @@ export class Buffer {
   private _eof: boolean;
 
   changeItems: OnDataChanged;
-  bofSource: Subject<boolean>;
-  eofSource: Subject<boolean>;
+  onBofChanged: ((value: boolean) => void) | null;
+  onEofChanged: ((value: boolean) => void) | null;
   minIndexUser: number;
   maxIndexUser: number;
   startIndexUser: number;
@@ -29,8 +27,8 @@ export class Buffer {
   constructor(settings: Settings, onDataChanged: OnDataChanged, logger: Logger) {
     this.logger = logger;
     this.changeItems = onDataChanged;
-    this.bofSource = new Subject<boolean>();
-    this.eofSource = new Subject<boolean>();
+    this.onBofChanged = null;
+    this.onEofChanged = null;
     this.cache = new Cache(settings.itemSize, settings.cacheData, logger);
     this.startIndexUser = settings.startIndex;
     this.minIndexUser = settings.minIndex;
@@ -39,8 +37,8 @@ export class Buffer {
   }
 
   dispose() {
-    this.bofSource.complete();
-    this.eofSource.complete();
+    this.onBofChanged = null;
+    this.onEofChanged = null;
   }
 
   reset(reload?: boolean, startIndex?: number) {
@@ -132,7 +130,9 @@ export class Buffer {
       : isFinite(this.absMinIndex);
     if (this._bof !== bof) {
       this._bof = bof;
-      this.bofSource.next(bof);
+      if (this.onBofChanged) {
+        this.onBofChanged(bof);
+      }
     }
   }
 
@@ -143,7 +143,9 @@ export class Buffer {
       : isFinite(this.absMaxIndex);
     if (this._eof !== eof) {
       this._eof = eof;
-      this.eofSource.next(eof);
+      if (this.onEofChanged) {
+        this.onEofChanged(eof);
+      }
     }
   }
 

@@ -101,16 +101,14 @@ export class Adapter implements IAdapter {
   bufferInfo: IBufferInfo;
 
   private initialized: boolean;
-  private relax$: Subject<AdapterMethodResult> | null;
   private relaxRun: Promise<AdapterMethodResult> | null;
+  private onRelaxed: (value: AdapterMethodResult) => void;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]): Promise<AdapterMethodResult> =>
       new Promise(resolve => {
-        if (this.relax$) {
-          this.relax$
-            .pipe(take(1))
-            .subscribe(value => resolve(value));
+        if (this.initialized) {
+          this.onRelaxed = (value) => resolve(value);
         }
         method.apply(this, args);
         if (!this.initialized) {
@@ -123,7 +121,7 @@ export class Adapter implements IAdapter {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
     this.initialized = false;
-    this.relax$ = null;
+    this.onRelaxed = () => null;
     this.relaxRun = null;
     this.reloadCounter = 0;
 
@@ -248,23 +246,19 @@ export class Adapter implements IAdapter {
 
     // self-pending; set up only on the very first init
     if (!events.all.has(EVENTS.WORKFLOW.RUN_ADAPTER)) {
-      if (!this.relax$) {
-        this.relax$ = new Subject<AdapterMethodResult>();
-      }
-      const relax$ = this.relax$;
       events.on(EVENTS.WORKFLOW.RUN_ADAPTER, ({ status, payload }) => {
         let loadSub;
         if (status === ProcessStatus.start) {
           loadSub = this.isLoading$
             .pipe(filter(isLoading => !isLoading), take(1))
-            .subscribe(() => relax$.next({ success: true, immediate: false, details: null }));
+            .subscribe(() => this.onRelaxed({ success: true, immediate: false, details: null }));
           subs.push(loadSub);
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
           if (loadSub) {
             loadSub.unsubscribe();
           }
-          relax$.next({
+          this.onRelaxed({
             success: status !== ProcessStatus.error,
             immediate: true,
             details: status === ProcessStatus.error && payload ? payload.error : null
@@ -281,9 +275,7 @@ export class Adapter implements IAdapter {
   }
 
   dispose() {
-    if (this.relax$) {
-      this.relax$.complete();
-    }
+    this.onRelaxed = () => null;
     Object.values(this.source).forEach(observable => observable.complete());
   }
 

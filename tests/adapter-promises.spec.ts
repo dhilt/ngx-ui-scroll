@@ -295,15 +295,16 @@ const checkConcurrentSequences = (config: TestBedConfig) => (misc: Misc) => asyn
   await misc.relaxNext();
   const { datasourceSettings: { startIndex }, custom: { count, interrupt } } = config;
   const scrollPosition = misc.getScrollPosition();
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count; i++) { // multiple concurrent calls
     doAppendAndScroll(misc, startIndex + i + 1);
   }
   if (interrupt === 'reload') {
     await misc.adapter.reload();
   } else if (interrupt === 'reset') {
     await misc.adapter.reset();
+  } else {
+    await misc.adapter.relax();
   }
-  await misc.adapter.relax();
   if (interrupt) {
     expect(misc.workflow.cyclesDone).toEqual(2);
   } else {
@@ -361,7 +362,6 @@ describe('Adapter Promises Spec', () => {
   });
 
   describe('Call before init', () =>
-
     ['relax', 'reload', 'reset', 'check'].forEach(method =>
       it(`should immediately return with no success ("${method}")`, async (done) => {
         const misc = new Misc(configureTestBedSub());

@@ -7,7 +7,7 @@ import { AdapterProcess, ProcessStatus, IDatasourceOptional } from '../../interf
 export default class Reset extends getBaseAdapterProcess(AdapterProcess.reset) {
 
   static run(scroller: Scroller, options?: IDatasourceOptional) {
-    const { datasource, buffer, viewport: { paddings }, state } = scroller;
+    const { datasource, buffer, viewport: { paddings }, state: { cycle } } = scroller;
 
     if (options) {
       const { data } = Reset.parseInput(scroller, options);
@@ -28,9 +28,9 @@ export default class Reset extends getBaseAdapterProcess(AdapterProcess.reset) {
     paddings.forward.reset();
 
     const payload: any = { datasource };
-    if (scroller.adapter.isLoading) {
+    if (cycle.busy) {
       payload.finalize = true;
-      state.cycle.interrupter = Reset.process;
+      cycle.interrupter = Reset.process;
     }
 
     scroller.workflow.call({

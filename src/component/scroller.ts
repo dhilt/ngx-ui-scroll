@@ -83,31 +83,7 @@ export class Scroller {
   init(events: Emitter) {
     this.viewport.reset(this.buffer.startIndex, 0);
     this.logger.stat('initialization');
-    this.adapter.init(this.buffer, this.logger, events);
-  }
-
-  innerLoopCleanup() {
-    const { state: { fetch, render } } = this;
-    if (fetch.cancel) {
-      fetch.cancel();
-      fetch.cancel = null;
-    }
-    if (render.renderTimer) {
-      clearTimeout(render.renderTimer);
-      render.renderTimer = null;
-    }
-  }
-
-  scrollCleanup() {
-    const { state: { scrollState } } = this;
-    if (scrollState.scrollTimer) {
-      clearTimeout(scrollState.scrollTimer);
-      scrollState.scrollTimer = null;
-    }
-    if (scrollState.animationFrameId) {
-      cancelAnimationFrame(scrollState.animationFrameId);
-      scrollState.animationFrameId = 0;
-    }
+    this.adapter.init(this.buffer, this.state, this.logger, events);
   }
 
   dispose(forever?: boolean) {
@@ -115,8 +91,7 @@ export class Scroller {
       this.adapter.dispose();
     }
     this.buffer.dispose();
-    this.innerLoopCleanup();
-    this.scrollCleanup();
+    this.state.dispose();
   }
 
   finalize() {

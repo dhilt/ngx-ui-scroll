@@ -4,7 +4,7 @@ import { IDatasourceOptional } from './datasource';
 
 export enum AdapterPropType {
   Scalar,
-  Observable,
+  Reactive,
   WorkflowRunner,
   Function
 }
@@ -13,7 +13,7 @@ export interface IAdapterProp {
   name: string;
   type: AdapterPropType;
   value: any;
-  observable?: string;
+  reactive?: string;
   wanted?: boolean;
   onDemand?: boolean;
   permanent?: boolean;

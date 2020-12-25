@@ -1,5 +1,4 @@
 import { Settings } from './settings';
-import { Logger } from './logger';
 import { WorkflowCycleModel } from './state/cycle';
 import { FetchModel } from './state/fetch';
 import { ClipModel } from './state/clip';
@@ -39,6 +38,38 @@ export class State implements IState {
     this.render = new RenderModel();
 
     this.scrollState = new ScrollState();
+  }
+
+  endInnerLoop() {
+    const { fetch, render, cycle } = this;
+    if (fetch.cancel) {
+      fetch.cancel();
+      fetch.cancel = null;
+    }
+    if (render.renderTimer) {
+      clearTimeout(render.renderTimer);
+      render.renderTimer = null;
+    }
+    cycle.innerLoop.done();
+  }
+
+  startInnerLoop() {
+    const { cycle, scrollState: scroll, fetch, render, clip } = this;
+    cycle.innerLoop.start();
+    scroll.positionBeforeAsync = null;
+    if (!fetch.simulate) {
+      fetch.reset();
+    }
+    if (!clip.simulate) {
+      clip.reset(clip.force);
+    }
+    render.reset();
+  }
+
+  dispose() {
+    this.cycle.dispose();
+    this.endInnerLoop();
+    this.scrollState.cleanupTimers();
   }
 
 }

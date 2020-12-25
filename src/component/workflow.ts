@@ -165,11 +165,10 @@ export class Workflow {
   }
 
   done() {
-    const { state, adapter } = this.scroller;
+    const { state, logger } = this.scroller;
     this.cyclesDone++;
-    this.scroller.logger.logCycle(false);
+    logger.logCycle(false);
     state.cycle.done(this.cyclesDone + 1);
-    adapter.isLoading = false;
     this.finalize();
   }
 

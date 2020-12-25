@@ -91,11 +91,11 @@ export default class Scroll extends getBaseProcess(CommonProcess.scroll) {
   }
 
   static onScroll(scroller: Scroller, workflow: ScrollerWorkflow) {
-    const { state: { scrollState }, adapter } = scroller;
+    const { state: { scrollState, cycle } } = scroller;
     scrollState.previous = { ...(scrollState.current as ScrollEventData) };
     scrollState.current = null;
 
-    if (adapter.isLoading) {
+    if (cycle.busy) {
       scroller.logger.log(() => ['skipping scroll', (scrollState.previous as ScrollEventData).position, '[pending]']);
       return;
     }

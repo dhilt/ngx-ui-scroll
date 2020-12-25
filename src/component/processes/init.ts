@@ -7,11 +7,10 @@ const initProcesses = [CommonProcess.init, AdapterProcess.reset, AdapterProcess.
 export default class Init extends getBaseProcess(CommonProcess.init) {
 
   static run(scroller: Scroller, process: Process) {
-    const { state, workflow, adapter } = scroller;
+    const { state: { cycle }, workflow } = scroller;
     const isInitial = initProcesses.includes(process);
     scroller.logger.logCycle(true);
-    state.cycle.start(isInitial, process);
-    adapter.isLoading = true;
+    cycle.start(isInitial, process);
     workflow.call({
       process: Init.process,
       status: ProcessStatus.next

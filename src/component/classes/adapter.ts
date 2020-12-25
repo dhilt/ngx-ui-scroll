@@ -25,6 +25,7 @@ import {
   ScrollerWorkflow,
   IDatasourceOptional,
   IBufferInfo,
+  State,
 } from '../interfaces/index';
 import { Emitter, EVENTS } from '../event-bus';
 
@@ -58,9 +59,9 @@ export class Adapter implements IAdapter {
   private logger: Logger;
   private getWorkflow: WorkflowGetter;
   private reloadCounter: number;
-  private source: { [key: string]: any } = {}; // for observables
-  private box: { [key: string]: any } = {}; // for scalars over observables
-  private demand: { [key: string]: any } = {}; // for scalars on demand
+  private source: { [key: string]: any } = {}; // for Reactive props
+  private box: { [key: string]: any } = {}; // for Scalars over Reactive props
+  private demand: { [key: string]: any } = {}; // for Scalars on demand
   public wanted: { [key: string]: boolean } = {};
 
   get workflow(): ScrollerWorkflow {
@@ -133,17 +134,17 @@ export class Adapter implements IAdapter {
         })
       );
 
-    // Observable props
+    // Reactive props
     // 1) store original values in "source" container, to avoid extra .get() calls on scalar twins set
     // 2) "wanted" container is bound with scalars; get() updates it
     adapterProps
-      .filter(prop => prop.type === AdapterPropType.Observable)
+      .filter(prop => prop.type === AdapterPropType.Reactive)
       .forEach(({ name, value }: IAdapterProp) => {
         this.source[name] = value;
         Object.defineProperty(this, name, {
           get: () => {
             const scalarWanted = ADAPTER_PROPS_STUB.find(
-              ({ wanted, observable }) => wanted && observable === name
+              ({ wanted, reactive }) => wanted && reactive === name
             );
             if (scalarWanted) {
               this.wanted[scalarWanted.name] = true;
@@ -153,13 +154,13 @@ export class Adapter implements IAdapter {
         });
       });
 
-    // Scalar props that have Observable twins
+    // Scalar props that have Reactive twins
     // 1) scalars should use "box" container
     // 2) "wanted" should be updated on get
-    // 3) observables (from "source") are triggered on set
+    // 3) reactive props (from "source") are triggered on set
     adapterProps
-      .filter(prop => prop.type === AdapterPropType.Scalar && !!prop.observable)
-      .forEach(({ name, value, observable, wanted }: IAdapterProp) => {
+      .filter(prop => prop.type === AdapterPropType.Scalar && !!prop.reactive)
+      .forEach(({ name, value, reactive, wanted }: IAdapterProp) => {
         if (wanted) {
           this.wanted[name] = false;
         }
@@ -168,7 +169,7 @@ export class Adapter implements IAdapter {
           set: (newValue: any) => {
             if (newValue !== this.box[name]) {
               this.box[name] = newValue;
-              this.source[observable as string].next(newValue);
+              this.source[reactive as string].next(newValue);
             }
           },
           get: () => {
@@ -208,12 +209,12 @@ export class Adapter implements IAdapter {
         Object.defineProperty(publicContext, name, {
           get: () => type === AdapterPropType.Scalar
             ? (this as any)[name] // Scalars should be taken in runtime
-            : value // Observables and methods (Functions/WorkflowRunners) can be defined once
+            : value // Reactive props and methods (Functions/WorkflowRunners) can be defined once
         });
       });
   }
 
-  init(buffer: Buffer, logger: Logger, events: Emitter) {
+  init(buffer: Buffer, state: State, logger: Logger, events: Emitter) {
     const subs: Subscription[] = [];
 
     // buffer
@@ -234,6 +235,12 @@ export class Adapter implements IAdapter {
     buffer.onBofChanged = bof => this.bof = bof;
     this.eof = buffer.eof;
     buffer.onEofChanged = eof => this.eof = eof;
+
+    // state
+    this.loopPending = state.cycle.innerLoop.busy;
+    state.cycle.innerLoop.onBusyChanged = busy => this.loopPending = busy;
+    this.isLoading = state.cycle.busy;
+    state.cycle.onBusyChanged = busy => this.isLoading = busy;
 
     // logger
     this.logger = logger;

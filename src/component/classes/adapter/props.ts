@@ -36,39 +36,39 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     type: Prop.Scalar,
     name: 'isLoading',
     value: false,
-    observable: 'isLoading$'
+    reactive: 'isLoading$'
   },
   {
     type: Prop.Scalar,
     name: 'loopPending',
     value: false,
-    observable: 'loopPending$'
+    reactive: 'loopPending$'
   },
   {
     type: Prop.Scalar,
     name: 'firstVisible',
     value: nullItem,
-    observable: 'firstVisible$',
+    reactive: 'firstVisible$',
     wanted: true
   },
   {
     type: Prop.Scalar,
     name: 'lastVisible',
     value: nullItem,
-    observable: 'lastVisible$',
+    reactive: 'lastVisible$',
     wanted: true
   },
   {
     type: Prop.Scalar,
     name: 'bof',
     value: false,
-    observable: 'bof$'
+    reactive: 'bof$'
   },
   {
     type: Prop.Scalar,
     name: 'eof',
     value: false,
-    observable: 'eof$'
+    reactive: 'eof$'
   },
   {
     type: Prop.Scalar,
@@ -143,32 +143,32 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
     value: noop
   },
   {
-    type: Prop.Observable,
+    type: Prop.Reactive,
     name: 'isLoading$',
     value: new Subject<boolean>()
   },
   {
-    type: Prop.Observable,
+    type: Prop.Reactive,
     name: 'loopPending$',
     value: new Subject<boolean>()
   },
   {
-    type: Prop.Observable,
+    type: Prop.Reactive,
     name: 'firstVisible$',
     value: new BehaviorSubject<any>(nullItem)
   },
   {
-    type: Prop.Observable,
+    type: Prop.Reactive,
     name: 'lastVisible$',
     value: new BehaviorSubject<any>(nullItem)
   },
   {
-    type: Prop.Observable,
+    type: Prop.Reactive,
     name: 'bof$',
     value: new Subject<boolean>()
   },
   {
-    type: Prop.Observable,
+    type: Prop.Reactive,
     name: 'eof$',
     value: new Subject<boolean>()
   }

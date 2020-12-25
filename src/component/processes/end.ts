@@ -50,15 +50,13 @@ export default class End extends getBaseProcess(CommonProcess.end) {
   }
 
   static finalizeInnerLoop(scroller: Scroller, error: any): boolean {
-    const { state, state: { cycle, clip }, adapter } = scroller;
+    const { state, state: { cycle, clip, fetch } } = scroller;
     const next = !!cycle.interrupter || (error ? false : End.getNext(scroller));
-    state.cycle.innerLoop.isInitial = false;
-    state.fetch.stopSimulate();
+    cycle.innerLoop.isInitial = false;
+    fetch.stopSimulate();
     clip.noClip = scroller.settings.infinite || (next && clip.simulate);
     clip.forceReset();
-    scroller.innerLoopCleanup();
-    adapter.loopPending = false;
-    state.cycle.innerLoop.done();
+    state.endInnerLoop();
     return next;
   }
 

@@ -23,13 +23,23 @@ export class ScrollState implements IScrollState {
   reset() {
     this.previous = null;
     this.current = null;
-    this.scrollTimer = null;
     this.syntheticPosition = null;
     this.syntheticFulfill = false;
-    this.animationFrameId = 0;
     this.positionBeforeAsync = null;
     this.positionBeforeAdjust = null;
     this.positionAfterAdjust = null;
+    this.cleanupTimers();
+  }
+
+  cleanupTimers() {
+    if (this.scrollTimer) {
+      clearTimeout(this.scrollTimer);
+      this.scrollTimer = null;
+    }
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = 0;
+    }
   }
 
   hasPositionChanged(position: number): boolean {

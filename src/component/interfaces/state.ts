@@ -24,6 +24,7 @@ export interface ScrollState {
   positionAfterAdjust: number | null;
 
   reset: Function;
+  cleanupTimers: Function;
   hasPositionChanged: (position: number) => boolean;
 }
 

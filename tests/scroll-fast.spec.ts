@@ -46,7 +46,7 @@ const runFastScroll = (misc: Misc, customConfig: any, done: Function) => {
         if (iteration < customConfig.scrollCount || customConfig.start === Direction.backward) {
           misc.scrollMin();
         }
-        success();
+        success(void 0);
       }, 25);
     }, 25);
   });

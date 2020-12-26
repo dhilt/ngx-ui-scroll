@@ -74,12 +74,12 @@ describe('EOF/BOF Spec', () => {
     expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
 
     const { adapter, scroller: { buffer: { eof, bof } }, shared } = misc;
-    expect(bof).toEqual(!_forward);
-    expect(bof).toEqual(adapter.bof);
-    expect(bof).toEqual(shared.bofEofContainer.bof.value);
-    expect(eof).toEqual(adapter.eof);
-    expect(eof).toEqual(_forward);
-    expect(eof).toEqual(shared.bofEofContainer.eof.value);
+    expect(bof.get()).toEqual(!_forward);
+    expect(bof.get()).toEqual(adapter.bof);
+    expect(bof.get()).toEqual(shared.bofEofContainer.bof.value);
+    expect(eof.get()).toEqual(adapter.eof);
+    expect(eof.get()).toEqual(_forward);
+    expect(eof.get()).toEqual(shared.bofEofContainer.eof.value);
   };
 
   const _makeTest = (data: MakeTestConfig) => makeTest({
@@ -118,15 +118,15 @@ describe('EOF/BOF Spec', () => {
             const { scroller: { buffer }, adapter } = misc;
             const { bofEofContainer } = misc.shared;
             if (misc.workflow.cyclesDone === 1) {
-              expect(buffer[operation]).toEqual(true);
+              expect(buffer[operation].get()).toEqual(true);
               expect(adapter[operation]).toEqual(true);
               expect(bofEofContainer[operation].value).toEqual(true);
               doScroll(misc);
             } else {
-              expect(buffer[operation]).toEqual(false);
+              expect(buffer[operation].get()).toEqual(false);
               expect(adapter[operation]).toEqual(false);
               expect(bofEofContainer[operation].value).toEqual(false);
-              expect(buffer[_operation]).toEqual(false);
+              expect(buffer[_operation].get()).toEqual(false);
               expect(adapter[_operation]).toEqual(false);
               expect(bofEofContainer[_operation].value).toEqual(false);
               done();

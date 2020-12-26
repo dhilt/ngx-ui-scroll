@@ -18,8 +18,8 @@ export default class Append extends getBaseAdapterProcess(AdapterProcess.append)
 
     // virtual prepend case: shift abs min index and update viewport params
     if (
-      (prepend && _eof && !scroller.buffer.bof) ||
-      (!prepend && _eof && !scroller.buffer.eof)
+      (prepend && _eof && !scroller.buffer.bof.get()) ||
+      (!prepend && _eof && !scroller.buffer.eof.get())
     ) {
       Append.doVirtualize(scroller, items, prepend);
       scroller.workflow.call({

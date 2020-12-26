@@ -216,6 +216,7 @@ export class Adapter implements IAdapter {
 
   init(buffer: Buffer, state: State, logger: Logger, events: Emitter) {
     const subs: Subscription[] = [];
+    const unSubList: Function[] = [];
 
     // buffer
     Object.defineProperty(this.demand, 'itemsCount', {
@@ -231,16 +232,16 @@ export class Adapter implements IAdapter {
         absMaxIndex: buffer.absMaxIndex,
       })
     });
-    this.bof = buffer.bof;
-    buffer.onBofChanged = bof => this.bof = bof;
-    this.eof = buffer.eof;
-    buffer.onEofChanged = eof => this.eof = eof;
+    this.bof = buffer.bof.get();
+    unSubList.push(buffer.bof.on(bof => this.bof = bof));
+    this.eof = buffer.eof.get();
+    unSubList.push(buffer.eof.on(eof => this.eof = eof));
 
     // state
-    this.loopPending = state.cycle.innerLoop.busy;
-    state.cycle.innerLoop.onBusyChanged = busy => this.loopPending = busy;
-    this.isLoading = state.cycle.busy;
-    state.cycle.onBusyChanged = busy => this.isLoading = busy;
+    this.loopPending = state.cycle.innerLoop.busy.get();
+    unSubList.push(state.cycle.innerLoop.busy.on(busy => this.loopPending = busy));
+    this.isLoading = state.cycle.busy.get();
+    unSubList.push(state.cycle.busy.on(busy => this.isLoading = busy));
 
     // logger
     this.logger = logger;
@@ -268,9 +269,10 @@ export class Adapter implements IAdapter {
       });
     }
 
-    events.on(EVENTS.WORKFLOW.DISPOSE, () =>
-      subs.forEach(sub => sub ? sub.unsubscribe() : null)
-    );
+    events.on(EVENTS.WORKFLOW.DISPOSE, () => {
+      subs.forEach(sub => sub ? sub.unsubscribe() : null);
+      unSubList.forEach(c => c());
+    });
 
     this.initialized = true;
   }

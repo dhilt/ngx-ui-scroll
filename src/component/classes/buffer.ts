@@ -2,6 +2,7 @@ import { Cache } from './cache';
 import { Item } from './item';
 import { Settings } from './settings';
 import { Logger } from './logger';
+import { Reactive } from './reactive';
 import { Direction, OnDataChanged } from '../interfaces/index';
 
 export class Buffer {
@@ -9,12 +10,10 @@ export class Buffer {
   private _items: Item[];
   private _absMinIndex: number;
   private _absMaxIndex: number;
-  private _bof: boolean;
-  private _eof: boolean;
+  bof: Reactive<boolean>;
+  eof: Reactive<boolean>;
 
   changeItems: OnDataChanged;
-  onBofChanged: ((value: boolean) => void) | null;
-  onEofChanged: ((value: boolean) => void) | null;
   minIndexUser: number;
   maxIndexUser: number;
   startIndexUser: number;
@@ -27,8 +26,8 @@ export class Buffer {
   constructor(settings: Settings, onDataChanged: OnDataChanged, logger: Logger) {
     this.logger = logger;
     this.changeItems = onDataChanged;
-    this.onBofChanged = null;
-    this.onEofChanged = null;
+    this.bof = new Reactive(false as boolean);
+    this.eof = new Reactive(false as boolean);
     this.cache = new Cache(settings.itemSize, settings.cacheData, logger);
     this.startIndexUser = settings.startIndex;
     this.minIndexUser = settings.minIndex;
@@ -37,8 +36,8 @@ export class Buffer {
   }
 
   dispose() {
-    this.onBofChanged = null;
-    this.onEofChanged = null;
+    this.bof.dispose();
+    this.eof.dispose();
   }
 
   reset(reload?: boolean, startIndex?: number) {
@@ -51,8 +50,8 @@ export class Buffer {
     this.absMinIndex = this.minIndexUser;
     this.absMaxIndex = this.maxIndexUser;
     this.setCurrentStartIndex(startIndex);
-    this._bof = false;
-    this._eof = false;
+    this.bof.set(false);
+    this.eof.set(false);
     this.pristine = false;
   }
 
@@ -115,25 +114,12 @@ export class Buffer {
     return this._absMaxIndex;
   }
 
-  get bof(): boolean {
-    return this._bof;
-  }
-
-  get eof(): boolean {
-    return this._eof;
-  }
-
   private checkBOF() {
     // since bof has no setter, need to call checkBOF() on items and absMinIndex change
     const bof = this.items.length
       ? (this.items[0].$index === this.absMinIndex)
       : isFinite(this.absMinIndex);
-    if (this._bof !== bof) {
-      this._bof = bof;
-      if (this.onBofChanged) {
-        this.onBofChanged(bof);
-      }
-    }
+    this.bof.set(bof);
   }
 
   private checkEOF() {
@@ -141,12 +127,7 @@ export class Buffer {
     const eof = this.items.length
       ? (this.items[this.items.length - 1].$index === this.absMaxIndex)
       : isFinite(this.absMaxIndex);
-    if (this._eof !== eof) {
-      this._eof = eof;
-      if (this.onEofChanged) {
-        this.onEofChanged(eof);
-      }
-    }
+    this.eof.set(eof);
   }
 
   get size(): number {

@@ -1,46 +1,34 @@
 import { Process } from '../../interfaces/index';
+import { Reactive } from '../reactive';
 
 class InnerLoopModel {
   total: number;
   count: number;
   isInitial: boolean;
+  busy: Reactive<boolean>;
 
   get first(): boolean {
     return this.count === 0;
   }
 
-  onBusyChanged: ((value: boolean) => void) | null;
-  private _busy: boolean;
-  get busy(): boolean {
-    return this._busy;
-  }
-  set busy(value: boolean) {
-    if (this._busy !== value) {
-      this._busy = value;
-      if (this.onBusyChanged) {
-        this.onBusyChanged(value);
-      }
-    }
-  }
-
   constructor(total: number) {
     this.total = total;
     this.isInitial = false;
-    this._busy = false;
+    this.busy = new Reactive(false as boolean);
   }
 
   done() {
     this.count++;
     this.total++;
-    this.busy = false;
+    this.busy.set(false);
   }
 
   start() {
-    this.busy = true;
+    this.busy.set(true);
   }
 
   dispose() {
-    this.onBusyChanged = null;
+    this.busy.dispose();
   }
 }
 
@@ -51,6 +39,7 @@ export class WorkflowCycleModel {
   initiator: Process;
   innerLoop: InnerLoopModel;
   interrupter: Process | null;
+  busy: Reactive<boolean>;
 
   get loopId(): string {
     return `${this.instanceIndex}-${this.count}-${this.innerLoop.total}`;
@@ -60,32 +49,18 @@ export class WorkflowCycleModel {
     return `${this.instanceIndex}-${this.count}-${this.innerLoop.total + 1}`;
   }
 
-  onBusyChanged: ((value: boolean) => void) | null;
-  private _busy: boolean;
-  get busy(): boolean {
-    return this._busy;
-  }
-  set busy(value: boolean) {
-    if (this._busy !== value) {
-      this._busy = value;
-      if (this.onBusyChanged) {
-        this.onBusyChanged(value);
-      }
-    }
-  }
-
   constructor(instanceIndex: number, cycleCount: number, loopCount: number) {
     this.instanceIndex = instanceIndex;
     this.innerLoop = new InnerLoopModel(loopCount);
     this.interrupter = null;
-    this._busy = false;
+    this.busy = new Reactive(false as boolean);
     this.done(cycleCount);
   }
 
   done(count: number) {
     this.count = count;
     this.isInitial = false;
-    this.busy = false;
+    this.busy.set(false);
   }
 
   start(isInitial: boolean, initiator: Process) {
@@ -94,11 +69,11 @@ export class WorkflowCycleModel {
     this.innerLoop.isInitial = isInitial;
     this.innerLoop.count = 0;
     this.interrupter = null;
-    this.busy = true;
+    this.busy.set(true);
   }
 
   dispose() {
-    this.onBusyChanged = null;
+    this.busy.dispose();
     this.innerLoop.dispose();
   }
 }

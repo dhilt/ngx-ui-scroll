@@ -28,7 +28,7 @@ export default class Reset extends getBaseAdapterProcess(AdapterProcess.reset) {
     paddings.forward.reset();
 
     const payload: any = { datasource };
-    if (cycle.busy) {
+    if (cycle.busy.get()) {
       payload.finalize = true;
       cycle.interrupter = Reset.process;
     }

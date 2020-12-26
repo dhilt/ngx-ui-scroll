@@ -94,8 +94,8 @@ describe('Datasource Get', () => {
           const { buffer, state } = misc.scroller;
           expect(misc.innerLoopCount).toEqual(1);
           expect(state.fetch.callCount).toEqual(0);
-          expect(buffer.bof).toEqual(true);
-          expect(buffer.eof).toEqual(true);
+          expect(buffer.bof.get()).toEqual(true);
+          expect(buffer.eof.get()).toEqual(true);
           done();
         })
     });

@@ -95,7 +95,7 @@ export default class Scroll extends getBaseProcess(CommonProcess.scroll) {
     scrollState.previous = { ...(scrollState.current as ScrollEventData) };
     scrollState.current = null;
 
-    if (cycle.busy) {
+    if (cycle.busy.get()) {
       scroller.logger.log(() => ['skipping scroll', (scrollState.previous as ScrollEventData).position, '[pending]']);
       return;
     }

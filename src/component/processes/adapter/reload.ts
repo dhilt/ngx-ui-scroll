@@ -15,7 +15,7 @@ export default class Reload extends getBaseAdapterProcess(AdapterProcess.reload)
     viewport.reset(buffer.startIndex, scrollPosition);
 
     const payload: any = {};
-    if (state.cycle.busy) {
+    if (state.cycle.busy.get()) {
       state.scrollState.cleanupTimers();
       payload.finalize = true;
       state.cycle.interrupter = Reload.process;

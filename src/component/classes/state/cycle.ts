@@ -14,7 +14,7 @@ class InnerLoopModel {
   constructor(total: number) {
     this.total = total;
     this.isInitial = false;
-    this.busy = new Reactive(false as boolean);
+    this.busy = new Reactive<boolean>(false);
   }
 
   done() {
@@ -49,11 +49,14 @@ export class WorkflowCycleModel {
     return `${this.instanceIndex}-${this.count}-${this.innerLoop.total + 1}`;
   }
 
-  constructor(instanceIndex: number, cycleCount: number, loopCount: number) {
+  constructor(instanceIndex: number, cycle?: WorkflowCycleModel) {
+    const cycleCount = cycle ? cycle.count : 1;
+    const loopCount = cycle ? cycle.innerLoop.count : 0;
+
     this.instanceIndex = instanceIndex;
     this.innerLoop = new InnerLoopModel(loopCount);
     this.interrupter = null;
-    this.busy = new Reactive(false as boolean);
+    this.busy = new Reactive<boolean>(false);
     this.done(cycleCount);
   }
 
@@ -72,8 +75,11 @@ export class WorkflowCycleModel {
     this.busy.set(true);
   }
 
-  dispose() {
-    this.busy.dispose();
+  dispose(forever?: boolean) {
+    if (forever) {
+      // otherwise the value will be persisted during re-instantiation
+      this.busy.dispose();
+    }
     this.innerLoop.dispose();
   }
 }

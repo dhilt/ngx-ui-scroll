@@ -1,11 +1,12 @@
 interface Subscription<T> {
-  on: (value: T) => void;
+  emit: (value: T) => void;
   off: () => void;
 }
 
 interface Options {
-  immediate?: boolean; // if true, emit right on subscribe
-  equal?: boolean; // if true, emit when new value is equal to the old one
+  emitOnSubscribe?: boolean; // if set, emit right on subscribe
+  emitEqual?: boolean; // if set, emit when new value is equal to the old one
+  emitChanged?: boolean; // if set, emit when value changed during subscriptions run
 }
 
 export class Reactive<T> {
@@ -25,11 +26,16 @@ export class Reactive<T> {
   }
 
   set(value: T) {
-    if (this.value === value && !this.options.equal) {
+    if (this.value === value && !this.options.emitEqual) {
       return;
     }
     this.value = value;
-    this.subscriptions.forEach(sub => sub.on(value));
+    for (const [id, sub] of this.subscriptions) {
+      sub.emit(value);
+      if (this.value !== value && !this.options.emitChanged) {
+        break;
+      }
+    }
   }
 
   get(): T {
@@ -39,15 +45,15 @@ export class Reactive<T> {
   on(callback: (value: T) => void): () => void {
     const id = this.id++;
     const subscription: Subscription<T> = {
-      on: callback,
+      emit: callback,
       off: () => {
-        subscription.on = () => null;
+        subscription.emit = () => null;
         this.subscriptions.delete(id);
       }
     };
     this.subscriptions.set(id, subscription);
-    if (this.options.immediate) {
-      subscription.on(this.value);
+    if (this.options.emitOnSubscribe) {
+      subscription.emit(this.value);
     }
     return () => subscription.off();
   }

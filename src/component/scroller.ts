@@ -40,17 +40,10 @@ export class Scroller {
     }
 
     this.workflow = workflow;
-
-    let cycleCount, loopCount;
-    if (scroller) { // continue counters
-      cycleCount = scroller.state.cycle.count;
-      loopCount = scroller.state.cycle.innerLoop.total;
-    }
-
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
-    this.state = new State(version, this.settings, loopCount, cycleCount);
+    this.state = new State(version, this.settings, scroller ? scroller.state : void 0);
     this.buffer = new Buffer(this.settings, this.workflow.onDataChanged, this.logger);
     this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
     this.logger.object('uiScroll settings object', this.settings, true);

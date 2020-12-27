@@ -26,8 +26,8 @@ export class Buffer {
   constructor(settings: Settings, onDataChanged: OnDataChanged, logger: Logger) {
     this.logger = logger;
     this.changeItems = onDataChanged;
-    this.bof = new Reactive(false as boolean);
-    this.eof = new Reactive(false as boolean);
+    this.bof = new Reactive<boolean>(false);
+    this.eof = new Reactive<boolean>(false);
     this.cache = new Cache(settings.itemSize, settings.cacheData, logger);
     this.startIndexUser = settings.startIndex;
     this.minIndexUser = settings.minIndex;

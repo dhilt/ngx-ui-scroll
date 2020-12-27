@@ -25,13 +25,13 @@ export class State implements IState {
     return Number(new Date()) - this.initTime;
   }
 
-  constructor(version: string, settings: Settings, loopCount?: number, cycleCount?: number) {
+  constructor(version: string, settings: Settings, state?: IState) {
     this.version = version;
     this.settings = settings;
 
     this.initTime = Number(new Date());
 
-    this.cycle = new WorkflowCycleModel(this.settings.instanceIndex, cycleCount || 1, loopCount || 0);
+    this.cycle = new WorkflowCycleModel(this.settings.instanceIndex, state ? state.cycle : void 0);
 
     this.fetch = new FetchModel();
     this.clip = new ClipModel();

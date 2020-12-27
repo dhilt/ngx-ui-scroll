@@ -9,16 +9,16 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { validate, DATASOURCE } from './inputs/index';
 
-import { ScrollerWorkflow, IDatasource } from './interfaces/index';
+import { ScrollerWorkflow, IDatasource, ScrollerParams } from './interfaces/index';
 
 export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
 let instanceCount = 0;
 
 export class Scroller {
+  public datasource: Datasource;
   public workflow: ScrollerWorkflow;
 
-  public datasource: Datasource;
   public settings: Settings;
   public logger: Logger;
   public routines: Routines;
@@ -27,24 +27,22 @@ export class Scroller {
   public state: State;
   public adapter: Adapter;
 
-  constructor(
-    element: HTMLElement,
-    datasource: Datasource | IDatasource,
-    version: string,
-    workflow: ScrollerWorkflow,
-    scroller?: Scroller // for re-initialization
-  ) {
+  constructor({ datasource, version, element, workflow, scroller }: ScrollerParams) {
     const { params: { get } } = validate(datasource, DATASOURCE);
     if (!get.isValid) {
       throw new Error(`${INVALID_DATASOURCE_PREFIX} ${get.errors[0]}`);
     }
+
+    version = scroller ? scroller.state.version : (version as string);
+    element = scroller ? scroller.viewport.element : (element as HTMLElement);
+    workflow = scroller ? scroller.workflow : (workflow as ScrollerWorkflow);
 
     this.workflow = workflow;
     this.settings = new Settings(datasource.settings, datasource.devSettings, ++instanceCount);
     this.logger = new Logger(this, version);
     this.routines = new Routines(this.settings);
     this.state = new State(version, this.settings, scroller ? scroller.state : void 0);
-    this.buffer = new Buffer(this.settings, this.workflow.onDataChanged, this.logger);
+    this.buffer = new Buffer(this.settings, workflow.onDataChanged, this.logger);
     this.viewport = new Viewport(element, this.settings, this.routines, this.state, this.logger);
     this.logger.object('uiScroll settings object', this.settings, true);
 

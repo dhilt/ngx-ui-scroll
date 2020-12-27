@@ -31,7 +31,7 @@ export class Workflow {
     this.isInitialized = false;
     this.events = eventBus();
     this.propagateChanges = run;
-    this.scroller = new Scroller(element, datasource, version, this.getUpdater());
+    this.scroller = new Scroller({ element, datasource, version, workflow: this.getUpdater() });
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];
@@ -155,8 +155,7 @@ export class Workflow {
     if (datasource) { // Scroller re-initialization case
       this.scroller.adapter.relax(() => {
         this.scroller.logger.log('new Scroller instantiation');
-        const { viewport: { element }, state: { version }, workflow } = this.scroller;
-        const scroller = new Scroller(element, datasource, version, workflow, this.scroller);
+        const scroller = new Scroller({ datasource, scroller: this.scroller });
         this.scroller.dispose();
         this.scroller = scroller;
         this.scroller.init(this.events);

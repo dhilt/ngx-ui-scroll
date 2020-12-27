@@ -2,6 +2,7 @@ import { IDatasource, DatasourceGet, IDatasourceOptional } from './datasource';
 import {
   OnDataChanged,
   ScrollerWorkflow,
+  ScrollerParams,
   WorkflowGetter,
   WorkflowError,
   InterruptParams,
@@ -46,6 +47,7 @@ export {
   IDatasourceOptional,
   OnDataChanged,
   ScrollerWorkflow,
+  ScrollerParams,
   WorkflowGetter,
   WorkflowError,
   InterruptParams,

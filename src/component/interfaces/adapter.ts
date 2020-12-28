@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { Reactive } from '../classes/reactive';
 import { IDatasourceOptional } from './datasource';
@@ -42,7 +42,7 @@ export enum AdapterPropType {
   Function
 }
 
-interface IReactivePropConfig {
+export interface IReactivePropConfig {
   source: any;
   emit: (source: any, value: any) => void;
 }
@@ -156,9 +156,9 @@ export interface IAdapter {
   readonly lastVisible: ItemAdapter;
   readonly lastVisible$: BehaviorSubject<ItemAdapter>;
   readonly bof: boolean;
-  readonly bof$: Subject<boolean>;
+  readonly bof$: Reactive<boolean>;
   readonly eof: boolean;
-  readonly eof$: Subject<boolean>;
+  readonly eof$: Reactive<boolean>;
   readonly itemsCount: number;
   readonly bufferInfo: IBufferInfo;
   reset(datasource?: IDatasourceOptional): MethodResult;

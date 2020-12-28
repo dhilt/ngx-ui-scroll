@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { Logger } from './logger';
 import { Buffer } from './buffer';
@@ -88,9 +88,9 @@ export class Adapter implements IAdapter {
   lastVisible: ItemAdapter;
   lastVisible$: BehaviorSubject<ItemAdapter>;
   bof: boolean;
-  bof$: Subject<boolean>;
+  bof$: Reactive<boolean>;
   eof: boolean;
-  eof$: Subject<boolean>;
+  eof$: Reactive<boolean>;
   itemsCount: number;
   bufferInfo: IBufferInfo;
 
@@ -244,10 +244,10 @@ export class Adapter implements IAdapter {
 
   init(buffer: Buffer, { cycle }: State, logger: Logger, events: Emitter) {
     // buffer
-    Object.defineProperty(this.demand, 'itemsCount', {
+    Object.defineProperty(this.demand, AdapterPropName.itemsCount, {
       get: () => buffer.getVisibleItemsCount()
     });
-    Object.defineProperty(this.demand, 'bufferInfo', {
+    Object.defineProperty(this.demand, AdapterPropName.bufferInfo, {
       get: (): IBufferInfo => ({
         firstIndex: buffer.firstIndex,
         lastIndex: buffer.lastIndex,

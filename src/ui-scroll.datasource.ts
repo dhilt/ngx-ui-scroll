@@ -4,33 +4,34 @@ import { makeDatasource } from './component/classes/datasource';
 import {
   IDatasourceGeneric,
   AdapterPropName,
+  IReactivePropConfig,
   IAdapterConfig,
   IAdapter,
 } from './component/interfaces/index';
 
-interface IAdapterOverride {
+interface IReactiveOverride {
   isLoading$: Subject<boolean>;
   loopPending$: Subject<boolean>;
+  bof$: Subject<boolean>;
+  eof$: Subject<boolean>;
 }
 
-interface IAngularAdapter extends Omit<IAdapter, keyof IAdapterOverride> {
-  isLoading$: Subject<boolean>;
-  loopPending$: Subject<boolean>;
-}
+interface IAngularAdapter extends Omit<IAdapter, keyof IReactiveOverride>, IReactiveOverride { }
 
 interface IAngularDatasource extends IDatasourceGeneric<IAngularAdapter> { }
+
+const getBooleanSubjectPropConfig = (): IReactivePropConfig => ({
+  source: new Subject<boolean>(),
+  emit: (source, value) => source.next(value)
+});
 
 const getAdapterConfig = (): IAdapterConfig => ({
   mock: false,
   reactive: {
-    [AdapterPropName.isLoading$]: {
-      source: new Subject<boolean>(),
-      emit: (source, value) => source.next(value)
-    },
-    [AdapterPropName.loopPending$]: {
-      source: new Subject<boolean>(),
-      emit: (source, value) => source.next(value)
-    },
+    [AdapterPropName.isLoading$]: getBooleanSubjectPropConfig(),
+    [AdapterPropName.loopPending$]: getBooleanSubjectPropConfig(),
+    [AdapterPropName.bof$]: getBooleanSubjectPropConfig(),
+    [AdapterPropName.eof$]: getBooleanSubjectPropConfig(),
   }
 });
 

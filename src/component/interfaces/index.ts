@@ -20,6 +20,7 @@ import {
 import {
   AdapterPropName,
   AdapterPropType,
+  IReactivePropConfig,
   IReactivePropsConfig,
   IReactivePropsStore,
   IAdapterConfig,
@@ -71,6 +72,7 @@ export {
   StateMachineParams,
   AdapterPropName,
   AdapterPropType,
+  IReactivePropConfig,
   IReactivePropsConfig,
   IReactivePropsStore,
   IAdapterConfig,

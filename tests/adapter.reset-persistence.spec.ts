@@ -142,7 +142,17 @@ const getAdapters = (misc: Misc) => [
   misc.scroller.datasource.adapter, // component.workflow.scroller.datasource.adapter (public)
   misc.internalAdapter // component.workflow.scroller.adapter (private)
 ];
+
 const subMethods = ['subscribe', 'subscribe', 'on'];
+
+const cleanupSubscriptions = (list: any[]) =>
+  list.forEach((sub) => {
+    if (sub.unsubscribe) { // Angular Adapter
+      sub.unsubscribe();
+    } else { // Native Adapter
+      sub();
+    }
+  });
 
 const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const subs = getAdapters(misc).reduce((acc: any[], adapter, i: number) => {
@@ -170,13 +180,7 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
     if (misc.workflow.cyclesDone <= 1) {
       doReset(config, misc);
     } else {
-      subs.forEach((sub) => {
-        if (sub.unsubscribe) {
-          sub.unsubscribe();
-        } else {
-          sub();
-        }
-      });
+      cleanupSubscriptions(subs);
       expect(misc.shared.count).toEqual(4);
       done();
     }
@@ -210,7 +214,7 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
     if (misc.workflow.cyclesDone <= 1) {
       doReset(config, misc);
     } else {
-      subs.forEach((sub) => sub.unsubscribe());
+      cleanupSubscriptions(subs);
       expect(misc.shared.count).toEqual(3);
       done();
     }
@@ -218,11 +222,11 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
 };
 
 const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = getAdapters(misc).reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: Subscription[], adapter, i) => {
     let call = 0;
     return [
       ...acc,
-      adapter.bof$.subscribe((bof: boolean) => {
+      (adapter.bof$ as any)[subMethods[i]]((bof: boolean) => {
         misc.shared.count = ++call;
         if (call === 1) {
           expect(bof).toEqual(true);
@@ -243,7 +247,7 @@ const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Func
     } else if (misc.workflow.cyclesDone === 2) {
       doReset(config, misc);
     } else {
-      subs.forEach((sub) => sub.unsubscribe());
+      cleanupSubscriptions(subs);
       expect(misc.shared.count).toEqual(3);
       done();
     }

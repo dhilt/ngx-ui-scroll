@@ -168,11 +168,11 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Type.Reactive,
     name: Name.bof$,
-    value: new Subject<boolean>()
+    value: new Reactive<boolean>()
   },
   {
     type: Type.Reactive,
     name: Name.eof$,
-    value: new Subject<boolean>()
+    value: new Reactive<boolean>()
   }
 ];

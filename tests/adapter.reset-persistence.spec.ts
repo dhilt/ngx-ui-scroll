@@ -1,8 +1,6 @@
-import { Subscription } from 'rxjs';
-
 import { IAdapter, Datasource, IDatasource } from '../src/ui-scroll.datasource';
 import { ADAPTER_PROPS } from '../src/component/classes/adapter/props';
-import { IDatasourceOptional } from '../src/component/interfaces';
+import { IDatasourceOptional, ItemAdapter } from '../src/component/interfaces';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
@@ -189,11 +187,11 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
 
 const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
-  const subs = getAdapters(misc).reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: any[], adapter, i) => {
     let call = 0;
     return [
       ...acc,
-      adapter.firstVisible$.subscribe(({ $index }) => {
+      (adapter.firstVisible$ as any)[subMethods[i]](({ $index }: ItemAdapter) => {
         misc.shared.count = ++call;
         const { startIndex } = config.datasourceSettings;
         if (call === 1) {
@@ -222,7 +220,7 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
 };
 
 const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = getAdapters(misc).reduce((acc: Subscription[], adapter, i) => {
+  const subs = getAdapters(misc).reduce((acc: any[], adapter, i) => {
     let call = 0;
     return [
       ...acc,

@@ -1,5 +1,3 @@
-import { BehaviorSubject } from 'rxjs';
-
 import { Logger } from './logger';
 import { Buffer } from './buffer';
 import { Reactive } from './reactive';
@@ -84,9 +82,9 @@ export class Adapter implements IAdapter {
   loopPending: boolean;
   loopPending$: Reactive<boolean>;
   firstVisible: ItemAdapter;
-  firstVisible$: BehaviorSubject<ItemAdapter>;
+  firstVisible$: Reactive<ItemAdapter>;
   lastVisible: ItemAdapter;
-  lastVisible$: BehaviorSubject<ItemAdapter>;
+  lastVisible$: Reactive<ItemAdapter>;
   bof: boolean;
   bof$: Reactive<boolean>;
   eof: boolean;

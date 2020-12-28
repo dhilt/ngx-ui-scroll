@@ -1,5 +1,3 @@
-import { BehaviorSubject } from 'rxjs';
-
 import { Reactive } from '../classes/reactive';
 import { IDatasourceOptional } from './datasource';
 
@@ -152,9 +150,9 @@ export interface IAdapter {
   readonly loopPending: boolean;
   readonly loopPending$: Reactive<boolean>;
   readonly firstVisible: ItemAdapter;
-  readonly firstVisible$: BehaviorSubject<ItemAdapter>;
+  readonly firstVisible$: Reactive<ItemAdapter>;
   readonly lastVisible: ItemAdapter;
-  readonly lastVisible$: BehaviorSubject<ItemAdapter>;
+  readonly lastVisible$: Reactive<ItemAdapter>;
   readonly bof: boolean;
   readonly bof$: Reactive<boolean>;
   readonly eof: boolean;

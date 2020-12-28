@@ -1,8 +1,6 @@
-import { BehaviorSubject, Subject } from 'rxjs';
-
 import { Reactive } from '../reactive';
 import {
-  AdapterPropName as Name, AdapterPropType as Type, IAdapterProp, IBufferInfo
+  AdapterPropName as Name, AdapterPropType as Type, IAdapterProp, IBufferInfo, ItemAdapter
 } from '../../interfaces/index';
 
 const noop = () => null;
@@ -158,12 +156,12 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Type.Reactive,
     name: Name.firstVisible$,
-    value: new BehaviorSubject<any>(nullItem)
+    value: new Reactive<ItemAdapter>(nullItem, { emitOnSubscribe: true })
   },
   {
     type: Type.Reactive,
     name: Name.lastVisible$,
-    value: new BehaviorSubject<any>(nullItem)
+    value: new Reactive<ItemAdapter>(nullItem, { emitOnSubscribe: true })
   },
   {
     type: Type.Reactive,

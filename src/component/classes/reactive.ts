@@ -4,7 +4,7 @@ interface Subscription<T> {
 }
 
 interface Options {
-  emitOnSubscribe?: boolean; // if set, emit right on subscribe
+  emitOnSubscribe?: boolean; // if set, emit right on subscribe (like rxjs BehaviorSubject)
   emitEqual?: boolean; // if set, emit when new value is equal to the old one
   emitChanged?: boolean; // if set, emit when value changed during subscriptions run
 }

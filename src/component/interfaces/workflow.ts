@@ -1,8 +1,6 @@
 import { Process, ProcessSubject } from './process';
 import { IDatasource } from './datasource';
-import { IAdapterConfig } from './adapter';
 import { Item } from '../classes/item';
-import { Datasource } from '../classes/datasource';
 import { Scroller } from '../scroller';
 
 interface CallWorkflow {
@@ -18,13 +16,12 @@ export interface ScrollerWorkflow {
 }
 
 export interface ScrollerParams {
-  datasource: Datasource | IDatasource;
+  datasource: IDatasource;
   version?: string;
   element?: HTMLElement;
   workflow?: ScrollerWorkflow;
-  adapterConfig?: IAdapterConfig;
   scroller?: Scroller; // for re-instantiation
-};
+}
 
 export type WorkflowGetter = () => ScrollerWorkflow;
 

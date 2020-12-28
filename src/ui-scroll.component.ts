@@ -6,7 +6,6 @@ import {
 
 import { Workflow } from './component/workflow';
 import { IDatasource } from './component/interfaces/index';
-import { Datasource } from './component/classes/datasource';
 import { Item } from './component/classes/item';
 
 /* tslint:disable:component-selector */
@@ -36,7 +35,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
   // these should come from the directive
   public version: string;
   public template: TemplateRef<any>;
-  public datasource: IDatasource | Datasource;
+  public datasource: IDatasource;
 
   // the only template variable
   public items: Item[] = [];

@@ -1,14 +1,16 @@
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { Logger } from './logger';
 import { Buffer } from './buffer';
+import { Reactive } from './reactive';
 import { EMPTY_ITEM } from './adapter/context';
 import { ADAPTER_PROPS } from './adapter/props';
 import {
   WorkflowGetter,
+  AdapterPropName,
   AdapterPropType,
   IAdapterProp,
+  IReactivePropsStore,
   AdapterMethodResult,
   IAdapter,
   AdapterProcess,
@@ -78,7 +80,7 @@ export class Adapter implements IAdapter {
   mock: boolean;
   version: string;
   isLoading: boolean;
-  isLoading$: Subject<boolean>;
+  isLoading$: Reactive<boolean>;
   loopPending: boolean;
   loopPending$: Subject<boolean>;
   firstVisible: ItemAdapter;
@@ -117,13 +119,24 @@ export class Adapter implements IAdapter {
     this.relaxRun = null;
     this.reloadCounter = 0;
 
-    // restore original values from the publicContext if present
+    const reactivePropsStore: IReactivePropsStore =
+      publicContext && (publicContext as any).reactiveConfiguredProps || {};
+
+    // make array of the original values from publicContext if present
     const adapterProps = publicContext
       ? ADAPTER_PROPS_STUB.map(prop => ({
         ...prop,
-        value: (publicContext as any)[prop.name]
+        value: publicContext[prop.name]
       }))
       : ADAPTER_PROPS(EMPTY_ITEM);
+
+    // restore default reactive props if they were configured
+    Object.entries(reactivePropsStore).forEach(([key, value]) => {
+      const prop = adapterProps.find(({ name }) => name === key);
+      if (prop && value) {
+        prop.value = value.default;
+      }
+    });
 
     // Scalar permanent props
     adapterProps
@@ -169,7 +182,17 @@ export class Adapter implements IAdapter {
           set: (newValue: any) => {
             if (newValue !== this.box[name]) {
               this.box[name] = newValue;
-              this.source[reactive as string].next(newValue);
+              const source = this.source[reactive as string];
+              if (source.next) { // old observable, todo dhilt: remove after Reactive refactoring
+                source.next(newValue);
+                return;
+              }
+              source.set(newValue);
+              // need to emit new value through the configured reactive prop if present
+              const reactiveProp = reactivePropsStore[reactive as AdapterPropName];
+              if (reactiveProp) {
+                reactiveProp.emit(reactiveProp.source, newValue);
+              }
             }
           },
           get: () => {
@@ -205,19 +228,21 @@ export class Adapter implements IAdapter {
           value = value.bind(this);
         } else if (type === AdapterPropType.WorkflowRunner) {
           value = this.getPromisifiedMethod(value);
+        } else if (type === AdapterPropType.Reactive && reactivePropsStore[name]) {
+          value = publicContext[name];
         }
         Object.defineProperty(publicContext, name, {
+          configurable: false,
           get: () => type === AdapterPropType.Scalar
             ? (this as any)[name] // Scalars should be taken in runtime
             : value // Reactive props and methods (Functions/WorkflowRunners) can be defined once
         });
       });
+
+    delete (publicContext as any).reactiveConfiguredProps;
   }
 
-  init(buffer: Buffer, state: State, logger: Logger, events: Emitter) {
-    const subs: Subscription[] = [];
-    const unSubList: Function[] = [];
-
+  init(buffer: Buffer, { cycle }: State, logger: Logger, events: Emitter) {
     // buffer
     Object.defineProperty(this.demand, 'itemsCount', {
       get: () => buffer.getVisibleItemsCount()
@@ -233,15 +258,15 @@ export class Adapter implements IAdapter {
       })
     });
     this.bof = buffer.bof.get();
-    unSubList.push(buffer.bof.on(bof => this.bof = bof));
+    buffer.bof.on(bof => this.bof = bof);
     this.eof = buffer.eof.get();
-    unSubList.push(buffer.eof.on(eof => this.eof = eof));
+    buffer.eof.on(eof => this.eof = eof);
 
     // state
-    this.loopPending = state.cycle.innerLoop.busy.get();
-    unSubList.push(state.cycle.innerLoop.busy.on(busy => this.loopPending = busy));
-    this.isLoading = state.cycle.busy.get();
-    unSubList.push(state.cycle.busy.on(busy => this.isLoading = busy));
+    this.loopPending = cycle.innerLoop.busy.get();
+    cycle.innerLoop.busy.on(busy => this.loopPending = busy);
+    this.isLoading = cycle.busy.get();
+    cycle.busy.on(busy => this.isLoading = busy);
 
     // logger
     this.logger = logger;
@@ -249,17 +274,17 @@ export class Adapter implements IAdapter {
     // self-pending; set up only on the very first init
     if (!events.all.has(EVENTS.WORKFLOW.RUN_ADAPTER)) {
       events.on(EVENTS.WORKFLOW.RUN_ADAPTER, ({ status, payload }) => {
-        let loadSub;
+        let unSubBusy = () => { };
         if (status === ProcessStatus.start) {
-          loadSub = this.isLoading$
-            .pipe(filter(isLoading => !isLoading), take(1))
-            .subscribe(() => this.onRelaxed({ success: true, immediate: false, details: null }));
-          subs.push(loadSub);
+          unSubBusy = this.isLoading$.on(value => {
+            if (!value) {
+              unSubBusy();
+              this.onRelaxed({ success: true, immediate: false, details: null });
+            }
+          });
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
-          if (loadSub) {
-            loadSub.unsubscribe();
-          }
+          unSubBusy();
           this.onRelaxed({
             success: status !== ProcessStatus.error,
             immediate: true,
@@ -269,17 +294,18 @@ export class Adapter implements IAdapter {
       });
     }
 
-    events.on(EVENTS.WORKFLOW.DISPOSE, () => {
-      subs.forEach(sub => sub ? sub.unsubscribe() : null);
-      unSubList.forEach(c => c());
-    });
-
     this.initialized = true;
   }
 
   dispose() {
     this.onRelaxed = () => null;
-    Object.values(this.source).forEach(observable => observable.complete());
+    Object.values(this.source).forEach(reactive => {
+      if (reactive.complete) { // old observable, todo dhilt: remove after Reactive refactoring
+        reactive.complete();
+      } else {
+        reactive.dispose();
+      }
+    });
   }
 
   reset(options?: IDatasourceOptional): any {
@@ -387,12 +413,11 @@ export class Adapter implements IAdapter {
           resolve(true);
           return;
         }
-        this.isLoading$
-          .pipe(filter(isLoading => !isLoading), take(1))
-          .subscribe(() => {
-            runCallback();
-            resolve(false);
-          });
+        const unSub = this.isLoading$.on(() => {
+          unSub();
+          runCallback();
+          resolve(false);
+        });
       })
     );
     const success = reloadId === this.reloadId;

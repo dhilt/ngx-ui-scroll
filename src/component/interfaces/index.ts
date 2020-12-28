@@ -1,4 +1,12 @@
-import { IDatasource, DatasourceGet, IDatasourceOptional } from './datasource';
+import {
+  DatasourceGet,
+  IDatasourceOptional,
+  IDatasourceGeneric,
+  IDatasourceConstructedGeneric,
+  IDatasource,
+  IDatasourceConstructed,
+  IDatasourceClass,
+} from './datasource';
 import {
   OnDataChanged,
   ScrollerWorkflow,
@@ -10,7 +18,11 @@ import {
   StateMachineParams,
 } from './workflow';
 import {
+  AdapterPropName,
   AdapterPropType,
+  IReactivePropsConfig,
+  IReactivePropsStore,
+  IAdapterConfig,
   IAdapterProp,
   ItemAdapter,
   ItemsPredicate,
@@ -42,9 +54,13 @@ import {
 } from './validation';
 
 export {
-  IDatasource,
   DatasourceGet,
   IDatasourceOptional,
+  IDatasourceGeneric,
+  IDatasourceConstructedGeneric,
+  IDatasource,
+  IDatasourceConstructed,
+  IDatasourceClass,
   OnDataChanged,
   ScrollerWorkflow,
   ScrollerParams,
@@ -53,7 +69,11 @@ export {
   InterruptParams,
   StateMachineMethods,
   StateMachineParams,
+  AdapterPropName,
   AdapterPropType,
+  IReactivePropsConfig,
+  IReactivePropsStore,
+  IAdapterConfig,
   IAdapterProp,
   ItemAdapter,
   AdapterMethodResult,

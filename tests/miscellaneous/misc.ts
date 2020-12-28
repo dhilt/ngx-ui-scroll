@@ -7,12 +7,12 @@ import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
 import { generateItem, IndexedItem } from './items';
 
-import { Direction, DatasourceGet, IAdapter } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
+import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
 import { Scroller } from '../../src/component/scroller';
 import { Workflow } from '../../src/component/workflow';
-import { Datasource } from '../../src/component/classes/datasource';
 import { Routines } from '../../src/component/classes/domRoutines';
+import { Direction, DatasourceGet } from '../../src/component/interfaces';
 
 export class Padding {
   direction: Direction;
@@ -42,7 +42,7 @@ export class Misc {
   uiScrollComponent: UiScrollComponent;
   workflow: Workflow;
   scroller: Scroller;
-  datasource: Datasource;
+  datasource: IDatasource;
   adapter: IAdapter;
   routines: Routines;
   padding: {
@@ -68,8 +68,8 @@ export class Misc {
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.workflow.scroller;
-    this.datasource = this.testComponent.datasource as Datasource;
-    this.adapter = this.datasource.adapter;
+    this.datasource = this.testComponent.datasource;
+    this.adapter = this.datasource.adapter as IAdapter;
     this.routines = new Routines(this.scroller.settings);
     const { horizontal, windowViewport } = this.scroller.settings;
     this.horizontal = horizontal;
@@ -160,12 +160,12 @@ export class Misc {
   relaxNext(debounce?: boolean): Promise<void> {
     return new Promise(resolve =>
       (debounce
-        ? this.scroller.adapter.isLoading$.pipe(
+        ? this.adapter.isLoading$.pipe(
           filter(pending => !pending),
           debounceTime(30),
           take(1)
         )
-        : this.scroller.adapter.isLoading$.pipe(
+        : this.adapter.isLoading$.pipe(
           filter(pending => !pending),
           take(1)
         )

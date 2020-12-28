@@ -6,7 +6,8 @@ import { UiScrollComponent } from '../src/ui-scroll.component';
 import { Workflow } from '../src/component/workflow';
 import { SETTINGS, MIN } from '../src/component/inputs/settings';
 import { INVALID_DATASOURCE_PREFIX } from '../src/component/scroller';
-import { Settings, Direction, IAdapter } from '../src/component/interfaces';
+import { Settings, Direction } from '../src/component/interfaces';
+import { IAdapter } from '../src/ui-scroll.datasource';
 
 import { configureTestBed, configureTestBedTwo } from './scaffolding/testBed';
 import { generateDatasourceClass } from './scaffolding/datasources/class';
@@ -314,8 +315,8 @@ describe('Workflow', () => {
   const delay = 1;
   const runBeforeEach = (initDelay: number) =>
     beforeEach(
-      () =>
-        (misc = new Misc(
+      () => (
+        misc = new Misc(
           configureTestBed(
             generateDatasourceClass(
               'infinite-callback-no-delay',
@@ -324,7 +325,8 @@ describe('Workflow', () => {
             ),
             defaultTemplate
           )
-        ))
+        )
+      )
     );
 
   describe('Delayed initialization', () => {

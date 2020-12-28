@@ -1,4 +1,5 @@
-import { IDatasource } from '../../../src/component/interfaces';
+
+import { IDatasource } from '../../../src/ui-scroll.datasource';
 import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet } from './get';
 
 interface IDatasourceStore {

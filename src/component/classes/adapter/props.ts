@@ -1,6 +1,9 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { AdapterPropType as Prop, IAdapterProp, IBufferInfo } from '../../interfaces/index';
+import { Reactive } from '../reactive';
+import {
+  AdapterPropName as Name, AdapterPropType as Type, IAdapterProp, IBufferInfo
+} from '../../interfaces/index';
 
 const noop = () => null;
 
@@ -15,161 +18,162 @@ const bufferInfoDefault: IBufferInfo = {
 
 export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
-    type: Prop.Scalar,
-    name: 'id',
+    type: Type.Scalar,
+    name: Name.id,
     value: 0,
     permanent: true
   },
   {
-    type: Prop.Scalar,
-    name: 'mock',
+    type: Type.Scalar,
+    name: Name.mock,
     value: true,
     permanent: true
   },
   {
-    type: Prop.Scalar,
-    name: 'version',
+    type: Type.Scalar,
+    name: Name.version,
     value: '',
     permanent: true
   },
   {
-    type: Prop.Scalar,
-    name: 'isLoading',
+    type: Type.Scalar,
+    name: Name.isLoading,
     value: false,
-    reactive: 'isLoading$'
+    reactive: Name.isLoading$
   },
   {
-    type: Prop.Scalar,
-    name: 'loopPending',
+    type: Type.Scalar,
+    name: Name.loopPending,
     value: false,
-    reactive: 'loopPending$'
+    reactive: Name.loopPending$
   },
   {
-    type: Prop.Scalar,
-    name: 'firstVisible',
+    type: Type.Scalar,
+    name: Name.firstVisible,
     value: nullItem,
-    reactive: 'firstVisible$',
+    reactive: Name.firstVisible$,
     wanted: true
   },
   {
-    type: Prop.Scalar,
-    name: 'lastVisible',
+    type: Type.Scalar,
+    name: Name.lastVisible,
     value: nullItem,
-    reactive: 'lastVisible$',
+    reactive: Name.lastVisible$,
     wanted: true
   },
   {
-    type: Prop.Scalar,
-    name: 'bof',
+    type: Type.Scalar,
+    name: Name.bof,
     value: false,
-    reactive: 'bof$'
+    reactive: Name.bof$
   },
   {
-    type: Prop.Scalar,
-    name: 'eof',
+    type: Type.Scalar,
+    name: Name.eof,
     value: false,
-    reactive: 'eof$'
+    reactive: Name.eof$
   },
   {
-    type: Prop.Scalar,
-    name: 'itemsCount',
+    type: Type.Scalar,
+    name: Name.itemsCount,
     value: 0,
     onDemand: true
   },
   {
-    type: Prop.Scalar,
-    name: 'bufferInfo',
+    type: Type.Scalar,
+    name: Name.bufferInfo,
     value: bufferInfoDefault,
     onDemand: true
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'reset',
+    type: Type.WorkflowRunner,
+    name: Name.reset,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'reload',
+    type: Type.WorkflowRunner,
+    name: Name.reload,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'append',
+    type: Type.WorkflowRunner,
+    name: Name.append,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'prepend',
+    type: Type.WorkflowRunner,
+    name: Name.prepend,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'check',
+    type: Type.WorkflowRunner,
+    name: Name.check,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'remove',
+    type: Type.WorkflowRunner,
+    name: Name.remove,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'clip',
+    type: Type.WorkflowRunner,
+    name: Name.clip,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'insert',
+    type: Type.WorkflowRunner,
+    name: Name.insert,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'replace',
+    type: Type.WorkflowRunner,
+    name: Name.replace,
     value: noop
   },
   {
-    type: Prop.WorkflowRunner,
-    name: 'fix',
+    type: Type.WorkflowRunner,
+    name: Name.fix,
     value: noop
   },
   {
-    type: Prop.Function,
-    name: 'relax',
+    type: Type.Function,
+    name: Name.relax,
     value: noop
   },
   {
-    type: Prop.Function,
-    name: 'showLog',
+    type: Type.Function,
+    name: Name.showLog,
     value: noop
   },
   {
-    type: Prop.Reactive,
-    name: 'isLoading$',
+    type: Type.Reactive,
+    name: Name.isLoading$,
+    // value: new Subject<boolean>()
+    value: new Reactive<boolean>()
+  },
+  {
+    type: Type.Reactive,
+    name: Name.loopPending$,
     value: new Subject<boolean>()
   },
   {
-    type: Prop.Reactive,
-    name: 'loopPending$',
-    value: new Subject<boolean>()
-  },
-  {
-    type: Prop.Reactive,
-    name: 'firstVisible$',
+    type: Type.Reactive,
+    name: Name.firstVisible$,
     value: new BehaviorSubject<any>(nullItem)
   },
   {
-    type: Prop.Reactive,
-    name: 'lastVisible$',
+    type: Type.Reactive,
+    name: Name.lastVisible$,
     value: new BehaviorSubject<any>(nullItem)
   },
   {
-    type: Prop.Reactive,
-    name: 'bof$',
+    type: Type.Reactive,
+    name: Name.bof$,
     value: new Subject<boolean>()
   },
   {
-    type: Prop.Reactive,
-    name: 'eof$',
+    type: Type.Reactive,
+    name: Name.eof$,
     value: new Subject<boolean>()
   }
 ];

@@ -1,6 +1,39 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
+import { Reactive } from '../classes/reactive';
 import { IDatasourceOptional } from './datasource';
+
+export enum AdapterPropName {
+  id = 'id',
+  mock = 'mock',
+  version = 'version',
+  isLoading = 'isLoading',
+  isLoading$ = 'isLoading$',
+  loopPending = 'loopPending',
+  loopPending$ = 'loopPending$',
+  firstVisible = 'firstVisible',
+  firstVisible$ = 'firstVisible$',
+  lastVisible = 'lastVisible',
+  lastVisible$ = 'lastVisible$',
+  bof = 'bof',
+  bof$ = 'bof$',
+  eof = 'eof',
+  eof$ = 'eof$',
+  itemsCount = 'itemsCount',
+  bufferInfo = 'bufferInfo',
+  reset = 'reset',
+  reload = 'reload',
+  append = 'append',
+  prepend = 'prepend',
+  check = 'check',
+  remove = 'remove',
+  clip = 'clip',
+  insert = 'insert',
+  replace = 'replace',
+  fix = 'fix',
+  relax = 'relax',
+  showLog = 'showLog',
+}
 
 export enum AdapterPropType {
   Scalar,
@@ -9,11 +42,33 @@ export enum AdapterPropType {
   Function
 }
 
+interface IReactivePropConfig {
+  source: any;
+  emit: (source: any, value: any) => void;
+}
+
+interface IReactivePropStore extends IReactivePropConfig {
+  default: any;
+}
+
+export type IReactivePropsConfig = {
+  [key in AdapterPropName]?: IReactivePropConfig;
+};
+
+export type IReactivePropsStore = {
+  [key in AdapterPropName]?: IReactivePropStore;
+};
+
+export interface IAdapterConfig {
+  mock: boolean;
+  reactive?: IReactivePropsConfig;
+}
+
 export interface IAdapterProp {
-  name: string;
+  name: AdapterPropName;
   type: AdapterPropType;
   value: any;
-  reactive?: string;
+  reactive?: AdapterPropName;
   wanted?: boolean;
   onDemand?: boolean;
   permanent?: boolean;
@@ -93,7 +148,7 @@ export interface IAdapter {
   readonly mock: boolean;
   readonly version: string;
   readonly isLoading: boolean;
-  readonly isLoading$: Subject<boolean>;
+  readonly isLoading$: Reactive<boolean>;
   readonly loopPending: boolean;
   readonly loopPending$: Subject<boolean>;
   readonly firstVisible: ItemAdapter;

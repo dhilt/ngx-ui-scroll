@@ -1,5 +1,5 @@
 import { Emitter } from './event-bus';
-import { Datasource } from './classes/datasource';
+import { DatasourceGeneric, makeDatasource } from './classes/datasource';
 import { Settings } from './classes/settings';
 import { Logger } from './classes/logger';
 import { Routines } from './classes/domRoutines';
@@ -9,14 +9,14 @@ import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
 import { validate, DATASOURCE } from './inputs/index';
 
-import { ScrollerWorkflow, IDatasource, ScrollerParams } from './interfaces/index';
+import { ScrollerWorkflow, IDatasource, IDatasourceConstructed, ScrollerParams, IAdapter } from './interfaces/index';
 
 export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
 let instanceCount = 0;
 
 export class Scroller {
-  public datasource: Datasource;
+  public datasource: IDatasourceConstructed;
   public workflow: ScrollerWorkflow;
 
   public settings: Settings;
@@ -49,23 +49,24 @@ export class Scroller {
     this.initDatasource(datasource, scroller);
   }
 
-  initDatasource(datasource: Datasource | IDatasource, scroller?: Scroller) {
+  initDatasource(datasource: IDatasource, scroller?: Scroller) {
     if (scroller) { // scroller re-instantiating case
-      this.datasource = datasource as Datasource;
+      this.datasource = datasource as IDatasourceConstructed;
       this.adapter = scroller.adapter;
       // todo: what about (this.settings.adapter !== scroller.setting.adapter) case?
       return;
     }
     // scroller is being instantiated for the first time
-    const constructed = datasource instanceof Datasource;
+    const constructed = datasource instanceof DatasourceGeneric;
     const mockAdapter = !constructed && !this.settings.adapter;
-    if (!constructed) { // datasource as POJO case
-      this.datasource = new Datasource(datasource, mockAdapter);
+    if (constructed) { // datasource is already instantiated
+      this.datasource = datasource as IDatasourceConstructed;
+    } else { // datasource as POJO
+      const DS = makeDatasource<IAdapter>(() => ({ mock: mockAdapter }));
+      this.datasource = new DS(datasource);
       if (this.settings.adapter) {
         datasource.adapter = this.datasource.adapter;
       }
-    } else { // instantiated datasource case
-      this.datasource = datasource as Datasource;
     }
     const publicContext = !mockAdapter ? this.datasource.adapter : null;
     this.adapter = new Adapter(publicContext, () => this.workflow, this.logger);

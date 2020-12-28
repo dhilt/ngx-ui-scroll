@@ -1,8 +1,8 @@
 import { Subscription } from 'rxjs';
 
-import { Datasource } from '../src/component/classes/datasource';
+import { IAdapter, Datasource, IDatasource } from '../src/ui-scroll.datasource';
 import { ADAPTER_PROPS } from '../src/component/classes/adapter/props';
-import { IDatasourceOptional, IAdapter, IDatasource } from '../src/component/interfaces';
+import { IDatasourceOptional } from '../src/component/interfaces';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
@@ -59,7 +59,7 @@ const accessFirstLastVisibleItems = (misc: Misc) => {
 const doReset = (config: TestBedConfig, misc: Misc) => {
   const { get, settings, devSettings, isNew } = config.custom;
   if (!settings && !get && !devSettings) {
-    misc.datasource.adapter.reset();
+    misc.adapter.reset();
   } else {
     const datasource: IDatasourceOptional = {};
     if (get) {
@@ -75,9 +75,9 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
       if (!datasource.get) {
         datasource.get = misc.datasource.get;
       }
-      misc.datasource.adapter.reset(new Datasource(datasource as IDatasource));
+      misc.adapter.reset(new Datasource(datasource as IDatasource));
     } else {
-      misc.datasource.adapter.reset(datasource);
+      misc.adapter.reset(datasource);
     }
   }
   accessFirstLastVisibleItems(misc);
@@ -140,14 +140,13 @@ const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done
 const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   const subs = [
     misc.testComponent.datasource.adapter as IAdapter,
-    misc.workflow.scroller.datasource.adapter
+    misc.workflow.scroller.datasource.adapter as unknown as IAdapter // todo dhilt: must be Reactive, not Subject
   ].reduce((acc: Subscription[], adapter) => {
     let call = 0;
     return [
       ...acc,
-      adapter.isLoading$.subscribe((value) => {
+      adapter.isLoading$.subscribe((value: boolean) => {
         misc.shared.count = ++call;
-        const { startIndex } = config.datasourceSettings;
         if (call === 1) {
           expect(value).toEqual(true);
         } else if (call === 2) {
@@ -221,7 +220,6 @@ const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Func
       ...acc,
       adapter.bof$.subscribe((bof: boolean) => {
         misc.shared.count = ++call;
-        const { startIndex } = config.datasourceSettings;
         if (call === 1) {
           expect(bof).toEqual(true);
         } else if (call === 2) {

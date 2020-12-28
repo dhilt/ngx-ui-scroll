@@ -148,13 +148,12 @@ export const ADAPTER_PROPS = (nullItem: any): IAdapterProp[] => [
   {
     type: Type.Reactive,
     name: Name.isLoading$,
-    // value: new Subject<boolean>()
     value: new Reactive<boolean>()
   },
   {
     type: Type.Reactive,
     name: Name.loopPending$,
-    value: new Subject<boolean>()
+    value: new Reactive<boolean>()
   },
   {
     type: Type.Reactive,

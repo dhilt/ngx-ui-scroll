@@ -137,15 +137,19 @@ const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done
   });
 };
 
+const getAdapters = (misc: Misc) => [
+  misc.adapter, // component.datasource.adapter (public)
+  misc.scroller.datasource.adapter, // component.workflow.scroller.datasource.adapter (public)
+  misc.internalAdapter // component.workflow.scroller.adapter (private)
+];
+const subMethods = ['subscribe', 'subscribe', 'on'];
+
 const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = [
-    misc.testComponent.datasource.adapter as IAdapter,
-    misc.workflow.scroller.datasource.adapter as unknown as IAdapter // todo dhilt: must be Reactive, not Subject
-  ].reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: any[], adapter, i: number) => {
     let call = 0;
     return [
       ...acc,
-      adapter.isLoading$.subscribe((value: boolean) => {
+      (adapter.isLoading$ as any)[subMethods[i]]((value: boolean) => {
         misc.shared.count = ++call;
         if (call === 1) {
           expect(value).toEqual(true);
@@ -166,7 +170,13 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
     if (misc.workflow.cyclesDone <= 1) {
       doReset(config, misc);
     } else {
-      subs.forEach((sub) => sub.unsubscribe());
+      subs.forEach((sub) => {
+        if (sub.unsubscribe) {
+          sub.unsubscribe();
+        } else {
+          sub();
+        }
+      });
       expect(misc.shared.count).toEqual(4);
       done();
     }
@@ -175,10 +185,7 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
 
 const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
-  const subs = [
-    misc.testComponent.datasource.adapter as IAdapter,
-    misc.workflow.scroller.datasource.adapter
-  ].reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: Subscription[], adapter) => {
     let call = 0;
     return [
       ...acc,
@@ -211,10 +218,7 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
 };
 
 const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = [
-    misc.testComponent.datasource.adapter as IAdapter,
-    misc.workflow.scroller.datasource.adapter
-  ].reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: Subscription[], adapter) => {
     let call = 0;
     return [
       ...acc,

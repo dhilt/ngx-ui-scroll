@@ -150,7 +150,7 @@ export interface IAdapter {
   readonly isLoading: boolean;
   readonly isLoading$: Reactive<boolean>;
   readonly loopPending: boolean;
-  readonly loopPending$: Subject<boolean>;
+  readonly loopPending$: Reactive<boolean>;
   readonly firstVisible: ItemAdapter;
   readonly firstVisible$: BehaviorSubject<ItemAdapter>;
   readonly lastVisible: ItemAdapter;

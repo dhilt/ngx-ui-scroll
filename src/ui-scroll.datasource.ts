@@ -8,8 +8,14 @@ import {
   IAdapter,
 } from './component/interfaces/index';
 
-interface IAngularAdapter extends Omit<IAdapter, 'isLoading$'> {
+interface IAdapterOverride {
   isLoading$: Subject<boolean>;
+  loopPending$: Subject<boolean>;
+}
+
+interface IAngularAdapter extends Omit<IAdapter, keyof IAdapterOverride> {
+  isLoading$: Subject<boolean>;
+  loopPending$: Subject<boolean>;
 }
 
 interface IAngularDatasource extends IDatasourceGeneric<IAngularAdapter> { }
@@ -20,7 +26,11 @@ const getAdapterConfig = (): IAdapterConfig => ({
     [AdapterPropName.isLoading$]: {
       source: new Subject<boolean>(),
       emit: (source, value) => source.next(value)
-    }
+    },
+    [AdapterPropName.loopPending$]: {
+      source: new Subject<boolean>(),
+      emit: (source, value) => source.next(value)
+    },
   }
 });
 

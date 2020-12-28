@@ -12,7 +12,7 @@ import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
 import { Scroller } from '../../src/component/scroller';
 import { Workflow } from '../../src/component/workflow';
 import { Routines } from '../../src/component/classes/domRoutines';
-import { Direction, DatasourceGet } from '../../src/component/interfaces';
+import { Direction, DatasourceGet, IAdapter as IAdapterInternal } from '../../src/component/interfaces';
 
 export class Padding {
   direction: Direction;
@@ -44,6 +44,7 @@ export class Misc {
   scroller: Scroller;
   datasource: IDatasource;
   adapter: IAdapter;
+  internalAdapter: IAdapterInternal;
   routines: Routines;
   padding: {
     forward: Padding;
@@ -70,6 +71,7 @@ export class Misc {
     this.scroller = this.workflow.scroller;
     this.datasource = this.testComponent.datasource;
     this.adapter = this.datasource.adapter as IAdapter;
+    this.internalAdapter = this.scroller.adapter;
     this.routines = new Routines(this.scroller.settings);
     const { horizontal, windowViewport } = this.scroller.settings;
     this.horizontal = horizontal;

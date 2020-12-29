@@ -26,8 +26,8 @@ import {
   IDatasourceOptional,
   IBufferInfo,
   State,
+  ProcessSubject,
 } from '../interfaces/index';
-import { Emitter, EVENTS } from '../event-bus';
 
 const ADAPTER_PROPS_STUB = ADAPTER_PROPS(EMPTY_ITEM);
 
@@ -117,6 +117,7 @@ export class Adapter implements IAdapter {
     this.relaxRun = null;
     this.reloadCounter = 0;
 
+    // public context stores Reactive props non-default configuration
     const reactivePropsStore: IReactivePropsStore =
       publicContext && (publicContext as any).reactiveConfiguredProps || {};
 
@@ -237,10 +238,11 @@ export class Adapter implements IAdapter {
         });
       });
 
+    // public context cleanup
     delete (publicContext as any).reactiveConfiguredProps;
   }
 
-  init(buffer: Buffer, { cycle }: State, logger: Logger, events: Emitter) {
+  init(buffer: Buffer, { cycle }: State, logger: Logger, adapterRun$?: Reactive<ProcessSubject>) {
     // buffer
     Object.defineProperty(this.demand, AdapterPropName.itemsCount, {
       get: () => buffer.getVisibleItemsCount()
@@ -269,9 +271,9 @@ export class Adapter implements IAdapter {
     // logger
     this.logger = logger;
 
-    // self-pending; set up only on the very first init
-    if (!events.all.has(EVENTS.WORKFLOW.RUN_ADAPTER)) {
-      events.on(EVENTS.WORKFLOW.RUN_ADAPTER, ({ status, payload }) => {
+    // self-pending subscription; set up only on the very first init
+    if (adapterRun$) {
+      adapterRun$.on(({ status, payload }) => {
         let unSubBusy = () => { };
         if (status === ProcessStatus.start) {
           unSubBusy = this.isLoading$.on(value => {

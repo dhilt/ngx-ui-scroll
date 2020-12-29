@@ -1,6 +1,6 @@
-import eventBus, { Emitter, EVENTS } from './event-bus';
 import { Scroller } from './scroller';
 import { runStateMachine } from './workflow-transducer';
+import { Reactive } from './classes/reactive';
 import { Item } from './classes/item';
 import {
   IDatasource,
@@ -18,23 +18,25 @@ import {
 export class Workflow {
 
   isInitialized: boolean;
-  events: Emitter;
   scroller: Scroller;
   cyclesDone: number;
   interruptionCount: number;
   errors: WorkflowError[];
+  adapterRun$: Reactive<ProcessSubject>;
 
+  private disposeScrollEventHandler: Function;
   readonly propagateChanges: Function;
-  private stateMachineMethods: StateMachineMethods;
+  readonly stateMachineMethods: StateMachineMethods;
 
   constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
-    this.events = eventBus();
+    this.disposeScrollEventHandler = () => null;
     this.propagateChanges = run;
     this.scroller = new Scroller({ element, datasource, version, workflow: this.getUpdater() });
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];
+    this.adapterRun$ = new Reactive();
     this.stateMachineMethods = {
       run: this.runProcess(),
       interrupt: this.interrupt.bind(this),
@@ -50,7 +52,7 @@ export class Workflow {
   }
 
   init() {
-    this.scroller.init(this.events);
+    this.scroller.init(this.adapterRun$);
     this.isInitialized = true;
 
     // run the Workflow
@@ -68,12 +70,8 @@ export class Workflow {
         payload: { event }
       });
     scrollEventReceiver.addEventListener('scroll', onScrollHandler);
-
-    // disposing
-    this.events.on(EVENTS.WORKFLOW.DISPOSE, () => {
-      this.events.all.clear();
+    this.disposeScrollEventHandler = () =>
       scrollEventReceiver.removeEventListener('scroll', onScrollHandler);
-    });
   }
 
   changeItems(items: Item[]) {
@@ -85,7 +83,7 @@ export class Workflow {
       return;
     }
     if (processSubject.process && processSubject.process.startsWith('adapter')) {
-      this.events.emit(EVENTS.WORKFLOW.RUN_ADAPTER, processSubject);
+      this.adapterRun$.set(processSubject);
     }
     this.process(processSubject);
   }
@@ -158,7 +156,7 @@ export class Workflow {
         const scroller = new Scroller({ datasource, scroller: this.scroller });
         this.scroller.dispose();
         this.scroller = scroller;
-        this.scroller.init(this.events);
+        this.scroller.init();
       });
     }
   }
@@ -172,7 +170,8 @@ export class Workflow {
   }
 
   dispose() {
-    this.events.emit(EVENTS.WORKFLOW.DISPOSE);
+    this.disposeScrollEventHandler();
+    this.adapterRun$.dispose();
     this.scroller.dispose(true);
     this.isInitialized = false;
   }

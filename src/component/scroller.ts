@@ -1,4 +1,3 @@
-import { Emitter } from './event-bus';
 import { DatasourceGeneric, makeDatasource } from './classes/datasource';
 import { Settings } from './classes/settings';
 import { Logger } from './classes/logger';
@@ -7,9 +6,11 @@ import { Viewport } from './classes/viewport';
 import { Buffer } from './classes/buffer';
 import { State } from './classes/state';
 import { Adapter } from './classes/adapter';
+import { Reactive } from './classes/reactive';
 import { validate, DATASOURCE } from './inputs/index';
-
-import { ScrollerWorkflow, IDatasource, IDatasourceConstructed, ScrollerParams, IAdapter } from './interfaces/index';
+import {
+  ScrollerWorkflow, IDatasource, IDatasourceConstructed, ScrollerParams, IAdapter, ProcessSubject
+} from './interfaces/index';
 
 export const INVALID_DATASOURCE_PREFIX = 'Invalid datasource:';
 
@@ -72,10 +73,10 @@ export class Scroller {
     this.adapter = new Adapter(publicContext, () => this.workflow, this.logger);
   }
 
-  init(events: Emitter) {
+  init(adapterRun$?: Reactive<ProcessSubject>) {
     this.viewport.reset(this.buffer.startIndex, 0);
     this.logger.stat('initialization');
-    this.adapter.init(this.buffer, this.state, this.logger, events);
+    this.adapter.init(this.buffer, this.state, this.logger, adapterRun$);
   }
 
   dispose(forever?: boolean) {

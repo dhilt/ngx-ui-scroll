@@ -80,7 +80,7 @@ export class Scroller {
   }
 
   dispose(forever?: boolean) {
-    if (this.adapter && forever) {
+    if (forever) { // Adapter is not re-instantiated on reset
       this.adapter.dispose();
     }
     this.buffer.dispose();

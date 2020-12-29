@@ -59,7 +59,7 @@ export class Adapter implements IAdapter {
   private logger: Logger;
   private getWorkflow: WorkflowGetter;
   private reloadCounter: number;
-  private source: { [key: string]: any } = {}; // for Reactive props
+  private source: { [key: string]: Reactive<any> } = {}; // for Reactive props
   private box: { [key: string]: any } = {}; // for Scalars over Reactive props
   private demand: { [key: string]: any } = {}; // for Scalars on demand
   public wanted: { [key: string]: boolean } = {};
@@ -93,17 +93,17 @@ export class Adapter implements IAdapter {
   bufferInfo: IBufferInfo;
 
   private initialized: boolean;
+  private relax$: Reactive<AdapterMethodResult> | null;
   private relaxRun: Promise<AdapterMethodResult> | null;
-  private onRelaxed: (value: AdapterMethodResult) => void;
 
   private getPromisifiedMethod(method: Function) {
     return (...args: any[]): Promise<AdapterMethodResult> =>
       new Promise(resolve => {
-        if (this.initialized) {
-          this.onRelaxed = resolve;
+        if (this.relax$) {
+          this.relax$.once(value => resolve(value));
         }
         method.apply(this, args);
-        if (!this.initialized) {
+        if (!this.relax$) {
           resolve(adapterMethodPreResult);
         }
       });
@@ -113,11 +113,11 @@ export class Adapter implements IAdapter {
     this.getWorkflow = getWorkflow;
     this.logger = logger;
     this.initialized = false;
-    this.onRelaxed = () => null;
+    this.relax$ = null;
     this.relaxRun = null;
     this.reloadCounter = 0;
 
-    // public context stores Reactive props non-default configuration
+    // public context stores Reactive props configuration
     const reactivePropsStore: IReactivePropsStore =
       publicContext && (publicContext as any).reactiveConfiguredProps || {};
 
@@ -181,12 +181,7 @@ export class Adapter implements IAdapter {
           set: (newValue: any) => {
             if (newValue !== this.box[name]) {
               this.box[name] = newValue;
-              const source = this.source[reactive as string];
-              if (source.next) { // old observable, todo dhilt: remove after Reactive refactoring
-                source.next(newValue);
-                return;
-              }
-              source.set(newValue);
+              this.source[reactive as AdapterPropName].set(newValue);
               // need to emit new value through the configured reactive prop if present
               const reactiveProp = reactivePropsStore[reactive as AdapterPropName];
               if (reactiveProp) {
@@ -273,19 +268,23 @@ export class Adapter implements IAdapter {
 
     // self-pending subscription; set up only on the very first init
     if (adapterRun$) {
+      if (!this.relax$) {
+        this.relax$ = new Reactive();
+      }
+      const relax$ = this.relax$;
       adapterRun$.on(({ status, payload }) => {
-        let unSubBusy = () => { };
+        let unSubRelax = () => { };
         if (status === ProcessStatus.start) {
-          unSubBusy = this.isLoading$.on(value => {
+          unSubRelax = this.isLoading$.on(value => {
             if (!value) {
-              unSubBusy();
-              this.onRelaxed({ success: true, immediate: false, details: null });
+              unSubRelax();
+              relax$.set({ success: true, immediate: false, details: null });
             }
           });
         }
         if (status === ProcessStatus.done || status === ProcessStatus.error) {
-          unSubBusy();
-          this.onRelaxed({
+          unSubRelax();
+          relax$.set({
             success: status !== ProcessStatus.error,
             immediate: true,
             details: status === ProcessStatus.error && payload ? payload.error : null
@@ -298,14 +297,10 @@ export class Adapter implements IAdapter {
   }
 
   dispose() {
-    this.onRelaxed = () => null;
-    Object.values(this.source).forEach(reactive => {
-      if (reactive.complete) { // old observable, todo dhilt: remove after Reactive refactoring
-        reactive.complete();
-      } else {
-        reactive.dispose();
-      }
-    });
+    if (this.relax$) {
+      this.relax$.dispose();
+    }
+    Object.values(this.source).forEach(reactive => reactive.dispose());
   }
 
   reset(options?: IDatasourceOptional): any {
@@ -413,8 +408,7 @@ export class Adapter implements IAdapter {
           resolve(true);
           return;
         }
-        const unSub = this.isLoading$.on(() => {
-          unSub();
+        this.isLoading$.once(() => {
           runCallback();
           resolve(false);
         });

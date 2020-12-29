@@ -25,7 +25,7 @@ export class AdapterContext {
     Object.defineProperty(this, AdapterPropName.mock, { get: () => mock, ...conf });
     Object.defineProperty(this, AdapterPropName.version, { get: () => version, ...conf });
 
-    // set up props that will be reassigned during the Adapter instantiation
+    // set up default props, they will be reassigned during the Adapter instantiation
     ADAPTER_PROPS(EMPTY_ITEM)
       .filter(({ permanent }) => !permanent)
       .forEach(({ name, value, type }) => {
@@ -34,7 +34,7 @@ export class AdapterContext {
         if (reactive && type === AdapterPropType.Reactive) {
           const react = reactive[name];
           if (react) {
-            // here we have a configured reactive prop that came from the outside config
+            // here we have a configured reactive prop that came from the outer config
             // this prop must be exposed via Adapter, but at the same time we need to
             // persist the original default value as it will be used by the Adapter internally
             this.reactiveConfiguredProps[name] = {

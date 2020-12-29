@@ -1,6 +1,9 @@
+type On<T> = (value: T) => void;
+type Off = () => void;
+
 interface Subscription<T> {
-  emit: (value: T) => void;
-  off: () => void;
+  emit: On<T>;
+  off: Off;
 }
 
 interface Options {
@@ -42,10 +45,10 @@ export class Reactive<T> {
     return this.value;
   }
 
-  on(callback: (value: T) => void): () => void {
+  on(func: On<T>): Off {
     const id = this.id++;
     const subscription: Subscription<T> = {
-      emit: callback,
+      emit: func,
       off: () => {
         subscription.emit = () => null;
         this.subscriptions.delete(id);
@@ -56,6 +59,14 @@ export class Reactive<T> {
       subscription.emit(this.value);
     }
     return () => subscription.off();
+  }
+
+  once(func: On<T>): Off {
+    const off = this.on(v => {
+      off();
+      func(v);
+    });
+    return off;
   }
 
   dispose() {

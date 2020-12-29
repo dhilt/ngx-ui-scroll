@@ -18,31 +18,33 @@ import {
 export class Workflow {
 
   isInitialized: boolean;
-  scroller: Scroller;
+  adapterRun$: Reactive<ProcessSubject>;
   cyclesDone: number;
   interruptionCount: number;
   errors: WorkflowError[];
-  adapterRun$: Reactive<ProcessSubject>;
 
   private disposeScrollEventHandler: Function;
   readonly propagateChanges: Function;
   readonly stateMachineMethods: StateMachineMethods;
 
+  scroller: Scroller;
+
   constructor(element: HTMLElement, datasource: IDatasource, version: string, run: Function) {
     this.isInitialized = false;
-    this.disposeScrollEventHandler = () => null;
-    this.propagateChanges = run;
-    this.scroller = new Scroller({ element, datasource, version, workflow: this.getUpdater() });
+    this.adapterRun$ = new Reactive();
     this.cyclesDone = 0;
     this.interruptionCount = 0;
     this.errors = [];
-    this.adapterRun$ = new Reactive();
+    this.disposeScrollEventHandler = () => null;
+    this.propagateChanges = run;
     this.stateMachineMethods = {
       run: this.runProcess(),
       interrupt: this.interrupt.bind(this),
       done: this.done.bind(this),
       onError: this.onError.bind(this)
     };
+
+    this.scroller = new Scroller({ element, datasource, version, workflow: this.getUpdater() });
 
     if (this.scroller.settings.initializeDelay) {
       setTimeout(() => this.init(), this.scroller.settings.initializeDelay);

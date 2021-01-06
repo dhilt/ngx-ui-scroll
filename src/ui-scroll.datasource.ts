@@ -1,21 +1,19 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
-import { makeDatasource } from './component/classes/datasource';
-import { EMPTY_ITEM } from './component/classes/adapter/context';
+import { makeDatasource, AdapterPropName, EMPTY_ITEM } from 'vscroll';
 import {
   IDatasourceGeneric,
-  AdapterPropName,
   IReactivePropConfig,
   IAdapterConfig,
-  ItemAdapter,
+  IAdapterItem,
   IAdapter,
-} from './component/interfaces/index';
+} from 'vscroll';
 
 interface IReactiveOverride {
   isLoading$: Subject<boolean>;
   loopPending$: Subject<boolean>;
-  firstVisible$: BehaviorSubject<ItemAdapter>;
-  lastVisible$: BehaviorSubject<ItemAdapter>;
+  firstVisible$: BehaviorSubject<IAdapterItem>;
+  lastVisible$: BehaviorSubject<IAdapterItem>;
   bof$: Subject<boolean>;
   eof$: Subject<boolean>;
 }
@@ -30,7 +28,7 @@ const getBooleanSubjectPropConfig = (): IReactivePropConfig => ({
 });
 
 const getItemBehaviorSubjectPropConfig = (): IReactivePropConfig => ({
-  source: new BehaviorSubject<ItemAdapter>(EMPTY_ITEM),
+  source: new BehaviorSubject<IAdapterItem>(EMPTY_ITEM),
   emit: (source, value) => source.next(value)
 });
 

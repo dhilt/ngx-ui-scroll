@@ -4,9 +4,7 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
-import { Workflow } from './component/workflow';
-import { IDatasource } from './component/interfaces/index';
-import { Item } from './component/classes/item';
+import { Workflow, IDatasource, Item } from 'vscroll';
 
 /* tslint:disable:component-selector */
 @Component({

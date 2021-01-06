@@ -1,6 +1,6 @@
 {
   "name": "ngx-ui-scroll",
-  "version": "1.11.1",
+  "version": "2.0.0-beta",
   "description": "Infinite/virtual scroll for Angular",
   "main": "./bundles/ngx-ui-scroll.umd.js",
   "module": "./fesm5/ngx-ui-scroll.js",
@@ -11,8 +11,8 @@
   "fesm2015": "./fesm2015/ngx-ui-scroll.js",
   "typings": "./ngx-ui-scroll.d.ts",
   "author": {
-    "name": "dhilt",
-    "email": "d.alexanov@gmail.com"
+    "name": "Denis Hilt",
+    "email": "dhilt.public@gmail.com"
   },
   "license": "MIT",
   "repository": {
@@ -29,7 +29,8 @@
   "peerDependencies": {
     "rxjs": ">= 5.5.0",
     "@angular/common": ">= 5.0.0",
-    "@angular/core": ">= 5.0.0"
+    "@angular/core": ">= 5.0.0",
+    "vscroll": ">= 1.0.0"
   },
   "dependencies": {
     "tslib": "^1.9.0"

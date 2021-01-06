@@ -2,7 +2,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolv
 
 import version from './ui-scroll.version';
 import { UiScrollComponent } from './ui-scroll.component';
-import { IDatasource } from './component/interfaces/datasource';
+import { IDatasource } from 'vscroll';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
 export class UiScrollDirective implements OnInit {

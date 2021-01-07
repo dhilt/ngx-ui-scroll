@@ -1,5 +1,6 @@
+import { Settings, DevSettings, DatasourceGet } from 'vscroll/dist/typings/interfaces';
+
 import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
-import { Settings, DevSettings, DatasourceGet } from '../../../src/component/interfaces/index';
 import { generateItem, Item } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 

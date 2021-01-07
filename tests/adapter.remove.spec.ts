@@ -1,7 +1,8 @@
+import { ItemsPredicate } from 'vscroll/dist/typings/interfaces';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { IndexedItem, removeItems } from './miscellaneous/items';
-import { AdapterProcess, ItemsPredicate } from '../src/component/interfaces/index';
 
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-processor',
@@ -205,7 +206,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => async (done: Func
   expect(misc.workflow.cyclesDone).toEqual(1);
   expect(misc.innerLoopCount).toEqual(innerLoopCount);
   expect(misc.workflow.errors.length).toEqual(1);
-  expect(misc.workflow.errors[0].process).toEqual(AdapterProcess.remove);
+  expect(misc.workflow.errors[0].process).toContain('remove');
   done();
 };
 

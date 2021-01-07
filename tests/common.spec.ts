@@ -2,11 +2,10 @@ import { async, ComponentFixture } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
+import { Workflow, Direction, INVALID_DATASOURCE_PREFIX } from 'vscroll';
+import { Settings } from 'vscroll/dist/typings/interfaces';
+
 import { UiScrollComponent } from '../src/ui-scroll.component';
-import { Workflow } from '../src/component/workflow';
-import { SETTINGS, MIN } from '../src/component/inputs/settings';
-import { INVALID_DATASOURCE_PREFIX } from '../src/component/scroller';
-import { Settings, Direction } from '../src/component/interfaces';
 import { IAdapter } from '../src/ui-scroll.datasource';
 
 import { configureTestBed, configureTestBedTwo } from './scaffolding/testBed';
@@ -14,11 +13,6 @@ import { generateDatasourceClass } from './scaffolding/datasources/class';
 import { defaultTemplate } from './scaffolding/templates';
 import { Misc } from './miscellaneous/misc';
 import { makeTest } from './scaffolding/runner';
-
-const defaultSettings = Object.entries(SETTINGS).reduce((acc, [key, prop]) => ({
-  ...acc,
-  [key]: prop.defaultValue
-}), {} as Settings);
 
 describe('Component', () => {
 
@@ -62,10 +56,12 @@ describe('Settings', () => {
   const _settings3 = { infinite: true };
   const _settings4 = { startIndex: 99, bufferSize: 11, infinite: true };
 
-  const checkSettings = (_settings: any) => (misc: Misc) => (done: Function) => {
+  const checkSettings = ({ merge, min }: { merge?: any, min?: string } = {}) => (misc: Misc) => (done: Function) => {
+    const _settings = min ? { [min]: -999 } : {};
+    const settings = misc.generateFakeWorkflow(_settings).scroller.settings;
     expect(misc.scroller.settings).toEqual(jasmine.any(Object));
-    const mergedSettings = { ...defaultSettings, ..._settings };
-    Object.keys(defaultSettings).forEach(key => {
+    const mergedSettings = { ...settings, ...(merge || {}) };
+    Object.keys(settings).filter(key => key !== 'instanceIndex').forEach(key => {
       expect((misc.scroller.settings as any)[key]).toEqual((mergedSettings as any)[key]);
     });
     done();
@@ -74,131 +70,97 @@ describe('Settings', () => {
   makeTest({
     config: { datasourceSettings: _settings1 },
     title: 'should override startIndex',
-    it: checkSettings(_settings1)
+    it: checkSettings({ merge: _settings1 })
   });
 
   makeTest({
     config: { datasourceSettings: _settings2 },
     title: 'should override bufferSize',
-    it: checkSettings(_settings2)
+    it: checkSettings({ merge: _settings2 })
   });
 
   makeTest({
     config: { datasourceSettings: _settings3 },
     title: 'should override infinite',
-    it: checkSettings(_settings3)
+    it: checkSettings({ merge: _settings3 })
   });
 
   makeTest({
     config: { datasourceSettings: _settings4 },
     title: 'should override startIndex, bufferSize, infinite',
-    it: checkSettings(_settings4)
+    it: checkSettings({ merge: _settings4 })
   });
 
   makeTest({
     config: { datasourceName: 'default-bad-settings' },
     title: 'should fallback to the defaults',
-    it: checkSettings({})
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { startIndex: false } },
     title: 'should fallback startIndex to the default',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.startIndex).toEqual(defaultSettings.startIndex);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { bufferSize: { weird: true } } },
     title: 'should fallback bufferSize to the default',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.bufferSize).toEqual(defaultSettings.bufferSize);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { bufferSize: 5.5 } },
     title: 'should fallback bufferSize to the default',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.bufferSize).toEqual(defaultSettings.bufferSize);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { bufferSize: -1 } },
     title: 'should fallback bufferSize to the minimum',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.bufferSize).toEqual(MIN.bufferSize);
-      done();
-    }
+    it: checkSettings({ min: 'bufferSize' })
   });
 
   makeTest({
     config: { datasourceSettings: { padding: 'something' } },
     title: 'should fallback padding to the default',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.padding).toEqual(defaultSettings.padding);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { padding: -0.1 } },
     title: 'should fallback padding to the minimum',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.padding).toEqual(MIN.padding);
-      done();
-    }
+    it: checkSettings({ min: 'padding' })
   });
 
   makeTest({
     config: { datasourceSettings: { itemSize: -5 } },
     title: 'should fallback itemSize to the minimum',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.itemSize).toEqual(MIN.itemSize);
-      done();
-    }
+    it: checkSettings({ min: 'itemSize' })
   });
 
   makeTest({
     config: { datasourceSettings: { itemSize: 1.5 } },
     title: 'should fallback itemSize to default',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.itemSize).toEqual(defaultSettings.itemSize);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { infinite: 'something' } },
     title: 'should fallback infinite to the default',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.infinite).toEqual(defaultSettings.infinite);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { horizontal: null } },
     title: 'should fallback horizontal to the default',
-    it: (misc: Misc) => (done: Function) => {
-      expect(misc.scroller.settings.horizontal).toEqual(defaultSettings.horizontal);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({
     config: { datasourceSettings: { viewportElement: { nodeType: 1 } } },
     title: 'should fallback viewportElement to the default',
-    it: ({ scroller: { settings } }: Misc) => (done: Function) => {
-      expect(settings.viewportElement).toEqual(settings.viewport);
-      expect(settings.viewport).toEqual(defaultSettings.viewportElement);
-      done();
-    }
+    it: checkSettings()
   });
 
   makeTest({

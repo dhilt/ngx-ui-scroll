@@ -1,12 +1,13 @@
 import { filter, take } from 'rxjs/operators';
 
+import {
+  AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions
+} from 'vscroll/dist/typings/interfaces';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { configureTestBedSub } from './scaffolding/testBed';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
-import {
-  AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions
-} from '../src/component/interfaces';
 
 const ITEM_SIZE = 20;
 

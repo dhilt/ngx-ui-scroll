@@ -1,4 +1,4 @@
-import { Scroller } from '../../src/component/scroller';
+import { Workflow } from 'vscroll';
 
 export class Stat {
   size: number;
@@ -9,7 +9,7 @@ export class Stat {
   itemsCountByIndexes: number;
   averageSize: number;
 
-  constructor({ viewport, buffer }: Scroller) {
+  constructor({ viewport, buffer }: Workflow['scroller']) {
     this.size = viewport.getSize();
     this.scrollableSize = viewport.getScrollableSize();
     this.paddingFwd = viewport.paddings.forward.size;

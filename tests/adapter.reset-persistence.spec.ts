@@ -1,12 +1,13 @@
+import { getDefaultAdapterProps } from 'vscroll';
+import { IDatasourceOptional, ItemAdapter } from 'vscroll/dist/typings/interfaces';
+
 import { IAdapter, Datasource, IDatasource } from '../src/ui-scroll.datasource';
-import { ADAPTER_PROPS } from '../src/component/classes/adapter/props';
-import { IDatasourceOptional, ItemAdapter } from '../src/component/interfaces';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
 import { Misc } from './miscellaneous/misc';
 
-const ADAPTER_PROPS_STUB = ADAPTER_PROPS(null);
+const ADAPTER_PROPS_STUB = getDefaultAdapterProps();
 
 const defaultSettings = { startIndex: 1, adapter: true };
 

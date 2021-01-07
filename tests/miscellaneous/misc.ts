@@ -3,16 +3,15 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
+import { Workflow, Direction } from 'vscroll';
+import { DatasourceGet, IAdapter as IAdapterInternal } from 'vscroll/dist/typings/interfaces';
+
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
 import { generateItem, IndexedItem } from './items';
 
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
-import { Scroller } from '../../src/component/scroller';
-import { Workflow } from '../../src/component/workflow';
-import { Routines } from '../../src/component/classes/domRoutines';
-import { Direction, DatasourceGet, IAdapter as IAdapterInternal } from '../../src/component/interfaces';
 
 export class Padding {
   direction: Direction;
@@ -41,11 +40,11 @@ export class Misc {
   viewportElement: DebugElement;
   uiScrollComponent: UiScrollComponent;
   workflow: Workflow;
-  scroller: Scroller;
+  scroller: Workflow['scroller'];
   datasource: IDatasource;
   adapter: IAdapter;
   internalAdapter: IAdapterInternal;
-  routines: Routines;
+  routines: Workflow['scroller']['routines'];
   padding: {
     forward: Padding;
     backward: Padding;
@@ -72,7 +71,7 @@ export class Misc {
     this.datasource = this.testComponent.datasource;
     this.adapter = this.datasource.adapter as IAdapter;
     this.internalAdapter = this.scroller.adapter;
-    this.routines = new Routines(this.scroller.settings);
+    this.routines = this.scroller.routines;
     const { horizontal, windowViewport } = this.scroller.settings;
     this.horizontal = horizontal;
     this.window = windowViewport;
@@ -82,8 +81,12 @@ export class Misc {
     };
   }
 
+  generateFakeWorkflow(settings?: any): Workflow {
+    return new Workflow(this.scroller.viewport.element, { get: (a: any, b: any) => null, settings }, '', () => null);
+  }
+
   spyOnGet(): jasmine.Spy<DatasourceGet> {
-    return spyOn(this.scroller.datasource, 'get').and.callThrough();
+    return spyOn(this.datasource, 'get').and.callThrough();
   }
 
   getViewportSize(settings?: TestBedConfig): number {

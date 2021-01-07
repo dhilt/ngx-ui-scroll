@@ -1,7 +1,8 @@
+import { AdapterClipOptions, ItemAdapter } from 'vscroll/dist/typings/interfaces';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { testItemsCounter, ItemsCounter } from './miscellaneous/itemsCounter';
-import { AdapterClipOptions, ItemAdapter } from '../src/component/interfaces/index';
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },

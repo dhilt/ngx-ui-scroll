@@ -1,4 +1,5 @@
-import { Direction } from '../../src/component/interfaces';
+import { Direction } from 'vscroll';
+
 import { Misc } from './misc';
 import { TestBedConfig } from '../scaffolding/runner';
 

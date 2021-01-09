@@ -3,7 +3,7 @@
 
 # NgxUiScroll
 
-Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/).
+Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Since v2.0.0, the core of the ngx-ui-scroll library lives and develops as a separate zero-dependency npm package [vscroll](https://github.com/dhilt/vscroll). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/).
 
 <p dir="rtl">
 <sub>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b></sub><sub> 👉 <br>make open-source world better</sub></p>
@@ -163,7 +163,7 @@ Then `this.datasource.adapter.version`, `this.datasource.adapter.reload()` and o
 
 |Name|Type|Description|
 |:--|:----|:----------|
-|version|string|Current version of ngx-ui-scroll library|
+|[packageInfo](https://dhilt.github.io/ngx-ui-scroll/#adapter#package-info)|IPackages {<br>&nbsp;&nbsp;core: IPackage;<br>&nbsp;&nbsp;consumer: IPackage;<br>}<br><br>IPackage {<br>&nbsp;&nbsp;name: string;<br>&nbsp;&nbsp;version: string<br>}|Information about versions of the library ant its core. For example: "ngx-ui-scroll" v2.0.0 (consumer), "vscroll" v1.0.0 (core).|
 |[isLoading](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|boolean|Indicates whether the uiScroll is working ot not. |
 |[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|Subject&lt;boolean&gt;|An Observable version of "isLoading" property. |
 |[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|

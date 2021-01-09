@@ -158,6 +158,11 @@ const adapterScope = {
     name: 'Is loading, advanced',
     scope: globalScope.adapter.id
   },
+  packageInfo: {
+    id: 'package-info',
+    name: 'Package info',
+    scope: globalScope.adapter.id
+  },
   itemsCount: {
     id: 'items-count',
     name: 'Buffer items counter',

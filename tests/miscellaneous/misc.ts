@@ -82,7 +82,12 @@ export class Misc {
   }
 
   generateFakeWorkflow(settings?: any): Workflow {
-    return new Workflow(this.scroller.viewport.element, { get: (a: any, b: any) => null, settings }, '', () => null);
+    return new Workflow({
+      consumer: { name: 'fake', version: 'x.x.x' },
+      element: this.scroller.viewport.element,
+      datasource: { get: (a: any, b: any) => null, settings },
+      run: () => null
+    });
   }
 
   spyOnGet(): jasmine.Spy<DatasourceGet> {

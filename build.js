@@ -16,14 +16,16 @@ const OUT_DIR = `${NPM_DIR}/package`;
 const OUT_DIR_ESM5 = `${NPM_DIR}/package/esm5`;
 const OUT_DIR_ESM5_ABS = `${__dirname}/${OUT_DIR_ESM5}`;
 
-/* Package version */
+// Package version 
 shell.echo(`Setup package version`);
-let version = config.version;
-const versionContent = `export default '${version}';`;
+const versionContent = `export default {
+  name: '${config.name}',
+  version: '${config.version}'
+};`;
 const versionFilePath = './src/ui-scroll.version.ts';
 shell.touch(versionFilePath);
 shell.echo(versionContent).to(versionFilePath);
-shell.echo(chalk.green(`${PACKAGE} v${version}`));
+shell.echo(chalk.green(`${config.name} v${config.version}`));
 
 shell.echo(`Start building...`);
 

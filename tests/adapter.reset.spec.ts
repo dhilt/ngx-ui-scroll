@@ -1,5 +1,5 @@
 import { Direction } from 'vscroll';
-import { AdapterProcess, IDatasourceOptional } from 'vscroll/dist/typings/interfaces';
+import { IDatasourceOptional } from 'vscroll/dist/typings/interfaces';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';

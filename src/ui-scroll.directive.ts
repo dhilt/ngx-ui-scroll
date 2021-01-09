@@ -1,6 +1,5 @@
 import { Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolver, OnInit } from '@angular/core';
 
-import version from './ui-scroll.version';
 import { UiScrollComponent } from './ui-scroll.component';
 import { IDatasource } from 'vscroll';
 
@@ -26,6 +25,5 @@ export class UiScrollDirective implements OnInit {
     );
     componentRef.instance.datasource = this.datasource;
     componentRef.instance.template = this.templateRef;
-    componentRef.instance.version = version;
   }
 }

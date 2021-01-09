@@ -6,6 +6,8 @@ import {
 
 import { Workflow, IDatasource, Item } from 'vscroll';
 
+import consumer from './ui-scroll.version';
+
 /* tslint:disable:component-selector */
 @Component({
   selector: '[ui-scroll]',
@@ -31,7 +33,6 @@ import { Workflow, IDatasource, Item } from 'vscroll';
 export class UiScrollComponent implements OnInit, OnDestroy {
 
   // these should come from the directive
-  public version: string;
   public template: TemplateRef<any>;
   public datasource: IDatasource;
 
@@ -46,18 +47,18 @@ export class UiScrollComponent implements OnInit, OnDestroy {
     public elementRef: ElementRef) { }
 
   ngOnInit() {
-    this.workflow = new Workflow(
-      this.elementRef.nativeElement,
-      this.datasource,
-      this.version,
-      (items: Item[]) => {
+    this.workflow = new Workflow({
+      consumer,
+      element: this.elementRef.nativeElement,
+      datasource: this.datasource,
+      run: (items: Item[]) => {
         if (!items.length && !this.items.length) {
           return;
         }
         this.items = items;
         this.changeDetector.detectChanges();
       }
-    );
+    });
   }
 
   ngOnDestroy() {

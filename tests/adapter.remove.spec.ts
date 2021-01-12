@@ -172,7 +172,7 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
   expect(misc.scroller.state.clip.callCount).toEqual(1);
   if (!isNaN(firstIndex) && !isNaN(lastIndex)) {
     // check all items contents
-    items.forEach(({ $index, data: { id } }) => {
+    (items as IndexedItem[]).forEach(({ $index, data: { id } }) => {
       const diff = indexList.reduce((acc: number, index: number) =>
         acc + (increase ? (id < index ? -1 : 0) : (id > index ? 1 : 0)), 0
       );

@@ -106,7 +106,7 @@ interface ICheckReset {
   instanceIndex: number;
   firstVisible: number;
   lastVisible: number;
-  firstVisibleText: number;
+  firstVisibleText: string;
   interruptionCount: number;
 }
 

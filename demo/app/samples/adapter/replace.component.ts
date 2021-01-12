@@ -4,9 +4,9 @@ import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
-import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource, IAdapter } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
-interface Item {
+interface MyItem {
   text: string;
 }
 
@@ -27,7 +27,7 @@ export class DemoReplaceComponent {
   adapterScope = demos.adapter;
 
   MAX = 100;
-  data: Item[];
+  data: MyItem[];
 
   constructor() {
     this.data = [];
@@ -36,9 +36,9 @@ export class DemoReplaceComponent {
     }
   }
 
-  datasource = new Datasource({
+  datasource = new Datasource<IAdapter<MyItem>>({
     get: (start: number, count: number, success: Function) => {
-      let data: Item[] = [];
+      let data: MyItem[] = [];
       const end = Math.min(start + count - 1, this.data.length - 1);
       if (start <= end) {
         data = this.data.slice(start, end + 1);
@@ -130,7 +130,7 @@ async doReplace() {
   async doReplace() {
     await this.datasource.adapter.relax();
     const toRemove = [3, 4, 5];
-    const newItems: Item[] = [{ text: 'X' }, { text: 'Y' }];
+    const newItems: MyItem[] = [{ text: 'X' }, { text: 'Y' }];
     this.data = [
       ...this.data.slice(0, toRemove[0]),
       ...newItems,

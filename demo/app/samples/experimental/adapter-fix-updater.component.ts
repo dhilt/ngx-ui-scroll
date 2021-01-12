@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 
-import { Datasource } from '../../../../public_api';
+import { Datasource, IAdapter } from '../../../../public_api';
 
 @Component({
   selector: 'app-adapter-fix-updater',
@@ -18,9 +18,9 @@ export class DemoAdapterFixUpdaterComponent {
 
   adapterScope = demos.adapter;
 
-  datasource = new Datasource({
+  datasource = new Datasource<IAdapter<MyItem>>({
     get: (index: number, count: number, success: Function) => {
-      const data = [];
+      const data: MyItem[] = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });
       }
@@ -49,9 +49,9 @@ export class DemoAdapterFixUpdaterComponent {
     name: DemoSourceType.Component,
     text: `inputValue = '5'
 
-datasource = new Datasource({
+datasource = new Datasource<IAdapter<MyItem>>({
   get: (index, count, success) => {
-    const data = [];
+    const data: MyItem[] = [];
     for (let i = index; i < index + count; i++) {
       data.push({ id: i, text: 'item #' + i });
     }

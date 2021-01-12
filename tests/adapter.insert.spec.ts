@@ -93,7 +93,7 @@ describe('Adapter Insert Spec', () => {
     bufferSize: buffer.size,
     viewportSize: viewport.getScrollableSize(),
     bufferedIndexes: buffer.items.map(({ $index }) => $index),
-    bufferedIds: buffer.items.map(({ data: { id } }) => id)
+    bufferedIds: buffer.items.map(({ data }) => (data as any).id)
   });
 
   const doCheck = (

@@ -1,6 +1,7 @@
 import { makeTest } from './scaffolding/runner';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
+import { Item } from './miscellaneous/items';
 import { configureTestBedSub } from './scaffolding/testBed';
 
 describe('Bug Spec', () => {
@@ -161,19 +162,19 @@ describe('Bug Spec', () => {
         });
         // no need to insert new item to the original DS in this test
         await misc.adapter.insert({
-          items: [{ id: `${MAX}*`, text: `item #${MAX} *` }],
+          items: [{ id: MAX + 1, text: `item #${MAX} *` }],
           after: ({ $index }) => $index === startIndex
         });
 
         expect(misc.adapter.firstVisible.$index).toEqual(startIndex);
         misc.scroller.buffer.items.forEach((item) => {
-          let id = item.$index.toString();
+          let text = item.$index.toString();
           if (item.$index === MIN) {
-            id = `${MAX}*`;
+            text = `${MAX} *`;
           } else if (item.$index > MIN) {
-            id = (item.$index + (MAX - MIN)).toString();
+            text = (item.$index + (MAX - MIN)).toString();
           }
-          expect(item.data.id.toString()).toEqual(id);
+          expect((item.data as Item).text).toEqual('item #' + text);
         });
 
         done();

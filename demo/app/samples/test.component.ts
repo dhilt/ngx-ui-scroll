@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource, IAdapter } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 50;
 let MIN = -199;
@@ -39,7 +39,7 @@ export class TestComponent {
   datasourceDelay = 0;
   data: MyItem[];
 
-  datasource = new Datasource({
+  datasource = new Datasource<IAdapter<MyItem>>({
     get: (index: number, count: number) =>
       this.fetchData(index, count)
     ,
@@ -187,9 +187,9 @@ export class TestComponent {
 
   doToggleItem(item: MyItem) {
     this.datasource.adapter.fix({
-      updater: (_item) => {
-        if (item.id === _item.data.id) {
-          _item.data.isSelected = !_item.data.isSelected;
+      updater: ({ data }) => {
+        if (item.id === data.id) {
+          data.isSelected = !data.isSelected;
         }
       }
     });

@@ -29,3 +29,8 @@ export interface DemoContext {
   count: number;
   log: string;
 }
+
+export interface MyItem {
+  id: number;
+  text: string;
+}

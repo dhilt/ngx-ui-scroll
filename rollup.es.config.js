@@ -1,6 +1,8 @@
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import license from 'rollup-plugin-license';
 
+import { globals } from './rollup.config';
+
 const path = require('path');
 
 export default {
@@ -20,5 +22,5 @@ export default {
       }
     })
   ],
-  onwarn: () => null
+  external: ['tslib', 'vscroll', ...Object.keys(globals)]
 };

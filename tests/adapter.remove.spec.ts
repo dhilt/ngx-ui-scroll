@@ -1,4 +1,4 @@
-import { ItemsPredicate } from 'vscroll/dist/typings/interfaces';
+import { ItemsPredicate } from './miscellaneous/vscroll';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';

@@ -3,8 +3,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
-import { Workflow, Direction } from 'vscroll';
-import { DatasourceGet, IAdapter as IAdapterInternal } from 'vscroll/dist/typings/interfaces';
+import { Workflow, Direction, DatasourceGet, IAdapter as IAdapterInternal } from './vscroll';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';

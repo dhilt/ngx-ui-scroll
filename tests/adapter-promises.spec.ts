@@ -2,7 +2,7 @@ import { filter, take } from 'rxjs/operators';
 
 import {
   AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions
-} from 'vscroll/dist/typings/interfaces';
+} from './miscellaneous/vscroll';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { configureTestBedSub } from './scaffolding/testBed';
@@ -364,11 +364,12 @@ describe('Adapter Promises Spec', () => {
 
   describe('Call before init', () =>
     ['relax', 'reload', 'reset', 'check'].forEach(method =>
-      it(`should immediately return with no success ("${method}")`, async (done) => {
+      it(`should resolve immediately ("${method}")`, async (done) => {
         const misc = new Misc(configureTestBedSub());
         const result = await (misc.adapter as any)[method]();
-        expect(result.success).toBe(false);
         expect(result.immediate).toBe(true);
+        expect(result.success).toBe(true);
+        // expect(result.details).toBe('Adapter is not initialized');
         done();
       })
     )

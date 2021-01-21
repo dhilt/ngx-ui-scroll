@@ -54,6 +54,15 @@ const onFetchReloadConfigList = configList.map((config, i) => ({
   }
 }));
 
+const beforeInitConfigList: TestBedConfig[] = configList.map((config, i) => ({
+  ...config,
+  custom: {
+    ...config.custom,
+    reloadCount: 0,
+    interruptionCount: 0
+  }
+}));
+
 const doubleReloadConfigList: TestBedConfig[] = configList.map((config, i) => ({
   ...config,
   custom: {
@@ -210,7 +219,7 @@ const shouldReloadOnFetchAsync = (config: TestBedConfig) => (misc: Misc) => (don
   });
 };
 
-const shouldReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldNotReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
   doReload(config, misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -340,11 +349,11 @@ describe('Adapter Reload Spec', () => {
   );
 
   describe('reload on init', () =>
-    configList.forEach(config =>
+    beforeInitConfigList.forEach(config =>
       makeTest({
         config,
-        title: 'should reload before workflow start',
-        it: shouldReloadBeforeWorkflowStart(config)
+        title: 'should not reload before workflow start',
+        it: shouldNotReloadBeforeWorkflowStart(config)
       })
     )
   );

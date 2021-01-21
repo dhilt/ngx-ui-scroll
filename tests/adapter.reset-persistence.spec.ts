@@ -1,5 +1,4 @@
-import { getDefaultAdapterProps } from 'vscroll';
-import { IDatasourceOptional, ItemAdapter } from 'vscroll/dist/typings/interfaces';
+import { getDefaultAdapterProps, IDatasourceOptional, ItemAdapter } from './miscellaneous/vscroll';
 
 import { IAdapter, Datasource, IDatasource } from '../src/ui-scroll.datasource';
 

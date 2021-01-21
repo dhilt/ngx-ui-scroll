@@ -1,17 +1,15 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import {
-  // entities
   makeDatasource,
   AdapterPropName,
   EMPTY_ITEM,
-  // interfaces
   IDatasourceGeneric,
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,
   IAdapter,
-} from 'vscroll'; // '../../vscroll/src/index';
+} from './vscroll';
 
 interface IReactiveOverride {
   isLoading$: Subject<boolean>;

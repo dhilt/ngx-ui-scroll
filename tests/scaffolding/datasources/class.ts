@@ -1,4 +1,4 @@
-import { Settings, DevSettings, DatasourceGet } from 'vscroll/dist/typings/interfaces';
+import { Settings, DevSettings, DatasourceGet } from '../../miscellaneous/vscroll';
 
 import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
 import { generateItem, Item } from '../../miscellaneous/items';

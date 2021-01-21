@@ -4,7 +4,7 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
-import { Workflow, IDatasource, Item } from 'vscroll';
+import { Workflow, IDatasource, Item } from './vscroll';
 
 import consumer from './ui-scroll.version';
 

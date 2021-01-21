@@ -1,4 +1,4 @@
-import { Workflow } from 'vscroll';
+import { Workflow } from './vscroll';
 
 export class Stat {
   size: number;

@@ -1,6 +1,6 @@
 import { NgZone } from '@angular/core';
 
-import { Settings, DevSettings } from 'vscroll/dist/typings/interfaces';
+import { Settings, DevSettings } from '../miscellaneous/vscroll';
 
 import { Misc } from '../miscellaneous/misc';
 import { configureTestBed } from './testBed';

@@ -2,8 +2,7 @@ import { waitForAsync, ComponentFixture } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
-import { Workflow, Direction, INVALID_DATASOURCE_PREFIX } from 'vscroll';
-import { Settings } from 'vscroll/dist/typings/interfaces';
+import { Workflow, Direction, INVALID_DATASOURCE_PREFIX, Settings } from './miscellaneous/vscroll';
 
 import { UiScrollComponent } from '../src/ui-scroll.component';
 import { IAdapter } from '../src/ui-scroll.datasource';

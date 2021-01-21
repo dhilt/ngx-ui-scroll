@@ -1,4 +1,4 @@
-import { Direction } from 'vscroll';
+import { Direction } from './miscellaneous/vscroll';
 
 import { makeTest, OperationConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';

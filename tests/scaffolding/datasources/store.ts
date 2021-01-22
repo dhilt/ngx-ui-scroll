@@ -1,4 +1,6 @@
 
+import { of } from 'rxjs';
+
 import { IDatasource } from '../../../src/ui-scroll.datasource';
 import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet } from './get';
 
@@ -121,6 +123,10 @@ export const datasourceStore: IDatasourceStore = {
 
   'empty-callback': {
     get: (index: number, count: number, success: Function) => success([])
+  },
+
+  'empty-of': {
+    get: (index: number, count: number) => of([])
   },
 
   'infinite-callback-no-delay-star': {

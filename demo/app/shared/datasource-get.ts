@@ -15,7 +15,7 @@ export const doLog = (demoContext: DemoContext, index: number, count: number, re
   demoContext.log =
     `${++demoContext.count}) got ${resolved} items [${index}..${index + count - 1}]\n`
     + demoContext.log;
-}
+};
 
 export const datasourceGetInfinite =
   (demoContext: DemoContext, index: number, count: number) => {

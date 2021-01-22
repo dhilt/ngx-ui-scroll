@@ -4,8 +4,9 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
-import { Workflow, IDatasource, Item } from './vscroll';
+import { Workflow, Item } from './vscroll';
 
+import { IDatasource } from './ui-scroll.datasource';
 import consumer from './ui-scroll.version';
 
 /* tslint:disable:component-selector */
@@ -50,7 +51,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
     this.workflow = new Workflow({
       consumer,
       element: this.elementRef.nativeElement,
-      datasource: this.datasource,
+      datasource: this.datasource as any,
       run: (items: Item[]) => {
         if (!items.length && !this.items.length) {
           return;

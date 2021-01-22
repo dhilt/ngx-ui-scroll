@@ -1,11 +1,11 @@
 import { Directive, Input, TemplateRef, ViewContainerRef, ComponentFactoryResolver, OnInit } from '@angular/core';
 
 import { UiScrollComponent } from './ui-scroll.component';
-import { IDatasource } from './vscroll';
+import { IDatasource } from './ui-scroll.datasource';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
-export class UiScrollDirective implements OnInit {
-  private datasource: IDatasource;
+export class UiScrollDirective<ItemData = unknown> implements OnInit {
+  private datasource: IDatasource<ItemData>;
 
   constructor(
     private templateRef: TemplateRef<any>,
@@ -14,7 +14,7 @@ export class UiScrollDirective implements OnInit {
   ) {
   }
 
-  @Input() set uiScrollOf(datasource: IDatasource) {
+  @Input() set uiScrollOf(datasource: IDatasource<ItemData>) {
     this.datasource = datasource;
   }
 
@@ -23,7 +23,7 @@ export class UiScrollDirective implements OnInit {
     const componentRef = this.viewContainer.createComponent(
       compFactory, void 0, this.viewContainer.injector
     );
-    componentRef.instance.datasource = this.datasource;
+    componentRef.instance.datasource = this.datasource as IDatasource;
     componentRef.instance.template = this.templateRef;
   }
 }

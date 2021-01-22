@@ -26,8 +26,8 @@ export interface DemoContext {
   noInfo?: boolean;
 
   // dynamic data
-  count: number;
-  log: string;
+  count?: number;
+  log?: string;
 }
 
 export interface MyItem {

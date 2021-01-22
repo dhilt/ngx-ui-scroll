@@ -6,7 +6,7 @@
   <div actions style="display: flex">
     <button (click)="doReload()">Reload</button>
     &nbsp; by index &nbsp;
-    <input [ngModel]="reloadIndex" (change)="onInputChanged($event.target)" size="2">
+    <input [ngModel]="reloadIndex" (change)="onInputChanged($any($event.target))" size="2">
   </div>
 
   <div description>

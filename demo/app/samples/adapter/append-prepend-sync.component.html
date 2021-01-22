@@ -6,7 +6,7 @@
   <div actions style="display: flex">
     <button (click)="doAppend()">Append</button> /
     <button (click)="doPrepend()">Prepend</button>
-    <input [ngModel]="inputValue" (change)="onInputChanged($event.target)" size="3">
+    <input [ngModel]="inputValue" (change)="onInputChanged($any($event.target))" size="3">
   </div>
 
   <div description>

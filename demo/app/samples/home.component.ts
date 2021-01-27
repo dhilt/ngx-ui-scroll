@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
-import { DemoSources, DemoSourceType } from '../shared/interfaces';
+import { DemoSources, DemoSourceType, MyItem } from '../shared/interfaces';
 import { globalScope as scopes, demoList as demos } from '../routes';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource, IAdapter } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +16,7 @@ export class HomeComponent {
   scopes: typeof scopes;
   demos: typeof demos;
 
-  datasource = new Datasource({
+  datasource = new Datasource<IAdapter<MyItem>>({
     get: (index: number, count: number, success: Function) => {
       const data: any = [];
       for (let i = index; i <= index + count - 1; i++) {

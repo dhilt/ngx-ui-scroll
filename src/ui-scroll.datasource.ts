@@ -12,6 +12,7 @@ import {
 } from './vscroll';
 
 interface IReactiveOverride {
+  init$: Subject<boolean>;
   isLoading$: Subject<boolean>;
   loopPending$: Subject<boolean>;
   firstVisible$: BehaviorSubject<IAdapterItem>;
@@ -37,6 +38,7 @@ const getItemBehaviorSubjectPropConfig = (): IReactivePropConfig => ({
 const getAdapterConfig = (): IAdapterConfig => ({
   mock: false,
   reactive: {
+    [AdapterPropName.init$]: getBooleanSubjectPropConfig(),
     [AdapterPropName.isLoading$]: getBooleanSubjectPropConfig(),
     [AdapterPropName.loopPending$]: getBooleanSubjectPropConfig(),
     [AdapterPropName.firstVisible$]: getItemBehaviorSubjectPropConfig(),

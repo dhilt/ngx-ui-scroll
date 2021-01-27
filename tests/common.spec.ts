@@ -270,7 +270,7 @@ describe('Datasource', () => {
 
 });
 
-describe('Workflow', () => {
+describe('Workflow & Adapter', () => {
 
   let misc: Misc;
   const delay = 1;
@@ -294,10 +294,12 @@ describe('Workflow', () => {
     runBeforeEach(delay);
 
     it('should pass', (done: Function) => {
-      const { workflow } = misc;
+      const { workflow, adapter } = misc;
       expect(workflow.isInitialized).toBe(false);
+      expect(adapter.init).toBe(false);
       setTimeout(() => {
         expect(workflow.isInitialized).toBe(true);
+        expect(adapter.init).toBe(true);
         done();
       }, delay);
     });
@@ -310,6 +312,7 @@ describe('Workflow', () => {
       setTimeout(() => {
         misc.fixture.destroy();
         expect(misc.workflow.isInitialized).toBe(false);
+        expect(misc.adapter.init).toBe(false);
         done();
       }, delay);
     });
@@ -321,6 +324,7 @@ describe('Workflow', () => {
     it('should dispose correctly', (done: Function) => {
       misc.fixture.destroy();
       expect(misc.workflow.isInitialized).toBe(false);
+      expect(misc.adapter.init).toBe(false);
       done();
     });
   });
@@ -330,8 +334,10 @@ describe('Workflow', () => {
 
     it('should pass', (done: Function) => {
       expect(misc.workflow.isInitialized).toBe(true);
+      expect(misc.adapter.init).toBe(true);
       misc.fixture.destroy();
       expect(misc.workflow.isInitialized).toBe(false);
+      expect(misc.adapter.init).toBe(false);
       done();
     });
   });

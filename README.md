@@ -177,6 +177,8 @@ Below is the list of read-only properties of the Adapter API with descriptions a
 |Name|Type|Description|
 |:--|:----|:----------|
 |[packageInfo](https://dhilt.github.io/ngx-ui-scroll/#adapter#package-info)|IPackages {<br>&nbsp;&nbsp;core: IPackage;<br>&nbsp;&nbsp;consumer: IPackage;<br>}<br><br>IPackage {<br>&nbsp;&nbsp;name: string;<br>&nbsp;&nbsp;version: string<br>}|Information about versions of the library ant its core. For example: "ngx-ui-scroll" v2.0.0 (consumer), "vscroll" v1.0.0 (core).|
+|[init](https://dhilt.github.io/ngx-ui-scroll/#adapter#init)|boolean|Indicates whether the Scroller is initialized ot not. |
+|[init$](https://dhilt.github.io/ngx-ui-scroll/#adapter#init)|Subject&lt;boolean&gt;|An Observable version of "init" property. |
 |[isLoading](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|boolean|Indicates whether the Scroller is working ot not. |
 |[isLoading$](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|Subject&lt;boolean&gt;|An Observable version of "isLoading" property. |
 |[itemsCount](https://dhilt.github.io/ngx-ui-scroll/#adapter#items-count)|number|A number of items that are rendered in the viewport at a moment.|

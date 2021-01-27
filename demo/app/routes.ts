@@ -148,6 +148,11 @@ const adapterScope = {
     name: 'Reset',
     scope: globalScope.adapter.id
   },
+  init: {
+    id: 'init',
+    name: 'Initialization',
+    scope: globalScope.adapter.id
+  },
   isLoading: {
     id: 'is-loading',
     name: 'Is loading?',

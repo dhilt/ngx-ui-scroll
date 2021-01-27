@@ -1,0 +1,31 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    ngx-ui-scroll version is {{version}}
+  </div>
+  <div description>
+    <p>
+      <em>Adapter.init$</em> is a Subject-boolean property that fires once
+      after the <em>Adapter</em> is initialized and
+      the <em>uiScroll Workflow</em> is ready to run.
+      There is also <em>Adapter.init</em> read-only boolean property.
+      An important point is that there is a time gap between
+      the Datasource/Adapter instantiation and the Scroller initialization.
+      The initialization of the Scroller happens during the <em>uiScroll Workflow</em>
+      running, which waits for the component to render the uiScroll-related
+      part of its template.
+    </p>
+    <p>
+      This demo implements <em>OnPush</em> strategy and displays
+      <em>ngx-ui-scroll</em> version taken from the <em>Adapter</em>.
+      The <em>Adapter.init$</em> subscription is used to set <em>version</em> property
+      exactly when the <em>Adapter</em> initializes and receives all data.
+      The  <em>changeDetector</em> call is required to update the view
+      because initializing is an asynchronous process.
+      If we remove <em>changeDetector</em> call, we see 3 dots, the initial value.
+    </p>
+  </div>
+</app-demo>

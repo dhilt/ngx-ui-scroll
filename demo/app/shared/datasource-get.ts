@@ -10,10 +10,12 @@ const delayedCall = (result: any, callback: Function, delay?: number) => {
   }
 };
 
-export const doLog = (demoContext: DemoContext, index: number, count: number, resolved: number) =>
+export const doLog = (demoContext: DemoContext, index: number, count: number, resolved: number) => {
+  demoContext.count = demoContext.count || 0;
   demoContext.log =
     `${++demoContext.count}) got ${resolved} items [${index}..${index + count - 1}]\n`
     + demoContext.log;
+};
 
 export const datasourceGetInfinite =
   (demoContext: DemoContext, index: number, count: number) => {

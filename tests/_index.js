@@ -36,7 +36,6 @@ const testContext = require.context(
   //(adapter\.reset\-persistence)\.spec\.ts/
   //(adapter\.reset)\.spec\.ts/
   //(bug)\.spec\.ts/
-  //(cache)\.spec\.ts/
   //(common)\.spec\.ts/
   //(datasource\-get)\.spec\.ts/
   //(dynamic\-height\-reload)\.spec\.ts/
@@ -48,7 +47,6 @@ const testContext = require.context(
   //(scroll\-basic)\.spec\.ts/
   //(scroll\-delay)\.spec\.ts/
   //(scroll\-fast)\.spec\.ts/
-  //(validation)\.spec\.ts/
   //(viewport)\.spec\.ts/
 );
 

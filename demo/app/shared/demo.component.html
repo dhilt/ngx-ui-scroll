@@ -31,11 +31,11 @@
       <ng-template #allView>
         <div class="elements {{context.addClass || ''}}">
           Viewport scrollable size:
-          <span>{{viewport(context.viewportId)}}</span>
+          <span>{{viewport(context.viewportId!)}}</span>
         </div>
         <div class="elements {{context.addClass || ''}}">
           DOM elements count:
-          <span>{{elements(context.viewportId)}}</span>
+          <span>{{elements(context.viewportId!)}}</span>
         </div>
         <div class="datasource {{context.addClass || ''}}">
           Datasource.get log

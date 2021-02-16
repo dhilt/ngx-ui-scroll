@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 
-import { Datasource } from '../../../../public_api';
+import { Datasource, IAdapter } from '../../../../public_api';
 
 @Component({
   selector: 'app-adapter-fix-scroll-to-item',
@@ -16,9 +16,9 @@ export class DemoAdapterFixScrollToItemComponent {
     noInfo: true
   };
 
-  datasource = new Datasource({
+  datasource = new Datasource<IAdapter<MyItem>>({
     get: (index, count, success) => {
-      const data = [];
+      const data: MyItem[] = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });
       }
@@ -50,9 +50,9 @@ export class DemoAdapterFixScrollToItemComponent {
     text: `index = '5'
 scrollToBottom = false;
 
-datasource = new Datasource({
+datasource = new Datasource<IAdapter<MyItem>>({
   get: (index, count, success) => {
-    const data = [];
+    const data: MyItem[] = [];
     for (let i = index; i < index + count; i++) {
       data.push({ id: i, text: 'item #' + i });
     }

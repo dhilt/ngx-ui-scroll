@@ -1,14 +1,12 @@
-import { Subscription } from 'rxjs';
+import { getDefaultAdapterProps, IDatasourceOptional, ItemAdapter } from './miscellaneous/vscroll';
 
-import { Datasource } from '../src/component/classes/datasource';
-import { ADAPTER_PROPS } from '../src/component/classes/adapter/props';
-import { IDatasourceOptional, IAdapter, IDatasource } from '../src/component/interfaces';
+import { IAdapter, Datasource, IDatasource } from '../src/ui-scroll.datasource';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
 import { Misc } from './miscellaneous/misc';
 
-const ADAPTER_PROPS_STUB = ADAPTER_PROPS(null);
+const ADAPTER_PROPS_STUB = getDefaultAdapterProps();
 
 const defaultSettings = { startIndex: 1, adapter: true };
 
@@ -59,7 +57,7 @@ const accessFirstLastVisibleItems = (misc: Misc) => {
 const doReset = (config: TestBedConfig, misc: Misc) => {
   const { get, settings, devSettings, isNew } = config.custom;
   if (!settings && !get && !devSettings) {
-    misc.datasource.adapter.reset();
+    misc.adapter.reset();
   } else {
     const datasource: IDatasourceOptional = {};
     if (get) {
@@ -75,9 +73,9 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
       if (!datasource.get) {
         datasource.get = misc.datasource.get;
       }
-      misc.datasource.adapter.reset(new Datasource(datasource as IDatasource));
+      misc.adapter.reset(new Datasource(datasource as IDatasource));
     } else {
-      misc.datasource.adapter.reset(datasource);
+      misc.adapter.reset(datasource);
     }
   }
   accessFirstLastVisibleItems(misc);
@@ -137,17 +135,30 @@ const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done
   });
 };
 
+const getAdapters = (misc: Misc) => [
+  misc.adapter, // component.datasource.adapter (public)
+  misc.scroller.datasource.adapter, // component.workflow.scroller.datasource.adapter (public)
+  misc.internalAdapter // component.workflow.scroller.adapter (private)
+];
+
+const subMethods = ['subscribe', 'subscribe', 'on'];
+
+const cleanupSubscriptions = (list: any[]) =>
+  list.forEach((sub) => {
+    if (sub.unsubscribe) { // Angular Adapter
+      sub.unsubscribe();
+    } else { // Native Adapter
+      sub();
+    }
+  });
+
 const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = [
-    misc.testComponent.datasource.adapter as IAdapter,
-    misc.workflow.scroller.datasource.adapter
-  ].reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: any[], adapter, i: number) => {
     let call = 0;
     return [
       ...acc,
-      adapter.isLoading$.subscribe((value) => {
+      (adapter.isLoading$ as any)[subMethods[i]]((value: boolean) => {
         misc.shared.count = ++call;
-        const { startIndex } = config.datasourceSettings;
         if (call === 1) {
           expect(value).toEqual(true);
         } else if (call === 2) {
@@ -167,7 +178,7 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
     if (misc.workflow.cyclesDone <= 1) {
       doReset(config, misc);
     } else {
-      subs.forEach((sub) => sub.unsubscribe());
+      cleanupSubscriptions(subs);
       expect(misc.shared.count).toEqual(4);
       done();
     }
@@ -176,14 +187,11 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
 
 const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
   accessFirstLastVisibleItems(misc);
-  const subs = [
-    misc.testComponent.datasource.adapter as IAdapter,
-    misc.workflow.scroller.datasource.adapter
-  ].reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: any[], adapter, i) => {
     let call = 0;
     return [
       ...acc,
-      adapter.firstVisible$.subscribe(({ $index }) => {
+      (adapter.firstVisible$ as any)[subMethods[i]](({ $index }: ItemAdapter) => {
         misc.shared.count = ++call;
         const { startIndex } = config.datasourceSettings;
         if (call === 1) {
@@ -204,7 +212,7 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
     if (misc.workflow.cyclesDone <= 1) {
       doReset(config, misc);
     } else {
-      subs.forEach((sub) => sub.unsubscribe());
+      cleanupSubscriptions(subs);
       expect(misc.shared.count).toEqual(3);
       done();
     }
@@ -212,16 +220,12 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
 };
 
 const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = [
-    misc.testComponent.datasource.adapter as IAdapter,
-    misc.workflow.scroller.datasource.adapter
-  ].reduce((acc: Subscription[], adapter) => {
+  const subs = getAdapters(misc).reduce((acc: any[], adapter, i) => {
     let call = 0;
     return [
       ...acc,
-      adapter.bof$.subscribe((bof: boolean) => {
+      (adapter.bof$ as any)[subMethods[i]]((bof: boolean) => {
         misc.shared.count = ++call;
-        const { startIndex } = config.datasourceSettings;
         if (call === 1) {
           expect(bof).toEqual(true);
         } else if (call === 2) {
@@ -241,7 +245,7 @@ const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Func
     } else if (misc.workflow.cyclesDone === 2) {
       doReset(config, misc);
     } else {
-      subs.forEach((sub) => sub.unsubscribe());
+      cleanupSubscriptions(subs);
       expect(misc.shared.count).toEqual(3);
       done();
     }

@@ -148,6 +148,11 @@ const adapterScope = {
     name: 'Reset',
     scope: globalScope.adapter.id
   },
+  init: {
+    id: 'init',
+    name: 'Initialization',
+    scope: globalScope.adapter.id
+  },
   isLoading: {
     id: 'is-loading',
     name: 'Is loading?',
@@ -156,6 +161,11 @@ const adapterScope = {
   isLoadingAdvanced: {
     id: 'is-loading-advanced',
     name: 'Is loading, advanced',
+    scope: globalScope.adapter.id
+  },
+  packageInfo: {
+    id: 'package-info',
+    name: 'Package info',
     scope: globalScope.adapter.id
   },
   itemsCount: {

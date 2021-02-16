@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { IDatasource, ItemAdapter } from '../../src/component/interfaces';
-import { Datasource } from '../../src/component/classes/datasource';
+import { ItemAdapter } from '../miscellaneous/vscroll';
+
+import { IDatasource, Datasource } from '../../src/ui-scroll.datasource';
 
 import { DatasourceService } from './datasources/class';
 import { defaultTemplate, TemplateSettings } from './templates';

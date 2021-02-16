@@ -21,7 +21,9 @@ import { DemoAdapterRelaxComponent } from './samples/adapter/adapter-relax.compo
 import { DemoAdapterReturnValueComponent } from './samples/adapter/adapter-return-value.component';
 import { DemoResetComponent } from './samples/adapter/reset.component';
 import { DemoReloadComponent } from './samples/adapter/reload.component';
+import { DemoInitComponent } from './samples/adapter/init.component';
 import { DemoIsLoadingComponent } from './samples/adapter/is-loading.component';
+import { DemoPackageInfoComponent } from './samples/adapter/package-info.component';
 import { DemoItemsCountComponent } from './samples/adapter/items-count.component';
 import { DemoBufferInfoComponent } from './samples/adapter/buffer-info.component';
 import { DemoBofEofComponent } from './samples/adapter/bof-eof.component';
@@ -70,7 +72,9 @@ const adapter = [
   DemoAdapterReturnValueComponent,
   DemoResetComponent,
   DemoReloadComponent,
+  DemoInitComponent,
   DemoIsLoadingComponent,
+  DemoPackageInfoComponent,
   DemoItemsCountComponent,
   DemoBufferInfoComponent,
   DemoBofEofComponent,

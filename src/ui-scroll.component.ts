@@ -4,10 +4,10 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
-import { Workflow } from './component/workflow';
-import { IDatasource } from './component/interfaces/index';
-import { Datasource } from './component/classes/datasource';
-import { Item } from './component/classes/item';
+import { Workflow, Item } from './vscroll';
+
+import { IDatasource } from './ui-scroll.datasource';
+import consumer from './ui-scroll.version';
 
 /* tslint:disable:component-selector */
 @Component({
@@ -34,9 +34,8 @@ import { Item } from './component/classes/item';
 export class UiScrollComponent implements OnInit, OnDestroy {
 
   // these should come from the directive
-  public version: string;
   public template: TemplateRef<any>;
-  public datasource: IDatasource | Datasource;
+  public datasource: IDatasource;
 
   // the only template variable
   public items: Item[] = [];
@@ -49,18 +48,18 @@ export class UiScrollComponent implements OnInit, OnDestroy {
     public elementRef: ElementRef) { }
 
   ngOnInit() {
-    this.workflow = new Workflow(
-      this.elementRef.nativeElement,
-      this.datasource,
-      this.version,
-      (items: Item[]) => {
+    this.workflow = new Workflow({
+      consumer,
+      element: this.elementRef.nativeElement,
+      datasource: this.datasource as any,
+      run: (items: Item[]) => {
         if (!items.length && !this.items.length) {
           return;
         }
         this.items = items;
         this.changeDetector.detectChanges();
       }
-    );
+    });
   }
 
   ngOnDestroy() {

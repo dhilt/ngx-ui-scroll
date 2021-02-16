@@ -1,4 +1,5 @@
-import { AdapterProcess, IDatasourceOptional, Direction } from '../src/component/interfaces';
+import { Direction, IDatasourceOptional } from './miscellaneous/vscroll';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
 import { Misc } from './miscellaneous/misc';
@@ -104,7 +105,7 @@ interface ICheckReset {
   instanceIndex: number;
   firstVisible: number;
   lastVisible: number;
-  firstVisibleText: number;
+  firstVisibleText: string;
   interruptionCount: number;
 }
 
@@ -181,7 +182,7 @@ const shouldReset = (config: TestBedConfig, fail?: boolean) => (misc: Misc) => (
         } else {
           doReset(config, misc);
           if (fail) {
-            expect(misc.workflow.errors.some(e => e.process === AdapterProcess.reset)).toEqual(true);
+            expect(misc.workflow.errors.some(e => e.process.endsWith('reset'))).toEqual(true);
             done();
           }
         }

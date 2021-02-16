@@ -1,13 +1,23 @@
 import { makeTest } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
-describe('Datasource Get', () => {
+const shouldWork = (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+  expect(misc.scroller.state.fetch.callCount).toBeGreaterThan(0);
+  done();
+};
 
-  const shouldWork = (misc: Misc) => (done: Function) =>
-    spyOn(misc.workflow, 'finalize').and.callFake(() => {
-      expect(misc.scroller.state.fetch.callCount).toBeGreaterThan(0);
-      done();
-    });
+const shouldNotFetch = (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+  const { buffer, state } = misc.scroller;
+  expect(misc.innerLoopCount).toEqual(1);
+  expect(state.fetch.callCount).toEqual(0);
+  expect(buffer.bof.get()).toEqual(true);
+  expect(buffer.eof.get()).toEqual(true);
+  done();
+};
+
+describe('Datasource Get', () => {
 
   describe('immediate', () => {
     makeTest({
@@ -87,17 +97,15 @@ describe('Datasource Get', () => {
 
   describe('empty', () => {
     makeTest({
-      title: 'should not fetch',
+      title: 'should not fetch (callback)',
       config: { datasourceName: 'empty-callback' },
-      it: (misc: Misc) => (done: Function) =>
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { buffer, state } = misc.scroller;
-          expect(misc.innerLoopCount).toEqual(1);
-          expect(state.fetch.callCount).toEqual(0);
-          expect(buffer.bof).toEqual(true);
-          expect(buffer.eof).toEqual(true);
-          done();
-        })
+      it: shouldNotFetch
+    });
+
+    makeTest({
+      title: 'should not fetch (rxjs of)',
+      config: { datasourceName: 'empty-of' },
+      it: shouldNotFetch
     });
   });
 

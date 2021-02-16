@@ -2,8 +2,6 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 
 import { DemoContext, DemoSources } from './interfaces';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
-
 @Component({
   selector: 'app-demo',
   templateUrl: './demo.component.html'
@@ -12,7 +10,7 @@ export class DemoComponent implements OnInit {
 
   init = false;
 
-  @Input() datasource: Datasource;
+  @Input() datasource: any;
   @Input() context: DemoContext;
   @Input() sources: DemoSources;
   @Input() itemTemplate: TemplateRef<any>;

@@ -10,7 +10,7 @@
   [itemTemplate]="itemTemplate"
 >
   <div actions>
-    <input [(ngModel)]="inputValue" (change)="onInputChanged($event.target)" size="3">
+    <input [(ngModel)]="inputValue" (change)="onInputChanged($any($event.target))" size="3">
     <button (click)="removeByIndex(inputValue)">Remove by index</button>
   </div>
   <div description>

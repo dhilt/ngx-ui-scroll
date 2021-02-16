@@ -1,4 +1,4 @@
-import { Direction } from '../src/component/interfaces';
+import { Direction } from './miscellaneous/vscroll';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
@@ -141,7 +141,7 @@ const testInitialLoad = (config: TestBedConfig, misc: Misc, done: Function) => {
 
 const testScroll = (config: TestBedConfig, misc: Misc, done: Function) => {
   const buffer = misc.scroller.buffer;
-  if (buffer.bof) {
+  if (buffer.bof.get()) {
     getDynamicSizeData(
       Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
       Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
@@ -149,7 +149,7 @@ const testScroll = (config: TestBedConfig, misc: Misc, done: Function) => {
     done();
     return;
   }
-  if (buffer.eof) {
+  if (buffer.eof.get()) {
     misc.shared.eof = true;
     misc.scrollMin();
     return;

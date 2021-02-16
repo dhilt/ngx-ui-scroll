@@ -1,7 +1,8 @@
+import { AdapterClipOptions, ItemAdapter } from './miscellaneous/vscroll';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { testItemsCounter, ItemsCounter } from './miscellaneous/itemsCounter';
-import { AdapterClipOptions, ItemAdapter } from '../src/component/interfaces/index';
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
@@ -142,7 +143,8 @@ describe('Adapter Clip Spec', () => {
     it: (misc: Misc) => async (done: Function) => {
       const result = await misc.adapter.clip();
       expect(result.immediate).toBe(true);
-      expect(result.success).toBe(false); // Adapter is not initialized
+      expect(result.success).toBe(true);
+      // expect(result.details).toBe('Adapter is not initialized');
       done();
     }
   });

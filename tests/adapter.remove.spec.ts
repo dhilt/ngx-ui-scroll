@@ -1,7 +1,8 @@
+import { ItemsPredicate } from './miscellaneous/vscroll';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { IndexedItem, removeItems } from './miscellaneous/items';
-import { AdapterProcess, ItemsPredicate } from '../src/component/interfaces/index';
 
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-processor',
@@ -171,7 +172,7 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
   expect(misc.scroller.state.clip.callCount).toEqual(1);
   if (!isNaN(firstIndex) && !isNaN(lastIndex)) {
     // check all items contents
-    items.forEach(({ $index, data: { id } }) => {
+    (items as IndexedItem[]).forEach(({ $index, data: { id } }) => {
       const diff = indexList.reduce((acc: number, index: number) =>
         acc + (increase ? (id < index ? -1 : 0) : (id > index ? 1 : 0)), 0
       );
@@ -205,7 +206,7 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => async (done: Func
   expect(misc.workflow.cyclesDone).toEqual(1);
   expect(misc.innerLoopCount).toEqual(innerLoopCount);
   expect(misc.workflow.errors.length).toEqual(1);
-  expect(misc.workflow.errors[0].process).toEqual(AdapterProcess.remove);
+  expect(misc.workflow.errors[0].process).toContain('remove');
   done();
 };
 

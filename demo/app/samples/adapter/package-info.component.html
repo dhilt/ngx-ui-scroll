@@ -1,0 +1,22 @@
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+>
+  <div actions>
+    Consumer: {{datasource.adapter.packageInfo.consumer.name}}
+    v{{datasource.adapter.packageInfo.consumer.version}}
+    <br>
+    Core: {{datasource.adapter.packageInfo.core.name}}
+    v{{datasource.adapter.packageInfo.core.version}}
+  </div>
+  <div description>
+    <p>
+      <em>Adapter.packageInfo</em> represents a read-only object
+      which contains information about versions of
+      ngx-ui-scroll and its external core. Prior to ngx-ui-scroll v2,
+      this core was a physical part of the ngx-ui-scroll codebase.
+      Now it is a separate npm package "vscroll" that "ngx-ui-scroll" depends on.
+    </p>
+  </div>
+</app-demo>

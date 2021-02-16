@@ -3,16 +3,14 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
+import { Workflow, Direction, DatasourceGet, IAdapter as IAdapterInternal } from './vscroll';
+
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
-import { generateItem, IndexedItem } from './items';
+import { Item, generateItem, IndexedItem } from './items';
 
-import { Direction, DatasourceGet, IAdapter } from '../../src/component/interfaces';
 import { UiScrollComponent } from '../../src/ui-scroll.component';
-import { Scroller } from '../../src/component/scroller';
-import { Workflow } from '../../src/component/workflow';
-import { Datasource } from '../../src/component/classes/datasource';
-import { Routines } from '../../src/component/classes/domRoutines';
+import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
 
 export class Padding {
   direction: Direction;
@@ -41,10 +39,11 @@ export class Misc {
   viewportElement: DebugElement;
   uiScrollComponent: UiScrollComponent;
   workflow: Workflow;
-  scroller: Scroller;
-  datasource: Datasource;
-  adapter: IAdapter;
-  routines: Routines;
+  scroller: Workflow['scroller'];
+  datasource: IDatasource;
+  adapter: IAdapter<Item>;
+  internalAdapter: IAdapterInternal<Item>;
+  routines: Workflow['scroller']['routines'];
   padding: {
     forward: Padding;
     backward: Padding;
@@ -68,9 +67,10 @@ export class Misc {
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.workflow.scroller;
-    this.datasource = this.testComponent.datasource as Datasource;
-    this.adapter = this.datasource.adapter;
-    this.routines = new Routines(this.scroller.settings);
+    this.datasource = this.testComponent.datasource;
+    this.adapter = this.datasource.adapter as IAdapter<Item>;
+    this.internalAdapter = this.scroller.adapter as IAdapterInternal<Item>;
+    this.routines = this.scroller.routines;
     const { horizontal, windowViewport } = this.scroller.settings;
     this.horizontal = horizontal;
     this.window = windowViewport;
@@ -80,8 +80,17 @@ export class Misc {
     };
   }
 
+  generateFakeWorkflow(settings?: any): Workflow {
+    return new Workflow({
+      consumer: { name: 'fake', version: 'x.x.x' },
+      element: this.scroller.viewport.element,
+      datasource: { get: (a: any, b: any) => null, settings },
+      run: () => null
+    });
+  }
+
   spyOnGet(): jasmine.Spy<DatasourceGet> {
-    return spyOn(this.scroller.datasource, 'get').and.callThrough();
+    return spyOn(this.datasource, 'get').and.callThrough();
   }
 
   getViewportSize(settings?: TestBedConfig): number {
@@ -160,12 +169,12 @@ export class Misc {
   relaxNext(debounce?: boolean): Promise<void> {
     return new Promise(resolve =>
       (debounce
-        ? this.scroller.adapter.isLoading$.pipe(
+        ? this.adapter.isLoading$.pipe(
           filter(pending => !pending),
           debounceTime(30),
           take(1)
         )
-        : this.scroller.adapter.isLoading$.pipe(
+        : this.adapter.isLoading$.pipe(
           filter(pending => !pending),
           take(1)
         )

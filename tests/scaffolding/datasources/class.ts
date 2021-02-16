@@ -1,7 +1,7 @@
-import { Settings, DevSettings, DatasourceGet } from '../../miscellaneous/vscroll';
+import { Settings, DevSettings, BufferUpdater, Workflow, Item } from '../../miscellaneous/vscroll';
 
 import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
-import { generateItem, Item } from '../../miscellaneous/items';
+import { generateItem, Data } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 
 export class DatasourceService implements IDatasource {
@@ -35,55 +35,65 @@ export const getDatasourceProcessingClass = (_datasource: IDatasource, _settings
   };
 };
 
-export const getDatasourceReplacementsClass = (settings: Settings) =>
-  class extends Datasource {
-    private data: Item[] = [];
+class LimitedDatasource extends Datasource {
+  data: Data[] = [];
 
-    settings: Settings;
-    devSettings: DevSettings;
-    get: DatasourceGet;
+  min: number;
+  max: number;
+  start: number;
+  shift: number;
 
-    constructor() {
-      super({
-        get: (index: number, count: number, success: Function) => {
-          const data = [];
-          const start = index;
-          const end = start + count - 1;
-          if (start <= end) {
-            for (let i = start; i <= end; i++) {
-              const item = this.data.find(({ id }) => id === i);
-              if (!item) {
-                continue;
-              }
-              data.push(item);
+  constructor(settings: Settings, devSettings?: DevSettings) {
+    super({
+      get: (index: number, count: number, success: Function) => {
+        const data = [];
+        const start = index;
+        const end = start + count - 1;
+        if (start <= end) {
+          for (let i = start; i <= end; i++) {
+            const _index = i - this.min + this.shift;
+            if (_index >= 0 && _index < this.data.length) {
+              data.push(this.data[_index]);
             }
           }
-          success(data);
-        },
-        settings: { ...settings },
-        // devSettings: { debug: true, logProcessRun: true }
-      });
+        }
+        success(data);
+      },
+      settings: { ...settings },
+      devSettings: devSettings || {},
+    });
 
-      const min = settings.minIndex || 0;
-      const max = settings.maxIndex || 0;
+    const { minIndex, maxIndex, startIndex } = this.settings as Settings;
+    this.min = minIndex || 0;
+    this.max = maxIndex || 0;
+    this.start = startIndex || 0;
+    this.shift = 0;
 
-      for (let i = min; i < min + max; ++i) {
-        this.data.push(generateItem(i));
-      }
+    for (let i = this.min; i <= this.max; ++i) {
+      this.data.push(generateItem(i));
+    }
+  }
+}
+
+export const getDatasourceReplacementsClass = (settings: Settings, devSettings?: DevSettings) =>
+  class extends LimitedDatasource {
+
+    constructor() {
+      super(settings, devSettings);
     }
 
-    replaceOneToOne(idToReplace: number, item: Item) {
+    replaceOneToOne(idToReplace: number, item: Data) {
       const itemToReplace = this.data.find(({ id }) => id === idToReplace);
       if (itemToReplace) {
         Object.assign(itemToReplace, item);
       }
     }
 
-    replaceManyToOne(idsToReplace: number[], item: Item, increase: boolean) {
+    replaceManyToOne(idsToReplace: number[], item: Data, increase: boolean) {
       this.replaceManyToMany(idsToReplace, [item], increase);
     }
 
-    replaceManyToMany(idsToReplace: number[], items: Item[], increase: boolean) {
+    replaceManyToMany(idsToReplace: number[], items: Data[], increase: boolean) {
       idsToReplace.sort((a, b) => a - b);
       const minRem = idsToReplace[0];
       const maxRem = idsToReplace.slice(1).reduce((acc, id) =>
@@ -93,7 +103,7 @@ export const getDatasourceReplacementsClass = (settings: Settings) =>
       const diff = itemsToRemove - items.length;
 
       let inserted = false;
-      this.data = this.data.reduce((acc, item: Item) => {
+      this.data = this.data.reduce((acc, item: Data) => {
         if ((!increase && item.id < minRem) || (increase && item.id > maxRem)) {
           // below (or above if increase): persist
           acc.push(item);
@@ -106,6 +116,36 @@ export const getDatasourceReplacementsClass = (settings: Settings) =>
           inserted = true;
         }
         return acc;
-      }, [] as Item[]);
+      }, [] as Data[]);
+      if (increase) {
+        this.min += diff;
+      } else {
+        this.max += diff;
+      }
+    }
+  };
+
+type Buffer<T = unknown> = Workflow<T>['scroller']['buffer'];
+
+export const getDatasourceForUpdates = (settings: Settings, devSettings?: DevSettings) =>
+  class extends LimitedDatasource {
+
+    constructor() {
+      super(settings, devSettings);
+    }
+
+    update(_buffer: Buffer<Data>, predicate: BufferUpdater<Data>, fixRight: boolean) {
+      // Since the update API is tested on the vscroll's end (Buffer class),
+      // it is possible to perform update manipulations by the Buffer.update method.
+      // Let's create a copy of Buffer instance, emulate all the datasource and run update.
+      const buffer: Buffer<Data> = new ((_buffer as any).constructor)(this.settings, () => null, { log: () => null });
+      const generator = (index: number, data: Data) => new Item(index, data, {} as never);
+      buffer.items = this.data.map((data, index) => generator(this.min + index, data));
+      buffer.items.forEach(item => buffer.cacheItem(item));
+      buffer.updateItems(predicate, generator, fixRight);
+      // Now backward assignment
+      this.data = buffer.items.map((item: Item<Data>) => item.data);
+      // Provide shift if min index is changed
+      this.shift = _buffer.absMinIndex - buffer.absMinIndex;
     }
   };

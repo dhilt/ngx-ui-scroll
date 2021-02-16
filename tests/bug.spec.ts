@@ -1,7 +1,7 @@
 import { makeTest } from './scaffolding/runner';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
-import { Item } from './miscellaneous/items';
+import { Data } from './miscellaneous/items';
 import { configureTestBedSub } from './scaffolding/testBed';
 
 describe('Bug Spec', () => {
@@ -174,7 +174,7 @@ describe('Bug Spec', () => {
           } else if (item.$index > MIN) {
             text = (item.$index + (MAX - MIN)).toString();
           }
-          expect((item.data as Item).text).toEqual('item #' + text);
+          expect((item.data as Data).text).toEqual('item #' + text);
         });
 
         done();

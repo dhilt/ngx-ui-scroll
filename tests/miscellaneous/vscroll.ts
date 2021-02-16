@@ -1,5 +1,6 @@
 export {
   Workflow,
+  Item,
   IDatasource,
   IDatasourceGeneric,
   IReactivePropConfig,
@@ -21,6 +22,7 @@ export {
   DevSettings,
   ItemAdapter,
   ItemsPredicate,
+  BufferUpdater,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterAppendOptions,

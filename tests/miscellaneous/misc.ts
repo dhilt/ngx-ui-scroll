@@ -7,7 +7,7 @@ import { Workflow, Direction, DatasourceGet, IAdapter as IAdapterInternal } from
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { TestBedConfig } from '../scaffolding/runner';
-import { Item, generateItem, IndexedItem } from './items';
+import { Data, generateItem, IndexedItem } from './items';
 
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
@@ -31,19 +31,21 @@ export class Padding {
   }
 }
 
+type Scroller = Workflow<Data>['scroller'];
+
 export class Misc {
 
   fixture: ComponentFixture<TestComponentInterface>;
   testComponent: TestComponentInterface;
   uiScrollElement: DebugElement;
   viewportElement: DebugElement;
-  uiScrollComponent: UiScrollComponent;
-  workflow: Workflow;
-  scroller: Workflow['scroller'];
+  uiScrollComponent: UiScrollComponent<Data>;
+  workflow: Workflow<Data>;
+  scroller: Scroller;
   datasource: IDatasource;
-  adapter: IAdapter<Item>;
-  internalAdapter: IAdapterInternal<Item>;
-  routines: Workflow['scroller']['routines'];
+  adapter: IAdapter<Data>;
+  internalAdapter: IAdapterInternal<Data>;
+  routines: Scroller['routines'];
   padding: {
     forward: Padding;
     backward: Padding;
@@ -68,8 +70,8 @@ export class Misc {
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.workflow.scroller;
     this.datasource = this.testComponent.datasource;
-    this.adapter = this.datasource.adapter as IAdapter<Item>;
-    this.internalAdapter = this.scroller.adapter as IAdapterInternal<Item>;
+    this.adapter = this.datasource.adapter as IAdapter<Data>;
+    this.internalAdapter = this.scroller.adapter as IAdapterInternal<Data>;
     this.routines = this.scroller.routines;
     const { horizontal, windowViewport } = this.scroller.settings;
     this.horizontal = horizontal;

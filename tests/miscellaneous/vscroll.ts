@@ -27,5 +27,6 @@ export {
   AdapterInsertOptions,
   AdapterAppendOptions,
   AdapterPrependOptions,
+  AdapterUpdateOptions,
   AdapterFixOptions,
 } from 'vscroll/dist/typings/interfaces'; // from '../../../vscroll/src/interfaces/index';

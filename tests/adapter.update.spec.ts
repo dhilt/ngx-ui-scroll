@@ -1,8 +1,8 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { Misc } from './miscellaneous/misc';
 import { getDatasourceForUpdates } from './scaffolding/datasources/class';
+import { Misc } from './miscellaneous/misc';
 import { Data } from './miscellaneous/items';
-import { BufferUpdater } from './miscellaneous/vscroll';
+import { BufferUpdater, Item, AdapterUpdateOptions } from './miscellaneous/vscroll';
 
 const MIN = -49, MAX = 50;
 
@@ -14,15 +14,17 @@ const baseSettings = {
   itemSize: 20
 };
 
+type CheckList = { [key: string]: string }[];
+type DS = InstanceType<ReturnType<typeof getDatasourceForUpdates>>;
+
 interface ICustom {
   title: string;
   start?: number;
   predicate: BufferUpdater<Data>;
-  check: { [key: string]: string }[]; // fixRight = true
-  check2: { [key: string]: string }[]; // fixRight = true
+  check: CheckList; // fixRight = false
+  check2: CheckList; // fixRight = true
 }
 
-type DS = InstanceType<ReturnType<typeof getDatasourceForUpdates>>;
 const make = (text: string): Data => ({ id: 0, text });
 
 const configList: TestBedConfig[] = ([{
@@ -47,6 +49,7 @@ const configList: TestBedConfig[] = ([{
   check2: [{ 0: 'item #2' }, { 1: 'xxx' }, { 2: 'yyy' }, { 3: 'zzz' }, { 4: 'item #4' }],
 }, {
   title: 'insert two with 1 original item',
+  start: 10,
   predicate: ({ $index, data }) => {
     if ($index === 10) {
       return [make('xxx'), data, make('yyy')];
@@ -135,6 +138,18 @@ const configList: TestBedConfig[] = ([{
   };
 });
 
+const checkContents = (items: Item<Data>[], checkList: CheckList, left: number) => {
+  let index = items.findIndex(({ $index }) => $index === left);
+  checkList.forEach(entry => {
+    const $index = Object.keys(entry)[0];
+    const item = items[index++];
+    expect(item.invisible).toBe(false);
+    expect(item.toRemove).not.toBe(true);
+    expect(item.$index.toString()).toBe($index);
+    expect(item.data.text).toBe(entry[$index]);
+  });
+};
+
 const shouldUpdate = (
   config: TestBedConfig, fixRight: boolean
 ) => (misc: Misc) => async (done: Function) => {
@@ -150,6 +165,8 @@ const shouldUpdate = (
   // update in Viewport
   await adapter.update({ predicate, fixRight });
 
+  checkContents(buffer.items, checkList, left);
+
   // refresh the view via scroll to edges
   await misc.scrollMinMax();
 
@@ -160,14 +177,28 @@ const shouldUpdate = (
     await misc.relaxNext();
   }
 
-  // check updated content
-  let index = buffer.items.findIndex(({ $index }) => $index === left);
-  checkList.forEach(entry => {
-    const $index = Object.keys(entry)[0];
-    const item = buffer.items[index++];
-    expect(item.$index.toString()).toBe($index);
-    expect(item.data.text).toBe(entry[$index]);
-  });
+  checkContents(buffer.items, checkList, left);
+  done();
+};
+
+const shouldWorkAfterCleanup = (fixRight: boolean) => (misc: Misc) => async (done: Function) => {
+  await misc.relaxNext();
+  const { adapter, scroller: { buffer } } = misc;
+  const { firstIndex, lastIndex } = buffer;
+  const diff = lastIndex - firstIndex + 1;
+  const predicate: AdapterUpdateOptions['predicate'] = item =>
+    !(item.$index >= firstIndex && item.$index <= lastIndex);
+
+  (misc.datasource as DS).update(buffer, predicate, fixRight);
+  await adapter.update({ predicate, fixRight });
+
+  misc.scrollMin();
+  await misc.relaxNext();
+  expect(buffer.firstIndex).toBe(MIN + (fixRight ? diff : 0));
+
+  misc.scrollMax();
+  await misc.relaxNext();
+  expect(buffer.lastIndex).toBe(MAX - (fixRight ? 0 : diff));
 
   done();
 };
@@ -192,6 +223,14 @@ describe('Adapter Update Spec', () => {
         it: shouldUpdate(config, true)
       })
     )
+  );
+
+  describe('After cleanup', () =>
+    [false, true].forEach((fixRight) => makeTest({
+      title: 'should work properly when fixRight = ' + (fixRight ? 'true' : 'false'),
+      config: { datasourceClass: getDatasourceForUpdates(baseSettings) },
+      it: shouldWorkAfterCleanup(fixRight)
+    }))
   );
 
 });

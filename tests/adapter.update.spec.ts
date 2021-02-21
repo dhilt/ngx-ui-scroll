@@ -1,5 +1,5 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { getDatasourceForUpdates } from './scaffolding/datasources/class';
+import { getDatasourceClassForUpdates } from './scaffolding/datasources/class';
 import { Misc } from './miscellaneous/misc';
 import { Data } from './miscellaneous/items';
 import { BufferUpdater, Item, AdapterUpdateOptions } from './miscellaneous/vscroll';
@@ -15,7 +15,7 @@ const baseSettings = {
 };
 
 type CheckList = { [key: string]: string }[];
-type DS = InstanceType<ReturnType<typeof getDatasourceForUpdates>>;
+type DS = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;
 
 interface ICustom {
   title: string;
@@ -134,7 +134,7 @@ const configList: TestBedConfig[] = ([{
   return {
     datasourceSettings,
     custom,
-    datasourceClass: getDatasourceForUpdates(datasourceSettings)
+    datasourceClass: getDatasourceClassForUpdates(datasourceSettings)
   };
 });
 
@@ -228,7 +228,7 @@ describe('Adapter Update Spec', () => {
   describe('After cleanup', () =>
     [false, true].forEach((fixRight) => makeTest({
       title: 'should work properly when fixRight = ' + (fixRight ? 'true' : 'false'),
-      config: { datasourceClass: getDatasourceForUpdates(baseSettings) },
+      config: { datasourceClass: getDatasourceClassForUpdates(baseSettings) },
       it: shouldWorkAfterCleanup(fixRight)
     }))
   );

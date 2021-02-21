@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { generateItem } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
-import { getDatasourceReplacementsClass } from './scaffolding/datasources/class';
+import { getDatasourceClassForReplacements } from './scaffolding/datasources/class';
 
 const baseSettings = {
   startIndex: 1,
@@ -41,7 +41,7 @@ const configList: TestBedConfig[] = [{
   } as ICustom
 }].map(config => ({
   ...config,
-  datasourceClass: getDatasourceReplacementsClass(config.datasourceSettings)
+  datasourceClass: getDatasourceClassForReplacements(config.datasourceSettings)
 }));
 
 const manyToOneConfigList: TestBedConfig[] = [{
@@ -79,7 +79,7 @@ const manyToOneConfigList: TestBedConfig[] = [{
   } as ICustom
 }].map(config => ({
   ...config,
-  datasourceClass: getDatasourceReplacementsClass(config.datasourceSettings)
+  datasourceClass: getDatasourceClassForReplacements(config.datasourceSettings)
 }));
 
 const manyToOneIncreaseConfigList = manyToOneConfigList.map(config => ({

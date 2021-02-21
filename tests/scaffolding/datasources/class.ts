@@ -4,6 +4,8 @@ import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
 import { generateItem, Data } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 
+type Buffer<T = unknown> = Workflow<T>['scroller']['buffer'];
+
 export class DatasourceService implements IDatasource {
   get() {
   }
@@ -75,7 +77,28 @@ class LimitedDatasource extends Datasource {
   }
 }
 
-export const getDatasourceReplacementsClass = (settings: Settings, devSettings?: DevSettings) =>
+export const getDatasourceClassForRemovals = (settings: Settings, devSettings?: DevSettings) =>
+  class extends LimitedDatasource {
+    constructor() {
+      super(settings, devSettings);
+    }
+
+    remove(indexListToRemove: number[], increase: boolean) {
+      const result = [];
+      for (let i = 0; i < this.data.length; i++) {
+        if (indexListToRemove.includes(i + this.min - this.shift)) {
+          if (increase) {
+            this.shift--;
+          }
+          continue;
+        }
+        result.push(this.data[i]);
+      }
+      this.data = result;
+    }
+  };
+
+export const getDatasourceClassForReplacements = (settings: Settings, devSettings?: DevSettings) =>
   class extends LimitedDatasource {
 
     constructor() {
@@ -125,9 +148,7 @@ export const getDatasourceReplacementsClass = (settings: Settings, devSettings?:
     }
   };
 
-type Buffer<T = unknown> = Workflow<T>['scroller']['buffer'];
-
-export const getDatasourceForUpdates = (settings: Settings, devSettings?: DevSettings) =>
+export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: DevSettings) =>
   class extends LimitedDatasource {
 
     constructor() {

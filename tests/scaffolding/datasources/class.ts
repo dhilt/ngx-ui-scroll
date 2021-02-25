@@ -155,7 +155,7 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
       super(settings, devSettings);
     }
 
-    update(_buffer: Buffer<Data>, predicate: BufferUpdater<Data>, fixRight: boolean) {
+    update(_buffer: Buffer<Data>, predicate: BufferUpdater<Data>, indexToTrack: number, fixRight: boolean) {
       // Since the update API is tested on the vscroll's end (Buffer class),
       // it is possible to perform update manipulations by the Buffer.update method.
       // Let's create a copy of Buffer instance, emulate all the datasource and run update.
@@ -163,7 +163,7 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
       const generator = (index: number, data: Data) => new Item(index, data, {} as never);
       buffer.items = this.data.map((data, index) => generator(this.min + index, data));
       buffer.items.forEach(item => buffer.cacheItem(item));
-      buffer.updateItems(predicate, generator, fixRight);
+      buffer.updateItems(predicate, generator, indexToTrack, fixRight);
       // Now backward assignment
       this.data = buffer.items.map((item: Item<Data>) => item.data);
       // Provide shift if min index is changed

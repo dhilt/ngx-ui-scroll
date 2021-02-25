@@ -110,49 +110,67 @@ const configListOutFixed: TestBedConfig[] = [{
 }];
 
 const configListDynamicBuffer: TestBedConfig[] = [{
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   custom: { indexToRemove: 11, size: 100, increase: false }
 }, {
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   custom: { indexToRemove: 9, size: 100, increase: false }
 }, {
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   custom: { indexToRemove: 11, size: 100, increase: true }
 }, {
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   custom: { indexToRemove: 9, size: 100, increase: true }
 }].map(config => ({
   ...config,
+  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings)
 }));
 
 const configListDynamicVirtual: TestBedConfig[] = [{
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 2, indexToRemove: 20, size: 100, increase: false }
 }, {
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 15, indexToRemove: 1, size: 100, increase: false }
 }, {
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 2, indexToRemove: 20, size: 100, increase: true }
 }, {
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 15, indexToRemove: 1, size: 100, increase: true }
 }].map(config => ({
   ...config,
+  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
   datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings, config.datasourceDevSettings)
+}));
+
+const configListFlush: TestBedConfig[] = [{
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'bof', fixRight: false, first: 1, last: 8 }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'bof and 15 items', fixRight: true, first: 9, last: 15 }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 30, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'bof and 30 items', fixRight: true, first: 9, last: 16 }
+}, {
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'eof', fixRight: false, first: 5, last: 12 }
+}, {
+  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'eof and 15 items', fixRight: true, first: 9, last: 15 }
+}, {
+  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 25, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'eof and 25 items', fixRight: true, first: 18, last: 25 }
+}].map(config => ({
+  ...config,
+  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
+  datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings)
 }));
 
 const doRemove = async (config: TestBedConfig, misc: Misc, byId = false) => {
@@ -328,6 +346,23 @@ const shouldRemoveDynamicSize = (config: TestBedConfig) => (misc: Misc) => async
   done();
 };
 
+const shouldFlush = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  const { adapter, scroller: { state, buffer } } = misc;
+  const { first, last, fixRight } = config.custom;
+  await misc.relaxNext();
+
+  const ds = misc.datasource as DS;
+  ds.remove(buffer.items.map(({ $index }) => $index), fixRight);
+  await adapter.remove({ predicate: (_item) => true, increase: fixRight });
+
+  expect(misc.workflow.cyclesDone).toEqual(2);
+  expect(state.cycle.innerLoop.count).toBeGreaterThan(1);
+  expect(buffer.firstIndex).toEqual(first);
+  expect(buffer.lastIndex).toEqual(last);
+
+  done();
+};
+
 describe('Adapter Remove Spec', () => {
 
   describe('Buffer', () => {
@@ -414,6 +449,16 @@ describe('Adapter Remove Spec', () => {
         config,
         title: `should remove dynamic-sized items out of buffer`,
         it: shouldRemoveDynamicSize(config)
+      })
+    );
+  });
+
+  describe('Flush', () => {
+    configListFlush.forEach(config =>
+      makeTest({
+        config,
+        title: `should continue the Workflow if ${config.custom.text}${config.custom.fixRight ? ' (increase)' : ''}`,
+        it: shouldFlush(config)
       })
     );
   });

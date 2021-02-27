@@ -169,7 +169,7 @@ const configListFlush: TestBedConfig[] = [{
   custom: { text: 'eof and 25 items', fixRight: true, first: 18, last: 25 }
 }].map(config => ({
   ...config,
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
+  templateSettings: { viewportHeight: 100 },
   datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings)
 }));
 

@@ -207,6 +207,28 @@ export class Misc {
     }
   }
 
+  async scrollToIndexRecursively(index: number): Promise<void> {
+    const { adapter } = this;
+    let leftDiff: number, rightDiff: number;
+    do {
+      leftDiff = index - adapter.bufferInfo.firstIndex;
+      rightDiff = index - adapter.bufferInfo.lastIndex;
+      const position = this.getScrollPosition();
+      adapter.fix({
+        scrollToItem: ({ $index }) => {
+          if (leftDiff >= 0 && rightDiff <= 0) {
+            return $index === index;
+          }
+          return $index === (rightDiff > 0 ? adapter.bufferInfo.lastIndex : adapter.bufferInfo.firstIndex);
+        }
+      });
+      if (position !== this.getScrollPosition()) {
+        await this.relaxNext();
+      }
+    }
+    while (rightDiff > 0 || leftDiff < 0);
+  }
+
   delay(ms: number): Promise<void> {
     return new Promise(resolve =>
       setTimeout(() => resolve(), ms)

@@ -4,7 +4,7 @@ import { Misc } from './miscellaneous/misc';
 import { Data } from './miscellaneous/items';
 import { BufferUpdater, Item, AdapterUpdateOptions } from './miscellaneous/vscroll';
 
-const MIN = -49, MAX = 50, SIZE = 20, VP_SIZE = 100;
+const MIN = -29, MAX = 30, SIZE = 20, VP_SIZE = 100;
 const itemsPerPage = VP_SIZE / SIZE;
 
 const baseSettings = {
@@ -26,15 +26,16 @@ interface ICustom {
   check2: CheckList; // fixRight = true
   first: number; // fixRight = false
   first2: number; // fixRight = true
+  getAverageSize?: (count: number) => number; // get average item size after update for "count" items in cache
 }
 
-const make = (text: string): Data => ({ id: 0, text });
+const make = (text: string, size: number): Data => ({ id: 0, text, size });
 
 const configList: TestBedConfig[] = ([{
   title: 'replace one-to-one',
   predicate: ({ $index }) => {
     if ($index === 1) {
-      return [make('xxx')];
+      return [make('xxx', 125)];
     }
     return true;
   },
@@ -42,11 +43,12 @@ const configList: TestBedConfig[] = ([{
   check2: [{ 0: 'item #0' }, { 1: 'xxx' }, { 2: 'item #2' }],
   first: 1,
   first2: 1,
+  getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c),
 }, {
   title: 'replace one-to-three',
   predicate: ({ $index }) => {
     if ($index === 3) {
-      return [make('xxx'), make('yyy'), make('zzz')];
+      return [make('xxx', 1), make('yyy', 1), make('zzz', 125)];
     }
     return true;
   },
@@ -54,12 +56,13 @@ const configList: TestBedConfig[] = ([{
   check2: [{ 0: 'item #2' }, { 1: 'xxx' }, { 2: 'yyy' }, { 3: 'zzz' }, { 4: 'item #4' }],
   first: 1,
   first2: -1,
+  getAverageSize: c => Math.round(((c - 3) * SIZE + 1 + 1 + 125) / c),
 }, {
   title: 'insert two with 1 original item',
   start: 10,
   predicate: ({ $index, data }) => {
     if ($index === 10) {
-      return [make('xxx'), data, make('yyy')];
+      return [make('xxx', SIZE), data, make('yyy', 125)];
     }
     return true;
   },
@@ -67,12 +70,13 @@ const configList: TestBedConfig[] = ([{
   check2: [{ 7: 'item #9' }, { 8: 'xxx' }, { 9: 'item #10' }, { 10: 'yyy' }, { 11: 'item #11' }],
   first: 11,
   first2: 9,
+  getAverageSize: c => Math.round(((c - 2) * SIZE + SIZE + 125) / c),
 }, {
   title: 'prepend',
   start: MIN,
   predicate: ({ $index, data }) => {
     if ($index === MIN) {
-      return [make('xxx'), data];
+      return [make('xxx', 125), data];
     }
     return true;
   },
@@ -80,12 +84,13 @@ const configList: TestBedConfig[] = ([{
   check2: [{ [MIN - 1]: 'xxx' }, { [MIN]: `item #${MIN}` }],
   first: MIN + 1,
   first2: MIN,
+  getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c),
 }, {
   title: 'append',
   start: MAX,
   predicate: ({ $index, data }) => {
     if ($index === MAX) {
-      return [data, make('xxx')];
+      return [data, make('xxx', 125)];
     }
     return true;
   },
@@ -93,6 +98,7 @@ const configList: TestBedConfig[] = ([{
   check2: [{ [MAX - 1]: `item #${MAX}` }, { [MAX]: 'xxx' }],
   first: MAX - itemsPerPage + 1,
   first2: MAX - itemsPerPage,
+  getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c),
 }, {
   title: 'remove two',
   predicate: ({ $index }) => {
@@ -135,11 +141,11 @@ const configList: TestBedConfig[] = ([{
   title: 'perform complex update',
   predicate: ({ $index, data }) => {
     switch ($index) {
-      case 1: return [make('a'), data];
+      case 1: return [make('a', 2), data];
       case 2: return [];
-      case 3: return [make('b'), make('c')];
+      case 3: return [make('b', 2), make('c', 2)];
       case 4: return [];
-      case 5: return [data, make('d')];
+      case 5: return [data, make('d', 2)];
     }
     return true;
   },
@@ -147,13 +153,14 @@ const configList: TestBedConfig[] = ([{
   check2: [{ 0: 'a' }, { 1: 'item #1' }, { 2: 'b' }, { 3: 'c' }, { 4: 'item #5' }, { 5: 'd' }],
   first: 2,
   first2: 1,
+  getAverageSize: c => Math.round(((c - 4) * SIZE + 2 + 2 + 2 + 2) / c),
 }] as ICustom[]).map(custom => {
   const datasourceSettings = {
     ...baseSettings,
     startIndex: Number.isInteger(custom.start) ? custom.start : baseSettings.startIndex
   };
   return {
-    templateSettings: { viewportHeight: VP_SIZE, itemHeight: SIZE },
+    templateSettings: { viewportHeight: VP_SIZE, itemHeight: SIZE, dynamicSize: 'size' },
     datasourceSettings,
     custom,
     datasourceClass: getDatasourceClassForUpdates(datasourceSettings)
@@ -177,7 +184,7 @@ const shouldUpdate = (
 ) => (misc: Misc) => async (done: Function) => {
   await misc.relaxNext();
   const { adapter, scroller: { buffer } } = misc;
-  const { predicate, check, check2, first, first2 } = config.custom as ICustom;
+  const { predicate, check, check2, first, first2, getAverageSize } = config.custom as ICustom;
   const checkList = fixRight ? check2 : check;
   const firstVisible = fixRight ? first2 : first;
   const left = Number(Object.keys(checkList[0])[0]);
@@ -191,15 +198,14 @@ const shouldUpdate = (
   expect(adapter.firstVisible.$index).toBe(firstVisible);
   checkContents(buffer.items, checkList, left);
 
-  // refresh the view via scroll to edges
-  await misc.scrollMinMax();
-
-  // scroll to first check-item
-  const position = Math.min((left - buffer.absMinIndex) * buffer.getSizeByIndex(left), misc.getMaxScrollPosition());
-  if (misc.getScrollPosition() !== position) {
-    adapter.fix({ scrollPosition: position });
-    await misc.relaxNext();
+  if (typeof getAverageSize === 'function') {
+    expect(buffer.averageSize).not.toBe(SIZE);
+    expect(buffer.averageSize).toBe(getAverageSize(buffer.cacheSize));
   }
+
+  // refresh the view via scroll to edges and then scroll to first check-item
+  await misc.scrollMinMax();
+  await misc.scrollToIndexRecursively(left);
 
   checkContents(buffer.items, checkList, left);
   done();

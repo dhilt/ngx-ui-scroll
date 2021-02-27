@@ -72,7 +72,7 @@ class LimitedDatasource extends Datasource {
     this.shift = 0;
 
     for (let i = this.min; i <= this.max; ++i) {
-      this.data.push(generateItem(i));
+      this.data.push(generateItem(i, 20));
     }
   }
 }

@@ -32,7 +32,7 @@
     "ngx-bootstrap": "^5.6.1",
     "rxjs": "~6.6.1",
     "tslib": "^1.13.0",
-    "vscroll": "github:dhilt/vscroll#issue-2-Adapter.update-API",
+    "vscroll": "^1.0.0-rc.7",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

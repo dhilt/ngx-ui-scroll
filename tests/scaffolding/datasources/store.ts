@@ -122,7 +122,7 @@ export const datasourceStore: IDatasourceStore = {
   },
 
   'empty-callback': {
-    get: (index: number, count: number, success: Function) => success([])
+    get: (index, count, success) => success([])
   },
 
   'empty-of': {

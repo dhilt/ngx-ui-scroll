@@ -162,9 +162,9 @@ import { Datasource } from 'ngx-ui-scroll';
 Then `this.datasource.adapter.packageInfo`, `this.datasource.adapter.reload()` and other Adapter expressions become available. For better typing, it is recommended to specify the Adapter type as follows:
 
 ```typescript
-import { Datasource, IAdapter } from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 ...
-  datasource = new Datasource<IAdapter<MyItem>>({
+  datasource = new Datasource<MyItem>({
     get: ... ,
     settings: { ... }
   });

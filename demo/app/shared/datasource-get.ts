@@ -1,5 +1,6 @@
 import { Observable, Observer } from 'rxjs';
 
+import { IDatasource } from '../../../src/ui-scroll.datasource';
 import { DemoContext } from './interfaces';
 
 const delayedCall = (result: any, callback: Function, delay?: number) => {
@@ -53,10 +54,12 @@ export const datasourceGetPromiseInfinite = (demoContext: DemoContext) =>
     success(datasourceGetInfinite(demoContext, index, count))
   );
 
-export const datasourceGetCallbackInfinite = (demoContext: DemoContext, delay?: number) =>
-  (index: number, count: number, success: Function) =>
+export const datasourceGetCallbackInfinite = (
+  demoContext: DemoContext, delay?: number
+): IDatasource['get'] => (index, count, success) =>
     delayedCall(datasourceGetInfinite(demoContext, index, count), success, delay);
 
-export const datasourceGetCallbackLimited = (demoContext: DemoContext, min: number, max: number, delay?: number) =>
-  (index: number, count: number, success: Function) =>
+export const datasourceGetCallbackLimited = (
+  demoContext: DemoContext, min: number, max: number, delay?: number
+): IDatasource['get'] => (index, count, success) =>
     delayedCall(datasourceGetLimited(demoContext, min, max, index, count), success, delay);

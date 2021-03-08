@@ -1,6 +1,6 @@
-import { getDefaultAdapterProps, IDatasourceOptional, ItemAdapter } from './miscellaneous/vscroll';
+import { getDefaultAdapterProps, ItemAdapter } from './miscellaneous/vscroll';
 
-import { IAdapter, Datasource, IDatasource } from '../src/ui-scroll.datasource';
+import { IAdapter, Datasource } from '../src/ui-scroll.datasource';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
@@ -59,21 +59,16 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
   if (!settings && !get && !devSettings) {
     misc.adapter.reset();
   } else {
-    const datasource: IDatasourceOptional = {};
-    if (get) {
-      datasource.get = get;
-    }
-    if (settings) {
-      datasource.settings = settings;
-    }
-    if (devSettings) {
-      datasource.devSettings = devSettings;
-    }
+    const datasource = {
+      ...(get ? { get } : {}),
+      ...(settings ? { settings } : {}),
+      ...(devSettings ? { devSettings } : {}),
+    };
     if (isNew) {
-      if (!datasource.get) {
-        datasource.get = misc.datasource.get;
-      }
-      misc.adapter.reset(new Datasource(datasource as IDatasource));
+      misc.adapter.reset(new Datasource({
+        ...datasource,
+        get: datasource.get || misc.datasource.get
+      }));
     } else {
       misc.adapter.reset(datasource);
     }

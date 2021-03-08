@@ -3,6 +3,7 @@ import { NgZone } from '@angular/core';
 import { Settings, DevSettings } from '../miscellaneous/vscroll';
 
 import { Misc } from '../miscellaneous/misc';
+import { Data } from '../miscellaneous/items';
 import { configureTestBed } from './testBed';
 import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources/class';
@@ -10,7 +11,7 @@ import { generateDatasourceClass } from './datasources/class';
 export interface TestBedConfig {
   datasourceClass?: any;
   datasourceName?: string;
-  datasourceSettings?: Settings | any;
+  datasourceSettings?: Settings<Data> | any;
   datasourceDevSettings?: DevSettings;
   templateSettings?: TemplateSettings | any;
   toThrow?: boolean;

@@ -42,7 +42,7 @@ export class Misc {
   uiScrollComponent: UiScrollComponent<Data>;
   workflow: Workflow<Data>;
   scroller: Scroller;
-  datasource: IDatasource;
+  datasource: IDatasource<Data>;
   adapter: IAdapter<Data>;
   internalAdapter: IAdapterInternal<Data>;
   routines: Scroller['routines'];
@@ -91,7 +91,7 @@ export class Misc {
     });
   }
 
-  spyOnGet(): jasmine.Spy<DatasourceGet> {
+  spyOnGet(): jasmine.Spy<DatasourceGet<Data>> {
     return spyOn(this.datasource, 'get').and.callThrough();
   }
 

@@ -11,11 +11,11 @@ export class DatasourceService implements IDatasource {
   }
 }
 
-export const generateDatasourceClass = (name: string, settings?: Settings, devSettings?: DevSettings) =>
+export const generateDatasourceClass = (name: string, settings?: Settings<Data>, devSettings?: DevSettings) =>
   getDatasourceProcessingClass(datasourceStore[name], settings, devSettings);
 
-export const getDatasourceProcessingClass = (_datasource: IDatasource, _settings?: Settings, _devSettings?: DevSettings) => {
-  return class extends Datasource {
+export const getDatasourceProcessingClass = (_datasource: IDatasource, _settings?: Settings<Data>, _devSettings?: DevSettings) => {
+  return class extends Datasource<Data> {
     get: (a: any, b: any) => any;
     settings: Settings;
     devSettings: DevSettings;
@@ -37,7 +37,8 @@ export const getDatasourceProcessingClass = (_datasource: IDatasource, _settings
   };
 };
 
-class LimitedDatasource extends Datasource {
+class LimitedDatasource extends Datasource<Data> {
+  settings: Settings<Data>;
   data: Data[] = [];
 
   min: number;
@@ -45,9 +46,9 @@ class LimitedDatasource extends Datasource {
   start: number;
   shift: number;
 
-  constructor(settings: Settings, devSettings?: DevSettings) {
+  constructor(settings: Settings<Data>, devSettings?: DevSettings) {
     super({
-      get: (index: number, count: number, success: Function) => {
+      get: (index, count, success) => {
         const data = [];
         const start = index;
         const end = start + count - 1;
@@ -65,7 +66,7 @@ class LimitedDatasource extends Datasource {
       devSettings: devSettings || {},
     });
 
-    const { minIndex, maxIndex, startIndex } = this.settings as Settings;
+    const { minIndex, maxIndex, startIndex } = this.settings;
     this.min = minIndex || 0;
     this.max = maxIndex || 0;
     this.start = startIndex || 0;

@@ -2,7 +2,6 @@ export {
   Workflow,
   Item,
   IDatasource,
-  IDatasourceGeneric,
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,

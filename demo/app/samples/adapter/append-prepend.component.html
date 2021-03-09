@@ -11,27 +11,32 @@
 
   <div description>
     <p>
-      Adding items at the end and at the beginning of the <em>uiScroll</em> items buffer is possible with
+      Adding items at the end and at the beginning of the Scroller's Buffer is possible with
       <em>{{appendCallSample}}</em> and <em>{{prependCallSample}}</em> methods respectively.
       The <em>items</em> parameter is an array of items we want to add.
       Both methods act in the same way, so let's discuss <em>prepend</em>.
     </p>
     <p>
-      In this demo we have 20 items on start and 5 of them (95-99) are invisible on the backward direction.
-      By pushing "Prepend" button we are going to add 4 (which is the input value) new items
+      In this demo we have 20 items on start, 5 of them (95-99) are invisible on the backward direction.
+      By pushing "Prepend" button we want to add 4 (which is the input value) new items
       to the top of the list. After they are prepended, they become visible when scrolling up.
-      The <em>uiScroll</em> accurately injects prepended items into
-      its internal buffer consisting of 95-114 rows initially,
+      The <em>Scroller</em> accurately injects prepended items into
+      its Buffer consisting of 95-114 rows initially,
       so 1-4 new items temporary take place of items with indexes 91-94.
     </p>
     <p>
       But if we scroll away and make '90s items invisible and deleted from the viewport,
       and then scroll back, we will realise that nothing changes:
       "new" items are gone and the old 91-94 items returned to initial position.
-      The point is that the <em>Datasource</em> does not take into account our dataset changes.
-      It is our responsibility to take care of data passing to the <em>uiScroll</em> via <em>Datasource</em>.
-      Next sample provides one of the approach of consistent <em>Datasource</em> implementation with
-      <em>Adapter.append</em> and <em>Adapter.prepend</em> methods usage.
+      The point is that the changes we provide via <em>Adapter</em> over the internal Scroller's Buffer
+      don't affect the external <em>Datasource</em> we implemented on the Component level.
+      This is our responsibility to take care of data passing to the Scroller through the <em>Datasource</em>.
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterMethodsScope.map.appendPrependSync.id}}"
+      >The next sample</a>
+      provides one of the approach of consistent <em>Datasource</em> implementation
+      with <em>Adapter.append</em> and <em>Adapter.prepend</em> methods usage.
     </p>
   </div>
 </app-demo>

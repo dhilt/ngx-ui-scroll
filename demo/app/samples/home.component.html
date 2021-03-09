@@ -81,7 +81,7 @@
   Example list
 </h3>
 <div style="display: flex" class="demo-examples">
-  <div *ngFor="let scope of demos">
+  <div *ngFor="let scope of demosNotEmpty">
     <h5>{{scope.name}}</h5>
     <span *ngFor="let demo of scope.map">
       <a routerLink="{{scope.id}}" fragment="{{demo.id}}">

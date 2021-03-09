@@ -9,11 +9,8 @@ export class AdapterComponent {
   constructor() {
   }
 
-  importSample = `  import { Datasource } from 'ngx-ui-scroll';`;
+  datasourceSample = `  import { Datasource } from 'ngx-ui-scroll';
 
-  datasourceSample = `  datasource = new Datasource({
-    get: ... ,
-    settings: { ... }
-  });`;
+  datasource = new Datasource({ get, settings });`;
 
 }

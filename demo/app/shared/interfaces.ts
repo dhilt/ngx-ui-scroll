@@ -31,6 +31,7 @@ export interface DemoContext {
 }
 
 export interface MyItem {
-  id: number;
+  id: number | string;
   text: string;
+  size?: number;
 }

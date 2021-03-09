@@ -19,7 +19,7 @@ export class WindowComponent {
   }
 
   datasource = new Datasource({
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       const start = Math.max(index, MIN);
       const end = Math.min(index + count - 1, MAX);
       const data: any[] = [];
@@ -45,7 +45,7 @@ export class WindowComponent {
       }
     },
     settings: {
-      startIndex: 1,
+      startIndex: 100,
       padding: 0.25,
       bufferSize: 1,
       itemSize: 20,

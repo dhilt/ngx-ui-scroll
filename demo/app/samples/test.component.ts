@@ -39,7 +39,7 @@ export class TestComponent {
   datasourceDelay = 0;
   data: MyItem[];
 
-  datasource = new Datasource<IAdapter<MyItem>>({
+  datasource = new Datasource<MyItem>({
     get: (index: number, count: number) =>
       this.fetchData(index, count)
     ,

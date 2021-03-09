@@ -11,9 +11,8 @@
 
   <div description>
     <p>
-      The first <em>Adapter</em> API method is the <em>reload</em> method.
-      It allows to reload the <em>uiScroll</em> which includes
-      resetting the items <em>Buffer</em> and the <em>Viewport</em> params.
+      The <em>Adapter.reload</em> method allows to reload the <em>Scroller</em>.
+      This includes resetting the items <em>Buffer</em> and the <em>Viewport</em> params.
       The <em>reload</em> method has 1 optional argument: <em>index</em>. It specifies
       the index of the item to be first in the visible part of the viewport after reload.
     </p>
@@ -25,12 +24,13 @@
       <a
         [routerLink]="['/', startIndexDemoConfig.scope]"
         fragment="{{startIndexDemoConfig.id}}"
-      >startIndex setting description</a>.
+      >startIndex setting</a> demo.
     </p>
     <p>
       The <em>Adapter.reload</em> method is safe and needs not to be protected
-      with the <em>Adapter.relax</em> (though it could be protected if the UX demands).
-      This method interrupts the <em>uiScroll</em> flow and synchronously terminates
+      with the <em>Adapter.relax</em>
+      (though it could be protected if that's the UX requirement).
+      This method interrupts the Scroller's flow and synchronously terminates
       any pending processes on the Scroller's end.
       The same is true also for the <em>Adapter.reset</em> method.
     </p>

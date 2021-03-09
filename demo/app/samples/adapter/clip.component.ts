@@ -13,17 +13,20 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoClipComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.clip,
+    config: demos.adapterMethods.map.clip,
     viewportId: `clip-viewport`,
     count: 0,
     log: ''
   };
 
+  settingsScope = demos.settings;
+
   datasource = new Datasource({
     get: datasourceGetCallbackInfinite(this.demoContext),
     settings: {
       infinite: true
-    }
+    },
+    devSettings: { debug: true }
   });
 
   sources: DemoSources = [{
@@ -73,7 +76,7 @@ async doClip() {
     backwardOnly?: boolean;
   }`;
 
-  clipOptionsSample = `{ forwardOnly: true }`;
+  clipOptionsSample = `{ backwardOnly: true }`;
 
   async doClip() {
     await this.datasource.adapter.relax();

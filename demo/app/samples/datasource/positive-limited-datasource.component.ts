@@ -22,7 +22,7 @@ export class DemoPositiveLimitedDatasourceComponent {
   settingsScope = demos.settings.map;
 
   datasource: IDatasource = {
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       const data = [];
       const start = Math.max(1, index); // or 0
       const end = index + count - 1;

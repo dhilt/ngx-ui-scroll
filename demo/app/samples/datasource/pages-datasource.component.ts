@@ -37,7 +37,7 @@ export class DemoPagesDatasourceComponent {
   }
 
   datasource: IDatasource = {
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       this.getCount++;
       this.demoContext.log = '\n' + this.demoContext.log;
       this.demoContext.log = `${this.getCount}.1 index = ${index}, count = ${count}\n` + this.demoContext.log;

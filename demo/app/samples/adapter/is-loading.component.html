@@ -10,19 +10,19 @@
   </div>
   <div description>
     <p>
-      The first <em>Adapter</em> read-only property in the list is <em>isLoading</em>.
-      It is a boolean value indicating whether there are any pending processes running by the <em>uiScroll</em>.
+      <em>Adapter.isLoading</em> is a read-only boolean property
+      indicating whether there are any pending processes running by the <em>Scroller</em>.
       So when <em>datasource.adapter.isLoading</em> is <em>true</em>, it means that
-      the <em>uiScroll</em> is working right now and the viewport might be updated soon.
+      the <em>Scroller</em> is working right now and the viewport might be updated soon.
       225ms delay was added to the <em>Datasource.get</em> implementation in this sample.
     </p>
     <p>
       In addition to read-only scalar <em>isLoading</em> property there is also
       <em>isLoading$</em> property which is Observable. A Subject, to be exact.
       In this demo we have a subscription and <em>isLoadingCounter</em>
-      incrementing each time the <em>isLoading</em> becomes <em>false</em>.
+      which is incremented each time the <em>isLoading</em> value becomes <em>false</em>.
       We see that the initial value of this counter on the UI (before any scrolling) is 1.
-      So the <em>uiScroll</em> does initialization and first 3 fetches in a single session.
+      So the <em>Scroller</em> does initialization and first 3 fetches in a single session.
     </p>
   </div>
 </app-demo>

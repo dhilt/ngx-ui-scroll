@@ -15,7 +15,7 @@
   </div>
   <div description>
     <p>
-      <em>Adapter.remove</em> method allows to remove items from current buffer or/and virtually.
+      The <em>Adapter.remove</em> method allows to remove items from current buffer or/and virtually.
       The argument of this method is an object of the following type:
     </p>
     <pre>{{argumentsDescription}}</pre>
@@ -36,37 +36,36 @@
     </p>
     <p>
       Only a continuous series of items can be removed at a time using <em>predicate</em>.
-      So, if you need to remove items 1, 2, 3 and 5,
-      you need to call this method twice: once for 1, 2, 3 and then for 5.
+      So, if we want to remove items 1, 2, 3 and 5 with <em>predicate</em>,
+      we need to call this method twice: once for 1, 2, 3 and then for 5.
     </p>
     <p>
       Instead of <em>predicate</em> running over buffered items,
       it is possible to remove items by <em>indexes</em>.
       It has no sequence limitation.
       This method works with both buffered and virtual items.
-      For example, if we have [1..10] buffered items (they are rendered)
+      For example, we have [1..10] buffered items (they are rendered)
       and [11..100] virtual items (emulated via forward padding element
-      which size corresponds to 90 virtual items) and then we perform
-      <em>Adapter.remove(&#123; indexes: [100] &#125;)</em>, we'll have
-      the following:
+      which size corresponds to 90 virtual items), and we want to remove the last item via
+      <em>Adapter.remove(&#123; indexes: [100] &#125;)</em>, the result will be as follows:
     </p>
     <ul>
       <li>buffer is not affected</li>
       <li>the visible part of the viewport remains the same</li>
       <li>
-        size of the forward padding is reduced by the size of the 100th item,
+        size of the forward padding is reduced by size of the 100th item,
         so the scrollable area becomes slightly smaller
       </li>
     </ul>
     <p>
-      Indexes decrease by default, and the next option (<em>increase</em>)
+      Indexes decrease by default, and the <em>increase</em> option
       allows to change the default indexes adjustment strategy.
-      By setting <em>increase</em> to <em>true</em>, we tell the <em>uiScroll</em>
+      By setting <em>increase</em> to <em>true</em>, we tell the Scroller
       that we want to increase indexes of the items before the removed one(s).
     </p>
     <p>
       The very important thing is to synchronize the datasource with the changes
-      we are making over the <em>uiScroll</em> buffer via <em>Adapter.remove</em>.
+      we are making over the Scroller's buffer via <em>Adapter.remove</em>.
       Generally this is the App component responsibility,
       and in this demo it is done by the <em>removeFromDatasource</em> method.
       It removes 1 item from the initial dataset,

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
-import { Datasource, IAdapter } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-insert',
@@ -11,7 +11,7 @@ import { Datasource, IAdapter } from '../../../../public_api'; // from 'ngx-ui-s
 })
 export class DemoInsertComponent {
 
-  demoConfig = demos.adapter.map.insert;
+  demoConfig = demos.adapterMethods.map.insert;
 
   MIN = 1;
   MAX = 100;
@@ -31,8 +31,8 @@ export class DemoInsertComponent {
     }
   }
 
-  datasource = new Datasource<IAdapter<string>>({
-    get: (index: number, count: number, success: Function) => {
+  datasource = new Datasource<string>({
+    get: (index, count, success) => {
       index -= this.MIN; // convert to natural indexes starting with 0
       const start = Math.max(0, index);
       const end = Math.min(this.MAX - this.MIN + 1, index + count);
@@ -47,8 +47,8 @@ export class DemoInsertComponent {
     }
   });
 
-  datasource2 = new Datasource({
-    get: (index: number, count: number, success: Function) => {
+  datasource2 = new Datasource<string>({
+    get: (index, count, success) => {
       index -= this.MIN2; // convert to natural indexes starting with 0
       const start = Math.max(0, index);
       const end = Math.min(this.MAX2 - this.MIN2 + 1, index + count);
@@ -73,7 +73,7 @@ export class DemoInsertComponent {
     name: DemoSourceType.Component,
     text: `MIN = 1;
 MAX = 100;
-data = [];
+data: string[] = [];
 
 inputCount = '2';
 inputIndex = '3';
@@ -84,7 +84,7 @@ constructor() {
   }
 }
 
-datasource = new Datasource<IAdapter<string>>({
+datasource = new Datasource<string>({
   get: (index, count, success) => {
     index -= this.MIN; // convert to natural indexes starting with 0
     const start = Math.max(0, index);

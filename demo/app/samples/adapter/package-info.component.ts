@@ -13,7 +13,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoPackageInfoComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.packageInfo,
+    config: demos.adapterProps.map.packageInfo,
     viewportId: `package-info-viewport`,
     count: 0,
     log: ''

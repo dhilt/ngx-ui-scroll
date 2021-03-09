@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { DemoSources, DemoSourceType, MyItem } from '../shared/interfaces';
 import { globalScope as scopes, demoList as demos } from '../routes';
 
-import { Datasource, IAdapter } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-home',
@@ -15,9 +15,10 @@ export class HomeComponent {
   delay = 25;
   scopes: typeof scopes;
   demos: typeof demos;
+  demosNotEmpty: typeof demos;
 
-  datasource = new Datasource<IAdapter<MyItem>>({
-    get: (index: number, count: number, success: Function) => {
+  datasource = new Datasource<MyItem>({
+    get: (index, count, success) => {
       const data: any = [];
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });
@@ -110,6 +111,7 @@ Index to reload:
   constructor() {
     this.scopes = scopes;
     this.demos = demos;
+    this.demosNotEmpty = demos.filter(({ map }) => map.length);
   }
 
   doReload() {

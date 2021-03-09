@@ -25,7 +25,7 @@ export class DemoLimitedDatasourceComponent {
   MAX = 900;
 
   datasource: IDatasource = {
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       const data = [];
       const start = Math.max(this.MIN, index);
       const end = Math.min(index + count - 1, this.MAX);

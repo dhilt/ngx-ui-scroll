@@ -20,22 +20,19 @@
     <pre>{{itemAdapterDescription}}</pre>
     <p>
       <em>$index</em> corresponds to <em>Datasource</em> item index value;
-      <em>data</em> is what we were pushing to the <em>uiScroll</em>
+      <em>data</em> is what we were pushing to the Scroller
       on <em>Datasource.get</em> (item's content);
       <em>element</em> is the DOM element that is relevant to our item.
     </p>
     <p>
       In addition to scalar <em>firstVisible</em> and <em>lastVisible</em> properties
       there are also Observable versions: <em>firstVisible$</em> and <em>lastVisible$</em>.
-      Both versions could be used in the template as it is shown in this demo.
-      Also, we may have appropriate subscriptions and
-      here in this sample we are calculating
-      a number of visible items with the help of <em>combineLatest</em> RxJs method.
+      In this demo we calculate a number of visible items with the help of <em>combineLatest</em> RxJs method.
     </p>
     <p>
       Recalculation of the first and the last items occurs per each non-empty
-      <em>Datasource.get</em> call after new items are retrieved and rendered
-      and unnecessary items are clipped out.
+      "inner loop" session, when a bunch of new items are fetched via <em>Datasource.get</em>,
+      rendered and unnecessary items are clipped out.
     </p>
   </div>
 </app-demo>

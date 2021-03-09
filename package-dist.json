@@ -1,6 +1,6 @@
 {
   "name": "ngx-ui-scroll",
-  "version": "2.0.0-rc.6",
+  "version": "2.0.0-rc.7",
   "description": "Infinite/virtual scroll for Angular",
   "main": "./bundles/ngx-ui-scroll.umd.js",
   "module": "./fesm5/ngx-ui-scroll.js",

@@ -14,7 +14,7 @@
     "deploy-app": "npm run build-app && firebase deploy",
     "preinstall": "cd server && npm install",
     "postinstall": "npm run build-app",
-    "pack:install": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-2.0.0-rc.7.tgz --no-save",
+    "pack:install": "npm run build && npm pack ./dist && npm install ngx-ui-scroll-2.0.0-rc.8.tgz --no-save",
     "pack:start": "npm run pack:install && npm start",
     "build": "node build.js",
     "publish:lib": "npm run build && npm publish ./dist",

@@ -12,10 +12,10 @@
   </div>
   <div description>
     <p>
-      The <em>Scroller</em> has internal process layer that might be called "inner loop",
+      The Scroller has internal process layer that might be called "inner loop",
       which is responsible for single fetch-clip-render chain.
       Inner loop can be empty and non-empty.
-      Empty inner loop does nothing but check if the <em>Scroller</em> could relax.
+      Empty inner loop does nothing but check if the Scroller could relax.
       Non-empty inner loop corresponds to 1 <em>Datasource.get</em> call (which is "fetch" subprocess)
       and following viewport updates: clipping old items, inserting new ones and render.
       <em>Adapter.loopPending</em> read-only scalar property
@@ -28,10 +28,10 @@
       Here we count the Scroller "loading" sessions and 
       the Scroller "inner loops" within the
       <em>Adapter.isLoading$</em> and <em>Adapter.loopPending$</em> subscriptions respectively.
-      After the <em>Scroller</em> is initialized and started relaxing,
+      After the Scroller is initialized and started relaxing,
       we see that there are 4 inner loops done, while <em>isLoading</em> counter is 1.
       Practically it means that we have 3 <em>Datasource.get</em> calls and 1 more empty loop
-      to ensure that the <em>Scroller</em> could relax.
+      to ensure that the Scroller could relax.
       And these 4 inner loops are being packed into 1 "isLoading" session.
     </p>
     <p>

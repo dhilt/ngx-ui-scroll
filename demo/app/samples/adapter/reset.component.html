@@ -11,13 +11,13 @@
 
   <div description>
     <p>
-      The <em>Adapter.reset</em> method is designed to reset the internal state of the <em>Scroller</em>.
+      The <em>Adapter.reset</em> method is designed to reset the internal state of the Scroller.
       It differs from the <em>Adapter.reload</em> because it re-instantiates all internal entities,
       which is equivalent to destroying the Scroller and re-creating it again via <em>ngIf</em>.
     </p>
     <p>
       The method has 1 optional argument: <em>datasource</em> object. By passing it,
-      we tell the <em>Scroller</em> that we want to use a new datasource.
+      we tell the Scroller that we want to use a new datasource.
       If the argument is not passed, the old Datasource will be used.
     </p>
     <p>
@@ -34,7 +34,7 @@
       <em>this.datasource</em> must keep the same reference before and after reset.
       So <em>this.datasource&nbsp;=&nbsp;...</em> expressions are prohibited after reset,
       for it will make the Adapter subscriptions broken.
-      The <em>Scroller</em> maintains Datasource params and
+      The Scroller maintains Datasource params and
       provides the Adapter consistency across the reset.
       Even in case of passing a new instance of Datasource:
     </p>

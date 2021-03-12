@@ -12,7 +12,7 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 export class HomeComponent {
 
   reloadIndex = 999;
-  delay = 25;
+  delay = 0;
   scopes: typeof scopes;
   demos: typeof demos;
   demosNotEmpty: typeof demos;
@@ -41,6 +41,15 @@ export class HomeComponent {
   });
 
   sources: DemoSources = [{
+    name: DemoSourceType.Template,
+    text: `<div class="viewport">
+  <div *uiScroll="let item of datasource; let even = even">
+    <div class="item" [class.even]="even">
+      {{item.text}}
+    </div>
+  </div>
+</div>`
+  }, {
     name: DemoSourceType.Component,
     text: `delay = 25;
 reloadIndex = 999;
@@ -63,22 +72,19 @@ doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`
   }, {
-    name: DemoSourceType.Template,
-    text: `<div class="viewport">
-  <div *uiScroll="let item of datasource; let even = even">
-    <div class="item" [class.even]="even">
-      {{item.text}}
-    </div>
-  </div>
-</div>
+    name: 'Adapter',
+    text: `Version:
+{{datasource.adapter.packageInfo.consumer.version}}
 
-<!-- adapter props and methods: -->
+Core:
+{{datasource.adapter.packageInfo.core.name}}
+v{{datasource.adapter.packageInfo.core.version}}
 
 First visible:
-\${{datasource.adapter.firstVisible.$index}}
+\#{{datasource.adapter.firstVisible.$index}}
 
 Last visible:
-\${{(datasource.adapter.lastVisible$ | async)?.$index}}
+\#{{(datasource.adapter.lastVisible$ | async)?.$index}}
 
 Items in DOM:
 {{datasource.adapter.itemsCount}}

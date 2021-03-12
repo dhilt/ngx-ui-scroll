@@ -23,7 +23,7 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
     get: (index, count, success) => {
       const data = [];
       for (let i = index; i <= index + count - 1; i++) {
-        data.push({ id: i, text: 'item #' + i });
+        data.push({ text: 'item #' + i });
       }
       doLog(this.demoContext, index, count, data.length);
       success(data);
@@ -36,7 +36,7 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
-      data.push({ id: i, text: 'item #' + i });
+      data.push({ text: 'item #' + i });
     }
     success(data);
   }

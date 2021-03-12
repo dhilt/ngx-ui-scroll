@@ -2,12 +2,9 @@
 
 <p>
   <em>ngx-ui-scroll</em> is the Angular library for large datasets virtualization.
-  The idea, core principles and terminology are inherited from its AngularJS direct predecessor:
-  <a href="https://github.com/angular-ui/ui-scroll">angular-ui-scroll</a>,
-  a pioneer in the virtual scrolling developing, since 2013.
   More information regarding motivation, infrastructure, features, developing
   can be found on <a href="https://github.com/dhilt/ngx-ui-scroll">GitHub</a>.
-  This site is dedicated to practical examples of the <em>uiScroll</em> usage.
+  This site is dedicated to practical examples of <em>ngx-ui-scroll</em> usage.
 </p>
 
 <div class="demo">
@@ -24,6 +21,8 @@
     </div>
     <div class="log">
       <div style="line-height: 25px; margin-bottom: 2px;">
+        Version: {{datasource.adapter.packageInfo.consumer.version}}
+        <br>
         Core: {{datasource.adapter.packageInfo.core.name}} v{{datasource.adapter.packageInfo.core.version}}
         <br>
         First visible: #{{datasource.adapter.firstVisible.$index}}
@@ -51,31 +50,34 @@
 
   <div class="sources">
     <tabset>
-      <tab heading="{{sources[1].name}}">
-        <pre class="prettyprint lang-html">{{sources[1].text}}</pre>
-      </tab>
       <tab heading="{{sources[0].name}}">
-        <pre class="prettyprint">{{sources[0].text}}</pre>
+        <pre class="prettyprint lang-html">{{sources[0].text}}</pre>
+      </tab>
+      <tab heading="{{sources[1].name}}">
+        <pre class="prettyprint">{{sources[1].text}}</pre>
       </tab>
       <tab heading="{{sources[2].name}}">
-        <pre class="prettyprint">{{sources[2].text}}</pre>
+        <pre class="prettyprint lang-html">{{sources[2].text}}</pre>
+      </tab>
+      <tab heading="{{sources[3].name}}">
+        <pre class="prettyprint">{{sources[3].text}}</pre>
       </tab>
     </tabset>
   </div>
 </div>
 
 <p>
-  It's just a little demo including simplest template,
-  simplest Datasource implementation with no any settings provided
-  and some of Adapter properties and methods usage.
-  Other samples with all necessary details and explanations can be found at
+  This particular demo includes simplest virtual list template (tab 1),
+  simplest Datasource implementation with no any settings provided (tab 2),
+  some of the Adapter read-only properties output (tab 3),
+  simplest styling (tab 4).
+  Many other samples with all necessary details and explanations can be found at
   <a routerLink="{{scopes.datasource.id}}">{{scopes.datasource.name}}</a>,
   <a routerLink="{{scopes.settings.id}}">{{scopes.settings.name}}</a>,
   <a routerLink="{{scopes.adapter.id}}">{{scopes.adapter.name}}</a> and
   <a routerLink="{{scopes.experimental.id}}">{{scopes.experimental.name}}</a>
-  sections. Below is the list of all examples available per these sections.
+  sections. Below is the list of all examples available in these sections.
 </p>
-
 
 <h3>
   Example list

@@ -6,6 +6,8 @@
 
   <div description>
     <p>
+      The <em>Adapter.relax</em> is a kind of empty <em>Adapter</em> method
+      that does only one thing: it resolves when the Scroller is relaxed.
       If we need to run any logic that should not interfere with the Scroller internal processes,
       it should be protected by the "relax" promise:
     </p>
@@ -19,14 +21,22 @@
       Thus, both operations must be run in sequence.
       Also, we should be wary of any async processes
       before running the Adapter methods chain.
-      So the algorithm for this demo can be written be as follows: 
+      So the algorithm for this demo can be written as follows: 
     </p>
     <ul>
-      <li>wait for scroller stops</li>
+      <li>wait for Scroller stops</li>
       <li>run remove</li>
       <li>wait for remove is done</li>
       <li>run insert</li>
     </ul>
+    <p>
+      (Please note, a replacement can be done via 
+      <a
+        [routerLink]="['/', adapterMethodsScope.map.replace.scope]"
+        fragment="{{adapterMethodsScope.map.replace.id}}"
+      >Adapter.replace API</a> in a single run;
+      the <em>insert-remove</em> approach is less performant than the <em>Adapter.replace</em>)
+    </p>
     <p>
       The purpose of the <em>Adapter.relax</em> method is to make sure that the <em>uiScroll</em> relaxes
       and there are no pending internal tasks running on the Scroller's end.
@@ -41,13 +51,13 @@
       All the tabs are equivalent. The third tab "Callback" uses a callback signature of
       the <em>Adapter.relax</em> method. The method accepts callback as an optional argument,
       and this allows to run necessary logic right before resolving the "relax" promise.
-      This might be helpful if we don't want to wait until the end of current call stack.
+      This might be helpful if we don't want to wait until the end of the current call stack.
     </p>
     <p>
       At last, we may use
       <a
-        [routerLink]="['/', adapterReturnValueDemoConfig.scope]"
-        fragment="{{adapterReturnValueDemoConfig.id}}"
+        [routerLink]="['/', adapterMethodsScope.map.returnValue.scope]"
+        fragment="{{adapterMethodsScope.map.returnValue.id}}"
       >Return value API</a>
       (which is a part of each <em>Adapter</em> method)
       and get rid of the second "relax". This approach is demonstrated on the last tab "Return".

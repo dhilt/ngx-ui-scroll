@@ -1,4 +1,4 @@
-import { AdapterClipOptions, ItemAdapter } from './miscellaneous/vscroll';
+import { AdapterClipOptions } from './miscellaneous/vscroll';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
@@ -29,6 +29,13 @@ configByDirectionList.push({
 });
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
+
+const configListInfinite = configList
+  .filter((c, i) => i === 0 || i === 3)
+  .map(config => ({
+    ...config,
+    datasourceSettings: { ...config.datasourceSettings, infinite: true }
+  }));
 
 export const getItemsCounter = (
   settings: TestBedConfig, misc: Misc, itemSize: number, firstIndex: number, lastIndex: number, clipOptions: AdapterClipOptions
@@ -103,6 +110,22 @@ const getClipArgument = ({ custom }: TestBedConfig): any => {
   return argument;
 };
 
+const shouldClipInfinite = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  const { adapter } = misc;
+  await misc.relaxNext();
+  const count = adapter.itemsCount;
+
+  await misc.scrollMinMax();
+  const count2 = adapter.itemsCount;
+  expect(count2).toBeGreaterThan(count);
+
+  await adapter.clip();
+  const count3 = adapter.itemsCount;
+  expect(count3).toBeLessThan(count2);
+
+  done();
+};
+
 const getClipDirection = (config: TestBedConfig): string => {
   if (!config.custom) {
     return '';
@@ -137,6 +160,14 @@ describe('Adapter Clip Spec', () => {
     })
   );
 
+  configListInfinite.forEach(config =>
+    makeTest({
+      config,
+      title: 'should clip after scroll when infinite',
+      it: shouldClipInfinite(config)
+    })
+  );
+
   makeTest({
     config: { datasourceSettings: { adapter: true } },
     title: `should resolve immediately before scroller initialization`,
@@ -144,37 +175,9 @@ describe('Adapter Clip Spec', () => {
       const result = await misc.adapter.clip();
       expect(result.immediate).toBe(true);
       expect(result.success).toBe(true);
-      // expect(result.details).toBe('Adapter is not initialized');
+      expect(result.details).toBe('Adapter is not initialized');
       done();
     }
-  });
-
-  describe('onBeforeClip', () => {
-    const clippedIndexes: number[] = [];
-    const config: TestBedConfig = {
-      datasourceSettings: {
-        adapter: true,
-        onBeforeClip: (items: ItemAdapter[]) =>
-          items.forEach(({ $index }) => clippedIndexes.push($index))
-      }
-    };
-    makeTest({
-      config,
-      title: `should call properly`,
-      it: (misc: Misc) => async (done: Function) => {
-        await misc.relaxNext();
-        const { adapter } = misc;
-        const indexList: number[] = [], indexListAfterScroll: number[] = [];
-        adapter.fix({ updater: ({ $index }) => indexList.push($index) });
-        adapter.fix({ scrollPosition: Infinity });
-        await misc.relaxNext();
-        adapter.fix({ updater: ({ $index }) => indexListAfterScroll.push($index) });
-        const removedIndexes = indexList.filter(index => indexListAfterScroll.indexOf(index) < 0);
-        const isEqual = (JSON.stringify(removedIndexes.sort()) === JSON.stringify(clippedIndexes.sort()));
-        expect(isEqual).toBe(true);
-        done();
-      }
-    });
   });
 
 });

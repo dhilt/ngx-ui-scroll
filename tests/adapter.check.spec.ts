@@ -148,7 +148,7 @@ const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
 const shouldSimulateFetch = (misc: Misc, value: boolean) => {
   const { fetch } = misc.scroller.state;
   expect(fetch.simulate).toEqual(value);
-  expect(fetch.isReplace).toEqual(value);
+  expect(fetch.isCheck).toEqual(value);
 };
 
 const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>

@@ -1,7 +1,7 @@
 import { DynamicSizeArg, getDynamicSizeByIndex } from './dynamicSize';
 import { getMin, getMax } from './common';
 
-export interface Item {
+export interface Data {
   id: number;
   text: string;
   size?: number;
@@ -9,10 +9,10 @@ export interface Item {
 
 export interface IndexedItem {
   $index: number;
-  data: Item;
+  data: Data;
 }
 
-const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSizeArg, suffix = ''): Item => ({
+const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSizeArg, suffix = ''): Data => ({
   id,
   text: 'item #' + index + suffix,
   ...(
@@ -26,10 +26,10 @@ const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSize
   )
 });
 
-export const generateItem = (index: number, dynamicSize: DynamicSizeArg = false, suffix = ''): Item =>
+export const generateItem = (index: number, dynamicSize: DynamicSizeArg = false, suffix = ''): Data =>
   generateItemWithId(index, index, dynamicSize, suffix);
 
-export const generateItems = (length: number, lastIndex: number): Item[] =>
+export const generateItems = (length: number, lastIndex: number): Data[] =>
   Array.from({ length }).map((j, i) => generateItem(lastIndex + i + 1));
 
 export const removeItems = (items: IndexedItem[], idListToRemove: number[], min: number, max: number, increase?: boolean) => {

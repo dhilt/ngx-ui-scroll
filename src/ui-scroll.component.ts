@@ -31,28 +31,28 @@ import consumer from './ui-scroll.version';
     </div>
     <div data-padding-forward></div>`
 })
-export class UiScrollComponent implements OnInit, OnDestroy {
+export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
 
   // these should come from the directive
   public template: TemplateRef<any>;
-  public datasource: IDatasource;
+  public datasource: IDatasource<Data>;
 
   // the only template variable
-  public items: Item[] = [];
+  public items: Item<Data>[] = [];
 
   // Component-Workflow integration
-  public workflow: Workflow;
+  public workflow: Workflow<Data>;
 
   constructor(
     public changeDetector: ChangeDetectorRef,
     public elementRef: ElementRef) { }
 
   ngOnInit() {
-    this.workflow = new Workflow({
+    this.workflow = new Workflow<Data>({
       consumer,
       element: this.elementRef.nativeElement,
       datasource: this.datasource as any,
-      run: (items: Item[]) => {
+      run: (items: Item<Data>[]) => {
         if (!items.length && !this.items.length) {
           return;
         }

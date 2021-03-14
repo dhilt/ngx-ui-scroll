@@ -13,7 +13,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoIsLoadingComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.isLoading,
+    config: demos.adapterProps.map.isLoading,
     viewportId: `is-loading-viewport`,
     count: 0,
     log: ''

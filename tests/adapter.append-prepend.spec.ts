@@ -2,7 +2,7 @@ import { Direction } from './miscellaneous/vscroll';
 
 import { makeTest, OperationConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { Item } from './miscellaneous/items';
+import { Data } from './miscellaneous/items';
 
 enum Operation {
   append = 'append',
@@ -77,7 +77,7 @@ describe('Adapter Append-Prepend Spec', () => {
     }
   };
 
-  const getNewItems = (total: number): { [key: string]: Item[] } => ({
+  const getNewItems = (total: number): { [key: string]: Data[] } => ({
     [Operation.append]: [...Array(total).keys()].map((i: number) => ({
       id: max - total + i + 1,
       text: 'item #' + (max - total + i + 1)

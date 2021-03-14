@@ -206,11 +206,11 @@ describe('Zero Size Spec', () => {
     makeTest({
       config,
       title: 'should stop the Workflow after the first loop',
-      it: (misc: Misc) => (done: Function) =>
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          expect(misc.innerLoopCount).toEqual(1);
-          done();
-        })
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        expect(misc.innerLoopCount).toEqual(1);
+        done();
+      }
     })
   );
 
@@ -221,12 +221,11 @@ describe('Zero Size Spec', () => {
         datasourceName: 'limited-1-100-processor'
       },
       title: 'should stop the Workflow after the second loop',
-      it: (misc: Misc) => (done: Function) => {
+      it: (misc: Misc) => async (done: Function) => {
         misc.setItemProcessor(({ $index, data }) => data.size = $index >= 6 ? 0 : 20);
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          expect(misc.innerLoopCount).toEqual(2);
-          done();
-        });
+        await misc.relaxNext();
+        expect(misc.innerLoopCount).toEqual(2);
+        done();
       }
     })
   );
@@ -239,25 +238,24 @@ describe('Zero Size Spec', () => {
         datasourceSettings: { adapter: true }
       },
       title: 'should continue the Workflow after re-size and check',
-      it: (misc: Misc) => (done: Function) =>
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const { scroller: { viewport }, adapter } = misc;
-          if (misc.workflow.cyclesDone === 1) {
-            expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-            misc.setItemProcessor(({ data }) => data.size = 20);
-            adapter.fix({
-              updater: ({ element, data }) => {
-                data.size = 20;
-                (element as any).children[0].style.height = '20px';
-              }
-            });
-            adapter.check();
-          } else {
-            expect(viewport.getScrollableSize()).toBeGreaterThan(0);
-            expect(viewport.paddings.forward.size).toEqual(0);
-            done();
+      it: (misc: Misc) => async (done: Function) => {
+        const { scroller: { viewport }, adapter } = misc;
+        await misc.relaxNext();
+
+        expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
+        misc.setItemProcessor(({ data }) => data.size = 20);
+        adapter.fix({
+          updater: ({ element, data }) => {
+            data.size = 20;
+            (element as any).children[0].style.height = '20px';
           }
-        })
+        });
+        await adapter.check();
+
+        expect(viewport.getScrollableSize()).toBeGreaterThan(0);
+        expect(viewport.paddings.forward.size).toEqual(0);
+        done();
+      }
     })
   );
 

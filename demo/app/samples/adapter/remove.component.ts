@@ -4,7 +4,7 @@ import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
-import { Datasource, IAdapter } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-remove',
@@ -13,7 +13,7 @@ import { Datasource, IAdapter } from '../../../../public_api'; // from 'ngx-ui-s
 export class DemoRemoveComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.remove,
+    config: demos.adapterMethods.map.remove,
     viewportId: `remove-viewport`,
     addClass: `remove`,
     count: 0,
@@ -32,8 +32,8 @@ export class DemoRemoveComponent {
     }
   }
 
-  datasource = new Datasource<IAdapter<MyItem>>({
-    get: (index: number, count: number, success: Function) => {
+  datasource = new Datasource<MyItem>({
+    get: (index, count, success) => {
       let data: MyItem[] = [];
       const shift = -Math.min(this.MIN, 0);
       const start = Math.max(index + shift, 0);
@@ -60,8 +60,8 @@ constructor() {
   }
 }
 
-datasource = new Datasource<IAdapter<MyItem>>({
-  get: (index: number, count: number, success: Function) => {
+datasource = new Datasource<MyItem>({
+  get: (index, count, success) => {
     const shift = -Math.min(this.MIN, 0);
     const start = Math.max(index + shift, 0);
     const end = Math.min(index + count - 1, this.MAX) + shift;

@@ -22,13 +22,13 @@ export class DemoPositiveLimitedDatasourceComponent {
   settingsScope = demos.settings.map;
 
   datasource: IDatasource = {
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       const data = [];
       const start = Math.max(1, index); // or 0
       const end = index + count - 1;
       if (start <= end) {
         for (let i = start; i <= end; i++) {
-          data.push({ id: i, text: 'item #' + i });
+          data.push({ text: 'item #' + i });
         }
       }
       doLog(this.demoContext, index, count, data.length);
@@ -45,7 +45,7 @@ export class DemoPositiveLimitedDatasourceComponent {
     const end = index + count - 1;
     if (start <= end) {
       for (let i = start; i <= end; i++) {
-        data.push({ id: i, text: 'item #' + i });
+        data.push({ text: 'item #' + i });
       }
     }
     success(data);

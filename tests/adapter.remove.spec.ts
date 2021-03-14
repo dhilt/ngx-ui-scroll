@@ -1,8 +1,10 @@
 import { ItemsPredicate } from './miscellaneous/vscroll';
 
 import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { getDatasourceClassForRemovals } from './scaffolding/datasources/class';
 import { Misc } from './miscellaneous/misc';
 import { IndexedItem, removeItems } from './miscellaneous/items';
+import { getDynamicSumSize, getDynamicSizeByIndex } from './miscellaneous/dynamicSize';
 
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-processor',
@@ -97,7 +99,7 @@ const configListOutFixed: TestBedConfig[] = [{
     remove: [-51, -52, -53, -54, -55],
     useIndexes: true,
     text: 'backward'
-  }
+  },
 }, {
   ...baseConfigOut, custom: {
     removeBwd: [-51, -52, -53, -54, -55],
@@ -107,15 +109,69 @@ const configListOutFixed: TestBedConfig[] = [{
   }
 }];
 
-const configListOutDynamic: TestBedConfig[] = [{
-  datasourceName: 'limited--99-100-dynamic-size-processor',
+const configListDynamicBuffer: TestBedConfig[] = [{
+  datasourceSettings: { startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { indexToRemove: 11, size: 100, increase: false }
+}, {
+  datasourceSettings: { startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { indexToRemove: 9, size: 100, increase: false }
+}, {
+  datasourceSettings: { startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { indexToRemove: 11, size: 100, increase: true }
+}, {
+  datasourceSettings: { startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { indexToRemove: 9, size: 100, increase: true }
+}].map(config => ({
+  ...config,
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
-  datasourceSettings: { startIndex: 1, maxIndex: 100, bufferSize: 10, padding: 0.2, adapter: true },
-  custom: {
-    remove: [100], // must be the last index in the datasource
-    useIndexes: true
-  }
-}];
+  datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings)
+}));
+
+const configListDynamicVirtual: TestBedConfig[] = [{
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceDevSettings: { cacheOnReload: true },
+  custom: { indexToReload: 2, indexToRemove: 20, size: 100, increase: false }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceDevSettings: { cacheOnReload: true },
+  custom: { indexToReload: 15, indexToRemove: 1, size: 100, increase: false }
+}, {
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceDevSettings: { cacheOnReload: true },
+  custom: { indexToReload: 2, indexToRemove: 20, size: 100, increase: true }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceDevSettings: { cacheOnReload: true },
+  custom: { indexToReload: 15, indexToRemove: 1, size: 100, increase: true }
+}].map(config => ({
+  ...config,
+  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
+  datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings, config.datasourceDevSettings)
+}));
+
+const configListFlush: TestBedConfig[] = [{
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'bof', fixRight: false, first: 1, last: 8 }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'bof and 15 items', fixRight: true, first: 9, last: 15 }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 30, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'bof and 30 items', fixRight: true, first: 9, last: 16 }
+}, {
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'eof', fixRight: false, first: 5, last: 12 }
+}, {
+  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'eof and 15 items', fixRight: true, first: 9, last: 15 }
+}, {
+  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 25, bufferSize: 1, padding: 0.5, adapter: true },
+  custom: { text: 'eof and 25 items', fixRight: true, first: 18, last: 25 }
+}].map(config => ({
+  ...config,
+  templateSettings: { viewportHeight: 100 },
+  datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings)
+}));
 
 const doRemove = async (config: TestBedConfig, misc: Misc, byId = false) => {
   const { increase, useIndexes, remove, removeBwd, removeFwd } = config.custom;
@@ -169,7 +225,6 @@ const shouldRemove = (config: TestBedConfig, byId = false) => (misc: Misc) => as
   await doRemove(config, misc, byId);
 
   const { firstIndex, lastIndex, items } = misc.scroller.buffer;
-  expect(misc.scroller.state.clip.callCount).toEqual(1);
   if (!isNaN(firstIndex) && !isNaN(lastIndex)) {
     // check all items contents
     (items as IndexedItem[]).forEach(({ $index, data: { id } }) => {
@@ -210,14 +265,18 @@ const shouldBreak = (config: TestBedConfig) => (misc: Misc) => async (done: Func
   done();
 };
 
-const shouldRemoveOutOfViewFixed = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const shouldRemoveVirtual = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
   const { datasourceSettings: { minIndex, maxIndex, itemSize } } = config;
   const { remove, removeBwd, removeFwd } = config.custom;
-  const indexList = remove || [...removeBwd, ...removeFwd];
+  const indexList: number[] = remove || [...removeBwd, ...removeFwd];
   await misc.relaxNext();
+  const { $index: indexFirst, data: { id: idFirst } } = misc.adapter.firstVisible;
   await doRemove(config, misc);
   const size = (maxIndex - minIndex + 1 - indexList.length) * itemSize;
+  const shift = indexList.reduce((acc: number, i) => acc + (i < indexFirst ? 1 : 0), 0);
   expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
+  expect(misc.adapter.firstVisible.$index).toBe(indexFirst - shift);
+  expect(misc.adapter.firstVisible.data.id).toBe(idFirst);
 
   // let's scroll to the first row before the removed
   const min = Math.min(...(removeBwd || remove));
@@ -235,38 +294,71 @@ const shouldRemoveOutOfViewFixed = (config: TestBedConfig) => (misc: Misc) => as
   expect(misc.adapter.lastVisible.$index).toBe(maxIndex - indexList.length);
   expect(misc.checkElementContent(maxIndex - indexList.length, maxIndex)).toBe(true);
   expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
+
   done();
 };
 
-const shouldRemoveOutOfViewDynamic = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+type DS = InstanceType<ReturnType<typeof getDatasourceClassForRemovals>>;
+
+const scrollDownToIndex = async (misc: Misc, index: number) => {
+  const { adapter } = misc;
+  while (adapter.bufferInfo.lastIndex < index) {
+    adapter.fix({ scrollToItem: ({ $index }) => $index === adapter.bufferInfo.lastIndex });
+    await misc.relaxNext();
+  }
+};
+
+const shouldRemoveDynamicSize = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  const { custom: { indexToReload, indexToRemove, size, increase } } = config;
+  const { datasourceSettings: { minIndex, maxIndex, startIndex } } = config;
+  const ds = misc.datasource as DS;
+  const finalSize = getDynamicSumSize(minIndex, maxIndex) - getDynamicSizeByIndex(indexToRemove);
+
+  // set DS sizes
+  ds.data.forEach(item => item.size = getDynamicSizeByIndex(item.id));
+  ds.data[indexToRemove - minIndex].size = size;
   await misc.relaxNext();
 
-  // scroll to the very bottom
-  const position = misc.getScrollPosition();
-  await misc.scrollDownRecursively();
-  expect(misc.adapter.eof).toEqual(true);
-  const indexToRemove = config.custom.remove[0];
-  const { scroller: { viewport }, adapter } = misc;
-  expect(adapter.lastVisible.$index).toBe(indexToRemove);
-  const sizeToRemove = misc.routines.getSize(adapter.lastVisible.element as HTMLElement);
-  expect(sizeToRemove).toBeGreaterThan(0);
+  if (Number.isInteger(indexToReload)) {
+    await misc.adapter.reload(indexToReload);
+  }
 
-  // scroll back to start item
-  misc.scrollTo(position);
+  // remove item from DS and Scroller
+  const { $index, data: { id } } = misc.adapter.firstVisible;
+  const { averageSize } = misc.scroller.buffer;
+  ds.remove([indexToRemove], increase);
+  await misc.adapter.remove({ indexes: [indexToRemove], increase });
+  let shift = 0;
+  if (increase && indexToRemove > $index) {
+    shift = 1;
+  } else if (!increase && indexToRemove < $index) {
+    shift = -1;
+  }
+  expect(misc.adapter.firstVisible.$index).toBe($index + shift);
+  expect(misc.adapter.firstVisible.data.id).toBe(id);
+  expect(misc.scroller.buffer.averageSize).not.toBe(averageSize);
+
+  misc.scrollMin();
   await misc.relaxNext();
-  const viewportSizeBeforeRemove = misc.getScrollableSize();
+  await scrollDownToIndex(misc, maxIndex - (increase ? 0 : 1));
+  expect(misc.getScrollableSize()).toBe(finalSize);
 
-  // remove invisible lat row
-  await doRemove(config, misc);
-  const viewportSizeAfterRemove = viewportSizeBeforeRemove - sizeToRemove;
-  expect(misc.getScrollableSize()).toBe(viewportSizeAfterRemove);
+  done();
+};
 
-  // scroll to the very bottom again
-  misc.scrollMax();
+const shouldFlush = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+  const { adapter, scroller: { state, buffer } } = misc;
+  const { first, last, fixRight } = config.custom;
   await misc.relaxNext();
-  expect(misc.getScrollableSize()).toBe(viewportSizeAfterRemove);
-  expect(adapter.lastVisible.$index).toBe(indexToRemove - 1);
-  expect(viewport.paddings.forward.size).toBe(0);
+
+  const ds = misc.datasource as DS;
+  ds.remove(buffer.items.map(({ $index }) => $index), fixRight);
+  await adapter.remove({ predicate: (_item) => true, increase: fixRight });
+
+  expect(misc.workflow.cyclesDone).toEqual(2);
+  expect(state.cycle.innerLoop.count).toBeGreaterThan(1);
+  expect(buffer.firstIndex).toEqual(first);
+  expect(buffer.lastIndex).toEqual(last);
 
   done();
 };
@@ -337,16 +429,36 @@ describe('Adapter Remove Spec', () => {
     configListOutFixed.forEach(config =>
       makeTest({
         config,
-        title: `should remove fix-sized items out of view (${config.custom.text})`,
-        it: shouldRemoveOutOfViewFixed(config)
+        title: `should remove fix-sized items out of buffer (${config.custom.text})`,
+        it: shouldRemoveVirtual(config)
+      })
+    );
+  });
+
+  describe('Dynamic size', () => {
+    configListDynamicBuffer.forEach(config =>
+      makeTest({
+        config,
+        title: `should remove dynamic-sized items from buffer` + (config.custom.increase ? ' (increase)' : ''),
+        it: shouldRemoveDynamicSize(config)
       })
     );
 
-    configListOutDynamic.forEach(config =>
+    configListDynamicVirtual.forEach(config =>
       makeTest({
         config,
-        title: `should remove dynamic-sized items out of view`,
-        it: shouldRemoveOutOfViewDynamic(config)
+        title: `should remove dynamic-sized items out of buffer`,
+        it: shouldRemoveDynamicSize(config)
+      })
+    );
+  });
+
+  describe('Flush', () => {
+    configListFlush.forEach(config =>
+      makeTest({
+        config,
+        title: `should continue the Workflow if ${config.custom.text}${config.custom.fixRight ? ' (increase)' : ''}`,
+        it: shouldFlush(config)
       })
     );
   });

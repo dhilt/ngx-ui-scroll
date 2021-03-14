@@ -29,16 +29,16 @@
       be applied to the <em>uiScroll</em> buffer should also happen at the datasource level.
       The examples of Datasource-Adapter synching can be found
       <a
-        [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterScope.map.appendPrependSync.id}}"
+        [routerLink]="['/', adapterMethodsScope.id]"
+        fragment="{{adapterMethodsScope.map.appendPrependSync.id}}"
       >here</a>,
       <a
-        [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterScope.map.remove.id}}"
+        [routerLink]="['/', adapterMethodsScope.id]"
+        fragment="{{adapterMethodsScope.map.remove.id}}"
       >here</a> and
       <a
-        [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterScope.map.insert.id}}"
+        [routerLink]="['/', adapterMethodsScope.id]"
+        fragment="{{adapterMethodsScope.map.insert.id}}"
       >here</a>.
     </p>
     <p>
@@ -48,8 +48,8 @@
       at a particular moment. The result is equal to the value of <em>Adapter.itemsCount</em>
       read-only property
       (<a
-        [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterScope.map.itemsCount.id}}"
+        [routerLink]="['/', adapterPropsScope.id]"
+        fragment="{{adapterPropsScope.map.itemsCount.id}}"
       >link</a>).
       Also, I would not recommend to bind <em>countItems</em>-like methods with the template
       as it is in this demo, for it might affect the performance.

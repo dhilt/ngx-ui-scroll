@@ -4,7 +4,7 @@
   [sources]="sources"
 >
   <div actions>
-    The uiScroll is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}},
+    The Scroller is {{datasource.adapter.isLoading ? 'loading': 'relaxing'}},
     counter {{loadingCounter}}
     <br>
     Inner loop is {{datasource.adapter.loopPending ? 'pending': 'stopped'}},
@@ -12,25 +12,26 @@
   </div>
   <div description>
     <p>
-      The <em>uiScroll</em> has internal process layer that might be called "inner loop",
+      The Scroller has internal process layer that might be called "inner loop",
       which is responsible for single fetch-clip-render chain.
       Inner loop can be empty and non-empty.
-      Empty inner loop does nothing but check if the <em>uiScroll</em> could relax.
+      Empty inner loop does nothing but check if the Scroller could relax.
       Non-empty inner loop corresponds to 1 <em>Datasource.get</em> call (which is "fetch" subprocess)
       and following viewport updates: clipping old items, inserting new ones and render.
-      The <em>Adapter.loopPending</em> read-only property
-      and <em>Adapter.loopPending$</em> subscription
-      allow us to know whether "inner loop" is working or not.
+      <em>Adapter.loopPending</em> read-only scalar property
+      and <em>Adapter.loopPending$</em> observable property
+      let us to know if the "inner loop" is pending or not.
     </p>
     <p>
-      The <em>isLoading</em> property we discussed before
+      The <em>isLoading</em> property, which we discussed earlier,
       majorizes <em>loopPending</em> property, and this demo shows how they correlate.
-      Here we are counting loadings and inner loops within the
-      <em>Adapter.isLoading$</em> and <em>Adapter.loopPending$</em> subscription handlers respectively.
-      After the <em>uiScroll</em> is initialized and started relaxing,
+      Here we count the Scroller "loading" sessions and 
+      the Scroller "inner loops" within the
+      <em>Adapter.isLoading$</em> and <em>Adapter.loopPending$</em> subscriptions respectively.
+      After the Scroller is initialized and started relaxing,
       we see that there are 4 inner loops done, while <em>isLoading</em> counter is 1.
       Practically it means that we have 3 <em>Datasource.get</em> calls and 1 more empty loop
-      to ensure that the <em>uiScroll</em> could relax.
+      to ensure that the Scroller could relax.
       And these 4 inner loops are being packed into 1 "isLoading" session.
     </p>
     <p>
@@ -43,14 +44,14 @@
       </li>
       <li>
         <em>inner loop</em> pending, which is <em>loopPending</em> and which includes
-        some internal <em>uiScroll</em> subprocesses (fetch, clip, render)
-        that can take some time in addition to <em>Datasource.get</em> work
+        some internal Scroller's subprocesses (fetch, clip, render)
+        that can take some time in addition to <em>Datasource.get</em> call
         (which is a part of "fetch" subprocess);
       </li>
       <li>
-        <em>continuous work session</em> pending, which is <em>isLoading</em>
-        and which consists of 1 and more inner loops that contain
-        a single session of the internal <em>uiScroll</em> Workflow run.
+        <em>Workflow</em> pending, which is <em>isLoading</em>
+        and which consists of 1 and more inner loops
+        making up one continuous "loading" session.
       </li>
     </ul>
   </div>

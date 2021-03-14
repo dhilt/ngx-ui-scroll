@@ -1,8 +1,9 @@
-import { makeTest } from './scaffolding/runner';
+import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
-import { Item } from './miscellaneous/items';
+import { Data } from './miscellaneous/items';
 import { configureTestBedSub } from './scaffolding/testBed';
+import { ItemAdapter } from './miscellaneous/vscroll';
 
 describe('Bug Spec', () => {
 
@@ -174,7 +175,7 @@ describe('Bug Spec', () => {
           } else if (item.$index > MIN) {
             text = (item.$index + (MAX - MIN)).toString();
           }
-          expect((item.data as Item).text).toEqual('item #' + text);
+          expect((item.data as Data).text).toEqual('item #' + text);
         });
 
         done();
@@ -201,6 +202,34 @@ describe('Bug Spec', () => {
       }
     })
   );
+
+  describe('onBeforeClip', () => {
+    const clippedIndexes: number[] = [];
+    const config: TestBedConfig = {
+      datasourceSettings: {
+        adapter: true,
+        onBeforeClip: (items: ItemAdapter<Data>[]) =>
+          items.forEach(({ $index }) => clippedIndexes.push($index))
+      }
+    };
+    makeTest({
+      config,
+      title: `should call properly`,
+      it: (misc: Misc) => async (done: Function) => {
+        await misc.relaxNext();
+        const { adapter } = misc;
+        const indexList: number[] = [], indexListAfterScroll: number[] = [];
+        adapter.fix({ updater: ({ $index }) => indexList.push($index) });
+        adapter.fix({ scrollPosition: Infinity });
+        await misc.relaxNext();
+        adapter.fix({ updater: ({ $index }) => indexListAfterScroll.push($index) });
+        const removedIndexes = indexList.filter(index => indexListAfterScroll.indexOf(index) < 0);
+        const isEqual = (JSON.stringify(removedIndexes.sort()) === JSON.stringify(clippedIndexes.sort()));
+        expect(isEqual).toBe(true);
+        done();
+      }
+    });
+  });
 
   describe('infinite mode', () =>
     makeTest({

@@ -40,4 +40,3 @@ const configureTestBedFactory = <T>(comp: Type<T>) => (): ComponentFixture<T> =>
 
 export const configureTestBedTwo = configureTestBedFactory(TwoScrollersTestComponent);
 export const configureTestBedSub = configureTestBedFactory(ScrollerSubTestComponent);
-

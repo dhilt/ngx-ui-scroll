@@ -30,6 +30,14 @@ const globalScope = {
     id: 'adapter',
     name: 'Adapter'
   },
+  adapterProps: {
+    id: 'adapter',
+    name: 'Adapter props'
+  },
+  adapterMethods: {
+    id: 'adapter',
+    name: 'Adapter methods'
+  },
   experimental: {
     id: 'experimental',
     name: 'Experimental'
@@ -44,32 +52,32 @@ const datasourceScope = {
   },
   unlimitedBidirectional: {
     id: 'unlimited-bidirectional',
-    name: 'Unlimited bidirectional datasource',
+    name: 'Unlimited bidirectional',
     scope: globalScope.datasource.id
   },
   limited: {
     id: 'limited',
-    name: 'Limited datasource',
+    name: 'Limited',
     scope: globalScope.datasource.id
   },
   positiveLimitedIndexes: {
     id: 'positive-limited-indexes',
-    name: 'Positive limited datasource',
+    name: 'Positive limited',
     scope: globalScope.datasource.id
   },
   remote: {
     id: 'remote',
-    name: 'Remote datasource',
+    name: 'Remote',
     scope: globalScope.datasource.id
   },
   invertedIndexes: {
     id: 'inverted-indexes',
-    name: 'Inverted datasource',
+    name: 'Inverted',
     scope: globalScope.datasource.id
   },
   pages: {
     id: 'pages',
-    name: 'Pages datasource',
+    name: 'Pages',
     scope: globalScope.datasource.id
   },
 };
@@ -82,22 +90,22 @@ const settingsScope = {
   },
   bufferSize: {
     id: 'buffer-size',
-    name: 'bufferSize setting',
+    name: 'bufferSize',
     scope: globalScope.settings.id
   },
   padding: {
     id: 'padding',
-    name: 'padding setting',
+    name: 'padding',
     scope: globalScope.settings.id
   },
   itemSize: {
     id: 'item-size',
-    name: 'itemSize setting',
+    name: 'itemSize',
     scope: globalScope.settings.id
   },
   startIndex: {
     id: 'start-index',
-    name: 'startIndex setting',
+    name: 'startIndex',
     scope: globalScope.settings.id
   },
   minMaxIndexes: {
@@ -127,7 +135,50 @@ const settingsScope = {
   },
 };
 
-const adapterScope = {
+const adapterPropsScope = {
+  init: {
+    id: 'init',
+    name: 'Initialization',
+    scope: globalScope.adapterProps.id
+  },
+  packageInfo: {
+    id: 'package-info',
+    name: 'Package info',
+    scope: globalScope.adapterProps.id
+  },
+  isLoading: {
+    id: 'is-loading',
+    name: 'Is loading?',
+    scope: globalScope.adapterProps.id
+  },
+  isLoadingAdvanced: {
+    id: 'is-loading-advanced',
+    name: 'Is loading, advanced',
+    scope: globalScope.adapterProps.id
+  },
+  itemsCount: {
+    id: 'items-count',
+    name: 'Buffer items counter',
+    scope: globalScope.adapterProps.id
+  },
+  bufferInfo: {
+    id: 'buffer-info',
+    name: 'Buffer info',
+    scope: globalScope.adapterProps.id
+  },
+  bofEof: {
+    id: 'bof-eof',
+    name: 'Begin/end of file',
+    scope: globalScope.adapterProps.id
+  },
+  firstLastVisible: {
+    id: 'first-last-visible-items',
+    name: 'First and last visible items',
+    scope: globalScope.adapterProps.id
+  },
+};
+
+const adapterMethodsScope = {
   returnValue: {
     id: 'return-value',
     name: 'Return value',
@@ -148,80 +199,40 @@ const adapterScope = {
     name: 'Reset',
     scope: globalScope.adapter.id
   },
-  init: {
-    id: 'init',
-    name: 'Initialization',
-    scope: globalScope.adapter.id
-  },
-  isLoading: {
-    id: 'is-loading',
-    name: 'Is loading?',
-    scope: globalScope.adapter.id
-  },
-  isLoadingAdvanced: {
-    id: 'is-loading-advanced',
-    name: 'Is loading, advanced',
-    scope: globalScope.adapter.id
-  },
-  packageInfo: {
-    id: 'package-info',
-    name: 'Package info',
-    scope: globalScope.adapter.id
-  },
-  itemsCount: {
-    id: 'items-count',
-    name: 'Buffer items counter',
-    scope: globalScope.adapter.id
-  },
-  bufferInfo: {
-    id: 'buffer-info',
-    name: 'Buffer info',
-    scope: globalScope.adapter.id
-  },
-  bofEof: {
-    id: 'bof-eof',
-    name: 'Begin/end of file',
-    scope: globalScope.adapter.id
-  },
-  firstLastVisible: {
-    id: 'first-last-visible-items',
-    name: 'First and last visible items',
-    scope: globalScope.adapter.id
-  },
   check: {
     id: 'check-size',
     name: 'Check size',
-    scope: globalScope.adapter.id
+    scope: globalScope.adapterMethods.id
   },
   clip: {
     id: 'clip',
     name: 'Clip',
-    scope: globalScope.adapter.id
+    scope: globalScope.adapterMethods.id
   },
   appendPrepend: {
     id: 'append-prepend',
     name: 'Append / prepend',
-    scope: globalScope.adapter.id
+    scope: globalScope.adapterMethods.id
   },
   appendPrependSync: {
     id: 'append-prepend-sync',
     name: 'Append / prepend sync',
-    scope: globalScope.adapter.id
+    scope: globalScope.adapterMethods.id
   },
   remove: {
     id: 'remove',
     name: 'Remove',
-    scope: globalScope.adapter.id
+    scope: globalScope.adapterMethods.id
   },
   insert: {
     id: 'insert',
     name: 'Insert',
-    scope: globalScope.adapter.id
+    scope: globalScope.adapterMethods.id
   },
   replace: {
     id: 'replace',
     name: 'Replace',
-    scope: globalScope.adapter.id
+    scope: globalScope.adapterMethods.id
   },
 };
 
@@ -269,7 +280,15 @@ const demos = {
   },
   adapter: {
     ...globalScope.adapter,
-    map: adapterScope
+    map: [],
+  },
+  adapterProps: {
+    ...globalScope.adapterProps,
+    map: adapterPropsScope
+  },
+  adapterMethods: {
+    ...globalScope.adapterMethods,
+    map: adapterMethodsScope
   },
   experimental: {
     ...globalScope.experimental,

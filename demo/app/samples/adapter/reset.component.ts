@@ -13,7 +13,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoResetComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.reset,
+    config: demos.adapterMethods.map.reset,
     viewportId: `reset-viewport`,
     count: 0,
     log: ''

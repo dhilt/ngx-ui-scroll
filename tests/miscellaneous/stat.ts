@@ -1,6 +1,6 @@
 import { Workflow } from './vscroll';
 
-export class Stat {
+export class Stat<Data = unknown> {
   size: number;
   scrollableSize: number;
   paddingFwd: number;
@@ -9,7 +9,7 @@ export class Stat {
   itemsCountByIndexes: number;
   averageSize: number;
 
-  constructor({ viewport, buffer }: Workflow['scroller']) {
+  constructor({ viewport, buffer }: Workflow<Data>['scroller']) {
     this.size = viewport.getSize();
     this.scrollableSize = viewport.getScrollableSize();
     this.paddingFwd = viewport.paddings.forward.size;
@@ -19,7 +19,7 @@ export class Stat {
     this.averageSize = buffer.averageSize;
   }
 
-  expect(stat: Stat) {
+  expect(stat: Stat<Data>) {
     expect(this.size).toEqual(stat.size);
     expect(this.scrollableSize).toEqual(stat.scrollableSize);
     expect(this.paddingFwd).toEqual(stat.paddingFwd);

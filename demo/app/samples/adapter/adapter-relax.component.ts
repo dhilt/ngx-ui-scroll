@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources } from '../../shared/interfaces';
+import { DemoSources, MyItem } from '../../shared/interfaces';
 
 import { Datasource } from '../../../../public_api';
 
@@ -12,14 +12,14 @@ import { Datasource } from '../../../../public_api';
 export class DemoAdapterRelaxComponent {
 
   demoContext = {
-    config: demos.adapter.map.relax,
+    config: demos.adapterMethods.map.relax,
     noInfo: true
   };
 
-  adapterReturnValueDemoConfig = demos.adapter.map.returnValue;
+  adapterMethodsScope = demos.adapterMethods;
 
-  datasource = new Datasource({
-    get: (index: number, count: number, success: Function) => {
+  datasource = new Datasource<MyItem>({
+    get: (index, count, success) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });
@@ -120,7 +120,7 @@ doReplace() {
 
   async doReplace() {
     const { adapter } = this.datasource;
-    const newItem = { id: '5*', text: 'item #5 *' };
+    const newItem: MyItem = { id: '5*', text: 'item #5 *' };
     await adapter.relax();
     adapter.remove({
       predicate: ({ $index }) => $index > 4 && $index < 8

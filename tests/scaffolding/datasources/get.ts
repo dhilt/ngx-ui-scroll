@@ -1,6 +1,6 @@
 import { Observable, Observer } from 'rxjs';
 
-import { generateItem, IndexedItem, Item } from '../../miscellaneous/items';
+import { generateItem, IndexedItem, Data } from '../../miscellaneous/items';
 import { DynamicSizeArg } from '../../miscellaneous/dynamicSize';
 
 const datasourceGetInfinite = (index: number, count: number, suffix?: string) => {
@@ -13,7 +13,7 @@ const datasourceGetInfinite = (index: number, count: number, suffix?: string) =>
 
 export const getLimitedData = (
   index: number, count: number, min: number, max: number, dynamicSize: DynamicSizeArg, inverse: boolean, processor?: any
-): Item[] => {
+): Data[] => {
   const result: IndexedItem[] = [];
   const start = inverse ? -index - count : index;
   const end = start + count - 1;

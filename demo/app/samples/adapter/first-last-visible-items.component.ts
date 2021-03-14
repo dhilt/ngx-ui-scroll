@@ -14,7 +14,7 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoFirstLastVisibleItemsComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.firstLastVisible,
+    config: demos.adapterProps.map.firstLastVisible,
     viewportId: `first-last-visible-items-viewport`,
     count: 0,
     log: ''

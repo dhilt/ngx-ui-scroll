@@ -14,7 +14,7 @@ export class DemoAppendPrependComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.appendPrepend,
-    viewportId: `append-prepend-viewport`,
+    viewportId: 'append-prepend-viewport',
     count: 0,
     log: ''
   };

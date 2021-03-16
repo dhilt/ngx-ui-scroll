@@ -14,7 +14,7 @@ export class DemoPackageInfoComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.packageInfo,
-    viewportId: `package-info-viewport`,
+    viewportId: 'package-info-viewport',
     count: 0,
     log: ''
   };

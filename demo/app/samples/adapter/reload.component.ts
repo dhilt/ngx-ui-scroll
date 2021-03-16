@@ -14,7 +14,7 @@ export class DemoReloadComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.reload,
-    viewportId: `reload-viewport`,
+    viewportId: 'reload-viewport',
     count: 0,
     log: ''
   };

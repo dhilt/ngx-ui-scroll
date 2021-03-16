@@ -14,7 +14,7 @@ export class DemoInfiniteComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.infiniteMode,
-    viewportId: `infinite-viewport`,
+    viewportId: 'infinite-viewport',
     count: 0,
     log: ''
   };

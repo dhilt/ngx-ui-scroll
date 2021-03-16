@@ -1,5 +1,7 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 
+import { IDatasource } from '../../../public_api';
+
 import { DemoContext, DemoSources } from './interfaces';
 
 @Component({
@@ -10,10 +12,10 @@ export class DemoComponent implements OnInit {
 
   init = false;
 
-  @Input() datasource: any;
+  @Input() datasource: IDatasource;
   @Input() context: DemoContext;
   @Input() sources: DemoSources;
-  @Input() itemTemplate: TemplateRef<any>;
+  @Input() itemTemplate: TemplateRef<unknown>;
 
   viewport(token: string): string {
     const element = document.getElementById(token);

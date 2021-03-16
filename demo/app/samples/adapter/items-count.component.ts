@@ -14,7 +14,7 @@ export class DemoItemsCountComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.itemsCount,
-    viewportId: `items-count-viewport`,
+    viewportId: 'items-count-viewport',
     count: 0,
     log: ''
   };

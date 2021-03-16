@@ -1,9 +1,9 @@
 import { Observable, Observer } from 'rxjs';
 
 import { IDatasource } from '../../../src/ui-scroll.datasource';
-import { DemoContext } from './interfaces';
+import { DemoContext, MyItem } from './interfaces';
 
-const delayedCall = (result: any, callback: Function, delay?: number) => {
+const delayedCall = (result: MyItem[], callback: (items: MyItem[]) => void, delay?: number) => {
   if (isNaN(Number(delay))) {
     callback(result);
   } else {
@@ -11,7 +11,7 @@ const delayedCall = (result: any, callback: Function, delay?: number) => {
   }
 };
 
-export const doLog = (demoContext: DemoContext, index: number, count: number, resolved: number) => {
+export const doLog = (demoContext: DemoContext, index: number, count: number, resolved: number): void => {
   demoContext.count = demoContext.count || 0;
   demoContext.log =
     `${++demoContext.count}) got ${resolved} items [${index}..${index + count - 1}]\n`
@@ -19,8 +19,8 @@ export const doLog = (demoContext: DemoContext, index: number, count: number, re
 };
 
 export const datasourceGetInfinite =
-  (demoContext: DemoContext, index: number, count: number) => {
-    const data = [];
+  (demoContext: DemoContext, index: number, count: number): MyItem[] => {
+    const data: MyItem[] = [];
     for (let i = index; i <= index + count - 1; i++) {
       data.push({ id: i, text: 'item #' + i });
     }
@@ -29,15 +29,15 @@ export const datasourceGetInfinite =
   };
 
 export const datasourceGetLimited =
-  (demoContext: DemoContext, min: number, max: number, index: number, count: number) => {
+  (demoContext: DemoContext, min: number, max: number, index: number, count: number): MyItem[] => {
     min = isNaN(Number(min)) ? -Infinity : Number(min);
     max = isNaN(Number(max)) ? Infinity : Number(max);
-    const data = [];
+    const data: MyItem[] = [];
     const start = Math.max(min, index);
     const end = Math.min(index + count - 1, max);
     if (start <= end) {
       for (let i = start; i <= end; i++) {
-        data.push({ id: i, text: 'item #' + i, height: 20 + i });
+        data.push({ id: i, text: 'item #' + i, size: 20 + i });
       }
     }
     doLog(demoContext, index, count, data.length);
@@ -45,12 +45,12 @@ export const datasourceGetLimited =
   };
 
 export const datasourceGetObservableInfinite = (demoContext: DemoContext) =>
-  (index: number, count: number) => new Observable((observer: Observer<any[]>) =>
+  (index: number, count: number): Observable<MyItem[]> => new Observable<MyItem[]>((observer: Observer<MyItem[]>) =>
     observer.next(datasourceGetInfinite(demoContext, index, count))
   );
 
 export const datasourceGetPromiseInfinite = (demoContext: DemoContext) =>
-  (index: number, count: number) => new Promise(success =>
+  (index: number, count: number): Promise<MyItem[]> => new Promise<MyItem[]>(success =>
     success(datasourceGetInfinite(demoContext, index, count))
   );
 

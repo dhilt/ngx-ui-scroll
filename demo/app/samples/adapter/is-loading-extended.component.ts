@@ -14,7 +14,7 @@ export class DemoIsLoadingExtendedComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.isLoadingAdvanced,
-    viewportId: `is-loading-advanced-viewport`,
+    viewportId: 'is-loading-advanced-viewport',
     count: 0,
     log: ''
   };

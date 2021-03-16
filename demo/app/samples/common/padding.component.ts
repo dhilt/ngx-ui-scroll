@@ -14,7 +14,7 @@ export class DemoPaddingComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.padding,
-    viewportId: `padding-viewport`,
+    viewportId: 'padding-viewport',
     count: 0,
     log: ''
   };

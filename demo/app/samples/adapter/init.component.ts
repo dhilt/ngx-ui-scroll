@@ -16,7 +16,7 @@ export class DemoInitComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.init,
-    viewportId: `init-viewport`,
+    viewportId: 'init-viewport',
     noInfo: true,
     count: 0,
     log: ''

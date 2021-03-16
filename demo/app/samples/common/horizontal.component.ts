@@ -14,8 +14,8 @@ export class DemoHorizontalComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.horizontalMode,
-    viewportId: `horizontal-viewport`,
-    addClass: `horizontal`,
+    viewportId: 'horizontal-viewport',
+    addClass: 'horizontal',
     count: 0,
     log: ''
   };

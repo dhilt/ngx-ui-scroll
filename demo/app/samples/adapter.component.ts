@@ -13,6 +13,6 @@ export class AdapterComponent {
 
   datasource = new Datasource({ get, settings });`;
 
-  datasourceTypedSample = `datasource = new Datasource<MyItem>({ get, settings });`;
+  datasourceTypedSample = 'datasource = new Datasource<MyItem>({ get, settings });';
 
 }

@@ -14,7 +14,7 @@ export class DemoCheckSizeComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.check,
-    viewportId: `check-size-viewport`,
+    viewportId: 'check-size-viewport',
     count: 0,
     log: ''
   };

@@ -18,8 +18,8 @@ export class DemoReplaceComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.replace,
-    viewportId: `replace-viewport`,
-    addClass: `replace`,
+    viewportId: 'replace-viewport',
+    addClass: 'replace',
     count: 0,
     log: ''
   };

@@ -15,7 +15,7 @@ export class DemoFirstLastVisibleItemsComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.firstLastVisible,
-    viewportId: `first-last-visible-items-viewport`,
+    viewportId: 'first-last-visible-items-viewport',
     count: 0,
     log: ''
   };

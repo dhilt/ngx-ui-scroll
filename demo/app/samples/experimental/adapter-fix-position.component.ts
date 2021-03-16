@@ -58,7 +58,7 @@ export class DemoAdapterFixPositionComponent {
 `
   }];
 
-  adapterFixPosition = `Adapter.fix({ scrollPosition: 0 })`;
+  adapterFixPosition = 'Adapter.fix({ scrollPosition: 0 })';
 
   scrollTop() {
     this.datasource.adapter.fix({ scrollPosition: 0 });

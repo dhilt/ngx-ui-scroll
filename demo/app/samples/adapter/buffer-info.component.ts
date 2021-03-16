@@ -14,7 +14,7 @@ export class DemoBufferInfoComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.bufferInfo,
-    viewportId: `buffer-info-viewport`,
+    viewportId: 'buffer-info-viewport',
     count: 0,
     log: ''
   };

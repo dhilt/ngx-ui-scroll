@@ -89,7 +89,7 @@ countItems() {
     element?: HTMLElement;
   }`;
 
-  adapterFixUpdater = `Adapter.fix({ updater })`;
+  adapterFixUpdater = 'Adapter.fix({ updater })';
 
   doUpdate() {
     const index = Number(this.inputValue);
@@ -104,10 +104,10 @@ countItems() {
     }
   }
 
-  countItems() {
+  countItems(): number {
     let count = 0;
     this.datasource.adapter.fix({
-      updater: ({ }) => count++
+      updater: () => count++
     });
     return count;
   }

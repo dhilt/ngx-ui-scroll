@@ -14,7 +14,7 @@ export class DemoIsLoadingComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.isLoading,
-    viewportId: `is-loading-viewport`,
+    viewportId: 'is-loading-viewport',
     count: 0,
     log: ''
   };

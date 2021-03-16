@@ -73,11 +73,11 @@ doScrollTo() {
 `
   }];
 
-  adapterFixUpdater = `Adapter.fix({ scrollToItem })`;
+  adapterFixUpdater = 'Adapter.fix({ scrollToItem })';
 
   doScrollTo() {
     const index = Number(this.index);
-    const alignToTop = !Boolean(this.scrollToBottom);
+    const alignToTop = !this.scrollToBottom;
     if (!isNaN(index)) {
       this.datasource.adapter.fix({
         scrollToItem: ({ data }) => data.id === index,

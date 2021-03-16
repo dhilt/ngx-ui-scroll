@@ -19,7 +19,7 @@ export class HomeComponent {
 
   datasource = new Datasource<MyItem>({
     get: (index, count, success) => {
-      const data: any = [];
+      const data: MyItem[] = [];
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });
       }
@@ -81,10 +81,10 @@ Core:
 v{{datasource.adapter.packageInfo.core.version}}
 
 First visible:
-\#{{datasource.adapter.firstVisible.$index}}
+#{{datasource.adapter.firstVisible.$index}}
 
 Last visible:
-\#{{(datasource.adapter.lastVisible$ | async)?.$index}}
+#{{(datasource.adapter.lastVisible$ | async)?.$index}}
 
 Items in DOM:
 {{datasource.adapter.itemsCount}}

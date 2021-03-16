@@ -14,7 +14,7 @@ export class DemoClipComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.clip,
-    viewportId: `clip-viewport`,
+    viewportId: 'clip-viewport',
     count: 0,
     log: ''
   };
@@ -25,8 +25,7 @@ export class DemoClipComponent {
     get: datasourceGetCallbackInfinite(this.demoContext),
     settings: {
       infinite: true
-    },
-    devSettings: { debug: true }
+    }
   });
 
   sources: DemoSources = [{
@@ -76,7 +75,7 @@ async doClip() {
     backwardOnly?: boolean;
   }`;
 
-  clipOptionsSample = `{ backwardOnly: true }`;
+  clipOptionsSample = '{ backwardOnly: true }';
 
   async doClip() {
     await this.datasource.adapter.relax();

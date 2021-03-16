@@ -14,7 +14,7 @@ export class DemoMinMaxIndexesComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.minMaxIndexes,
-    viewportId: `min-max-indexes-viewport`,
+    viewportId: 'min-max-indexes-viewport',
     count: 0,
     log: ''
   };

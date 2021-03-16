@@ -13,8 +13,8 @@ export class DatasourceComponent {
   constructor() {
   }
 
-  importSample = `import { Datasource, IDatasource } from 'ngx-ui-scroll';`;
-  datasourceSampleLiteral = `datasource: IDatasource = { get, settings };`;
-  datasourceSampleClass = `datasource = new Datasource({ get, settings });`;
+  importSample = 'import { Datasource, IDatasource } from \'ngx-ui-scroll\';';
+  datasourceSampleLiteral = 'datasource: IDatasource = { get, settings };';
+  datasourceSampleClass = 'datasource = new Datasource({ get, settings });';
 
 }

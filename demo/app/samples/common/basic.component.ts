@@ -14,7 +14,7 @@ export class DemoBasicComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.noSettings,
-    viewportId: `no-settings-viewport`,
+    viewportId: 'no-settings-viewport',
     count: 0,
     log: ''
   };

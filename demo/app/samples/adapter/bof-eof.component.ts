@@ -15,7 +15,7 @@ export class DemoBofEofComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterProps.map.bofEof,
-    viewportId: `bof-eof-viewport`,
+    viewportId: 'bof-eof-viewport',
     count: 0,
     log: ''
   };

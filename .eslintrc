@@ -25,6 +25,15 @@
       "rules": {
         "@typescript-eslint/no-var-requires": "off"
       }
+    },
+    {
+      "files": ["demo/**/*.ts"],
+      "env": {
+        "node": true
+      },
+      "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": "off"
+      }
     }
   ]
 }

@@ -11,7 +11,7 @@ export class DemoWindowViewportComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.windowViewport,
-    viewportId: `window-viewport-viewport`,
+    viewportId: 'window-viewport-viewport',
     noWorkView: true,
     count: 0,
     log: ''

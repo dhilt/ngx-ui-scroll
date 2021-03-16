@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoSources } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { IDatasource } from '../../../../public_api';

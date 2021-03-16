@@ -14,8 +14,8 @@ export class DemoRemoveComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.remove,
-    viewportId: `remove-viewport`,
-    addClass: `remove`,
+    viewportId: 'remove-viewport',
+    addClass: 'remove',
     count: 0,
     log: ''
   };

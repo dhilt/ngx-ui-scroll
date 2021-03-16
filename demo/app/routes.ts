@@ -7,16 +7,6 @@ interface IDemo extends IScope {
   scope: string;
 }
 
-interface ScopeDemo extends IScope {
-  map: {
-    [key in string]: IDemo
-  };
-}
-
-type Demos = {
-  [key in string]: ScopeDemo
-};
-
 const globalScope = {
   datasource: {
     id: 'datasource',

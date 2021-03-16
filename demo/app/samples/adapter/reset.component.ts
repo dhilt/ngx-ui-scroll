@@ -14,7 +14,7 @@ export class DemoResetComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.reset,
-    viewportId: `reset-viewport`,
+    viewportId: 'reset-viewport',
     count: 0,
     log: ''
   };
@@ -62,7 +62,7 @@ doReset() {
 </div>`
   }];
 
-  resetWithNewInstanceSample = `  this.datasource.adapter.reset(new Datasource(...));`;
+  resetWithNewInstanceSample = '  this.datasource.adapter.reset(new Datasource(...));';
 
   doReset() {
     this.demoContext.count = 0;

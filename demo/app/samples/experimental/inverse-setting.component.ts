@@ -13,7 +13,7 @@ export class DemoInverseSettingComponent {
 
   demoContext = {
     config: demos.experimental.map.inverseSetting,
-    addClass: `inverse`,
+    addClass: 'inverse',
     noInfo: true
   };
 

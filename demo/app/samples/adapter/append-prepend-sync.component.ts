@@ -14,7 +14,7 @@ export class DemoAppendPrependSyncComponent {
 
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.appendPrependSync,
-    viewportId: `append-prepend-sync-viewport`,
+    viewportId: 'append-prepend-sync-viewport',
     count: 0,
     log: ''
   };
@@ -62,6 +62,7 @@ export class DemoAppendPrependSyncComponent {
           data.push(this.data[_index]);
         }
       }
+      doLog(this.demoContext, index, count, data.length);
       success(data);
     },
     settings: {

@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 
-import { Datasource, IAdapter } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 const MAX = 50;
 let MIN = -199;
@@ -10,7 +10,7 @@ const MIN_ROW_HEIGHT = 5;
 interface MyItem {
   id: number;
   text: string;
-  height: number;
+  size: number;
   isSelected: boolean;
   data?: string;
   color?: string;
@@ -50,12 +50,13 @@ export class TestComponent {
       // maxIndex: MAX,
       itemSize: 100,
       startIndex: 1,
+      // onBeforeClip: (item) => item,
       viewportElement: () => this.viewportRef.nativeElement
       // viewportElement: () => document.getElementById('my-viewport')
     },
     devSettings: {
       debug: true,
-      immediateLog: true,
+      immediateLog: false,
       logTime: false,
       logProcessRun: true,
       throttle: 40,
@@ -75,10 +76,10 @@ export class TestComponent {
         id: i + MIN,
         text: 'item #' + (i + MIN),
         isSelected: i % 15 === 0,
-        height: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN) // 100
+        size: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN) // 100
       };
       if (item.isSelected) {
-        item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, (x, j) => '*').join('');
+        item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, () => '*').join('');
         item.color = i % 30 === 0 ? 'red' : 'black';
       }
       this.data.push(item);
@@ -93,7 +94,7 @@ export class TestComponent {
       for (let i = start; i <= end; i++) {
         data.push(this.data[i - MIN]);
         // if (i > 0) {
-        //   this.data[i - MIN].height = 25;
+        //   this.data[i - MIN].size = 25;
         // }
       }
       if (start === MIN) {
@@ -142,7 +143,7 @@ export class TestComponent {
       id: MIN,
       text: 'item #' + MIN,
       isSelected: false,
-      height: 25
+      size: 25
     };
     this.data.unshift(item);
     this.datasource.adapter.prepend(item, true);
@@ -173,7 +174,7 @@ export class TestComponent {
           (element as HTMLElement).style.height = this.sizeValue + 'px';
           const item = this.data.find(_item => _item.id === i);
           if (item) {
-            item.height = this.sizeValue;
+            item.size = this.sizeValue;
           }
         }
       }

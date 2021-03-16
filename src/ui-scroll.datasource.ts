@@ -22,7 +22,8 @@ interface IReactiveOverride<Item = unknown> {
   eof$: Subject<boolean>;
 }
 
-interface IAngularAdapter<Data = unknown> extends Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>, IReactiveOverride<Data> { }
+interface IAngularAdapter<Data = unknown>
+  extends Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>, IReactiveOverride<Data> { }
 
 interface IAngularDatasource<Data = unknown> extends Omit<IDatasource<Data>, 'adapter'> {
   adapter?: IAngularAdapter<Data>;
@@ -58,7 +59,7 @@ const getAdapterConfig = (): IAdapterConfig => ({
 const makeAngularDatasource = () => class <T = unknown> implements IAngularDatasourceConstructed<T> {
   get: IDatasource<T>['get'];
   adapter: IAngularAdapter<T>;
-  constructor(ds: IDatasource<T>) { }
+  constructor(_ds: IDatasource<T>) { }
 };
 
 const AngularDatasource =

@@ -1,9 +1,20 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
-const customDefault = { startIndex: null, scrollCount: 0, preLoad: false, reloadCount: 1, interruptionCount: 0 };
+interface ICustom {
+  startIndex: number | null;
+  scrollCount: number;
+  preLoad: boolean;
+  reloadCount: number;
+  interruptionCount: number;
+  firstVisible?: number;
+}
 
-const configList: TestBedConfig[] = [{
+const customDefault: ICustom = {
+  startIndex: null, scrollCount: 0, preLoad: false, reloadCount: 1, interruptionCount: 0
+};
+
+const configList: TestBedConfig<ICustom>[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
   templateSettings: { viewportHeight: 100 },
   custom: { ...customDefault }
@@ -54,7 +65,7 @@ const onFetchReloadConfigList = configList.map((config, i) => ({
   }
 }));
 
-const beforeInitConfigList: TestBedConfig[] = configList.map((config, i) => ({
+const beforeInitConfigList = configList.map(config => ({
   ...config,
   custom: {
     ...config.custom,
@@ -63,7 +74,7 @@ const beforeInitConfigList: TestBedConfig[] = configList.map((config, i) => ({
   }
 }));
 
-const doubleReloadConfigList: TestBedConfig[] = configList.map((config, i) => ({
+const doubleReloadConfigList = configList.map((config, i) => ({
   ...config,
   custom: {
     ...config.custom,
@@ -87,7 +98,9 @@ doubleReloadConfigList.push({
   custom: {
     reloadCount: 2,
     interruptionCount: 1,
-    startIndex: 999
+    startIndex: 999,
+    scrollCount: 0,
+    preLoad: false
   }
 });
 
@@ -121,11 +134,11 @@ const onFirstVisibleChangeReloadConfigList = configList.map((config, i) => ({
   }
 }));
 
-const checkExpectation = (config: TestBedConfig, misc: Misc) => {
+const checkExpectation = (config: TestBedConfig<ICustom>, misc: Misc) => {
   const { scroller: { viewport, buffer }, adapter } = misc;
   const startIndex = config.custom.startIndex === null ?
-    config.datasourceSettings.startIndex : config.custom.startIndex;
-  const bufferSize = config.datasourceSettings.bufferSize;
+    config.datasourceSettings.startIndex as number : config.custom.startIndex;
+  const bufferSize = config.datasourceSettings.bufferSize as number;
   const firstIndex = startIndex - bufferSize;
   const nextIndex = firstIndex + bufferSize + 1;
   const firstItem = buffer.getFirstVisibleItem();
@@ -143,10 +156,11 @@ const checkExpectation = (config: TestBedConfig, misc: Misc) => {
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
   // need to have a pre-call
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { firstVisible, lastVisible } = misc.adapter;
 };
 
-const doReload = ({ custom }: TestBedConfig, { adapter }: Misc) => {
+const doReload = ({ custom }: TestBedConfig<ICustom>, { adapter }: Misc) => {
   if (custom.startIndex !== null) {
     adapter.reload(custom.startIndex);
   } else {
@@ -154,7 +168,7 @@ const doReload = ({ custom }: TestBedConfig, { adapter }: Misc) => {
   }
 };
 
-const doReloadOnFirstDatasourceGetCall = (config: TestBedConfig, misc: Misc) => {
+const doReloadOnFirstDatasourceGetCall = (config: TestBedConfig<ICustom>, misc: Misc) => {
   let reloaded = false;
   misc.setDatasourceProcessor(() => {
     if (!reloaded) {
@@ -164,7 +178,7 @@ const doReloadOnFirstDatasourceGetCall = (config: TestBedConfig, misc: Misc) => 
   });
 };
 
-const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReload: ItFuncConfig<ICustom> = config => misc => done => {
   const startWFCount = config.custom.preLoad ? 0 : 1;
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -187,7 +201,7 @@ const shouldReload = (config: TestBedConfig) => (misc: Misc) => (done: Function)
   }
 };
 
-const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadBeforeLoad: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.state.fetch.cancel).toEqual(null);
@@ -203,7 +217,7 @@ const shouldReloadBeforeLoad = (config: TestBedConfig) => (misc: Misc) => (done:
   });
 };
 
-const shouldReloadOnFetchAsync = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadOnFetchAsync: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     expect(misc.scroller.state.fetch.cancel).toEqual(null);
@@ -219,7 +233,7 @@ const shouldReloadOnFetchAsync = (config: TestBedConfig) => (misc: Misc) => (don
   });
 };
 
-const shouldNotReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldNotReloadBeforeWorkflowStart: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
   doReload(config, misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -231,7 +245,7 @@ const shouldNotReloadBeforeWorkflowStart = (config: TestBedConfig) => (misc: Mis
   });
 };
 
-const shouldReloadAfterAdjust = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadAfterAdjust: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     if (misc.workflow.cyclesDone === 1) {
@@ -250,7 +264,7 @@ const shouldReloadAfterAdjust = (config: TestBedConfig) => (misc: Misc) => (done
   });
 };
 
-const shouldReloadOnRender = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadOnRender: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     if (misc.workflow.cyclesDone === 1) {
@@ -263,7 +277,7 @@ const shouldReloadOnRender = (config: TestBedConfig) => (misc: Misc) => (done: F
   });
 };
 
-const shouldReloadOnFetchSync = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadOnFetchSync: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
   doReloadOnFirstDatasourceGetCall(config, misc);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -274,12 +288,12 @@ const shouldReloadOnFetchSync = (config: TestBedConfig) => (misc: Misc) => (done
   });
 };
 
-const shouldReloadOnFirstVisibleChange = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldReloadOnFirstVisibleChange: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
   let stopScroll = false;
   let lastCycle: number;
   const sub = misc.adapter.firstVisible$.subscribe(({ $index }) => {
-    if ($index <= config.custom.firstVisible) {
+    if ($index <= (config.custom.firstVisible as number)) {
       sub.unsubscribe();
       stopScroll = true;
       doReload(config, misc);

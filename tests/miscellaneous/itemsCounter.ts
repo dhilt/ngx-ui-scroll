@@ -1,7 +1,6 @@
 import { Direction } from './vscroll';
 
 import { Misc } from './misc';
-import { TestBedConfig } from '../scaffolding/runner';
 
 export class ItemsDirCounter {
   count: number;
@@ -42,7 +41,7 @@ export class ItemsCounter {
     return token === Direction.backward ? this.backward : this.forward;
   }
 
-  set(token: Direction, value: ItemsDirCounter) {
+  set(token: Direction, value: ItemsDirCounter): void {
     if (token === Direction.backward) {
       Object.assign(this.backward, value);
     } else {
@@ -51,8 +50,7 @@ export class ItemsCounter {
   }
 }
 
-export const testItemsCounter = (settings: TestBedConfig, misc: Misc, itemsCounter: ItemsCounter) => {
-  const { startIndex } = settings.datasourceSettings;
+export const testItemsCounter = (startIndex: number, misc: Misc, itemsCounter: ItemsCounter): void => {
   const bwdSize = itemsCounter.backward.size;
   const fwdSize = itemsCounter.forward.size;
   const bwdPadding = itemsCounter.backward.padding;

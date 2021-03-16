@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { ItemAdapter } from '../miscellaneous/vscroll';
 import { Data } from '../miscellaneous/items';
@@ -28,7 +28,7 @@ export class ScrollerTestComponent implements TestComponentInterface {
     this.datasource = datasourceService;
   }
 
-  getItemStyle(item: any) {
+  getItemStyle(item: { [key: string]: unknown }): SafeStyle {
     if (!this.templateSettings) {
       return '';
     }

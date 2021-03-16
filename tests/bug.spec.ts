@@ -1,8 +1,9 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { configureTestBedSub } from './scaffolding/testBed';
+import { DatasourceProcessor } from './scaffolding/datasources/class';
+import { ScrollerSubTestComponent } from './scaffolding/testComponent';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
-import { Data } from './miscellaneous/items';
-import { configureTestBedSub } from './scaffolding/testBed';
 import { ItemAdapter } from './miscellaneous/vscroll';
 
 describe('Bug Spec', () => {
@@ -15,7 +16,7 @@ describe('Bug Spec', () => {
         templateSettings: { viewportPadding: 200 },
         datasourceSettings: { adapter: true }
       },
-      it: (misc: Misc) => (done: Function) => {
+      it: misc => done => {
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           if (misc.innerLoopCount === 1) {
             misc.scrollMax();
@@ -39,9 +40,9 @@ describe('Bug Spec', () => {
         templateSettings: { viewportHeight: 300, itemHeight: 15 },
         datasourceSettings: { padding: 5, adapter: true }
       },
-      it: (misc: Misc) => (done: Function) => {
+      it: misc => done => {
         const { scroller: { state }, adapter } = misc;
-        adapter.firstVisible$.subscribe(item => count++);
+        adapter.firstVisible$.subscribe(() => count++);
         let count = 0, checkedCount = 0;
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           const cycleCount = state.cycle.count;
@@ -76,7 +77,7 @@ describe('Bug Spec', () => {
         }
       },
       title: 'should continue the workflow again and again',
-      it: (misc: Misc) => (done: Function) => {
+      it: misc => done => {
         let count = 0;
         const doubleReload = () => {
           count++;
@@ -113,7 +114,7 @@ describe('Bug Spec', () => {
         },
         templateSettings: { viewportHeight: 300, dynamicSize: 'size' }
       },
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         misc.setItemProcessor(({ $index, data }) => $index === 4 && (data.size = 120));
         await misc.relaxNext();
         const { paddings } = misc.scroller.viewport;
@@ -125,7 +126,7 @@ describe('Bug Spec', () => {
   );
 
   describe('early (constructor) subscriptions', () => {
-    let misc: any;
+    let misc: Misc<ScrollerSubTestComponent>;
 
     beforeEach(() => {
       misc = new Misc(configureTestBedSub());
@@ -150,7 +151,7 @@ describe('Bug Spec', () => {
         datasourceName: 'limited--99-100-processor',
         datasourceSettings: { adapter: true, startIndex }
       },
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         await misc.relaxNext();
         expect(misc.adapter.firstVisible.$index).toEqual(startIndex);
 
@@ -175,7 +176,7 @@ describe('Bug Spec', () => {
           } else if (item.$index > MIN) {
             text = (item.$index + (MAX - MIN)).toString();
           }
-          expect((item.data as Data).text).toEqual('item #' + text);
+          expect(item.data.text).toEqual('item #' + text);
         });
 
         done();
@@ -190,7 +191,7 @@ describe('Bug Spec', () => {
         datasourceName: 'default',
         datasourceSettings: { adapter: true, bufferSize: 50 }
       },
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         const { clip } = misc.scroller.state;
         await misc.relaxNext();
         expect(clip.callCount).toEqual(0);
@@ -208,14 +209,14 @@ describe('Bug Spec', () => {
     const config: TestBedConfig = {
       datasourceSettings: {
         adapter: true,
-        onBeforeClip: (items: ItemAdapter<Data>[]) =>
+        onBeforeClip: (items: ItemAdapter[]) =>
           items.forEach(({ $index }) => clippedIndexes.push($index))
       }
     };
     makeTest({
       config,
-      title: `should call properly`,
-      it: (misc: Misc) => async (done: Function) => {
+      title: 'should call properly',
+      it: misc => async done => {
         await misc.relaxNext();
         const { adapter } = misc;
         const indexList: number[] = [], indexListAfterScroll: number[] = [];
@@ -238,7 +239,7 @@ describe('Bug Spec', () => {
         datasourceName: 'default-delay-25',
         datasourceSettings: { adapter: true, bufferSize: 50, infinite: true },
       },
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         await misc.relaxNext();
         misc.scrollMin();
         await misc.relaxNext();
@@ -254,7 +255,7 @@ describe('Bug Spec', () => {
         datasourceName: 'limited-1-100-no-delay',
         datasourceSettings: { adapter: true, bufferSize: 5, startIndex: 1, minIndex: 1, maxIndex: 100 },
       },
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         await misc.relaxNext();
         const { settings: { minIndex, maxIndex }, buffer, buffer: { startIndex } } = misc.scroller;
         const toRemove = [1, 2, 3, 4, 5];
@@ -262,7 +263,7 @@ describe('Bug Spec', () => {
           predicate: ({ $index }) => toRemove.includes($index),
           increase: true
         });
-        (misc.datasource as any).setProcessGet((result: IndexedItem[]) =>
+        (misc.datasource as DatasourceProcessor).setProcessGet((result: IndexedItem[]) =>
           removeItems(result, toRemove, minIndex, maxIndex, true)
         );
         expect(buffer.startIndex).toBe(startIndex + toRemove.length);

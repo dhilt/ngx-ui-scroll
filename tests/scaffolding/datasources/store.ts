@@ -1,11 +1,18 @@
 
 import { of } from 'rxjs';
+import { Data, Processor } from 'tests/miscellaneous/items';
 
 import { IDatasource } from '../../../src/ui-scroll.datasource';
 import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet } from './get';
 
+interface DSProcess<Data = unknown> extends Omit<IDatasource<Data>, 'get'> {
+  get: (
+    index: number, count: number, success?: (items: Data[]) => void, fail?: (error: unknown) => void, p?: Processor
+  ) => unknown;
+}
+
 interface IDatasourceStore {
-  [key: string]: IDatasource;
+  [key: string]: IDatasource<Data> | DSProcess<Data>;
 }
 
 export const datasourceStore: IDatasourceStore = {
@@ -115,18 +122,18 @@ export const datasourceStore: IDatasourceStore = {
   'default-bad-settings': {
     get: infiniteDatasourceGet(),
     settings: 'invalid'
-  } as IDatasource,
+  } as IDatasource<Data>,
 
   'infinite-callback-delay-150': {
     get: infiniteDatasourceGet(DatasourceType.Callback, 150)
   },
 
   'empty-callback': {
-    get: (index, count, success) => success([])
+    get: (index: number, count: number, success: (r: Data[]) => void) => success([])
   },
 
   'empty-of': {
-    get: (index: number, count: number) => of([])
+    get: (_index: number, _count: number) => of([])
   },
 
   'infinite-callback-no-delay-star': {

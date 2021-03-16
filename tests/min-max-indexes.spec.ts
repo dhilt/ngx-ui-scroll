@@ -1,4 +1,4 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
 const configList: TestBedConfig[] = [{
@@ -26,7 +26,7 @@ const configList: TestBedConfig[] = [{
 }];
 
 const noItemSizeConfigList = configList.map(
-  ({ datasourceSettings: { itemSize, ...restDatasourceSettings }, ...config }) => ({
+  ({ datasourceSettings: { itemSize: _, ...restDatasourceSettings }, ...config }) => ({
     ...config, datasourceSettings: { ...restDatasourceSettings }
   })
 );
@@ -54,15 +54,15 @@ const startIndexAroundMaxIndexConfigList: TestBedConfig[] = [{
 }];
 
 const noMaxIndexConfigList: TestBedConfig[] = configList.map(
-  ({ datasourceSettings: { maxIndex, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
+  ({ datasourceSettings: { maxIndex: _, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
 );
 
 const noMinIndexConfigList: TestBedConfig[] = configList.map(
-  ({ datasourceSettings: { minIndex, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
+  ({ datasourceSettings: { minIndex: _, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
 );
 
 const forwardGapConfigList: TestBedConfig[] = startIndexAroundMaxIndexConfigList.map(
-  ({ datasourceSettings: { minIndex, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
+  ({ datasourceSettings: { minIndex: _, ...datasourceSettings }, ...config }) => ({ ...config, datasourceSettings })
 );
 
 const checkMinMaxIndexes = (misc: Misc) => {
@@ -74,16 +74,26 @@ const checkMinMaxIndexes = (misc: Misc) => {
   expect(maxIndex).toEqual(misc.getElementIndex(elements[elements.length - 1]));
 };
 
-const _testCommonCase = (settings: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const getParams = (
+  { datasourceSettings: settings }: TestBedConfig
+): { maxIndex: number, minIndex: number, itemSize: number, startIndex: number, padding: number } => ({
+  maxIndex: settings.maxIndex as number,
+  minIndex: settings.minIndex as number,
+  itemSize: settings.itemSize as number,
+  startIndex: settings.startIndex as number,
+  padding: settings.padding as number,
+});
+
+const _testCommonCase: ItFuncConfig = settings => misc => async done => {
   await misc.relaxNext();
 
-  const { maxIndex, minIndex, itemSize: _itemSize, startIndex, padding } = settings.datasourceSettings;
   const { settings: { bufferSize }, adapter } = misc.scroller;
-  const viewportSize = misc.getViewportSize(settings);
+  const { maxIndex, minIndex, itemSize: _itemSize, startIndex, padding } = getParams(settings);
+  const viewportSize = misc.getViewportSize();
   const viewportSizeDelta = viewportSize * padding;
   const itemSize = _itemSize || misc.scroller.buffer.averageSize;
-  const hasMinIndex = settings.datasourceSettings.hasOwnProperty('minIndex');
-  const hasMaxIndex = settings.datasourceSettings.hasOwnProperty('maxIndex');
+  const hasMinIndex = minIndex !== void 0;
+  const hasMaxIndex = maxIndex !== void 0;
   let innerLoopCount = 3;
 
   const _negativeItemsAmount = Math.ceil(viewportSizeDelta / itemSize);
@@ -140,12 +150,12 @@ const _testCommonCase = (settings: TestBedConfig) => (misc: Misc) => async (done
   done();
 };
 
-const _testStartIndexEdgeCase = (settings: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const _testStartIndexEdgeCase: ItFuncConfig = (settings) => misc => async done => {
   await misc.relaxNext();
 
-  const { maxIndex, minIndex, itemSize, startIndex, padding } = settings.datasourceSettings;
+  const { maxIndex, minIndex, itemSize, startIndex, padding } = getParams(settings);
   const { adapter } = misc.scroller;
-  const viewportSize = misc.getViewportSize(settings);
+  const viewportSize = misc.getViewportSize();
   const totalSize = (maxIndex - minIndex + 1) * itemSize;
   const viewportSizeDelta = viewportSize * padding;
   let _startIndex = Math.max(minIndex, startIndex); // startIndex < minIndex
@@ -179,9 +189,9 @@ const _testStartIndexEdgeCase = (settings: TestBedConfig) => (misc: Misc) => asy
   done();
 };
 
-const _testForwardGapCase = (settings: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const _testForwardGapCase: ItFuncConfig = () => misc => async done => {
   await misc.relaxNext();
-  const viewportSize = misc.getViewportSize(settings);
+  const viewportSize = misc.getViewportSize();
   const viewportChildren = misc.scroller.viewport.element.children;
   const lastChild = viewportChildren[viewportChildren.length - 2];
   const lastChildBottom = lastChild.getBoundingClientRect().bottom;

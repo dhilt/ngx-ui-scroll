@@ -3,6 +3,11 @@ import { Misc } from './miscellaneous/misc';
 import { Stat } from './miscellaneous/stat';
 import { appendItems, generateItems, IndexedItem } from './miscellaneous/items';
 
+interface ICustom {
+  MAX: number;
+  AMOUNT: number;
+}
+
 const configFetch: TestBedConfig = {
   datasourceName: 'limited-1-20-dynamic-size-processor',
   datasourceSettings: {
@@ -11,7 +16,7 @@ const configFetch: TestBedConfig = {
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 };
 
-const configAppend: TestBedConfig = {
+const configAppend: TestBedConfig<ICustom> = {
   datasourceName: 'limited--99-100-dynamic-size-processor',
   datasourceSettings: {
     startIndex: 50, maxIndex: 100, minIndex: -99, padding: 0.5, bufferSize: 5, itemSize: 20, adapter: true
@@ -23,18 +28,16 @@ const configAppend: TestBedConfig = {
   }
 };
 
-const testConfigFetch = (config: TestBedConfig, misc: Misc, done: Function) => {
+const testConfigFetch = (config: TestBedConfig, misc: Misc, done: () => void) => {
   const { scroller, shared } = misc;
   misc.setItemProcessor(({ $index, data }) => $index === 1 && (data.size = 200));
-  let initialFetchCount = 0;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const cycle = scroller.state.cycle.count;
     if (cycle === 2) {
       shared.stat = new Stat(scroller);
-      initialFetchCount = scroller.state.fetch.callCount;
       misc.scrollTo(100);
     } else {
-      (new Stat(scroller)).expect(shared.stat);
+      (new Stat(scroller)).expect(shared.stat as Stat);
       done();
     }
   });
@@ -45,14 +48,15 @@ const scroll = (misc: Misc, position: number) => {
   return misc.relaxNext();
 };
 
-const testConfigAppend = async (config: TestBedConfig, misc: Misc, done: Function) => {
+const testConfigAppend = async (config: TestBedConfig<ICustom>, misc: Misc, done: () => void) => {
   const { MAX, AMOUNT } = config.custom;
   await misc.relaxNext();
   // append items to the original datasource
   misc.setDatasourceProcessor((
-    result: IndexedItem[], _index: number, _count: number, _min: number, _max: number
-  ) =>
-    appendItems(result, _index, _count, _min, _max, AMOUNT, true)
+    result: IndexedItem[], ...args: unknown[]
+  ) => appendItems.apply(this, [result,
+    args[0] as number, args[1] as number, args[2] as number, args[3] as number,
+    AMOUNT, true])
   );
   // append items to the UiScroll
   await misc.adapter.append({
@@ -72,13 +76,13 @@ describe('Dynamic Size Scroll Spec', () => {
   makeTest({
     config: configFetch,
     title: 'should fetch properly',
-    it: (misc: Misc) => (done: Function) => testConfigFetch(configFetch, misc, done)
+    it: misc => done => testConfigFetch(configFetch, misc, done)
   });
 
   makeTest({
     config: configAppend,
     title: 'should append properly',
-    it: (misc: Misc) => (done: Function) => testConfigAppend(configAppend, misc, done)
+    it: misc => done => testConfigAppend(configAppend, misc, done)
   });
 
 });

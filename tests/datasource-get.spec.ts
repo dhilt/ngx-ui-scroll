@@ -1,13 +1,12 @@
-import { makeTest } from './scaffolding/runner';
-import { Misc } from './miscellaneous/misc';
+import { makeTest, ItFunc } from './scaffolding/runner';
 
-const shouldWork = (misc: Misc) => async (done: Function) => {
+const shouldWork: ItFunc = misc => async done => {
   await misc.relaxNext();
   expect(misc.scroller.state.fetch.callCount).toBeGreaterThan(0);
   done();
 };
 
-const shouldNotFetch = (misc: Misc) => async (done: Function) => {
+const shouldNotFetch: ItFunc = misc => async done => {
   await misc.relaxNext();
   const { buffer, state } = misc.scroller;
   expect(misc.innerLoopCount).toEqual(1);
@@ -19,94 +18,73 @@ const shouldNotFetch = (misc: Misc) => async (done: Function) => {
 
 describe('Datasource Get', () => {
 
-  describe('immediate', () => {
-    makeTest({
+  describe('immediate', () => [
+    {
       config: { datasourceName: 'infinite-observable-no-delay' },
       title: 'should run the workflow with infinite observable-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'infinite-promise-no-delay' },
       title: 'should run the workflow with infinite promise-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'infinite-callback-no-delay' },
       title: 'should run the workflow with infinite callback-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'limited-observable-no-delay' },
       title: 'should run the workflow with limited observable-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'limited-promise-no-delay' },
       title: 'should run the workflow with limited promise-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'limited-callback-no-delay' },
       title: 'should run the workflow with limited callback-based datasource',
       it: shouldWork
-    });
-  });
+    }
+  ].forEach(c => makeTest<void, false>(c)));
 
-  describe('non-immediate', () => {
-    makeTest({
+  describe('non-immediate', () => [
+    {
       config: { datasourceName: 'infinite-observable-delay-1' },
       title: 'should run the workflow with infinite observable-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'infinite-promise-delay-1' },
       title: 'should run the workflow with infinite promise-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'infinite-callback-delay-1' },
       title: 'should run the workflow with infinite callback-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'limited-observable-delay-1' },
       title: 'should run the workflow with limited observable-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'limited-promise-delay-1' },
       title: 'should run the workflow with limited promise-based datasource',
       it: shouldWork
-    });
-
-    makeTest({
+    }, {
       config: { datasourceName: 'limited-callback-delay-1' },
       title: 'should run the workflow with limited callback-based datasource',
       it: shouldWork
-    });
-  });
+    }
+  ].forEach(c => makeTest<void, false>(c)));
 
-  describe('empty', () => {
-    makeTest({
+
+  describe('empty', () => [
+    {
       title: 'should not fetch (callback)',
       config: { datasourceName: 'empty-callback' },
       it: shouldNotFetch
-    });
-
-    makeTest({
+    }, {
       title: 'should not fetch (rxjs of)',
       config: { datasourceName: 'empty-of' },
       it: shouldNotFetch
-    });
-  });
+    }
+  ].forEach(c => makeTest<void, false>(c)));
 
 });

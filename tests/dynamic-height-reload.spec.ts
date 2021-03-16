@@ -4,6 +4,10 @@ import { Misc } from './miscellaneous/misc';
 const MIN_INDEX = -99;
 const MAX_INDEX = 100;
 
+interface ICustom {
+  reloadIndex: number;
+}
+
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-dynamic-size',
   datasourceSettings: {
@@ -13,12 +17,12 @@ const baseConfig: TestBedConfig = {
   timeout: 4000
 };
 
-const reloadIndexList = [-99, -98, -90, -75, /*-50*/, -35, -20, -10, -5, -2, -1, 0, 1, 2, 5, 10, 20, 35, 50, 75, 90];
-const configList: TestBedConfig[] = reloadIndexList.map(index => ({
+const reloadIndexList = [-99, -98, -90, -75, /*-50,*/ -35, -20, -10, -5, -2, -1, 0, 1, 2, 5, 10, 20, 35, 50, 75, 90];
+const configList: TestBedConfig<ICustom>[] = reloadIndexList.map(index => ({
   ...baseConfig, custom: { reloadIndex: index }
 }));
 
-const testIt = (config: TestBedConfig, misc: Misc, done: Function) => {
+const testIt = (config: TestBedConfig<ICustom>, misc: Misc, done: () => void) => {
   const { adapter } = misc;
   const cycle = misc.scroller.state.cycle.count;
   const reloadIndex = config.custom.reloadIndex;
@@ -38,7 +42,7 @@ describe('Dynamic Size Reload Spec', () => {
       config,
       title: 'should reload properly',
       meta: `reloadIndex: ${config.custom.reloadIndex}`,
-      it: (misc: Misc) => (done: Function) =>
+      it: misc => done =>
         spyOn(misc.workflow, 'finalize').and.callFake(() =>
           testIt(config, misc, done)
         )

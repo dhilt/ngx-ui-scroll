@@ -1,17 +1,37 @@
 import { filter, take } from 'rxjs/operators';
 
 import {
-  AdapterInsertOptions, AdapterAppendOptions, AdapterPrependOptions, ItemsPredicate, AdapterFixOptions
+  AdapterInsertOptions,
+  AdapterAppendOptions,
+  AdapterPrependOptions,
+  ItemsPredicate,
+  AdapterFixOptions,
+  AdapterUpdateOptions,
+  AdapterPropName as Adapter,
+  AdapterMethodResult,
 } from './miscellaneous/vscroll';
 
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { configureTestBedSub } from './scaffolding/testBed';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
 
 const ITEM_SIZE = 20;
 
-const configBase: TestBedConfig = {
+interface ICustom {
+  method: Adapter; // Adapter method name
+  options: unknown; // Adapter method params
+  async: boolean; // produces asynchronicity
+  newWFCycle: boolean; // produces additional Workflow cycle
+  error?: boolean; // produces error
+}
+
+interface ICustom2 {
+  count: number;
+  interrupt?: 'reload' | 'reset';
+}
+
+const configBase = {
   datasourceName: 'default-delay-25',
   datasourceSettings: {
     itemSize: ITEM_SIZE,
@@ -24,125 +44,129 @@ const configBase: TestBedConfig = {
   templateSettings: { viewportHeight: ITEM_SIZE * 10 }
 };
 
-interface ICustom {
-  method: string; // Adapter method name
-  options: any; // Adapter method params
-  async: boolean; // produces asynchronicity
-  newWFCycle: boolean; // produces additional Workflow cycle
-  error: boolean; // produces error
-}
-
-const delayedConfigList = [{
+const delayedConfigList: TestBedConfig<ICustom>[] = [{
   ...configBase,
   custom: {
-    method: 'reset',
+    method: Adapter.reset,
     options: void 0,
     newWFCycle: true,
     async: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'reload',
+    method: Adapter.reload,
     options: void 0,
     newWFCycle: true,
     async: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'append',
+    method: Adapter.append,
     options: {
       items: [generateItem(100.1)]
     } as AdapterAppendOptions,
     newWFCycle: true,
     async: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'prepend',
+    method: Adapter.prepend,
     options: {
       items: [generateItem(100.1)]
     } as AdapterPrependOptions,
     newWFCycle: true,
     async: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'check',
+    method: Adapter.check,
+    options: void 0,
     newWFCycle: true,
     async: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'remove',
+    method: Adapter.remove,
     options: (({ $index }) => $index > 1) as ItemsPredicate,
     newWFCycle: true,
     async: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'insert',
+    method: Adapter.insert,
     options: {
       after: ({ $index }) => $index === 5,
       items: [generateItem(5 + 0.1)]
     } as AdapterInsertOptions,
     newWFCycle: true,
     async: true
-  } as ICustom
-}];
-
-const immediateConfigSyncList = [{
+  }
+}, {
   ...configBase,
   custom: {
-    method: 'append',
+    method: Adapter.update,
+    options: {
+      predicate: ({ $index }) => $index !== 1, // remove 1st item
+    } as AdapterUpdateOptions,
+    newWFCycle: true,
+    async: true
+  }
+}];
+
+const immediateConfigSyncList: TestBedConfig<ICustom>[] = [{
+  ...configBase,
+  custom: {
+    method: Adapter.append,
     options: {
       items: [generateItem(100.1)],
       eof: true
     } as AdapterAppendOptions,
     newWFCycle: false,
     async: false
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'prepend',
+    method: Adapter.prepend,
     options: {
       items: [generateItem(100.1)],
       bof: true
     } as AdapterAppendOptions,
     newWFCycle: false,
     async: false
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'check',
+    method: Adapter.check,
+    options: void 0,
     newWFCycle: false,
     async: false
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'remove',
+    method: Adapter.remove,
     options: (({ $index }) => $index > 100) as ItemsPredicate,
     newWFCycle: false,
     async: false
-  } as ICustom
+  }
 }, {
   ...configBase, custom: {
-    method: 'insert',
+    method: Adapter.insert,
     options: {
       after: ({ $index }) => $index === 55,
       items: [generateItem(55 + 0.1)]
     } as AdapterInsertOptions,
     newWFCycle: false,
     async: false
-  } as ICustom
+  }
 }, {
   ...configBase,
   datasourceSettings: {
@@ -150,11 +174,11 @@ const immediateConfigSyncList = [{
     bufferSize: 1 // clip will be skipped
   },
   custom: {
-    method: 'clip',
+    method: Adapter.clip,
     options: void 0,
     newWFCycle: true,
     async: false
-  } as ICustom
+  }
 }, {
   ...configBase,
   datasourceSettings: {
@@ -162,77 +186,87 @@ const immediateConfigSyncList = [{
     bufferSize: 40 // clip will happen
   },
   custom: {
-    method: 'clip',
+    method: Adapter.clip,
     options: void 0,
     newWFCycle: true,
     async: false
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'fix',
+    method: Adapter.fix,
     options: {
       minIndex: -99
     } as AdapterFixOptions,
     newWFCycle: false,
     async: false
-  } as ICustom
-}];
-
-const immediateConfigErrorList = [{
+  }
+}, {
   ...configBase,
   custom: {
-    method: 'reset',
+    method: Adapter.update,
+    options: {
+      predicate: _x => true,
+    } as AdapterUpdateOptions,
+    newWFCycle: false,
+    async: false
+  }
+}];
+
+const immediateConfigErrorList: TestBedConfig<ICustom>[] = [{
+  ...configBase,
+  custom: {
+    method: Adapter.reset,
     options: {
       get: 'error'
     },
     newWFCycle: false,
     async: false,
     error: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'append',
+    method: Adapter.append,
     options: {
       items: 'error'
     },
     newWFCycle: false,
     async: false,
     error: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'remove',
+    method: Adapter.remove,
     options: 'error',
     newWFCycle: false,
     async: false,
     error: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'insert',
+    method: Adapter.insert,
     options: 'error',
     newWFCycle: false,
     async: false,
     error: true
-  } as ICustom
+  }
 }, {
   ...configBase,
   custom: {
-    method: 'fix',
+    method: Adapter.fix,
     options: {
       minIndex: 'error'
     },
     newWFCycle: false,
     async: false,
     error: true
-  } as ICustom
+  }
 }];
 
-const concurrentSequencesConfigList: TestBedConfig[] = [{
+const concurrentSequencesConfigList: TestBedConfig<ICustom2>[] = [{
   datasourceName: 'limited-1-100-no-delay',
   datasourceSettings: { adapter: true, startIndex: 100 },
   custom: { count: 25 }
@@ -243,7 +277,7 @@ const concurrentSequencesConfigList: TestBedConfig[] = [{
   custom: { count: 30 }
 }];
 
-const concurrentSequencesInterruptConfigList = [{
+const concurrentSequencesInterruptConfigList: TestBedConfig<ICustom2>[] = [{
   ...concurrentSequencesConfigList[0],
   custom: { count: 99, interrupt: 'reload' }
 }, {
@@ -251,27 +285,28 @@ const concurrentSequencesInterruptConfigList = [{
   custom: { count: 99, interrupt: 'reset' }
 }];
 
-const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const checkPromisifiedMethod: ItFuncConfig<ICustom> = config => misc => done => {
   const { workflow } = misc;
-  const { method, options, newWFCycle, async, error } = config.custom as ICustom;
+  const { method: token, options, newWFCycle, async, error } = config.custom;
   misc.adapter.isLoading$
     .pipe(filter(v => !v), take(1))
     .subscribe(() => {
       expect(workflow.cyclesDone).toEqual(1);
-      if (method === 'check' && async) {
+      if (token === Adapter.check && async) {
         misc.adapter.fix({
           updater: ({ $index }) =>
             misc.getElement($index).style.height = 5 + 'px'
         });
       }
-      (misc.adapter as any)[method](options).then(({ success, immediate, details: err }: any) => {
+      const method = (misc.adapter[token]) as unknown as (opt: unknown) => Promise<AdapterMethodResult>;
+      method(options).then(({ success, immediate, details: err }) => {
         expect(workflow.cyclesDone).toEqual(newWFCycle ? 2 : 1);
         expect(immediate).toEqual(!newWFCycle);
         expect(success).toEqual(!error);
         if (error) {
           expect(success).toBeFalsy();
           expect(workflow.errors.length).toEqual(1);
-          expect(workflow.errors[0].process).toEqual(`adapter.${method}`);
+          expect(workflow.errors[0].process).toEqual(`adapter.${token}`);
           expect(err).toBeTruthy();
         } else {
           expect(success).toBeTruthy();
@@ -283,7 +318,7 @@ const checkPromisifiedMethod = (config: TestBedConfig) => (misc: Misc) => (done:
     });
 };
 
-const doAppendAndScroll = async (misc: Misc, index: number): Promise<any> => {
+const doAppendAndScroll = async (misc: Misc, index: number): Promise<void> => {
   const { adapter } = misc;
   const { success } = await adapter.relax();
   if (success) {
@@ -292,9 +327,10 @@ const doAppendAndScroll = async (misc: Misc, index: number): Promise<any> => {
   }
 };
 
-const checkConcurrentSequences = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const checkConcurrentSequences: ItFuncConfig<ICustom2> = config => misc => async done => {
   await misc.relaxNext();
-  const { datasourceSettings: { startIndex }, custom: { count, interrupt } } = config;
+  const { startIndex } = misc.scroller.settings;
+  const { count, interrupt } = config.custom;
   const scrollPosition = misc.getScrollPosition();
   for (let i = 0; i < count; i++) { // multiple concurrent calls
     doAppendAndScroll(misc, startIndex + i + 1);
@@ -347,7 +383,7 @@ describe('Adapter Promises Spec', () => {
   describe('Concurrent sequences', () => {
     concurrentSequencesConfigList.forEach(config =>
       makeTest({
-        title: `should run a sequence within sequence`,
+        title: 'should run a sequence within sequence',
         config,
         it: checkConcurrentSequences(config)
       })
@@ -363,10 +399,11 @@ describe('Adapter Promises Spec', () => {
   });
 
   describe('Call before init', () =>
-    ['relax', 'reload', 'reset', 'check'].forEach(method =>
-      it(`should resolve immediately ("${method}")`, async (done) => {
+    [Adapter.relax, Adapter.reload, Adapter.reset, Adapter.check].forEach(token =>
+      it(`should resolve immediately ("${token}")`, async (done) => {
         const misc = new Misc(configureTestBedSub());
-        const result = await (misc.adapter as any)[method]();
+        const method = (misc.adapter[token]) as unknown as () => Promise<AdapterMethodResult>;
+        const result = await method();
         expect(result.immediate).toBe(true);
         expect(result.success).toBe(true);
         // expect(result.details).toBe('Adapter is not initialized');

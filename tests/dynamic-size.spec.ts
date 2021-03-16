@@ -44,9 +44,9 @@ const configListScroll = configList
 const ABS_MIN_INDEX = -50;
 const ABS_MAX_INDEX = 99;
 
-const getInitialItemsCounter = (config: TestBedConfig, misc: Misc): ItemsCounter => {
+const getInitialItemsCounter = (_startIndex: number, misc: Misc): ItemsCounter => {
   const { bufferSize, startIndex, minIndex, maxIndex } = misc.scroller.settings;
-  const viewportSize = misc.getViewportSize(config);
+  const viewportSize = misc.getViewportSize();
   const firstFetchEndIndex = startIndex + bufferSize - 1;
   const firstFetchData = getDynamicSizeData(startIndex, firstFetchEndIndex);
   const result = new ItemsCounter();
@@ -71,13 +71,13 @@ const getInitialItemsCounter = (config: TestBedConfig, misc: Misc): ItemsCounter
     result.forward.padding = (Math.min(maxIndex, ABS_MAX_INDEX) - result.forward.index) * result.average;
   }
 
-  testItemsCounter(config, misc, result);
+  testItemsCounter(_startIndex, misc, result);
   return result;
 };
 
-const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsCounter): ItemsCounter | null => {
+const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCounter): ItemsCounter | null => {
   const { bufferSize, startIndex, padding, minIndex, maxIndex } = misc.scroller.settings;
-  const viewportSize = misc.getViewportSize(config);
+  const viewportSize = misc.getViewportSize();
   const backwardLimit = viewportSize * padding;
   const forwardLimit = viewportSize + backwardLimit;
   const itemsCounter = new ItemsCounter();
@@ -120,17 +120,18 @@ const getNextItemsCounter = (config: TestBedConfig, misc: Misc, previous: ItemsC
     itemsCounter.forward.padding = count * itemsCounter.average;
   }
 
-  testItemsCounter(config, misc, itemsCounter);
+  testItemsCounter(_startIndex, misc, itemsCounter);
 
   return JSON.stringify(itemsCounter) !== JSON.stringify(previous) ? itemsCounter : null;
 };
 
-const testInitialLoad = (config: TestBedConfig, misc: Misc, done: Function) => {
+const testInitialLoad = (config: TestBedConfig, misc: Misc, done: () => void) => {
   let itemsCounter: ItemsCounter | null;
+  const startIndex = config.datasourceSettings.startIndex as number;
   if (misc.innerLoopCount === 1) {
-    itemsCounter = getInitialItemsCounter(config, misc);
+    itemsCounter = getInitialItemsCounter(startIndex, misc);
   } else {
-    itemsCounter = getNextItemsCounter(config, misc, misc.shared.itemsCounter);
+    itemsCounter = getNextItemsCounter(startIndex, misc, misc.shared.itemsCounter as ItemsCounter);
   }
   if (itemsCounter) {
     misc.shared.itemsCounter = itemsCounter;
@@ -139,7 +140,7 @@ const testInitialLoad = (config: TestBedConfig, misc: Misc, done: Function) => {
   }
 };
 
-const testScroll = (config: TestBedConfig, misc: Misc, done: Function) => {
+const testScroll = (config: TestBedConfig, misc: Misc, done: () => void) => {
   const buffer = misc.scroller.buffer;
   if (buffer.bof.get()) {
     getDynamicSizeData(
@@ -171,7 +172,7 @@ describe('Dynamic Size Spec', () => {
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
-        it: (misc: Misc) => (done: Function) =>
+        it: misc => done =>
           spyOn(misc.scroller, 'finalize').and.callFake(() =>
             testInitialLoad(config, misc, done)
           )
@@ -184,7 +185,7 @@ describe('Dynamic Size Spec', () => {
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
-        it: (misc: Misc) => (done: Function) =>
+        it: misc => done =>
           spyOn(misc.workflow, 'finalize').and.callFake(() =>
             testScroll(config, misc, done)
           )
@@ -206,7 +207,7 @@ describe('Zero Size Spec', () => {
     makeTest({
       config,
       title: 'should stop the Workflow after the first loop',
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         await misc.relaxNext();
         expect(misc.innerLoopCount).toEqual(1);
         done();
@@ -221,7 +222,7 @@ describe('Zero Size Spec', () => {
         datasourceName: 'limited-1-100-processor'
       },
       title: 'should stop the Workflow after the second loop',
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         misc.setItemProcessor(({ $index, data }) => data.size = $index >= 6 ? 0 : 20);
         await misc.relaxNext();
         expect(misc.innerLoopCount).toEqual(2);
@@ -238,7 +239,7 @@ describe('Zero Size Spec', () => {
         datasourceSettings: { adapter: true }
       },
       title: 'should continue the Workflow after re-size and check',
-      it: (misc: Misc) => async (done: Function) => {
+      it: misc => async done => {
         const { scroller: { viewport }, adapter } = misc;
         await misc.relaxNext();
 
@@ -247,7 +248,7 @@ describe('Zero Size Spec', () => {
         adapter.fix({
           updater: ({ element, data }) => {
             data.size = 20;
-            (element as any).children[0].style.height = '20px';
+            ((element as HTMLElement).children[0] as HTMLElement).style.height = '20px';
           }
         });
         await adapter.check();

@@ -1,8 +1,13 @@
 import { AdapterClipOptions } from './miscellaneous/vscroll';
 
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { testItemsCounter, ItemsCounter } from './miscellaneous/itemsCounter';
+
+interface ICustom {
+  forward: boolean;
+  backward: boolean;
+}
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
@@ -18,10 +23,11 @@ const configList: TestBedConfig[] = [{
   templateSettings: { viewportWidth: 320, itemWidth: 75, horizontal: true }
 }];
 
-const configByDirectionList = configList.map((config: TestBedConfig, index: number) => ({
-  ...config,
-  custom: { forward: index % 2 === 0, backward: index % 2 !== 0 }
-}));
+const configByDirectionList: TestBedConfig<ICustom>[] =
+  configList.map((config: TestBedConfig, index: number) => ({
+    ...config,
+    custom: { forward: index % 2 === 0, backward: index % 2 !== 0 }
+  }));
 
 configByDirectionList.push({
   ...configByDirectionList[0],
@@ -38,10 +44,14 @@ const configListInfinite = configList
   }));
 
 export const getItemsCounter = (
-  settings: TestBedConfig, misc: Misc, itemSize: number, firstIndex: number, lastIndex: number, clipOptions: AdapterClipOptions
+  misc: Misc,
+  itemSize: number,
+  firstIndex: number,
+  lastIndex: number,
+  clipOptions: AdapterClipOptions | undefined
 ): ItemsCounter => {
   const { startIndex, padding } = misc.scroller.settings;
-  const viewportSize = misc.getViewportSize(settings);
+  const viewportSize = misc.getViewportSize();
 
   const backwardLimit = viewportSize * padding;
   const forwardLimit = viewportSize + backwardLimit;
@@ -72,9 +82,9 @@ export const getItemsCounter = (
   return itemsCounter;
 };
 
-const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const shouldClipAfterAppend: ItFuncConfig<void | ICustom> = config => misc => async done => {
   const NEW_ITEMS_COUNT = 50;
-  const { itemSize } = config.datasourceSettings;
+  const { itemSize, startIndex } = config.datasourceSettings;
   const { adapter, scroller: { buffer } } = misc;
   const clipSettings = getClipArgument(config);
   await misc.relaxNext();
@@ -92,25 +102,24 @@ const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => async (
   expect(misc.padding.backward.getSize()).toEqual(0);
   await adapter.clip(clipSettings);
 
-  const itemsCounter = getItemsCounter(config, misc, itemSize, firstIndex, lastIndex, clipSettings);
-  testItemsCounter(config, misc, itemsCounter);
+  const itemsCounter = getItemsCounter(misc, itemSize as number, firstIndex, lastIndex, clipSettings);
+  testItemsCounter(startIndex as number, misc, itemsCounter);
   done();
 };
 
-const getClipArgument = ({ custom }: TestBedConfig): any => {
-  let argument: any;
+const getClipArgument = ({ custom }: TestBedConfig<void | ICustom>): AdapterClipOptions | undefined => {
+  let argument: AdapterClipOptions | undefined = void 0;
   if (custom && custom.forward) {
-    argument = argument || {};
-    argument.forwardOnly = true;
+    argument = { forwardOnly: true };
   }
   if (custom && custom.backward) {
-    argument = argument || {};
+    argument ??= {};
     argument.backwardOnly = true;
   }
   return argument;
 };
 
-const shouldClipInfinite = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const shouldClipInfinite: ItFuncConfig = () => misc => async done => {
   const { adapter } = misc;
   await misc.relaxNext();
   const count = adapter.itemsCount;
@@ -126,7 +135,7 @@ const shouldClipInfinite = (config: TestBedConfig) => (misc: Misc) => async (don
   done();
 };
 
-const getClipDirection = (config: TestBedConfig): string => {
+const getClipDirection = (config: TestBedConfig<void | ICustom>): string => {
   if (!config.custom) {
     return '';
   }
@@ -170,8 +179,8 @@ describe('Adapter Clip Spec', () => {
 
   makeTest({
     config: { datasourceSettings: { adapter: true } },
-    title: `should resolve immediately before scroller initialization`,
-    it: (misc: Misc) => async (done: Function) => {
+    title: 'should resolve immediately before scroller initialization',
+    it: misc => async done => {
       const result = await misc.adapter.clip();
       expect(result.immediate).toBe(true);
       expect(result.success).toBe(true);

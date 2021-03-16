@@ -6,6 +6,7 @@ export {
   IAdapterConfig,
   IAdapterItem,
   IAdapter,
+  AdapterPropName,
 } from '../../src/vscroll';
 
 export {
@@ -19,9 +20,11 @@ export {
   DatasourceGet,
   Settings,
   DevSettings,
+  IAdapterProp,
   ItemAdapter,
   ItemsPredicate,
   BufferUpdater,
+  AdapterMethodResult,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterAppendOptions,

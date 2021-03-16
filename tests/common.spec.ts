@@ -10,8 +10,10 @@ import { IAdapter } from '../src/ui-scroll.datasource';
 import { configureTestBed, configureTestBedTwo } from './scaffolding/testBed';
 import { generateDatasourceClass } from './scaffolding/datasources/class';
 import { defaultTemplate } from './scaffolding/templates';
+import { ItFunc, makeTest } from './scaffolding/runner';
+import { TwoScrollersTestComponent } from './scaffolding/testComponent';
 import { Misc } from './miscellaneous/misc';
-import { makeTest } from './scaffolding/runner';
+import { Data } from './miscellaneous/items';
 
 describe('Component', () => {
 
@@ -55,13 +57,14 @@ describe('Settings', () => {
   const _settings3 = { infinite: true };
   const _settings4 = { startIndex: 99, bufferSize: 11, infinite: true };
 
-  const checkSettings = ({ merge, min }: { merge?: any, min?: string } = {}) => (misc: Misc) => (done: Function) => {
-    const _settings = min ? { [min]: -999 } : {};
+  const checkSettings = ({ merge, min }: { merge?: Settings, min?: string } = {}): ItFunc => misc => done => {
+    const _settings = (min ? { [min]: -999 } : {}) as unknown as Misc['scroller']['settings'];
     const settings = misc.generateFakeWorkflow(_settings).scroller.settings;
     expect(misc.scroller.settings).toEqual(jasmine.any(Object));
     const mergedSettings = { ...settings, ...(merge || {}) };
     Object.keys(settings).filter(key => key !== 'instanceIndex').forEach(key => {
-      expect((misc.scroller.settings as any)[key]).toEqual((mergedSettings as any)[key]);
+      const _key = key as keyof Settings;
+      expect(misc.scroller.settings[_key]).toEqual(mergedSettings[_key]);
     });
     done();
   };
@@ -90,20 +93,20 @@ describe('Settings', () => {
     it: checkSettings({ merge: _settings4 })
   });
 
-  makeTest({
+  makeTest<void, false>({
     config: { datasourceName: 'default-bad-settings' },
     title: 'should fallback to the defaults',
     it: checkSettings()
   });
 
   makeTest({
-    config: { datasourceSettings: { startIndex: false } },
+    config: { datasourceSettings: { startIndex: false as never } },
     title: 'should fallback startIndex to the default',
     it: checkSettings()
   });
 
   makeTest({
-    config: { datasourceSettings: { bufferSize: { weird: true } } },
+    config: { datasourceSettings: { bufferSize: { weird: true } as never } },
     title: 'should fallback bufferSize to the default',
     it: checkSettings()
   });
@@ -121,7 +124,7 @@ describe('Settings', () => {
   });
 
   makeTest({
-    config: { datasourceSettings: { padding: 'something' } },
+    config: { datasourceSettings: { padding: 'something' as never } },
     title: 'should fallback padding to the default',
     it: checkSettings()
   });
@@ -145,19 +148,19 @@ describe('Settings', () => {
   });
 
   makeTest({
-    config: { datasourceSettings: { infinite: 'something' } },
+    config: { datasourceSettings: { infinite: 'something' as never } },
     title: 'should fallback infinite to the default',
     it: checkSettings()
   });
 
   makeTest({
-    config: { datasourceSettings: { horizontal: null } },
+    config: { datasourceSettings: { horizontal: null as never } },
     title: 'should fallback horizontal to the default',
     it: checkSettings()
   });
 
   makeTest({
-    config: { datasourceSettings: { viewportElement: { nodeType: 1 } } },
+    config: { datasourceSettings: { viewportElement: { nodeType: 1 } as never } },
     title: 'should fallback viewportElement to the default',
     it: checkSettings()
   });
@@ -165,7 +168,7 @@ describe('Settings', () => {
   makeTest({
     config: { datasourceSettings: { viewportElement: document.createElement('div') } },
     title: 'should pass HTML element as a value of viewportElement',
-    it: ({ scroller: { settings } }: Misc) => (done: Function) => {
+    it: ({ scroller: { settings } }: Misc) => done => {
       expect(settings.viewportElement).toEqual(settings.viewport);
       const nodeType = settings.viewport ? settings.viewport.nodeType : null;
       expect(nodeType).toEqual(1);
@@ -177,19 +180,19 @@ describe('Settings', () => {
 
 describe('Datasource', () => {
 
-  makeTest({
+  makeTest<void, false>({
     config: {
-      datasourceClass: 'invalid',
+      datasourceClass: 'invalid' as unknown as { new(): void },
       toThrow: true
     },
     title: 'should throw exception (datasource is not a constructor)',
-    it: (error: any) => (done: Function) => {
+    it: error => done => {
       expect(error).toBe('datasource is not a constructor');
       done();
     }
   });
 
-  makeTest({
+  makeTest<void, false>({
     config: {
       datasourceClass: class {
         settings: Settings;
@@ -201,13 +204,13 @@ describe('Datasource', () => {
       toThrow: true
     },
     title: 'should throw exception (no get)',
-    it: (error: string) => (done: Function) => {
-      expect(error.startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
+    it: error => done => {
+      expect((error as unknown as string).startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
       done();
     }
   });
 
-  makeTest({
+  makeTest<void, false>({
     config: {
       datasourceClass: class {
         settings: Settings;
@@ -221,13 +224,13 @@ describe('Datasource', () => {
       toThrow: true
     },
     title: 'should throw exception (get is not a function)',
-    it: (error: string) => (done: Function) => {
-      expect(error.startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
+    it: error => done => {
+      expect((error as unknown as string).startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
       done();
     }
   });
 
-  makeTest({
+  makeTest<void, false>({
     config: {
       datasourceClass: class {
         settings: Settings;
@@ -243,13 +246,13 @@ describe('Datasource', () => {
       toThrow: true
     },
     title: 'should throw exception (get has less than 2 arguments)',
-    it: (error: string) => (done: Function) => {
-      expect(error.startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
+    it: error => done => {
+      expect((error as unknown as string).startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
       done();
     }
   });
 
-  makeTest({
+  makeTest<void, false>({
     config: {
       datasourceClass: class {
         settings: Settings;
@@ -259,13 +262,13 @@ describe('Datasource', () => {
           this.settings = {};
         }
 
-        get(offset: number, count: number) {
+        get(_offset: number, _count: number) {
           return [];
         }
       }
     },
     title: 'should pass',
-    it: (error: string) => (done: Function) => done()
+    it: () => done => done()
   });
 
 });
@@ -293,7 +296,7 @@ describe('Workflow & Adapter', () => {
   describe('Delayed initialization', () => {
     runBeforeEach(delay);
 
-    it('should pass', (done: Function) => {
+    it('should pass', done => {
       const { workflow, adapter } = misc;
       expect(workflow.isInitialized).toBe(false);
       expect(adapter.init).toBe(false);
@@ -308,7 +311,7 @@ describe('Workflow & Adapter', () => {
   describe('Disposing after delayed initialization', () => {
     runBeforeEach(delay);
 
-    it('should pass', (done: Function) => {
+    it('should pass', done => {
       setTimeout(() => {
         misc.fixture.destroy();
         expect(misc.workflow.isInitialized).toBe(false);
@@ -321,7 +324,7 @@ describe('Workflow & Adapter', () => {
   describe('Disposing before delayed initialization', () => {
     runBeforeEach(delay);
 
-    it('should dispose correctly', (done: Function) => {
+    it('should dispose correctly', done => {
       misc.fixture.destroy();
       expect(misc.workflow.isInitialized).toBe(false);
       expect(misc.adapter.init).toBe(false);
@@ -332,7 +335,7 @@ describe('Workflow & Adapter', () => {
   describe('Disposing after immediate initialization', () => {
     runBeforeEach(0);
 
-    it('should pass', (done: Function) => {
+    it('should pass', done => {
       expect(misc.workflow.isInitialized).toBe(true);
       expect(misc.adapter.init).toBe(true);
       misc.fixture.destroy();
@@ -346,9 +349,9 @@ describe('Workflow & Adapter', () => {
 
 describe('Multiple Instances', () => {
 
-  let fixture: ComponentFixture<any>;
+  let fixture: ComponentFixture<TwoScrollersTestComponent>;
   let reconfigure = true;
-  const getAdapters = (): { a1: IAdapter, a2: IAdapter } => ({
+  const getAdapters = (): { a1: IAdapter<Data>, a2: IAdapter<Data> } => ({
     a1: fixture.componentInstance.datasource.adapter,
     a2: fixture.componentInstance.datasource2.adapter
   });
@@ -357,7 +360,7 @@ describe('Multiple Instances', () => {
       .reduce((acc, element: DebugElement, i: number) => ({
         ...acc,
         ['w' + (i + 1)]: element.componentInstance.workflow
-      }), {} as any);
+      }), {} as { w1: Workflow, w2: Workflow });
 
 
   describe('Initialization', () => {
@@ -420,8 +423,8 @@ describe('Multiple Instances', () => {
       const { a1, a2 } = getAdapters();
       const { w1, w2 } = getWorkflows();
       let c1 = 0, c2 = 0, count = 0;
-      a1.isLoading$.subscribe(value => c1++);
-      a2.isLoading$.subscribe(value => c2++);
+      a1.isLoading$.subscribe(() => c1++);
+      a2.isLoading$.subscribe(() => c2++);
       const _done = () => {
         if (++count === 2) {
           done();

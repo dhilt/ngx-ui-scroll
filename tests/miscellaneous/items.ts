@@ -12,6 +12,8 @@ export interface IndexedItem {
   data: Data;
 }
 
+export type Processor = (items: IndexedItem[], ...args: unknown[]) => unknown;
+
 const generateItemWithId = (id: number, index: number, dynamicSize?: DynamicSizeArg, suffix = ''): Data => ({
   id,
   text: 'item #' + index + suffix,
@@ -32,7 +34,9 @@ export const generateItem = (index: number, dynamicSize: DynamicSizeArg = false,
 export const generateItems = (length: number, lastIndex: number): Data[] =>
   Array.from({ length }).map((j, i) => generateItem(lastIndex + i + 1));
 
-export const removeItems = (items: IndexedItem[], idListToRemove: number[], min: number, max: number, increase?: boolean) => {
+export const removeItems = (
+  items: IndexedItem[], idListToRemove: number[], min: number, max: number, increase?: boolean
+): void => {
   items.forEach(({ data: item }) => {
     const id = item.id;
     if (
@@ -61,7 +65,7 @@ export const insertItems = (
   count: number,
   decrease: boolean,
   dynamicSize?: DynamicSizeArg
-) => {
+): void => {
   let i = 1;
   const items: IndexedItem[] = [];
   const min = _min - (decrease ? count : 0);
@@ -93,4 +97,4 @@ export const appendItems = (
   _max: number,
   count: number,
   dynamicSize?: boolean
-) => insertItems(_items, _index, _count, _min, _max, _max + 1, count, false, dynamicSize);
+): void => insertItems(_items, _index, _count, _min, _max, _max + 1, count, false, dynamicSize);

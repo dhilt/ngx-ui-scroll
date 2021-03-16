@@ -1,14 +1,23 @@
-import { Direction, IDatasourceOptional } from './miscellaneous/vscroll';
+import { Direction, IDatasourceOptional, DatasourceGet, Settings, DevSettings } from './miscellaneous/vscroll';
 
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFunc } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
 import { Misc } from './miscellaneous/misc';
 import { generateItem } from './miscellaneous/items';
 
-const customDefault = { settings: null, get: null, interruption: false, scrollCount: 0 };
+interface ICustom {
+  settings: Settings | null;
+  get: DatasourceGet<unknown> | null;
+  devSettings?: DevSettings;
+  interruption: boolean;
+  scrollCount: number;
+  direction?: Direction;
+}
+
+const customDefault: ICustom = { settings: null, get: null, interruption: false, scrollCount: 0 };
 const datasourceName = 'infinite-promise-no-delay';
 
-const configList: TestBedConfig[] = [{
+const configList: TestBedConfig<ICustom>[] = [{
   datasourceName,
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.25, adapter: true },
   templateSettings: { viewportHeight: 100 },
@@ -36,24 +45,24 @@ const failedConfigList = [{
   custom: { get: 'bad' }
 }, {
   ...configList[0],
-  custom: { get: (x: any) => 'bad' }
+  custom: { get: (_x: number) => 'bad' }
 }, {
   ...configList[0],
   custom: {
-    get: (x: any, y: any) => null,
+    get: (_x: number, _y: number) => null,
     settings: {},
     devSettings: 'bad',
   }
-}];
+}] as unknown as TestBedConfig<ICustom>[];
 
-const interruptionConfigList = configList
+const interruptionConfigList: TestBedConfig<ICustom>[] = configList
   .filter((c, i) => i === 0 || i === 2)
   .map(config => ({
     ...config,
     custom: { ...config.custom, interruption: true }
   }));
 
-const settingsConfigList = configList
+const settingsConfigList: TestBedConfig<ICustom>[] = configList
   .filter((c, i) => i === 0 || i === 2)
   .map(config => ({
     ...config,
@@ -98,6 +107,7 @@ const newGetConfigList = configList
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
   // need to have a pre-call
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { firstVisible, lastVisible } = misc.adapter;
 };
 
@@ -121,7 +131,7 @@ const setCheck = (misc: Misc): ICheckReset => {
   };
 };
 
-const checkReset = (config: TestBedConfig, misc: Misc, oldCheck: ICheckReset) => {
+const checkReset = (config: TestBedConfig<ICustom>, misc: Misc, oldCheck: ICheckReset) => {
   const { settings, get, interruption } = config.custom;
   let firstIndex = oldCheck.firstVisible;
   let lastIndex = oldCheck.lastVisible;
@@ -140,7 +150,7 @@ const checkReset = (config: TestBedConfig, misc: Misc, oldCheck: ICheckReset) =>
   expect(newCheck.interruptionCount).toEqual(interruptionCount);
 };
 
-const doReset = (config: TestBedConfig, misc: Misc) => {
+const doReset = (config: TestBedConfig<ICustom>, misc: Misc) => {
   const { get, settings, devSettings } = config.custom;
   if (!settings && !get && !devSettings) {
     misc.adapter.reset();
@@ -160,7 +170,7 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
   accessFirstLastVisibleItems(misc);
 };
 
-const shouldReset = (config: TestBedConfig, fail?: boolean) => (misc: Misc) => (done: Function) => {
+const shouldReset = (config: TestBedConfig<ICustom>, fail?: boolean): ItFunc => misc => done => {
   accessFirstLastVisibleItems(misc);
   const { interruption, scrollCount, direction } = config.custom;
   const cyclesCount = 1 + (scrollCount || 0);

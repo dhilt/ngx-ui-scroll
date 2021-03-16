@@ -1,10 +1,17 @@
 import { Direction } from './miscellaneous/vscroll';
 
-import { makeTest, TestBedConfig, MakeTestConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, MakeTestConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter } from './miscellaneous/itemsCounter';
 
-const configList: TestBedConfig[] = [{
+interface ICustom {
+  direction: Direction;
+  count: number;
+  bouncing?: boolean;
+  mass?: boolean;
+}
+
+const configList: TestBedConfig<ICustom>[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22, itemSize: 20 },
   templateSettings: { viewportHeight: 71, itemHeight: 20 },
   custom: { direction: Direction.forward, count: 1 }
@@ -31,7 +38,7 @@ configList.forEach(config => config.datasourceSettings.adapter = true);
 const treatIndex = (index: number) => index <= 3 ? index : (3 * 2 - index);
 
 const singleBackwardMaxScrollConfigList =
-  configList.map((config, index) => ({
+  configList.map(config => ({
     ...config,
     custom: {
       ...config.custom,
@@ -97,7 +104,7 @@ const massTwoDirectionalScrollsConfigList_bwd =
     }
   }));
 
-const doScrollMax = (config: TestBedConfig, misc: Misc) => {
+const doScrollMax = (config: TestBedConfig<ICustom>, misc: Misc) => {
   if (config.custom.direction === Direction.forward) {
     misc.scrollMax();
   } else {
@@ -105,7 +112,7 @@ const doScrollMax = (config: TestBedConfig, misc: Misc) => {
   }
 };
 
-const invertDirection = (config: TestBedConfig) => {
+const invertDirection = (config: TestBedConfig<ICustom>) => {
   const _forward = config.custom.direction === Direction.forward;
   config.custom.direction = _forward ? Direction.backward : Direction.forward;
 };
@@ -186,7 +193,7 @@ const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: Item
   return result;
 };
 
-const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldScroll: ItFuncConfig<ICustom> = config => misc => done => {
   const custom = config.custom;
   const wfCount = custom.count + 1;
   const wfCountMiddle = Math.ceil(wfCount / 2);
@@ -227,7 +234,7 @@ const shouldScroll = (config: TestBedConfig) => (misc: Misc) => (done: Function)
   });
 };
 
-const _makeTest = (data: MakeTestConfig) => makeTest({
+const _makeTest = (data: MakeTestConfig<ICustom>) => makeTest({
   ...data,
   meta: `count: ${data.config.custom.count}`
 });

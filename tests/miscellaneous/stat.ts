@@ -19,7 +19,7 @@ export class Stat<Data = unknown> {
     this.averageSize = buffer.averageSize;
   }
 
-  expect(stat: Stat<Data>) {
+  expect(stat: Stat<Data>): void {
     expect(this.size).toEqual(stat.size);
     expect(this.scrollableSize).toEqual(stat.scrollableSize);
     expect(this.paddingFwd).toEqual(stat.paddingFwd);

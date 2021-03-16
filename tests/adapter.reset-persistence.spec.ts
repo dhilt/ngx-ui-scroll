@@ -1,8 +1,17 @@
-import { getDefaultAdapterProps, ItemAdapter } from './miscellaneous/vscroll';
+import {
+  AdapterPropName,
+  getDefaultAdapterProps,
+  ItemAdapter,
+  IAdapterProp,
+  DatasourceGet,
+  IDatasourceOptional,
+  Settings,
+  DevSettings
+} from './miscellaneous/vscroll';
 
 import { IAdapter, Datasource } from '../src/ui-scroll.datasource';
 
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
 import { Misc } from './miscellaneous/misc';
 
@@ -10,7 +19,14 @@ const ADAPTER_PROPS_STUB = getDefaultAdapterProps();
 
 const defaultSettings = { startIndex: 1, adapter: true };
 
-const mainConfig: TestBedConfig = {
+interface ICustom {
+  isNew: boolean;
+  get?: DatasourceGet<unknown>;
+  settings: Settings;
+  devSettings?: DevSettings;
+}
+
+const mainConfig: TestBedConfig<ICustom> = {
   datasourceName: 'infinite-promise-no-delay',
   datasourceSettings: defaultSettings,
   templateSettings: { viewportHeight: 100 },
@@ -24,7 +40,7 @@ const mainConfig: TestBedConfig = {
   }
 };
 
-const bofConfig = {
+const bofConfig: TestBedConfig<ICustom> = {
   ...mainConfig,
   datasourceName: 'limited-1-100-no-delay',
   datasourceSettings: {
@@ -40,26 +56,27 @@ const bofConfig = {
   }
 };
 
-const cloneConfig = (config: TestBedConfig): TestBedConfig => ({
+const cloneConfig = (config: TestBedConfig<ICustom>): TestBedConfig<ICustom> => ({
   ...config, custom: {
     ...config.custom,
     isNew: false
   }
 });
 const configList = [mainConfig, cloneConfig(mainConfig)];
-const bofConfigList = [bofConfig, cloneConfig(bofConfig)];
+const bofConfigList: TestBedConfig<ICustom>[] = [bofConfig, cloneConfig(bofConfig)];
 
 const accessFirstLastVisibleItems = (misc: Misc) => {
   // need to have a pre-call
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { firstVisible, lastVisible } = misc.workflow.scroller.datasource.adapter;
 };
 
-const doReset = (config: TestBedConfig, misc: Misc) => {
+const doReset = (config: TestBedConfig<ICustom>, misc: Misc) => {
   const { get, settings, devSettings, isNew } = config.custom;
   if (!settings && !get && !devSettings) {
     misc.adapter.reset();
   } else {
-    const datasource = {
+    const datasource: IDatasourceOptional = {
       ...(get ? { get } : {}),
       ...(settings ? { settings } : {}),
       ...(devSettings ? { devSettings } : {}),
@@ -76,18 +93,20 @@ const doReset = (config: TestBedConfig, misc: Misc) => {
   accessFirstLastVisibleItems(misc);
 };
 
-const shouldPersistPermanentProp = (token: string, config: TestBedConfig, misc: Misc, done: Function) => {
+const shouldPersistPermanentProp = (
+  token: AdapterPropName, config: TestBedConfig<ICustom>, misc: Misc, done: () => void
+) => {
   const outer = misc.testComponent.datasource;
   const inner = misc.workflow.scroller.datasource;
-  const value = (misc.workflow.scroller.adapter as any)[token];
+  const value = misc.workflow.scroller.adapter[token];
   expect(value).toBeTruthy();
-  const prop = ADAPTER_PROPS_STUB.find(({ name }) => name === token);
+  const prop = ADAPTER_PROPS_STUB.find(({ name }) => name === token) as IAdapterProp;
   expect(prop).toBeTruthy();
-  const propDefault = (prop as any).value;
+  const propDefault = prop.value;
   expect(propDefault).toBeFalsy();
   const check = () => {
     expect(outer.adapter as IAdapter).toEqual(inner.adapter);
-    expect((inner.adapter as any)[token]).toEqual(value);
+    expect(inner.adapter[token]).toEqual(value);
   };
   check();
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -101,18 +120,18 @@ const shouldPersistPermanentProp = (token: string, config: TestBedConfig, misc: 
   });
 };
 
-const shouldPersistId = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
-  shouldPersistPermanentProp('id', config, misc, done);
+const shouldPersistId: ItFuncConfig<ICustom> = config => misc => done =>
+  shouldPersistPermanentProp(AdapterPropName.id, config, misc, done);
 
-const shouldPersistVersion = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
-  shouldPersistPermanentProp('version', config, misc, done);
+const shouldPersistVersion: ItFuncConfig<ICustom> = config => misc => done =>
+  shouldPersistPermanentProp(AdapterPropName.version, config, misc, done);
 
-const shouldPersistItemsCount = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldPersistItemsCount: ItFuncConfig<ICustom> = config => misc => done => {
   const outer = misc.testComponent.datasource;
   const inner = misc.workflow.scroller.datasource;
-  const itemsCountProp = ADAPTER_PROPS_STUB.find(({ name }) => name === 'itemsCount');
+  const itemsCountProp = ADAPTER_PROPS_STUB.find(({ name }) => name === AdapterPropName.itemsCount);
   expect(itemsCountProp).toBeTruthy();
-  const itemsCountDefault = (itemsCountProp as any).value;
+  const itemsCountDefault = (itemsCountProp as IAdapterProp).value;
   const check = (isDefault?: boolean) => {
     const itemsCount = isDefault ? itemsCountDefault : misc.workflow.scroller.buffer.getVisibleItemsCount();
     expect(outer.adapter as IAdapter).toEqual(inner.adapter);
@@ -137,21 +156,23 @@ const getAdapters = (misc: Misc) => [
 ];
 
 const subMethods = ['subscribe', 'subscribe', 'on'];
+type Sub = { unsubscribe: () => void } | (() => void);
 
-const cleanupSubscriptions = (list: any[]) =>
+const cleanupSubscriptions = (list: Sub[]) =>
   list.forEach((sub) => {
-    if (sub.unsubscribe) { // Angular Adapter
-      sub.unsubscribe();
-    } else { // Native Adapter
-      sub();
+    if (typeof sub === 'function') {
+      sub(); // Native Adapter
+    } else {
+      sub.unsubscribe(); // Angular Adapter
     }
   });
 
-const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = getAdapters(misc).reduce((acc: any[], adapter, i: number) => {
+const shouldPersistIsLoading$: ItFuncConfig<ICustom> = config => misc => done => {
+  const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i: number) => {
     let call = 0;
     return [
       ...acc,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (adapter.isLoading$ as any)[subMethods[i]]((value: boolean) => {
         misc.shared.count = ++call;
         if (call === 1) {
@@ -180,12 +201,13 @@ const shouldPersistIsLoading$ = (config: TestBedConfig) => (misc: Misc) => (done
   });
 };
 
-const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldPersistFirstVisible$: ItFuncConfig<ICustom> = config => misc => done => {
   accessFirstLastVisibleItems(misc);
-  const subs = getAdapters(misc).reduce((acc: any[], adapter, i) => {
+  const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i) => {
     let call = 0;
     return [
       ...acc,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (adapter.firstVisible$ as any)[subMethods[i]](({ $index }: ItemAdapter) => {
         misc.shared.count = ++call;
         const { startIndex } = config.datasourceSettings;
@@ -214,11 +236,12 @@ const shouldPersistFirstVisible$ = (config: TestBedConfig) => (misc: Misc) => (d
   });
 };
 
-const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
-  const subs = getAdapters(misc).reduce((acc: any[], adapter, i) => {
+const shouldPersistBof$: ItFuncConfig<ICustom> = config => misc => done => {
+  const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i) => {
     let call = 0;
     return [
       ...acc,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (adapter.bof$ as any)[subMethods[i]]((bof: boolean) => {
         misc.shared.count = ++call;
         if (call === 1) {
@@ -249,7 +272,7 @@ const shouldPersistBof$ = (config: TestBedConfig) => (misc: Misc) => (done: Func
 
 describe('Adapter Reset Persistence Spec', () => {
 
-  const title = (config: TestBedConfig, token = 'should persist'): string =>
+  const title = (config: TestBedConfig<ICustom>, token = 'should persist'): string =>
     token + (config.custom.isNew ? ' (new)' : '');
 
   configList.forEach(config => {

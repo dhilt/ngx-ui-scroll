@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Settings, DevSettings, BufferUpdater, Workflow, Item } from '../../miscellaneous/vscroll';
 
 import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
-import { generateItem, Data } from '../../miscellaneous/items';
+import { generateItem, Data, Processor } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 
 type Buffer<T = unknown> = Workflow<T>['scroller']['buffer'];
@@ -14,28 +15,31 @@ export class DatasourceService implements IDatasource {
 export const generateDatasourceClass = (name: string, settings?: Settings<Data>, devSettings?: DevSettings) =>
   getDatasourceProcessingClass(datasourceStore[name], settings, devSettings);
 
-export const getDatasourceProcessingClass = (_datasource: IDatasource, _settings?: Settings<Data>, _devSettings?: DevSettings) => {
-  return class extends Datasource<Data> {
-    get: (a: any, b: any) => any;
-    settings: Settings;
+export const getDatasourceProcessingClass = (
+  _datasource: IDatasource<Data>, _settings?: Settings<Data>, _devSettings?: DevSettings
+) =>
+  class extends Datasource<Data> {
+    get: IDatasource<Data>['get'];
+    settings: Settings<Data>;
     devSettings: DevSettings;
-    processGet: (f: () => any) => any;
+    processGet: Processor;
 
     constructor() {
       const settings = _datasource.settings || _settings || {};
       const devSettings = _datasource.devSettings || _devSettings || {};
       const self = () => this;
-      const get = function (a: any, b: any) {
-        return (_datasource.get as any).apply(self(), [...Array.prototype.slice.call(arguments), self().processGet]);
+      const get = function (_a: number, _b: number) {
+        // eslint-disable-next-line prefer-rest-params
+        const args = [...Array.prototype.slice.call(arguments), self().processGet];
+        return (_datasource.get as (...args: unknown[]) => unknown).apply(self(), args);
       };
       super({ get, settings, devSettings });
     }
 
-    setProcessGet(func: (f: () => any) => any) {
+    setProcessGet(func: Processor) {
       this.processGet = func;
     }
   };
-};
 
 class LimitedDatasource extends Datasource<Data> {
   settings: Settings<Data>;
@@ -160,6 +164,7 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
       // Since the update API is tested on the vscroll's end (Buffer class),
       // it is possible to perform update manipulations by the Buffer.update method.
       // Let's create a copy of Buffer instance, emulate all the datasource and run update.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const buffer: Buffer<Data> = new ((_buffer as any).constructor)(this.settings, () => null, { log: () => null });
       const generator = (index: number, data: Data) => new Item(index, data, {} as never);
       buffer.items = this.data.map((data, index) => generator(this.min + index, data));
@@ -171,3 +176,9 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
       this.shift = _buffer.absMinIndex - buffer.absMinIndex;
     }
   };
+
+
+export type DatasourceProcessor = InstanceType<ReturnType<typeof getDatasourceProcessingClass>>;
+export type DatasourceRemover = InstanceType<ReturnType<typeof getDatasourceClassForRemovals>>;
+export type DatasourceReplacer = InstanceType<ReturnType<typeof getDatasourceClassForReplacements>>;
+export type DatasourceUpdater = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;

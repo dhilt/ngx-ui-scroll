@@ -1,6 +1,5 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { getDatasourceClassForUpdates } from './scaffolding/datasources/class';
-import { Misc } from './miscellaneous/misc';
+import { makeTest, TestBedConfig, ItFunc } from './scaffolding/runner';
+import { DatasourceUpdater, getDatasourceClassForUpdates } from './scaffolding/datasources/class';
 import { Data } from './miscellaneous/items';
 import { BufferUpdater, Item, AdapterUpdateOptions } from './miscellaneous/vscroll';
 
@@ -16,7 +15,6 @@ const baseSettings = {
 };
 
 type CheckList = { [key: string]: string }[];
-type DS = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;
 
 interface ICustom {
   title: string;
@@ -31,7 +29,7 @@ interface ICustom {
 
 const make = (text: string, size: number): Data => ({ id: 0, text, size });
 
-const configList: TestBedConfig[] = ([{
+const configList: TestBedConfig<ICustom>[] = ([{
   title: 'replace one-to-one',
   predicate: ({ $index }) => {
     if ($index === 1) {
@@ -180,17 +178,17 @@ const checkContents = (items: Item<Data>[], checkList: CheckList, left: number) 
 };
 
 const shouldUpdate = (
-  config: TestBedConfig, fixRight: boolean
-) => (misc: Misc) => async (done: Function) => {
+  config: TestBedConfig<ICustom>, fixRight: boolean
+): ItFunc => misc => async done => {
   await misc.relaxNext();
   const { adapter, scroller: { buffer } } = misc;
-  const { predicate, check, check2, first, first2, getAverageSize } = config.custom as ICustom;
+  const { predicate, check, check2, first, first2, getAverageSize } = config.custom;
   const checkList = fixRight ? check2 : check;
   const firstVisible = fixRight ? first2 : first;
   const left = Number(Object.keys(checkList[0])[0]);
 
   // update in Datasource
-  (misc.datasource as DS).update(buffer, predicate, firstVisible, fixRight);
+  (misc.datasource as DatasourceUpdater).update(buffer, predicate, firstVisible, fixRight);
 
   // update in Viewport
   await adapter.update({ predicate, fixRight });
@@ -211,7 +209,7 @@ const shouldUpdate = (
   done();
 };
 
-const shouldWorkAfterCleanup = (fixRight: boolean) => (misc: Misc) => async (done: Function) => {
+const shouldWorkAfterCleanup = (fixRight: boolean): ItFunc => misc => async done => {
   await misc.relaxNext();
   const { adapter, scroller: { buffer } } = misc;
   const { firstIndex, lastIndex } = buffer;
@@ -219,7 +217,7 @@ const shouldWorkAfterCleanup = (fixRight: boolean) => (misc: Misc) => async (don
   const predicate: AdapterUpdateOptions['predicate'] = item =>
     !(item.$index >= firstIndex && item.$index <= lastIndex);
 
-  (misc.datasource as DS).update(buffer, predicate, firstIndex, fixRight);
+  (misc.datasource as DatasourceUpdater).update(buffer, predicate, firstIndex, fixRight);
   await adapter.update({ predicate, fixRight });
 
   expect(adapter.firstVisible.$index).toBe(fixRight ? lastIndex + 1 : firstIndex);
@@ -258,7 +256,7 @@ describe('Adapter Update Spec', () => {
   );
 
   describe('After cleanup', () =>
-    [false, true].forEach((fixRight) => makeTest({
+    [false, true].forEach((fixRight) => makeTest<void, false>({
       title: 'should work properly when fixRight = ' + (fixRight ? 'true' : 'false'),
       config: { datasourceClass: getDatasourceClassForUpdates(baseSettings) },
       it: shouldWorkAfterCleanup(fixRight)

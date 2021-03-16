@@ -6,18 +6,15 @@
   <div description>
     <p>
       If the boundaries of the dataset are known,
-      we may virtualize all the data items right on the <em>uiScroll</em> initialization, in other words
-      the <em>uiScroll</em> will maintain forward and backward padding elements of the viewport
-      in assumption that the dataset consists of (maxIndex - minIndex) items.
+      we may virtualize all the data items right on the Scroller initialization, in other words
+      the Scroller will maintain forward and backward padding elements of the viewport
+      in assumption that the dataset consists of (<em>maxIndex</em> - <em>minIndex</em>) items.
       So it will be possible to jump to any position immediately.
     </p>
     <p>
-      In this demo we are telling the <em>uiScroll</em>
-      to work with indexes in-between [1..1000] range only.
-      1000 items per 25px give us 25000px,
-      it is our viewport scrollable size and it will not be changed.
-      Also, we may reach the bottom item in a single long scroll with just a couple of fetches:
-      3-10 <em>Datasource.get</em> method calls against 70-200 ones in the previous demos.
+      In this demo we tell the Scroller to work with indexes in-between [1..1000] range only.
+      1000 items of 25px amount 25000px,
+      this is the end viewport scrollable size which will not be changed.
     </p>
     <p>
       An important note is that <em>minIndex</em> and <em>maxIndex</em>
@@ -34,11 +31,16 @@
       >here</a>.
     </p>
     <p>
-      The <em>uiScroll</em> can accept only one of min/max indexes settings.
+      The Scroller can accept only one of min/max indexes settings.
       For example, if we know that our datasource have no negative values,
       then we may define <em>minIndex</em> as 1 (or 0) and not define <em>maxIndex</em>.
       It also seems right idea to set <em>startIndex</em> value to 0 in case
       <em>minIndex</em> value had been set to 0.
+      An example of positive-limited <em>Datasource.get</em> implementation can be found
+      <a
+        [routerLink]="['/', datasourcePositiveLimitedDemoConfig.scope]"
+        fragment="{{datasourcePositiveLimitedDemoConfig.id}}"
+      >here</a>.
     </p>
     <p>
       Both of <em>minIndex</em> and <em>maxIndex</em> values should be integer.

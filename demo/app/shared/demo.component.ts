@@ -1,7 +1,5 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 
-import { IDatasource } from '../../../public_api';
-
 import { DemoContext, DemoSources } from './interfaces';
 
 @Component({
@@ -12,7 +10,8 @@ export class DemoComponent implements OnInit {
 
   init = false;
 
-  @Input() datasource: IDatasource;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  @Input() datasource: any;
   @Input() context: DemoContext;
   @Input() sources: DemoSources;
   @Input() itemTemplate: TemplateRef<unknown>;

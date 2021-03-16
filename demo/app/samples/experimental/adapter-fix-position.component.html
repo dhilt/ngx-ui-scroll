@@ -8,7 +8,8 @@
 
   <div description>
     <p>
-      The first option of the <em>Adapter.fix</em> method is <em>scrollPosition</em>.
+      The <em>Adapter.fix</em> method has a number of settings, 
+      one of them is <em>scrollPosition</em>.
       It allows to change the position of the viewport's scrollbar programmatically.
       It is used in the lib tests.
     </p>
@@ -17,7 +18,7 @@
       Negative value would be treated as zero.
       Despite the browsers have no agreement on how to deal with
       setting <em>scrollTop</em>/<em>scrollLeft</em> properties
-      into <em>+/-Infinity</em>, the <em>uiScroll</em> treats them as follows:
+      into <em>+/-Infinity</em>, the Scroller treats them as follows:
     </p>
     <ul>
       <li>

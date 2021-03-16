@@ -14,19 +14,19 @@
   <div description>
     <p>
       The <em>Adapter.fix</em> method could be invoked with <em>updater</em> option
-      which is a function that is applied to each element in current <em>uiScroll</em> buffer list
+      which is a function that is applied to each element in the current Scroller's Buffer list
       and allows to update buffered items on the fly.
       The argument of the <em>updater</em> function is an object of special <em>ItemAdapter</em> type
     </p>
     <pre>{{itemAdapterDescription}}</pre>
     <p>
-      The <em>data</em> is exactly what the <em>Datasource</em> sends to the <em>uiScroll</em>
-      as the items contents. So we have an access to the items inside the <em>uiScroll</em> buffer,
+      The <em>data</em> is exactly what the <em>Datasource</em> sends to the Scroller
+      as the items contents. So we have access to the items inside the Scroller's Buffer,
       and in this demo we update the <em>text</em> of selected item by its index.
       If we destroy the updated item by scrolling out and then scroll back,
       we will see that our update is gone. Speaking generally,
       we need to care about datasource consistency and every update we want to
-      be applied to the <em>uiScroll</em> buffer should also happen at the datasource level.
+      be applied to the Scroller's Buffer should also happen at the datasource level.
       The examples of Datasource-Adapter synching can be found
       <a
         [routerLink]="['/', adapterMethodsScope.id]"
@@ -55,7 +55,7 @@
       as it is in this demo, for it might affect the performance.
     </p>
     <p>
-      The <em>Adapter.fix</em> method has the second argument <em>update</em>
+      The <em>Adapter.fix-updater</em> method has the second argument <em>update</em>
       (available since v2.0.0-rc.6) which is a function that can be invoked 
       in case the <em>Buffer.items</em> array reference needs to be updated.
     </p>

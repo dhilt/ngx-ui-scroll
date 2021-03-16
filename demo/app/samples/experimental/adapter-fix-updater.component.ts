@@ -64,9 +64,10 @@ doUpdate() {
   const index = Number(this.inputValue);
   if (!isNaN(index)) {
     this.datasource.adapter.fix({
-      updater: ({ $index, data }) => {
+      updater: ({ $index, data }, update) => {
         if (index === $index) {
           data.text += '*';
+          // update();
         }
       }
     });
@@ -95,10 +96,11 @@ countItems() {
     const index = Number(this.inputValue);
     if (!isNaN(index)) {
       this.datasource.adapter.fix({
-        updater: ({ $index, data }) => {
+        updater: ({ $index, data }, update) => {
           if (index === $index) {
             data.text += '*';
           }
+          update();
         }
       });
     }

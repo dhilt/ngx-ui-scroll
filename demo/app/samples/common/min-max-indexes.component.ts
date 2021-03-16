@@ -20,6 +20,7 @@ export class DemoMinMaxIndexesComponent {
   };
 
   datasourceLimitedDemoConfig = demos.datasource.map.limited;
+  datasourcePositiveLimitedDemoConfig = demos.datasource.map.positiveLimitedIndexes;
 
   datasource: IDatasource = {
     get: datasourceGetCallbackInfinite(this.demoContext),

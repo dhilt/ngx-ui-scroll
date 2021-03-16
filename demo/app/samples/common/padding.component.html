@@ -5,12 +5,10 @@
 >
   <div description>
     <p>
-      Here the <em>Datasource.get</em> method implementation is taken from previous samples,
-      but the <em>Settings</em> object is completed with <em>padding</em> property.
-      This setting defines an extra space added to the visible part of the viewport for
+      This <em>padding</em> setting defines an extra space added to the visible part of the viewport for
       the purpose of determining when the items should be created/destroyed.
       The value is relative to the visible size of the viewport.
-      So <em>1.46</em> means that the <em>uiScroll</em> would request new items
+      So <em>1.46</em> means that the Scroller would request new items
       until the areas of 146% of the viewport size on both of forward and backward directions
       are filled with rendered items: 100% + 146% downward and 146% upward.
       In this demo we have 3 requests on the initial load, let's see what happened:
@@ -44,7 +42,7 @@
       </li>
     </ol>
     <p>
-      So we have satisfied to 40 DOM elements (7 + 18 + 15 = 40).
+      This way we got 40 DOM elements (7 + 18 + 15 = 40).
       The bigger <em>padding</em> value is, the more DOM elements should be present in the viewport.
     </p>
     <p>

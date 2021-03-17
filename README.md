@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/dhilt/ngx-ui-scroll.svg?branch=master)](https://travis-ci.com/dhilt/ngx-ui-scroll)
+[![ngx-ui-scroll CI](https://github.com/dhilt/ngx-ui-scroll/actions/workflows/ci.yml/badge.svg)](https://github.com/dhilt/ngx-ui-scroll/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/ngx-ui-scroll.svg)](https://www.npmjs.com/package/ngx-ui-scroll)
 
 # NgxUiScroll

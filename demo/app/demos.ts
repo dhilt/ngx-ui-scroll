@@ -38,6 +38,7 @@ import { DemoCheckSizeComponent } from './samples/adapter/check-size.component';
 import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoReplaceComponent } from './samples/adapter/replace.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
+import { DemoUpdateComponent } from './samples/adapter/update.component';
 
 import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
@@ -89,6 +90,7 @@ const adapter = [
   DemoRemoveComponent,
   DemoReplaceComponent,
   DemoClipComponent,
+  DemoUpdateComponent,
 ];
 
 const experimental = [

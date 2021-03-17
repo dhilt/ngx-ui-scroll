@@ -224,6 +224,11 @@ const adapterMethodsScope = {
     name: 'Replace',
     scope: globalScope.adapterMethods.id
   },
+  update: {
+    id: 'update',
+    name: 'Update',
+    scope: globalScope.adapterMethods.id
+  },
 };
 
 const experimentalScope = {

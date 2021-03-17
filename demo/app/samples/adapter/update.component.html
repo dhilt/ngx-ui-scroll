@@ -1,0 +1,80 @@
+<ng-template #itemTemplate let-item="item" let-index="index">
+  <span class="index">{{index}})</span> {{item.text}}
+</ng-template>
+
+<app-demo
+  [datasource]="datasource"
+  [context]="demoContext"
+  [sources]="sources"
+  [itemTemplate]="itemTemplate"
+>
+  <div actions>
+    <button (click)="doUpdate()">Run update</button>
+    <br>
+    <input type="checkbox" [(ngModel)]="fixRight"> fix right
+  </div>
+  <div description>
+    <p>
+      The <em>Adapter.update</em> method provides access to Scroller's Buffer
+      and allows to perform insert/replace/remove operations on the fly.
+      The <em>Adapter.update</em> method has 1 required argument which is a predicate
+      that is applied to each item in the current Scroller's Buffer.
+      The argument of the predicate gives natural datasource <em>$index</em>
+      of the item, its <em>data</em> payload and its HTML <em>element</em>.
+      The return value of <em>predicate</em> determines what should happen with each item in the Buffer:
+    </p>
+    <ul>
+      <li>
+        returning of a falsy value or an empty array means removal of an item;
+      </li>
+      <li>
+        returning of a truthy value or an array with only current item in it means leaving an item as is;
+      </li>
+      <li>
+        returning of a non-empty array means replacement/insertion.
+      </li>
+    </ul>
+    <p>
+      In the demo the predicate is implemented to remove item 3, 
+      replace item 5 with new A and B items,
+      insert new C and D items after item 7, while other items should remain pristine.
+      This particular predicate should provide
+      [1..10] to [1, 2, 4, A, B, 6, 7, C, D, 8] contents transition.
+    </p>
+    <p>
+      On index shifting.
+      The second option of the <em>Adapter.update</em> is <em>fixRight</em>.
+      This is a non-required boolean setting that defines the indexing strategy.
+      If <em>fixRight</em> is false (which is default),
+      indexes to the right of the updated ones will be affected.
+      Since the first updated item has index 3,
+      the indexes of the first two items should not change after update when fixRight&nbsp;=&nbsp;false.
+      But the index of the 8 item should grow up to 10:
+      2 removals (3, 5) and 4 insertions (A, B, C, D) results in +2&nbsp;shift.
+      If <em>fixRight</em> is true, indexes to the left of the updated ones will be affected.
+      And we'll see -2&nbsp;shift on the first two items when fixRight&nbsp;=&nbsp;true.
+    </p>
+    <p>
+      The very important thing is to synchronize each update we perform via Adapter API
+      over the Scroller's Buffer with the Datasource outside the Scroller.
+      This demo does not have such synchronization due to high complexity of the operations.
+      But there are some examples in other demos:
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterMethodsScope.map.appendPrependSync.id}}"
+      >append</a>,
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterMethodsScope.map.remove.id}}"
+      >remove</a> and
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterMethodsScope.map.insert.id}}"
+      >insert</a>.
+    </p>
+    <p>
+      Since v2, the <em>Adapter.insert</em> and <em>Adapter.replace</em> methods
+      use the <em>Adapter.update</em> method under hood. 
+    </p>
+  </div>
+</app-demo>

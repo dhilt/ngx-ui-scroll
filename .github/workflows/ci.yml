@@ -1,33 +1,58 @@
-name: ngx-ui-scroll CI
+name: ngx-ui-scroll ci
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - "**"
   pull_request:
     branches: [ master ]
   workflow_dispatch:
     inputs:
       cause:
-        description: 'Cause of run'
+        description: 'Reason'
         required: true
         default: 'Manual triggering'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [12.x]
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - run: npm test
-    - run: npm run build
-    - run: npm run build-app
+      - name: Dispatched?
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "This is dispatched"
+          echo "Build reason: ${{ github.event.inputs.cause }}"
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: npm install
+      - run: npm test
+      - run: npm run build
+      - run: npm run build-app
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set output (branch name)
+        id: vars
+        run: echo ::set-output name=branch::${GITHUB_REF#refs/*/}
+
+      - name: Skip Deploy?
+        if: ${{ github.event_name != 'push' || steps.vars.outputs.branch != 'master' }}
+        run: |
+          echo "Only pushing to 'master' causes deploy automatically. Pushed to '${{ steps.vars.outputs.branch }}'"
+      - name: Deploy
+        if: ${{ github.event_name == 'push' && steps.vars.outputs.branch == 'master' }}
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages
+          folder: dist-app

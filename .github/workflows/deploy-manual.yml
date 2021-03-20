@@ -1,27 +1,17 @@
-name: Deploy demo site
+name: ngx-ui-scroll demo app manual deploy
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
     inputs:
       cause:
-        description: 'Cause of run'
+        description: 'Deploy reason'
         required: true
         default: 'Manual triggering'
 
 jobs:
-  build-and-deploy:
+  deploy-on-dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatched?
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          echo "Yes"
-          echo "Build reason: ${{ github.event.inputs.cause }}"
-          echo "Good luck!"
-
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
 
@@ -29,7 +19,6 @@ jobs:
         run: |
           npm install
           npm run build-app
-
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:

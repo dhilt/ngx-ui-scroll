@@ -171,7 +171,7 @@ const checkContents = (items: Item<Data>[], checkList: CheckList, left: number) 
     const $index = Object.keys(entry)[0];
     const item = items[index++];
     expect(item.invisible).toBe(false);
-    expect(item.toRemove).not.toBe(true);
+    expect((item as unknown as { toRemove: boolean }).toRemove).not.toBe(true);
     expect(item.$index.toString()).toBe($index);
     expect(item.data.text).toBe(entry[$index]);
   });

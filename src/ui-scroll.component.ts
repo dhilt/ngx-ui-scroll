@@ -51,7 +51,7 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
       consumer,
       element: this.elementRef.nativeElement,
       datasource: this.datasource as unknown as IDatasource<Data>,
-      run: (items: Item<Data>[]) => {
+      run: items => {
         if (!items.length && !this.items.length) {
           return;
         }

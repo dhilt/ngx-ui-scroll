@@ -124,7 +124,7 @@ export const makeTest = <T = void, DS = true>(data: MakeTestConfig<T, DS>): void
           } catch (_error) {
             runPromise = new Promise((resolve, reject) =>
               (fixture.ngZone as NgZone).onError.subscribe((error: unknown) =>
-                reject(error)
+                setTimeout(() => reject(error))
               )
             );
           }

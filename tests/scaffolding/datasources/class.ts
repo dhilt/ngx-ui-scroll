@@ -164,9 +164,12 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
       // Since the update API is tested on the vscroll's end (Buffer class),
       // it is possible to perform update manipulations by the Buffer.update method.
       // Let's create a copy of Buffer instance, emulate all the datasource and run update.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const buffer: Buffer<Data> = new ((_buffer as any).constructor)(this.settings, () => null, { log: () => null });
-      const generator = (index: number, data: Data) => new Item(index, data, {} as never);
+      const buffer: Buffer<Data> =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        new ((_buffer as any).constructor)(this.settings, () => null, { log: () => null });
+      const generator = (index: number, data: Data) =>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        new ((_buffer.items[0] as any).constructor)(index, data, {} as never);
       buffer.items = this.data.map((data, index) => generator(this.min + index, data));
       buffer.items.forEach(item => buffer.cacheItem(item));
       buffer.updateItems(predicate, generator, indexToTrack, fixRight);

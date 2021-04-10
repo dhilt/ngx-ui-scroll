@@ -9,6 +9,13 @@ if (config.error) {
   console.error(config.error.toString());
 }
 const TEST_SERVER_PORT = process.env.TEST_SERVER_PORT || 9876;
+const BROWSERS = {
+  DEFAULT: 'headless',
+  CHROME: 'chrome',
+  FF: 'firefox',
+};
+const browser = Object.values(BROWSERS).find(b => b === process.env.TEST_BROWSER) || BROWSERS.DEFAULT;
+const flags = ['--window-size=1024,768'];
 
 module.exports = function (config) {
 
@@ -96,19 +103,20 @@ module.exports = function (config) {
     autoWatch: !process.env.CI,
     singleRun: !!process.env.CI,
 
-    browsers: process.env.CI || !process.env.NOT_HEADLESS ?
-      ['ChromeHeadlessSized'] :
-      [process.platform === 'linux' ? 'Chromium' : 'ChromeSized'],
+    browsers: process.env.CI || browser === BROWSERS.DEFAULT
+      ? ['ChromeHeadlessSized']
+      : (browser === BROWSERS.FF
+        ? ['FirefoxSized']
+        : process.platform === 'linux'
+          ? ['ChromiumSized']
+          : ['ChromeSized']
+      ),
 
     customLaunchers: {
-      'ChromeHeadlessSized': {
-        base: 'ChromeHeadless',
-        flags: ['--window-size=1024,768']
-      },
-      'ChromeSized': {
-        base: 'Chrome',
-        flags: ['--window-size=1024,768']
-      }
+      'ChromeHeadlessSized': { base: 'ChromeHeadless', flags },
+      'ChromiumSized': { base: 'Chromium', flags },
+      'ChromeSized': { base: 'Chrome', flags },
+      'FirefoxSized': { base: 'Firefox', flags }
     }
   };
 

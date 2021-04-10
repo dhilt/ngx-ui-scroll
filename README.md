@@ -249,7 +249,20 @@ import { Datasource } from 'ngx-ui-scroll';
   });
 ```
 
-The development settings are not documented. Information about them can be obtained directly from the [source code](https://github.com/dhilt/vscroll/blob/main/src/classes/settings.ts). The Scroller has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
+The development settings are not documented. Information about it can be taken directly from the [source code](https://github.com/dhilt/vscroll/blob/main/src/classes/settings.ts). The Scroller has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
+
+Below is the quick guide for vscroll/ngx-ui-scroll integrated development (this is relevant since ngx-ui-scroll v2 depends on vscroll):
+
+ - clone both ngx-ui-scroll and [vscroll](https://github.com/dhilt/vscroll) repositories into the same folder
+ - replace "vscroll" import with local sources [here](https://github.com/dhilt/ngx-ui-scroll/blob/v2.0.0-rc.10/src/vscroll.ts#L17) and [here](https://github.com/dhilt/ngx-ui-scroll/blob/v2.0.0-rc.10/tests/miscellaneous/vscroll.ts#L16).
+
+Also, there are some environment variables for additional customization of the dev process. In accordance with [dotenv](https://www.npmjs.com/package/dotenv) approach, the `.env` file should be placed in the root folder, and it may contain the following variables.
+
+|Name|Value|Description|
+|:--|:----|:----------|
+|DEV_SERVER_PORT|4200|Port the dev server (webpack) will use|
+|TEST_BROWSER|default&nbsp;&#124; chrome&nbsp;&#124; firefox|Platform for running tests. By default a headless chrome is used; "chrome" or "firefox" are for running tests in real (chrome/ff) browser |
+|TEST_SERVER_PORT|9876|Port that will be used by non-default testing browser |
 
 Any support and participation are welcome, so feel free to <a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">donate</a>, submit new [Issues](https://github.com/dhilt/ngx-ui-scroll/issues) and open [Pull Requests](https://github.com/dhilt/ngx-ui-scroll/pulls).
 

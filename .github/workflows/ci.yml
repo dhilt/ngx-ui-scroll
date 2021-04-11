@@ -38,6 +38,11 @@ jobs:
       - run: npm run build
       - run: npm run build-app
 
+      - uses: actions/upload-artifact@master
+        with:
+          name: my-dist
+          path: dist-app
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -50,6 +55,18 @@ jobs:
         if: ${{ github.event_name != 'push' || steps.vars.outputs.branch != 'master' }}
         run: |
           echo "Only pushing to 'master' causes deploy automatically. Pushed to '${{ steps.vars.outputs.branch }}'"
+
+      - name: Checkout
+        if: ${{ github.event_name == 'push' && steps.vars.outputs.branch == 'master' }}
+        uses: actions/checkout@v2
+
+      - name: Download dist
+        if: ${{ github.event_name == 'push' && steps.vars.outputs.branch == 'master' }}
+        uses: actions/download-artifact@master
+        with:
+          name: my-dist
+          path: dist-app
+
       - name: Deploy
         if: ${{ github.event_name == 'push' && steps.vars.outputs.branch == 'master' }}
         uses: JamesIves/github-pages-deploy-action@4.1.0

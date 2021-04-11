@@ -25,6 +25,7 @@ jobs:
         run: |
           echo "This is dispatched"
           echo "Build reason: ${{ github.event.inputs.cause }}"
+
       - name: Checkout
         uses: actions/checkout@v2
 
@@ -47,28 +48,35 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Set output (branch name)
-        id: vars
-        run: echo ::set-output name=branch::${GITHUB_REF#refs/*/}
+
+      - name: Set env BRANCH
+        run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
+
+      - name: Set env NEED
+        run: |
+          if [[ $BRANCH == 'master' && $GITHUB_EVENT_NAME == 'push' ]]; then
+              echo "NEED=true" >> "$GITHUB_ENV"
+          else
+              echo "NEED=false" >> "$GITHUB_ENV"
+          fi
 
       - name: Skip Deploy?
-        if: ${{ github.event_name != 'push' || steps.vars.outputs.branch != 'master' }}
-        run: |
-          echo "Only pushing to 'master' causes deploy automatically. Pushed to '${{ steps.vars.outputs.branch }}'"
+        if: env.NEED != 'true'
+        run: echo "Only pushing to 'master' causes automatic deployment"
 
       - name: Checkout
-        if: ${{ github.event_name == 'push' && steps.vars.outputs.branch == 'master' }}
+        if: env.NEED == 'true'
         uses: actions/checkout@v2
 
       - name: Download dist
-        if: ${{ github.event_name == 'push' && steps.vars.outputs.branch == 'master' }}
+        if: env.NEED == 'true'
         uses: actions/download-artifact@master
         with:
           name: my-dist
           path: dist-app
 
       - name: Deploy
-        if: ${{ github.event_name == 'push' && steps.vars.outputs.branch == 'master' }}
+        if: env.NEED == 'true'
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
           branch: gh-pages

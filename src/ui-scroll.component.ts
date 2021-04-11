@@ -16,7 +16,7 @@ import consumer from './ui-scroll.version';
     <div data-padding-backward></div>
     <div
       *ngFor="let item of items"
-      [attr.data-sid]="item.nodeId"
+      [attr.data-sid]="item.$index"
       [style.position]="item.invisible ? 'fixed' : null"
       [style.left]="item.invisible ? '-99999px' : null">
       <ng-template

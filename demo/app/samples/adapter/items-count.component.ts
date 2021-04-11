@@ -13,8 +13,8 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoItemsCountComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.itemsCount,
-    viewportId: `items-count-viewport`,
+    config: demos.adapterProps.map.itemsCount,
+    viewportId: 'items-count-viewport',
     count: 0,
     log: ''
   };

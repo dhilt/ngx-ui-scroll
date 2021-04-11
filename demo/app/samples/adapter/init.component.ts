@@ -15,8 +15,8 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoInitComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.init,
-    viewportId: `init-viewport`,
+    config: demos.adapterProps.map.init,
+    viewportId: 'init-viewport',
     noInfo: true,
     count: 0,
     log: ''
@@ -31,20 +31,37 @@ export class DemoInitComponent {
   sources: DemoSources = [{
     active: true,
     name: DemoSourceType.Component,
-    text: `changeDetection: ChangeDetectionStrategy.OnPush
+    text: `version = '...';
 
-// ...
+datasource = new Datasource ({
+  get: (index, length, success) =>
+    success(Array.from({ length }).map((i, j) =>
+      ({ id: index + j, text: 'item #' + (index + j) })
+    ))
+});
+
+constructor() {
+  const { adapter } = this.datasource;
+  adapter.init$.pipe(take(1)).subscribe(() =>
+    this.version = adapter.packageInfo.consumer.version
+  );
+}`
+  }, {
+    name: DemoSourceType.Component + ' (OnPush)',
+    text: `@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  ...
+})
+
+...
 
 version = '...';
 
 datasource = new Datasource ({
-  get: (index, count, success) => {
-    const data = [];
-    for (let i = index; i <= index + count - 1; i++) {
-      data.push({ id: i, text: 'item #' + i });
-    }
-    success(data);
-  }
+  get: (index, length, success) =>
+    success(Array.from({ length }).map((i, j) =>
+      ({ id: index + j, text: 'item #' + (index + j) })
+    ))
 });
 
 constructor(public changeDetector: ChangeDetectorRef) {

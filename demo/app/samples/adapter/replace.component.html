@@ -13,7 +13,7 @@
   </div>
   <div description>
     <p>
-      <em>Adapter.replace</em> method allows to perform many-to-many in-Buffer replacement.
+      The <em>Adapter.replace</em> method allows to perform many-to-many in-Buffer replacement.
       It acts as a combination of insert and remove operations working in a single run,
       which means minimal latency in comparison to applying
       <em>Adapter.insert</em> and <em>Adapter.remove</em> methods one by one.
@@ -24,12 +24,12 @@
       The <em>predicate</em> option is exactly the same as in
       <a
         [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterScope.map.remove.id}}"
+        fragment="{{adapterMethodsScope.map.remove.id}}"
       >Adapter-remove</a> and case.
       The <em>indexes</em> options is exactly the same as in the
       <a
         [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterScope.map.insert.id}}"
+        fragment="{{adapterMethodsScope.map.insert.id}}"
       >Adapter-insert</a> case.
       The <em>fixRight</em> option allows to change
       the default indexing strategy.
@@ -42,15 +42,14 @@
     <p>
       Current limitations of the <em>Adapter.replace</em> method:
       no virtual replacements are possible and only continues series are allowed.
-      So only a portion of items that are currently in the <em>uiScroll</em> Buffer
-      can be replaced with this method.
-      And this portion must consist of a continuous list of items.
+      So only a portion of items that are currently in the Scroller Buffer
+      can be replaced with this method and this portion must consist of a continuous list of items.
     </p>
     <p>
       In this demo we are replacing 3 items with indexes [3, 4, 5] with 2 new items.
       Switching to "fixRight" strategy is not implemented here,
       in order to keep natural indexes flow as simple as possible.
-      Note, before running the "replace" operation over the <em>uiScroll</em> Buffer,
+      Note, before running the "replace" operation over the Scroller's Buffer,
       the Datasource gets the update as well.
     </p>
   </div>

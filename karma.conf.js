@@ -1,23 +1,28 @@
-// Karma configuration for Unit testing
-
+const PuppeteerPath = require('puppeteer').executablePath();
 const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
 const dotenv = require('dotenv');
 
-const config = dotenv.config()
+process.env.CHROME_BIN = PuppeteerPath;
+
+const config = dotenv.config();
 if (config.error) {
   console.error(config.error.toString());
 }
 const TEST_SERVER_PORT = process.env.TEST_SERVER_PORT || 9876;
+const BROWSERS = {
+  DEFAULT: 'headless',
+  CHROME: 'chrome',
+  FF: 'firefox',
+};
+const browser = Object.values(BROWSERS).find(b => b === process.env.TEST_BROWSER) || BROWSERS.DEFAULT;
+const flags = ['--window-size=1024,768'];
 
 module.exports = function (config) {
 
   const configuration = {
 
-    // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
-    // frameworks to use
-    // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine'],
 
     plugins: [
@@ -29,22 +34,17 @@ module.exports = function (config) {
       require('karma-spec-reporter')
     ],
 
-    // list of files / patterns to load in the browser
     files: [
       'tests/miscellaneous/styles.css',
       { pattern: './tests/_index.js', watched: false }
     ],
 
-    // list of files to exclude
     exclude: [],
 
-    // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       './tests/_index.js': ['webpack', 'sourcemap']
     },
 
-    // webpack
     webpack: {
       mode: 'development',
       resolve: {
@@ -95,20 +95,29 @@ module.exports = function (config) {
       noInfo: true
     },
 
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['spec'],
 
     port: TEST_SERVER_PORT,
     colors: true,
     logLevel: config.LOG_ERROR,
-    autoWatch: !process.env.TRAVIS,
-    browsers: process.env.TRAVIS ?
-      ['Firefox'] :
-      [process.platform === 'linux' ? 'Chromium' : 'Chrome'],
-    singleRun: !!process.env.TRAVIS
+    autoWatch: !process.env.CI,
+    singleRun: !!process.env.CI,
 
+    browsers: process.env.CI || browser === BROWSERS.DEFAULT
+      ? ['ChromeHeadlessSized']
+      : (browser === BROWSERS.FF
+        ? ['FirefoxSized']
+        : process.platform === 'linux'
+          ? ['ChromiumSized']
+          : ['ChromeSized']
+      ),
+
+    customLaunchers: {
+      'ChromeHeadlessSized': { base: 'ChromeHeadless', flags },
+      'ChromiumSized': { base: 'Chromium', flags },
+      'ChromeSized': { base: 'Chrome', flags },
+      'FirefoxSized': { base: 'Firefox', flags }
+    }
   };
 
   config.set(configuration);

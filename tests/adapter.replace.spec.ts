@@ -1,7 +1,6 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { generateItem } from './miscellaneous/items';
-import { Misc } from './miscellaneous/misc';
-import { getDatasourceReplacementsClass } from './scaffolding/datasources/class';
+import { DatasourceReplacer, getDatasourceClassForReplacements } from './scaffolding/datasources/class';
 
 const baseSettings = {
   startIndex: 1,
@@ -11,40 +10,42 @@ const baseSettings = {
   itemSize: 20
 };
 
+enum Token { first, last, middle }
+
 interface ICustom {
-  token: 'first' | 'last' | 'middle';
+  token: Token;
   indexesToReplace: number[]; // indexes to remove
   amount: number; // how many items to insert
   fixRight?: boolean;
 }
 
-const configList: TestBedConfig[] = [{
+const configList: TestBedConfig<ICustom>[] = [{
   datasourceSettings: { ...baseSettings },
   custom: {
     indexesToReplace: [baseSettings.minIndex + 1],
-    token: 'middle',
+    token: Token.middle,
     amount: 1
-  } as ICustom
+  }
 }, {
   datasourceSettings: { ...baseSettings },
   custom: {
     indexesToReplace: [baseSettings.minIndex],
-    token: 'first',
+    token: Token.first,
     amount: 1
-  } as ICustom
+  }
 }, {
   datasourceSettings: { ...baseSettings, startIndex: baseSettings.maxIndex },
   custom: {
     indexesToReplace: [baseSettings.maxIndex],
-    token: 'last',
+    token: Token.last,
     amount: 1
-  } as ICustom
+  }
 }].map(config => ({
   ...config,
-  datasourceClass: getDatasourceReplacementsClass(config.datasourceSettings)
+  datasourceClass: getDatasourceClassForReplacements(config.datasourceSettings)
 }));
 
-const manyToOneConfigList: TestBedConfig[] = [{
+const manyToOneConfigList: TestBedConfig<ICustom>[] = [{
   datasourceSettings: { ...baseSettings },
   custom: {
     indexesToReplace: [
@@ -52,9 +53,9 @@ const manyToOneConfigList: TestBedConfig[] = [{
       baseSettings.minIndex + 2,
       baseSettings.minIndex + 3
     ],
-    token: 'middle',
+    token: Token.middle,
     amount: 1
-  } as ICustom
+  }
 }, {
   datasourceSettings: { ...baseSettings },
   custom: {
@@ -63,9 +64,9 @@ const manyToOneConfigList: TestBedConfig[] = [{
       baseSettings.minIndex + 1,
       baseSettings.minIndex + 2
     ],
-    token: 'first',
+    token: Token.first,
     amount: 1
-  } as ICustom
+  }
 }, {
   datasourceSettings: { ...baseSettings, startIndex: baseSettings.maxIndex },
   custom: {
@@ -74,12 +75,12 @@ const manyToOneConfigList: TestBedConfig[] = [{
       baseSettings.maxIndex - 1,
       baseSettings.maxIndex
     ],
-    token: 'last',
+    token: Token.last,
     amount: 1
-  } as ICustom
+  }
 }].map(config => ({
   ...config,
-  datasourceClass: getDatasourceReplacementsClass(config.datasourceSettings)
+  datasourceClass: getDatasourceClassForReplacements(config.datasourceSettings)
 }));
 
 const manyToOneIncreaseConfigList = manyToOneConfigList.map(config => ({
@@ -87,32 +88,33 @@ const manyToOneIncreaseConfigList = manyToOneConfigList.map(config => ({
   custom: {
     ...config.custom,
     fixRight: true
-  } as ICustom
+  }
 }));
 
 const manyToManyConfigList = [
   ...manyToOneConfigList.map(config => ({
-    ...config, custom: { ...config.custom, amount: 2 } as ICustom
+    ...config, custom: { ...config.custom, amount: 2 }
   })),
   ...manyToOneConfigList.map(config => ({
-    ...config, custom: { ...config.custom, amount: 3 } as ICustom
+    ...config, custom: { ...config.custom, amount: 3 }
   })),
   ...manyToOneConfigList.map(config => ({
-    ...config, custom: { ...config.custom, amount: 4 } as ICustom
+    ...config, custom: { ...config.custom, amount: 4 }
   })),
 ];
 
 const manyToManyIncreaseConfigList = manyToManyConfigList
   .filter((i, j) => [0, 5, 8].includes(j))
   .map(config => ({
-    ...config, custom: { ...config.custom, fixRight: true } as ICustom
+    ...config, custom: { ...config.custom, fixRight: true }
   }));
 
-const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const shouldReplace: ItFuncConfig<ICustom> = config => misc => async done => {
   await misc.relaxNext();
   const { adapter } = misc;
   const { indexesToReplace: indexes, amount, token, fixRight } = config.custom;
-  const { datasourceSettings: { minIndex, itemSize } } = config;
+  const minIndex = config.datasourceSettings.minIndex as number;
+  const itemSize = config.datasourceSettings.itemSize as number;
   const diff = amount - indexes.length; // inserted - removed
   const viewportSize = misc.getScrollableSize();
   const sizeToChange = diff * misc.getItemSize();
@@ -120,16 +122,16 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
   const newIndexFirst = indexes[0] - (fixRight ? diff : 0);
   const newIndexLast = newIndexFirst + amount - 1;
   const newAbsMinIndex = fixRight ? minIndex - diff : minIndex;
-  const position = token === 'last' ? maxScrollPosition : (newIndexFirst - newAbsMinIndex) * itemSize;
+  const position = token === Token.last ? maxScrollPosition : (newIndexFirst - newAbsMinIndex) * itemSize;
   const items = Array.from({ length: amount }).map((j, i) => generateItem(newIndexFirst + i, false, '*'));
 
   // replace at the Datasource level (component)
   if (indexes.length === 1 && amount === 1) {
-    (misc.datasource as any).replaceOneToOne(indexes[0], items[0]);
+    (misc.datasource as DatasourceReplacer).replaceOneToOne(indexes[0], items[0]);
   } else if (indexes.length > 1 && amount === 1) {
-    (misc.datasource as any).replaceManyToOne(indexes, items[0], fixRight);
+    (misc.datasource as DatasourceReplacer).replaceManyToOne(indexes, items[0], !!fixRight);
   } else if (indexes.length > 1 && amount > 1) {
-    (misc.datasource as any).replaceManyToMany(indexes, items, fixRight);
+    (misc.datasource as DatasourceReplacer).replaceManyToMany(indexes, items, !!fixRight);
   }
 
   // replace at the Viewport level (scroller)
@@ -149,7 +151,7 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
   }
 
   // check edge replaced items
-  if (token === 'last') {
+  if (token === Token.last) {
     expect(adapter.lastVisible.$index).toEqual(newIndexLast);
   } else {
     expect(adapter.firstVisible.$index).toEqual(newIndexFirst);
@@ -158,7 +160,7 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
   expect(misc.getElementText(newIndexLast)).toEqual(newIndexLast + ': ' + items[items.length - 1].text);
 
   // check the item next to the last replaced one
-  if (token === 'last') {
+  if (token === Token.last) {
     expect(misc.checkElementContent(newIndexFirst - 1, newIndexFirst - (fixRight ? 1 - diff : 1))).toEqual(true);
   } else {
     expect(misc.checkElementContent(newIndexLast + 1, newIndexLast + (fixRight ? 1 : 1 - diff))).toEqual(true);
@@ -170,7 +172,7 @@ const shouldReplace = (config: TestBedConfig) => (misc: Misc) => async (done: Fu
 
 describe('Adapter Replace Spec', () => {
 
-  const getTitle = ({ custom: { token, indexesToReplace: { length }, amount } }: TestBedConfig) =>
+  const getTitle = ({ custom: { token, indexesToReplace: { length }, amount } }: TestBedConfig<ICustom>) =>
     `should replace ${token} ${length === 1 ? 'one' : length} to ${amount === 1 ? 'one' : amount}`;
 
   describe('one-to-ne replacement', () =>

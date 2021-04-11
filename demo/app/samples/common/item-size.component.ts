@@ -14,7 +14,7 @@ export class DemoItemSizeComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.itemSize,
-    viewportId: `item-size-viewport`,
+    viewportId: 'item-size-viewport',
     count: 0,
     log: ''
   };

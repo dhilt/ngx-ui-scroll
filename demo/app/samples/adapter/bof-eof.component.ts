@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { merge } from 'rxjs';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -14,14 +14,14 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoBofEofComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.bofEof,
-    viewportId: `bof-eof-viewport`,
+    config: demos.adapterProps.map.bofEof,
+    viewportId: 'bof-eof-viewport',
     count: 0,
     log: ''
   };
 
-  datasource = new Datasource({
-    get: (index: number, count: number, success: Function) => {
+  datasource = new Datasource<MyItem>({
+    get: (index, count, success) => {
       const MIN = 1, MAX = 100;
       const data = [];
       const start = Math.max(MIN, index);
@@ -45,7 +45,7 @@ export class DemoBofEofComponent {
 
   sources: DemoSources = [{
     name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+    text: `datasource = new Datasource<MyItem>({
   get: (index, count, success) => {
     const MIN = 1, MAX = 100;
     const data = [];

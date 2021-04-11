@@ -14,7 +14,7 @@ export class DemoStartIndexComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.startIndex,
-    viewportId: `start-index-viewport`,
+    viewportId: 'start-index-viewport',
     count: 0,
     log: ''
   };

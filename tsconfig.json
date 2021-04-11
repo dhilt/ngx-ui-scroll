@@ -7,7 +7,7 @@
     "strictPropertyInitialization": false,
     "module": "commonjs",
     "moduleResolution": "node",
-    "rootDir": ".",
+    "rootDir": "../",
     "sourceMap": true,
     "inlineSources": true,
     "target": "es5",

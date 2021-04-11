@@ -24,8 +24,8 @@ const testContext = require.context(
   './',
   false,
   /\.spec\.ts/
-  //(adapter\-promises)\.spec\.ts/
-  //(adapter\.append\-prepend)\.spec\.ts/
+  //(adapter-promises)\.spec\.ts/
+  //(adapter\.append-prepend)\.spec\.ts/
   //(adapter\.check)\.spec\.ts/
   //(adapter\.clip)\.spec\.ts/
   //(adapter\.insert)\.spec\.ts/
@@ -33,20 +33,21 @@ const testContext = require.context(
   //(adapter\.reload)\.spec\.ts/
   //(adapter\.remove)\.spec\.ts/
   //(adapter\.replace)\.spec\.ts/
-  //(adapter\.reset\-persistence)\.spec\.ts/
+  //(adapter\.reset-persistence)\.spec\.ts/
   //(adapter\.reset)\.spec\.ts/
+  //(adapter\.update)\.spec\.ts/
   //(bug)\.spec\.ts/
   //(common)\.spec\.ts/
-  //(datasource\-get)\.spec\.ts/
-  //(dynamic\-height\-reload)\.spec\.ts/
-  //(dynamic\-height\-scroll)\.spec\.ts/
-  //(dynamic\-size)\.spec\.ts/
+  //(datasource-get)\.spec\.ts/
+  //(dynamic-height-reload)\.spec\.ts/
+  //(dynamic-height-scroll)\.spec\.ts/
+  //(dynamic-size)\.spec\.ts/
   //(eof)\.spec\.ts/
-  //(initial\-load)\.spec\.ts/
-  //(min\-max\-indexes)\.spec\.ts/
-  //(scroll\-basic)\.spec\.ts/
-  //(scroll\-delay)\.spec\.ts/
-  //(scroll\-fast)\.spec\.ts/
+  //(initial-load)\.spec\.ts/
+  //(min-max-indexes)\.spec\.ts/
+  //(scroll-basic)\.spec\.ts/
+  //(scroll-delay)\.spec\.ts/
+  //(scroll-fast)\.spec\.ts/
   //(viewport)\.spec\.ts/
 );
 

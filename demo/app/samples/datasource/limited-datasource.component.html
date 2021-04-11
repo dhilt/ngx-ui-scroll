@@ -5,21 +5,32 @@
 >
   <div description>
     <p>
-      The datasource could be limited. In this sample we have only 1000 items in the dataset:
-      from -99 to 900 including 0. If at some point the <em>uiScroll</em> will request
-      this datasource for, say, 10 items started from -105 index, then
+      The datasource could be limited.
+      The main point of limited datasource implementation is
+      to cut the result in accordance with dataset boundaries and
+      return an empty array if we are out of range.
+      </p>
+    <p>
+      In this sample we have only 200 items in the dataset:
+      from -99 to 100 including 0. If at some point the Scroller will request
+      this datasource for, say, 10 items started from -105 index,
       the result will consist of only 4 items: -99, -98, -97, -96.
-      It is also important to return empty array if we are out of range.
+      If a request falls out of [-99..100] range, an empty array will be returned.
+    </p>
+    <p>
+      The second tab (Fixed dataset) implements a limited datasource
+      over a fixed dataset, which is initialized in the Component's constructor.
+      This way data could be retrieved from a remote source.
     </p>
     <p>
       Another option of how to limit the datasource is to use
       <a
         [routerLink]="['/', minMaxDemoConfig.scope]"
         fragment="{{minMaxDemoConfig.id}}"
-      >minIndex and maxIndex settings</a>;
+      >minIndex/maxIndex settings</a>;
       this way the implementation of the <em>Datasource.get</em> method could remain unlimited
-      as the <em>uiScroll</em> will not request for items that are out of
-      [<em>minIndex</em>; <em>maxIndex</em>] range.
+      as the Scroller will not request for items that are out of
+      [minIndex..maxIndex] range.
     </p>
   </div>
 </app-demo>

@@ -1,5 +1,4 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { Misc } from './miscellaneous/misc';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 
 const configThrottle: TestBedConfig = {
   datasourceName: 'infinite-promise-no-delay',
@@ -16,7 +15,7 @@ const configSlow: TestBedConfig = {
   timeout: 5000
 };
 
-const shouldThrottle = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldThrottle: ItFuncConfig = () => misc => done => {
   const COUNT = 10;
   let count = 0, timer: ReturnType<typeof setInterval>;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -40,7 +39,7 @@ const shouldThrottle = (config: TestBedConfig) => (misc: Misc) => (done: Functio
   });
 };
 
-const shouldSlow = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldSlow: ItFuncConfig = () => misc => done => {
   const COUNT = 10;
   let count = 0, timer: ReturnType<typeof setInterval>;
   let startPosition: number, endPosition: number;

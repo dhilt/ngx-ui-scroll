@@ -4,7 +4,7 @@ import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
-import { Datasource, IAdapter } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
 interface MyItem {
   text: string;
@@ -17,14 +17,15 @@ interface MyItem {
 export class DemoReplaceComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.replace,
-    viewportId: `replace-viewport`,
-    addClass: `replace`,
+    config: demos.adapterMethods.map.replace,
+    viewportId: 'replace-viewport',
+    addClass: 'replace',
     count: 0,
     log: ''
   };
 
   adapterScope = demos.adapter;
+  adapterMethodsScope = demos.adapterMethods;
 
   MAX = 100;
   data: MyItem[];
@@ -36,8 +37,8 @@ export class DemoReplaceComponent {
     }
   }
 
-  datasource = new Datasource<IAdapter<MyItem>>({
-    get: (start: number, count: number, success: Function) => {
+  datasource = new Datasource<MyItem>({
+    get: (start, count, success) => {
       let data: MyItem[] = [];
       const end = Math.min(start + count - 1, this.data.length - 1);
       if (start <= end) {
@@ -63,8 +64,8 @@ constructor() {
   }
 }
 
-datasource = new Datasource({
-  get: (start: number, count: number, success: Function) => {
+datasource = new Datasource<MyItem>({
+  get: (start, count, success) => {
     let data: Item[] = [];
     const end = Math.min(start + count - 1, this.data.length - 1);
     if (start <= end) {

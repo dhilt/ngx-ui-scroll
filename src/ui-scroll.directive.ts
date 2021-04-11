@@ -8,7 +8,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
   private datasource: IDatasource<ItemData>;
 
   constructor(
-    private templateRef: TemplateRef<any>,
+    private templateRef: TemplateRef<unknown>,
     private viewContainer: ViewContainerRef,
     private resolver: ComponentFactoryResolver
   ) {
@@ -18,7 +18,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
     this.datasource = datasource;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     const compFactory = this.resolver.resolveComponentFactory(UiScrollComponent);
     const componentRef = this.viewContainer.createComponent(
       compFactory, void 0, this.viewContainer.injector

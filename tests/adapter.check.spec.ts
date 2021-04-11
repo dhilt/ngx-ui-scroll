@@ -1,10 +1,17 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 
 const MIN_INDEX = -99;
 const MAX_INDEX = 100;
 
-const baseConfig: TestBedConfig = {
+interface ICustom {
+  min: number;
+  max: number;
+  size: number;
+  prepend?: boolean;
+}
+
+const baseConfig: TestBedConfig<ICustom> = {
   datasourceName: 'limited--99-100-dynamic-size-processor',
   datasourceSettings: {
     startIndex: 1, padding: 0.5, bufferSize: 10, minIndex: MIN_INDEX, maxIndex: MAX_INDEX, itemSize: 100, adapter: true
@@ -18,7 +25,7 @@ const baseConfig: TestBedConfig = {
   timeout: 9000
 };
 
-const configList: TestBedConfig[] = [
+const configList: TestBedConfig<ICustom>[] = [
   baseConfig, {
     ...baseConfig,
     datasourceSettings: {
@@ -79,7 +86,7 @@ const configList: TestBedConfig[] = [
   }
 ];
 
-const moreProcessesConfigList = configList
+const moreProcessesConfigList: TestBedConfig<ICustom>[] = configList
   .filter((v, i) => i === 1 || i === 4)
   .map((v, i) => ({
     ...v, custom: { ...v.custom, prepend: i % 2 === 0 }
@@ -96,7 +103,9 @@ const updateDOMElement = (misc: Misc, index: number, size: number) => {
   }
 };
 
-const updateDOM = (misc: Misc, { min, max, size, initialSize }: any) => {
+const updateDOM = (
+  misc: Misc, { min, max, size, initialSize }: { min: number, max: number, size: number, initialSize: number }
+) => {
   for (let i = min; i <= max; i++) {
     updateDOMElement(misc, i, size);
     // persist new sizes on the datasource level
@@ -120,10 +129,10 @@ const getFirstVisibleIndex = (misc: Misc): number => {
   return NaN;
 };
 
-const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldCheck: ItFuncConfig<ICustom> = config => misc => done => {
   const { adapter, scroller } = misc;
   const { state, buffer, settings: { minIndex, maxIndex } } = scroller;
-  const initialSize = config.datasourceSettings.itemSize;
+  const initialSize = config.datasourceSettings.itemSize as number;
   const { min, max, size } = config.custom;
   const changedCount = (max - min + 1);
   let firstVisibleIndex = NaN;
@@ -148,10 +157,10 @@ const shouldCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) 
 const shouldSimulateFetch = (misc: Misc, value: boolean) => {
   const { fetch } = misc.scroller.state;
   expect(fetch.simulate).toEqual(value);
-  expect(fetch.isReplace).toEqual(value);
+  expect(fetch.isCheck).toEqual(value);
 };
 
-const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) =>
+const shouldFetchAfterCheck: ItFuncConfig<ICustom> = () => misc => done =>
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const { adapter, scroller: { state, settings } } = misc;
     switch (state.cycle.count) {
@@ -169,7 +178,7 @@ const shouldFetchAfterCheck = (config: TestBedConfig) => (misc: Misc) => (done: 
     }
   });
 
-const shouldDoubleCheck = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldDoubleCheck: ItFuncConfig<ICustom> = config => misc => done => {
   const { adapter, scroller: { state, settings: { startIndex } } } = misc;
   const { itemSize } = config.datasourceSettings;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -188,7 +197,7 @@ const shouldDoubleCheck = (config: TestBedConfig) => (misc: Misc) => (done: Func
         }
         break;
       case 4:
-        updateDOMElement(misc, startIndex, itemSize);
+        updateDOMElement(misc, startIndex, itemSize as number);
         adapter.check();
         shouldSimulateFetch(misc, true);
         break;

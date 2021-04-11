@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 
-import { Datasource, IAdapter } from '../../../../public_api';
+import { Datasource } from '../../../../public_api';
 
 @Component({
   selector: 'app-adapter-fix-scroll-to-item',
@@ -16,7 +16,7 @@ export class DemoAdapterFixScrollToItemComponent {
     noInfo: true
   };
 
-  datasource = new Datasource<IAdapter<MyItem>>({
+  datasource = new Datasource<MyItem>({
     get: (index, count, success) => {
       const data: MyItem[] = [];
       for (let i = index; i < index + count; i++) {
@@ -50,7 +50,7 @@ export class DemoAdapterFixScrollToItemComponent {
     text: `index = '5'
 scrollToBottom = false;
 
-datasource = new Datasource<IAdapter<MyItem>>({
+datasource = new Datasource<MyItem>({
   get: (index, count, success) => {
     const data: MyItem[] = [];
     for (let i = index; i < index + count; i++) {
@@ -73,11 +73,11 @@ doScrollTo() {
 `
   }];
 
-  adapterFixUpdater = `Adapter.fix({ scrollToItem })`;
+  adapterFixUpdater = 'Adapter.fix({ scrollToItem })';
 
   doScrollTo() {
     const index = Number(this.index);
-    const alignToTop = !Boolean(this.scrollToBottom);
+    const alignToTop = !this.scrollToBottom;
     if (!isNaN(index)) {
       this.datasource.adapter.fix({
         scrollToItem: ({ data }) => data.id === index,

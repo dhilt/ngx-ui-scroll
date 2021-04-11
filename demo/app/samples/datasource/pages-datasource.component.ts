@@ -5,6 +5,11 @@ import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 import { IDatasource } from '../../../../public_api';
 
+interface MyItem {
+  index: number;
+  text: string;
+}
+
 @Component({
   selector: 'app-pages-datasource',
   templateUrl: './pages-datasource.component.html'
@@ -20,7 +25,7 @@ export class DemoPagesDatasourceComponent {
   private getCount = 0;
   private pagesCount = 30;
   private pageSize = 7;
-  private data: any[];
+  private data: MyItem[][];
 
   constructor() {
     this.data = [];
@@ -37,7 +42,7 @@ export class DemoPagesDatasourceComponent {
   }
 
   datasource: IDatasource = {
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       this.getCount++;
       this.demoContext.log = '\n' + this.demoContext.log;
       this.demoContext.log = `${this.getCount}.1 index = ${index}, count = ${count}\n` + this.demoContext.log;
@@ -50,14 +55,15 @@ export class DemoPagesDatasourceComponent {
         success([]);
         return;
       }
-      this.demoContext.log = `${this.getCount}.2 requesting items [${startIndex}..${endIndex}]\n` + this.demoContext.log;
+      this.demoContext.log = `${this.getCount}.2 requesting items [${startIndex}..${endIndex}]
+${this.demoContext.log}`;
 
       // getting start/end page numbers
       const startPage = Math.floor(startIndex / this.pageSize);
       const endPage = Math.floor(endIndex / this.pageSize);
 
       // retrieving pages items
-      let pagesResult: any[] = [];
+      let pagesResult: MyItem[] = [];
       const logPages = [];
       for (let i = startPage; i <= endPage; i++) {
         logPages.push(i);
@@ -100,7 +106,7 @@ export class DemoPagesDatasourceComponent {
     const endPage = Math.floor(endIndex / this.pageSize);
 
     // pages result (x.4)
-    let pagesResult: any[] = [];
+    let pagesResult: MyItem[] = [];
     for (let i = startPage; i <= endPage; i++) {
       pagesResult = [...pagesResult, ...this.getDataPage(i)];
     }
@@ -119,7 +125,7 @@ export class DemoPagesDatasourceComponent {
 
 pagesCount = 30;
 pageSize = 7;
-data: any[];
+data: MyItem[];
 
 constructor() {
   this.data = [];
@@ -156,7 +162,7 @@ getDataPage(page: number) {
     const startPage = Math.floor(startIndex / this.pageSize);
     const endPage = Math.floor(endIndex / this.pageSize);
 
-    const pagesRequest: any[] = [];
+    const pagesRequest: MyItem[] = [];
     for (let i = startPage; i <= endPage; i++) {
       pagesRequest.push(
         this.remoteDataService.getDataPageAsync(i)

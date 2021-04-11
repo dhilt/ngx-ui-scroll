@@ -21,6 +21,12 @@ export class DemoDatasourceSignaturesComponent {
     success(this.getData(index, count))
 };
 
+datasourceCallback2: IDatasource = {
+  get: (index, count, success) => setTimeout(
+    success(this.getData(index, count)), DELAY
+  )
+};
+
 datasourcePromise: IDatasource = {
   get: (index, count) => new Promise(resolve =>
     resolve(this.getData(index, count))

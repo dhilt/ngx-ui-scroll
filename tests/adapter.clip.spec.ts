@@ -1,8 +1,13 @@
-import { AdapterClipOptions, ItemAdapter } from './miscellaneous/vscroll';
+import { AdapterClipOptions } from './miscellaneous/vscroll';
 
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { testItemsCounter, ItemsCounter } from './miscellaneous/itemsCounter';
+
+interface ICustom {
+  forward: boolean;
+  backward: boolean;
+}
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
@@ -18,10 +23,11 @@ const configList: TestBedConfig[] = [{
   templateSettings: { viewportWidth: 320, itemWidth: 75, horizontal: true }
 }];
 
-const configByDirectionList = configList.map((config: TestBedConfig, index: number) => ({
-  ...config,
-  custom: { forward: index % 2 === 0, backward: index % 2 !== 0 }
-}));
+const configByDirectionList: TestBedConfig<ICustom>[] =
+  configList.map((config: TestBedConfig, index: number) => ({
+    ...config,
+    custom: { forward: index % 2 === 0, backward: index % 2 !== 0 }
+  }));
 
 configByDirectionList.push({
   ...configByDirectionList[0],
@@ -30,11 +36,22 @@ configByDirectionList.push({
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
+const configListInfinite = configList
+  .filter((c, i) => i === 0 || i === 3)
+  .map(config => ({
+    ...config,
+    datasourceSettings: { ...config.datasourceSettings, infinite: true }
+  }));
+
 export const getItemsCounter = (
-  settings: TestBedConfig, misc: Misc, itemSize: number, firstIndex: number, lastIndex: number, clipOptions: AdapterClipOptions
+  misc: Misc,
+  itemSize: number,
+  firstIndex: number,
+  lastIndex: number,
+  clipOptions: AdapterClipOptions | undefined
 ): ItemsCounter => {
   const { startIndex, padding } = misc.scroller.settings;
-  const viewportSize = misc.getViewportSize(settings);
+  const viewportSize = misc.getViewportSize();
 
   const backwardLimit = viewportSize * padding;
   const forwardLimit = viewportSize + backwardLimit;
@@ -65,9 +82,9 @@ export const getItemsCounter = (
   return itemsCounter;
 };
 
-const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => async (done: Function) => {
+const shouldClipAfterAppend: ItFuncConfig<void | ICustom> = config => misc => async done => {
   const NEW_ITEMS_COUNT = 50;
-  const { itemSize } = config.datasourceSettings;
+  const { itemSize, startIndex } = config.datasourceSettings;
   const { adapter, scroller: { buffer } } = misc;
   const clipSettings = getClipArgument(config);
   await misc.relaxNext();
@@ -85,25 +102,40 @@ const shouldClipAfterAppend = (config: TestBedConfig) => (misc: Misc) => async (
   expect(misc.padding.backward.getSize()).toEqual(0);
   await adapter.clip(clipSettings);
 
-  const itemsCounter = getItemsCounter(config, misc, itemSize, firstIndex, lastIndex, clipSettings);
-  testItemsCounter(config, misc, itemsCounter);
+  const itemsCounter = getItemsCounter(misc, itemSize as number, firstIndex, lastIndex, clipSettings);
+  testItemsCounter(startIndex as number, misc, itemsCounter);
   done();
 };
 
-const getClipArgument = ({ custom }: TestBedConfig): any => {
-  let argument: any;
+const getClipArgument = ({ custom }: TestBedConfig<void | ICustom>): AdapterClipOptions | undefined => {
+  let argument: AdapterClipOptions | undefined = void 0;
   if (custom && custom.forward) {
-    argument = argument || {};
-    argument.forwardOnly = true;
+    argument = { forwardOnly: true };
   }
   if (custom && custom.backward) {
-    argument = argument || {};
+    argument ??= {};
     argument.backwardOnly = true;
   }
   return argument;
 };
 
-const getClipDirection = (config: TestBedConfig): string => {
+const shouldClipInfinite: ItFuncConfig = () => misc => async done => {
+  const { adapter } = misc;
+  await misc.relaxNext();
+  const count = adapter.itemsCount;
+
+  await misc.scrollMinMax();
+  const count2 = adapter.itemsCount;
+  expect(count2).toBeGreaterThan(count);
+
+  await adapter.clip();
+  const count3 = adapter.itemsCount;
+  expect(count3).toBeLessThan(count2);
+
+  done();
+};
+
+const getClipDirection = (config: TestBedConfig<void | ICustom>): string => {
   if (!config.custom) {
     return '';
   }
@@ -137,44 +169,24 @@ describe('Adapter Clip Spec', () => {
     })
   );
 
+  configListInfinite.forEach(config =>
+    makeTest({
+      config,
+      title: 'should clip after scroll when infinite',
+      it: shouldClipInfinite(config)
+    })
+  );
+
   makeTest({
     config: { datasourceSettings: { adapter: true } },
-    title: `should resolve immediately before scroller initialization`,
-    it: (misc: Misc) => async (done: Function) => {
+    title: 'should resolve immediately before scroller initialization',
+    it: misc => async done => {
       const result = await misc.adapter.clip();
       expect(result.immediate).toBe(true);
       expect(result.success).toBe(true);
-      // expect(result.details).toBe('Adapter is not initialized');
+      expect(result.details).toBe('Adapter is not initialized');
       done();
     }
-  });
-
-  describe('onBeforeClip', () => {
-    const clippedIndexes: number[] = [];
-    const config: TestBedConfig = {
-      datasourceSettings: {
-        adapter: true,
-        onBeforeClip: (items: ItemAdapter[]) =>
-          items.forEach(({ $index }) => clippedIndexes.push($index))
-      }
-    };
-    makeTest({
-      config,
-      title: `should call properly`,
-      it: (misc: Misc) => async (done: Function) => {
-        await misc.relaxNext();
-        const { adapter } = misc;
-        const indexList: number[] = [], indexListAfterScroll: number[] = [];
-        adapter.fix({ updater: ({ $index }) => indexList.push($index) });
-        adapter.fix({ scrollPosition: Infinity });
-        await misc.relaxNext();
-        adapter.fix({ updater: ({ $index }) => indexListAfterScroll.push($index) });
-        const removedIndexes = indexList.filter(index => indexListAfterScroll.indexOf(index) < 0);
-        const isEqual = (JSON.stringify(removedIndexes.sort()) === JSON.stringify(clippedIndexes.sort()));
-        expect(isEqual).toBe(true);
-        done();
-      }
-    });
   });
 
 });

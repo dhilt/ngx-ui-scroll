@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { ItemAdapter } from '../miscellaneous/vscroll';
+import { Data } from '../miscellaneous/items';
 
 import { IDatasource, Datasource } from '../../src/ui-scroll.datasource';
 
@@ -9,7 +10,7 @@ import { DatasourceService } from './datasources/class';
 import { defaultTemplate, TemplateSettings } from './templates';
 
 export interface TestComponentInterface {
-  datasource: IDatasource;
+  datasource: IDatasource<Data>;
 }
 
 @Component({
@@ -17,7 +18,7 @@ export interface TestComponentInterface {
   providers: [DatasourceService]
 })
 export class ScrollerTestComponent implements TestComponentInterface {
-  datasource: IDatasource;
+  datasource: IDatasource<Data>;
   templateSettings: TemplateSettings;
 
   constructor(
@@ -27,7 +28,7 @@ export class ScrollerTestComponent implements TestComponentInterface {
     this.datasource = datasourceService;
   }
 
-  getItemStyle(item: any) {
+  getItemStyle(item: { [key: string]: unknown }): SafeStyle {
     if (!this.templateSettings) {
       return '';
     }
@@ -61,14 +62,14 @@ export class ScrollerTestComponent implements TestComponentInterface {
 ><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`
 })
 export class TwoScrollersTestComponent implements TestComponentInterface {
-  datasource = new Datasource({
+  datasource = new Datasource<Data>({
     get: (index, count, success) =>
       success(Array.from({ length: count }, (j, i) =>
         ({ id: i + index, text: 'item #' + (i + index) })
       ))
   });
 
-  datasource2 = new Datasource({
+  datasource2 = new Datasource<Data>({
     get: (index, count, success) =>
       success(Array.from({ length: count }, (j, i) =>
         ({ id: i + index, text: 'item #' + (i + index) + ' *' })
@@ -84,14 +85,14 @@ export class TwoScrollersTestComponent implements TestComponentInterface {
 ><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`
 })
 export class ScrollerSubTestComponent implements TestComponentInterface {
-  datasource = new Datasource({
+  datasource = new Datasource<Data>({
     get: (index, count, success) =>
       success(Array.from({ length: count }, (j, i) =>
         ({ id: i + index, text: 'item #' + (i + index) })
       ))
   });
 
-  firstVisible: ItemAdapter;
+  firstVisible: ItemAdapter<Data>;
 
   constructor() {
     this.datasource.adapter.firstVisible$.subscribe(value => this.firstVisible = value);

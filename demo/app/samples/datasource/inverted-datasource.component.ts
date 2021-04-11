@@ -16,12 +16,12 @@ export class DemoInvertedDatasourceComponent {
   MIN = 1;
 
   datasourceCommon: IDatasource = {
-    get: (index: number, count: number, success: Function) =>
+    get: (index, count, success) =>
       success(this.getData(index, count))
   };
 
   datasourceInverted: IDatasource = {
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       const _index = -index - count + this.MIN;
       const data = this.getData(_index, count).reverse();
       success(data);

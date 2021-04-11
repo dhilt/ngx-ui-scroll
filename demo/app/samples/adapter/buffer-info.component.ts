@@ -13,8 +13,8 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoBufferInfoComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.bufferInfo,
-    viewportId: `buffer-info-viewport`,
+    config: demos.adapterProps.map.bufferInfo,
+    viewportId: 'buffer-info-viewport',
     count: 0,
     log: ''
   };

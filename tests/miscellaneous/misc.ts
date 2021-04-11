@@ -6,19 +6,19 @@ import { debounceTime, filter, take } from 'rxjs/operators';
 import { Workflow, Direction, DatasourceGet, IAdapter as IAdapterInternal } from './vscroll';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
-import { TestBedConfig } from '../scaffolding/runner';
-import { Item, generateItem, IndexedItem } from './items';
+import { Data, generateItem, IndexedItem, Processor } from './items';
 
 import { UiScrollComponent } from '../../src/ui-scroll.component';
 import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
+import { DatasourceProcessor } from 'tests/scaffolding/datasources/class';
 
-export class Padding {
+export class Padding<Comp = TestComponentInterface> {
   direction: Direction;
   horizontal: boolean;
   element: DebugElement;
   style: CSSStyleDeclaration;
 
-  constructor(fixture: ComponentFixture<any>, direction: Direction, horizontal: boolean) {
+  constructor(fixture: ComponentFixture<Comp>, direction: Direction, horizontal: boolean) {
     this.direction = direction;
     this.horizontal = horizontal;
     this.element = fixture.debugElement.query(By.css(`[data-padding-${direction}]`));
@@ -31,19 +31,21 @@ export class Padding {
   }
 }
 
-export class Misc {
+type Scroller = Workflow<Data>['scroller'];
 
-  fixture: ComponentFixture<TestComponentInterface>;
-  testComponent: TestComponentInterface;
+export class Misc<Comp = TestComponentInterface> {
+
+  fixture: ComponentFixture<Comp>;
+  testComponent: Comp;
   uiScrollElement: DebugElement;
   viewportElement: DebugElement;
-  uiScrollComponent: UiScrollComponent;
-  workflow: Workflow;
-  scroller: Workflow['scroller'];
-  datasource: IDatasource;
-  adapter: IAdapter<Item>;
-  internalAdapter: IAdapterInternal<Item>;
-  routines: Workflow['scroller']['routines'];
+  uiScrollComponent: UiScrollComponent<Data>;
+  workflow: Workflow<Data>;
+  scroller: Scroller;
+  datasource: IDatasource<Data>;
+  adapter: IAdapter<Data>;
+  internalAdapter: IAdapterInternal<Data>;
+  routines: Scroller['routines'];
   padding: {
     forward: Padding;
     backward: Padding;
@@ -53,13 +55,13 @@ export class Misc {
 
   itemHeight = 20;
   itemWidth = 100;
-  shared: any = {};
+  shared: { [key: string]: unknown } = {};
 
   get innerLoopCount(): number {
     return this.scroller.state.cycle.innerLoop.total;
   }
 
-  constructor(fixture: ComponentFixture<TestComponentInterface>) {
+  constructor(fixture: ComponentFixture<Comp>) {
     this.fixture = fixture;
     this.testComponent = fixture.componentInstance;
     this.uiScrollElement = fixture.debugElement.query(By.css('[ui-scroll]'));
@@ -67,9 +69,9 @@ export class Misc {
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
     this.workflow = this.uiScrollComponent.workflow;
     this.scroller = this.workflow.scroller;
-    this.datasource = this.testComponent.datasource;
-    this.adapter = this.datasource.adapter as IAdapter<Item>;
-    this.internalAdapter = this.scroller.adapter as IAdapterInternal<Item>;
+    this.datasource = (this.testComponent as unknown as TestComponentInterface).datasource;
+    this.adapter = this.datasource.adapter as IAdapter<Data>;
+    this.internalAdapter = this.scroller.adapter as IAdapterInternal<Data>;
     this.routines = this.scroller.routines;
     const { horizontal, windowViewport } = this.scroller.settings;
     this.horizontal = horizontal;
@@ -80,22 +82,21 @@ export class Misc {
     };
   }
 
-  generateFakeWorkflow(settings?: any): Workflow {
+  generateFakeWorkflow(settings?: Scroller['settings']): Workflow {
     return new Workflow({
       consumer: { name: 'fake', version: 'x.x.x' },
       element: this.scroller.viewport.element,
-      datasource: { get: (a: any, b: any) => null, settings },
+      datasource: { get: (_a: unknown, _b: unknown) => null, settings },
       run: () => null
     });
   }
 
-  spyOnGet(): jasmine.Spy<DatasourceGet> {
+  spyOnGet(): jasmine.Spy<DatasourceGet<Data>> {
     return spyOn(this.datasource, 'get').and.callThrough();
   }
 
-  getViewportSize(settings?: TestBedConfig): number {
+  getViewportSize(): number {
     return this.scroller.viewport.getSize();
-    // return settings.templateSettings[this.horizontal ? 'viewportWidth' : 'viewportHeight'];
   }
 
   getItemSize(): number {
@@ -103,7 +104,7 @@ export class Misc {
   }
 
   getElements(): HTMLElement[] {
-    return this.fixture.nativeElement.querySelectorAll(`[data-sid]`);
+    return this.fixture.nativeElement.querySelectorAll('[data-sid]');
   }
 
   getElement(index: number): HTMLElement {
@@ -138,7 +139,7 @@ export class Misc {
     return params[this.horizontal ? 'width' : 'height'];
   }
 
-  getScrollableElement() {
+  getScrollableElement(): HTMLElement {
     return this.window ? document.scrollingElement : this.viewportElement.nativeElement;
   }
 
@@ -150,7 +151,7 @@ export class Misc {
     return this.getScrollableSize() - this.getViewportSize();
   }
 
-  scrollTo(value: number, native?: boolean) {
+  scrollTo(value: number, native?: boolean): void {
     if (native) {
       this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
     } else {
@@ -158,11 +159,11 @@ export class Misc {
     }
   }
 
-  scrollMin() {
+  scrollMin(): void {
     this.scrollTo(0);
   }
 
-  scrollMax() {
+  scrollMax(): void {
     this.scrollTo(999999);
   }
 
@@ -205,20 +206,42 @@ export class Misc {
     }
   }
 
+  async scrollToIndexRecursively(index: number): Promise<void> {
+    const { adapter } = this;
+    let leftDiff: number, rightDiff: number;
+    do {
+      leftDiff = index - adapter.bufferInfo.firstIndex;
+      rightDiff = index - adapter.bufferInfo.lastIndex;
+      const position = this.getScrollPosition();
+      adapter.fix({
+        scrollToItem: ({ $index }) => {
+          if (leftDiff >= 0 && rightDiff <= 0) {
+            return $index === index;
+          }
+          return $index === (rightDiff > 0 ? adapter.bufferInfo.lastIndex : adapter.bufferInfo.firstIndex);
+        }
+      });
+      if (position !== this.getScrollPosition()) {
+        await this.relaxNext();
+      }
+    }
+    while (rightDiff > 0 || leftDiff < 0);
+  }
+
   delay(ms: number): Promise<void> {
     return new Promise(resolve =>
       setTimeout(() => resolve(), ms)
     );
   }
 
-  setDatasourceProcessor(processor: Function) {
-    const setProcessor = (this.datasource as any).setProcessGet;
+  setDatasourceProcessor(processor: Processor): void {
+    const setProcessor = (this.datasource as unknown as DatasourceProcessor).setProcessGet;
     if (typeof processor === 'function') {
       setProcessor.call(this.datasource, processor);
     }
   }
 
-  setItemProcessor(itemUpdater: (item: IndexedItem) => any) {
+  setItemProcessor(itemUpdater: (item: IndexedItem) => unknown): void {
     this.setDatasourceProcessor((result: IndexedItem[]) =>
       result.forEach(itemUpdater)
     );

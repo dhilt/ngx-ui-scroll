@@ -4,12 +4,11 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
-import { Workflow, Item } from './vscroll';
+import { IDatasource, Workflow, Item } from './vscroll';
 
-import { IDatasource } from './ui-scroll.datasource';
+import { IDatasource as IAngularDatasource } from './ui-scroll.datasource';
 import consumer from './ui-scroll.version';
 
-/* tslint:disable:component-selector */
 @Component({
   selector: '[ui-scroll]',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,7 +16,7 @@ import consumer from './ui-scroll.version';
     <div data-padding-backward></div>
     <div
       *ngFor="let item of items"
-      [attr.data-sid]="item.nodeId"
+      [attr.data-sid]="item.$index"
       [style.position]="item.invisible ? 'fixed' : null"
       [style.left]="item.invisible ? '-99999px' : null">
       <ng-template
@@ -31,28 +30,28 @@ import consumer from './ui-scroll.version';
     </div>
     <div data-padding-forward></div>`
 })
-export class UiScrollComponent implements OnInit, OnDestroy {
+export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
 
   // these should come from the directive
-  public template: TemplateRef<any>;
-  public datasource: IDatasource;
+  public template: TemplateRef<unknown>;
+  public datasource: IAngularDatasource<Data>;
 
   // the only template variable
-  public items: Item[] = [];
+  public items: Item<Data>[] = [];
 
   // Component-Workflow integration
-  public workflow: Workflow;
+  public workflow: Workflow<Data>;
 
   constructor(
     public changeDetector: ChangeDetectorRef,
     public elementRef: ElementRef) { }
 
-  ngOnInit() {
-    this.workflow = new Workflow({
+  ngOnInit(): void {
+    this.workflow = new Workflow<Data>({
       consumer,
       element: this.elementRef.nativeElement,
-      datasource: this.datasource as any,
-      run: (items: Item[]) => {
+      datasource: this.datasource as unknown as IDatasource<Data>,
+      run: items => {
         if (!items.length && !this.items.length) {
           return;
         }
@@ -62,7 +61,7 @@ export class UiScrollComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.workflow.dispose();
   }
 }

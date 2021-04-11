@@ -1,5 +1,4 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { Misc } from './miscellaneous/misc';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 
 const configList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, bufferSize: 4, padding: 0.22, itemSize: 20 },
@@ -20,7 +19,7 @@ const configList: TestBedConfig[] = [{
 
 configList.forEach(config => config.datasourceSettings.adapter = true);
 
-const shouldPrepend = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldPrepend: ItFuncConfig = () => misc => done => {
   const { buffer } = misc.scroller;
   let indexToPrepend = -Infinity;
 
@@ -38,7 +37,7 @@ const shouldPrepend = (config: TestBedConfig) => (misc: Misc) => (done: Function
   });
 };
 
-const shouldPrependMany = (config: TestBedConfig) => (misc: Misc) => (done: Function) => {
+const shouldPrependMany: ItFuncConfig = () => misc => done => {
   const { buffer } = misc.scroller;
   let indexToPrepend = -Infinity;
   const NEW_ITEMS_COUNT = 50;

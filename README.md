@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/dhilt/ngx-ui-scroll.svg?branch=master)](https://travis-ci.com/dhilt/ngx-ui-scroll)
+[![ngx-ui-scroll CI](https://github.com/dhilt/ngx-ui-scroll/actions/workflows/ci.yml/badge.svg)](https://github.com/dhilt/ngx-ui-scroll/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/ngx-ui-scroll.svg)](https://www.npmjs.com/package/ngx-ui-scroll)
 
 # NgxUiScroll
@@ -159,12 +159,12 @@ import { Datasource } from 'ngx-ui-scroll';
   });
 ```
 
-Then `this.datasource.adapter.packageInfo`, `this.datasource.adapter.reload()` and other Adapter expressions become available. For better typing, it is recommended to specify the Adapter type as follows:
+Then `this.datasource.adapter.packageInfo`, `this.datasource.adapter.reload()` and other Adapter expressions become available. For better typing, it is recommended to specify the Datasource Item type as follows:
 
 ```typescript
-import { Datasource, IAdapter } from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 ...
-  datasource = new Datasource<IAdapter<MyItem>>({
+  datasource = new Datasource<MyItem>({
     get: ... ,
     settings: { ... }
   });
@@ -187,10 +187,10 @@ Below is the list of read-only properties of the Adapter API with descriptions a
 |[bof$](https://dhilt.github.io/ngx-ui-scroll/#adapter#bof-eof)|Subject&lt;boolean&gt;|An Observable version of "bof" property.|
 |[eof](https://dhilt.github.io/ngx-ui-scroll/#adapter#bof-eof)|boolean|Indicates whether the end of the dataset is reached or not.|
 |[eof$](https://dhilt.github.io/ngx-ui-scroll/#adapter#bof-eof)|Subject&lt;boolean&gt;|An Observable version of "eof" property.|
-|[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;MyItem;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the Datasource item index value, "data" is exactly the item's content passed via Datasource, "element" is a link to DOM element which is relevant to the item. |
-|[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "firstVisible" property. |
-|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|ItemAdapter {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;MyItem;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
-|[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&gt;|An observable version of "lastVisible" property. |
+|[firstVisible](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|ItemAdapter&lt;MyItem&gt; {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;MyItem;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about first visible item, where "$index" corresponds to the Datasource item index value, "data" is exactly the item's content passed via Datasource, "element" is a link to DOM element which is relevant to the item. |
+|[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&lt;MyItem&gt;&gt;|An observable version of "firstVisible" property. |
+|[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|ItemAdapter&lt;MyItem&gt; {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;MyItem;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
+|[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&lt;MyItem&gt;&gt;|An observable version of "lastVisible" property. |
 
 Below is the list of invocable methods of the Adapter API with description and links to demos.
 
@@ -206,10 +206,11 @@ Below is the list of invocable methods of the Adapter API with description and l
 |[remove](https://dhilt.github.io/ngx-ui-scroll/#adapter#remove)|(options: {<br>&nbsp;&nbsp;predicate?:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;indexes?:&nbsp;number[],<br>&nbsp;&nbsp;increase?:&nbsp;boolean<br>}) <br><br>(func:&nbsp;ItemsPredicate) &#42;<br><sub>&#42; old signature, deprecated</sub><br><br> type&nbsp;ItemsPredicate&nbsp;=<br>&nbsp;&nbsp;(item: ItemAdapter)&nbsp;=><br>&nbsp;&nbsp;&nbsp;&nbsp;boolean|Removes items form buffer and/or virtually. Predicate is a function to be applied to every item presently in the buffer. Predicate must return a boolean value. If predicate's return value is true, the item will be removed. Only a continuous series of items can be removed at a time using _predicate_. Alternatively, if _indexes_ array is passed, the items whose indexes match the list will be removed. Only one of the _predicate_ and _indexes_ options is allowed. In case of _indexes_, the deletion is performed also virtually. By default, indexes of the items following the deleted ones are decremented. Instead, if _increase_ is set to _true_, indexes of the items before the removed ones will be increased. |
 |[insert](https://dhilt.github.io/ngx-ui-scroll/#adapter#insert)|(options: {<br>&nbsp;&nbsp;items:&nbsp;MyItem[],<br>&nbsp;&nbsp;before?:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;after?:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;decrease?:&nbsp;boolean<br>})|Inserts items _before_ or _after_ the one that presents in the buffer and satisfies the predicate condition. Only one of the _before_ and _after_ options is allowed. Indexes increase by default. Decreasing strategy can be enabled via _decrease_ option. |
 |[replace](https://dhilt.github.io/ngx-ui-scroll/#adapter#replace)|(options: {<br>&nbsp;&nbsp;predicate:&nbsp;ItemsPredicate,<br>&nbsp;&nbsp;items:&nbsp;MyItem[],<br>&nbsp;&nbsp;fixRight?:&nbsp;boolean<br>})|Replaces items that continuously match the _predicate_ with an array of new _items_. Indexes are maintained on the assumption that the left border of the dataset is fixed. To release the left border and fix the right one the _fixRight_ option should be set to _true_. |
+|[update](https://dhilt.github.io/ngx-ui-scroll/#adapter#update)|(options: {<br>&nbsp;&nbsp;predicate:&nbsp;BufferUpdater,<br>&nbsp;&nbsp;fixRight?:&nbsp;boolean<br>}) <br><br> type&nbsp;BufferUpdater&nbsp;=<br>&nbsp;&nbsp;(item: ItemAdapter)&nbsp;=><br>&nbsp;&nbsp;&nbsp;&nbsp;unknown|Updates existing items by running the _predicate_ function over the Scroller's buffer. The return value of the _predicate_ determines the operation: falsy or empty array to remove, truthy or array with only 1 current item to keep unchanged, non-empty array to replace/insert. Indexes are maintained on the assumption that the left border of the dataset is fixed. To release the left border and fix the right one the _fixRight_ option should be set to _true_. |
 
 Along with the documented API there are some undocumented features that can be treated as experimental. They are not tested enough and might change over time. Some of them can be found on the [experimental tab](https://dhilt.github.io/ngx-ui-scroll/#experimental) of the demo app.
 
-All of the Adapter methods are asynchronous, because they work with DOM and may take time to complete. For this purpose the Adapter methods return a Promise resolving at the moment when the Scroller terminates its internal processes triggered by the invocation of the correspondent Adapter method. It is called [Adapter Return API](https://dhilt.github.io/ngx-ui-scroll/#adapter#return-value). This promise has exactly the same nature as the promise of the [relax method](https://dhilt.github.io/ngx-ui-scroll/#experimental#adapter-relax). Both "Relax" and "Return API" are the instruments of the App-Scroller processes normalization. It might be quite important to run some logic after the Scroller finishes its job and relaxes. Below is an example of how an explicit sequence of the Adapter methods can be safely implemented:
+All of the Adapter methods are asynchronous, because they work with DOM and may take time to complete. For this purpose the Adapter methods return a Promise resolving at the moment when the Scroller terminates its internal processes triggered by the invocation of the correspondent Adapter method. It is called [Adapter Return API](https://dhilt.github.io/ngx-ui-scroll/#adapter#return-value). This promise has exactly the same nature as the promise of the [Adapter.relax method](https://dhilt.github.io/ngx-ui-scroll/#experimental#adapter-relax). Both "Relax" and "Return API" are the instruments of the App-Scroller processes normalization. It might be quite important to run some logic after the Scroller finishes its job and relaxes. Below is an example of how an explicit sequence of the Adapter methods can be safely implemented:
 
 ```js
 const { adapter } = this.datasource;
@@ -217,7 +218,7 @@ const predicate = ({ $index }) => $index === indexToReplace;
 await adapter.relax();
 await adapter.remove({ predicate });
 await adapter.insert({ items: [itemToReplace], before: predicate });
-console.log('Replacement done');
+console.log('Two-phase replacement done');
 ```
 
 For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#adapter).
@@ -248,9 +249,22 @@ import { Datasource } from 'ngx-ui-scroll';
   });
 ```
 
-The development settings are not documented. Information about them can be obtained directly from the [source code](https://github.com/dhilt/vscroll/blob/main/src/classes/settings.ts). The Scroller has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
+The development settings are not documented. Information about it can be taken directly from the [source code](https://github.com/dhilt/vscroll/blob/main/src/classes/settings.ts). The Scroller has "debug" mode with powerful logging which can be enabled via `devSettings.debug = true`. Also, with `devSettings.immediateLog = false` the console logging will be postponed until the undocumented Adapter method `showLog` is called (`datasource.adapter.showLog()`). This case could be important from the performance view: there might be too many logs and pushing them to the console output immediately could slow down the App.
 
-Any participation is welcome, so feel free to submit new [Issues](https://github.com/dhilt/ngx-ui-scroll/issues) and open [Pull Requests](https://github.com/dhilt/ngx-ui-scroll/pulls).
+Below is the quick guide for vscroll/ngx-ui-scroll integrated development (this is relevant since ngx-ui-scroll v2 depends on vscroll):
+
+ - clone both ngx-ui-scroll and [vscroll](https://github.com/dhilt/vscroll) repositories into the same folder
+ - replace "vscroll" import with local sources [here](https://github.com/dhilt/ngx-ui-scroll/blob/v2.0.0-rc.10/src/vscroll.ts#L17) and [here](https://github.com/dhilt/ngx-ui-scroll/blob/v2.0.0-rc.10/tests/miscellaneous/vscroll.ts#L16).
+
+Also, there are some environment variables for additional customization of the dev process. In accordance with [dotenv](https://www.npmjs.com/package/dotenv) approach, the `.env` file should be placed in the root folder, and it may contain the following variables.
+
+|Name|Value|Description|
+|:--|:----|:----------|
+|DEV_SERVER_PORT|4200|Port the dev server (webpack) will use|
+|TEST_BROWSER|default&nbsp;&#124; chrome&nbsp;&#124; firefox|Platform for running tests. By default a headless chrome is used; "chrome" or "firefox" are for running tests in real (chrome/ff) browser |
+|TEST_SERVER_PORT|9876|Port that will be used by non-default testing browser |
+
+Any support and participation are welcome, so feel free to <a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">donate</a>, submit new [Issues](https://github.com/dhilt/ngx-ui-scroll/issues) and open [Pull Requests](https://github.com/dhilt/ngx-ui-scroll/pulls).
 
 __________
 

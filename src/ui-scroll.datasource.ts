@@ -4,26 +4,34 @@ import {
   makeDatasource,
   AdapterPropName,
   EMPTY_ITEM,
-  IDatasourceGeneric,
+  IDatasource,
+  IDatasourceConstructed,
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,
   IAdapter,
-} from './vscroll';
+} from 'vscroll';
 
-interface IReactiveOverride {
+interface IReactiveOverride<Item = unknown> {
   init$: Subject<boolean>;
   isLoading$: Subject<boolean>;
   loopPending$: Subject<boolean>;
-  firstVisible$: BehaviorSubject<IAdapterItem>;
-  lastVisible$: BehaviorSubject<IAdapterItem>;
+  firstVisible$: BehaviorSubject<IAdapterItem<Item>>;
+  lastVisible$: BehaviorSubject<IAdapterItem<Item>>;
   bof$: Subject<boolean>;
   eof$: Subject<boolean>;
 }
 
-interface IAngularAdapter<Item = unknown> extends Omit<IAdapter<Item>, keyof IReactiveOverride>, IReactiveOverride { }
+interface IAngularAdapter<Data = unknown>
+  extends Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>, IReactiveOverride<Data> { }
 
-interface IAngularDatasource<Item = unknown> extends IDatasourceGeneric<IAngularAdapter<Item>> { }
+interface IAngularDatasource<Data = unknown> extends Omit<IDatasource<Data>, 'adapter'> {
+  adapter?: IAngularAdapter<Data>;
+}
+
+interface IAngularDatasourceConstructed<Data = unknown> extends Omit<IDatasourceConstructed<Data>, 'adapter'> {
+  adapter: IAngularAdapter<Data>;
+}
 
 const getBooleanSubjectPropConfig = (): IReactivePropConfig => ({
   source: new Subject<boolean>(),
@@ -48,10 +56,19 @@ const getAdapterConfig = (): IAdapterConfig => ({
   }
 });
 
-const AngularDatasource = makeDatasource<IAngularAdapter>(getAdapterConfig);
+const makeAngularDatasource = () => class <T = unknown> implements IAngularDatasourceConstructed<T> {
+  get: IDatasource<T>['get'];
+  settings?: IDatasource<T>['settings'];
+  devSettings?: IDatasource<T>['devSettings'];
+  adapter: IAngularAdapter<T>;
+  constructor(_ds: IDatasource<T>) { }
+};
+
+const AngularDatasource =
+  makeDatasource(getAdapterConfig) as unknown as ReturnType<typeof makeAngularDatasource>;
 
 export {
   IAngularAdapter as IAdapter,
   IAngularDatasource as IDatasource,
-  AngularDatasource as Datasource
+  AngularDatasource as Datasource,
 };

@@ -166,6 +166,20 @@ button:hover {
   color: #fff;
 }
 
+.navbar .container .copyrights .support {
+  float: right;
+}
+
+.navbar .container .copyrights .support .support_icon {
+  animation: blink 1s linear infinite;
+}
+
+@keyframes blink{
+  33%{opacity: 0;}
+  66%{opacity: .5;}
+  100%{opacity: 1;}
+}
+
 .sources {
   margin-top: 29px;
 }

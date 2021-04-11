@@ -29,7 +29,8 @@ export class DemoOnBeforeClipSettingComponent {
     settings: {
       bufferSize: 25,
       onBeforeClip: (items) => {
-        const log = `${++this.demoContext.count}) clipping ${items.length} items [${items[0].$index}..${items[items.length - 1].$index}]\n`;
+        const log = `${++this.demoContext.count}) clipping ${items.length} items` +
+          `[${items[0].$index}..${items[items.length - 1].$index}]\n`;
         this.demoContext.log = log + this.demoContext.log;
       }
     }

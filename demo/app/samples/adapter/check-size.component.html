@@ -12,17 +12,17 @@
   </div>
   <div description>
     <p>
-      <em>Adapter.check</em> method could be useful when rows heights can change after rendering.
-      By invoking <em>Adapter.check()</em> we ask the <em>uiScroll</em> to check
-      if any of items that are in current viewport's buffer changed their size.
+      The <em>Adapter.check</em> method could be useful when rows heights can change after rendering.
+      By invoking the <em>Adapter.check</em> method we ask the Scroller to check
+      if any of items that are in the current Buffer (and present in DOM) changed their size.
     </p>
     <p>
-      In this demo method <em>doCheck</em> is implemented to
+      In this demo, the <em>doCheck</em> method is implemented to
     </p>
     <ul>
-      <li>change real size of 10 items (from 15 to 25) in DOM;</li>
+      <li>change the actual size of 10 items (from 15 to 25) in DOM;</li>
       <li>run <em>Adapter.check()</em>;</li>
-      <li>autoscroll to item that was first visible before change (optionally).</li>
+      <li>autoscroll to the first visible item before changing(optionally).</li>
     </ul>
   </div>
 </app-demo>

@@ -46,7 +46,7 @@
     <div
       *uiScroll="let item of datasource"
       (click)="doToggleItem(item)"
-      [style.height]="item.height + 'px'"
+      [style.height]="item.size + 'px'"
     >
       <app-samples-test-inner>
         {{item.text}}

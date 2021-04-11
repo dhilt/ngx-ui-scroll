@@ -1,8 +1,8 @@
 import { Direction } from './miscellaneous/vscroll';
 
 import { makeTest, OperationConfig } from './scaffolding/runner';
-import { Misc } from './miscellaneous/misc';
-import { Item } from './miscellaneous/items';
+import { Data } from './miscellaneous/items';
+import { TemplateSettings } from './scaffolding/templates';
 
 enum Operation {
   append = 'append',
@@ -12,9 +12,13 @@ const min = 1, max = 100, bufferSize = 10, padding = 0.5;
 const templateSettings = { viewportHeight: 200 };
 const amount = 3, emptyAmount = 20;
 
+interface ICustom {
+  amount: number;
+}
+
 describe('Adapter Append-Prepend Spec', () => {
 
-  const config: OperationConfig<Operation> = {
+  const config: OperationConfig<Operation, ICustom> = {
     [Operation.prepend]: {
       datasourceName: 'limited',
       datasourceSettings: {
@@ -37,7 +41,7 @@ describe('Adapter Append-Prepend Spec', () => {
     }
   };
 
-  const configScroll: OperationConfig<Operation> = {
+  const configScroll: OperationConfig<Operation, ICustom> = {
     [Operation.prepend]: {
       ...config.prepend,
       datasourceSettings: {
@@ -54,7 +58,7 @@ describe('Adapter Append-Prepend Spec', () => {
     }
   };
 
-  const configEmpty: OperationConfig<Operation> = {
+  const configEmpty: OperationConfig<Operation, ICustom> = {
     [Operation.prepend]: {
       datasourceName: 'empty-callback',
       datasourceSettings: {
@@ -77,7 +81,7 @@ describe('Adapter Append-Prepend Spec', () => {
     }
   };
 
-  const getNewItems = (total: number): { [key: string]: Item[] } => ({
+  const getNewItems = (total: number): { [key: string]: Data[] } => ({
     [Operation.append]: [...Array(total).keys()].map((i: number) => ({
       id: max - total + i + 1,
       text: 'item #' + (max - total + i + 1)
@@ -97,7 +101,7 @@ describe('Adapter Append-Prepend Spec', () => {
     makeTest({
       config: config[token],
       title: `should ${token} immediately`,
-      it: (misc: Misc) => (done: any) =>
+      it: misc => done =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           const viewport = misc.scroller.viewport;
           const paddings = misc.scroller.viewport.paddings;
@@ -120,7 +124,7 @@ describe('Adapter Append-Prepend Spec', () => {
     makeTest({
       config: configScroll[token],
       title: `should ${token} after scroll (virtualization)`,
-      it: (misc: Misc) => (done: any) =>
+      it: misc => done =>
         spyOn(misc.workflow, 'finalize').and.callFake(() => {
           const viewport = misc.scroller.viewport;
           const paddings = viewport.paddings;
@@ -151,11 +155,11 @@ describe('Adapter Append-Prepend Spec', () => {
       makeTest({
         config: configEmpty[token],
         title: `should ${token} to empty datasource` + (virtualize ? ' (virtualization)' : ''),
-        it: (misc: Misc) => (done: any) => {
+        it: misc => done => {
           const { viewport, buffer } = misc.scroller;
           const _config = configEmpty[token];
           const { amount: _amount } = _config.custom;
-          const templateSize = _config.templateSettings.viewportHeight;
+          const templateSize = (_config.templateSettings as TemplateSettings).viewportHeight as number;
           const items = getNewItems(_amount)[token];
 
           spyOn(misc.workflow, 'finalize').and.callFake(() => {

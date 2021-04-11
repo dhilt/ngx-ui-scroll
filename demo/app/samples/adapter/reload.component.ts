@@ -13,8 +13,8 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoReloadComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.reload,
-    viewportId: `reload-viewport`,
+    config: demos.adapterMethods.map.reload,
+    viewportId: 'reload-viewport',
     count: 0,
     log: ''
   };

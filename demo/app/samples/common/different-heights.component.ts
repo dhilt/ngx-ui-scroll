@@ -14,7 +14,7 @@ export class DemoDifferentHeightsComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.differentItemHeights,
-    viewportId: `different-heights-viewport`,
+    viewportId: 'different-heights-viewport',
     count: 0,
     log: ''
   };
@@ -43,7 +43,7 @@ export class DemoDifferentHeightsComponent {
     name: DemoSourceType.Template,
     text: `<div class="viewport">
   <div *uiScroll="let item of datasource">
-     <div class="item" [style.height]="item.height + 'px'">
+     <div class="item" [style.height]="item.size + 'px'">
       {{item.text}}
      </div>
   </div>

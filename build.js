@@ -37,12 +37,10 @@ shell.mkdir(`-p`, `./${FESM5_DIR}`);
 shell.mkdir(`-p`, `./${BUNDLES_DIR}`);
 shell.mkdir(`-p`, `./${OUT_DIR}`);
 
-/* TSLint with Codelyzer */
-// https://github.com/palantir/tslint/blob/master/src/configs/recommended.ts
-// https://github.com/mgechev/codelyzer
-shell.echo(`Start TSLint`);
-shell.exec(`tslint -p tsconfig.json -t stylish src/**/*.ts`);
-shell.echo(chalk.green(`TSLint completed`));
+/* ESLint */
+shell.echo(`Start ESLint`);
+shell.exec(`eslint . --ext .ts`);
+shell.echo(chalk.green(`ESLint completed`));
 
 shell.cp(`-Rf`, [`src`, `*.ts`, `*.json`], `${OUT_DIR}`);
 

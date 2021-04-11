@@ -8,7 +8,7 @@ import { DatasourceService } from './datasources/class';
 import { ScrollerTestComponent, TwoScrollersTestComponent, ScrollerSubTestComponent } from './testComponent';
 
 export const configureTestBed = (
-  datasource: any, template: string
+  datasource: new () => unknown, template: string
 ): ComponentFixture<ScrollerTestComponent> =>
   TestBed
     .configureTestingModule({
@@ -40,4 +40,3 @@ const configureTestBedFactory = <T>(comp: Type<T>) => (): ComponentFixture<T> =>
 
 export const configureTestBedTwo = configureTestBedFactory(TwoScrollersTestComponent);
 export const configureTestBedSub = configureTestBedFactory(ScrollerSubTestComponent);
-

@@ -14,7 +14,7 @@ export class DemoBufferSizeComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.bufferSize,
-    viewportId: `buffer-size-viewport`,
+    viewportId: 'buffer-size-viewport',
     count: 0,
     log: ''
   };

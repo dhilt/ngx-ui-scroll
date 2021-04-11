@@ -17,7 +17,7 @@ export class DemoAdapterFixPositionComponent {
   };
 
   datasource = new Datasource({
-    get: (index: number, count: number, success: Function) => {
+    get: (index, count, success) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });
@@ -58,7 +58,7 @@ export class DemoAdapterFixPositionComponent {
 `
   }];
 
-  adapterFixPosition = `Adapter.fix({ scrollPosition: 0 })`;
+  adapterFixPosition = 'Adapter.fix({ scrollPosition: 0 })';
 
   scrollTop() {
     this.datasource.adapter.fix({ scrollPosition: 0 });

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
@@ -13,18 +13,21 @@ import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 export class DemoAppendPrependComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.appendPrepend,
-    viewportId: `append-prepend-viewport`,
+    config: demos.adapterMethods.map.appendPrepend,
+    viewportId: 'append-prepend-viewport',
     count: 0,
     log: ''
   };
 
-  data: any[];
+  adapterScope = demos.adapter;
+  adapterMethodsScope = demos.adapterMethods;
+
+  data: MyItem[];
   inputValue = 4;
   newIndex = 0;
 
-  datasource = new Datasource({
-    get: (index: number, count: number, success: Function) => {
+  datasource = new Datasource<MyItem>({
+    get: (index, count, success) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });
@@ -39,11 +42,11 @@ export class DemoAppendPrependComponent {
 
   sources: DemoSources = [{
     name: DemoSourceType.Component,
-    text: `data: any[];
+    text: `data: MyItem[];
 inputValue = 4;
 newIndex = 0;
 
-datasource = new Datasource({
+datasource = new Datasource<MyItem>({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i < index + count; i++) {
@@ -57,7 +60,7 @@ datasource = new Datasource({
 });
 
 generateItems(isPrepend: boolean) {
-    const items: any[] = [];
+    const items: MyItem[] = [];
     for (let i = 0; i < this.inputValue; i++) {
       this.newIndex++;
       const item = {
@@ -117,7 +120,7 @@ async doAppend() {
   }
 
   generateItems(isPrepend: boolean) {
-    const items: any[] = [];
+    const items: MyItem[] = [];
     for (let i = 0; i < this.inputValue; i++) {
       this.newIndex++;
       const item = {

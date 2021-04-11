@@ -2,14 +2,13 @@ export {
 
   // entities
   Workflow,
-  Item,
   makeDatasource,
   AdapterPropName,
   EMPTY_ITEM,
 
   // interfaces
+  Item,
   IDatasource,
-  IDatasourceGeneric,
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,

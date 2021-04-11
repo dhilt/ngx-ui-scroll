@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { DemoSources, DemoSourceType, MyItem } from '../shared/interfaces';
 import { globalScope as scopes, demoList as demos } from '../routes';
 
-import { Datasource, IAdapter } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-home',
@@ -12,13 +12,14 @@ import { Datasource, IAdapter } from '../../../public_api'; // from 'ngx-ui-scro
 export class HomeComponent {
 
   reloadIndex = 999;
-  delay = 25;
+  delay = 0;
   scopes: typeof scopes;
   demos: typeof demos;
+  demosNotEmpty: typeof demos;
 
-  datasource = new Datasource<IAdapter<MyItem>>({
-    get: (index: number, count: number, success: Function) => {
-      const data: any = [];
+  datasource = new Datasource<MyItem>({
+    get: (index, count, success) => {
+      const data: MyItem[] = [];
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });
       }
@@ -40,6 +41,15 @@ export class HomeComponent {
   });
 
   sources: DemoSources = [{
+    name: DemoSourceType.Template,
+    text: `<div class="viewport">
+  <div *uiScroll="let item of datasource; let even = even">
+    <div class="item" [class.even]="even">
+      {{item.text}}
+    </div>
+  </div>
+</div>`
+  }, {
     name: DemoSourceType.Component,
     text: `delay = 25;
 reloadIndex = 999;
@@ -62,22 +72,19 @@ doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`
   }, {
-    name: DemoSourceType.Template,
-    text: `<div class="viewport">
-  <div *uiScroll="let item of datasource; let even = even">
-    <div class="item" [class.even]="even">
-      {{item.text}}
-    </div>
-  </div>
-</div>
+    name: 'Adapter',
+    text: `Version:
+{{datasource.adapter.packageInfo.consumer.version}}
 
-<!-- adapter props and methods: -->
+Core:
+{{datasource.adapter.packageInfo.core.name}}
+v{{datasource.adapter.packageInfo.core.version}}
 
 First visible:
-\${{datasource.adapter.firstVisible.$index}}
+#{{datasource.adapter.firstVisible.$index}}
 
 Last visible:
-\${{(datasource.adapter.lastVisible$ | async)?.$index}}
+#{{(datasource.adapter.lastVisible$ | async)?.$index}}
 
 Items in DOM:
 {{datasource.adapter.itemsCount}}
@@ -110,6 +117,7 @@ Index to reload:
   constructor() {
     this.scopes = scopes;
     this.demos = demos;
+    this.demosNotEmpty = demos.filter(({ map }) => map.length);
   }
 
   doReload() {

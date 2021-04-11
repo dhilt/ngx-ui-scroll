@@ -4,10 +4,11 @@
 
   <div class="description">
     <p>
-      Each <em>Adapter</em> method runs the <em>uiScroll Workflow</em>
+      Along with <em>Adapter</em> properties there are several <em>Adapter</em> methods.
+      Each <em>Adapter</em> method runs the Scroller's Workflow
       that handles multiple internal processes, some of which may be asynchronous.
       In order to deal with such asynchronicity,
-      the return value of the <em>Adapter</em> method is a <em>Promise</em>
+      the return value of any <em>Adapter</em> method is a <em>Promise</em>
       that is resolved when all internal processes
       triggered by the <em>Adapter</em> are terminated.
       Return value has following type
@@ -31,9 +32,10 @@
 
     <p>
       Note, <em>immediate:&nbsp;false</em> does not necessarily mean that the <em>Adapter</em> method
-      worked asynchronously. But in any case, if there is any logic that needs to be run after
-      the Adapter method completes its job, it is highly recommended
-      to implement an explicit sequence like this:
+      worked asynchronously. For example, <em>Adapter.clip</em> does its work in a single call stack
+      regardless of whether there are items to be clipped or not. But in any case,
+      if there is any logic that needs to be run after the Adapter method completes its job,
+      it is highly recommended to implement an explicit sequence like this:
     </p>
 
     <pre>{{explicitSequenceSample}}</pre>

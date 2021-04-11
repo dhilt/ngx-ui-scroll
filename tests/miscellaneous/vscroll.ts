@@ -1,11 +1,12 @@
 export {
   Workflow,
+  Item,
   IDatasource,
-  IDatasourceGeneric,
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,
   IAdapter,
+  AdapterPropName,
 } from '../../src/vscroll';
 
 export {
@@ -19,11 +20,15 @@ export {
   DatasourceGet,
   Settings,
   DevSettings,
+  IAdapterProp,
   ItemAdapter,
   ItemsPredicate,
+  BufferUpdater,
+  AdapterMethodResult,
   AdapterClipOptions,
   AdapterInsertOptions,
   AdapterAppendOptions,
   AdapterPrependOptions,
+  AdapterUpdateOptions,
   AdapterFixOptions,
 } from 'vscroll/dist/typings/interfaces'; // from '../../../vscroll/src/interfaces/index';

@@ -10,7 +10,9 @@ import { DemoDifferentHeightsComponent } from './samples/common/different-height
 import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
 
 import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasource-signatures.component';
-import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
+import {
+  DemoBidirectionalUnlimitedDatasourceComponent
+} from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
 import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/positive-limited-datasource.component';
 import { DemoRemoteDatasourceComponent } from './samples/datasource/remote-datasource.component';
@@ -36,6 +38,7 @@ import { DemoCheckSizeComponent } from './samples/adapter/check-size.component';
 import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoReplaceComponent } from './samples/adapter/replace.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
+import { DemoUpdateComponent } from './samples/adapter/update.component';
 
 import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
@@ -87,6 +90,7 @@ const adapter = [
   DemoRemoveComponent,
   DemoReplaceComponent,
   DemoClipComponent,
+  DemoUpdateComponent,
 ];
 
 const experimental = [

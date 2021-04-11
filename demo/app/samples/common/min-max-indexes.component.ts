@@ -14,12 +14,13 @@ export class DemoMinMaxIndexesComponent {
 
   demoContext: DemoContext = {
     config: demos.settings.map.minMaxIndexes,
-    viewportId: `min-max-indexes-viewport`,
+    viewportId: 'min-max-indexes-viewport',
     count: 0,
     log: ''
   };
 
   datasourceLimitedDemoConfig = demos.datasource.map.limited;
+  datasourcePositiveLimitedDemoConfig = demos.datasource.map.positiveLimitedIndexes;
 
   datasource: IDatasource = {
     get: datasourceGetCallbackInfinite(this.demoContext),

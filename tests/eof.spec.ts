@@ -2,6 +2,7 @@ import { Direction } from './miscellaneous/vscroll';
 
 import { makeTest, MakeTestConfig, TestBedConfig, OperationConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
+import { Subscription } from 'rxjs';
 
 enum Operation {
   eof = 'eof',
@@ -41,25 +42,40 @@ describe('EOF/BOF Spec', () => {
     }
   };
 
+  interface BEContainer {
+    count: number;
+    value: boolean;
+    subscription: Subscription;
+  }
+
+  interface BofEofContainer {
+    eof: BEContainer;
+    bof: BEContainer;
+  }
+
   const initializeBofEofContainer = (misc: Misc) => {
     const { adapter, shared } = misc;
-    shared.bofEofContainer = {
-      bof: { count: 0, value: adapter.bof },
-      eof: { count: 0, value: adapter.eof }
+    const bof: BEContainer = {
+      count: 0,
+      value: adapter.bof,
+      subscription: adapter.bof$.subscribe(value => {
+        bof.count++;
+        bof.value = value;
+      })
     };
-    const { bof, eof } = shared.bofEofContainer;
-    bof.subscription = adapter.bof$.subscribe(value => {
-      bof.count++;
-      bof.value = value;
-    });
-    eof.subscription = adapter.eof$.subscribe(value => {
-      eof.count++;
-      eof.value = value;
-    });
+    const eof: BEContainer = {
+      count: 0,
+      value: adapter.eof,
+      subscription: adapter.eof$.subscribe(value => {
+        eof.count++;
+        eof.value = value;
+      })
+    };
+    shared.bofEofContainer = { bof, eof } as BofEofContainer;
   };
 
   const disposeBofEofContainer = (misc: Misc) => {
-    const { bof, eof } = misc.shared.bofEofContainer;
+    const { bof, eof } = misc.shared.bofEofContainer as BofEofContainer;
     eof.subscription.unsubscribe();
     bof.subscription.unsubscribe();
   };
@@ -67,7 +83,8 @@ describe('EOF/BOF Spec', () => {
   const expectLimit = (misc: Misc, direction: Direction, noscroll = false) => {
     const _forward = direction === Direction.forward;
     const elements = misc.getElements();
-    expect(elements.length).toBeGreaterThan(config[_forward ? 'eof' : 'bof'].datasourceSettings.bufferSize);
+    const length = config[_forward ? Operation.eof : Operation.bof].datasourceSettings.bufferSize as number;
+    expect(elements.length).toBeGreaterThan(length);
     expect(misc.padding[_forward ? Direction.forward : Direction.backward].getSize()).toEqual(0);
     if (!noscroll) {
       expect(misc.padding[_forward ? Direction.backward : Direction.forward].getSize()).toBeGreaterThan(0);
@@ -77,10 +94,10 @@ describe('EOF/BOF Spec', () => {
     const { adapter, scroller: { buffer: { eof, bof } }, shared } = misc;
     expect(bof.get()).toEqual(!_forward);
     expect(bof.get()).toEqual(adapter.bof);
-    expect(bof.get()).toEqual(shared.bofEofContainer.bof.value);
+    expect(bof.get()).toEqual((shared.bofEofContainer as BofEofContainer).bof.value);
     expect(eof.get()).toEqual(adapter.eof);
     expect(eof.get()).toEqual(_forward);
-    expect(eof.get()).toEqual(shared.bofEofContainer.eof.value);
+    expect(eof.get()).toEqual((shared.bofEofContainer as BofEofContainer).eof.value);
   };
 
   const _makeTest = (data: MakeTestConfig) => makeTest({
@@ -104,7 +121,7 @@ describe('EOF/BOF Spec', () => {
       _makeTest({
         config: config[operation],
         title: `should get ${operation} on init`,
-        it: (misc: Misc) => (done: Function) =>
+        it: misc => done =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             expectLimit(misc, direction, true);
             done();
@@ -114,10 +131,10 @@ describe('EOF/BOF Spec', () => {
       _makeTest({
         config: config[operation],
         title: `should reset ${operation} after scroll`,
-        it: (misc: Misc) => (done: Function) =>
+        it: misc => done =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             const { scroller: { buffer }, adapter } = misc;
-            const { bofEofContainer } = misc.shared;
+            const bofEofContainer = misc.shared.bofEofContainer as BofEofContainer;
             if (misc.workflow.cyclesDone === 1) {
               expect(buffer[operation].get()).toEqual(true);
               expect(adapter[operation]).toEqual(true);
@@ -138,7 +155,7 @@ describe('EOF/BOF Spec', () => {
       _makeTest({
         config: config[operation],
         title: `should stop when ${operation} is reached again`,
-        it: (misc: Misc) => (done: Function) =>
+        it: misc => done =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             if (misc.workflow.cyclesDone === 1) {
               doScroll(misc);
@@ -154,7 +171,7 @@ describe('EOF/BOF Spec', () => {
       _makeTest({
         config: config[operation],
         title: `should reach ${_operation} after some scrolls`,
-        it: (misc: Misc) => (done: Function) =>
+        it: misc => done =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
             if (misc.workflow.cyclesDone < scrollCount) {
               doScroll(misc);
@@ -172,10 +189,10 @@ describe('EOF/BOF Spec', () => {
 
   _makeTest({
     config: emptyConfig,
-    title: `should reach both bof and eof during the first WF cycle`,
-    it: (misc: Misc) => (done: Function) =>
+    title: 'should reach both bof and eof during the first WF cycle',
+    it: misc => done =>
       spyOn(misc.workflow, 'finalize').and.callFake(() => {
-        const { bof, eof } = misc.shared.bofEofContainer;
+        const { bof, eof } = misc.shared.bofEofContainer as BofEofContainer;
         expect(bof.count).toEqual(1);
         expect(eof.count).toEqual(1);
         expect(bof.value).toEqual(true);
@@ -186,8 +203,8 @@ describe('EOF/BOF Spec', () => {
 
   _makeTest({
     config: observableCountConfig,
-    title: `should reach bof/eof multiple times`,
-    it: (misc: Misc) => (done: Function) =>
+    title: 'should reach bof/eof multiple times',
+    it: misc => done =>
       spyOn(misc.workflow, 'finalize').and.callFake(() => {
         const COUNT = 10;
         const { cyclesDone } = misc.workflow;
@@ -200,7 +217,7 @@ describe('EOF/BOF Spec', () => {
             misc.scrollMax();
           }
         } else {
-          const { bof, eof } = misc.shared.bofEofContainer;
+          const { bof, eof } = misc.shared.bofEofContainer as BofEofContainer;
           expect(bof.count).toEqual(COUNT);
           expect(eof.count).toEqual(COUNT - 1);
           done();

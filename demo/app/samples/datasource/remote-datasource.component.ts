@@ -13,7 +13,7 @@ export class RemoteDataService {
   constructor(private http: HttpClient) {
   }
 
-  getData(index: number, count: number): Observable<any> {
+  getData(index: number, count: number): Observable<unknown> {
     return this.http.get(`/api/data?index=${index}&count=${count}`);
   }
 }
@@ -33,7 +33,8 @@ export class DemoRemoteDatasourceComponent {
 
   datasource: IDatasource = {
     get: (index: number, count: number) => {
-      this.demoContext.log = `${++this.demoContext.count}) get items [${index}..${index + count - 1}]\n` + this.demoContext.log;
+      this.demoContext.log = `${++this.demoContext.count}) get items [${index}..${index + count - 1}]
+${this.demoContext.log}`;
       return this.remoteDataService.getData(index, count);
     }
   };
@@ -46,7 +47,7 @@ export class RemoteDataService {
   constructor(private http: HttpClient) {
   }
 
-  getData(index: number, count: number): Observable\<any\> {
+  getData(index: number, count: number): Observable<any> {
     return this.http.get(
       \`/api/data?index=\${index}&count=\${count}\`
     );

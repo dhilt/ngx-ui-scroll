@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from '../../../../public_api';
@@ -13,8 +13,8 @@ import { Datasource } from '../../../../public_api';
 export class DemoCheckSizeComponent {
 
   demoContext: DemoContext = {
-    config: demos.adapter.map.check,
-    viewportId: `check-size-viewport`,
+    config: demos.adapterMethods.map.check,
+    viewportId: 'check-size-viewport',
     count: 0,
     log: ''
   };
@@ -23,18 +23,18 @@ export class DemoCheckSizeComponent {
   MAX = 200;
   startIndex = 20;
   sizeValue = 15;
-  data: any[];
+  data: MyItem[];
   needAutoscroll: false;
 
   constructor() {
     this.data = [];
     for (let i = this.MIN; i <= this.MAX; i++) {
-      this.data.push({ id: i, text: 'item #' + i, height: 50 });
+      this.data.push({ id: i, text: 'item #' + i, size: 50 });
     }
   }
 
-  datasource = new Datasource({
-    get: (index: number, count: number, success: Function) => {
+  datasource = new Datasource<MyItem>({
+    get: (index, count, success) => {
       const data = [];
       for (let i = index; i < index + count; i++) {
         const found = this.data.find(item => item.id === i);
@@ -56,17 +56,17 @@ export class DemoCheckSizeComponent {
 MAX = 200;
 startIndex = 20;
 sizeValue = 15;
-data: any[];
+data: MyItem[];
 needAutoscroll: false;
 
 constructor() {
   this.data = [];
   for (let i = this.MIN; i <= this.MAX; i++) {
-    this.data.push({ id: i, text: 'item #' + i, height: 50 });
+    this.data.push({ id: i, text: 'item #' + i, size: 50 });
   }
 }
 
-datasource = new Datasource ({
+datasource = new Datasource<MyItem>({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i < index + count; i++) {
@@ -99,7 +99,7 @@ doChangeSize() {
         element.style.height = this.sizeValue + 'px';
         const item = this.data.find(({ id }) => id === i);
         if (item) {
-          item.height = this.sizeValue;
+          item.size = this.sizeValue;
         }
       }
     }
@@ -180,7 +180,7 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
           element.style.height = this.sizeValue + 'px';
           const item = this.data.find(({ id }) => id === i);
           if (item) {
-            item.height = this.sizeValue;
+            item.size = this.sizeValue;
           }
         }
       }

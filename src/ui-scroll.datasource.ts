@@ -10,7 +10,7 @@ import {
   IAdapterConfig,
   IAdapterItem,
   IAdapter,
-} from 'vscroll';
+} from './vscroll';
 
 interface IReactiveOverride<Item = unknown> {
   init$: Subject<boolean>;

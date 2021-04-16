@@ -9,6 +9,7 @@ export {
   // interfaces
   Item,
   IDatasource,
+  IDatasourceConstructed,
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,

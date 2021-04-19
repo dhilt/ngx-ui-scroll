@@ -40,29 +40,22 @@ describe('Bug Spec', () => {
         templateSettings: { viewportHeight: 300, itemHeight: 15 },
         datasourceSettings: { padding: 5, adapter: true }
       },
-      it: misc => done => {
-        const { scroller: { state }, adapter } = misc;
-        adapter.firstVisible$.subscribe(() => count++);
+      it: misc => async (done) => {
         let count = 0, checkedCount = 0;
-        spyOn(misc.workflow, 'finalize').and.callFake(() => {
-          const cycleCount = state.cycle.count;
-          expect(adapter.bof).toEqual(true);
-          expect(adapter.eof).toEqual(true);
-          if (cycleCount === 2) {
-            expect(count).toBeGreaterThan(checkedCount);
-            checkedCount = count;
-            misc.scrollMax();
-          } else if (cycleCount === 3) {
-            expect(count).toBeGreaterThan(checkedCount);
-            checkedCount = count;
-            misc.scrollMin();
-          } else if (cycleCount === 4) {
-            expect(adapter.bof).toEqual(true);
-            expect(adapter.eof).toEqual(true);
-            expect(count).toBeGreaterThan(checkedCount);
-            done();
-          }
-        });
+        misc.adapter.firstVisible$.subscribe(() => count++);
+        const check = async () => {
+          await misc.relaxNext();
+          expect(misc.adapter.bof).toEqual(true);
+          expect(misc.adapter.eof).toEqual(true);
+          expect(count).toBeGreaterThan(checkedCount);
+          checkedCount = count;
+        };
+        await check();
+        misc.scrollMax();
+        await check();
+        misc.scrollMin();
+        await check();
+        done();
       }
     })
   );
@@ -270,6 +263,24 @@ describe('Bug Spec', () => {
         await misc.scrollMinMax();
         const maxItemsCount = Math.ceil(misc.getViewportSize() * 2 / misc.getItemSize());
         expect(buffer.size).toBeLessThan(maxItemsCount);
+        done();
+      }
+    })
+  );
+
+  describe('padding height >= 1M px', () =>
+    makeTest({
+      title: 'should not jump when scroll',
+      config: {
+        datasourceName: 'default',
+        datasourceSettings: { adapter: true, bufferSize: 5, startIndex: 1, minIndex: 1, maxIndex: 123456 },
+      },
+      it: misc => async done => {
+        await misc.relaxNext();
+        misc.scrollMax();
+        await misc.relaxNext();
+        expect(misc.adapter.eof).toBe(true);
+        expect(misc.getScrollPosition()).toBe(misc.getMaxScrollPosition());
         done();
       }
     })

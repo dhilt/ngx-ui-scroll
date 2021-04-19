@@ -151,12 +151,8 @@ export class Misc<Comp = TestComponentInterface> {
     return this.getScrollableSize() - this.getViewportSize();
   }
 
-  scrollTo(value: number, native?: boolean): void {
-    if (native) {
-      this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'] = value;
-    } else {
-      this.scroller.adapter.fix({ scrollPosition: value });
-    }
+  scrollTo(value: number): void {
+    this.scroller.adapter.fix({ scrollPosition: value });
   }
 
   scrollMin(): void {
@@ -164,7 +160,7 @@ export class Misc<Comp = TestComponentInterface> {
   }
 
   scrollMax(): void {
-    this.scrollTo(999999);
+    this.scrollTo(Infinity);
   }
 
   relaxNext(debounce?: boolean): Promise<void> {

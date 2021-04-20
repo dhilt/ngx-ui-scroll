@@ -22,14 +22,16 @@ interface IReactiveOverride<Item = unknown> {
   eof$: Subject<boolean>;
 }
 
-interface IAngularAdapter<Data = unknown>
-  extends Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>, IReactiveOverride<Data> { }
+type _Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 
-interface IAngularDatasource<Data = unknown> extends Omit<IDatasource<Data>, 'adapter'> {
+interface IAngularAdapter<Data = unknown>
+  extends _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>, IReactiveOverride<Data> { }
+
+interface IAngularDatasource<Data = unknown> extends _Omit<IDatasource<Data>, 'adapter'> {
   adapter?: IAngularAdapter<Data>;
 }
 
-interface IAngularDatasourceConstructed<Data = unknown> extends Omit<IDatasourceConstructed<Data>, 'adapter'> {
+interface IAngularDatasourceConstructed<Data = unknown> extends _Omit<IDatasourceConstructed<Data>, 'adapter'> {
   adapter: IAngularAdapter<Data>;
 }
 

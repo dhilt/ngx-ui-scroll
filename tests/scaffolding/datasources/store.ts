@@ -5,7 +5,7 @@ import { Data, Processor } from 'tests/miscellaneous/items';
 import { IDatasource } from '../../../src/ui-scroll.datasource';
 import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet } from './get';
 
-interface DSProcess<Data = unknown> extends Omit<IDatasource<Data>, 'get'> {
+interface DSProcess<Data = unknown> extends IDatasource<Data> {
   get: (
     index: number, count: number, success?: (items: Data[]) => void, fail?: (error: unknown) => void, p?: Processor
   ) => unknown;

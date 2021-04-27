@@ -73,7 +73,7 @@ export const testItemsCounter = (startIndex: number, misc: Misc, itemsCounter: I
     expect(bwdSize + fwdSize + sizePaddings).toEqual(size);
   }
   if (!isNaN(Number(average))) {
-    expect(average).toEqual(buffer.averageSize);
+    expect(average).toEqual(buffer.defaultSize);
   }
   expect(elements.length).toEqual(itemsCounter.total);
   expect(buffer.items.length).toEqual(itemsCounter.total);

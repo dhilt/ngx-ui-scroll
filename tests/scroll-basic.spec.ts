@@ -154,7 +154,7 @@ const getFullHouseDiff = (
 const getCurrentItemsCounter = (misc: Misc, direction: Direction, previous: ItemsCounter): ItemsCounter => {
   const { bufferSize, padding } = misc.scroller.settings;
   const viewportSize = misc.scroller.viewport.getSize();
-  const itemSize = misc.scroller.buffer.averageSize;
+  const itemSize = misc.scroller.buffer.defaultSize;
   const fwd = direction === Direction.forward;
   const opposite = fwd ? Direction.backward : Direction.forward;
   const delta = viewportSize * padding;

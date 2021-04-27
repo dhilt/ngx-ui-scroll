@@ -1,7 +1,8 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { Stat } from './miscellaneous/stat';
 import { appendItems, generateItems, IndexedItem } from './miscellaneous/items';
+import { SizeStrategy } from './miscellaneous/vscroll';
 
 interface ICustom {
   MAX: number;
@@ -11,7 +12,7 @@ interface ICustom {
 const configFetch: TestBedConfig = {
   datasourceName: 'limited-1-20-dynamic-size-processor',
   datasourceSettings: {
-    startIndex: 1, padding: 0.5, bufferSize: 5, minIndex: 1, maxIndex: 20, itemSize: 20, adapter: true
+    startIndex: 1, padding: 0.5, bufferSize: 5, minIndex: 1, maxIndex: 20, itemSize: 20
   },
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 };
@@ -19,7 +20,7 @@ const configFetch: TestBedConfig = {
 const configAppend: TestBedConfig<ICustom> = {
   datasourceName: 'limited--99-100-dynamic-size-processor',
   datasourceSettings: {
-    startIndex: 50, maxIndex: 100, minIndex: -99, padding: 0.5, bufferSize: 5, itemSize: 20, adapter: true
+    startIndex: 50, maxIndex: 100, minIndex: -99, padding: 0.5, bufferSize: 5, itemSize: 20
   },
   templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
   custom: {
@@ -28,27 +29,22 @@ const configAppend: TestBedConfig<ICustom> = {
   }
 };
 
-const testConfigFetch = (config: TestBedConfig, misc: Misc, done: () => void) => {
-  const { scroller, shared } = misc;
-  misc.setItemProcessor(({ $index, data }) => $index === 1 && (data.size = 200));
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const cycle = scroller.state.cycle.count;
-    if (cycle === 2) {
-      shared.stat = new Stat(scroller);
-      misc.scrollTo(100);
-    } else {
-      (new Stat(scroller)).expect(shared.stat as Stat);
-      done();
-    }
-  });
-};
-
 const scroll = (misc: Misc, position: number) => {
   misc.adapter.fix({ scrollPosition: position });
   return misc.relaxNext();
 };
 
-const testConfigAppend = async (config: TestBedConfig<ICustom>, misc: Misc, done: () => void) => {
+const testConfigFetch: ItFuncConfig = () => misc => async done => {
+  const { scroller } = misc;
+  misc.setItemProcessor(({ $index, data }) => $index === 1 && (data.size = 200));
+  await misc.relaxNext();
+  const stat = new Stat(scroller);
+  await scroll(misc, 100);
+  (new Stat(scroller)).expect(stat);
+  done();
+};
+
+const testConfigAppend: ItFuncConfig<ICustom> = config => misc => async done => {
   const { MAX, AMOUNT } = config.custom;
   await misc.relaxNext();
   // append items to the original datasource
@@ -71,18 +67,21 @@ const testConfigAppend = async (config: TestBedConfig<ICustom>, misc: Misc, done
   done();
 };
 
-describe('Dynamic Size Scroll Spec', () => {
+describe('Dynamic Size Scroll Spec', () => [
+  SizeStrategy.Average,
+  SizeStrategy.Frequent,
+].forEach(sizeStrategy => {
 
   makeTest({
-    config: configFetch,
-    title: 'should fetch properly',
-    it: misc => done => testConfigFetch(configFetch, misc, done)
+    config: { ...configFetch, datasourceSettings: { ...configFetch.datasourceSettings, sizeStrategy } },
+    title: `should fetch properly (${sizeStrategy})`,
+    it: testConfigFetch(configFetch)
   });
 
   makeTest({
-    config: configAppend,
-    title: 'should append properly',
-    it: misc => done => testConfigAppend(configAppend, misc, done)
+    config: { ...configAppend, datasourceSettings: { ...configAppend.datasourceSettings, sizeStrategy } },
+    title: `should append properly (${sizeStrategy})`,
+    it: testConfigAppend(configAppend)
   });
 
-});
+}));

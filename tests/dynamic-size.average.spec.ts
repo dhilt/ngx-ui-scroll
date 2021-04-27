@@ -1,6 +1,7 @@
-import { Direction } from './miscellaneous/vscroll';
+import { filter } from 'rxjs/operators';
 
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { Direction, SizeStrategy } from './miscellaneous/vscroll';
+import { ItFuncConfig, makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
 import {
@@ -9,29 +10,31 @@ import {
   getDynamicSumSize
 } from './miscellaneous/dynamicSize';
 
+const sizeStrategy = SizeStrategy.Average;
+
 const configList: TestBedConfig[] = [{
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5 },
+  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, sizeStrategy },
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, minIndex: -20, maxIndex: 10 },
+  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, minIndex: -20, maxIndex: 10, sizeStrategy },
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: -5, padding: 1.2, bufferSize: 1 },
+  datasourceSettings: { startIndex: -5, padding: 1.2, bufferSize: 1, sizeStrategy },
   templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: -25, padding: 1.2, bufferSize: 1, minIndex: -50 },
+  datasourceSettings: { startIndex: -25, padding: 1.2, bufferSize: 1, minIndex: -50, sizeStrategy },
   templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.25, bufferSize: 10, windowViewport: true },
+  datasourceSettings: { startIndex: 0, padding: 0.25, bufferSize: 10, windowViewport: true, sizeStrategy },
   templateSettings: { noViewportClass: true, viewportHeight: 0, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 20, padding: 0.75, bufferSize: 15, horizontal: true },
+  datasourceSettings: { startIndex: 20, padding: 0.75, bufferSize: 15, horizontal: true, sizeStrategy },
   templateSettings: { viewportWidth: 300, horizontal: true, dynamicSize: 'size' }
 }];
 
@@ -125,45 +128,47 @@ const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCou
   return JSON.stringify(itemsCounter) !== JSON.stringify(previous) ? itemsCounter : null;
 };
 
-const testInitialLoad = (config: TestBedConfig, misc: Misc, done: () => void) => {
-  let itemsCounter: ItemsCounter | null;
-  const startIndex = config.datasourceSettings.startIndex as number;
-  if (misc.innerLoopCount === 1) {
-    itemsCounter = getInitialItemsCounter(startIndex, misc);
-  } else {
-    itemsCounter = getNextItemsCounter(startIndex, misc, misc.shared.itemsCounter as ItemsCounter);
-  }
-  if (itemsCounter) {
-    misc.shared.itemsCounter = itemsCounter;
-  } else {
-    done();
-  }
-};
+const testInitialLoad: ItFuncConfig = config => misc => done =>
+  misc.adapter.loopPending$.pipe(filter(v => !v)).subscribe(() => {
+    let itemsCounter: ItemsCounter | null;
+    const startIndex = config.datasourceSettings.startIndex as number;
+    if (misc.innerLoopCount === 1) {
+      itemsCounter = getInitialItemsCounter(startIndex, misc);
+    } else {
+      itemsCounter = getNextItemsCounter(startIndex, misc, misc.shared.itemsCounter as ItemsCounter);
+    }
+    if (itemsCounter) {
+      misc.shared.itemsCounter = itemsCounter;
+    } else {
+      done();
+    }
+  });
 
-const testScroll = (config: TestBedConfig, misc: Misc, done: () => void) => {
-  const buffer = misc.scroller.buffer;
-  if (buffer.bof.get()) {
-    getDynamicSizeData(
-      Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
-      Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
-    );
-    done();
-    return;
-  }
-  if (buffer.eof.get()) {
-    misc.shared.eof = true;
-    misc.scrollMin();
-    return;
-  }
-  if (!misc.shared.eof) {
-    misc.scrollMax();
-    return;
-  }
-  if (misc.shared.eof) {
-    misc.scrollMin();
-    return;
-  }
-};
+const testScroll: ItFuncConfig = () => misc => done =>
+  misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
+    const buffer = misc.scroller.buffer;
+    if (buffer.bof.get()) {
+      getDynamicSizeData(
+        Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
+        Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
+      );
+      done();
+      return;
+    }
+    if (buffer.eof.get()) {
+      misc.shared.eof = true;
+      misc.scrollMin();
+      return;
+    }
+    if (!misc.shared.eof) {
+      misc.scrollMax();
+      return;
+    }
+    if (misc.shared.eof) {
+      misc.scrollMin();
+      return;
+    }
+  });
 
 describe('Dynamic Size Spec', () => {
 
@@ -172,10 +177,7 @@ describe('Dynamic Size Spec', () => {
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
-        it: misc => done =>
-          spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testInitialLoad(config, misc, done)
-          )
+        it: testInitialLoad(config)
       })
     );
   });
@@ -185,10 +187,7 @@ describe('Dynamic Size Spec', () => {
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
-        it: misc => done =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testScroll(config, misc, done)
-          )
+        it: testScroll(config)
       })
     );
   });
@@ -199,7 +198,7 @@ describe('Zero Size Spec', () => {
 
   const config = {
     datasourceName: 'limited-1-100-zero-size',
-    datasourceSettings: { bufferSize: 5, minIndex: 1 },
+    datasourceSettings: { bufferSize: 5, minIndex: 1, sizeStrategy },
     templateSettings: { dynamicSize: 'size', viewportHeight: 200 }
   };
 

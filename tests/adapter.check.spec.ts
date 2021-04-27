@@ -1,5 +1,6 @@
 import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
+import { SizeStrategy } from './miscellaneous/vscroll';
 
 const MIN_INDEX = -99;
 const MAX_INDEX = 100;
@@ -14,7 +15,14 @@ interface ICustom {
 const baseConfig: TestBedConfig<ICustom> = {
   datasourceName: 'limited--99-100-dynamic-size-processor',
   datasourceSettings: {
-    startIndex: 1, padding: 0.5, bufferSize: 10, minIndex: MIN_INDEX, maxIndex: MAX_INDEX, itemSize: 100, adapter: true
+    startIndex: 1,
+    padding: 0.5,
+    bufferSize: 10,
+    minIndex: MIN_INDEX,
+    maxIndex: MAX_INDEX,
+    itemSize: 100,
+    sizeStrategy: SizeStrategy.Average,
+    adapter: true,
   },
   templateSettings: { viewportHeight: 600, dynamicSize: 'size' },
   custom: {
@@ -129,29 +137,23 @@ const getFirstVisibleIndex = (misc: Misc): number => {
   return NaN;
 };
 
-const shouldCheck: ItFuncConfig<ICustom> = config => misc => done => {
+const shouldCheck: ItFuncConfig<ICustom> = config => misc => async done => {
   const { adapter, scroller } = misc;
-  const { state, buffer, settings: { minIndex, maxIndex } } = scroller;
+  const { buffer, settings: { minIndex, maxIndex } } = scroller;
   const initialSize = config.datasourceSettings.itemSize as number;
   const { min, max, size } = config.custom;
   const changedCount = (max - min + 1);
   let firstVisibleIndex = NaN;
   misc.setItemProcessor(({ data }) => data.size = initialSize);
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const cycle = state.cycle.count;
-    const { firstVisible } = adapter; // need to have a pre-call
-    if (cycle === 2) {
-      updateDOM(misc, { min, max, size, initialSize });
-      firstVisibleIndex = getFirstVisibleIndex(misc);
-      adapter.check();
-    } else if (cycle === 3) {
-      expect(firstVisible.$index).toEqual(firstVisibleIndex);
-      const virtualSize = (maxIndex - minIndex + 1 - buffer.cacheSize) * buffer.averageSize;
-      const realSize = changedCount * size + (buffer.cacheSize - changedCount) * initialSize;
-      expect(misc.getScrollableSize()).toEqual(virtualSize + realSize);
-      done();
-    }
-  });
+  await misc.relaxNext();
+  updateDOM(misc, { min, max, size, initialSize });
+  firstVisibleIndex = getFirstVisibleIndex(misc);
+  await adapter.check();
+  expect(adapter.firstVisible.$index).toEqual(firstVisibleIndex);
+  const virtualSize = (maxIndex - minIndex + 1 - buffer.cacheSize) * buffer.defaultSize;
+  const realSize = changedCount * size + (buffer.cacheSize - changedCount) * initialSize;
+  expect(misc.getScrollableSize()).toEqual(virtualSize + realSize);
+  done();
 };
 
 const shouldSimulateFetch = (misc: Misc, value: boolean) => {
@@ -160,52 +162,40 @@ const shouldSimulateFetch = (misc: Misc, value: boolean) => {
   expect(fetch.isCheck).toEqual(value);
 };
 
-const shouldFetchAfterCheck: ItFuncConfig<ICustom> = () => misc => done =>
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    const { adapter, scroller: { state, settings } } = misc;
-    switch (state.cycle.count) {
-      case 2:
-        updateDOMElement(misc, settings.startIndex, 50);
-        adapter.check();
-        shouldSimulateFetch(misc, true);
-        break;
-      case 3:
-        shouldSimulateFetch(misc, false);
-        misc.scrollMax();
-        break;
-      case 4:
-        done();
-    }
-  });
+const shouldFetchAfterCheck: ItFuncConfig<ICustom> = () => misc => async done => {
+  const { adapter, scroller: { settings } } = misc;
+  await misc.relaxNext();
+  updateDOMElement(misc, settings.startIndex, 50);
+  adapter.check();
+  shouldSimulateFetch(misc, true);
+  await adapter.relax();
+  shouldSimulateFetch(misc, false);
+  misc.scrollMax();
+  await misc.relaxNext();
+  done();
+};
 
-const shouldDoubleCheck: ItFuncConfig<ICustom> = config => misc => done => {
-  const { adapter, scroller: { state, settings: { startIndex } } } = misc;
+const shouldDoubleCheck: ItFuncConfig<ICustom> = config => misc => async done => {
+  const { adapter, scroller: { settings: { startIndex } } } = misc;
   const { itemSize } = config.datasourceSettings;
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    switch (state.cycle.count) {
-      case 2:
-        updateDOMElement(misc, startIndex, 50);
-        adapter.check();
-        shouldSimulateFetch(misc, true);
-        break;
-      case 3:
-        shouldSimulateFetch(misc, false);
-        if (config.custom.prepend) {
-          adapter.prepend({ id: MIN_INDEX - 1, text: 'new item', size: itemSize });
-        } else {
-          adapter.append({ id: MAX_INDEX + 1, text: 'new item', size: itemSize });
-        }
-        break;
-      case 4:
-        updateDOMElement(misc, startIndex, itemSize as number);
-        adapter.check();
-        shouldSimulateFetch(misc, true);
-        break;
-      case 5:
-        shouldSimulateFetch(misc, false);
-        done();
-    }
-  });
+  await misc.relaxNext();
+  updateDOMElement(misc, startIndex, 50);
+  adapter.check();
+  shouldSimulateFetch(misc, true);
+  await adapter.relax();
+  shouldSimulateFetch(misc, false);
+  if (config.custom.prepend) {
+    adapter.prepend({ id: MIN_INDEX - 1, text: 'new item', size: itemSize });
+  } else {
+    adapter.append({ id: MAX_INDEX + 1, text: 'new item', size: itemSize });
+  }
+  await adapter.relax();
+  updateDOMElement(misc, startIndex, itemSize as number);
+  adapter.check();
+  shouldSimulateFetch(misc, true);
+  await adapter.relax();
+  shouldSimulateFetch(misc, false);
+  done();
 };
 
 describe('Adapter Check Size Spec', () => {

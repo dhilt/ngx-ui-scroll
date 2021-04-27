@@ -11,6 +11,7 @@ export {
 
 export {
   Direction,
+  SizeStrategy,
   getDefaultAdapterProps,
   INVALID_DATASOURCE_PREFIX,
 } from 'vscroll'; // from '../../../vscroll';

@@ -197,8 +197,8 @@ const shouldUpdate = (
   checkContents(buffer.items, checkList, left);
 
   if (typeof getAverageSize === 'function') {
-    expect(buffer.averageSize).not.toBe(SIZE);
-    expect(buffer.averageSize).toBe(getAverageSize(buffer.cacheSize));
+    expect(buffer.defaultSize).not.toBe(SIZE);
+    expect(buffer.defaultSize).toBe(getAverageSize(buffer.cacheSize));
   }
 
   // refresh the view via scroll to edges and then scroll to first check-item

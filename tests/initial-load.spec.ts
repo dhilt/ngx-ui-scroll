@@ -139,7 +139,7 @@ const getTunedItemSizeCounter =
     backward.index = startIndex - backward.count;
     forward.index = startIndex + forward.count - 1;
     backward.padding = 0;
-    forward.padding = Math.max(0, viewportSize - forward.count * misc.scroller.buffer.averageSize);
+    forward.padding = Math.max(0, viewportSize - forward.count * misc.scroller.buffer.defaultSize);
 
     return itemsCounter;
   };

@@ -41,7 +41,7 @@ const testContext = require.context(
   //(datasource-get)\.spec\.ts/
   //(dynamic-height-reload)\.spec\.ts/
   //(dynamic-height-scroll)\.spec\.ts/
-  //(dynamic-size)\.spec\.ts/
+  //(dynamic-size\.average)\.spec\.ts/
   //(eof)\.spec\.ts/
   //(initial-load)\.spec\.ts/
   //(min-max-indexes)\.spec\.ts/

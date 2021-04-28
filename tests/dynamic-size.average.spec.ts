@@ -1,14 +1,10 @@
 import { filter } from 'rxjs/operators';
 
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Direction, SizeStrategy } from './miscellaneous/vscroll';
-import { ItFuncConfig, makeTest, TestBedConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
-import {
-  getDynamicAverage,
-  getDynamicSizeData,
-  getDynamicSumSize
-} from './miscellaneous/dynamicSize';
+import { getAverageSize, getAverageSizeData, getDynamicSumSize } from './miscellaneous/dynamicSize';
 
 const sizeStrategy = SizeStrategy.Average;
 
@@ -51,7 +47,7 @@ const getInitialItemsCounter = (_startIndex: number, misc: Misc): ItemsCounter =
   const { bufferSize, startIndex, minIndex, maxIndex } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize();
   const firstFetchEndIndex = startIndex + bufferSize - 1;
-  const firstFetchData = getDynamicSizeData(startIndex, firstFetchEndIndex);
+  const firstFetchData = getAverageSizeData(startIndex, firstFetchEndIndex);
   const result = new ItemsCounter();
   result.average = firstFetchData.average;
 
@@ -112,7 +108,7 @@ const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCou
       size: getDynamicSumSize(startIndex, fwdIndex)
     });
   }
-  itemsCounter.average = getDynamicAverage(itemsCounter.backward.index, itemsCounter.forward.index);
+  itemsCounter.average = getAverageSize(itemsCounter.backward.index, itemsCounter.forward.index);
 
   if (isFinite(minIndex)) {
     const count = itemsCounter.backward.index - Math.max(minIndex, ABS_MIN_INDEX);
@@ -148,7 +144,7 @@ const testScroll: ItFuncConfig = () => misc => done =>
   misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
     const buffer = misc.scroller.buffer;
     if (buffer.bof.get()) {
-      getDynamicSizeData(
+      getAverageSizeData(
         Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
         Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
       );
@@ -170,7 +166,7 @@ const testScroll: ItFuncConfig = () => misc => done =>
     }
   });
 
-describe('Dynamic Size Spec', () => {
+describe('Dynamic Average Size Spec', () => {
 
   describe('Initial load', () => {
     configList.forEach(config =>
@@ -194,69 +190,3 @@ describe('Dynamic Size Spec', () => {
 
 });
 
-describe('Zero Size Spec', () => {
-
-  const config = {
-    datasourceName: 'limited-1-100-zero-size',
-    datasourceSettings: { bufferSize: 5, minIndex: 1, sizeStrategy },
-    templateSettings: { dynamicSize: 'size', viewportHeight: 200 }
-  };
-
-  describe('Items with zero size', () =>
-    makeTest({
-      config,
-      title: 'should stop the Workflow after the first loop',
-      it: misc => async done => {
-        await misc.relaxNext();
-        expect(misc.innerLoopCount).toEqual(1);
-        done();
-      }
-    })
-  );
-
-  describe('Items with zero size started from 2 pack', () =>
-    makeTest({
-      config: {
-        ...config,
-        datasourceName: 'limited-1-100-processor'
-      },
-      title: 'should stop the Workflow after the second loop',
-      it: misc => async done => {
-        misc.setItemProcessor(({ $index, data }) => data.size = $index >= 6 ? 0 : 20);
-        await misc.relaxNext();
-        expect(misc.innerLoopCount).toEqual(2);
-        done();
-      }
-    })
-  );
-
-  describe('Items get non-zero size asynchronously', () =>
-    makeTest({
-      config: {
-        ...config,
-        datasourceName: 'limited-1-100-zero-size',
-        datasourceSettings: { adapter: true }
-      },
-      title: 'should continue the Workflow after re-size and check',
-      it: misc => async done => {
-        const { scroller: { viewport }, adapter } = misc;
-        await misc.relaxNext();
-
-        expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-        misc.setItemProcessor(({ data }) => data.size = 20);
-        adapter.fix({
-          updater: ({ element, data }) => {
-            data.size = 20;
-            ((element as HTMLElement).children[0] as HTMLElement).style.height = '20px';
-          }
-        });
-        await adapter.check();
-
-        expect(viewport.getScrollableSize()).toBeGreaterThan(0);
-        expect(viewport.paddings.forward.size).toEqual(0);
-        done();
-      }
-    })
-  );
-
-});

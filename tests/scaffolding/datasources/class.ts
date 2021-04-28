@@ -82,6 +82,18 @@ class LimitedDatasource extends Datasource<Data> {
   }
 }
 
+export const getDatasourceClassForResize = (settings: Settings, devSettings?: DevSettings) =>
+  class extends LimitedDatasource {
+    constructor() {
+      super(settings, devSettings);
+    }
+    setSizes(cb: (index: number) => number) {
+      this.data.forEach((item, i) =>
+        item.size = cb(i + this.min)
+      );
+    }
+  };
+
 export const getDatasourceClassForRemovals = (settings: Settings, devSettings?: DevSettings) =>
   class extends LimitedDatasource {
     constructor() {
@@ -182,6 +194,7 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
 
 
 export type DatasourceProcessor = InstanceType<ReturnType<typeof getDatasourceProcessingClass>>;
+export type DatasourceResizer = InstanceType<ReturnType<typeof getDatasourceClassForResize>>;
 export type DatasourceRemover = InstanceType<ReturnType<typeof getDatasourceClassForRemovals>>;
 export type DatasourceReplacer = InstanceType<ReturnType<typeof getDatasourceClassForReplacements>>;
 export type DatasourceUpdater = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;

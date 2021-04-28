@@ -222,12 +222,10 @@ const shouldWorkAfterCleanup = (fixRight: boolean): ItFunc => misc => async done
 
   expect(adapter.firstVisible.$index).toBe(fixRight ? lastIndex + 1 : firstIndex);
 
-  misc.scrollMin();
-  await misc.relaxNext();
+  await misc.scrollMinRelax();
   expect(buffer.firstIndex).toBe(MIN + (fixRight ? diff : 0));
 
-  misc.scrollMax();
-  await misc.relaxNext();
+  await misc.scrollMaxRelax();
   expect(buffer.lastIndex).toBe(MAX - (fixRight ? 0 : diff));
 
   done();

@@ -391,8 +391,7 @@ const shouldRemoveDynamicSize: ItFuncConfig<ICustomCommon> = config => misc => a
     expect(misc.scroller.buffer.defaultSize).not.toBe(defaultSize);
   }
 
-  misc.scrollMin();
-  await misc.relaxNext();
+  await misc.scrollMinRelax();
   await scrollDownToIndex(misc, maxIndex - (increase ? 0 : 1));
   expect(misc.getScrollableSize()).toBe(finalSize);
 

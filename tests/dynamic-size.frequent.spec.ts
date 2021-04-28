@@ -6,12 +6,12 @@ import { Misc } from './miscellaneous/misc';
 interface ICustom {
   title: string;
   getSize: (index: number) => number;
-  action?: (misc: Misc) => Promise<void>;
+  action?: (misc: Misc) => Promise<unknown>;
   before: number;
   after?: number;
 }
 
-const settings: TestBedConfig['datasourceSettings'] = {
+const settings = {
   padding: 0.5,
   bufferSize: 5,
   startIndex: 1,
@@ -35,27 +35,100 @@ const customConfigList: ICustom[] = [{
   getSize: i => i < 0 ? -i : (i === 0 ? 1 : i),
   before: 1,
 }, {
-  title: 'set change default on scroll min',
+  title: 'change default on scroll min',
   getSize: i => i < 0 ? 20 : 30,
   action: misc => misc.scrollMinRelax(),
   before: 30,
   after: 20,
 }, {
-  title: 'set not change default on scroll max',
+  title: 'not change default on scroll max',
   getSize: i => i < 0 ? 20 : 30,
   action: misc => misc.scrollMaxRelax(),
   before: 30,
-  after: 30,
+}, {
+  title: 'not change default on scroll max & min',
+  getSize: i => i < 0 ? 20 : 30,
+  action: async misc => {
+    await misc.scrollMaxRelax();
+    return misc.scrollMinRelax();
+  },
+  before: 30,
+}, {
+  title: 'change default on scroll max & min & 100',
+  getSize: i => i < 0 ? 20 : 30,
+  action: async misc => {
+    await misc.scrollMaxRelax();
+    await misc.scrollMinRelax();
+    return misc.scrollToRelax(100);
+  },
+  before: 30,
+  after: 20,
+}, {
+  title: 'change default on Adapter.check',
+  getSize: i => {
+    if (i >= -2 && i <= 2) { // 5 items of "2"
+      return 2;
+    }
+    return i < 0 ? -i : i;
+  },
+  action: misc => {
+    for (let i = 5; i <= 10; i++) { // 6 items of "1"
+      misc.getElement(i).style.height = 1 + 'px';
+    }
+    return misc.adapter.check();
+  },
+  before: 2,
+  after: 1,
+}, {
+  title: 'not change default on Adapter.check',
+  getSize: i => {
+    if (i >= -2 && i <= 2) { // 5 items of "2"
+      return 2;
+    }
+    return i < 0 ? -i : i;
+  },
+  action: misc => {
+    for (let i = 5; i < 10; i++) { // 5 items of "1"
+      misc.getElement(i).style.height = 1 + 'px';
+    }
+    return misc.adapter.check();
+  },
+  before: 2,
+  after: 2,
 }];
+
+const checkViewportWithoutCache = (misc: Misc) => {
+  const { buffer, viewport: { paddings: { backward, forward } } } = misc.scroller;
+  const virtualCountLeft = buffer.firstIndex - settings.minIndex;
+  const virtualCountRight = settings.maxIndex - buffer.lastIndex;
+  expect(backward.size).toBe(virtualCountLeft * buffer.defaultSize);
+  expect(forward.size).toBe(virtualCountRight * buffer.defaultSize);
+};
+
+const checkViewportWithCache = (misc: Misc) => {
+  const { buffer, viewport: { paddings: { backward, forward } } } = misc.scroller;
+  let sizeLeft = 0, sizeRight = 0;
+  for (let i = settings.minIndex; i < buffer.firstIndex; i++) {
+    sizeLeft += buffer.getSizeByIndex(i);
+  }
+  for (let i = settings.maxIndex; i > buffer.lastIndex; i--) {
+    sizeRight += buffer.getSizeByIndex(i);
+  }
+  expect(backward.size).toBe(sizeLeft);
+  expect(forward.size).toBe(sizeRight);
+};
 
 const shouldSetDefault: ItFuncConfig<ICustom> = config => misc => async done => {
   const { getSize, action, before, after } = config.custom;
   (misc.datasource as DatasourceResizer).setSizes(getSize);
   await misc.relaxNext();
-  expect(misc.scroller.buffer.defaultSize).toBe(before);
+  const { buffer } = misc.scroller;
+  expect(buffer.defaultSize).toBe(before);
+  checkViewportWithoutCache(misc);
   if (action) {
     await action(misc);
-    expect(misc.scroller.buffer.defaultSize).toBe(Number.isInteger(after) ? after : before);
+    expect(buffer.defaultSize).toBe(Number.isInteger(after) ? after : before);
+    checkViewportWithCache(misc);
   }
   done();
 };

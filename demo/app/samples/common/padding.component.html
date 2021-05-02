@@ -5,28 +5,29 @@
 >
   <div description>
     <p>
-      This <em>padding</em> setting defines an extra space added to the visible part of the viewport for
-      the purpose of determining when the items should be created/destroyed.
+      The <em>padding</em> setting defines an extra space out of the visible part of the viewport
+      that should be filled with items.
+      This provides outlets that determine when the items are to be created/destroyed.
       The value is relative to the visible size of the viewport.
       So <em>1.46</em> means that the Scroller would request new items
-      until the areas of 146% of the viewport size on both of forward and backward directions
+      until the areas of 146% of the viewport size in both forward and backward directions
       are filled with rendered items: 100% + 146% downward and 146% upward.
       In this demo we have 3 requests on the initial load, let's see what happened:
     </p>
     <ol>
       <li>250px + 1.46 * 250px = 615px
-        &mdash; total size of area that needs to be filled on downward (positive) direction,
+        &mdash; total size of area that needs to be filled in downward (positive) direction,
         where 250px is the size of the visible viewport (per CSS)
       </li>
       <li>7 items * 25px = 175px
-        &mdash; the result size of first downward fetch,
+        &mdash; the result size of the first downward fetch,
         where <em>bufferSize</em> is 7 and 25px is the item's size (per CSS)
       </li>
       <li>615px - 175px = 440px
-        &mdash; downward space which has to be filled during second downward fetch
+        &mdash; downward space which has to be filled during the second downward fetch
       </li>
       <li>ceil(440px / 25px) = 18
-        &mdash; items number that is needed to feel remain 440px area during second downward fetch
+        &mdash; the number of items that should fill 440px area during the second downward fetch
       </li>
     </ol>
     <p>
@@ -35,10 +36,10 @@
     </p>
     <ol>
       <li>1.46 * 250px = 360px
-        &mdash; upward space which has to be filled on backward (negative) direction
+        &mdash; upward space that has to be filled in backward (negative) direction
       </li>
       <li>ceil(360px / 25px) = 15
-        &mdash; items number that is needed to feel 360px area on backward fetch
+        &mdash; the number of items that should fill 360px during backward fetch
       </li>
     </ol>
     <p>
@@ -47,7 +48,7 @@
     </p>
     <p>
       The default value of <em>padding</em> property is 0.5.
-      It is treated as floating point number.
+      It is a floating point number.
       The minimum value is 0.01.
     </p>
   </div>

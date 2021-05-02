@@ -1,10 +1,16 @@
 import { Component } from '@angular/core';
+import { merge } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
-import { datasourceGetCallbackLimited } from '../../shared/datasource-get';
+import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
-import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource, SizeStrategy } from '../../../../public_api'; // from 'ngx-ui-scroll';
+
+interface MyItem {
+  text: string;
+  size: number;
+}
 
 @Component({
   selector: 'app-demo-different-heights',
@@ -12,38 +18,124 @@ import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 })
 export class DemoDifferentHeightsComponent {
 
-  demoContext: DemoContext = {
-    config: demos.settings.map.differentItemHeights,
-    viewportId: 'different-heights-viewport',
-    count: 0,
-    log: ''
-  };
+  settingsScope = demos.settings.map;
+  demoConfig = demos.settings.map.differentItemHeights;
+  viewportId = 'different-heights-viewport';
 
-  datasource: IDatasource = {
-    get: datasourceGetCallbackLimited(this.demoContext, -20, 100)
-  };
+  MIN = 0;
+  MAX = 99;
+  SIZE = 20;
+
+  averageLog = '';
+  frequentLog = '';
+  log = 'average';
+
+  constructor() {
+    merge(
+      this.datasourceAverage.adapter.init$,
+      this.datasourceFrequent.adapter.init$
+    ).pipe(take(1)).subscribe(() => this.setupLog());
+  }
+
+  setupLog() {
+    const adapter1 = this.datasourceAverage.adapter;
+    const adapter2 = this.datasourceFrequent.adapter;
+    const wrapperElement = document.getElementById(this.viewportId as string);
+    const viewports = (wrapperElement as HTMLElement).getElementsByClassName('viewport');
+    const vp1 = viewports[0] as HTMLElement;
+    const vp2 = viewports[1] as HTMLElement;
+    adapter1.loopPending$.subscribe(pending => {
+      if (!pending) {
+        this.averageLog =
+          `default: ${adapter1.bufferInfo.defaultSize}px, total: ${vp1.scrollHeight}px\n` + this.averageLog;
+      }
+    });
+    adapter2.loopPending$.subscribe(pending => {
+      if (!pending) {
+        this.frequentLog =
+          `default: ${adapter2.bufferInfo.defaultSize}px, total: ${vp2.scrollHeight}px\n` + this.frequentLog;
+      }
+    });
+  }
+
+  datasourceAverage = new Datasource<MyItem>({
+    get: (index, count, success) =>
+      success(this.getData(index, count, false)),
+    settings: {
+      startIndex: this.MIN,
+      minIndex: this.MIN,
+      maxIndex: this.MAX,
+      sizeStrategy: SizeStrategy.Average
+    }
+  });
+
+  datasourceFrequent = new Datasource<MyItem>({
+    get: (index, count, success) =>
+      success(this.getData(index, count, true)),
+    settings: {
+      startIndex: this.MIN,
+      minIndex: this.MIN,
+      maxIndex: this.MAX,
+      sizeStrategy: SizeStrategy.Frequent
+    }
+  });
 
   sources: DemoSources = [{
-    name: DemoSourceType.Datasource,
-    text: `datasource: IDatasource = {
-  get: (index, count, success) => {
-    const MIN = -20, MAX = 100;
-    const data = [];
-    const start = Math.max(MIN, index);
-    const end = Math.min(index + count - 1, MAX);
-    if (start <= end) {
-      for (let i = start; i <= end; i++) {
-        data.push({ id: i, text: 'item #' + i, height: 20 + i });
-      }
-    }
-    success(data);
+    name: DemoSourceType.Component,
+    text: `MIN = 0;
+MAX = 99;
+SIZE = 20;
+
+datasourceAverage = new Datasource<MyItem>({
+  get: (index, count, success) =>
+    success(this.getData(index, count, false)),
+  settings: {
+    startIndex: this.MIN,
+    minIndex: this.MIN,
+    maxIndex: this.MAX,
+    sizeStrategy: SizeStrategy.Average
   }
+});
+
+datasourceFrequent = new Datasource<MyItem>({
+  get: (index, count, success) =>
+    success(this.getData(index, count, true)),
+  settings: {
+    startIndex: this.MIN,
+    minIndex: this.MIN,
+    maxIndex: this.MAX,
+    sizeStrategy: SizeStrategy.Frequent
+  }
+});
+
+getData(index: number, count: number, isFrequent: boolean): MyItem[] {
+  const data = [];
+  const start = Math.max(this.MIN, index);
+  const end = Math.min(index + count - 1, this.MAX);
+  for (let i = start; i <= end; i++) {
+    const size = isFrequent
+      ? this.SIZE * (i % 10 === 0 ? 2 : 1)
+      : this.SIZE + i;
+    data.push({ text: 'item #' + i, size });
+  }
+  return data;
 }`
   }, {
     name: DemoSourceType.Template,
-    text: `<div class="viewport">
-  <div *uiScroll="let item of datasource">
-     <div class="item" [style.height]="item.size + 'px'">
+    active: true,
+    text: `<em>average</em>
+<div class="viewport">
+  <div *uiScroll="let item of datasourceAverage">
+     <div class="item" [style.height.px]="item.size">
+      {{item.text}}
+     </div>
+  </div>
+</div>
+
+<em>frequent</em>
+<div class="viewport">
+  <div *uiScroll="let item of datasourceFrequent">
+    <div class="item" [style.height.px]="item.size">
       {{item.text}}
      </div>
   </div>
@@ -59,5 +151,20 @@ export class DemoDifferentHeightsComponent {
   font-weight: bold;
 }`
   }];
+
+  averageSample = 'Array.from({length: 100}).reduce((a, i, j) => a + j + 20 , 0) / 100; // 69.5px';
+
+  getData(index: number, count: number, isFrequent: boolean): MyItem[] {
+    const data = [];
+    const start = Math.max(this.MIN, index);
+    const end = Math.min(index + count - 1, this.MAX);
+    for (let i = start; i <= end; i++) {
+      const size = isFrequent
+        ? this.SIZE * (i % 10 === 0 ? 2 : 1)
+        : this.SIZE + i;
+      data.push({ text: 'item #' + i, size });
+    }
+    return data;
+  }
 
 }

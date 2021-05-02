@@ -1,13 +1,91 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
-  <div description>
+<div class="demo">
+
+  <app-demo-title [config]="demoConfig"></app-demo-title>
+
+  <div class="work" [id]="viewportId">
+    <div class="viewport-wrapper">
+      <div class="viewport-label">average</div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasourceAverage">
+          <div class="item" [style.height.px]="item.size">
+            {{item.text}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="viewport-wrapper">
+      <div class="viewport-label">frequent</div>
+      <div class="viewport">
+        <div *uiScroll="let item of datasourceFrequent">
+          <div class="item" [style.height.px]="item.size">
+            {{item.text}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="datasource">
+      <div>
+        <input name="log" value="average" type="radio" [(ngModel)]="log"> average log &nbsp;
+        <input name="log" value="frequent" type="radio" [(ngModel)]="log"> frequent log
+      </div>
+      <div class="pre-wrapper">
+        <pre *ngIf="log === 'average'">{{averageLog}}</pre>
+        <pre *ngIf="log === 'frequent'">{{frequentLog}}</pre>
+      </div>
+    </div>
+    <div class="clearfix mb-3"></div>
+  </div>
+
+  <app-demo-sources [sources]="sources"></app-demo-sources>
+
+  <div class="description">
     <p>
-      The Scroller works fine with different item heights.
-      To make this sample more strict and to demonstrate the
-      scrollbar parameters' consistency the limited datasource is used.
+      Scroller works fine with non-constant item heights.
+      The <em>sizeStrategy</em> setting defines the default item size.
+      Scroller uses this default value when it needs to fetch new items and
+      some or all of these new items had never been fetched before,
+      so their sizes are unknown. (See
+      <a
+        [routerLink]="['/', settingsScope.padding.scope]"
+        fragment="{{settingsScope.padding.id}}"
+      >padding setting</a> to get more details on fetching.)
+      The following values are available
+    </p>
+    <ul>
+      <li>
+        <em>SizeStrategy.Average</em> ("average"), the average size is calculated for each new item render and is considered the default
+      </li>
+      <li>
+        <em>SizeStrategy.Frequent</em> ("frequent"), the most frequent size across all renders is considered the default
+      </li>
+      <!-- <li>
+        <em>SizeStrategy.Constant</em> ("constant"), the default item size value is taken from the
+        <a
+          [routerLink]="['/', settingsScope.itemSize.scope]"
+          fragment="{{settingsScope.itemSize.id}}"
+        >itemSize setting</a> and never changes.
+      </li> -->
+    </ul>
+    <p>
+      In this sample we have two Scrollers demonstrating "average" and "frequent" strategies.
+      The log section helps to understand behavior and catch the difference between strategies.
+      The "average" datasource provides incrementally growing items,
+      and we see how the <em>default</em> size increases per each scroll down.
+      Having 100 items with height of (20 + i)px, we'll get 70px as the average value in the end:
+    </p>
+    <pre>
+      {{averageSample}}
+    </pre>
+    <p>
+      The <em>total</em> size in the log section is an expectation of scrollable area for 100 items,
+      it consists of two parts: 1) cumulative height of the items that have been rendered at least once,
+      and 2) anticipated height of unknown items based on the "default" size.
+      This second part increases per each <em>default</em> size increase in the "average" sample.
+    </p>
+    <p>
+      The "frequent" datasource provides the size of each 10th item = 40px, the rest = 20px.
+      In this case it seems reasonable to use <em>SizeStrategy.Frequent</em> strategy,
+      though there is no strict conditions defining which strategy should be used in the end App.
     </p>
   </div>
-</app-demo>
+</div>

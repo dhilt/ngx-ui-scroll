@@ -5,6 +5,7 @@ export {
   makeDatasource,
   AdapterPropName,
   EMPTY_ITEM,
+  SizeStrategy,
 
   // interfaces
   Item,

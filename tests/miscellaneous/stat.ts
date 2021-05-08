@@ -7,7 +7,7 @@ export class Stat<Data = unknown> {
   paddingBwd: number;
   itemsCount: number;
   itemsCountByIndexes: number;
-  averageSize: number;
+  defaultSize: number;
 
   constructor({ viewport, buffer }: Workflow<Data>['scroller']) {
     this.size = viewport.getSize();
@@ -16,7 +16,7 @@ export class Stat<Data = unknown> {
     this.paddingBwd = viewport.paddings.backward.size;
     this.itemsCount = buffer.size;
     this.itemsCountByIndexes = buffer.maxIndex - buffer.minIndex + 1;
-    this.averageSize = buffer.averageSize;
+    this.defaultSize = buffer.defaultSize;
   }
 
   expect(stat: Stat<Data>): void {
@@ -26,6 +26,6 @@ export class Stat<Data = unknown> {
     expect(this.paddingBwd).toEqual(stat.paddingBwd);
     expect(this.itemsCount).toEqual(stat.itemsCount);
     expect(this.itemsCountByIndexes).toEqual(stat.itemsCount);
-    expect(this.averageSize).toEqual(stat.averageSize);
+    expect(this.defaultSize).toEqual(stat.defaultSize);
   }
 }

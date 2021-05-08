@@ -7,6 +7,7 @@ export {
   IAdapterItem,
   IAdapter,
   AdapterPropName,
+  SizeStrategy,
 } from '../../src/vscroll';
 
 export {

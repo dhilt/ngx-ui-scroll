@@ -40,21 +40,21 @@ describe('Bug Spec', () => {
         templateSettings: { viewportHeight: 300, itemHeight: 15 },
         datasourceSettings: { padding: 5, adapter: true }
       },
-      it: misc => async (done) => {
+      it: misc => async done => {
         let count = 0, checkedCount = 0;
         misc.adapter.firstVisible$.subscribe(() => count++);
-        const check = async () => {
-          await misc.relaxNext();
+        const check = () => {
           expect(misc.adapter.bof).toEqual(true);
           expect(misc.adapter.eof).toEqual(true);
           expect(count).toBeGreaterThan(checkedCount);
           checkedCount = count;
         };
-        await check();
-        misc.scrollMax();
-        await check();
-        misc.scrollMin();
-        await check();
+        await misc.relaxNext();
+        check();
+        await misc.scrollMaxRelax();
+        check();
+        await misc.scrollMinRelax();
+        check();
         done();
       }
     })

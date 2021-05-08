@@ -197,8 +197,8 @@ const shouldUpdate = (
   checkContents(buffer.items, checkList, left);
 
   if (typeof getAverageSize === 'function') {
-    expect(buffer.averageSize).not.toBe(SIZE);
-    expect(buffer.averageSize).toBe(getAverageSize(buffer.cacheSize));
+    expect(buffer.defaultSize).not.toBe(SIZE);
+    expect(buffer.defaultSize).toBe(getAverageSize(buffer.cacheSize));
   }
 
   // refresh the view via scroll to edges and then scroll to first check-item
@@ -222,12 +222,10 @@ const shouldWorkAfterCleanup = (fixRight: boolean): ItFunc => misc => async done
 
   expect(adapter.firstVisible.$index).toBe(fixRight ? lastIndex + 1 : firstIndex);
 
-  misc.scrollMin();
-  await misc.relaxNext();
+  await misc.scrollMinRelax();
   expect(buffer.firstIndex).toBe(MIN + (fixRight ? diff : 0));
 
-  misc.scrollMax();
-  await misc.relaxNext();
+  await misc.scrollMaxRelax();
   expect(buffer.lastIndex).toBe(MAX - (fixRight ? 0 : diff));
 
   done();

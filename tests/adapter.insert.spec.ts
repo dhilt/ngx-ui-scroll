@@ -191,12 +191,10 @@ const shouldCheckDynamicProcess = (
   const { decrease, amount } = config.custom;
   const doScroll = async (dataToCheck: ICheckData) => {
     misc.scrollMin();
-    misc.scrollMax();
-    await misc.relaxNext();
+    await misc.scrollMaxRelax();
 
     const spy = misc.spyOnGet();
-    misc.scrollMin();
-    await misc.relaxNext();
+    await misc.scrollMinRelax();
 
     expect(spy.calls.all()[0].args[0]).toBe(MIN - (decrease ? amount : 0));
     doCheck(dataToCheck, misc, config, shouldInsert, true);

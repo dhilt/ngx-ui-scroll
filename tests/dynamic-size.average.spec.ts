@@ -1,37 +1,36 @@
-import { Direction } from './miscellaneous/vscroll';
+import { filter } from 'rxjs/operators';
 
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
+import { Direction, SizeStrategy } from './miscellaneous/vscroll';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
-import {
-  getDynamicAverage,
-  getDynamicSizeData,
-  getDynamicSumSize
-} from './miscellaneous/dynamicSize';
+import { getAverageSize, getAverageSizeData, getDynamicSumSize } from './miscellaneous/dynamicSize';
+
+const sizeStrategy = SizeStrategy.Average;
 
 const configList: TestBedConfig[] = [{
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5 },
+  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, sizeStrategy },
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, minIndex: -20, maxIndex: 10 },
+  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, minIndex: -20, maxIndex: 10, sizeStrategy },
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: -5, padding: 1.2, bufferSize: 1 },
+  datasourceSettings: { startIndex: -5, padding: 1.2, bufferSize: 1, sizeStrategy },
   templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: -25, padding: 1.2, bufferSize: 1, minIndex: -50 },
+  datasourceSettings: { startIndex: -25, padding: 1.2, bufferSize: 1, minIndex: -50, sizeStrategy },
   templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.25, bufferSize: 10, windowViewport: true },
+  datasourceSettings: { startIndex: 0, padding: 0.25, bufferSize: 10, windowViewport: true, sizeStrategy },
   templateSettings: { noViewportClass: true, viewportHeight: 0, dynamicSize: 'size' }
 }, {
   datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 20, padding: 0.75, bufferSize: 15, horizontal: true },
+  datasourceSettings: { startIndex: 20, padding: 0.75, bufferSize: 15, horizontal: true, sizeStrategy },
   templateSettings: { viewportWidth: 300, horizontal: true, dynamicSize: 'size' }
 }];
 
@@ -48,7 +47,7 @@ const getInitialItemsCounter = (_startIndex: number, misc: Misc): ItemsCounter =
   const { bufferSize, startIndex, minIndex, maxIndex } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize();
   const firstFetchEndIndex = startIndex + bufferSize - 1;
-  const firstFetchData = getDynamicSizeData(startIndex, firstFetchEndIndex);
+  const firstFetchData = getAverageSizeData(startIndex, firstFetchEndIndex);
   const result = new ItemsCounter();
   result.average = firstFetchData.average;
 
@@ -109,7 +108,7 @@ const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCou
       size: getDynamicSumSize(startIndex, fwdIndex)
     });
   }
-  itemsCounter.average = getDynamicAverage(itemsCounter.backward.index, itemsCounter.forward.index);
+  itemsCounter.average = getAverageSize(itemsCounter.backward.index, itemsCounter.forward.index);
 
   if (isFinite(minIndex)) {
     const count = itemsCounter.backward.index - Math.max(minIndex, ABS_MIN_INDEX);
@@ -125,57 +124,56 @@ const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCou
   return JSON.stringify(itemsCounter) !== JSON.stringify(previous) ? itemsCounter : null;
 };
 
-const testInitialLoad = (config: TestBedConfig, misc: Misc, done: () => void) => {
-  let itemsCounter: ItemsCounter | null;
-  const startIndex = config.datasourceSettings.startIndex as number;
-  if (misc.innerLoopCount === 1) {
-    itemsCounter = getInitialItemsCounter(startIndex, misc);
-  } else {
-    itemsCounter = getNextItemsCounter(startIndex, misc, misc.shared.itemsCounter as ItemsCounter);
-  }
-  if (itemsCounter) {
-    misc.shared.itemsCounter = itemsCounter;
-  } else {
-    done();
-  }
-};
+const testInitialLoad: ItFuncConfig = config => misc => done =>
+  misc.adapter.loopPending$.pipe(filter(v => !v)).subscribe(() => {
+    let itemsCounter: ItemsCounter | null;
+    const startIndex = config.datasourceSettings.startIndex as number;
+    if (misc.innerLoopCount === 1) {
+      itemsCounter = getInitialItemsCounter(startIndex, misc);
+    } else {
+      itemsCounter = getNextItemsCounter(startIndex, misc, misc.shared.itemsCounter as ItemsCounter);
+    }
+    if (itemsCounter) {
+      misc.shared.itemsCounter = itemsCounter;
+    } else {
+      done();
+    }
+  });
 
-const testScroll = (config: TestBedConfig, misc: Misc, done: () => void) => {
-  const buffer = misc.scroller.buffer;
-  if (buffer.bof.get()) {
-    getDynamicSizeData(
-      Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
-      Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
-    );
-    done();
-    return;
-  }
-  if (buffer.eof.get()) {
-    misc.shared.eof = true;
-    misc.scrollMin();
-    return;
-  }
-  if (!misc.shared.eof) {
-    misc.scrollMax();
-    return;
-  }
-  if (misc.shared.eof) {
-    misc.scrollMin();
-    return;
-  }
-};
+const testScroll: ItFuncConfig = () => misc => done =>
+  misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
+    const buffer = misc.scroller.buffer;
+    if (buffer.bof.get()) {
+      getAverageSizeData(
+        Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
+        Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
+      );
+      done();
+      return;
+    }
+    if (buffer.eof.get()) {
+      misc.shared.eof = true;
+      misc.scrollMin();
+      return;
+    }
+    if (!misc.shared.eof) {
+      misc.scrollMax();
+      return;
+    }
+    if (misc.shared.eof) {
+      misc.scrollMin();
+      return;
+    }
+  });
 
-describe('Dynamic Size Spec', () => {
+describe('Dynamic Average Size Spec', () => {
 
   describe('Initial load', () => {
     configList.forEach(config =>
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
-        it: misc => done =>
-          spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testInitialLoad(config, misc, done)
-          )
+        it: testInitialLoad(config)
       })
     );
   });
@@ -185,79 +183,10 @@ describe('Dynamic Size Spec', () => {
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
-        it: misc => done =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testScroll(config, misc, done)
-          )
+        it: testScroll(config)
       })
     );
   });
 
 });
 
-describe('Zero Size Spec', () => {
-
-  const config = {
-    datasourceName: 'limited-1-100-zero-size',
-    datasourceSettings: { bufferSize: 5, minIndex: 1 },
-    templateSettings: { dynamicSize: 'size', viewportHeight: 200 }
-  };
-
-  describe('Items with zero size', () =>
-    makeTest({
-      config,
-      title: 'should stop the Workflow after the first loop',
-      it: misc => async done => {
-        await misc.relaxNext();
-        expect(misc.innerLoopCount).toEqual(1);
-        done();
-      }
-    })
-  );
-
-  describe('Items with zero size started from 2 pack', () =>
-    makeTest({
-      config: {
-        ...config,
-        datasourceName: 'limited-1-100-processor'
-      },
-      title: 'should stop the Workflow after the second loop',
-      it: misc => async done => {
-        misc.setItemProcessor(({ $index, data }) => data.size = $index >= 6 ? 0 : 20);
-        await misc.relaxNext();
-        expect(misc.innerLoopCount).toEqual(2);
-        done();
-      }
-    })
-  );
-
-  describe('Items get non-zero size asynchronously', () =>
-    makeTest({
-      config: {
-        ...config,
-        datasourceName: 'limited-1-100-zero-size',
-        datasourceSettings: { adapter: true }
-      },
-      title: 'should continue the Workflow after re-size and check',
-      it: misc => async done => {
-        const { scroller: { viewport }, adapter } = misc;
-        await misc.relaxNext();
-
-        expect(viewport.getScrollableSize()).toEqual(viewport.paddings.forward.size);
-        misc.setItemProcessor(({ data }) => data.size = 20);
-        adapter.fix({
-          updater: ({ element, data }) => {
-            data.size = 20;
-            ((element as HTMLElement).children[0] as HTMLElement).style.height = '20px';
-          }
-        });
-        await adapter.check();
-
-        expect(viewport.getScrollableSize()).toBeGreaterThan(0);
-        expect(viewport.paddings.forward.size).toEqual(0);
-        done();
-      }
-    })
-  );
-
-});

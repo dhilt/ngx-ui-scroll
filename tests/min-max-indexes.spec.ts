@@ -91,7 +91,7 @@ const _testCommonCase: ItFuncConfig = settings => misc => async done => {
   const { maxIndex, minIndex, itemSize: _itemSize, startIndex, padding } = getParams(settings);
   const viewportSize = misc.getViewportSize();
   const viewportSizeDelta = viewportSize * padding;
-  const itemSize = _itemSize || misc.scroller.buffer.averageSize;
+  const itemSize = _itemSize || misc.scroller.buffer.defaultSize;
   const hasMinIndex = minIndex !== void 0;
   const hasMaxIndex = maxIndex !== void 0;
   let innerLoopCount = 3;

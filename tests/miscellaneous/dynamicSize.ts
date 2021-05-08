@@ -12,18 +12,15 @@ export interface DynamicSizeData {
 export const getDynamicSizeByIndex = (index: number): number =>
   Math.max(MIN_ITEM_SIZE, Math.min(MAX_ITEM_SIZE, INITIAL_ITEM_SIZE + index));
 
-export const getDynamicSumSize = (start: number, end: number): number => {
-  let sum = 0;
-  for (let i = start; i <= end; i++) {
-    sum += getDynamicSizeByIndex(i);
-  }
-  return sum;
-};
+export const getDynamicSumSize = (start: number, end: number): number =>
+  Array.from({ length: end - start + 1 }).reduce(
+    (acc: number, i, j) => acc + getDynamicSizeByIndex(j + start), 0
+  );
 
-export const getDynamicAverage = (start: number, end: number): number =>
+export const getAverageSize = (start: number, end: number): number =>
   Math.round(getDynamicSumSize(start, end) / (end - start + 1));
 
-export const getDynamicSizeData = (start: number, end: number): DynamicSizeData => {
+export const getAverageSizeData = (start: number, end: number): DynamicSizeData => {
   const size = getDynamicSumSize(start, end);
   const average = Math.round(size / (end - start + 1));
   return { size, average };

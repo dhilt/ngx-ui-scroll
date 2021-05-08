@@ -1,5 +1,5 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { Misc } from './miscellaneous/misc';
+import { ItFuncConfig, makeTest, TestBedConfig } from './scaffolding/runner';
+import { SizeStrategy } from './miscellaneous/vscroll';
 
 const MIN_INDEX = -99;
 const MAX_INDEX = 100;
@@ -11,7 +11,13 @@ interface ICustom {
 const baseConfig: TestBedConfig = {
   datasourceName: 'limited--99-100-dynamic-size',
   datasourceSettings: {
-    startIndex: 1, padding: 0.5, bufferSize: 10, minIndex: MIN_INDEX, maxIndex: MAX_INDEX, itemSize: 20, adapter: true
+    startIndex: 1,
+    padding: 0.5,
+    bufferSize: 10,
+    minIndex: MIN_INDEX,
+    maxIndex: MAX_INDEX,
+    itemSize: 20,
+    sizeStrategy: SizeStrategy.Average
   },
   templateSettings: { viewportHeight: 600, dynamicSize: 'size' },
   timeout: 4000
@@ -22,17 +28,13 @@ const configList: TestBedConfig<ICustom>[] = reloadIndexList.map(index => ({
   ...baseConfig, custom: { reloadIndex: index }
 }));
 
-const testIt = (config: TestBedConfig<ICustom>, misc: Misc, done: () => void) => {
-  const { adapter } = misc;
-  const cycle = misc.scroller.state.cycle.count;
+const shouldReload: ItFuncConfig<ICustom> = config => misc => async done => {
+  await misc.relaxNext();
   const reloadIndex = config.custom.reloadIndex;
-  const { firstVisible } = adapter; // need to have a pre-call
-  if (cycle === 2) {
-    adapter.reload(reloadIndex);
-  } else {
-    expect(firstVisible.$index).toEqual(reloadIndex);
-    done();
-  }
+  misc.adapter.reload(reloadIndex);
+  await misc.relaxNext();
+  expect(misc.adapter.firstVisible.$index).toEqual(reloadIndex);
+  done();
 };
 
 describe('Dynamic Size Reload Spec', () => {
@@ -42,10 +44,7 @@ describe('Dynamic Size Reload Spec', () => {
       config,
       title: 'should reload properly',
       meta: `reloadIndex: ${config.custom.reloadIndex}`,
-      it: misc => done =>
-        spyOn(misc.workflow, 'finalize').and.callFake(() =>
-          testIt(config, misc, done)
-        )
+      it: shouldReload(config)
     })
   );
 

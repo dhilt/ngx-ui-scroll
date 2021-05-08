@@ -1,4 +1,4 @@
-import { ItemsPredicate } from './miscellaneous/vscroll';
+import { ItemsPredicate, SizeStrategy } from './miscellaneous/vscroll';
 
 import { makeTest, TestBedConfig, ItFuncConfig, ItFunc } from './scaffolding/runner';
 import { DatasourceRemover, getDatasourceClassForRemovals } from './scaffolding/datasources/class';
@@ -141,16 +141,24 @@ const configListOutFixed: TestBedConfig<ICustomCommon>[] = [{
 }];
 
 const configListDynamicBuffer: TestBedConfig<ICustomCommon>[] = [{
-  datasourceSettings: { startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Average
+  },
   custom: { indexToRemove: 11, size: 100, increase: false }
 }, {
-  datasourceSettings: { startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Frequent
+  },
   custom: { indexToRemove: 9, size: 100, increase: false }
 }, {
-  datasourceSettings: { startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 10, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Average
+  },
   custom: { indexToRemove: 11, size: 100, increase: true }
 }, {
-  datasourceSettings: { startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 11, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Frequent
+  },
   custom: { indexToRemove: 9, size: 100, increase: true }
 }].map(config => ({
   ...config,
@@ -159,19 +167,27 @@ const configListDynamicBuffer: TestBedConfig<ICustomCommon>[] = [{
 }));
 
 const configListDynamicVirtual: TestBedConfig<ICustomCommon>[] = [{
-  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Average
+  },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 2, indexToRemove: 20, size: 100, increase: false }
 }, {
-  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Frequent
+  },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 15, indexToRemove: 1, size: 100, increase: false }
 }, {
-  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Average
+  },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 2, indexToRemove: 20, size: 100, increase: true }
 }, {
-  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: {
+    startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, sizeStrategy: SizeStrategy.Frequent
+  },
   datasourceDevSettings: { cacheOnReload: true },
   custom: { indexToReload: 15, indexToRemove: 1, size: 100, increase: true }
 }].map(config => ({
@@ -181,22 +197,22 @@ const configListDynamicVirtual: TestBedConfig<ICustomCommon>[] = [{
 }));
 
 const configListFlush: TestBedConfig<ICustomFlush>[] = [{
-  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5 },
   custom: { text: 'bof', fixRight: false, first: 1, last: 8 }
 }, {
-  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5 },
   custom: { text: 'bof and 15 items', fixRight: true, first: 9, last: 15 }
 }, {
-  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 30, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 30, bufferSize: 1, padding: 0.5 },
   custom: { text: 'bof and 30 items', fixRight: true, first: 9, last: 16 }
 }, {
-  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.5 },
   custom: { text: 'eof', fixRight: false, first: 5, last: 12 }
 }, {
-  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 15, bufferSize: 1, padding: 0.5 },
   custom: { text: 'eof and 15 items', fixRight: true, first: 9, last: 15 }
 }, {
-  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 25, bufferSize: 1, padding: 0.5, adapter: true },
+  datasourceSettings: { startIndex: 15, minIndex: 1, maxIndex: 25, bufferSize: 1, padding: 0.5 },
   custom: { text: 'eof and 25 items', fixRight: true, first: 18, last: 25 }
 }].map(config => ({
   ...config,
@@ -360,7 +376,7 @@ const shouldRemoveDynamicSize: ItFuncConfig<ICustomCommon> = config => misc => a
 
   // remove item from DS and Scroller
   const { $index, data: { id } } = misc.adapter.firstVisible;
-  const { averageSize } = misc.scroller.buffer;
+  const { defaultSize } = misc.scroller.buffer;
   ds.remove([indexToRemove], !!increase);
   await misc.adapter.remove({ indexes: [indexToRemove], increase });
   let shift = 0;
@@ -371,10 +387,11 @@ const shouldRemoveDynamicSize: ItFuncConfig<ICustomCommon> = config => misc => a
   }
   expect(misc.adapter.firstVisible.$index).toBe($index + shift);
   expect(misc.adapter.firstVisible.data.id).toBe(id);
-  expect(misc.scroller.buffer.averageSize).not.toBe(averageSize);
+  if (misc.scroller.settings.sizeStrategy === SizeStrategy.Average) {
+    expect(misc.scroller.buffer.defaultSize).not.toBe(defaultSize);
+  }
 
-  misc.scrollMin();
-  await misc.relaxNext();
+  await misc.scrollMinRelax();
   await scrollDownToIndex(misc, maxIndex - (increase ? 0 : 1));
   expect(misc.getScrollableSize()).toBe(finalSize);
 

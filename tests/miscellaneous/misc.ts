@@ -163,6 +163,21 @@ export class Misc<Comp = TestComponentInterface> {
     this.scrollTo(Infinity);
   }
 
+  scrollToRelax(value: number): Promise<void> {
+    this.scrollTo(value);
+    return this.relaxNext();
+  }
+
+  scrollMinRelax(): Promise<void> {
+    this.scrollMin();
+    return this.relaxNext();
+  }
+
+  scrollMaxRelax(): Promise<void> {
+    this.scrollMax();
+    return this.relaxNext();
+  }
+
   relaxNext(debounce?: boolean): Promise<void> {
     return new Promise(resolve =>
       (debounce

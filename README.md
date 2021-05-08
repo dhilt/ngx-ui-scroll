@@ -3,7 +3,7 @@
 
 # NgxUiScroll
 
-Unlimited bidirectional scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/). Since v2.0.0, the core of the ngx-ui-scroll library lives and develops as a separate zero-dependency npm package [vscroll](https://github.com/dhilt/vscroll).
+Unlimited bidirectional virtual scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/). Since v2.0.0, the core of the ngx-ui-scroll library lives and develops as a separate zero-dependency npm package [vscroll](https://github.com/dhilt/vscroll).
 
 <p dir="rtl">
 <sub>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b></sub><sub> 👉 <br>make open-source world better</sub></p>
@@ -138,13 +138,14 @@ Settings are being applied during the Scroller initialization and have an impact
 |Name|Type|Default|Description|
 |:--|:----:|:----------:|:----------|
 |[bufferSize](https://dhilt.github.io/ngx-ui-scroll/#settings#buffer-size)|number,<br>integer|5| Fixes minimal size of the pack of the datasource items to be requested per single _Datasource.get_ call. Can't be less than 1. |
-|[padding](https://dhilt.github.io/ngx-ui-scroll/#settings#padding)|number,<br>float|0.5| Determines viewport outlets relative to the viewport's size that need to be filled. For example, 0.5 means that we'll have as many items at a moment as needed to fill out 100% of the visible part of the viewport, + 50% of the viewport size in backward direction and + 50% in forward direction. The value can't be less than 0.01. |
-|[startIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#start-index)|number,<br>integer|1| Specifies item index to be requested/rendered first. Can be any, but real datasource boundaries should be taken into account. |
+|[padding](https://dhilt.github.io/ngx-ui-scroll/#settings#padding)|number,<br>float|0.5| Determines the viewport outlets containing real but not visible items. The value is relative to the viewport's size. For example, 0.25 means that there will be as many items at a moment as needed to fill out 100% of the visible part of the viewport, + 25% of the viewport size in the backward direction and + 25% in the forward direction. The value can't be less than 0.01. |
+|[startIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#start-index)|number,<br>integer|1| Specifies item index to be requested/rendered first. Can be any, but the real datasource boundaries should be taken into account. |
 |[minIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#min-max-indexes)|number,<br>integer|-Infinity| Fixes absolute minimal index of the dataset. The datasource left boundary. |
 |[maxIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#min-max-indexes)|number,<br>integer|+Infinity| Fixes absolute maximal index of the dataset. The datasource right boundary. |
-|[infinite](https://dhilt.github.io/ngx-ui-scroll/#settings#infinite-mode)|boolean|false| Allows to run "infinite" mode, when items rendered once are never removed. |
-|[horizontal](https://dhilt.github.io/ngx-ui-scroll/#settings#horizontal-mode)|boolean|false| Allows to run "horizontal" mode, when the viewport's orientation is horizontal. |
-|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#settings#window-viewport)|boolean|false| Allows to run "entire window scrollable" mode, when the entire window becomes the scrollable viewport. |
+|[infinite](https://dhilt.github.io/ngx-ui-scroll/#settings#infinite-mode)|boolean|false| Enables "infinite" mode, when items rendered once are never removed. |
+|[horizontal](https://dhilt.github.io/ngx-ui-scroll/#settings#horizontal-mode)|boolean|false| Enables "horizontal" mode, when the viewport's orientation is horizontal. |
+|[sizeStrategy](https://dhilt.github.io/ngx-ui-scroll/#settings#different-item-heights)|string&nbsp;enum, 'average'&nbsp;&#124; 'frequent' | 'average' | Defines how the default item size is calculated. If item has never been rendered, its size is assumed to be the default size: most frequent or average among all items that have been rendered before. This has an impact on the process of virtualization. |
+|[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#settings#window-viewport)|boolean|false| Enables "entire window scrollable" mode, when the entire window becomes the scrollable viewport. |
 
 ### Adapter API
 

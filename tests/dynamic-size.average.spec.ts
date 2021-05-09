@@ -166,7 +166,7 @@ const testScroll: ItFuncConfig = () => misc => done =>
     }
   });
 
-describe('Dynamic Average Size Spec', () => {
+describe('Dynamic Size Spec for SizeStrategy.Average', () => {
 
   describe('Initial load', () => {
     configList.forEach(config =>

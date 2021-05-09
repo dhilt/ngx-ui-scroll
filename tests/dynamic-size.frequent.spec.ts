@@ -20,7 +20,7 @@ const settings = {
   sizeStrategy: SizeStrategy.Frequent,
 };
 
-const baseConfig: TestBedConfig = {
+const baseConfig = {
   datasourceSettings: settings,
   templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
   datasourceClass: getDatasourceClassForResize(settings)
@@ -97,20 +97,31 @@ const customConfigList: ICustom[] = [{
   after: 2,
 }];
 
-const configListFrequent = customConfigList
+const configListFrequent: TestBedConfig<ICustom>[] = customConfigList
   .map(custom => ({ ...baseConfig, custom }));
 
-const configListConstant = customConfigList
+const configListConstant: TestBedConfig<ICustom>[] = [...customConfigList
   .filter((i, j) => j % 2 === 0)
   .map((custom, j) => ({
     ...baseConfig,
-    custom: { ...custom, before: 20, after: 20, title: `not change (${j + 1})` },
+    custom: { ...custom, before: 22, after: 22, title: `not change (${j + 1})` },
     datasourceClass: getDatasourceClassForResize({
       ...settings,
       sizeStrategy: SizeStrategy.Constant,
-      itemSize: 20
+      itemSize: 22
     })
-  }));
+  })), {
+  ...baseConfig,
+  custom: {
+    title: 'not change when itemSize is not set',
+    getSize: () => 10,
+    before: 10
+  },
+  datasourceClass: getDatasourceClassForResize({
+    ...settings,
+    sizeStrategy: SizeStrategy.Constant
+  })
+}];
 
 const checkViewportWithoutCache = (misc: Misc) => {
   const { buffer, viewport: { paddings: { backward, forward } } } = misc.scroller;

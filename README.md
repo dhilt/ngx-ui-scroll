@@ -144,7 +144,7 @@ Settings are being applied during the Scroller initialization and have an impact
 |[maxIndex](https://dhilt.github.io/ngx-ui-scroll/#settings#min-max-indexes)|number,<br>integer|+Infinity| Fixes absolute maximal index of the dataset. The datasource right boundary. |
 |[infinite](https://dhilt.github.io/ngx-ui-scroll/#settings#infinite-mode)|boolean|false| Enables "infinite" mode, when items rendered once are never removed. |
 |[horizontal](https://dhilt.github.io/ngx-ui-scroll/#settings#horizontal-mode)|boolean|false| Enables "horizontal" mode, when the viewport's orientation is horizontal. |
-|[sizeStrategy](https://dhilt.github.io/ngx-ui-scroll/#settings#different-item-heights)|string&nbsp;enum, 'average'&nbsp;&#124; 'frequent' | 'average' | Defines how the default item size is calculated. If item has never been rendered, its size is assumed to be the default size: most frequent or average among all items that have been rendered before. This has an impact on the process of virtualization. |
+|[sizeStrategy](https://dhilt.github.io/ngx-ui-scroll/#settings#different-item-heights)|string&nbsp;enum, 'average'&nbsp;&#124; 'frequent'&nbsp;&#124; 'constant' | 'average' | Defines how the default item size is calculated. If item has never been rendered, its size is assumed to be the default size: an average or most frequent among all items that have been rendered before, or constant. This has an impact on the process of virtualization. |
 |[windowViewport](https://dhilt.github.io/ngx-ui-scroll/#settings#window-viewport)|boolean|false| Enables "entire window scrollable" mode, when the entire window becomes the scrollable viewport. |
 
 ### Adapter API

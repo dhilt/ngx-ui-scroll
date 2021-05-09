@@ -97,6 +97,21 @@ const customConfigList: ICustom[] = [{
   after: 2,
 }];
 
+const configListFrequent = customConfigList
+  .map(custom => ({ ...baseConfig, custom }));
+
+const configListConstant = customConfigList
+  .filter((i, j) => j % 2 === 0)
+  .map((custom, j) => ({
+    ...baseConfig,
+    custom: { ...custom, before: 20, after: 20, title: `not change (${j + 1})` },
+    datasourceClass: getDatasourceClassForResize({
+      ...settings,
+      sizeStrategy: SizeStrategy.Constant,
+      itemSize: 20
+    })
+  }));
+
 const checkViewportWithoutCache = (misc: Misc) => {
   const { buffer, viewport: { paddings: { backward, forward } } } = misc.scroller;
   const virtualCountLeft = buffer.firstIndex - settings.minIndex;
@@ -133,10 +148,19 @@ const shouldSetDefault: ItFuncConfig<ICustom> = config => misc => async done => 
   done();
 };
 
-describe('Dynamic Frequent Size Spec', () => {
+describe('Dynamic Size Spec', () => {
 
-  describe('Load and Scroll', () => customConfigList
-    .map(custom => ({ ...baseConfig, custom }))
+  describe('SizeStrategy.Frequent', () => configListFrequent
+    .forEach(config =>
+      makeTest({
+        config,
+        title: `should ${config.custom.title}`,
+        it: shouldSetDefault(config)
+      })
+    )
+  );
+
+  describe('SizeStrategy.Constant', () => configListConstant
     .forEach(config =>
       makeTest({
         config,

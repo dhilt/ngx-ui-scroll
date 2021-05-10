@@ -162,7 +162,7 @@ getDataPage(page: number) {
     const startPage = Math.floor(startIndex / this.pageSize);
     const endPage = Math.floor(endIndex / this.pageSize);
 
-    const pagesRequest: MyItem[] = [];
+    const pagesRequest: Promise<MyItem>[] = [];
     for (let i = startPage; i <= endPage; i++) {
       pagesRequest.push(
         this.remoteDataService.getDataPageAsync(i)

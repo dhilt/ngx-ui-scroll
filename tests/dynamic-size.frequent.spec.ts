@@ -20,7 +20,7 @@ const settings = {
   sizeStrategy: SizeStrategy.Frequent,
 };
 
-const baseConfig: TestBedConfig = {
+const baseConfig = {
   datasourceSettings: settings,
   templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
   datasourceClass: getDatasourceClassForResize(settings)
@@ -97,6 +97,32 @@ const customConfigList: ICustom[] = [{
   after: 2,
 }];
 
+const configListFrequent: TestBedConfig<ICustom>[] = customConfigList
+  .map(custom => ({ ...baseConfig, custom }));
+
+const configListConstant: TestBedConfig<ICustom>[] = [...customConfigList
+  .filter((i, j) => j % 2 === 0)
+  .map((custom, j) => ({
+    ...baseConfig,
+    custom: { ...custom, before: 22, after: 22, title: `not change (${j + 1})` },
+    datasourceClass: getDatasourceClassForResize({
+      ...settings,
+      sizeStrategy: SizeStrategy.Constant,
+      itemSize: 22
+    })
+  })), {
+  ...baseConfig,
+  custom: {
+    title: 'not change when itemSize is not set',
+    getSize: () => 10,
+    before: 10
+  },
+  datasourceClass: getDatasourceClassForResize({
+    ...settings,
+    sizeStrategy: SizeStrategy.Constant
+  })
+}];
+
 const checkViewportWithoutCache = (misc: Misc) => {
   const { buffer, viewport: { paddings: { backward, forward } } } = misc.scroller;
   const virtualCountLeft = buffer.firstIndex - settings.minIndex;
@@ -133,10 +159,19 @@ const shouldSetDefault: ItFuncConfig<ICustom> = config => misc => async done => 
   done();
 };
 
-describe('Dynamic Frequent Size Spec', () => {
+describe('Dynamic Size Spec', () => {
 
-  describe('Load and Scroll', () => customConfigList
-    .map(custom => ({ ...baseConfig, custom }))
+  describe('SizeStrategy.Frequent', () => configListFrequent
+    .forEach(config =>
+      makeTest({
+        config,
+        title: `should ${config.custom.title}`,
+        it: shouldSetDefault(config)
+      })
+    )
+  );
+
+  describe('SizeStrategy.Constant', () => configListConstant
     .forEach(config =>
       makeTest({
         config,

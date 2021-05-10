@@ -58,13 +58,14 @@
       <li>
         <em>SizeStrategy.Frequent</em> ("frequent"), the most frequent size across all renders is considered the default
       </li>
-      <!-- <li>
+      <li>
         <em>SizeStrategy.Constant</em> ("constant"), the default item size value is taken from the
         <a
           [routerLink]="['/', settingsScope.itemSize.scope]"
           fragment="{{settingsScope.itemSize.id}}"
         >itemSize setting</a> and never changes.
-      </li> -->
+        If the <em>itemSize</em> setting is not defined, the size of the first rendered item will be used as the default.
+      </li>
     </ul>
     <p>
       In this sample we have two Scrollers demonstrating "average" and "frequent" strategies.
@@ -86,6 +87,10 @@
       The "frequent" datasource provides the size of each 10th item = 40px, the rest = 20px.
       In this case it seems reasonable to use <em>SizeStrategy.Frequent</em> strategy,
       though there is no strict conditions defining which strategy should be used in the end App.
+      If accuracy is not a concern, the "constant" strategy
+      can be enabled by using the <em>SizeStrategy.Constant</em> value
+      as it results in less calculations on the Scroller's end.
+      However, it is recommended to make additional research on the impact on performance for each specific case.
     </p>
   </div>
 </div>

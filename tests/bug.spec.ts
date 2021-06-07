@@ -125,12 +125,11 @@ describe('Bug Spec', () => {
       misc = new Misc(configureTestBedSub());
     });
 
-    it('should work', async (done) => {
+    it('should work', async () => {
       const { adapter, testComponent } = misc;
       await misc.relaxNext();
       expect(testComponent.firstVisible).toEqual(adapter.firstVisible);
       expect(testComponent.firstVisible.$index).toEqual(1);
-      done();
     });
   });
 

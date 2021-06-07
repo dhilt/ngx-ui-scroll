@@ -39,7 +39,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.subscriptions.push(
-      this.route.fragment.subscribe((hash: string) => {
+      this.route.fragment.subscribe((hash) => {
         if (hash) {
           setTimeout(() => {
             const cmp = document.getElementById(hash);

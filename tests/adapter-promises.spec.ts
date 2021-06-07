@@ -400,14 +400,13 @@ describe('Adapter Promises Spec', () => {
 
   describe('Call before init', () =>
     [Adapter.relax, Adapter.reload, Adapter.reset, Adapter.check].forEach(token =>
-      it(`should resolve immediately ("${token}")`, async (done) => {
+      it(`should resolve immediately ("${token}")`, async () => {
         const misc = new Misc(configureTestBedSub());
         const method = (misc.adapter[token]) as unknown as () => Promise<AdapterMethodResult>;
         const result = await method();
         expect(result.immediate).toBe(true);
         expect(result.success).toBe(true);
         // expect(result.details).toBe('Adapter is not initialized');
-        done();
       })
     )
   );

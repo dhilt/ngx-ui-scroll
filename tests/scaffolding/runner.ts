@@ -136,9 +136,11 @@ export const makeTest = <T = void, DS = true>(data: MakeTestConfig<T, DS>): void
         }
       });
       if (typeof data.after === 'function') {
-        afterEach(() => (data.after as (misc: Misc) => void)(misc));
+        afterEach(() => {
+          (data.after as (misc: Misc) => void)(misc);
+        });
       }
-      _it = (done: () => void) =>
+      _it = (done: () => void) => {
         runPromise.then(() =>
           data.it(misc)(done)
         ).catch(error => {
@@ -147,6 +149,7 @@ export const makeTest = <T = void, DS = true>(data: MakeTestConfig<T, DS>): void
           }
           data.it(data.config.toThrow ? error.message : misc)(done);
         });
+      };
       timeout = data.config.timeout || timeout;
     } else {
       _it = data.it;

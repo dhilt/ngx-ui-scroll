@@ -8,6 +8,7 @@ import { IDatasource, Datasource } from '../../src/ui-scroll.datasource';
 
 import { DatasourceService } from './datasources/class';
 import { defaultTemplate, TemplateSettings } from './templates';
+import { filter, take } from 'rxjs/operators';
 
 export interface TestComponentInterface {
   datasource: IDatasource<Data>;
@@ -96,5 +97,45 @@ export class ScrollerSubTestComponent implements TestComponentInterface {
 
   constructor() {
     this.datasource.adapter.firstVisible$.subscribe(value => this.firstVisible = value);
+  }
+}
+
+@Component({
+  template: `<div
+  *ngIf="show"
+  style="height: 200px; overflow-y: scroll;"
+><div
+  *uiScroll="let item of datasource; let index = index"
+><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`
+})
+export class ScrollerNgIfTestComponent implements TestComponentInterface {
+  datasource = new Datasource<Data>({
+    get: (index, count, success) =>
+      success(Array.from({ length: count }, (j, i) =>
+        ({ id: i + index, text: 'item #' + (i + index) })
+      )),
+    devSettings: { debug: true }
+  });
+
+  show: boolean;
+
+  constructor() {
+    this.show = true;
+    this.run();
+  }
+
+  init(flag: boolean): Promise<boolean> {
+    return this.datasource.adapter.init$.pipe(
+      filter(v => flag ? v : !v), take(1)
+    ).toPromise();
+  }
+
+  async run(): Promise<void> {
+    await this.init(true);
+    await this.datasource.adapter.relax();
+    this.show = false;
+    await this.init(false);
+    this.show = true;
+    await this.init(true);
   }
 }

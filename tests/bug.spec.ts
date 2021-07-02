@@ -1,10 +1,11 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { configureTestBedSub } from './scaffolding/testBed';
 import { DatasourceProcessor } from './scaffolding/datasources/class';
-import { ScrollerSubTestComponent } from './scaffolding/testComponent';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { ItemAdapter } from './miscellaneous/vscroll';
+
+import { configureTestBedSub, configureTestBedNgIf } from './scaffolding/testBed';
+import { ScrollerSubTestComponent, ScrollerNgIfTestComponent } from './scaffolding/testComponent';
 
 describe('Bug Spec', () => {
 
@@ -121,9 +122,7 @@ describe('Bug Spec', () => {
   describe('early (constructor) subscriptions', () => {
     let misc: Misc<ScrollerSubTestComponent>;
 
-    beforeEach(() => {
-      misc = new Misc(configureTestBedSub());
-    });
+    beforeEach(() => misc = new Misc(configureTestBedSub()));
 
     it('should work', async () => {
       const { adapter, testComponent } = misc;
@@ -284,5 +283,27 @@ describe('Bug Spec', () => {
       }
     })
   );
+
+  describe('reload via ngIf', () => {
+    let misc: Misc<ScrollerNgIfTestComponent>;
+
+    beforeEach((() => {
+      misc = new Misc(configureTestBedNgIf());
+    }));
+
+    it('should work', done => {
+      let count = 0;
+      misc.adapter.init$.subscribe(init => {
+        if (init) {
+          count++;
+        }
+        console.log('COUNT', count, init);
+        if (count === 2) {
+          console.log('show');
+          done();
+        }
+      });
+    });
+  });
 
 });

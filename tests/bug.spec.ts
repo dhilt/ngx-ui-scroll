@@ -287,22 +287,49 @@ describe('Bug Spec', () => {
   describe('reload via ngIf', () => {
     let misc: Misc<ScrollerNgIfTestComponent>;
 
-    beforeEach((() => {
-      misc = new Misc(configureTestBedNgIf());
-    }));
+    beforeEach((() => misc = new Misc(configureTestBedNgIf())));
 
-    it('should work', done => {
+    const wf = () => misc.getWorkflow();
+    const scroller = () => wf().scroller;
+    const ngIfReload = async (): Promise<void> => {
       let count = 0;
-      misc.adapter.init$.subscribe(init => {
-        if (init) {
-          count++;
-        }
-        console.log('COUNT', count, init);
-        if (count === 2) {
-          console.log('show');
-          done();
-        }
+      await new Promise(resolve => {
+        const sub = misc.adapter.init$.subscribe(init => {
+          if (init) {
+            count++;
+          }
+          if (count === 2) {
+            sub.unsubscribe();
+            resolve(null);
+          }
+        });
       });
+      await misc.relaxNext();
+    };
+
+    it('should re-render the viewport', async () => {
+      const { adapter } = misc;
+      expect(wf().isInitialized).toEqual(false);
+      expect(adapter.id).toEqual(1);
+      expect(scroller().adapter.id).toEqual(1);
+      expect(scroller().settings.instanceIndex).toEqual(1);
+      await ngIfReload();
+      expect(wf().isInitialized).toEqual(true);
+      expect(adapter.id).toEqual(1);
+      expect(scroller().adapter.id).toEqual(1);
+      expect(scroller().settings.instanceIndex).toEqual(2);
+    });
+
+    it('should scroll and take firstVisible', async () => {
+      const { adapter } = misc;
+      await ngIfReload();
+      expect(adapter.firstVisible.$index).toEqual(1);
+      // (((misc.fixture.nativeElement as HTMLElement)
+      //   .querySelector('[ui-scroll]') as HTMLElement)
+      //   .parentElement as HTMLElement).scrollTop = 999;
+      // await misc.relaxNext();
+      await misc.scrollMaxRelax();
+      expect(adapter.firstVisible.$index).toBeGreaterThan(1);
     });
   });
 

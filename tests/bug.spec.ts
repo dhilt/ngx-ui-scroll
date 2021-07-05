@@ -1,11 +1,13 @@
+import { filter, take } from 'rxjs/operators';
+
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { DatasourceProcessor } from './scaffolding/datasources/class';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { ItemAdapter } from './miscellaneous/vscroll';
 
-import { configureTestBedSub, configureTestBedNgIf } from './scaffolding/testBed';
-import { ScrollerSubTestComponent, ScrollerNgIfTestComponent } from './scaffolding/testComponent';
+import { configureTestBedSub } from './scaffolding/testBed';
+import { ScrollerSubTestComponent } from './scaffolding/testComponent';
 
 describe('Bug Spec', () => {
 
@@ -285,39 +287,45 @@ describe('Bug Spec', () => {
   );
 
   describe('reload via ngIf', () => {
-    let misc: Misc<ScrollerNgIfTestComponent>;
+    let misc: Misc<ScrollerSubTestComponent>;
+    let workflowId: number;
+    let adapterId: number;
 
-    beforeEach((() => misc = new Misc(configureTestBedNgIf())));
+    beforeEach(() => {
+      misc = new Misc(configureTestBedSub());
+      workflowId = misc.scroller.settings.instanceIndex;
+      adapterId = misc.adapter.id;
+    });
 
     const wf = () => misc.getWorkflow();
     const scroller = () => wf().scroller;
+
+    const init = (flag: boolean): Promise<boolean> =>
+      misc.testComponent.datasource.adapter.init$.pipe(
+        filter(v => flag ? v : !v), take(1)
+      ).toPromise();
+
     const ngIfReload = async (): Promise<void> => {
-      let count = 0;
-      await new Promise(resolve => {
-        const sub = misc.adapter.init$.subscribe(init => {
-          if (init) {
-            count++;
-          }
-          if (count === 2) {
-            sub.unsubscribe();
-            resolve(null);
-          }
-        });
-      });
-      await misc.relaxNext();
+      await init(true);
+      await scroller().adapter.relax();
+      misc.testComponent.show = false;
+      await init(false);
+      misc.testComponent.show = true;
+      misc.fixture.changeDetectorRef.detectChanges();
+      await init(true);
     };
 
     it('should re-render the viewport', async () => {
       const { adapter } = misc;
       expect(wf().isInitialized).toEqual(false);
-      expect(adapter.id).toEqual(1);
-      expect(scroller().adapter.id).toEqual(1);
-      expect(scroller().settings.instanceIndex).toEqual(1);
+      expect(adapter.id).toEqual(adapterId);
+      expect(scroller().adapter.id).toEqual(adapterId);
+      expect(scroller().settings.instanceIndex).toEqual(workflowId);
       await ngIfReload();
       expect(wf().isInitialized).toEqual(true);
-      expect(adapter.id).toEqual(1);
-      expect(scroller().adapter.id).toEqual(1);
-      expect(scroller().settings.instanceIndex).toEqual(2);
+      expect(adapter.id).toEqual(adapterId);
+      expect(scroller().adapter.id).toEqual(adapterId);
+      expect(scroller().settings.instanceIndex).toEqual(workflowId + 1);
     });
 
     it('should scroll and take firstVisible', async () => {

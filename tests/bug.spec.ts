@@ -288,56 +288,55 @@ describe('Bug Spec', () => {
 
   describe('reload via ngIf', () => {
     let misc: Misc<ScrollerSubTestComponent>;
-    let workflowId: number;
+    let scrollerId: number;
     let adapterId: number;
 
     beforeEach(() => {
       misc = new Misc(configureTestBedSub());
-      workflowId = misc.scroller.settings.instanceIndex;
+      scrollerId = misc.scroller.settings.instanceIndex;
       adapterId = misc.adapter.id;
     });
-
-    const wf = () => misc.getWorkflow();
-    const scroller = () => wf().scroller;
 
     const init = (flag: boolean): Promise<boolean> =>
       misc.testComponent.datasource.adapter.init$.pipe(
         filter(v => flag ? v : !v), take(1)
       ).toPromise();
 
-    const ngIfReload = async (): Promise<void> => {
+    const ngIfReload = async (relax?: boolean): Promise<void> => {
       await init(true);
-      await scroller().adapter.relax();
+      await misc.adapter.relax();
       misc.testComponent.show = false;
       await init(false);
       misc.testComponent.show = true;
       misc.fixture.changeDetectorRef.detectChanges();
       await init(true);
+      if (relax) {
+        await misc.adapter.relax();
+      }
     };
 
     it('should re-render the viewport', async () => {
-      const { adapter } = misc;
-      expect(wf().isInitialized).toEqual(false);
-      expect(adapter.id).toEqual(adapterId);
-      expect(scroller().adapter.id).toEqual(adapterId);
-      expect(scroller().settings.instanceIndex).toEqual(workflowId);
+      expect(misc.workflow.isInitialized).toEqual(false);
+      expect(misc.adapter.id).toEqual(adapterId);
+      const _scroller = misc.scroller;
+      expect(_scroller.settings.instanceIndex).toEqual(scrollerId);
       await ngIfReload();
-      expect(wf().isInitialized).toEqual(true);
-      expect(adapter.id).toEqual(adapterId);
-      expect(scroller().adapter.id).toEqual(adapterId);
-      expect(scroller().settings.instanceIndex).toEqual(workflowId + 1);
+      const wf = misc.getWorkflow();
+      const scroller = wf.scroller;
+      expect(_scroller).not.toEqual(scroller);
+      expect(wf.isInitialized).toEqual(true);
+      expect(misc.adapter.id).toEqual(adapterId);
+      expect(scroller.adapter.id).toEqual(adapterId);
+      expect(scroller.settings.instanceIndex).toEqual(scrollerId + 1);
     });
 
     it('should scroll and take firstVisible', async () => {
-      const { adapter } = misc;
-      await ngIfReload();
-      expect(adapter.firstVisible.$index).toEqual(1);
-      // (((misc.fixture.nativeElement as HTMLElement)
-      //   .querySelector('[ui-scroll]') as HTMLElement)
-      //   .parentElement as HTMLElement).scrollTop = 999;
-      // await misc.relaxNext();
+      await ngIfReload(true);
+      const { firstVisible, firstVisible$ } = misc.adapter;
+      expect(firstVisible.$index).toEqual(1);
       await misc.scrollMaxRelax();
-      expect(adapter.firstVisible.$index).toBeGreaterThan(1);
+      expect(misc.adapter.firstVisible$).toEqual(firstVisible$);
+      expect(misc.adapter.firstVisible.$index).toBeGreaterThan(1);
     });
   });
 

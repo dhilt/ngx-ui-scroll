@@ -265,6 +265,8 @@ describe('Datasource', () => {
         get(_offset: number, _count: number) {
           return [];
         }
+
+        reset() { }
       }
     },
     title: 'should pass',
@@ -314,7 +316,7 @@ describe('Workflow & Adapter', () => {
     it('should pass', done => {
       setTimeout(() => {
         misc.fixture.destroy();
-        expect(misc.workflow.isInitialized).toBe(false);
+        expect(misc.workflow.isInitialized).toBeFalsy();
         expect(misc.adapter.init).toBe(false);
         done();
       }, delay);
@@ -326,7 +328,7 @@ describe('Workflow & Adapter', () => {
 
     it('should dispose correctly', done => {
       misc.fixture.destroy();
-      expect(misc.workflow.isInitialized).toBe(false);
+      expect(misc.workflow.isInitialized).toBeFalsy();
       expect(misc.adapter.init).toBe(false);
       done();
     });
@@ -339,7 +341,7 @@ describe('Workflow & Adapter', () => {
       expect(misc.workflow.isInitialized).toBe(true);
       expect(misc.adapter.init).toBe(true);
       misc.fixture.destroy();
-      expect(misc.workflow.isInitialized).toBe(false);
+      expect(misc.workflow.isInitialized).toBeFalsy();
       expect(misc.adapter.init).toBe(false);
       done();
     });
@@ -350,7 +352,6 @@ describe('Workflow & Adapter', () => {
 describe('Multiple Instances', () => {
 
   let fixture: ComponentFixture<TwoScrollersTestComponent>;
-  let reconfigure = true;
   const getAdapters = (): { a1: IAdapter<Data>, a2: IAdapter<Data> } => ({
     a1: fixture.componentInstance.datasource.adapter,
     a2: fixture.componentInstance.datasource2.adapter
@@ -365,13 +366,7 @@ describe('Multiple Instances', () => {
 
   describe('Initialization', () => {
 
-    beforeEach(waitForAsync(() => {
-      if (!reconfigure) {
-        return;
-      }
-      reconfigure = false;
-      fixture = configureTestBedTwo();
-    }));
+    beforeEach((() => fixture = configureTestBedTwo()));
 
     it('should init component with 2 datasources', () => {
       const cmp = fixture.componentInstance;

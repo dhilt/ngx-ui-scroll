@@ -302,18 +302,31 @@ describe('Bug Spec', () => {
         filter(v => flag ? v : !v), take(1)
       ).toPromise();
 
-    const ngIfReload = async (relax?: boolean): Promise<void> => {
+    const ngIfReload = async (onBeforeHide?: () => void): Promise<void> => {
       await init(true);
       await misc.adapter.relax();
+      onBeforeHide && onBeforeHide();
       misc.testComponent.show = false;
       await init(false);
       misc.testComponent.show = true;
       misc.fixture.changeDetectorRef.detectChanges();
       await init(true);
-      if (relax) {
-        await misc.adapter.relax();
-      }
     };
+
+    it('should switch Adapter.init trice', async () => {
+      let count = 0;
+      const result = new Promise(resolve => {
+        const sub = misc.testComponent.datasource.adapter.init$.subscribe(() => {
+          if (++count === 3) {
+            sub.unsubscribe();
+            resolve(null);
+          }
+        });
+      });
+      await ngIfReload();
+      await result;
+      expect(count).toBe(3);
+    });
 
     it('should re-render the viewport', async () => {
       expect(misc.workflow.isInitialized).toEqual(false);
@@ -331,12 +344,29 @@ describe('Bug Spec', () => {
     });
 
     it('should scroll and take firstVisible', async () => {
-      await ngIfReload(true);
+      await ngIfReload();
+      await misc.adapter.relax();
       const { firstVisible, firstVisible$ } = misc.adapter;
       expect(firstVisible.$index).toEqual(1);
       await misc.scrollMaxRelax();
       expect(misc.adapter.firstVisible$).toEqual(firstVisible$);
       expect(misc.adapter.firstVisible.$index).toBeGreaterThan(1);
+    });
+
+    it('should clear Buffer', async () => {
+      let retainedBuffer, retainedItem;
+      await ngIfReload(() => {
+        retainedBuffer = misc.scroller.buffer;
+        retainedItem = retainedBuffer.items[0];
+        expect(retainedBuffer.size).not.toBe(0);
+        expect(retainedItem.element).toBeTruthy();
+      });
+      await misc.adapter.relax();
+      const buffer = misc.getWorkflow().scroller.buffer;
+      expect((retainedBuffer as unknown as { size: number }).size).toBe(0);
+      expect((retainedItem as unknown as { element?: HTMLElement }).element).toBeFalsy();
+      expect(buffer.size).not.toBe(0);
+      expect(buffer.items[0].element).toBeTruthy();
     });
   });
 

@@ -190,13 +190,14 @@ const shouldReload: ItFuncConfig<ICustom> = config => misc => done => {
       }
     });
   }
-  misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
+  const sub = misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
     if (misc.workflow.cyclesDone < startWFCount + config.custom.scrollCount) {
       misc.scrollMax();
     } else if (misc.workflow.cyclesDone === startWFCount + config.custom.scrollCount) {
       doReload(config, misc);
     } else {
       checkExpectation(config, misc);
+      sub.unsubscribe();
       done();
     }
   });
@@ -301,6 +302,8 @@ const shouldReloadOnFirstVisibleChange: ItFuncConfig<ICustom> = config => misc =
 };
 
 describe('Adapter Reload Spec', () => {
+
+  // configListDestructiveFilter(configList, 0);
 
   describe('simple reload', () =>
     configList.forEach(config =>

@@ -77,28 +77,35 @@ export class TwoScrollersTestComponent implements TestComponentInterface {
   });
 }
 
-@Component({
-  template: `<div
+const basicTemplate = `<div
   *ngIf="show"
   style="height: 200px; overflow-y: scroll;"
 ><div
   *uiScroll="let item of datasource; let index = index"
-><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`
-})
+><span>{{index}}</span> : <b>{{item.text}}</b></div></div>`;
+
+const basicDS: IDatasource<Data> = {
+  get: (index, count, success) =>
+    success(Array.from({ length: count }, (j, i) =>
+      ({ id: i + index, text: 'item #' + (i + index) })
+    )),
+  // devSettings: { debug: true }
+};
+
+@Component({ template: basicTemplate })
 export class ScrollerSubTestComponent implements TestComponentInterface {
-  datasource = new Datasource<Data>({
-    get: (index, count, success) =>
-      success(Array.from({ length: count }, (j, i) =>
-        ({ id: i + index, text: 'item #' + (i + index) })
-      )),
-    // devSettings: { debug: true }
-  });
-
-  show: boolean;
+  datasource = new Datasource<Data>(basicDS);
+  show = true;
   firstVisible: ItemAdapter<Data>;
-
   constructor() {
-    this.show = true;
     this.datasource.adapter.firstVisible$.subscribe(value => this.firstVisible = value);
+  }
+}
+
+@Component({ template: basicTemplate })
+export class ScrollerPlainTestComponent implements TestComponentInterface {
+  datasource = basicDS;
+  show = true;
+  constructor() {
   }
 }

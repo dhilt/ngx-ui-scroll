@@ -59,11 +59,11 @@ const getAdapterConfig = (): IAdapterConfig => ({
 });
 
 const makeAngularDatasource = () => class <T = unknown> implements IAngularDatasourceConstructed<T> {
-  get: IDatasource<T>['get'];
-  settings?: IDatasource<T>['settings'];
-  devSettings?: IDatasource<T>['devSettings'];
+  get: IAngularDatasource<T>['get'];
+  settings?: IAngularDatasource<T>['settings'];
+  devSettings?: IAngularDatasource<T>['devSettings'];
   adapter: IAngularAdapter<T>;
-  constructor(_ds: IDatasource<T>) { }
+  constructor(_ds: IAngularDatasource<T>) { }
 };
 
 const AngularDatasource =

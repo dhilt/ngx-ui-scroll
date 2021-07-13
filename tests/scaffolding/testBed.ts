@@ -9,6 +9,7 @@ import {
   ScrollerTestComponent,
   TwoScrollersTestComponent,
   ScrollerSubTestComponent,
+  ScrollerPlainTestComponent,
 } from './testComponent';
 
 export const configureTestBed = (
@@ -44,3 +45,4 @@ const configureTestBedFactory = <T>(comp: Type<T>) => (): ComponentFixture<T> =>
 
 export const configureTestBedTwo = configureTestBedFactory(TwoScrollersTestComponent);
 export const configureTestBedSub = configureTestBedFactory(ScrollerSubTestComponent);
+export const configureTestBedPlain = configureTestBedFactory(ScrollerPlainTestComponent);

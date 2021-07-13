@@ -47,6 +47,7 @@ const testContext = require.context(
   //(eof)\.spec\.ts/
   //(initial-load)\.spec\.ts/
   //(min-max-indexes)\.spec\.ts/
+  //(recreation)\.spec\.ts/
   //(scroll-basic)\.spec\.ts/
   //(scroll-delay)\.spec\.ts/
   //(scroll-fast)\.spec\.ts/

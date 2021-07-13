@@ -82,6 +82,14 @@ export class Misc<Comp = TestComponentInterface> {
     };
   }
 
+  getComponent(): UiScrollComponent<Data> {
+    return this.fixture.debugElement.query(By.css('[ui-scroll]')).componentInstance;
+  }
+
+  getWorkflow(): Workflow<Data> {
+    return this.getComponent().workflow;
+  }
+
   generateFakeWorkflow(settings?: Scroller['settings']): Workflow {
     return new Workflow({
       consumer: { name: 'fake', version: 'x.x.x' },
@@ -152,7 +160,7 @@ export class Misc<Comp = TestComponentInterface> {
   }
 
   scrollTo(value: number): void {
-    this.scroller.adapter.fix({ scrollPosition: value });
+    this.adapter.fix({ scrollPosition: value });
   }
 
   scrollMin(): void {

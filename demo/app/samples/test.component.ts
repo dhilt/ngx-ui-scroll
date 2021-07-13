@@ -133,6 +133,11 @@ export class TestComponent {
     }, delay);
   }
 
+  show = true;
+  doHideShow() {
+    this.show = !this.show;
+  }
+
   doReload() {
     this.datasource.adapter.reload(this.reloadIndex);
   }

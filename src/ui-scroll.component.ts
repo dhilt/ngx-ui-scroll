@@ -63,9 +63,5 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.workflow.dispose();
-    const { reset } = (this.datasource as unknown as { reset?: () => void });
-    if (typeof reset === 'function') {
-      reset.call(this.datasource);
-    }
   }
 }

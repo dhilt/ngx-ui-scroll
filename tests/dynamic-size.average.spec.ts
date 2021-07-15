@@ -124,8 +124,8 @@ const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCou
   return JSON.stringify(itemsCounter) !== JSON.stringify(previous) ? itemsCounter : null;
 };
 
-const testInitialLoad: ItFuncConfig = config => misc => done =>
-  misc.adapter.loopPending$.pipe(filter(v => !v)).subscribe(() => {
+const testInitialLoad: ItFuncConfig = config => misc => done => {
+  const sub = misc.adapter.loopPending$.pipe(filter(v => !v)).subscribe(() => {
     let itemsCounter: ItemsCounter | null;
     const startIndex = config.datasourceSettings.startIndex as number;
     if (misc.innerLoopCount === 1) {
@@ -136,18 +136,21 @@ const testInitialLoad: ItFuncConfig = config => misc => done =>
     if (itemsCounter) {
       misc.shared.itemsCounter = itemsCounter;
     } else {
+      sub.unsubscribe();
       done();
     }
   });
+};
 
-const testScroll: ItFuncConfig = () => misc => done =>
-  misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
+const testScroll: ItFuncConfig = () => misc => done => {
+  const sub = misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
     const buffer = misc.scroller.buffer;
     if (buffer.bof.get()) {
       getAverageSizeData(
         Math.max(ABS_MIN_INDEX, misc.scroller.settings.minIndex),
         Math.min(ABS_MAX_INDEX, misc.scroller.settings.maxIndex)
       );
+      sub.unsubscribe();
       done();
       return;
     }
@@ -165,28 +168,29 @@ const testScroll: ItFuncConfig = () => misc => done =>
       return;
     }
   });
+};
 
 describe('Dynamic Size Spec for SizeStrategy.Average', () => {
 
-  describe('Initial load', () => {
+  describe('Initial load', () =>
     configList.forEach(config =>
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
         it: testInitialLoad(config)
       })
-    );
-  });
+    )
+  );
 
-  describe('After scroll', () => {
+  describe('After scroll', () =>
     configListScroll.forEach(config =>
       makeTest({
         config,
         title: 'should fill the viewport with paddings',
         it: testScroll(config)
       })
-    );
-  });
+    )
+  );
 
 });
 

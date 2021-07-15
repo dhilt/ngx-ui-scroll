@@ -1,10 +1,11 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { configureTestBedSub } from './scaffolding/testBed';
 import { DatasourceProcessor } from './scaffolding/datasources/class';
-import { ScrollerSubTestComponent } from './scaffolding/testComponent';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { ItemAdapter } from './miscellaneous/vscroll';
+
+import { configureTestBedSub } from './scaffolding/testBed';
+import { ScrollerSubTestComponent } from './scaffolding/testComponent';
 
 describe('Bug Spec', () => {
 
@@ -121,9 +122,7 @@ describe('Bug Spec', () => {
   describe('early (constructor) subscriptions', () => {
     let misc: Misc<ScrollerSubTestComponent>;
 
-    beforeEach(() => {
-      misc = new Misc(configureTestBedSub());
-    });
+    beforeEach(() => misc = new Misc(configureTestBedSub()));
 
     it('should work', async () => {
       const { adapter, testComponent } = misc;

@@ -5,7 +5,12 @@ import { Type } from '@angular/core';
 import { UiScrollModule } from '../../src/ui-scroll.module';
 
 import { DatasourceService } from './datasources/class';
-import { ScrollerTestComponent, TwoScrollersTestComponent, ScrollerSubTestComponent } from './testComponent';
+import {
+  ScrollerTestComponent,
+  TwoScrollersTestComponent,
+  ScrollerSubTestComponent,
+  ScrollerPlainTestComponent,
+} from './testComponent';
 
 export const configureTestBed = (
   datasource: new () => unknown, template: string
@@ -40,3 +45,4 @@ const configureTestBedFactory = <T>(comp: Type<T>) => (): ComponentFixture<T> =>
 
 export const configureTestBedTwo = configureTestBedFactory(TwoScrollersTestComponent);
 export const configureTestBedSub = configureTestBedFactory(ScrollerSubTestComponent);
+export const configureTestBedPlain = configureTestBedFactory(ScrollerPlainTestComponent);

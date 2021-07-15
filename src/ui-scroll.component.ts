@@ -50,7 +50,7 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
     this.workflow = new Workflow<Data>({
       consumer,
       element: this.elementRef.nativeElement,
-      datasource: this.datasource as unknown as IDatasource<Data>,
+      datasource: this.datasource as IDatasource<Data>,
       run: items => {
         if (!items.length && !this.items.length) {
           return;

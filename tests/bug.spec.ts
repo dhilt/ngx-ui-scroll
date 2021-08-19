@@ -1,5 +1,5 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { DatasourceProcessor } from './scaffolding/datasources/class';
+import { DatasourceProcessor, DatasourceResizer, getDatasourceClassForResize } from './scaffolding/datasources/class';
 import { IndexedItem, removeItems } from './miscellaneous/items';
 import { Misc } from './miscellaneous/misc';
 import { ItemAdapter } from './miscellaneous/vscroll';
@@ -283,5 +283,30 @@ describe('Bug Spec', () => {
       }
     })
   );
+
+  describe('bottom alignment when the targeting the last row', () => {
+    const settings = {
+      startIndex: 99,
+      minIndex: 0,
+      maxIndex: 99,
+    };
+    [true, false].forEach(odd =>
+      makeTest({
+        config: {
+          datasourceSettings: settings,
+          templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
+          datasourceClass: getDatasourceClassForResize(settings, { debug: false })
+        },
+        title: `should stay at the bottom edge when odd items are ${odd ? 'small' : 'big'}`,
+        it: (misc) => async done => {
+          (misc.datasource as DatasourceResizer).setSizes((i) => (odd ? i % 2 === 0 : i % 2 !== 0) ? 50 : 100);
+          await misc.relaxNext();
+          expect(misc.adapter.lastVisible.$index).toBe(settings.maxIndex);
+          expect(misc.getScrollPosition()).toBe(misc.getMaxScrollPosition());
+          done();
+        }
+      })
+    );
+  });
 
 });

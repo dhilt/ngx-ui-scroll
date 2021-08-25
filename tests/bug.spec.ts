@@ -284,7 +284,7 @@ describe('Bug Spec', () => {
     })
   );
 
-  describe('bottom alignment when the targeting the last row', () => {
+  describe('bottom alignment when targeting the last row', () => {
     const settings = {
       startIndex: 99,
       minIndex: 0,
@@ -297,8 +297,8 @@ describe('Bug Spec', () => {
           templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
           datasourceClass: getDatasourceClassForResize(settings, { debug: false })
         },
-        title: `should stay at the bottom edge when odd items are ${odd ? 'small' : 'big'}`,
-        it: (misc) => async done => {
+        title: `should stay at the bottom edge when ${odd ? 'odd' : 'even'} items are big`,
+        it: misc => async done => {
           (misc.datasource as DatasourceResizer).setSizes((i) => (odd ? i % 2 === 0 : i % 2 !== 0) ? 50 : 100);
           await misc.relaxNext();
           expect(misc.adapter.lastVisible.$index).toBe(settings.maxIndex);

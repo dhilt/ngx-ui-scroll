@@ -2,7 +2,7 @@ import { waitForAsync, ComponentFixture } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
-import { Workflow, Direction, INVALID_DATASOURCE_PREFIX, Settings } from './miscellaneous/vscroll';
+import { Workflow, Direction, Settings } from './miscellaneous/vscroll';
 
 import { UiScrollComponent } from '../src/ui-scroll.component';
 import { IAdapter } from '../src/ui-scroll.datasource';
@@ -174,103 +174,6 @@ describe('Settings', () => {
       expect(nodeType).toEqual(1);
       done();
     }
-  });
-
-});
-
-describe('Datasource', () => {
-
-  makeTest<void, false>({
-    config: {
-      datasourceClass: 'invalid' as unknown as { new(): void },
-      toThrow: true
-    },
-    title: 'should throw exception (datasource is not a constructor)',
-    it: error => done => {
-      expect(error).toBe('datasource is not a constructor');
-      done();
-    }
-  });
-
-  makeTest<void, false>({
-    config: {
-      datasourceClass: class {
-        settings: Settings;
-
-        constructor() {
-          this.settings = {};
-        }
-      },
-      toThrow: true
-    },
-    title: 'should throw exception (no get)',
-    it: error => done => {
-      expect((error as unknown as string).startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
-      done();
-    }
-  });
-
-  makeTest<void, false>({
-    config: {
-      datasourceClass: class {
-        settings: Settings;
-        get: boolean;
-
-        constructor() {
-          this.settings = {};
-          this.get = true;
-        }
-      },
-      toThrow: true
-    },
-    title: 'should throw exception (get is not a function)',
-    it: error => done => {
-      expect((error as unknown as string).startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
-      done();
-    }
-  });
-
-  makeTest<void, false>({
-    config: {
-      datasourceClass: class {
-        settings: Settings;
-
-        constructor() {
-          this.settings = {};
-        }
-
-        get(offset: number) {
-          return ++offset;
-        }
-      },
-      toThrow: true
-    },
-    title: 'should throw exception (get has less than 2 arguments)',
-    it: error => done => {
-      expect((error as unknown as string).startsWith(INVALID_DATASOURCE_PREFIX)).toBeTruthy();
-      done();
-    }
-  });
-
-  makeTest<void, false>({
-    config: {
-      datasourceClass: class {
-        settings: Settings;
-        test: true;
-
-        constructor() {
-          this.settings = {};
-        }
-
-        get(_offset: number, _count: number) {
-          return [];
-        }
-
-        reset() { }
-      }
-    },
-    title: 'should pass',
-    it: () => done => done()
   });
 
 });

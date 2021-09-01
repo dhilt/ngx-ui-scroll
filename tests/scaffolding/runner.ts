@@ -11,7 +11,7 @@ import { generateDatasourceClass } from './datasources/class';
 interface ITestBedConfig<Custom = void> {
   datasourceClass?: { new(): unknown };
   datasourceName?: string;
-  datasourceSettings?: Settings;
+  datasourceSettings?: Settings<Data>;
   datasourceDevSettings?: DevSettings;
   templateSettings?: TemplateSettings;
   toThrow?: boolean;
@@ -26,14 +26,14 @@ type TestBedConfigDS<Custom = void, DS = true> = DS extends true ?
 
 export type TestBedConfig<Custom = void, DS = true> = Custom extends void ?
   TestBedConfigDS<Custom, DS> :
-  (TestBedConfigDS<Custom> & { custom: Custom; datasourceSettings: Settings<Data>; });
+  (TestBedConfigDS<Custom, DS> & { custom: Custom; });
 
 export type OperationConfig<T extends PropertyKey, Custom = void> = {
   [key in T]: TestBedConfig<Custom>
 };
 
 export type ItFunc = (misc: Misc) => (done: () => void) => void;
-export type ItFuncConfig<Custom = void> = (config: TestBedConfig<Custom>) => ItFunc;
+export type ItFuncConfig<Custom = void, DS = true> = (config: TestBedConfig<Custom, DS>) => ItFunc;
 
 export interface MakeTestConfig<Custom = void, DS = true> {
   title: string;

@@ -159,7 +159,7 @@ const shouldSetDefault: ItFuncConfig<ICustom> = config => misc => async done => 
   done();
 };
 
-describe('Dynamic Size Spec', () => {
+describe('Dynamic Size Spec for Frequent and Constant strategies', () => {
 
   describe('SizeStrategy.Frequent', () => configListFrequent
     .forEach(config =>

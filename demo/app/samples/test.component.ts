@@ -60,7 +60,6 @@ export class TestComponent {
       logTime: false,
       logProcessRun: true,
       throttle: 40,
-      changeOverflow: false
     }
   });
 

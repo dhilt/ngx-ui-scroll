@@ -38,7 +38,8 @@ const testContext = require.context(
   //(adapter\.update)\.spec\.ts/
   //(bug)\.spec\.ts/
   //(common)\.spec\.ts/
-  //(datasource-get)\.spec\.ts/
+  //(datasource)\.spec\.ts/
+  //(direction-priority)\.spec\.ts/
   //(dynamic-height-reload)\.spec\.ts/
   //(dynamic-height-scroll)\.spec\.ts/
   //(dynamic-size\.average)\.spec\.ts/

@@ -1,7 +1,7 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
 import { DatasourceResizer, getDatasourceClassForResize } from './scaffolding/datasources/class';
 import { Misc } from './miscellaneous/misc';
-import { Direction } from '../../vscroll/src';
+import { Direction } from './miscellaneous/vscroll';
 
 interface ICustom {
   title: string;

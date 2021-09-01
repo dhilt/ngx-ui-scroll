@@ -1,5 +1,4 @@
 import { makeTest, ItFunc, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
-
 import { INVALID_DATASOURCE_PREFIX, Settings } from './miscellaneous/vscroll';
 
 const configClassPass: TestBedConfig<void, false> = {

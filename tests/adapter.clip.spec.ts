@@ -89,7 +89,7 @@ const shouldClipAfterAppend: ItFuncConfig<void | ICustom> = config => misc => as
   const clipSettings = getClipArgument(config);
   await misc.relaxNext();
 
-  const indexToAppend = buffer.getIndexToAppend();
+  const indexToAppend = buffer.lastIndex + 1;
   const itemsToAppend = Array.from(Array(NEW_ITEMS_COUNT), (_, x) => ({
     id: indexToAppend - x,
     text: `!item #${indexToAppend - x}`

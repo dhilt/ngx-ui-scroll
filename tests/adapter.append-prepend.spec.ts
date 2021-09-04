@@ -9,7 +9,7 @@ enum Operation {
 }
 const min = 1, max = 100, bufferSize = 10, padding = 0.5;
 const templateSettings = { viewportHeight: 200 };
-const amount = 3, emptyAmount = 20;
+const amount = 3, emptyAmount = 25;
 
 interface ICustom {
   amount: number;
@@ -158,58 +158,79 @@ const shouldVirtualize = (operation: Operation): ItFunc => misc => async done =>
   done();
 };
 
-const shouldFillEmptyDatasource = (operation: Operation, virtualize?: boolean): ItFunc => misc => async done => {
+const shouldFillEmptyDatasource = (
+  operation: Operation, virtualize: boolean, fixOpposite: boolean
+): ItFunc => misc => async done => {
   await misc.relaxNext();
   const { viewport, buffer } = misc.scroller;
   const config = configEmpty[operation];
+  const startIndex = config.datasourceSettings.startIndex as number;
   const { amount } = config.custom;
   const templateSize = (config.templateSettings as TemplateSettings).viewportHeight as number;
-  const items = getNewItems(amount)[operation];
   const isAppend = operation === Operation.append;
+  const firstId = startIndex - (!isAppend ? amount : 0) + 1;
+  const items = generateItems(amount, firstId - 1);
+  if (!isAppend) {
+    items.reverse();
+  }
   const itemSize = misc.getItemSize();
 
   expect(viewport.getScrollableSize()).toEqual(templateSize);
   expect(misc.adapter.itemsCount).toEqual(0);
 
-  await misc.adapter[operation](items, virtualize);
+  if (!isAppend) {
+    misc.adapter.prepend({ items, bof: virtualize, increase: fixOpposite });
+  } else {
+    misc.adapter.append({ items, eof: virtualize, decrease: fixOpposite });
+  }
+  await misc.adapter.relax();
 
   const viewportSize = Math.max(amount * itemSize, templateSize);
-  const scrollPosition = isAppend ? 0 : Math.min(amount * itemSize, templateSize);
-  const first = buffer.firstIndex;
-  const last = buffer.lastIndex;
-  const _first = isAppend ? max - amount + 1 : min;
-  const _last = isAppend ? max : min + amount - 1;
+  const shift = (isAppend ? -1 : 1) * (fixOpposite ? emptyAmount - 1 : 0);
+  const fixRight = isAppend && fixOpposite || !isAppend && !fixOpposite;
+  const scrollPosition = fixRight ? Math.max(amount * itemSize - templateSize, 0) : 0;
+  const firstIndex = (isAppend ? max - amount + 1 : min) + shift;
+  const lastIndex = (isAppend ? max : min + amount - 1) + shift;
   expect(misc.getScrollableSize()).toEqual(viewportSize);
   expect(misc.getScrollPosition()).toEqual(scrollPosition);
-  expect(first).toEqual(_first);
-  expect(last).toEqual(_last);
-  expect(misc.checkElementContentByIndex(first)).toEqual(true);
-  expect(misc.checkElementContentByIndex(last)).toEqual(true);
+  expect(buffer.firstIndex).toEqual(firstIndex);
+  expect(buffer.lastIndex).toEqual(lastIndex);
+  expect(misc.checkElementContent(firstIndex, firstId)).toEqual(true);
+  expect(misc.checkElementContent(lastIndex, firstId + amount - 1)).toEqual(true);
   done();
 };
 
-const shouldFillEmptyDatasourceNoIndex = (operation: Operation): ItFunc => misc => async done => {
+const shouldFillEmptyDatasourceNoIndex = (operation: Operation, fixOpposite: boolean): ItFunc => misc => async done => {
   await misc.relaxNext();
+  const { adapter } = misc;
   const isAppend = operation === Operation.append;
-  const items = generateItems(emptyAmount, 0);
+  const firstId = (!isAppend ? 1 - emptyAmount : 0) + 1;
+  const items = generateItems(emptyAmount, firstId - 1);
   if (!isAppend) {
     items.reverse();
   }
-  await misc.adapter[operation](items);
 
-  const first = isAppend ? 1 : 1 - emptyAmount + 1;
-  const last = isAppend ? emptyAmount : 1;
-  expect(misc.adapter.itemsCount).toEqual(emptyAmount);
-  expect(misc.adapter.bufferInfo.firstIndex).toEqual(first);
-  expect(misc.adapter.bufferInfo.lastIndex).toEqual(last);
-  expect(misc.checkElementContent(first, 1)).toEqual(true);
-  expect(misc.checkElementContent(last, emptyAmount)).toEqual(true);
+  if (!isAppend) {
+    adapter.prepend({ items, increase: fixOpposite });
+  } else {
+    adapter.append({ items, decrease: fixOpposite });
+  }
+  await adapter.relax();
+
+  const shift = (isAppend ? -1 : 1) * (fixOpposite ? emptyAmount - 1 : 0);
+  const firstIndex = (isAppend ? 1 : 1 - emptyAmount + 1) + shift;
+  const lastIndex = (isAppend ? emptyAmount : 1) + shift;
+  expect(adapter.itemsCount).toEqual(emptyAmount);
+  expect(adapter.bufferInfo.firstIndex).toEqual(firstIndex);
+  expect(adapter.bufferInfo.lastIndex).toEqual(lastIndex);
+  expect(misc.checkElementContent(firstIndex, firstId)).toEqual(true);
+  expect(misc.checkElementContent(lastIndex, firstId + emptyAmount - 1)).toEqual(true);
   done();
 };
 
 describe('Adapter Append-Prepend Spec', () =>
   [Operation.append, Operation.prepend].forEach(token =>
-    [true, false].forEach(opposite => {
+    [false, true].forEach(opposite => {
 
       makeTest({
         config: configBasic[token],
@@ -226,15 +247,15 @@ describe('Adapter Append-Prepend Spec', () =>
       [false, true].forEach(virtual =>
         makeTest({
           config: configEmpty[token],
-          title: `should ${token + (virtual ? ' virtually' : '')} to empty datasource` + opposite ? ' (opposite)' : '',
-          it: shouldFillEmptyDatasource(token, virtual)
+          title: `should ${token + (virtual ? ' virtually' : '')} to empty DS` + (opposite ? ' (opposite)' : ''),
+          it: shouldFillEmptyDatasource(token, virtual, opposite)
         })
       );
 
       makeTest({
         config: configEmptyNoIndex[token],
-        title: `should ${token} to empty datasource when no indexes are set` + (opposite ? ' (opposite)' : ''),
-        it: shouldFillEmptyDatasourceNoIndex(token)
+        title: `should ${token} to empty DS when no indexes are set` + (opposite ? ' (opposite)' : ''),
+        it: shouldFillEmptyDatasourceNoIndex(token, opposite)
       });
 
     })

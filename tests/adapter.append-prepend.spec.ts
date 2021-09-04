@@ -96,7 +96,7 @@ const getNewItems = (total: number): { [key: string]: Data[] } => ({
   })).reverse()
 });
 
-const shouldRenderImmediately = (operation: Operation): ItFunc => misc => async done => {
+const shouldRenderImmediately = (operation: Operation, fixOpposite: boolean): ItFunc => misc => async done => {
   await misc.relaxNext();
   const { scroller: { viewport }, adapter } = misc;
   const isAppend = operation === Operation.append;
@@ -107,20 +107,25 @@ const shouldRenderImmediately = (operation: Operation): ItFunc => misc => async 
   expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
   expect(viewport.paddings[direction].size).toEqual(0);
 
-  adapter[operation](items);
+  if (!isAppend) {
+    adapter.prepend({ items, increase: fixOpposite });
+  } else {
+    adapter.append({ items, decrease: fixOpposite });
+  }
   expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
 
   await adapter.relax();
   expect(viewport.getScrollableSize()).toEqual(max * itemSize);
   expect(viewport.paddings[direction].size).toEqual(0);
-  expect(adapter.bufferInfo.absMinIndex).toEqual(min);
-  expect(adapter.bufferInfo.absMaxIndex).toEqual(max);
+  const shift = (isAppend ? -1 : 1) * (fixOpposite ? _amount : 0);
+  expect(adapter.bufferInfo.absMinIndex).toEqual(min + shift);
+  expect(adapter.bufferInfo.absMaxIndex).toEqual(max + shift);
   if (isAppend) {
-    expect(adapter.bufferInfo.maxIndex).toEqual(max);
-    expect(misc.checkElementContentByIndex(max)).toEqual(true);
+    expect(adapter.bufferInfo.maxIndex).toEqual(max + shift);
+    expect(misc.checkElementContent(max + shift, max)).toEqual(true);
   } else {
-    expect(adapter.bufferInfo.minIndex).toEqual(min);
-    expect(misc.checkElementContentByIndex(min)).toEqual(true);
+    expect(adapter.bufferInfo.minIndex).toEqual(min + shift);
+    expect(misc.checkElementContent(min + shift, min)).toEqual(true);
   }
   done();
 };
@@ -203,33 +208,35 @@ const shouldFillEmptyDatasourceNoIndex = (operation: Operation): ItFunc => misc 
 };
 
 describe('Adapter Append-Prepend Spec', () =>
-  [Operation.append, Operation.prepend].forEach(token => {
+  [Operation.append, Operation.prepend].forEach(token =>
+    [true, false].forEach(opposite => {
 
-    makeTest({
-      config: configBasic[token],
-      title: `should ${token} immediately`,
-      it: shouldRenderImmediately(token)
-    });
-
-    makeTest({
-      config: configScroll[token],
-      title: `should ${token} after scroll (virtualization)`,
-      it: shouldVirtualize(token)
-    });
-
-    [false, true].forEach(virtualize =>
       makeTest({
-        config: configEmpty[token],
-        title: `should ${token} to empty datasource` + (virtualize ? ' (virtualization)' : ''),
-        it: shouldFillEmptyDatasource(token, virtualize)
-      })
-    );
+        config: configBasic[token],
+        title: `should ${token} immediately` + (opposite ? ' (opposite)' : ''),
+        it: shouldRenderImmediately(token, opposite)
+      });
 
-    makeTest({
-      config: configEmptyNoIndex[token],
-      title: `should ${token} to empty datasource when no indexes are set`,
-      it: shouldFillEmptyDatasourceNoIndex(token)
-    });
+      makeTest({
+        config: configScroll[token],
+        title: `should ${token} virtually after scroll` + (opposite ? ' (opposite)' : ''),
+        it: shouldVirtualize(token)
+      });
 
-  })
+      [false, true].forEach(virtual =>
+        makeTest({
+          config: configEmpty[token],
+          title: `should ${token + (virtual ? ' virtually' : '')} to empty datasource` + opposite ? ' (opposite)' : '',
+          it: shouldFillEmptyDatasource(token, virtual)
+        })
+      );
+
+      makeTest({
+        config: configEmptyNoIndex[token],
+        title: `should ${token} to empty datasource when no indexes are set` + (opposite ? ' (opposite)' : ''),
+        it: shouldFillEmptyDatasourceNoIndex(token)
+      });
+
+    })
+  )
 );

@@ -2,6 +2,7 @@ import { Direction } from './miscellaneous/vscroll';
 import { Data, generateItems } from './miscellaneous/items';
 import { ItFunc, makeTest, OperationConfig } from './scaffolding/runner';
 import { TemplateSettings } from './scaffolding/templates';
+import { DatasourceResetter, getDatasourceClassForReset } from './scaffolding/datasources/class';
 
 enum Operation {
   append = 'append',
@@ -11,13 +12,20 @@ const min = 1, max = 100, bufferSize = 10, padding = 0.5;
 const templateSettings = { viewportHeight: 200 };
 const amount = 3, emptyAmount = 25;
 
+const basicDSConfig = {
+  minIndex: min,
+  maxIndex: max,
+  bufferSize,
+  padding,
+};
+
 interface ICustom {
   amount: number;
 }
 
 const configBasic: OperationConfig<Operation, ICustom> = {
   [Operation.prepend]: {
-    datasourceName: 'limited',
+    datasourceName: 'limited-1-100-insert-processor',
     datasourceSettings: {
       startIndex: min, minIndex: min + amount, maxIndex: max,
       bufferSize, padding, adapter: true
@@ -26,7 +34,7 @@ const configBasic: OperationConfig<Operation, ICustom> = {
     custom: { amount }
   },
   [Operation.append]: {
-    datasourceName: 'limited',
+    datasourceName: 'limited-1-100-insert-processor',
     datasourceSettings: {
       startIndex: max - bufferSize + 1 - amount,
       minIndex: min,
@@ -38,20 +46,18 @@ const configBasic: OperationConfig<Operation, ICustom> = {
   }
 };
 
-const configScroll: OperationConfig<Operation, ICustom> = {
+const configVirtual: OperationConfig<Operation, ICustom> = {
   [Operation.prepend]: {
-    ...configBasic.prepend,
-    datasourceSettings: {
-      ...configBasic.prepend.datasourceSettings,
-      startIndex: max - bufferSize + 1
-    }
+    datasourceSettings: { ...basicDSConfig, startIndex: max },
+    datasourceClass: getDatasourceClassForReset({ ...basicDSConfig, startIndex: max }),
+    templateSettings,
+    custom: { amount }
   },
   [Operation.append]: {
-    ...configBasic.append,
-    datasourceSettings: {
-      ...configBasic.append.datasourceSettings,
-      startIndex: min
-    }
+    datasourceSettings: { ...basicDSConfig, startIndex: min },
+    datasourceClass: getDatasourceClassForReset({ ...basicDSConfig, startIndex: min }),
+    templateSettings,
+    custom: { amount }
   }
 };
 
@@ -130,31 +136,63 @@ const shouldRenderImmediately = (operation: Operation, fixOpposite: boolean): It
   done();
 };
 
-const shouldVirtualize = (operation: Operation): ItFunc => misc => async done => {
+const shouldVirtualize = (operation: Operation, fixOpposite: boolean): ItFunc => misc => async done => {
   await misc.relaxNext();
-  const { viewport, viewport: { paddings } } = misc.scroller;
-  const direction = operation === Operation.append ? Direction.forward : Direction.backward;
-  const oppositeDirection = direction === Direction.forward ? Direction.backward : Direction.forward;
-  const { amount } = configScroll[operation].custom;
-  const items = getNewItems(amount)[operation];
-  const itemSize = misc.getItemSize();
-  expect(viewport.getScrollableSize()).toEqual((max - items.length) * itemSize);
-  expect(paddings[oppositeDirection].size).toEqual(0);
+  const { viewport, viewport: { paddings }, buffer } = misc.scroller;
+  const { custom: { amount } } = configVirtual[operation];
+  const isAppend = operation === Operation.append;
+  const direction = isAppend ? Direction.forward : Direction.backward;
+  const oppositeDirection = isAppend ? Direction.backward : Direction.forward;
+  const fixRight = isAppend && fixOpposite || !isAppend && !fixOpposite;
   const paddingSize = paddings[direction].size;
+  const itemSize = misc.getItemSize();
+  let items: Data[] = [];
 
-  misc.adapter[operation](items, true);
-  expect(viewport.getScrollableSize()).toEqual(max * itemSize);
-  expect(paddings[direction].size).toEqual(paddingSize + (items.length * itemSize));
+  const minIndex = min - (fixRight ? amount : 0);
+  const maxIndex = max + (fixRight ? 0 : amount);
+  const firstId = min - (isAppend ? 0 : amount);
+  const firstNewIndex = (isAppend ? maxIndex + 1 : minIndex) - (isAppend ? amount : 0);
+  const shift = (isAppend ? -1 : 1) * (fixOpposite ? amount : 0);
+  expect(viewport.getScrollableSize()).toEqual((max - min + 1) * itemSize);
+  expect(paddings[oppositeDirection].size).toEqual(0);
 
-  if (operation === Operation.append) {
-    misc.scrollMax();
+  const _firstIndex = buffer.firstIndex;
+  const _lastIndex = buffer.lastIndex;
+
+  // append items to the original datasource
+  (misc.datasource as DatasourceResetter).reset(minIndex, maxIndex, firstId);
+  misc.datasource.get(firstNewIndex, amount, data => items = data);
+
+  // virtual append via Adapter
+  if (!isAppend) {
+    await misc.adapter.prepend({ items, bof: true, increase: fixOpposite });
+    expect(buffer.firstIndex).toEqual(_firstIndex + shift);
   } else {
+    await misc.adapter.append({ items, eof: true, decrease: fixOpposite });
+    expect(buffer.lastIndex).toEqual(_lastIndex + shift);
+  }
+  expect(viewport.getScrollableSize()).toEqual((maxIndex - minIndex + 1) * itemSize);
+  expect(paddings[direction].size).toEqual(paddingSize + (items.length * itemSize));
+  expect(buffer.absMinIndex).toEqual(minIndex);
+  expect(buffer.absMaxIndex).toEqual(maxIndex);
+
+  if (!isAppend) {
     misc.scrollMin();
+  } else {
+    misc.scrollMax();
   }
   await misc.relaxNext();
 
-  expect(viewport.getScrollableSize()).toEqual(max * itemSize);
+  expect(viewport.getScrollableSize()).toEqual((maxIndex - minIndex + 1) * itemSize);
   expect(paddings[direction].size).toEqual(0);
+
+  if (!isAppend) {
+    expect(buffer.firstIndex).toEqual(firstNewIndex);
+    expect(misc.checkElementContent(firstNewIndex, firstId)).toEqual(true);
+  } else {
+    expect(buffer.lastIndex).toEqual(firstNewIndex + amount - 1);
+    expect(misc.checkElementContent(firstNewIndex + amount - 1, items[amount - 1].id)).toEqual(true);
+  }
   done();
 };
 
@@ -186,7 +224,7 @@ const shouldFillEmptyDatasource = (
   await misc.adapter.relax();
 
   const viewportSize = Math.max(amount * itemSize, templateSize);
-  const shift = (isAppend ? -1 : 1) * (fixOpposite ? emptyAmount - 1 : 0);
+  const shift = (isAppend ? -1 : 1) * (fixOpposite ? amount - 1 : 0);
   const fixRight = isAppend && fixOpposite || !isAppend && !fixOpposite;
   const scrollPosition = fixRight ? Math.max(amount * itemSize - templateSize, 0) : 0;
   const firstIndex = (isAppend ? max - amount + 1 : min) + shift;
@@ -239,9 +277,9 @@ describe('Adapter Append-Prepend Spec', () =>
       });
 
       makeTest({
-        config: configScroll[token],
+        config: configVirtual[token],
         title: `should ${token} virtually after scroll` + (opposite ? ' (opposite)' : ''),
-        it: shouldVirtualize(token)
+        it: shouldVirtualize(token, opposite)
       });
 
       [false, true].forEach(virtual =>

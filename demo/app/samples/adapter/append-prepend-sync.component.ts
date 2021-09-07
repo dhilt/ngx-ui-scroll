@@ -23,9 +23,16 @@ export class DemoAppendPrependSyncComponent {
   adapterPropsScope = demos.adapterProps;
   adapterMethodsScope = demos.adapterMethods;
 
-  MIN = 100;
-  MAX = 200;
+  inputPrepend = 4;
+  inputAppend = 4;
+  increasePrepend = false;
+  decreaseAppend = false;
+
+  MIN = 1;
+  MAX = 100;
   data: MyItem[];
+  absMinIndex = this.MIN;
+  absMaxIndex = this.MAX;
 
   constructor() {
     this.data = [];
@@ -35,23 +42,6 @@ export class DemoAppendPrependSyncComponent {
   }
 
   datasource = new Datasource<MyItem>({
-    get: (index, count, success) => {
-      const data = [];
-      for (let i = index; i < index + count; i++) {
-        const found = this.data.find(item => item.id === i);
-        if (found) {
-          data.push(found);
-        }
-      }
-      doLog(this.demoContext, index, count, data.length);
-      success(data);
-    },
-    settings: {
-      startIndex: this.MIN
-    }
-  });
-
-  datasourceIndex = new Datasource<MyItem>({
     get: (index, count, success) => {
       const data: MyItem[] = [];
       const start = index;
@@ -66,75 +56,22 @@ export class DemoAppendPrependSyncComponent {
       success(data);
     },
     settings: {
-      startIndex: this.MIN
+      startIndex: Math.round((this.MAX - this.MIN) / 2)
     }
   });
 
   sources: DemoSources = [{
     name: DemoSourceType.Component,
-    text: `MIN = 100;
-MAX = 200;
-inputValue = 1;
+    text: `inputPrepend = 4;
+inputAppend = 4;
+increasePrepend = false;
+decreaseAppend = false;
+    
+MIN = 1;
+MAX = 100;
 data: MyItem[];
-
-constructor() {
-  this.data = [];
-  for (let i = this.MIN; i <= this.MAX; i++) {
-    this.data.push({ id: i, text: 'item #' + i });
-  }
-}
-
-datasource = new Datasource<MyItem>({
-  get: (index, count, success) => {
-    const data = [];
-    for (let i = index; i < index + count; i++) {
-      const found = this.data.find(item => item.id === i);
-      if (found) {
-        data.push(found);
-      }
-    }
-    success(data);
-  },
-  settings: {
-    startIndex: this.MIN
-  }
-});
-
-async doAppend() {
-  await this.datasource.adapter.relax();
-  const items = [];
-  for (let i = 0; i < this.inputValue; i++) {
-    this.MAX++;
-    const newItem: MyItem = {
-      id: this.MAX,
-      text: 'item #' + this.MAX + '*'
-    };
-    this.data.push(newItem);
-    items.push(newItem);
-  }
-  this.datasource.adapter.append({ items, eof: true });
-}
-
-async doPrepend() {
-  await this.datasource.adapter.relax();
-  const items = [];
-  for (let i = 0; i < this.inputValue; i++) {
-    this.MIN--;
-    const newItem: MyItem = {
-      id: this.MIN,
-      text: 'item #' + this.MIN + '*'
-    };
-    this.data.unshift(newItem);
-    items.push(newItem);
-  }
-  this.datasource.adapter.prepend({ items, bof: true });
-}`
-  }, {
-    name: DemoSourceType.Component + ' 2',
-    text: `MIN = 100;
-MAX = 200;
-inputValue = 1;
-data: MyItem2[];
+absMinIndex = this.MIN;
+absMaxIndex = this.MAX;
 
 constructor() {
   this.data = [];
@@ -143,9 +80,9 @@ constructor() {
   }
 }
 
-datasource = new Datasource<MyItem2>({
+datasource = new Datasource<MyItem>({
   get: (index, count, success) => {
-    const data: MyItem2[] = [];
+    const data: MyItem[] = [];
     const start = index;
     const end = start + count - 1;
     for (let i = start; i <= end; i++) {
@@ -157,47 +94,69 @@ datasource = new Datasource<MyItem2>({
     success(data);
   },
   settings: {
-    startIndex: this.MIN
+    startIndex: Math.round((this.MAX - this.MIN) / 2)
   }
 });
-
-async doAppend() {
-  await this.datasource.adapter.relax();
-  const items = [];
-  for (let i = 0; i < this.inputValue; i++) {
-    this.MAX++;
-    const newItem: MyItem2 = {
-      text: 'item #' + this.MAX + '*'
-    };
-    this.data.push(newItem);
-    items.push(newItem);
-  }
-  this.datasource.adapter.append({ items, eof: true });
-}
 
 async doPrepend() {
   await this.datasource.adapter.relax();
   const items = [];
-  for (let i = 0; i < this.inputValue; i++) {
-    this.MIN--;
-    const newItem: MyItem2 = {
-      text: 'item #' + this.MIN + '*'
+  for (let i = 0; i < this.inputPrepend; i++) {
+    if (!this.increasePrepend) {
+      this.MIN--;
+    } else {
+      this.MAX++;
+    }
+    this.absMinIndex--;
+    const newItem: MyItem = {
+      text: 'item #' + this.absMinIndex + '*'
     };
     this.data.unshift(newItem);
     items.push(newItem);
   }
-  this.datasource.adapter.prepend({ items, bof: true });
+  this.datasource.adapter.prepend({
+    items, bof: true, increase: this.increasePrepend
+  });
+}
+
+async doAppend() {
+  await this.datasource.adapter.relax();
+  const items = [];
+  for (let i = 0; i < this.inputAppend; i++) {
+    if (!this.decreaseAppend) {
+      this.MAX++;
+    } else {
+      this.MIN--;
+    }
+    this.absMaxIndex++;
+    const newItem: MyItem = {
+      text: 'item #' + this.absMaxIndex + '*'
+    };
+    this.data.push(newItem);
+    items.push(newItem);
+  }
+  this.datasource.adapter.append({
+    items, eof: true, decrease: this.decreaseAppend
+  });
 }`
   }, {
     active: true,
     name: DemoSourceType.Template,
-    text: `<button (click)="doAppend()">Append</button> /
-<button (click)="doPrepend()">Prepend</button>
-<input [(ngModel)]="inputValue" size="2">
+    text: `<button (click)="doPrepend()">Prepend</button>
+<input [ngModel]="inputPrepend" size="2"> items
+{{increasePrepend ? 'increasingly' : 'decreasingly'}}
+<input type="checkbox" [(ngModel)]="increasePrepend">
+<br>
+<button (click)="doAppend()">Append</button>
+<input [ngModel]="inputAppend" size="2"> items
+{{decreaseAppend ? 'decreasingly' : 'increasingly'}}
+<input type="checkbox" [(ngModel)]="decreaseAppend">
 
 <div class="viewport">
-  <div *uiScroll="let item of datasource">
-    <div class="item">{{item.text}}</div>
+  <div *uiScroll="let item of datasource; let index = index">
+    <div class="item">
+      <span class="index">{{index}})</span> {{item.text}}
+    </div>
   </div>
 </div>`
   }, {
@@ -213,69 +172,56 @@ async doPrepend() {
 }`
   }];
 
-  prependCallSample = 'Adapter.prepend({ items, bof })';
-  appendCallSample = 'Adapter.append({ items, eof })';
+  prependCallSample = 'Adapter.prepend({ items, bof: true })';
+  appendCallSample = 'Adapter.append({ items, eof: true })';
+  prependIncreaseCallSample = 'Adapter.prepend({ items, increase: true })';
 
-  inputValue = 1;
-
-  onInputChanged(target: HTMLInputElement) {
+  onInputChanged(isPrepend: boolean, target: HTMLInputElement) {
     const value = parseInt(target.value.trim(), 10);
     target.value = value.toString();
-    this.inputValue = value;
+    if (isPrepend) {
+      this.inputPrepend = value;
+    } else {
+      this.inputAppend = value;
+    }
   }
 
   async doPrepend() {
     await this.datasource.adapter.relax();
     const items = [];
-    for (let i = 0; i < this.inputValue; i++) {
-      this.MIN--;
-      const newItem = {
-        id: this.MIN,
-        text: 'item #' + this.MIN + '*'
-      };
+    for (let i = 0; i < this.inputPrepend; i++) {
+      if (!this.increasePrepend) {
+        this.MIN--;
+      } else {
+        this.MAX++;
+      }
+      this.absMinIndex--;
+      const newItem: MyItem = { id: 'x', text: 'item #' + this.absMinIndex + '*' };
       this.data.unshift(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.prepend({ items, bof: true });
+    this.datasource.adapter.prepend({
+      items, bof: true, increase: this.increasePrepend
+    });
   }
 
   async doAppend() {
     await this.datasource.adapter.relax();
     const items = [];
-    for (let i = 0; i < this.inputValue; i++) {
-      this.MAX++;
-      const newItem = {
-        id: this.MAX,
-        text: 'item #' + this.MAX + '*'
-      };
+    for (let i = 0; i < this.inputAppend; i++) {
+      if (!this.decreaseAppend) {
+        this.MAX++;
+      } else {
+        this.MIN--;
+      }
+      this.absMaxIndex++;
+      const newItem: MyItem = { id: 'x', text: 'item #' + this.absMaxIndex + '*' };
       this.data.push(newItem);
       items.push(newItem);
     }
-    this.datasource.adapter.append({ items, eof: true });
-  }
-
-  async doPrependIndex() {
-    await this.datasourceIndex.adapter.relax();
-    const items = [];
-    for (let i = 0; i < this.inputValue; i++) {
-      this.MIN--;
-      const newItem: MyItem = { id: 'x', text: 'item #' + this.MIN + '*' };
-      this.data.unshift(newItem);
-      items.push(newItem);
-    }
-    this.datasourceIndex.adapter.prepend({ items, bof: true });
-  }
-
-  async doAppendIndex() {
-    await this.datasourceIndex.adapter.relax();
-    const items = [];
-    for (let i = 0; i < this.inputValue; i++) {
-      this.MAX++;
-      const newItem: MyItem = { id: 'x', text: 'item #' + this.MAX + '*' };
-      this.data.push(newItem);
-      items.push(newItem);
-    }
-    this.datasourceIndex.adapter.append({ items, eof: true });
+    this.datasource.adapter.append({
+      items, eof: true, decrease: this.decreaseAppend
+    });
   }
 
 }

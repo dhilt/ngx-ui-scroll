@@ -361,6 +361,18 @@ input[type=checkbox], input[type=radio] {
   left: 150px;
 }
 
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.column {
+  padding: 0 15px;
+  float: left;
+  width: 50%;
+}
+
 /* code styles */
 
 pre.prettyprint {

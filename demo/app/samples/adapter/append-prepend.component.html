@@ -12,9 +12,24 @@
   <div description>
     <p>
       Adding items at the end and at the beginning of the Scroller's Buffer is possible with
-      <em>{{appendCallSample}}</em> and <em>{{prependCallSample}}</em> methods respectively.
-      The <em>items</em> parameter is an array of items we want to add.
-      Both methods act in the same way, so let's discuss <em>prepend</em>.
+      <em>Adapter.append</em> and <em>Adapter.prepend</em> methods respectively.
+      They have the following object-arguments:
+    </p>
+    <div class="row">
+      <div class="column"><pre>{{appendArgumentsDescription}}</pre></div>
+      <div class="column"><pre>{{prependArgumentsDescription}}</pre></div>
+    </div>
+    <p>
+      The <em>items</em> parameter is an array of items we want to add,
+      <em>eof</em>/<em>bof</em> params provide virtualization,
+      <em>decrease</em>/<em>increase</em> define index strategy.
+      Here we deal with only <em>items</em> parameter,
+      other params are considered in the <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{adapterMethodsScope.map.appendPrependSync.id}}"
+      >next demo</a>.
+      Both <em>append</em> and <em>prepend</em> methods act in the same way,
+      so let's discuss <em>prepend</em>.
     </p>
     <p>
       In this demo we have 20 items on start, 5 of them (95-99) are invisible on the backward direction.

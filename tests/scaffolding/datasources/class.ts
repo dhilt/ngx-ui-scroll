@@ -192,9 +192,27 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
     }
   };
 
+export const getDatasourceClassForReset = (settings: Settings, devSettings?: DevSettings) =>
+  class extends LimitedDatasource {
+
+    constructor() {
+      super(settings, devSettings);
+    }
+
+    reset(min: number, max: number, first: number) {
+      this.min = min;
+      this.max = max;
+      this.data = [];
+      for (let i = 0; i <= max - min; ++i) {
+        this.data.push(generateItem(first + i, 20));
+      }
+    }
+  };
+
 
 export type DatasourceProcessor = InstanceType<ReturnType<typeof getDatasourceProcessingClass>>;
 export type DatasourceResizer = InstanceType<ReturnType<typeof getDatasourceClassForResize>>;
 export type DatasourceRemover = InstanceType<ReturnType<typeof getDatasourceClassForRemovals>>;
 export type DatasourceReplacer = InstanceType<ReturnType<typeof getDatasourceClassForReplacements>>;
 export type DatasourceUpdater = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;
+export type DatasourceResetter = InstanceType<ReturnType<typeof getDatasourceClassForReset>>;

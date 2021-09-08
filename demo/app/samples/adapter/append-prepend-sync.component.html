@@ -1,18 +1,26 @@
+<ng-template #itemTemplate let-item="item" let-index="index">
+  <span class="index">{{index}})</span> {{item.text}}
+</ng-template>
+
 <app-demo
-  [datasource]="datasourceIndex"
+  [datasource]="datasource"
   [context]="demoContext"
   [sources]="sources"
+  [itemTemplate]="itemTemplate"
 >
-  <div actions style="display: flex">
-    <button (click)="doAppendIndex()">Append</button> /
-    <button (click)="doPrependIndex()">Prepend</button>
-    <input [ngModel]="inputValue" (change)="onInputChanged($any($event.target))" size="3">
+  <div actions>
+    <button (click)="doPrepend()">Prepend</button>&nbsp;
+    <input [ngModel]="inputPrepend" (change)="onInputChanged(true, $any($event.target))" size="2">
+    &nbsp;items {{increasePrepend ? 'increasingly' : 'decreasingly'}} &nbsp;<input type="checkbox" [(ngModel)]="increasePrepend">
+    <br>
+    <button (click)="doAppend()">Append</button>&nbsp;
+    <input [ngModel]="inputAppend" (change)="onInputChanged(false, $any($event.target))" size="2">
+    &nbsp;items {{decreaseAppend ? 'decreasingly' : 'increasingly'}} &nbsp;<input type="checkbox" [(ngModel)]="decreaseAppend">
   </div>
 
   <div description>
     <p>
-      Along with <em>items</em> parameter both
-      <em>Adapter.append</em> and <em>Adapter.prepend</em> methods
+      Along with <em>items</em> parameter both append and prepend methods
       have <em>eof</em>/<em>bof</em> parameter
       which is optional and which prevents rendering of new items
       when the end of the dataset (if we are speaking of <em>append</em>) or
@@ -23,26 +31,32 @@
       >bof/eof demo</a>.
     </p>
     <p>
-      Let's discuss <em>{{prependCallSample}}</em> case.
-      If <em>bof</em> is set to <em>true</em> and the beginning of the dataset is reached
-      (no more items can be fetched in backward direction), then
-      new items will be injected immediately.
-      Otherwise, new items will not appear, they will be virtualized:
+      For example, if we call <em>{{prependCallSample}}</em> when the beginning of the dataset is reached
+      and no more items can be fetched in the backward direction, then the new items will be injected immediately.
+      But if we are not in BOF, new items will not appear, they will be virtualized:
       viewport backward padding element size will be increased in accordance with
-      the number of new items multiplied by the average item size.
-      The same is true for <em>{{appendCallSample}}</em>
+      the number of new items multiplied by the default item size.
+      The same works for <em>{{appendCallSample}}</em> call
       adjusted for forward direction and forward padding element.
     </p>
     <p>
-      In this demo we want the datasource to be consistent with the dataset changes made during append/prepend.
-      For example, to synchronize some remote changes (appearance of new messages in a chat channel)
-      with the end user's Viewport.
-      This demo implements two approaches of such synchronization:
-      based on internal id of item's data ("Component" tab)
-      and based on natural index of data array ("Component 2" tab).
+      Indexes increase by default when <em>Adapter.append</em> and
+      decrease by default when <em>Adapter.prepend</em>.
+      The indexing strategy can be changed by <em>decrease</em>/<em>increase</em> params.
+      They are boolean and set to <em>false</em> by default.
+      For example, if we call <em>{{prependIncreaseCallSample}}</em>,
+      the topmost index remains unchanged and it will be given to the first prepended item.
+    </p>
+    <p>
+      The most important idea behind the Adapter update API is that
+      the changes made via Adapter must be synched with the Datasource.
+      This demo implements one of the possible ways of synching
+      the Datasource with the Adapter.append/prepend updates.
       The dataset is changed per each <em>doAppend</em> / <em>doPrepend</em> calls
       destructively by <em>unshift</em> and <em>push</em> Array's methods.
-      This will guarantee stable data flow from the App component to the Scroller.
+      There are also some additional variables that provide index offsets and
+      that are used in the <em>Datasource.get</em> and doPrepend/doAppend methods
+      to guarantee a stable data flow from the App component to the Scroller.
       Another examples of such synchronization could be found in
       <a
         [routerLink]="['/', adapterScope.id]"
@@ -51,7 +65,7 @@
       <a
         [routerLink]="['/', adapterScope.id]"
         fragment="{{adapterMethodsScope.map.insert.id}}"
-      >insert</a>.
+      >insert</a> demos.
     </p>
   </div>
 </app-demo>

@@ -110,8 +110,18 @@ async doAppend() {
 }`
   }];
 
-  appendCallSample = 'Adapter.append({ items })';
   prependCallSample = 'Adapter.prepend({ items })';
+  appendCallSample = 'Adapter.append({ items })';
+  prependArgumentsDescription = `  AdapterPrependOptions {
+    items: unknown[];
+    bof?: boolean;
+    increase?: boolean;
+  }`;
+  appendArgumentsDescription = `  AdapterAppendOptions {
+    items: unknown[];
+    eof?: boolean;
+    decrease?: boolean;
+  }`;
 
   onInputChanged(target: HTMLInputElement) {
     const value = parseInt(target.value.trim(), 10);

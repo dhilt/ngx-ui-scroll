@@ -5,6 +5,17 @@ import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
 import { generateItem, Data, Processor } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 
+interface DSClassConfig {
+  settings: Settings;
+  devSettings?: DevSettings;
+  common?: {
+    limits?: { // to set up limits if settings.min/maxIndex not set
+      min?: number;
+      max?: number;
+    }
+  };
+}
+
 type Buffer<T = unknown> = Workflow<T>['scroller']['buffer'];
 
 export class DatasourceService implements IDatasource {
@@ -43,6 +54,7 @@ export const getDatasourceProcessingClass = (
 
 class LimitedDatasource extends Datasource<Data> {
   settings: Settings<Data>;
+  common: DSClassConfig['common'];
   data: Data[] = [];
 
   min: number;
@@ -50,7 +62,7 @@ class LimitedDatasource extends Datasource<Data> {
   start: number;
   shift: number;
 
-  constructor(settings: Settings<Data>, devSettings?: DevSettings) {
+  constructor({ settings, devSettings, common }: DSClassConfig) {
     super({
       get: (index, count, success) => {
         const data = [];
@@ -70,10 +82,18 @@ class LimitedDatasource extends Datasource<Data> {
       devSettings: devSettings || {},
     });
 
-    const { minIndex, maxIndex, startIndex } = this.settings;
-    this.min = minIndex || 0;
-    this.max = maxIndex || 0;
-    this.start = startIndex || 0;
+    this.common = common || {};
+    if (common && common.limits && Number.isInteger(common.limits.min as number)) {
+      this.min = common.limits.min as number;
+    } else {
+      this.min = this.settings.minIndex || 0;
+    }
+    if (common && common.limits && Number.isInteger(common.limits.max as number)) {
+      this.max = common.limits.max as number;
+    } else {
+      this.max = this.settings.maxIndex || 0;
+    }
+    this.start = this.settings.startIndex || 0;
     this.shift = 0;
 
     for (let i = this.min; i <= this.max; ++i) {
@@ -82,10 +102,10 @@ class LimitedDatasource extends Datasource<Data> {
   }
 }
 
-export const getDatasourceClassForResize = (settings: Settings, devSettings?: DevSettings) =>
+export const getDatasourceClassForResize = (config: DSClassConfig) =>
   class extends LimitedDatasource {
     constructor() {
-      super(settings, devSettings);
+      super(config);
     }
     setSizes(cb: (index: number) => number) {
       this.data.forEach((item, i) =>
@@ -97,7 +117,7 @@ export const getDatasourceClassForResize = (settings: Settings, devSettings?: De
 export const getDatasourceClassForRemovals = (settings: Settings, devSettings?: DevSettings) =>
   class extends LimitedDatasource {
     constructor() {
-      super(settings, devSettings);
+      super({ settings, devSettings });
     }
 
     remove(indexListToRemove: number[], increase: boolean) {
@@ -119,7 +139,7 @@ export const getDatasourceClassForReplacements = (settings: Settings, devSetting
   class extends LimitedDatasource {
 
     constructor() {
-      super(settings, devSettings);
+      super({ settings, devSettings });
     }
 
     replaceOneToOne(idToReplace: number, item: Data) {
@@ -169,7 +189,7 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
   class extends LimitedDatasource {
 
     constructor() {
-      super(settings, devSettings);
+      super({ settings, devSettings });
     }
 
     update(_buffer: Buffer<Data>, predicate: BufferUpdater<Data>, indexToTrack: number, fixRight: boolean) {
@@ -196,7 +216,7 @@ export const getDatasourceClassForReset = (settings: Settings, devSettings?: Dev
   class extends LimitedDatasource {
 
     constructor() {
-      super(settings, devSettings);
+      super({ settings, devSettings });
     }
 
     reset(min: number, max: number, first: number) {

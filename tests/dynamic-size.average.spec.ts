@@ -4,41 +4,57 @@ import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Direction, SizeStrategy } from './miscellaneous/vscroll';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
-import { getAverageSize, getAverageSizeData, getDynamicSumSize } from './miscellaneous/dynamicSize';
+import { DatasourceResizer, getDatasourceClassForResize } from './scaffolding/datasources/class';
+import {
+  getAverageSize, getAverageSizeData, getDynamicSizeByIndex, getDynamicSumSize
+} from './miscellaneous/dynamicSize';
 
-const sizeStrategy = SizeStrategy.Average;
+interface ICustom {
+  getSize: (index: number) => number;
+}
 
-const configList: TestBedConfig[] = [{
-  datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, sizeStrategy },
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
-}, {
-  datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.5, bufferSize: 5, minIndex: -20, maxIndex: 10, sizeStrategy },
-  templateSettings: { viewportHeight: 100, dynamicSize: 'size' }
-}, {
-  datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: -5, padding: 1.2, bufferSize: 1, sizeStrategy },
-  templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
-}, {
-  datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: -25, padding: 1.2, bufferSize: 1, minIndex: -50, sizeStrategy },
-  templateSettings: { viewportHeight: 250, dynamicSize: 'size' }
-}, {
-  datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 0, padding: 0.25, bufferSize: 10, windowViewport: true, sizeStrategy },
-  templateSettings: { noViewportClass: true, viewportHeight: 0, dynamicSize: 'size' }
-}, {
-  datasourceName: 'limited--50-99-dynamic-size',
-  datasourceSettings: { startIndex: 20, padding: 0.75, bufferSize: 15, horizontal: true, sizeStrategy },
-  templateSettings: { viewportWidth: 300, horizontal: true, dynamicSize: 'size' }
-}];
+const baseConfig: TestBedConfig<ICustom> = {
+  datasourceSettings: { sizeStrategy: SizeStrategy.Average, },
+  templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
+  custom: { getSize: i => getDynamicSizeByIndex(i) },
+};
+const common = {
+  limits: {
+    min: -50,
+    max: 99
+  }
+};
 
-const configListScroll = configList
-  .map(config => ({
-    ...config, datasourceSettings: { ...config.datasourceSettings, adapter: true }
-  }))
-  .filter((config, index) => index !== 2 && index !== 3);
+const configList: TestBedConfig<ICustom>[] = [
+  {
+    ds: { startIndex: 0, padding: 0.5, bufferSize: 5 },
+    tpl: { viewportHeight: 100 }
+  }, {
+    ds: { startIndex: 0, padding: 0.5, bufferSize: 5, minIndex: -20, maxIndex: 10 },
+    tpl: { viewportHeight: 100 }
+  }, {
+    ds: { startIndex: -5, padding: 1.2, bufferSize: 1 },
+    tpl: { viewportHeight: 250 }
+  }, {
+    ds: { startIndex: -25, padding: 1.2, bufferSize: 1, minIndex: -50 },
+    tpl: { viewportHeight: 250 },
+  }, {
+    ds: { startIndex: 0, padding: 0.25, bufferSize: 10, windowViewport: true },
+    tpl: { noViewportClass: true, viewportHeight: 0 }
+  }, {
+    ds: { startIndex: 20, padding: 0.75, bufferSize: 15, horizontal: true },
+    tpl: { viewportWidth: 300, horizontal: true }
+  }
+].map(({ ds, tpl }) => ({
+  ...baseConfig,
+  datasourceSettings: { ...baseConfig.datasourceSettings, ...ds },
+  templateSettings: { ...baseConfig.templateSettings, ...tpl }
+})).map(c => ({
+  ...c,
+  datasourceClass: getDatasourceClassForResize({ settings: c.datasourceSettings, common })
+}));
+
+const configListScroll = configList.filter((_, index) => index !== 2 && index !== 3);
 
 const ABS_MIN_INDEX = -50;
 const ABS_MAX_INDEX = 99;
@@ -124,7 +140,8 @@ const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCou
   return JSON.stringify(itemsCounter) !== JSON.stringify(previous) ? itemsCounter : null;
 };
 
-const testInitialLoad: ItFuncConfig = config => misc => done => {
+const testInitialLoad: ItFuncConfig<ICustom> = config => misc => done => {
+  (misc.datasource as DatasourceResizer).setSizes(config.custom.getSize);
   const sub = misc.adapter.loopPending$.pipe(filter(v => !v)).subscribe(() => {
     let itemsCounter: ItemsCounter | null;
     const startIndex = config.datasourceSettings.startIndex as number;
@@ -142,7 +159,8 @@ const testInitialLoad: ItFuncConfig = config => misc => done => {
   });
 };
 
-const testScroll: ItFuncConfig = () => misc => done => {
+const testScroll: ItFuncConfig<ICustom> = config => misc => done => {
+  (misc.datasource as DatasourceResizer).setSizes(config.custom.getSize);
   const sub = misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
     const buffer = misc.scroller.buffer;
     if (buffer.bof.get()) {

@@ -35,8 +35,8 @@ const baseScrollConfig = {
 
 const configList: TestBedConfig<ICustom>[] = [{
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize(settings, {
-    directionPriority: Direction.forward
+  datasourceClass: getDatasourceClassForResize({
+    settings, devSettings: { directionPriority: Direction.forward }
   }),
   custom: {
     title: 'should stay at the bottom edge when odd items are big (fwd on init)',
@@ -48,8 +48,8 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize(settings, {
-    directionPriority: Direction.forward
+  datasourceClass: getDatasourceClassForResize({
+    settings, devSettings: { directionPriority: Direction.forward }
   }),
   custom: {
     title: 'should stay at the bottom edge when even items are big (fwd on init)',
@@ -61,8 +61,8 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize(settings, {
-    directionPriority: Direction.backward
+  datasourceClass: getDatasourceClassForResize({
+    settings, devSettings: { directionPriority: Direction.backward }
   }),
   custom: {
     title: 'should stay at the bottom edge when odd items are big (bwd on init)',
@@ -74,8 +74,8 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize(settings, {
-    directionPriority: Direction.backward
+  datasourceClass: getDatasourceClassForResize({
+    settings, devSettings: { directionPriority: Direction.backward }
   }),
   custom: {
     title: 'should not stay at the bottom edge when even items are big (bwd on init)',
@@ -87,8 +87,8 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseScrollConfig,
-  datasourceClass: getDatasourceClassForResize(settings, {
-    directionPriority: Direction.backward
+  datasourceClass: getDatasourceClassForResize({
+    settings, devSettings: { directionPriority: Direction.backward }
   }),
   custom: {
     title: 'should not shift position (bwd on scroll)',
@@ -101,8 +101,8 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseScrollConfig,
-  datasourceClass: getDatasourceClassForResize(settings, {
-    directionPriority: Direction.forward
+  datasourceClass: getDatasourceClassForResize({
+    settings, devSettings: { directionPriority: Direction.forward }
   }),
   custom: {
     title: 'should shift position (fwd on scroll)',

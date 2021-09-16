@@ -23,7 +23,7 @@ const settings = {
 const baseConfig = {
   datasourceSettings: settings,
   templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
-  datasourceClass: getDatasourceClassForResize(settings)
+  datasourceClass: getDatasourceClassForResize({ settings })
 };
 
 const customConfigList: ICustom[] = [{
@@ -106,9 +106,11 @@ const configListConstant: TestBedConfig<ICustom>[] = [...customConfigList
     ...baseConfig,
     custom: { ...custom, before: 22, after: 22, title: `not change (${j + 1})` },
     datasourceClass: getDatasourceClassForResize({
-      ...settings,
-      sizeStrategy: SizeStrategy.Constant,
-      itemSize: 22
+      settings: {
+        ...settings,
+        sizeStrategy: SizeStrategy.Constant,
+        itemSize: 22
+      }
     })
   })), {
   ...baseConfig,
@@ -118,8 +120,10 @@ const configListConstant: TestBedConfig<ICustom>[] = [...customConfigList
     before: 10
   },
   datasourceClass: getDatasourceClassForResize({
-    ...settings,
-    sizeStrategy: SizeStrategy.Constant
+    settings: {
+      ...settings,
+      sizeStrategy: SizeStrategy.Constant
+    }
   })
 }];
 

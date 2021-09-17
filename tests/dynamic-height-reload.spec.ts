@@ -1,6 +1,6 @@
 import { ItFuncConfig, makeTest, TestBedConfig } from './scaffolding/runner';
 import { SizeStrategy } from './miscellaneous/vscroll';
-import { DatasourceResizer, getDatasourceClassForResize } from './scaffolding/datasources/class';
+import { DatasourceLimiter, getLimitedDatasourceClass } from './scaffolding/datasources/class';
 import { getDynamicSizeByIndex } from './miscellaneous/dynamicSize';
 
 interface ICustom {
@@ -35,11 +35,11 @@ const configList: TestBedConfig<ICustom>[] = reloadIndexList.map(index => ({
   }
 })).map(c => ({
   ...c,
-  datasourceClass: getDatasourceClassForResize({ settings: c.datasourceSettings })
+  datasourceClass: getLimitedDatasourceClass({ settings: c.datasourceSettings })
 }));
 
 const shouldReload: ItFuncConfig<ICustom> = config => misc => async done => {
-  (misc.datasource as DatasourceResizer).setSizes(config.custom.getSize);
+  (misc.datasource as DatasourceLimiter).setSizes(config.custom.getSize);
   await misc.relaxNext();
   const { reloadIndex } = config.custom;
   misc.adapter.reload(reloadIndex);

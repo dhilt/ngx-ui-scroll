@@ -4,7 +4,7 @@ import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Direction, SizeStrategy } from './miscellaneous/vscroll';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
-import { DatasourceResizer, getDatasourceClassForResize } from './scaffolding/datasources/class';
+import { DatasourceLimiter, getLimitedDatasourceClass } from './scaffolding/datasources/class';
 import {
   getAverageSize, getAverageSizeData, getDynamicSizeByIndex, getDynamicSumSize
 } from './miscellaneous/dynamicSize';
@@ -51,7 +51,7 @@ const configList: TestBedConfig<ICustom>[] = [
   templateSettings: { ...baseConfig.templateSettings, ...tpl }
 })).map(c => ({
   ...c,
-  datasourceClass: getDatasourceClassForResize({ settings: c.datasourceSettings, common })
+  datasourceClass: getLimitedDatasourceClass({ settings: c.datasourceSettings, common })
 }));
 
 const configListScroll = configList.filter((_, index) => index !== 2 && index !== 3);
@@ -141,7 +141,7 @@ const getNextItemsCounter = (_startIndex: number, misc: Misc, previous: ItemsCou
 };
 
 const testInitialLoad: ItFuncConfig<ICustom> = config => misc => done => {
-  (misc.datasource as DatasourceResizer).setSizes(config.custom.getSize);
+  (misc.datasource as DatasourceLimiter).setSizes(config.custom.getSize);
   const sub = misc.adapter.loopPending$.pipe(filter(v => !v)).subscribe(() => {
     let itemsCounter: ItemsCounter | null;
     const startIndex = config.datasourceSettings.startIndex as number;
@@ -160,7 +160,7 @@ const testInitialLoad: ItFuncConfig<ICustom> = config => misc => done => {
 };
 
 const testScroll: ItFuncConfig<ICustom> = config => misc => done => {
-  (misc.datasource as DatasourceResizer).setSizes(config.custom.getSize);
+  (misc.datasource as DatasourceLimiter).setSizes(config.custom.getSize);
   const sub = misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
     const buffer = misc.scroller.buffer;
     if (buffer.bof.get()) {

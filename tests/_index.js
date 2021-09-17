@@ -42,6 +42,7 @@ const testContext = require.context(
   //(direction-priority)\.spec\.ts/
   //(dynamic-height-reload)\.spec\.ts/
   //(dynamic-height-scroll)\.spec\.ts/
+  //(dynamic-height-update)\.spec\.ts/
   //(dynamic-size\.average)\.spec\.ts/
   //(dynamic-size\.frequent)\.spec\.ts/
   //(dynamic-size\.zero)\.spec\.ts/

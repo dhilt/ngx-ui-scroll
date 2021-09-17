@@ -430,7 +430,7 @@ describe('Adapter Remove Spec', () => {
     configListInterrupted.forEach(config =>
       makeTest({
         config,
-        title: 'should remove only first uninterrupted portion',
+        title: 'should remove portion of non-continuous indexes',
         it: shouldRemove(config)
       })
     );

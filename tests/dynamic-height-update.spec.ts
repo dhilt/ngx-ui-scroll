@@ -100,6 +100,21 @@ const configCustomList: ICustom[] = [{
     initial: 25,
     final: ITEM_SIZE
   }
+}, {
+  title: 'should remove one big item in-buffer and another one virtually via Adapter.remove (inverted)',
+  limits: { min: 1, max: 35 },
+  getSize: i => i === 33 || i === 3 ? 100 : ITEM_SIZE,
+  action: async (misc) => {
+    await misc.scrollToIndexRecursively(35);
+    await misc.scrollMinRelax();
+    await misc.adapter.remove({
+      indexes: [3, 33]
+    });
+  },
+  defaultSize: {
+    initial: 25,
+    final: ITEM_SIZE
+  }
 }];
 
 const configList: TestBedConfig<ICustom>[] = configCustomList.map(custom => ({

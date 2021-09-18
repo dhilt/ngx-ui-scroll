@@ -52,7 +52,10 @@ export const getDatasourceProcessingClass = (
     }
   };
 
+let idCounter = 0;
+
 class LimitedDatasource extends Datasource<Data> {
+  id: number
   settings: Settings<Data>;
   common: DSClassConfig['common'];
   data: Data[] = [];
@@ -82,6 +85,7 @@ class LimitedDatasource extends Datasource<Data> {
       devSettings: devSettings || {},
     });
 
+    this.id = idCounter++;
     this.common = common || {};
     if (common && common.limits && Number.isInteger(common.limits.min as number)) {
       this.min = common.limits.min as number;
@@ -100,24 +104,26 @@ class LimitedDatasource extends Datasource<Data> {
       this.data.push(generateItem(i, 20));
     }
   }
+
+  setSizes(cb: (index: number) => number) {
+    this.data.forEach((item, i) =>
+      item.size = cb(i + this.min)
+    );
+  }
 }
 
-export const getDatasourceClassForResize = (config: DSClassConfig) =>
+export const getLimitedDatasourceClass = (config: DSClassConfig) =>
   class extends LimitedDatasource {
     constructor() {
       super(config);
     }
-    setSizes(cb: (index: number) => number) {
-      this.data.forEach((item, i) =>
-        item.size = cb(i + this.min)
-      );
-    }
   };
 
-export const getDatasourceClassForRemovals = (settings: Settings, devSettings?: DevSettings) =>
+export const getDatasourceClassForRemovals = (config: DSClassConfig) =>
   class extends LimitedDatasource {
+
     constructor() {
-      super({ settings, devSettings });
+      super(config);
     }
 
     remove(indexListToRemove: number[], increase: boolean) {
@@ -231,7 +237,7 @@ export const getDatasourceClassForReset = (settings: Settings, devSettings?: Dev
 
 
 export type DatasourceProcessor = InstanceType<ReturnType<typeof getDatasourceProcessingClass>>;
-export type DatasourceResizer = InstanceType<ReturnType<typeof getDatasourceClassForResize>>;
+export type DatasourceLimiter = InstanceType<ReturnType<typeof getLimitedDatasourceClass>>;
 export type DatasourceRemover = InstanceType<ReturnType<typeof getDatasourceClassForRemovals>>;
 export type DatasourceReplacer = InstanceType<ReturnType<typeof getDatasourceClassForReplacements>>;
 export type DatasourceUpdater = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;

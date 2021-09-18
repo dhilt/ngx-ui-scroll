@@ -1,10 +1,8 @@
-import { ItemsPredicate, SizeStrategy } from './miscellaneous/vscroll';
-
 import { makeTest, TestBedConfig, ItFuncConfig, ItFunc } from './scaffolding/runner';
 import { DatasourceRemover, getDatasourceClassForRemovals } from './scaffolding/datasources/class';
 import { Misc } from './miscellaneous/misc';
-import { IndexedItem, removeItems } from './miscellaneous/items';
 import { getDynamicSumSize, getDynamicSizeByIndex } from './miscellaneous/dynamicSize';
+import { ItemsPredicate, SizeStrategy } from './miscellaneous/vscroll';
 
 interface ICustom {
   remove: number[];
@@ -13,7 +11,6 @@ interface ICustom {
 }
 
 interface ICustomCommon {
-  interrupted?: number[];
   remove?: number[];
   removeBwd?: number[];
   removeFwd?: number[];
@@ -36,39 +33,43 @@ interface ICustomBreak {
   predicate: unknown;
 }
 
-const baseConfig: TestBedConfig = {
-  datasourceSettings: {},
-  datasourceName: 'limited--99-100-processor',
-  templateSettings: { viewportHeight: 100 }
-};
+interface ICustomBoth {
+  text: string;
+  toRemove: number[];
+  increase?: boolean;
+  result: {
+    min: number;
+    max: number;
+  };
+}
 
 const configList: TestBedConfig<ICustom>[] = [{
-  ...baseConfig,
   datasourceSettings: { startIndex: 1, bufferSize: 5, padding: 0.2, itemSize: 20 },
   custom: { remove: [3, 4, 5] }
 }, {
-  ...baseConfig,
   datasourceSettings: { startIndex: 55, bufferSize: 8, padding: 1, itemSize: 20 },
   custom: { remove: [54, 55, 56, 57, 58] }
 }, {
-  ...baseConfig,
   datasourceSettings: { startIndex: 10, bufferSize: 5, padding: 0.2, itemSize: 20 },
   custom: { remove: [7, 8, 9] }
-}];
-
-configList.forEach(config => config.datasourceSettings.adapter = true);
+}].map(config => ({
+  ...config,
+  templateSettings: { viewportHeight: 100 },
+  datasourceClass: getDatasourceClassForRemovals({
+    settings: config.datasourceSettings,
+    common: { limits: { min: -99, max: 100 } },
+  })
+}));
 
 const configListInterrupted: TestBedConfig<ICustomCommon>[] = [{
   ...configList[0],
   custom: {
-    remove: [2, 3],
-    interrupted: [2, 3, 5, 6]
+    remove: [2, 3, 5, 6]
   }
 }, {
   ...configList[1],
   custom: {
-    remove: [54],
-    interrupted: [54, 56, 57, 58]
+    remove: [54, 56, 57, 58]
   }
 }];
 
@@ -118,6 +119,9 @@ const baseConfigOut = {
     maxIndex: 100
   }
 };
+baseConfigOut.datasourceClass = getDatasourceClassForRemovals({
+  settings: baseConfigOut.datasourceSettings
+});
 
 const configListOutFixed: TestBedConfig<ICustomCommon>[] = [{
   ...baseConfigOut, custom: {
@@ -163,7 +167,7 @@ const configListDynamicBuffer: TestBedConfig<ICustomCommon>[] = [{
 }].map(config => ({
   ...config,
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
-  datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings)
+  datasourceClass: getDatasourceClassForRemovals({ settings: config.datasourceSettings })
 }));
 
 const configListDynamicVirtual: TestBedConfig<ICustomCommon>[] = [{
@@ -193,7 +197,10 @@ const configListDynamicVirtual: TestBedConfig<ICustomCommon>[] = [{
 }].map(config => ({
   ...config,
   templateSettings: { viewportHeight: 100, dynamicSize: 'size' },
-  datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings, config.datasourceDevSettings)
+  datasourceClass: getDatasourceClassForRemovals({
+    settings: config.datasourceSettings,
+    devSettings: config.datasourceDevSettings
+  })
 }));
 
 const configListFlush: TestBedConfig<ICustomFlush>[] = [{
@@ -217,29 +224,79 @@ const configListFlush: TestBedConfig<ICustomFlush>[] = [{
 }].map(config => ({
   ...config,
   templateSettings: { viewportHeight: 100 },
-  datasourceClass: getDatasourceClassForRemovals(config.datasourceSettings)
+  datasourceClass: getDatasourceClassForRemovals({ settings: config.datasourceSettings })
+}));
+
+const configListBufferAndVirtual: TestBedConfig<ICustomBoth>[] = [{
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the bottom virtual item is not reached',
+    toRemove: [1, 20], increase: false, result: { min: 1, max: 18 }
+  }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the bottom virtual item is not reached (increase)',
+    toRemove: [1, 20], increase: true, result: { min: 3, max: 20 }
+  }
+}, {
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the top virtual item is not reached',
+    toRemove: [1, 20], increase: false, result: { min: 1, max: 18 }
+  }
+}, {
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the top virtual item is not reached (increase)',
+    toRemove: [1, 20], increase: true, result: { min: 3, max: 20 }
+  }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the bottom virtual item is not reached, v2',
+    toRemove: [2, 3, 17, 18], increase: false, result: { min: 1, max: 16 }
+  }
+}, {
+  datasourceSettings: { startIndex: 1, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the bottom virtual item is not reached, v2 (increase)',
+    toRemove: [2, 3, 17, 18], increase: true, result: { min: 5, max: 20 }
+  }
+}, {
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the top virtual item is not reached, v2',
+    toRemove: [2, 3, 17, 18], increase: false, result: { min: 1, max: 16 }
+  }
+}, {
+  datasourceSettings: { startIndex: 20, minIndex: 1, maxIndex: 20, bufferSize: 1, padding: 0.3 },
+  custom: {
+    text: 'the top virtual item is not reached (increase)',
+    toRemove: [2, 3, 17, 18], increase: true, result: { min: 5, max: 20 }
+  }
+}].map(config => ({
+  ...config,
+  templateSettings: { viewportHeight: 100 },
+  datasourceClass: getDatasourceClassForRemovals({ settings: config.datasourceSettings })
 }));
 
 const doRemove = async (config: TestBedConfig<ICustomCommon>, misc: Misc, byId = false) => {
   const { increase, useIndexes, remove, removeBwd, removeFwd } = config.custom;
   const indexList = remove || [...(removeBwd || []), ...(removeFwd || [])];
-  const indexListInterrupted = config.custom.interrupted;
+  const ds = misc.datasource as DatasourceRemover;
   // remove item from the original datasource
-  misc.setDatasourceProcessor((result: IndexedItem[]) =>
-    [removeBwd, removeFwd, remove].forEach(list =>
-      list && removeItems(result, list, -99, 100, increase)
-    )
-  );
+  ds.remove(indexList, !!increase);
   // remove items from the UiScroll
   if (useIndexes) {
     await misc.adapter.remove({
-      indexes: indexListInterrupted || indexList,
+      indexes: indexList,
       increase
     });
   } else {
     await misc.adapter.remove({
       predicate: item =>
-        (indexListInterrupted || indexList).some((i: number) =>
+        indexList.some((i: number) =>
           i === (byId ? item.data.id : item.$index)
         ),
       increase
@@ -275,7 +332,7 @@ const shouldRemove = (config: TestBedConfig<ICustomCommon>, byId = false): ItFun
   const { firstIndex, lastIndex, items } = misc.scroller.buffer;
   if (!isNaN(firstIndex) && !isNaN(lastIndex)) {
     // check all items contents
-    (items as IndexedItem[]).forEach(({ $index, data: { id } }) => {
+    items.forEach(({ $index, data: { id } }) => {
       const diff = indexList.reduce((acc: number, index: number) =>
         acc + (increase ? (id < index ? -1 : 0) : (id > index ? 1 : 0)), 0
       );
@@ -349,14 +406,6 @@ const shouldRemoveVirtual: ItFuncConfig<ICustomCommon> = config => misc => async
   done();
 };
 
-const scrollDownToIndex = async (misc: Misc, index: number) => {
-  const { adapter } = misc;
-  while (adapter.bufferInfo.lastIndex < index) {
-    adapter.fix({ scrollToItem: ({ $index }) => $index === adapter.bufferInfo.lastIndex });
-    await misc.relaxNext();
-  }
-};
-
 const shouldRemoveDynamicSize: ItFuncConfig<ICustomCommon> = config => misc => async done => {
   const { indexToReload, size, increase } = config.custom;
   const indexToRemove = config.custom.indexToRemove as number;
@@ -366,7 +415,7 @@ const shouldRemoveDynamicSize: ItFuncConfig<ICustomCommon> = config => misc => a
   const finalSize = getDynamicSumSize(minIndex, maxIndex) - getDynamicSizeByIndex(indexToRemove);
 
   // set DS sizes
-  ds.data.forEach(item => item.size = getDynamicSizeByIndex(item.id));
+  ds.setSizes(getDynamicSizeByIndex);
   ds.data[indexToRemove - minIndex].size = size;
   await misc.relaxNext();
 
@@ -392,7 +441,7 @@ const shouldRemoveDynamicSize: ItFuncConfig<ICustomCommon> = config => misc => a
   }
 
   await misc.scrollMinRelax();
-  await scrollDownToIndex(misc, maxIndex - (increase ? 0 : 1));
+  await misc.scrollToIndexRecursively(maxIndex - (increase ? 0 : 1));
   expect(misc.getScrollableSize()).toBe(finalSize);
 
   done();
@@ -412,6 +461,18 @@ const shouldFlush: ItFuncConfig<ICustomFlush> = config => misc => async done => 
   expect(buffer.firstIndex).toEqual(first);
   expect(buffer.lastIndex).toEqual(last);
 
+  done();
+};
+
+const shouldRemoveInBufferAndVirtual: ItFuncConfig<ICustomBoth> = config => misc => async done => {
+  const { adapter, scroller: { buffer } } = misc;
+  const { toRemove, increase, result } = config.custom;
+  const ds = misc.datasource as DatasourceRemover;
+  await misc.relaxNext();
+  ds.remove(toRemove, !!increase);
+  await adapter.remove({ indexes: toRemove, increase });
+  expect(buffer.absMinIndex).toEqual(result.min);
+  expect(buffer.absMaxIndex).toEqual(result.max);
   done();
 };
 
@@ -437,7 +498,7 @@ describe('Adapter Remove Spec', () => {
     configListInterrupted.forEach(config =>
       makeTest({
         config,
-        title: 'should remove only first uninterrupted portion',
+        title: 'should remove portion of non-continuous indexes',
         it: shouldRemove(config)
       })
     );
@@ -511,6 +572,16 @@ describe('Adapter Remove Spec', () => {
         config,
         title: `should continue the Workflow if ${config.custom.text}${config.custom.fixRight ? ' (increase)' : ''}`,
         it: shouldFlush(config)
+      })
+    );
+  });
+
+  describe('Buffer and Virtual', () => {
+    configListBufferAndVirtual.forEach(config =>
+      makeTest({
+        config,
+        title: `should remove in-buffer and virtual items when ${config.custom.text}`,
+        it: shouldRemoveInBufferAndVirtual(config)
       })
     );
   });

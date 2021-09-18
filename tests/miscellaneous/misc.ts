@@ -265,4 +265,11 @@ export class Misc<Comp = TestComponentInterface> {
       result.forEach(itemUpdater)
     );
   }
+
+  logStat(text = ''): void {
+    const debug = this.scroller.logger.debug;
+    (this.scroller.logger as unknown as { debug: boolean }).debug = true;
+    console.log(this.scroller.logger.stat(text));
+    (this.scroller.logger as unknown as { debug: boolean }).debug = debug;
+  }
 }

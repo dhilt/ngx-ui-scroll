@@ -1,5 +1,5 @@
 import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
-import { DatasourceResizer, getDatasourceClassForResize } from './scaffolding/datasources/class';
+import { DatasourceLimiter, getLimitedDatasourceClass } from './scaffolding/datasources/class';
 import { SizeStrategy } from './miscellaneous/vscroll';
 import { Misc } from './miscellaneous/misc';
 
@@ -23,7 +23,7 @@ const settings = {
 const baseConfig = {
   datasourceSettings: settings,
   templateSettings: { viewportHeight: 200, dynamicSize: 'size' },
-  datasourceClass: getDatasourceClassForResize({ settings })
+  datasourceClass: getLimitedDatasourceClass({ settings })
 };
 
 const customConfigList: ICustom[] = [{
@@ -105,7 +105,7 @@ const configListConstant: TestBedConfig<ICustom>[] = [...customConfigList
   .map((custom, j) => ({
     ...baseConfig,
     custom: { ...custom, before: 22, after: 22, title: `not change (${j + 1})` },
-    datasourceClass: getDatasourceClassForResize({
+    datasourceClass: getLimitedDatasourceClass({
       settings: {
         ...settings,
         sizeStrategy: SizeStrategy.Constant,
@@ -119,7 +119,7 @@ const configListConstant: TestBedConfig<ICustom>[] = [...customConfigList
     getSize: () => 10,
     before: 10
   },
-  datasourceClass: getDatasourceClassForResize({
+  datasourceClass: getLimitedDatasourceClass({
     settings: {
       ...settings,
       sizeStrategy: SizeStrategy.Constant
@@ -150,7 +150,7 @@ const checkViewportWithCache = (misc: Misc) => {
 
 const shouldSetDefault: ItFuncConfig<ICustom> = config => misc => async done => {
   const { getSize, action, before, after } = config.custom;
-  (misc.datasource as DatasourceResizer).setSizes(getSize);
+  (misc.datasource as DatasourceLimiter).setSizes(getSize);
   await misc.relaxNext();
   const { buffer } = misc.scroller;
   expect(buffer.defaultSize).toBe(before);

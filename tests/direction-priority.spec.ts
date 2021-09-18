@@ -1,5 +1,5 @@
 import { makeTest, TestBedConfig } from './scaffolding/runner';
-import { DatasourceResizer, getDatasourceClassForResize } from './scaffolding/datasources/class';
+import { DatasourceLimiter, getLimitedDatasourceClass } from './scaffolding/datasources/class';
 import { Misc } from './miscellaneous/misc';
 import { Direction } from './miscellaneous/vscroll';
 
@@ -35,7 +35,7 @@ const baseScrollConfig = {
 
 const configList: TestBedConfig<ICustom>[] = [{
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize({
+  datasourceClass: getLimitedDatasourceClass({
     settings, devSettings: { directionPriority: Direction.forward }
   }),
   custom: {
@@ -48,7 +48,7 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize({
+  datasourceClass: getLimitedDatasourceClass({
     settings, devSettings: { directionPriority: Direction.forward }
   }),
   custom: {
@@ -61,7 +61,7 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize({
+  datasourceClass: getLimitedDatasourceClass({
     settings, devSettings: { directionPriority: Direction.backward }
   }),
   custom: {
@@ -74,7 +74,7 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseConfig,
-  datasourceClass: getDatasourceClassForResize({
+  datasourceClass: getLimitedDatasourceClass({
     settings, devSettings: { directionPriority: Direction.backward }
   }),
   custom: {
@@ -87,7 +87,7 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseScrollConfig,
-  datasourceClass: getDatasourceClassForResize({
+  datasourceClass: getLimitedDatasourceClass({
     settings, devSettings: { directionPriority: Direction.backward }
   }),
   custom: {
@@ -101,7 +101,7 @@ const configList: TestBedConfig<ICustom>[] = [{
   }
 }, {
   ...baseScrollConfig,
-  datasourceClass: getDatasourceClassForResize({
+  datasourceClass: getLimitedDatasourceClass({
     settings, devSettings: { directionPriority: Direction.forward }
   }),
   custom: {
@@ -124,7 +124,7 @@ describe('Direction Priority Spec', () => {
         title: config.custom.title,
         it: misc => async done => {
           const { getSize, action, result } = config.custom;
-          (misc.datasource as DatasourceResizer).setSizes(getSize);
+          (misc.datasource as DatasourceLimiter).setSizes(getSize);
           await misc.relaxNext();
           if (action) {
             await action(misc);

@@ -22,27 +22,21 @@
     <p>
       The <em>predicate</em> option is a function applying to each item in the buffer.
       If the return value is true, the item will be removed.
-      The argument of the predicate has <em>ItemAdapter</em> type, and
-      in this demo we have two versions of <em>predicate</em> using for
+      The argument of the predicate is of <em>ItemAdapter</em> type, and
+      in this demo we have two versions of <em>predicate</em> for
       removing by id and by index:
     </p>
     <pre>{{predicateDescription}}</pre>
     <p>
-      Indexes are adjusted each time we perform a removing via Adapter.
-      It is impossible to remove item with id = 5 twice,
+      Indexes are adjusted each time a delete is performed via Adapter.
+      For example, it's impossible to remove item with id = 5 twice,
       because there is only one item with id = 5.
       But we may remove item with index = 5 as many times
-      as many items we have after this index. 
-    </p>
-    <p>
-      Only a continuous series of items can be removed at a time using <em>predicate</em>.
-      So, if we want to remove items 1, 2, 3 and 5 with <em>predicate</em>,
-      we need to call this method twice: once for 1, 2, 3 and then for 5.
+      as many indexes we have after this one. 
     </p>
     <p>
       Instead of <em>predicate</em> running over buffered items,
       it is possible to remove items by <em>indexes</em>.
-      It has no sequence limitation.
       This method works with both buffered and virtual items.
       For example, we have [1..10] buffered items (they are rendered)
       and [11..100] virtual items (emulated via forward padding element
@@ -64,7 +58,7 @@
       that we want to increase indexes of the items before the removed one(s).
     </p>
     <p>
-      The very important thing is to synchronize the datasource with the changes
+      The very important point is that we need to synchronize the datasource with the changes
       we are making over the Scroller's buffer via <em>Adapter.remove</em>.
       Generally this is the App component responsibility,
       and in this demo it is done by the <em>removeFromDatasource</em> method.

@@ -1,6 +1,8 @@
 import { makeTest, TestBedConfig, ItFunc } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
-import { generateItems, insertItems, IndexedItem } from './miscellaneous/items';
+import { generateItems } from './miscellaneous/items';
+import { DatasourceInserter, getDatasourceClassForInsert } from './scaffolding/datasources/class';
+import { Direction } from './miscellaneous/vscroll';
 
 const MIN = 1;
 const MAX = 100;
@@ -16,7 +18,6 @@ interface ICustom {
 }
 
 const configBase: TestBedConfig<ICustom> = {
-  datasourceName: 'limited-1-100-insert-processor',
   datasourceSettings: {
     startIndex: MIDDLE,
     minIndex: MIN,
@@ -51,7 +52,9 @@ const configList: TestBedConfig<ICustom>[] = [{
     startIndex: MIN
   },
   custom: { before: true, index: 1, amount: 3, desc: ' (prepend case)' }
-}];
+}].map(conf => ({
+  ...conf, datasourceClass: getDatasourceClassForInsert({ settings: conf.datasourceSettings })
+}));
 
 const configOutList: TestBedConfig<ICustom>[] = [{
   ...configBase,
@@ -59,7 +62,9 @@ const configOutList: TestBedConfig<ICustom>[] = [{
 }, {
   ...configBase,
   custom: { index: MAX - 1, amount: 3, before: false }
-}];
+}].map(conf => ({
+  ...conf, datasourceClass: getDatasourceClassForInsert({ settings: conf.datasourceSettings })
+}));
 
 configOutList.push(
   ...configOutList.map(config => ({
@@ -143,28 +148,25 @@ const shouldCheckStaticProcess = (
 ): ItFunc => misc => async done => {
   await misc.relaxNext();
   const { adapter } = misc;
+  const ds = misc.datasource as DatasourceInserter;
   const { before, decrease, amount, index } = config.custom;
+  const items = generateItems(amount, MAX);
 
   // insert items to the original datasource
-  misc.setDatasourceProcessor((
-    result: IndexedItem[], ...args: unknown[]
-  ) => insertItems.apply(this, [result,
-    args[0] as number, args[1] as number, args[2] as number, args[3] as number,
-    index + (before ? 0 : 1), amount, !!decrease])
-  );
+  ds.insert(items, index, before ? Direction.backward : Direction.forward, decrease);
   const dataToCheck = getCheckData(misc);
 
   // insert items via adapter
   if (before) {
     adapter.insert({
       before: ({ $index }) => $index === index,
-      items: generateItems(amount, MAX),
+      items,
       decrease
     });
   } else {
     adapter.insert({
       after: ({ $index }) => $index === index,
-      items: generateItems(amount, MAX),
+      items,
       decrease
     });
   }

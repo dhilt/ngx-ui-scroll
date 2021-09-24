@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Settings, DevSettings, BufferUpdater, Workflow, Item } from '../../miscellaneous/vscroll';
+import { Settings, DevSettings, BufferUpdater, Workflow, Item, Direction } from '../../miscellaneous/vscroll';
 
 import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
 import { generateItem, Data, Processor } from '../../miscellaneous/items';
@@ -218,6 +218,35 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
     }
   };
 
+export const getDatasourceClassForInsert = (config: DSClassConfig) =>
+  class extends LimitedDatasource {
+
+    constructor() {
+      super(config);
+    }
+
+    insert(itemsToInsert: Data[], index: number, direction: Direction, decrease?: boolean) {
+      const result = [];
+      for (let i = 0; i < this.data.length; i++) {
+        const $index = i + this.min;
+        if (index === $index) {
+          if (direction === Direction.backward) {
+            result.push(...itemsToInsert);
+            result.push(this.data[i]);
+          } else {
+            result.push(this.data[i]);
+            result.push(...itemsToInsert);
+          }
+        } else {
+          result.push(this.data[i]);
+        }
+      }
+      this.data = result;
+      this.min = this.min - (decrease ? itemsToInsert.length : 0);
+      this.max = this.max + (!decrease ? itemsToInsert.length : 0);
+    }
+  };
+
 export const getDatasourceClassForReset = (settings: Settings, devSettings?: DevSettings) =>
   class extends LimitedDatasource {
 
@@ -235,10 +264,10 @@ export const getDatasourceClassForReset = (settings: Settings, devSettings?: Dev
     }
   };
 
-
 export type DatasourceProcessor = InstanceType<ReturnType<typeof getDatasourceProcessingClass>>;
 export type DatasourceLimiter = InstanceType<ReturnType<typeof getLimitedDatasourceClass>>;
 export type DatasourceRemover = InstanceType<ReturnType<typeof getDatasourceClassForRemovals>>;
 export type DatasourceReplacer = InstanceType<ReturnType<typeof getDatasourceClassForReplacements>>;
 export type DatasourceUpdater = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;
+export type DatasourceInserter = InstanceType<ReturnType<typeof getDatasourceClassForInsert>>;
 export type DatasourceResetter = InstanceType<ReturnType<typeof getDatasourceClassForReset>>;

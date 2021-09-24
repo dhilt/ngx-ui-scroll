@@ -91,10 +91,6 @@ export const datasourceStore: IDatasourceStore = {
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0)
   },
 
-  'limited-1-20-dynamic-size-processor': {
-    get: limitedDatasourceGet(1, 20, true, DatasourceType.Callback, 0, true)
-  },
-
   'limited-1-10-with-big-item-4': {
     get: limitedDatasourceGet(1, 10, false, DatasourceType.Callback, 0, true)
   },
@@ -113,10 +109,6 @@ export const datasourceStore: IDatasourceStore = {
 
   'limited--99-100-dynamic-size-processor': {
     get: limitedDatasourceGet(-99, 100, true, DatasourceType.Callback, 0, true)
-  },
-
-  'limited-1-100-insert-processor': {
-    get: limitedDatasourceGet(1, 100, true, DatasourceType.Callback, 0, true)
   },
 
   'default-bad-settings': {

@@ -25,7 +25,7 @@ interface ICustom {
 
 const configBasic: OperationConfig<Operation, ICustom> = {
   [Operation.prepend]: {
-    datasourceName: 'limited-1-100-insert-processor',
+    datasourceName: 'limited-1-100-no-delay',
     datasourceSettings: {
       startIndex: min, minIndex: min + amount, maxIndex: max,
       bufferSize, padding, adapter: true
@@ -34,7 +34,7 @@ const configBasic: OperationConfig<Operation, ICustom> = {
     custom: { amount }
   },
   [Operation.append]: {
-    datasourceName: 'limited-1-100-insert-processor',
+    datasourceName: 'limited-1-100-no-delay',
     datasourceSettings: {
       startIndex: max - bufferSize + 1 - amount,
       minIndex: min,

@@ -15,6 +15,7 @@ interface ICustom {
   amount: number;
   desc?: string;
   decrease?: boolean;
+  useIndexApi?: boolean;
 }
 
 const configBase: TestBedConfig<ICustom> = {
@@ -56,6 +57,16 @@ const configList: TestBedConfig<ICustom>[] = [{
   ...conf, datasourceClass: getDatasourceClassForInsert({ settings: conf.datasourceSettings })
 }));
 
+const configListByIndexes = [
+  configList[0], configList[3]
+].map(c => ({
+  ...c, custom: {
+    ...c.custom,
+    desc: c.custom.desc + ' by index-api',
+    useIndexApi: true
+  }
+}));
+
 const configOutList: TestBedConfig<ICustom>[] = [{
   ...configBase,
   custom: { index: 1, amount: 3, before: false }
@@ -76,7 +87,7 @@ configOutList.push(
   }))
 );
 
-const configDecreaseList: TestBedConfig<ICustom>[] = configList.map(config => ({
+const configDecreaseList = configList.map(config => ({
   ...config,
   custom: {
     ...config.custom,
@@ -84,9 +95,25 @@ const configDecreaseList: TestBedConfig<ICustom>[] = configList.map(config => ({
   }
 }));
 
-const configDynamicList: TestBedConfig<ICustom>[] = [
+const configDecreaseListByIndexes = configListByIndexes.map(config => ({
+  ...config,
+  custom: {
+    ...config.custom,
+    decrease: true
+  }
+}));
+
+const configDynamicList = [
   ...configList, configDecreaseList[0], configDecreaseList[1]
 ];
+
+const configDynamicListByIndexes = configDynamicList.map(c => ({
+  ...c, custom: {
+    ...c.custom,
+    desc: c.custom.desc + ' by index-api',
+    useIndexApi: true
+  }
+}));
 
 interface ICheckData {
   absMin: number;
@@ -149,7 +176,7 @@ const shouldCheckStaticProcess = (
   await misc.relaxNext();
   const { adapter } = misc;
   const ds = misc.datasource as DatasourceInserter;
-  const { before, decrease, amount, index } = config.custom;
+  const { before, decrease, amount, index, useIndexApi } = config.custom;
   const items = generateItems(amount, MAX);
 
   // insert items to the original datasource
@@ -158,17 +185,33 @@ const shouldCheckStaticProcess = (
 
   // insert items via adapter
   if (before) {
-    adapter.insert({
-      before: ({ $index }) => $index === index,
-      items,
-      decrease
-    });
+    if (useIndexApi) {
+      adapter.insert({
+        beforeIndex: index,
+        items,
+        decrease
+      });
+    } else {
+      adapter.insert({
+        before: ({ $index }) => $index === index,
+        items,
+        decrease
+      });
+    }
   } else {
-    adapter.insert({
-      after: ({ $index }) => $index === index,
-      items,
-      decrease
-    });
+    if (useIndexApi) {
+      adapter.insert({
+        afterIndex: index,
+        items,
+        decrease
+      });
+    } else {
+      adapter.insert({
+        after: ({ $index }) => $index === index,
+        items,
+        decrease
+      });
+    }
   }
 
   // check
@@ -210,19 +253,19 @@ const insert = (custom: ICustom) =>
 
 describe('Adapter Insert Spec', () => {
 
-  describe('Static Insert Process', () => {
-    configList.forEach(config =>
+  describe('Static Insert Process (in-Buffer)', () => {
+    [...configList, ...configListByIndexes].forEach(config =>
       makeTest({
         config: config,
-        title: `should ${insert(config.custom)} some items incrementally` + config.custom.desc,
+        title: `should ${insert(config.custom)} some items incrementally${config.custom.desc}`,
         it: shouldCheckStaticProcess(config, true)
       })
     );
 
-    configDecreaseList.forEach(config =>
+    [...configDecreaseList, ...configDecreaseListByIndexes].forEach(config =>
       makeTest({
         config: config,
-        title: `should ${insert(config.custom)} some items with decrement` + config.custom.desc,
+        title: `should ${insert(config.custom)} some items with decrement${config.custom.desc}`,
         it: shouldCheckStaticProcess(config, true)
       })
     );
@@ -236,13 +279,13 @@ describe('Adapter Insert Spec', () => {
     );
   });
 
-  describe('Dynamic Insert Process', () => {
+  describe('Dynamic Insert Process (in-Buffer)', () => {
     const dynamicTitle = (custom: ICustom) =>
       `should ${insert(custom)} some items ` +
       `(${(custom.decrease ? 'decrementally' : 'incrementally')}) ` +
       'and persist them after scroll' + custom.desc;
 
-    configDynamicList.forEach(config =>
+    [...configDynamicList, ...configDynamicListByIndexes].forEach(config =>
       makeTest({
         config: config,
         title: dynamicTitle(config.custom),

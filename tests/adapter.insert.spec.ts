@@ -1,4 +1,4 @@
-import { makeTest, TestBedConfig, ItFunc } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFunc, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { generateItems } from './miscellaneous/items';
 import { DatasourceInserter, getDatasourceClassForInsert } from './scaffolding/datasources/class';
@@ -9,13 +9,24 @@ const MAX = 100;
 const MIDDLE = Math.round((MAX - MIN + 1) / 2);
 const ITEM_SIZE = 20;
 
-interface ICustom {
+interface ICustomBasic {
   before: boolean;
   index: number;
   amount: number;
-  desc?: string;
   decrease?: boolean;
+  desc?: string;
+}
+
+interface ICustom extends ICustomBasic {
   useIndexApi?: boolean;
+}
+
+interface ICustomVirtual extends ICustomBasic {
+  result: {
+    min: number;
+    max: number;
+    list: number[];
+  };
 }
 
 const configBase: TestBedConfig<ICustom> = {
@@ -24,11 +35,10 @@ const configBase: TestBedConfig<ICustom> = {
     minIndex: MIN,
     maxIndex: MAX,
     bufferSize: 10,
-    padding: 0.5,
-    adapter: true
+    padding: 0.5
   },
   templateSettings: { viewportHeight: ITEM_SIZE * 10 },
-  custom: { before: false, index: MIDDLE, amount: 3, desc: '' }
+  custom: { before: false, decrease: false, index: MIDDLE, amount: 3, desc: '' }
 };
 
 const configList: TestBedConfig<ICustom>[] = [{
@@ -115,6 +125,77 @@ const configDynamicListByIndexes = configDynamicList.map(c => ({
   }
 }));
 
+const baseConfigVirtual = {
+  datasourceSettings: { // [-1, 0, 1, 2, 3] are visible after init
+    minIndex: -4, maxIndex: 5, startIndex: 0, padding: 0.1, bufferSize: 1
+  },
+  templateSettings: { viewportHeight: 60 },
+};
+
+const configListVirtual: TestBedConfig<ICustomVirtual>[] = [{
+  ...baseConfigVirtual, custom: {
+    index: -3, amount: 2, before: false, decrease: false,
+    result: { min: -4, max: 7, list: [-4, -3, MAX + 1, MAX + 2, -2, -1, 0, 1, 2, 3, 4, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: -3, amount: 2, before: false, decrease: true,
+    result: { min: -6, max: 5, list: [-4, -3, MAX + 1, MAX + 2, -2, -1, 0, 1, 2, 3, 4, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: -3, amount: 2, before: true, decrease: false,
+    result: { min: -4, max: 7, list: [-4, MAX + 1, MAX + 2, -3, -2, -1, 0, 1, 2, 3, 4, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: -3, amount: 2, before: true, decrease: true,
+    result: { min: -6, max: 5, list: [-4, MAX + 1, MAX + 2, -3, -2, -1, 0, 1, 2, 3, 4, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: 4, amount: 2, before: false, decrease: false,
+    result: { min: -4, max: 7, list: [-4, -3, -2, -1, 0, 1, 2, 3, 4, MAX + 1, MAX + 2, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: 4, amount: 2, before: false, decrease: true,
+    result: { min: -6, max: 5, list: [-4, -3, -2, -1, 0, 1, 2, 3, 4, MAX + 1, MAX + 2, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: 4, amount: 2, before: true, decrease: false,
+    result: { min: -4, max: 7, list: [-4, -3, -2, -1, 0, 1, 2, 3, MAX + 1, MAX + 2, 4, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: 4, amount: 2, before: true, decrease: true,
+    result: { min: -6, max: 5, list: [-4, -3, -2, -1, 0, 1, 2, 3, MAX + 1, MAX + 2, 4, 5] }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: -4, amount: 20, before: true, decrease: false,
+    result: {
+      min: -4, max: 25, list: [
+        ...Array.from({ length: 20 }).map((_, i) => MAX + i + 1),
+        ...[-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+      ]
+    }
+  }
+}, {
+  ...baseConfigVirtual, custom: {
+    index: 5, amount: 20, before: false, decrease: true,
+    result: {
+      min: -24, max: 5, list: [
+        ...[-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+        ...Array.from({ length: 20 }).map((_, i) => MAX + i + 1),
+      ]
+    }
+  }
+}].map(conf => ({
+  ...conf, datasourceClass: getDatasourceClassForInsert({ settings: conf.datasourceSettings })
+}));
+
 interface ICheckData {
   absMin: number;
   absMax: number;
@@ -170,7 +251,7 @@ const doCheck = (
   }
 };
 
-const shouldCheckStaticProcess = (
+const shouldCheckInBufferStatic = (
   config: TestBedConfig<ICustom>, shouldInsert: boolean, callback?: (data: ICheckData) => void
 ): ItFunc => misc => async done => {
   await misc.relaxNext();
@@ -186,51 +267,31 @@ const shouldCheckStaticProcess = (
   // insert items via adapter
   if (before) {
     if (useIndexApi) {
-      adapter.insert({
-        beforeIndex: index,
-        items,
-        decrease
-      });
+      adapter.insert({ beforeIndex: index, items, decrease });
     } else {
-      adapter.insert({
-        before: ({ $index }) => $index === index,
-        items,
-        decrease
-      });
+      adapter.insert({ before: ({ $index }) => $index === index, items, decrease });
     }
   } else {
     if (useIndexApi) {
-      adapter.insert({
-        afterIndex: index,
-        items,
-        decrease
-      });
+      adapter.insert({ afterIndex: index, items, decrease });
     } else {
-      adapter.insert({
-        after: ({ $index }) => $index === index,
-        items,
-        decrease
-      });
+      adapter.insert({ after: ({ $index }) => $index === index, items, decrease });
     }
   }
 
-  // check
-  const cb = callback || (() => {
-    doCheck(dataToCheck, misc, config, shouldInsert);
-    done();
-  });
   if (shouldInsert) {
     expect(adapter.isLoading).toEqual(true);
-    const sub = adapter.isLoading$.subscribe(() => {
-      sub.unsubscribe();
-      cb(dataToCheck);
-    });
+    await adapter.relax();
+  }
+  if (callback) {
+    callback(dataToCheck);
   } else {
-    cb(dataToCheck);
+    doCheck(dataToCheck, misc, config, shouldInsert);
+    done();
   }
 };
 
-const shouldCheckDynamicProcess = (
+const shouldCheckInBufferDynamic = (
   config: TestBedConfig<ICustom>, shouldInsert: boolean
 ): ItFunc => misc => done => {
   const { decrease, amount } = config.custom;
@@ -245,53 +306,93 @@ const shouldCheckDynamicProcess = (
     doCheck(dataToCheck, misc, config, shouldInsert, true);
     done();
   };
-  shouldCheckStaticProcess(config, shouldInsert, doScroll)(misc)(done);
+  shouldCheckInBufferStatic(config, shouldInsert, doScroll)(misc)(done);
 };
 
-const insert = (custom: ICustom) =>
-  custom.before ? 'insert.before' : 'insert.after';
+const shouldCheckVirtual: ItFuncConfig<ICustomVirtual> = config => misc => async done => {
+  await misc.relaxNext();
+  const { before, decrease, amount, index, result } = config.custom;
+  const { adapter, scroller: { buffer } } = misc;
+  const ds = misc.datasource as DatasourceInserter;
+  const items = generateItems(amount, MAX);
+
+  ds.insert(items, index, before ? Direction.backward : Direction.forward, decrease);
+  if (before) {
+    await adapter.insert({ beforeIndex: index, items, decrease });
+  } else {
+    await adapter.insert({ afterIndex: index, items, decrease });
+  }
+
+  await misc.scrollToIndexRecursively(result.min);
+  expect(buffer.absMinIndex).toBe(result.min);
+  expect(buffer.minIndex).toBe(result.min);
+  buffer.items.forEach((item, i) => {
+    expect(item.data.id).toBe(result.list[i]);
+  });
+
+  await misc.scrollToIndexRecursively(result.max);
+  expect(buffer.absMaxIndex).toBe(result.max);
+  expect(buffer.maxIndex).toBe(result.max);
+  [...buffer.items].reverse().forEach((item, i) => {
+    expect(item.data.id).toBe(result.list[result.list.length - i - 1]);
+  });
+
+  done();
+};
 
 describe('Adapter Insert Spec', () => {
 
-  describe('Static Insert Process (in-Buffer)', () => {
+  const getTitle = (custom: ICustom, scroll = false, virtual = false) =>
+    `should ${virtual ? 'virtually' : ''} insert ${custom.amount} items ` +
+    `${custom.before ? 'before' : 'after'} index ${custom.index} ` +
+    `(${(custom.decrease ? 'decrementally' : 'incrementally')}) ` +
+    (scroll ? 'and persist them after scroll' : '') +
+    custom.desc;
+
+  describe('Buffer (static)', () => {
     [...configList, ...configListByIndexes].forEach(config =>
       makeTest({
         config: config,
-        title: `should ${insert(config.custom)} some items incrementally${config.custom.desc}`,
-        it: shouldCheckStaticProcess(config, true)
+        title: getTitle(config.custom),
+        it: shouldCheckInBufferStatic(config, true)
       })
     );
 
     [...configDecreaseList, ...configDecreaseListByIndexes].forEach(config =>
       makeTest({
         config: config,
-        title: `should ${insert(config.custom)} some items with decrement${config.custom.desc}`,
-        it: shouldCheckStaticProcess(config, true)
+        title: getTitle(config.custom),
+        it: shouldCheckInBufferStatic(config, true)
       })
     );
 
-    configOutList.forEach(config =>
+    configOutList.forEach((config, i) =>
       makeTest({
         config,
-        title: `should not ${insert(config.custom)}`,
-        it: shouldCheckStaticProcess(config, false)
+        title: `should not insert (${i + 1})`,
+        it: shouldCheckInBufferStatic(config, false)
       })
     );
   });
 
-  describe('Dynamic Insert Process (in-Buffer)', () => {
-    const dynamicTitle = (custom: ICustom) =>
-      `should ${insert(custom)} some items ` +
-      `(${(custom.decrease ? 'decrementally' : 'incrementally')}) ` +
-      'and persist them after scroll' + custom.desc;
-
+  describe('Buffer (dynamic)', () =>
     [...configDynamicList, ...configDynamicListByIndexes].forEach(config =>
       makeTest({
         config: config,
-        title: dynamicTitle(config.custom),
-        it: shouldCheckDynamicProcess(config, true)
+        title: getTitle(config.custom, true),
+        it: shouldCheckInBufferDynamic(config, true)
       })
-    );
-  });
+    )
+  );
+
+  describe('Virtual', () =>
+    configListVirtual.forEach(config =>
+      makeTest({
+        config: config,
+        title: getTitle(config.custom, false, true),
+        it: shouldCheckVirtual(config)
+      })
+    )
+  );
 
 });

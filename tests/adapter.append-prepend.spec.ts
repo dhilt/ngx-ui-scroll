@@ -158,6 +158,7 @@ const shouldVirtualize = (operation: Operation, fixOpposite: boolean): ItFunc =>
 
   const _firstIndex = buffer.firstIndex;
   const _lastIndex = buffer.lastIndex;
+  const _firstVisibleId = misc.adapter.firstVisible.data.id;
 
   // append items to the original datasource
   (misc.datasource as DatasourceResetter).reset(minIndex, maxIndex, firstId);
@@ -171,6 +172,7 @@ const shouldVirtualize = (operation: Operation, fixOpposite: boolean): ItFunc =>
     await misc.adapter.append({ items, eof: true, decrease: fixOpposite });
     expect(buffer.lastIndex).toEqual(_lastIndex + shift);
   }
+  expect(misc.adapter.firstVisible.data.id).toBe(_firstVisibleId);
   expect(viewport.getScrollableSize()).toEqual((maxIndex - minIndex + 1) * itemSize);
   expect(paddings[direction].size).toEqual(paddingSize + (items.length * itemSize));
   expect(buffer.absMinIndex).toEqual(minIndex);

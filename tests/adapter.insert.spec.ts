@@ -315,6 +315,7 @@ const shouldCheckVirtual: ItFuncConfig<ICustomVirtual> = config => misc => async
   const { adapter, scroller: { buffer } } = misc;
   const ds = misc.datasource as DatasourceInserter;
   const items = generateItems(amount, MAX);
+  const firstVisibleId = adapter.firstVisible.data.id;
 
   ds.insert(items, index, before ? Direction.backward : Direction.forward, decrease);
   if (before) {
@@ -322,8 +323,10 @@ const shouldCheckVirtual: ItFuncConfig<ICustomVirtual> = config => misc => async
   } else {
     await adapter.insert({ afterIndex: index, items, decrease });
   }
+  expect(adapter.firstVisible.data.id).toBe(firstVisibleId);
+  expect(misc.getScrollableSize()).toBe((result.max - result.min + 1) * ITEM_SIZE);
 
-  await misc.scrollToIndexRecursively(result.min);
+  await misc.scrollToIndexRecursively(result.min, 25);
   expect(buffer.absMinIndex).toBe(result.min);
   expect(buffer.minIndex).toBe(result.min);
   buffer.items.forEach((item, i) => {

@@ -29,6 +29,16 @@ interface ICustomVirtual extends ICustomBasic {
   };
 }
 
+interface ICustomEmpty extends ICustomBasic {
+  result: {
+    min: number;
+    max: number;
+    start: number;
+    first?: number;
+    last?: number;
+  };
+}
+
 const configBase: TestBedConfig<ICustom> = {
   datasourceSettings: {
     startIndex: MIDDLE,
@@ -196,6 +206,58 @@ const configListVirtual: TestBedConfig<ICustomVirtual>[] = [{
   ...conf, datasourceClass: getDatasourceClassForInsert({ settings: conf.datasourceSettings })
 }));
 
+
+const baseConfigEmpty = {
+  datasourceSettings: {
+    minIndex: -15, maxIndex: 15, startIndex: 1, padding: 0.1, bufferSize: 7
+  },
+  templateSettings: { viewportHeight: 100 },
+};
+
+const configListEmpty: TestBedConfig<ICustomEmpty>[] = [{
+  ...baseConfigEmpty, custom: {
+    index: 0, amount: 5, before: false, decrease: false,
+    result: { min: 1, max: 5, start: 1, first: 1 }
+  }
+}, {
+  ...baseConfigEmpty, custom: {
+    index: 2, amount: 5, before: true, decrease: false,
+    result: { min: 1, max: 5, start: 1, first: 1 }
+  }
+}, {
+  ...baseConfigEmpty, custom: {
+    index: 5, amount: 5, before: false, decrease: true,
+    result: { min: 1, max: 5, start: 1, first: 1 }
+  }
+}, {
+  ...baseConfigEmpty, custom: {
+    index: 6, amount: 5, before: true, decrease: true,
+    result: { min: 1, max: 5, start: 1, first: 1 }
+  }
+}, {
+  ...baseConfigEmpty, custom: {
+    index: -10, amount: 20, before: false, decrease: false,
+    result: { min: -9, max: 10, start: 1, first: 1 }
+  }
+}, {
+  ...baseConfigEmpty, custom: {
+    index: 100, amount: 10, before: false, decrease: false,
+    result: { min: 101, max: 110, start: 101, first: 101 }
+  }
+}, {
+  ...baseConfigEmpty, custom: {
+    index: -100, amount: 10, before: false, decrease: false,
+    result: { min: -99, max: -90, start: -90, last: -90 }
+  }
+}].map(conf => ({
+  ...conf, datasourceClass: getDatasourceClassForInsert({
+    settings: conf.datasourceSettings,
+    common: { // set impossible limits to emulate empty datasource
+      limits: { min: 1, max: -1 }
+    }
+  })
+}));
+
 interface ICheckData {
   absMin: number;
   absMax: number;
@@ -343,14 +405,54 @@ const shouldCheckVirtual: ItFuncConfig<ICustomVirtual> = config => misc => async
   done();
 };
 
+const shouldCheckEmpty: ItFuncConfig<ICustomEmpty> = config => misc => async done => {
+  await misc.relaxNext();
+  const { before, decrease, amount, index, result } = config.custom;
+  const { adapter, scroller: { buffer } } = misc;
+  // const ds = misc.datasource as DatasourceInserter;
+  const items = generateItems(amount, MAX);
+  expect(buffer.size).toBe(0);
+
+  // ds.insert(items, index, before ? Direction.backward : Direction.forward, decrease);
+  if (before) {
+    await adapter.insert({ beforeIndex: index, items, decrease });
+  } else {
+    await adapter.insert({ afterIndex: index, items, decrease });
+  }
+  // expect(adapter.firstVisible.data.id).toBe(items[0].id);
+  const size = Math.max((result.max - result.min + 1) * ITEM_SIZE, misc.getViewportSize());
+  expect(misc.getScrollableSize()).toBe(size);
+
+  if (Number.isInteger(result.first)) {
+    expect(adapter.firstVisible.$index).toBe(result.first);
+  }
+  if (Number.isInteger(result.last)) {
+    expect(adapter.lastVisible.$index).toBe(result.last);
+  }
+
+  expect(buffer.startIndex).toBe(result.start);
+  expect(buffer.absMinIndex).toBe(result.min);
+  expect(buffer.minIndex).toBe(result.min);
+  expect(buffer.firstIndex).toBe(result.min);
+  expect(buffer.absMaxIndex).toBe(result.max);
+  expect(buffer.maxIndex).toBe(result.max);
+  expect(buffer.lastIndex).toBe(result.max);
+  buffer.items.forEach((item, i) => {
+    expect(item.data.id).toBe(items[i].id);
+  });
+
+  done();
+};
+
 describe('Adapter Insert Spec', () => {
 
-  const getTitle = (custom: ICustom, scroll = false, virtual = false) =>
-    `should ${virtual ? 'virtually' : ''} insert ${custom.amount} items ` +
+  const getTitle = (custom: ICustom, scroll = false, virtual = false, empty = false) =>
+    `should ${virtual ? 'virtually ' : ''}insert ${custom.amount} items ` +
+    (empty ? 'to the empty datasource ' : '') +
     `${custom.before ? 'before' : 'after'} index ${custom.index} ` +
     `(${(custom.decrease ? 'decrementally' : 'incrementally')}) ` +
-    (scroll ? 'and persist them after scroll' : '') +
-    custom.desc;
+    (scroll ? 'and persist them after scroll ' : '') +
+    (custom.desc || '');
 
   describe('Buffer (static)', () => {
     [...configList, ...configListByIndexes].forEach(config =>
@@ -394,6 +496,16 @@ describe('Adapter Insert Spec', () => {
         config: config,
         title: getTitle(config.custom, false, true),
         it: shouldCheckVirtual(config)
+      })
+    )
+  );
+
+  describe('Empty', () =>
+    configListEmpty.forEach((config, i) =>
+      makeTest({
+        config: config,
+        title: getTitle(config.custom, false, false, true) + `[${i}]`,
+        it: shouldCheckEmpty(config)
       })
     )
   );

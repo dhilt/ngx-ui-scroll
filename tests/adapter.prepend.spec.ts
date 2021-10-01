@@ -93,8 +93,8 @@ const shouldPrependVirtual = (
   expect(buffer.firstIndex).toEqual(_firstIndex + (increase ? amount : 0));
   expect(buffer.lastIndex).toEqual(_lastIndex + (increase ? amount : 0));
 
-  await misc.scrollToIndexRecursively(maxIndex);
-  await misc.scrollToIndexRecursively(minIndex);
+  await misc.scrollToIndexRecursively(maxIndex, 30);
+  await misc.scrollToIndexRecursively(minIndex, 30);
 
   expect(viewport.getScrollableSize()).toEqual((maxIndex - minIndex + 1) * itemSize);
   expect(buffer.absMinIndex).toEqual(minIndex);

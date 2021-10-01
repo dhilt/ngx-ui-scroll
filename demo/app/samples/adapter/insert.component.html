@@ -51,25 +51,30 @@
     </p>
     <pre>{{argumentsDescription}}</pre>
     <p>
-      The <em>items</em> option is an array we want to be added to the viewport.
-      This option is mandatory.
-      Both <em>before</em> and <em>after</em> options
-      are predicate functions applying to each item in the current buffer.
-      The first <em>true</em> result of running the predicate determines
-      the item before/after which the new ones should appear.
-      Only one of the <em>before</em> and <em>after</em> fields is allowed.
+      The <em>items</em> option is an array we want to be added to the dataset.
+      The <em>before</em>, <em>after</em>, <em>beforeIndex</em> and <em>afterIndex</em> options
+      define the position of the insertion; only one of these options is allowed.
+      Predicate function (<em>before</em>/<em>after</em>) is applied to each item in the current buffer,
+      and the first <em>true</em> result of running the predicate determines
+      the item before/after which the new <em>items</em> should appear.
+    </p>
+    <p>
+      Using the <em>beforeIndex</em>/<em>afterIndex</em> option allows to insert <em>items</em> by index.
+      Also, these options provide virtual insertion, if selected index is out the buffer but
+      still belongs to the known datasource boundaries.
     </p>
     <p>
       The last option is <em>decrease</em>.
-      The indexes of the items following after the inserted ones increase by default.
-      This behavior can be changed, and setting <em>decrease</em> to <em>true</em>,
-      we are telling the Scroller that we want to
-      decrease the indexes of the items that are before the inserted ones.
+      The indexes of the items following after the inserted ones are increased by default.
+      This behavior can be changed, by setting <em>decrease</em> to <em>true</em>,
+      we are telling the Scroller that the indexes of the items that are before the inserted ones should decrease.
     </p>
     <p>
       This demo shows how the <em>Adapter.insert</em> method can be used in the real life.
-      "Component" tab contains common datasource logic. "Increase" and "Decrease" tabs
+      "Datasource" tab contains common datasource logic. "Increase" and "Decrease" tabs
       present inserting logic for both cases we have in this demo.
+      "Increase" uses index API (in-buffer + virtual insertions),
+      "Decrease" uses predicate API (in-buffer insertions only).
       Note that each item is just a string, and the Scroller deals
       with natural indexes, which forces us to subtract <em>MIN</em> value from
       the <em>index</em> coming into the <em>Datasource.get</em> body.
@@ -77,7 +82,7 @@
     <p>
       Also, this is very important to maintain consistency
       between the external <em>Datasource</em> and the internal Scroller's buffer.
-      Both <em>doInsert</em> methods do it.They
+      Both <em>doInsert</em> methods do it. They
       a) generate new items in a for-loop,
       b) insert them into the datasource by updating <em>this.data</em>,
       c) insert them into the internal <em>Buffer</em> via <em>Adapter.insert</em>.

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoSources } from '../../shared/interfaces';
 
 import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
 
@@ -36,11 +36,8 @@ export class DemoInsertComponent {
       index -= this.MIN; // convert to natural indexes starting with 0
       const start = Math.max(0, index);
       const end = Math.min(this.MAX - this.MIN + 1, index + count);
-      if (start > end) {
-        success([]);
-        return;
-      }
-      success(this.data.slice(start, end));
+      const data = start > end ? [] : this.data.slice(start, end);
+      success(data);
     },
     settings: {
       startIndex: this.MIN
@@ -52,11 +49,8 @@ export class DemoInsertComponent {
       index -= this.MIN2; // convert to natural indexes starting with 0
       const start = Math.max(0, index);
       const end = Math.min(this.MAX2 - this.MIN2 + 1, index + count);
-      if (start > end) {
-        success([]);
-        return;
-      }
-      success(this.data2.slice(start, end));
+      const data = start > end ? [] : this.data2.slice(start, end);
+      success(data);
     },
     settings: {
       startIndex: this.MIN2
@@ -70,7 +64,7 @@ export class DemoInsertComponent {
 
   sources: DemoSources = [{
     active: true,
-    name: DemoSourceType.Component,
+    name: 'Datasource',
     text: `MIN = 1;
 MAX = 100;
 data: string[] = [];
@@ -89,11 +83,8 @@ datasource = new Datasource<string>({
     index -= this.MIN; // convert to natural indexes starting with 0
     const start = Math.max(0, index);
     const end = Math.min(this.MAX - this.MIN + 1, index + count);
-    if (start > end) {
-      success([]);
-      return;
-    }
-    success(this.data.slice(start, end));
+    const data = start > end ? [] : this.data.slice(start, end);
+    success(data);
   },
   settings: {
     startIndex: this.MIN
@@ -107,7 +98,7 @@ async doInsert() {
   await this.datasource.adapter.relax();
   const count = Number(this.inputCount); // first input
   const itemData = 'item #' + this.inputIndex; // second input
-  const index = this.data.indexOf(itemData);
+  const index = this.data.indexOf(itemData) + 1;
   if (index < 0 || isNaN(count)) {
     return;
   }
@@ -123,7 +114,7 @@ async doInsert() {
     ...this.data.slice(index)
   ];
   await this.datasource.adapter.insert({
-    after: ({ data }) => data === itemData,
+    afterIndex: index,
     items
   });
 }
@@ -163,13 +154,15 @@ async doInsert() {
     items: any[];
     before?: ItemsPredicate;
     after?: ItemsPredicate;
+    beforeIndex?: number;
+    afterIndex?: number;
     decrease?: boolean;
   }`;
 
   async doInsert() {
     await this.datasource.adapter.relax();
     const itemData = `item #${this.inputIndex}`;
-    const index = this.data.indexOf(itemData);
+    const index = this.data.indexOf(itemData) + 1;
     const count = Number(this.inputCount);
     if (index < 0 || isNaN(count)) {
       return;
@@ -186,7 +179,7 @@ async doInsert() {
       ...this.data.slice(index)
     ];
     await this.datasource.adapter.insert({
-      after: ({ data }) => data === itemData,
+      afterIndex: index,
       items
     });
   }

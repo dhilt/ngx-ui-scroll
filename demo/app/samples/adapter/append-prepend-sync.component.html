@@ -32,7 +32,7 @@
     </p>
     <p>
       For example, if we call <em>{{prependCallSample}}</em> when the beginning of the dataset is reached
-      and no more items can be fetched in the backward direction, then the new items will be injected immediately.
+      and no more items can be fetched in the backward direction, then the new items will be injected and rendered immediately.
       But if we are not in BOF, new items will not appear, they will be virtualized:
       viewport backward padding element size will be increased in accordance with
       the number of new items multiplied by the default item size.
@@ -45,14 +45,15 @@
       The indexing strategy can be changed by <em>decrease</em>/<em>increase</em> params.
       They are boolean and set to <em>false</em> by default.
       For example, if we call <em>{{prependIncreaseCallSample}}</em>,
-      the topmost index remains unchanged and it will be given to the first prepended item.
+      the topmost index remains unchanged, prepended items start with the topmost index,
+      the rest indexes are incremented.
     </p>
     <p>
       The most important idea behind the Adapter update API is that
       the changes made via Adapter must be synched with the Datasource.
       This demo implements one of the possible ways of synching
       the Datasource with the Adapter.append/prepend updates.
-      The dataset is changed per each <em>doAppend</em> / <em>doPrepend</em> calls
+      The external dataset is changed per each <em>doAppend</em> / <em>doPrepend</em> call
       destructively by <em>unshift</em> and <em>push</em> Array's methods.
       There are also some additional variables that provide index offsets and
       that are used in the <em>Datasource.get</em> and doPrepend/doAppend methods

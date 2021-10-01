@@ -225,9 +225,9 @@ export class Misc<Comp = TestComponentInterface> {
     }
   }
 
-  async scrollToIndexRecursively(index: number): Promise<void> {
+  async scrollToIndexRecursively(index: number, limit = 20): Promise<void> {
     const { adapter } = this;
-    let leftDiff: number, rightDiff: number;
+    let leftDiff: number, rightDiff: number, step = 0;
     do {
       leftDiff = index - adapter.bufferInfo.firstIndex;
       rightDiff = index - adapter.bufferInfo.lastIndex;
@@ -244,7 +244,7 @@ export class Misc<Comp = TestComponentInterface> {
         await this.relaxNext();
       }
     }
-    while (rightDiff > 0 || leftDiff < 0);
+    while ((rightDiff > 0 || leftDiff < 0) && ++step < limit);
   }
 
   delay(ms: number): Promise<void> {

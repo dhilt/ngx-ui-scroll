@@ -94,7 +94,7 @@ async removeByIndex(index: number) {
   await this.datasource.adapter.relax();
   this.removeFromDatasource(index, true);
   await this.datasource.adapter.remove({
-    predicate: ({ $index }) => $index === index
+    indexes: [index]
   });
 }`
   }, {
@@ -141,8 +141,7 @@ async removeByIndex(index: number) {
     indexes?: number[];
     increase?: boolean;
   }`;
-  predicateDescription = `  adapter.remove({ predicate: ({ data }) => data.id === id });
-  adapter.remove({ predicate: ({ $index }) => $index === index });`;
+  predicateDescription = '  adapter.remove({ predicate: ({ data }) => data.id === id });';
 
   onInputChanged(target: HTMLInputElement) {
     const value = parseInt(target.value.trim(), 10);
@@ -172,7 +171,7 @@ async removeByIndex(index: number) {
     await this.datasource.adapter.relax();
     this.removeFromDatasource(index, true);
     await this.datasource.adapter.remove({
-      predicate: ({ $index }) => $index === index
+      indexes: [index]
     });
   }
 

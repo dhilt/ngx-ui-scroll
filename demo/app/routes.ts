@@ -209,14 +209,14 @@ const adapterMethodsScope = {
     name: 'Append / prepend sync',
     scope: globalScope.adapterMethods.id
   },
-  remove: {
-    id: 'remove',
-    name: 'Remove',
-    scope: globalScope.adapterMethods.id
-  },
   insert: {
     id: 'insert',
     name: 'Insert',
+    scope: globalScope.adapterMethods.id
+  },
+  remove: {
+    id: 'remove',
+    name: 'Remove',
     scope: globalScope.adapterMethods.id
   },
   replace: {

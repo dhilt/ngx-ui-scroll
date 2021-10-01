@@ -40,12 +40,14 @@
       so 1-4 new items temporary take place of items with indexes 91-94.
     </p>
     <p>
-      But if we scroll away and make '90s items invisible and deleted from the viewport,
+      But if we scroll away and make '90s items invisible and removed from the viewport,
       and then scroll back, we will realise that nothing changes:
       "new" items are gone and the old 91-94 items returned to initial position.
       The point is that the changes we provide via <em>Adapter</em> over the internal Scroller's Buffer
       don't affect the external <em>Datasource</em> we implemented on the Component level.
-      This is our responsibility to take care of data passing to the Scroller through the <em>Datasource</em>.
+      This is the end app developer responsibility to take care of the data consistency
+      during manual updates such as append, prepend, insert, remove, etc:
+      the <em>Datasource.get</em> must provide correct data, while the Scroller maintains indexes.
       <a
         [routerLink]="['/', adapterScope.id]"
         fragment="{{adapterMethodsScope.map.appendPrependSync.id}}"

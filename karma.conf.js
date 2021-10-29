@@ -1,5 +1,4 @@
 const PuppeteerPath = require('puppeteer').executablePath();
-const FilterWarningsPlugin = require('webpack-filter-warnings-plugin');
 const dotenv = require('dotenv');
 
 process.env.CHROME_BIN = PuppeteerPath;
@@ -82,13 +81,7 @@ module.exports = function (config) {
         exprContextCritical: false
       },
       devtool: 'inline-source-map',
-      performance: { hints: false },
-      /* Workaround for https://github.com/angular/angular/issues/21560 */
-      plugins: [
-        new FilterWarningsPlugin({
-          exclude: /System.import/
-        })
-      ]
+      performance: { hints: false }
     },
 
     webpackServer: {

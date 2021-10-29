@@ -77,7 +77,7 @@ doUpdate() {
 countItems() {
   let count = 0;
   this.datasource.adapter.fix({
-    updater: ({}) => count++
+    updater: _ => count++
   });
   return count;
 }
@@ -109,7 +109,7 @@ countItems() {
   countItems(): number {
     let count = 0;
     this.datasource.adapter.fix({
-      updater: () => count++
+      updater: _ => count++
     });
     return count;
   }

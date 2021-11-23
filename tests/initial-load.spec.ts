@@ -61,6 +61,12 @@ const noItemSizeAndBigBufferConfigList = tunedItemSizeAndBigBufferSizeConfigList
   })
 );
 
+const fwdPaddingStretchConfigList: TestBedConfig[] = [{
+  datasourceSettings: { startIndex: 100, padding: 0.5, bufferSize: 10, minIndex: 1 },
+  datasourceDevSettings: { debug: true },
+  templateSettings: { viewportHeight: 300, itemHeight: 20 }
+}];
+
 const getSetItemSizeCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
   const { bufferSize, startIndex, padding } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize();
@@ -90,7 +96,7 @@ const getSetItemSizeCounter = (settings: TestBedConfig, misc: Misc, itemSize: nu
 
 const getNotSetItemSizeCounter =
   (settings: TestBedConfig, misc: Misc, itemSize: number, previous?: ItemsCounter): ItemsCounter => {
-    const { bufferSize, startIndex, padding, minIndex } = misc.scroller.settings;
+    const { bufferSize, startIndex, padding } = misc.scroller.settings;
     const viewportSize = misc.getViewportSize();
     const backwardLimit = viewportSize * padding;
     const forwardLimit = viewportSize + backwardLimit;
@@ -194,6 +200,14 @@ const testNotSetItemSizeCase: ItFuncConfig = settings => misc => done =>
     misc.shared.itemsCounter = itemsCounter;
   });
 
+const testFwdPaddingStretchCase: ItFuncConfig = config => misc => async done => {
+  await misc.relaxNext();
+  expect(misc.scroller.state.fetch.callCount).toEqual(3);
+  expect(misc.scroller.state.clip.callCount).toEqual(0);
+  expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex);
+  done();
+};
+
 describe('Initial Load Spec', () => {
 
   describe('Fixed itemSize', () => {
@@ -243,6 +257,16 @@ describe('Initial Load Spec', () => {
         config,
         title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
         it: testNotSetItemSizeCase(config)
+      })
+    );
+  });
+
+  describe('Not enough items after the first fetch', () => {
+    fwdPaddingStretchConfigList.forEach(config =>
+      makeTest({
+        config,
+        title: 'should stretch the forward padding element',
+        it: testFwdPaddingStretchCase(config)
       })
     );
   });

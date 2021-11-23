@@ -1,4 +1,4 @@
-import { makeTest, TestBedConfig } from './scaffolding/runner';
+import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { ItemsCounter, testItemsCounter } from './miscellaneous/itemsCounter';
 
@@ -61,7 +61,7 @@ const noItemSizeAndBigBufferConfigList = tunedItemSizeAndBigBufferSizeConfigList
   })
 );
 
-const getFixedItemSizeCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
+const getSetItemSizeCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
   const { bufferSize, startIndex, padding } = misc.scroller.settings;
   const viewportSize = misc.getViewportSize();
 
@@ -88,9 +88,9 @@ const getFixedItemSizeCounter = (settings: TestBedConfig, misc: Misc, itemSize: 
   return itemsCounter;
 };
 
-const getTunedItemSizeCounter =
+const getNotSetItemSizeCounter =
   (settings: TestBedConfig, misc: Misc, itemSize: number, previous?: ItemsCounter): ItemsCounter => {
-    const { bufferSize, startIndex, padding } = misc.scroller.settings;
+    const { bufferSize, startIndex, padding, minIndex } = misc.scroller.settings;
     const viewportSize = misc.getViewportSize();
     const backwardLimit = viewportSize * padding;
     const forwardLimit = viewportSize + backwardLimit;
@@ -138,51 +138,61 @@ const getTunedItemSizeCounter =
 
     backward.index = startIndex - backward.count;
     forward.index = startIndex + forward.count - 1;
+
+    const { defaultSize } = misc.scroller.buffer;
     backward.padding = 0;
-    forward.padding = Math.max(0, viewportSize - forward.count * misc.scroller.buffer.defaultSize);
+    forward.padding = Math.max(0, viewportSize - forward.count * defaultSize);
 
     return itemsCounter;
   };
 
-const testFixedItemSizeCase = (settings: TestBedConfig, misc: Misc, done: () => void) => {
-  const { fetch, clip } = misc.scroller.state;
-  expect(misc.workflow.cyclesDone).toEqual(1);
-  expect(fetch.callCount).toEqual(2);
-  expect(misc.innerLoopCount).toEqual(3);
-  expect(clip.callCount).toEqual(0);
-  expect(misc.padding.backward.getSize()).toEqual(0);
-  expect(misc.padding.forward.getSize()).toEqual(0);
+const testSetItemSizeCase: ItFuncConfig = settings => misc => done =>
+  misc.scroller.state.cycle.busy.on(pending => {
+    if (pending) {
+      return;
+    }
+    const { fetch, clip } = misc.scroller.state;
+    expect(misc.workflow.cyclesDone).toEqual(1);
+    expect(fetch.callCount).toEqual(2);
+    expect(misc.innerLoopCount).toEqual(3);
+    expect(clip.callCount).toEqual(0);
+    expect(misc.padding.backward.getSize()).toEqual(0);
+    expect(misc.padding.forward.getSize()).toEqual(0);
 
-  const startIndex = settings.datasourceSettings.startIndex as number;
-  const tplSettings = settings.templateSettings || {};
-  const itemSize = tplSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'] as number;
-  const itemsCounter = getFixedItemSizeCounter(settings, misc, itemSize);
-  testItemsCounter(startIndex, misc, itemsCounter);
-  done();
-};
-
-const testTunedItemSize = (settings: TestBedConfig, misc: Misc, done: () => void) => {
-  const loopCount = misc.innerLoopCount;
-  if (loopCount === 4) {
-    expect(misc.workflow.cyclesDone).toEqual(0);
-    expect(misc.scroller.state.fetch.callCount).toEqual(3);
-    expect(misc.scroller.state.clip.callCount).toEqual(0);
+    const startIndex = settings.datasourceSettings.startIndex as number;
+    const tplSettings = settings.templateSettings || {};
+    const itemSize = tplSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'] as number;
+    const itemsCounter = getSetItemSizeCounter(settings, misc, itemSize);
+    testItemsCounter(startIndex, misc, itemsCounter);
     done();
-    return;
-  }
-  let itemsCounter;
-  const initialItemSize = settings.datasourceSettings.itemSize as number;
-  const startIndex = settings.datasourceSettings.startIndex as number;
-  const tplSettings = settings.templateSettings || {};
-  const itemSize = tplSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'] as number;
-  if (loopCount === 1) {
-    itemsCounter = getTunedItemSizeCounter(settings, misc, initialItemSize);
-  } else {
-    itemsCounter = getTunedItemSizeCounter(settings, misc, itemSize, misc.shared.itemsCounter as ItemsCounter);
-  }
-  testItemsCounter(startIndex, misc, itemsCounter);
-  misc.shared.itemsCounter = itemsCounter;
-};
+  });
+
+const testNotSetItemSizeCase: ItFuncConfig = settings => misc => done =>
+  misc.scroller.state.cycle.innerLoop.busy.on(loopPending => {
+    if (loopPending) {
+      return;
+    }
+    const loopCount = misc.innerLoopCount;
+    if (loopCount === 4) {
+      expect(misc.workflow.cyclesDone).toEqual(0);
+      expect(misc.scroller.state.fetch.callCount).toEqual(3);
+      expect(misc.scroller.state.clip.callCount).toEqual(0);
+      done();
+      return;
+    }
+    let itemsCounter;
+    const initialItemSize = settings.datasourceSettings.itemSize as number;
+    const startIndex = settings.datasourceSettings.startIndex as number;
+    const tplSettings = settings.templateSettings || {};
+    const itemSize = tplSettings[misc.horizontal ? 'itemWidth' : 'itemHeight'] as number;
+    if (loopCount === 1) {
+      itemsCounter = getNotSetItemSizeCounter(settings, misc, initialItemSize);
+    } else {
+      itemsCounter = getNotSetItemSizeCounter(settings, misc, itemSize, misc.shared.itemsCounter as ItemsCounter);
+    }
+    testItemsCounter(startIndex, misc, itemsCounter);
+    misc.shared.itemsCounter = itemsCounter;
+  });
 
 describe('Initial Load Spec', () => {
 
@@ -191,20 +201,14 @@ describe('Initial Load Spec', () => {
       makeTest({
         config,
         title: 'should make 2 fetches to satisfy padding limits',
-        it: misc => done =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testFixedItemSizeCase(config, misc, done)
-          )
+        it: testSetItemSizeCase(config)
       })
     );
     fixedItemSizeAndBigBufferSizeConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should make 2 fetches to overflow padding limits (bufferSize is big enough)',
-        it: misc => done =>
-          spyOn(misc.workflow, 'finalize').and.callFake(() =>
-            testFixedItemSizeCase(config, misc, done)
-          )
+        it: testSetItemSizeCase(config)
       })
     );
   });
@@ -214,20 +218,14 @@ describe('Initial Load Spec', () => {
       makeTest({
         config,
         title: 'should make 3 fetches to satisfy padding limits',
-        it: misc => done =>
-          spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testTunedItemSize(config, misc, done)
-          )
+        it: testNotSetItemSizeCase(config)
       })
     );
     tunedItemSizeAndBigBufferSizeConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
-        it: misc => done =>
-          spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testTunedItemSize(config, misc, done)
-          )
+        it: testNotSetItemSizeCase(config)
       })
     );
   });
@@ -237,20 +235,14 @@ describe('Initial Load Spec', () => {
       makeTest({
         config,
         title: 'should make 3 fetches to satisfy padding limits',
-        it: misc => done =>
-          spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testTunedItemSize(config, misc, done)
-          )
+        it: testNotSetItemSizeCase(config)
       })
     );
     noItemSizeAndBigBufferConfigList.forEach(config =>
       makeTest({
         config,
         title: 'should make 3 fetches to overflow padding limits (bufferSize is big enough)',
-        it: misc => done =>
-          spyOn(misc.scroller, 'finalize').and.callFake(() =>
-            testTunedItemSize(config, misc, done)
-          )
+        it: testNotSetItemSizeCase(config)
       })
     );
   });

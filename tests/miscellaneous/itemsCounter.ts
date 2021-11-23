@@ -57,7 +57,8 @@ export const testItemsCounter = (startIndex: number, misc: Misc, itemsCounter: I
   const fwdPadding = itemsCounter.forward.padding;
   const average = itemsCounter.average;
   const elements = misc.getElements();
-  const { viewport, buffer, adapter: { bufferInfo } } = misc.scroller;
+  const { viewport, buffer, adapter } = misc.scroller;
+  const { bufferInfo, firstVisible } = adapter;
 
   let sizePaddings = 0;
   if (!isNaN(Number(bwdPadding))) {
@@ -82,4 +83,5 @@ export const testItemsCounter = (startIndex: number, misc: Misc, itemsCounter: I
   expect(misc.checkElementContentByIndex(startIndex)).toEqual(true);
   expect(bufferInfo.firstIndex).toEqual(itemsCounter.backward.index);
   expect(bufferInfo.lastIndex).toEqual(itemsCounter.forward.index);
+  expect(firstVisible.$index).toEqual(startIndex);
 };

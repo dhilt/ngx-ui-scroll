@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "tslib": "^1.9.0",
-    "vscroll": "^1.4.0"
+    "vscroll": "^1.4.3"
   },
   "keywords": [
     "angular",

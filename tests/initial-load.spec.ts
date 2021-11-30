@@ -61,10 +61,18 @@ const noItemSizeAndBigBufferConfigList = tunedItemSizeAndBigBufferSizeConfigList
   })
 );
 
-const fwdPaddingStretchConfigList: TestBedConfig[] = [{
+const lackOfItemsOnFirstFetchConfigList: TestBedConfig[] = [{
   datasourceSettings: { startIndex: 100, padding: 0.5, bufferSize: 10, minIndex: 1 },
-  datasourceDevSettings: { debug: true },
   templateSettings: { viewportHeight: 300, itemHeight: 20 }
+}, {
+  datasourceSettings: { startIndex: -70, padding: 0.5, bufferSize: 2, minIndex: -75 },
+  templateSettings: { viewportHeight: 200, itemHeight: 20 }
+}, {
+  datasourceSettings: { startIndex: 1, padding: 0.1, bufferSize: 12, minIndex: -9, windowViewport: true },
+  templateSettings: { noViewportClass: true, viewportHeight: 0, itemHeight: 20 }
+}, {
+  datasourceSettings: { startIndex: -99, padding: 0.3, bufferSize: 4, minIndex: -120, horizontal: true },
+  templateSettings: { horizontal: true, viewportWidth: 300, itemWidth: 40 }
 }];
 
 const getSetItemSizeCounter = (settings: TestBedConfig, misc: Misc, itemSize: number): ItemsCounter => {
@@ -200,12 +208,23 @@ const testNotSetItemSizeCase: ItFuncConfig = settings => misc => done =>
     misc.shared.itemsCounter = itemsCounter;
   });
 
-const testFwdPaddingStretchCase: ItFuncConfig = config => misc => async done => {
-  await misc.relaxNext();
-  expect(misc.scroller.state.fetch.callCount).toEqual(3);
-  expect(misc.scroller.state.clip.callCount).toEqual(0);
-  expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex);
-  done();
+const testLackOfItemsOnFirstFetchCase: ItFuncConfig = config => misc => async done => {
+  const unsubscribe = misc.scroller.state.cycle.innerLoop.busy.on(loopPending => {
+    if (loopPending) {
+      return;
+    }
+    unsubscribe();
+    // when the first inner loop is done, the first visible item should not be shifted
+    expect(misc.getScrollPosition()).toBe(misc.padding.backward.getSize());
+    expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex);
+  });
+  misc.scroller.state.cycle.busy.on(cyclePending => {
+    if (cyclePending) {
+      return;
+    }
+    expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex);
+    done();
+  });
 };
 
 describe('Initial Load Spec', () => {
@@ -261,14 +280,14 @@ describe('Initial Load Spec', () => {
     );
   });
 
-  describe('Not enough items after the first fetch', () => {
-    fwdPaddingStretchConfigList.forEach(config =>
+  describe('Lack of items after the 1st fetch', () =>
+    lackOfItemsOnFirstFetchConfigList.forEach((config, i) =>
       makeTest({
         config,
-        title: 'should stretch the forward padding element',
-        it: testFwdPaddingStretchCase(config)
+        title: `should stretch the forward padding element (${i})`,
+        it: testLackOfItemsOnFirstFetchCase(config)
       })
-    );
-  });
+    )
+  );
 
 });

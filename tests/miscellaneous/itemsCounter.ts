@@ -6,11 +6,13 @@ export class ItemsDirCounter {
   count: number;
   index: number;
   padding: number;
+  paddingShift?: number;
   size: number;
 
   constructor(count = 0, padding = 0) {
     this.count = count;
     this.padding = padding;
+    this.paddingShift = 0;
     this.index = NaN;
     this.size = NaN;
   }
@@ -54,7 +56,7 @@ export const testItemsCounter = (startIndex: number, misc: Misc, itemsCounter: I
   const bwdSize = itemsCounter.backward.size;
   const fwdSize = itemsCounter.forward.size;
   const bwdPadding = itemsCounter.backward.padding;
-  const fwdPadding = itemsCounter.forward.padding;
+  const fwdPadding = itemsCounter.forward.padding + (itemsCounter.forward.paddingShift || 0);
   const average = itemsCounter.average;
   const elements = misc.getElements();
   const { viewport, buffer, adapter } = misc.scroller;

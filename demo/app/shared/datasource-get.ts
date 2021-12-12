@@ -1,6 +1,6 @@
 import { Observable, Observer } from 'rxjs';
 
-import { IDatasource } from '../../../src/ui-scroll.datasource';
+import { IDatasource } from '../../../scroller/src/ui-scroll.datasource';
 import { DemoContext, MyItem } from './interfaces';
 
 const delayedCall = (result: MyItem[], callback: (items: MyItem[]) => void, delay?: number) => {

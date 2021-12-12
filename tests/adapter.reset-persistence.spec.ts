@@ -9,7 +9,7 @@ import {
   DevSettings
 } from './miscellaneous/vscroll';
 
-import { IAdapter, Datasource } from '../src/ui-scroll.datasource';
+import { IAdapter, Datasource } from '../scroller/src/ui-scroll.datasource';
 
 import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';

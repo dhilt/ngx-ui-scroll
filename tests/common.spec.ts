@@ -4,8 +4,8 @@ import { By } from '@angular/platform-browser';
 
 import { Workflow, Direction, Settings } from './miscellaneous/vscroll';
 
-import { UiScrollComponent } from '../src/ui-scroll.component';
-import { IAdapter } from '../src/ui-scroll.datasource';
+import { UiScrollComponent } from '../scroller/src/ui-scroll.component';
+import { IAdapter } from '../scroller/src/ui-scroll.datasource';
 
 import { configureTestBed, configureTestBedTwo } from './scaffolding/testBed';
 import { generateDatasourceClass } from './scaffolding/datasources/class';

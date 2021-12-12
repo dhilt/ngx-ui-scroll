@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Settings, DevSettings, BufferUpdater, Workflow, Item, Direction } from '../../miscellaneous/vscroll';
 
-import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
+import { IDatasource, Datasource } from '../../../scroller/src/ui-scroll.datasource';
 import { generateItem, Data, Processor } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 

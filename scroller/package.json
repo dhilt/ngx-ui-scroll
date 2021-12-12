@@ -1,0 +1,15 @@
+{
+  "name": "ngx-ui-scroll",
+  "version": "3.0.0-alpha",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^12.2.0",
+    "@angular/core": "^12.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "bundledDependencies": [
+    "vscroll"
+  ]
+}

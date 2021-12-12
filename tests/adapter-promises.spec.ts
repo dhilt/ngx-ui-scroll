@@ -318,14 +318,14 @@ const checkPromisifiedMethod: ItFuncConfig<ICustom> = config => misc => done => 
     });
 };
 
-const doAppendAndScroll = async (misc: Misc, index: number): Promise<void> => {
-  const { adapter } = misc;
-  const { success } = await adapter.relax();
-  if (success) {
-    await adapter.append(generateItem(index));
-    await adapter.fix({ scrollPosition: Infinity });
-  }
-};
+const doAppendAndScroll = (misc: Misc, index: number) =>
+  misc.adapter.relax().then(async (r) => {
+    if (r.success) {
+      await misc.adapter.append(generateItem(index));
+      await misc.adapter.fix({ scrollPosition: Infinity });
+    }
+    return r;
+  });
 
 const checkConcurrentSequences: ItFuncConfig<ICustom2> = config => misc => async done => {
   await misc.relaxNext();

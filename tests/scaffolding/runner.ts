@@ -82,77 +82,63 @@ const generateMetaTitle = <T, DS>(data: MakeTestConfig<T, DS>): string => {
 
 const windowOnError = window.onerror;
 const consoleError = console.error;
-let isErrorLogOf = false;
-
-const turnErrorLogOff = () => {
-  window.onerror = () => null;
-  console.error = () => null;
-  isErrorLogOf = true;
-};
-
-const turnErrorLogOn = () => {
-  window.onerror = windowOnError;
-  console.error = consoleError;
-  isErrorLogOf = false;
+let isErrorLogOff = false;
+const switchErrorLog = (toThrow: boolean) => {
+  if (toThrow) {
+    window.onerror = () => null;
+    console.error = () => null;
+    isErrorLogOff = true;
+  } else if (isErrorLogOff) {
+    window.onerror = windowOnError;
+    console.error = consoleError;
+    isErrorLogOff = false;
+  }
 };
 
 export const makeTest = <T = void, DS = true>(data: MakeTestConfig<T, DS>): void =>
   describe(generateMetaTitle(data), () => {
-    let _it, timeout = 2000;
-    if (data.config) {
-      let misc: Misc;
-      let runPromise: Promise<void> = Promise.resolve();
-      beforeEach(() => {
-        if (data.config.toThrow) {
-          turnErrorLogOff();
-        } else if (isErrorLogOf) {
-          turnErrorLogOn();
-        }
-        const datasourceClass = data.config.datasourceClass ?
-          data.config.datasourceClass :
-          generateDatasourceClass(
-            data.config.datasourceName || 'default',
-            data.config.datasourceSettings,
-            data.config.datasourceDevSettings
-          );
-        const templateData = generateTemplate(data.config.templateSettings);
+    const templateData = generateTemplate(data.config.templateSettings);
+
+    it(data.title, (done: () => void) => {
+      switchErrorLog(!!data.config.toThrow);
+
+      (new Promise<Misc>((resolve, reject) => {
+        let errorTimer: ReturnType<typeof setTimeout>;
         try {
+          const datasourceClass = data.config.datasourceClass ?
+            data.config.datasourceClass :
+            generateDatasourceClass(
+              data.config.datasourceName || 'default',
+              data.config.datasourceSettings,
+              data.config.datasourceDevSettings
+            );
           const fixture = configureTestBed(datasourceClass, templateData.template);
           fixture.componentInstance.templateSettings = templateData.settings;
-          try {
-            misc = new Misc(fixture);
-          } catch (_error) {
-            runPromise = new Promise((resolve, reject) =>
-              (fixture.ngZone as NgZone).onError.subscribe((error: unknown) =>
-                setTimeout(() => reject(error))
-              )
-            );
-          }
+          (fixture.ngZone as NgZone).onError.subscribe((error: unknown) => {
+            clearTimeout(errorTimer);
+            setTimeout(() => reject(error));
+          });
+          const misc = new Misc(fixture);
+          resolve(misc);
         } catch (error) {
-          runPromise = Promise.reject(error);
+          errorTimer = setTimeout(() => reject(error), 0);
         }
+      })).then((misc) => {
         if (typeof data.before === 'function') {
           (data.before as (misc: Misc) => void)(misc);
         }
-      });
-      if (typeof data.after === 'function') {
-        afterEach(() => {
-          (data.after as (misc: Misc) => void)(misc);
-        });
-      }
-      _it = (done: () => void) => {
-        runPromise.then(() =>
-          data.it(misc)(done)
-        ).catch(error => {
-          if (!data.config.toThrow && error) {
-            throw error;
+        data.it(misc)(() => {
+          if (typeof data.after === 'function') {
+            (data.after as (misc: Misc) => void)(misc);
           }
-          data.it(data.config.toThrow ? error.message : misc)(done);
+          done();
         });
-      };
-      timeout = data.config.timeout || timeout;
-    } else {
-      _it = data.it;
-    }
-    it(data.title, _it as (done: () => void) => void | Promise<void>, timeout);
+      }).catch(error => {
+        if (!data.config.toThrow && error) {
+          throw error;
+        }
+        const arg = data.config.toThrow ? (error as { message: string }).message : null;
+        data.it(arg as unknown as Misc)(done);
+      });
+    }, data.config.timeout || 2000);
   });

@@ -30,10 +30,10 @@ export const getDatasourceProcessingClass = (
   _datasource: IDatasource<Data>, _settings?: Settings<Data>, _devSettings?: DevSettings
 ) =>
   class extends Datasource<Data> {
-    get: IDatasource<Data>['get'];
-    settings: Settings<Data>;
-    devSettings: DevSettings;
-    processGet: Processor;
+    get!: IDatasource<Data>['get'];
+    settings!: Settings<Data>;
+    devSettings!: DevSettings;
+    processGet!: Processor;
 
     constructor() {
       const settings = _datasource.settings || _settings || {};
@@ -55,8 +55,8 @@ export const getDatasourceProcessingClass = (
 let idCounter = 0;
 
 class LimitedDatasource extends Datasource<Data> {
-  id: number
-  settings: Settings<Data>;
+  id: number;
+  settings!: Settings<Data>;
   common: DSClassConfig['common'];
   data: Data[] = [];
 

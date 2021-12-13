@@ -132,7 +132,7 @@ const _testCommonCase: ItFuncConfig = settings => misc => async done => {
     expect(adapter.bufferInfo.absMaxIndex).toEqual(Infinity);
   }
 
-  let totalSize;
+  let totalSize = 0;
   if (hasMinIndex && hasMaxIndex) {
     totalSize = (maxIndex - minIndex + 1) * itemSize;
   } else if (hasMinIndex) {

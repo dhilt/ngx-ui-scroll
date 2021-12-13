@@ -4,7 +4,6 @@ import { INVALID_DATASOURCE_PREFIX, Settings } from './miscellaneous/vscroll';
 const configClassPass: TestBedConfig<void, false> = {
   datasourceClass: class {
     settings: Settings;
-    test: true;
     constructor() {
       this.settings = {};
     }
@@ -73,7 +72,7 @@ const configListClassFail: TestBedConfig<ICustomClassFail, false>[] = [{
 
 const shouldFail: ItFuncConfig<ICustomClassFail, false> = config => error => done => {
   if (config.custom.error) {
-    expect(error).toBe(config.custom.error);
+    expect(error as unknown).toBe(config.custom.error);
   } else if (config.custom.errorStart) {
     expect(error.toString().startsWith(config.custom.errorStart)).toBeTrue();
   }

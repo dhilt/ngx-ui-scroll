@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 
 const MAX = 500;
 const MIN = 1;
@@ -22,6 +22,7 @@ export class WindowComponent {
   init: boolean;
 
   constructor() {
+    this.init = false;
     setTimeout(() => this.init = true);
   }
 

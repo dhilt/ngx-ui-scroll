@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { DemoSources, DemoSourceType, MyItem } from '../shared/interfaces';
 import { globalScope as scopes, demoList as demos } from '../routes';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-home',

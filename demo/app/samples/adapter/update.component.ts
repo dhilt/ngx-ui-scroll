@@ -4,7 +4,7 @@ import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
-import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 
 interface MyItem {
   text: string;

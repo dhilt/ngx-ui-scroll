@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
-import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-inverted-datasource',

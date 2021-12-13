@@ -4,7 +4,7 @@ import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
-import { IDatasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-buffer-size',

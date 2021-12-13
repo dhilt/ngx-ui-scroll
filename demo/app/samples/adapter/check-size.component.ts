@@ -4,7 +4,7 @@ import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
-import { Datasource } from '../../../../public_api';
+import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-check-size',
@@ -24,7 +24,7 @@ export class DemoCheckSizeComponent {
   startIndex = 20;
   sizeValue = 15;
   data: MyItem[];
-  needAutoscroll: false;
+  needAutoscroll = false;
 
   constructor() {
     this.data = [];

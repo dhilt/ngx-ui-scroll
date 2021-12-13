@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Observable, Observer } from 'rxjs';
 
-import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 
 const MAX = 50;
 let MIN = -199;
@@ -31,13 +31,13 @@ export class TestInnerComponent {
 })
 export class TestComponent {
 
-  @ViewChild('viewport', { static: true }) viewportRef: ElementRef<HTMLElement>;
+  @ViewChild('viewport', { static: true }) viewportRef!: ElementRef<HTMLElement>;
 
   reloadIndex = 1;
   sizeIndex = 1;
   sizeValue = 10;
   datasourceDelay = 0;
-  data: MyItem[];
+  data!: MyItem[];
 
   datasource = new Datasource<MyItem>({
     get: (index: number, count: number) =>

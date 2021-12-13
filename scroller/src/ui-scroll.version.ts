@@ -1,4 +1,4 @@
 export default {
   name: 'ngx-ui-scroll',
-  version: '2.3.1'
+  version: '3.0.0-alpha'
 };

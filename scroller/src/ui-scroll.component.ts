@@ -33,14 +33,14 @@ import consumer from './ui-scroll.version';
 export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
 
   // these should come from the directive
-  public template: TemplateRef<unknown>;
-  public datasource: IAngularDatasource<Data>;
+  public template!: TemplateRef<unknown>;
+  public datasource!: IAngularDatasource<Data>;
 
   // the only template variable
   public items: Item<Data>[] = [];
 
   // Component-Workflow integration
-  public workflow: Workflow<Data>;
+  public workflow!: Workflow<Data>;
 
   constructor(
     public changeDetector: ChangeDetectorRef,

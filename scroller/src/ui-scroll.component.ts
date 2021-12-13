@@ -62,6 +62,6 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.workflow.dispose();
+    this.workflow && this.workflow.dispose();
   }
 }

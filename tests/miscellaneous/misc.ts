@@ -10,7 +10,7 @@ import { Data, generateItem, IndexedItem, Processor } from './items';
 
 import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
 import { IAdapter, IDatasource } from '../../scroller/src/ui-scroll.datasource';
-import { DatasourceProcessor } from 'tests/scaffolding/datasources/class';
+import { DatasourceProcessor } from '../scaffolding/datasources/class';
 
 export class Padding<Comp = TestComponentInterface> {
   direction: Direction;

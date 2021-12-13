@@ -36,13 +36,13 @@ jobs:
 
       - run: npm install
       - run: npm test
-      - run: npm run build
-      - run: npm run build-app
+      - run: npm run build:lib
+      - run: npm run build:demo
 
       - uses: actions/upload-artifact@master
         with:
-          name: my-dist
-          path: dist-app
+          name: demo-dist
+          path: dist/demo
 
   deploy:
     needs: build
@@ -72,12 +72,12 @@ jobs:
         if: env.NEED == 'true'
         uses: actions/download-artifact@master
         with:
-          name: my-dist
-          path: dist-app
+          name: demo-dist
+          path: dist-demo-app
 
       - name: Deploy
         if: env.NEED == 'true'
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
           branch: gh-pages
-          folder: dist-app
+          folder: dist-demo-app

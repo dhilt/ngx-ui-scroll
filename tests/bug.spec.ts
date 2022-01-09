@@ -26,6 +26,7 @@ describe('Bug Spec', () => {
           } else if (misc.innerLoopCount === 3) {
             misc.scrollMax();
           } else {
+            expect().nothing();
             done();
           }
         });
@@ -234,6 +235,7 @@ describe('Bug Spec', () => {
         await misc.relaxNext();
         misc.scrollMin();
         await misc.relaxNext();
+        expect().nothing();
         done();
       }
     })

@@ -1,3 +1,4 @@
+import { firstValueFrom } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 import { Misc } from './miscellaneous/misc';
@@ -38,9 +39,10 @@ describe('Recreation Spec', () => {
     });
 
     const init = (flag: boolean): Promise<boolean> =>
-      misc.testComponent.datasource.adapter.init$.pipe(
-        filter(v => flag ? v : !v), take(1)
-      ).toPromise();
+      firstValueFrom(
+        misc.testComponent.datasource.adapter.init$.pipe(
+          filter(v => flag ? v : !v), take(1)
+        ));
 
     const ngIfReload = async (onBeforeHide?: () => void): Promise<void> => {
       await init(true);

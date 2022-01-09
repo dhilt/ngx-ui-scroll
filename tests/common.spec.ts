@@ -1,4 +1,4 @@
-import { waitForAsync, ComponentFixture } from '@angular/core/testing';
+import { ComponentFixture } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
@@ -18,14 +18,10 @@ import { Data } from './miscellaneous/items';
 describe('Component', () => {
 
   let misc: Misc;
-  let reconfigure = true;
 
-  beforeEach(waitForAsync(() => {
-    if (!reconfigure) {
-      return;
-    }
-    reconfigure = false;
-    const fixture = configureTestBed(generateDatasourceClass('initial'), defaultTemplate);
+  beforeAll((() => {
+    const ds = generateDatasourceClass('initial');
+    const fixture = configureTestBed(ds, defaultTemplate);
     misc = new Misc(fixture);
   }));
 

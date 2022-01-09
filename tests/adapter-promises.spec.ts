@@ -325,7 +325,7 @@ const doAppendAndScroll = (misc: Misc, index: number) =>
       await misc.adapter.fix({ scrollPosition: Infinity });
     }
     return r;
-  });
+  }).catch(() => null);
 
 const checkConcurrentSequences: ItFuncConfig<ICustom2> = config => misc => async done => {
   await misc.relaxNext();

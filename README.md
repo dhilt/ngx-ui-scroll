@@ -279,4 +279,4 @@ Any support and participation are welcome, so feel free to <a href="https://gith
 
 __________
 
-2021 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)
+2022 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)

@@ -4,7 +4,6 @@
 /dist
 /dist-app
 *scroll-*.tgz
-debug.log
 
 # dependencies
 /node_modules
@@ -23,11 +22,9 @@ debug.log
 /.sass-cache
 /connect.lock
 /coverage
-/libpeerconnection.log
-npm-debug.log
-testem.log
 /typings
 .angular
+*.log
 temp
 
 # System Files

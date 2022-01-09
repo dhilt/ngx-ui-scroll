@@ -14,6 +14,7 @@ Unlimited bidirectional virtual scrolling over limited viewport. A directive for
 - [Usage](#usage)
 - [Settings](#settings)
 - [Adapter API](#adapter-api)
+- [Compatibility](#compatibility)
 - [Development](#development)
 
 <br>
@@ -223,6 +224,16 @@ console.log('Two-phase replacement done');
 ```
 
 For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#adapter).
+
+
+<a name="compatibility" id="compatibility"></a>
+### Compatibility
+
+|ngx-ui-scroll|Angular|compiled|
+|:--|:--|:--|
+|1-2|5-12|View Engine|
+|3|12+|Ivy|
+
 
 ### Development
 

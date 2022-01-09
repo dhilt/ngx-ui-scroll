@@ -21,9 +21,10 @@
     </div>
     <div class="log">
       <div style="line-height: 25px; margin-bottom: 2px;">
-        Version: {{datasource.adapter.packageInfo.consumer.version}}
+        ngx-ui-scroll v{{datasource.adapter.packageInfo.consumer.version}}
         <br>
-        Core: {{datasource.adapter.packageInfo.core.name}} v{{datasource.adapter.packageInfo.core.version}}
+        ({{datasource.adapter.packageInfo.core.name}} v{{datasource.adapter.packageInfo.core.version}},
+        angular v{{angularVersion}})
         <br>
         First visible: #{{datasource.adapter.firstVisible.$index}}
         <br>

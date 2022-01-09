@@ -25,7 +25,6 @@ module.exports = function (config) {
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-firefox-launcher'),
-      require('karma-spec-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     files: [
@@ -37,7 +36,7 @@ module.exports = function (config) {
       },
       clearContext: false
     },
-    reporters: ['spec'],
+    reporters: ['dots'],
 
     port: TEST_SERVER_PORT,
     colors: true,

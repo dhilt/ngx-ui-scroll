@@ -17,8 +17,6 @@ debug.log
 *.launch
 .settings/
 *.sublime-workspace
-
-# IDE - VSCode
 .vscode/*
 
 # misc
@@ -29,6 +27,8 @@ debug.log
 npm-debug.log
 testem.log
 /typings
+.angular
+temp
 
 # System Files
 .DS_Store
@@ -41,5 +41,3 @@ firebase.json
 
 # environment
 .env
-
-temp

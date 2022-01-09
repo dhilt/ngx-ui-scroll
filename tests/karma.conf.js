@@ -5,9 +5,11 @@ process.env.CHROME_BIN = PuppeteerPath;
 
 const { error } = dotenv.config();
 if (error) {
-  console.error(error.toString());
+  console.log(error.toString());
 }
 const TEST_SERVER_PORT = process.env.TEST_SERVER_PORT || 9876;
+
+// browser configuration
 const BROWSERS = {
   DEFAULT: 'headless',
   CHROME: 'chrome',
@@ -15,9 +17,23 @@ const BROWSERS = {
 };
 const browser = Object.values(BROWSERS).find(b => b === process.env.TEST_BROWSER) || BROWSERS.DEFAULT;
 const flags = ['--window-size=1024,768'];
+const browsers = process.env.CI || browser === BROWSERS.DEFAULT
+  ? ['ChromeHeadlessSized']
+  : (browser === BROWSERS.FF
+    ? ['FirefoxSized']
+    : process.platform === 'linux'
+      ? ['ChromiumSized']
+      : ['ChromeSized']
+  );
+const customLaunchers = {
+  'ChromeHeadlessSized': { base: 'ChromeHeadless', flags },
+  'ChromiumSized': { base: 'Chromium', flags },
+  'ChromeSized': { base: 'Chrome', flags },
+  'FirefoxSized': { base: 'Firefox', flags }
+};
 
-module.exports = function (config) {
-
+// karma configuration
+module.exports = config =>
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -45,20 +61,6 @@ module.exports = function (config) {
     singleRun: !!process.env.CI,
     restartOnFileChange: true,
 
-    browsers: process.env.CI || browser === BROWSERS.DEFAULT
-      ? ['ChromeHeadlessSized']
-      : (browser === BROWSERS.FF
-        ? ['FirefoxSized']
-        : process.platform === 'linux'
-          ? ['ChromiumSized']
-          : ['ChromeSized']
-      ),
-
-    customLaunchers: {
-      'ChromeHeadlessSized': { base: 'ChromeHeadless', flags },
-      'ChromiumSized': { base: 'Chromium', flags },
-      'ChromeSized': { base: 'Chrome', flags },
-      'FirefoxSized': { base: 'Firefox', flags }
-    }
+    browsers,
+    customLaunchers,
   });
-};

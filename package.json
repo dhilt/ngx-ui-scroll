@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ng serve --proxy-config ./demo/proxy.conf.json",
     "start:env": "node env",
-    "start:api": "node ./server/index.js",
+    "start:server": "node ./server/index.js",
     "lint": "eslint . --ext .ts",
     "test:lib": "ng test scroller",
     "test": "npm run lint && npm run test:lib",

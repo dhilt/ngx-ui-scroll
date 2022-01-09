@@ -3,5 +3,9 @@
   "dest": "../dist/scroller",
   "lib": {
     "entryFile": "public-api.ts"
-  }
+  },
+  "assets": [
+    "../LICENSE",
+    "../README.md"
+  ]
 }

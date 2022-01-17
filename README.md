@@ -8,16 +8,28 @@ A directive for [Angular](https://angular.io/) framework to provide unlimited bi
 <p dir="rtl">
 <sub>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b></sub><sub> 👉 <br>make open-source world better</sub></p>
 
+- [Compatibility](#compatibility)
 - [Motivation](#motivation)
 - [Features](#features)
 - [Getting](#getting)
 - [Usage](#usage)
 - [Settings](#settings)
 - [Adapter API](#adapter-api)
-- [Compatibility](#compatibility)
 - [Development](#development)
 
 <br>
+
+<a name="compatibility" id="compatibility"></a>
+### Compatibility
+
+|ngx-ui-scroll|Angular|compiled|support|notes|
+|:--|:--|:--|:--|:--|
+|v1|5-12|View Engine|no|no dependencies (vscroll is not extracted)|
+|v2|5-12|View Engine|maintenance|vscroll is a bundle-dependency|
+|v3|12+|Ivy|active|vscroll is a peer-dependency|
+
+So if the consumer app is view-engine compatible, you should use v2 which is in maintenance mode and under [v2-legacy](https://github.com/dhilt/ngx-ui-scroll/tree/v2-legacy) branch.
+
 
 ### Motivation
 
@@ -224,16 +236,6 @@ console.log('Two-phase replacement done');
 ```
 
 For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#adapter).
-
-
-<a name="compatibility" id="compatibility"></a>
-### Compatibility
-
-|ngx-ui-scroll|Angular|compiled|support|notes|
-|:--|:--|:--|:--|:--|
-|1|5-12|View Engine|no|no dependencies|
-|2|5-12|View Engine|maintenance|vscroll is bundle-dependency|
-|3|12+|Ivy|active|vscroll is peer-dependency|
 
 
 ### Development

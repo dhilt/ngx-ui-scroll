@@ -14,6 +14,7 @@ Unlimited bidirectional virtual scrolling over limited viewport. A directive for
 - [Usage](#usage)
 - [Settings](#settings)
 - [Adapter API](#adapter-api)
+- [Compatibility](#compatibility)
 - [Development](#development)
 
 <br>
@@ -22,7 +23,7 @@ Unlimited bidirectional virtual scrolling over limited viewport. A directive for
 
 Scrolling large datasets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve the performance is to render only a small portion of the dataset visible to a user. Other dataset elements that are not visible to a user are virtualized with upward and downward empty padding elements which should provide a consistent viewport with consistent scrollbar parameters.
 
-The \*uiScroll is a structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the dataset and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if a user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
+The ngx-ui-scroll library provides the \*uiScroll structural directive that works like \*ngFor and renders a templated element once per item from a collection. By requesting the external Datasource (the implementation of which is a developer responsibility) the \*uiScroll directive fetches necessary portion of the dataset and renders corresponded elements until the visible part of the viewport is filled out. It starts to retrieve new data to render new elements again if a user scrolls to the edge of visible element list. It dynamically destroys elements as they become invisible and recreates them if they become visible again.
 <p align="center">
   <img src="https://raw.githubusercontent.com/dhilt/ngx-ui-scroll/master/demo/assets/ngx-ui-scroll-demo.gif">
 </p>
@@ -177,7 +178,7 @@ Below is the list of read-only properties of the Adapter API with descriptions a
 
 |Name|Type|Description|
 |:--|:----|:----------|
-|[packageInfo](https://dhilt.github.io/ngx-ui-scroll/#adapter#package-info)|IPackages {<br>&nbsp;&nbsp;core: IPackage;<br>&nbsp;&nbsp;consumer: IPackage;<br>}<br><br>IPackage {<br>&nbsp;&nbsp;name: string;<br>&nbsp;&nbsp;version: string<br>}|Information about versions of the library ant its core. For example: "ngx-ui-scroll" v2.0.0 (consumer), "vscroll" v1.0.0 (core).|
+|[packageInfo](https://dhilt.github.io/ngx-ui-scroll/#adapter#package-info)|IPackages {<br>&nbsp;&nbsp;consumer: IPackage;<br>&nbsp;&nbsp;core: IPackage;<br>}<br><br>IPackage {<br>&nbsp;&nbsp;name: string;<br>&nbsp;&nbsp;version: string<br>}|Information about versions of the library ant its core. For example: "ngx-ui-scroll" v3.1.0 (consumer), "vscroll" v1.4.3 (core).|
 |[init](https://dhilt.github.io/ngx-ui-scroll/#adapter#init)|boolean|Indicates whether the Scroller is initialized ot not. |
 |[init$](https://dhilt.github.io/ngx-ui-scroll/#adapter#init)|Subject&lt;boolean&gt;|An Observable version of "init" property. |
 |[isLoading](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|boolean|Indicates whether the Scroller is working ot not. |
@@ -224,6 +225,17 @@ console.log('Two-phase replacement done');
 
 For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#adapter).
 
+
+<a name="compatibility" id="compatibility"></a>
+### Compatibility
+
+|ngx-ui-scroll|Angular|compiled|support|notes|
+|:--|:--|:--|:--|:--|
+|1|5-12|View Engine|no|no dependencies|
+|2|5-12|View Engine|maintenance|vscroll is bundle-dependency|
+|3|12+|Ivy|active|vscroll is peer-dependency|
+
+
 ### Development
 
 There are some npm scripts available from package.json:
@@ -261,7 +273,7 @@ Also, there are some environment variables for additional customization of the d
 
 |Name|Value|Description|
 |:--|:----|:----------|
-|DEV_SERVER_PORT|4200|Port the dev server (webpack) will use|
+|DEV_SERVER_PORT|4200|Port the dev server (webpack) will use. Need to run `npm run start:env` instead of `npm run` to make this setting work.|
 |TEST_BROWSER|default&nbsp;&#124; chrome&nbsp;&#124; firefox|Platform for running tests. By default a headless chrome is used; "chrome" or "firefox" are for running tests in real (chrome/ff) browser |
 |TEST_SERVER_PORT|9876|Port that will be used by non-default testing browser |
 
@@ -269,4 +281,4 @@ Any support and participation are welcome, so feel free to <a href="https://gith
 
 __________
 
-2021 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)
+2022 &copy; dhilt, [Hill30 Inc](http://www.hill30.com/)

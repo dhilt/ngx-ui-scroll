@@ -16,7 +16,6 @@ A directive for [Angular](https://angular.io/) framework to provide unlimited bi
 - [Settings](#settings)
 - [Adapter API](#adapter-api)
 - [Development](#development)
-
 <br>
 
 <a name="compatibility" id="compatibility"></a>

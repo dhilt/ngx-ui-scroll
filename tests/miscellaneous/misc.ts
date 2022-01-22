@@ -93,7 +93,7 @@ export class Misc<Comp = TestComponentInterface> {
   generateFakeWorkflow(settings?: Scroller['settings']): Workflow {
     return new Workflow({
       consumer: { name: 'fake', version: 'x.x.x' },
-      element: this.scroller.viewport.element,
+      element: this.scroller.routines.element,
       datasource: { get: (_a: unknown, _b: unknown) => null, settings },
       run: () => null
     });

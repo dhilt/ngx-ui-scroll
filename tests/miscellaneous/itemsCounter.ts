@@ -37,6 +37,7 @@ export class ItemsCounter {
     this.direction = direction || null;
     this.forward = new ItemsDirCounter();
     this.backward = new ItemsDirCounter();
+    this.average = NaN;
   }
 
   get(token: Direction): ItemsDirCounter {

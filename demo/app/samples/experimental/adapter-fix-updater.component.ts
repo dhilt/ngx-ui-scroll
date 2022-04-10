@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 
-import { Datasource } from '../../../../public_api';
+import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-adapter-fix-updater',

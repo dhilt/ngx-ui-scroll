@@ -9,7 +9,7 @@ import {
   DevSettings
 } from './miscellaneous/vscroll';
 
-import { IAdapter, Datasource } from '../src/ui-scroll.datasource';
+import { Datasource } from '../scroller/src/ui-scroll.datasource';
 
 import { makeTest, TestBedConfig, ItFuncConfig } from './scaffolding/runner';
 import { datasourceStore } from './scaffolding/datasources/store';
@@ -105,7 +105,7 @@ const shouldPersistPermanentProp = (
   const propDefault = prop.value;
   expect(propDefault).toBeFalsy();
   const check = () => {
-    expect(outer.adapter as IAdapter).toEqual(inner.adapter);
+    expect(outer.adapter as unknown).toEqual(inner.adapter);
     expect(inner.adapter[token]).toEqual(value);
   };
   check();
@@ -134,8 +134,8 @@ const shouldPersistItemsCount: ItFuncConfig<ICustom> = config => misc => done =>
   const itemsCountDefault = (itemsCountProp as IAdapterProp).value;
   const check = (isDefault?: boolean) => {
     const itemsCount = isDefault ? itemsCountDefault : misc.workflow.scroller.buffer.getVisibleItemsCount();
-    expect(outer.adapter as IAdapter).toEqual(inner.adapter);
-    expect(inner.adapter.itemsCount).toEqual(itemsCount);
+    expect(outer.adapter as unknown).toEqual(inner.adapter);
+    expect(inner.adapter.itemsCount).toEqual(itemsCount as number);
   };
   check(true);
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
@@ -212,12 +212,12 @@ const shouldPersistFirstVisible$: ItFuncConfig<ICustom> = config => misc => done
         misc.shared.count = ++call;
         const { startIndex } = config.datasourceSettings;
         if (call === 1) {
-          expect($index).toEqual(void 0);
+          expect($index as unknown).toEqual(void 0);
         } else if (call === 2) {
-          expect($index).toEqual(startIndex);
+          expect($index).toEqual(startIndex as number);
         } else if (call === 3) {
           const { settings } = config.custom;
-          expect($index).toEqual(settings ? settings.startIndex : startIndex);
+          expect($index as unknown).toEqual(settings ? settings.startIndex : startIndex);
         } else {
           expect('Event #4').toEqual('should not be triggered');
         }

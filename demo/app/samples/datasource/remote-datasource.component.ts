@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
-import { IDatasource } from '../../../../public_api';
+import { IDatasource } from 'ngx-ui-scroll';
 
 @Injectable()
 export class RemoteDataService {

@@ -1,4 +1,4 @@
-name: ngx-ui-scroll demo app manual deploy
+name: ngx-ui-scroll demo app manual deployment
 
 on:
   workflow_dispatch:
@@ -18,9 +18,10 @@ jobs:
       - name: Install and Build 🔧
         run: |
           npm install
-          npm run build-app
+          npm run build:lib
+          npm run build:demo
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
           branch: gh-pages
-          folder: dist-app
+          folder: dist/demo

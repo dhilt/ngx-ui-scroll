@@ -157,7 +157,8 @@ const shouldSetDefault: ItFuncConfig<ICustom> = config => misc => async done => 
   checkViewportWithoutCache(misc);
   if (action) {
     await action(misc);
-    expect(buffer.defaultSize).toBe(Number.isInteger(after) ? after : before);
+    const defaultSize = Number.isInteger(after) ? after : before;
+    expect(buffer.defaultSize).toBe(defaultSize as number);
     checkViewportWithCache(misc);
   }
   done();

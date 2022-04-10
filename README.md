@@ -1,9 +1,9 @@
 [![ngx-ui-scroll CI](https://github.com/dhilt/ngx-ui-scroll/actions/workflows/ci.yml/badge.svg)](https://github.com/dhilt/ngx-ui-scroll/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/ngx-ui-scroll.svg)](https://www.npmjs.com/package/ngx-ui-scroll)
 
-# NgxUiScroll
+# ngx-ui-scroll
 
-Unlimited bidirectional virtual scrolling over limited viewport. A directive for [Angular](https://angular.io/) framework. Built with [angular-library-starter](https://github.com/robisim74/angular-library-starter). Inspired by [angular-ui-scroll](https://github.com/angular-ui/ui-scroll) (AngularJS, since 2013). Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/). Since v2.0.0, the core of the ngx-ui-scroll library lives and develops as a separate zero-dependency npm package [vscroll](https://github.com/dhilt/vscroll).
+A directive for [Angular](https://angular.io/) framework to provide unlimited bidirectional virtual scrolling over limited viewport. Built on top of [vscroll](https://github.com/dhilt/vscroll) native virtual scrolling engine. Demo is available at [dhilt.github.io/ngx-ui-scroll](https://dhilt.github.io/ngx-ui-scroll/). 
 
 <p dir="rtl">
 <sub>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b></sub><sub> 👉 <br>make open-source world better</sub></p>
@@ -16,11 +16,12 @@ Unlimited bidirectional virtual scrolling over limited viewport. A directive for
 - [Settings](#settings)
 - [Adapter API](#adapter-api)
 - [Development](#development)
-
 <br>
 
 <a name="compatibility" id="compatibility"></a>
 ### Compatibility
+
+The ngx-ui-scroll library has no breaking changes in its API, but there are inevitable changes in how it is built and distributed to the host app depending on the version of the Angular.
 
 |ngx-ui-scroll|Angular|compiled|support|notes|
 |:--|:--|:--|:--|:--|
@@ -28,8 +29,7 @@ Unlimited bidirectional virtual scrolling over limited viewport. A directive for
 |v2|5-12|View Engine|maintenance|vscroll is a bundle-dependency|
 |v3|12+|Ivy|active|vscroll is a peer-dependency|
 
-So if the consumer app is view-engine compatible, you should use v2 which is in maintenance mode and under [v2-legacy](https://github.com/dhilt/ngx-ui-scroll/tree/v2-legacy) branch.
-
+So if the consumer app is view-engine compatible, you should use ngx-ui-scroll v2 which is in maintenance mode and under [v2-legacy](https://github.com/dhilt/ngx-ui-scroll/tree/v2-legacy) branch.
 
 ### Motivation
 
@@ -100,7 +100,7 @@ where the viewport is a scrollable area of finite height:
 
 If the height of the viewport is not constrained, it will pull the entire content of the datasource and no scrollbar will appear.
 
-\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters. The directive calls `Datasource.get` method each time a user scrolls to the edge of visible element list. That's the API provided by the \*uiScroll directive.
+\*uiScroll acts like \*ngFor in its simplest form, where the datasource is an object of special type (IDatasource), which implements the _get_ method used by the \*uiScroll directive to access data by _index_ and _count_ parameters. The directive calls the `Datasource.get` method each time the user scrolls the list of visible elements to the edge.
 
 ```javascript
 import { IDatasource } from 'ngx-ui-scroll';
@@ -244,9 +244,8 @@ There are some npm scripts available from package.json:
 
 - `npm start` to run demo App on port 4200
 - `npm test` to run Karma tests
-- `npm run build` to build the ngx-ui-scroll module into the ./dist folder
-- `npm run pack:install` to build tar-gzipped version of package and install it locally into ./node_modules
-- `npm run build-app` to build demo App into the ./dist-app folder
+- `npm run build:lib` to build the ngx-ui-scroll module into the ./dist/scroller folder
+- `npm run build:demo` to build the demo App into the ./dist/demo folder
 
 Along with settings object the datasource implementation may include also devSettings object: 
 
@@ -269,13 +268,13 @@ The development settings are not documented. Information about it can be taken d
 Below is the quick guide for vscroll/ngx-ui-scroll integrated development (this is relevant since ngx-ui-scroll v2 depends on vscroll):
 
  - clone both ngx-ui-scroll and [vscroll](https://github.com/dhilt/vscroll) repositories into the same folder
- - replace "vscroll" import with local sources [here](https://github.com/dhilt/ngx-ui-scroll/blob/v2.0.0-rc.10/src/vscroll.ts#L17) and [here](https://github.com/dhilt/ngx-ui-scroll/blob/v2.0.0-rc.10/tests/miscellaneous/vscroll.ts#L16).
+ - replace "vscroll" import with local sources [here](https://github.com/dhilt/ngx-ui-scroll/blob/v3.0.0-rc.1/src/vscroll.ts#L19) and [here](https://github.com/dhilt/ngx-ui-scroll/blob/v3.0.0-rc.1/tests/miscellaneous/vscroll.ts#L17).
 
 Also, there are some environment variables for additional customization of the dev process. In accordance with [dotenv](https://www.npmjs.com/package/dotenv) approach, the `.env` file should be placed in the root folder, and it may contain the following variables.
 
 |Name|Value|Description|
 |:--|:----|:----------|
-|DEV_SERVER_PORT|4200|Port the dev server (webpack) will use. Need to run `npm run start-env` instead of `npm run` to make this setting work.|
+|DEV_SERVER_PORT|4200|Port the dev server (webpack) will use. Need to run `npm run start:env` instead of `npm run` to make this setting work.|
 |TEST_BROWSER|default&nbsp;&#124; chrome&nbsp;&#124; firefox|Platform for running tests. By default a headless chrome is used; "chrome" or "firefox" are for running tests in real (chrome/ff) browser |
 |TEST_SERVER_PORT|9876|Port that will be used by non-default testing browser |
 

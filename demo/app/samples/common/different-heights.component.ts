@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
-import { Datasource, SizeStrategy } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource, SizeStrategy } from 'ngx-ui-scroll';
 
 interface MyItem {
   text: string;

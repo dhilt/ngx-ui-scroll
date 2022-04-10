@@ -8,7 +8,7 @@ export {
   IAdapter,
   AdapterPropName,
   SizeStrategy,
-} from '../../src/vscroll';
+} from '../../scroller/src/vscroll';
 
 export {
   Direction,

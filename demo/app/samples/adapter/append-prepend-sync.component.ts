@@ -4,7 +4,7 @@ import { demos } from '../../routes';
 import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
-import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-append-prepend-sync',

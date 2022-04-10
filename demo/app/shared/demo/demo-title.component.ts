@@ -7,5 +7,5 @@ import { IDemo } from '../../routes';
   templateUrl: './demo-title.component.html'
 })
 export class DemoTitleComponent {
-  @Input() config: IDemo;
+  @Input() config!: IDemo;
 }

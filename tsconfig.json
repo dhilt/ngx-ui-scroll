@@ -1,31 +1,28 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": ".",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "strictPropertyInitialization": false,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "rootDir": "../",
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
-    "inlineSources": true,
-    "target": "es5",
+    "declaration": false,
     "downlevelIteration": true,
-    "skipLibCheck": true,
-    "lib": [
-      "es2015",
-      "dom",
-      "es2017"
-    ],
-    "typeRoots": [
-      "node_modules/@types/"
-    ]
+    "paths": {
+      "ngx-ui-scroll": ["dist/scroller"]
+    },
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2017",
+    "module": "es2020",
+    "lib": ["es2018", "dom"]
   },
-  "exclude": [
-    "node_modules"
-  ],
   "angularCompilerOptions": {
-      "strictTemplates": true
-  },
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
 }

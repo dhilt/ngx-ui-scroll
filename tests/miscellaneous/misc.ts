@@ -8,9 +8,9 @@ import { Workflow, Direction, DatasourceGet, IAdapter as IAdapterInternal } from
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { Data, generateItem, IndexedItem, Processor } from './items';
 
-import { UiScrollComponent } from '../../src/ui-scroll.component';
-import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
-import { DatasourceProcessor } from 'tests/scaffolding/datasources/class';
+import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
+import { IAdapter, IDatasource } from '../../scroller/src/ui-scroll.datasource';
+import { DatasourceProcessor } from '../scaffolding/datasources/class';
 
 export class Padding<Comp = TestComponentInterface> {
   direction: Direction;
@@ -93,7 +93,7 @@ export class Misc<Comp = TestComponentInterface> {
   generateFakeWorkflow(settings?: Scroller['settings']): Workflow {
     return new Workflow({
       consumer: { name: 'fake', version: 'x.x.x' },
-      element: this.scroller.viewport.element,
+      element: this.scroller.routines.element,
       datasource: { get: (_a: unknown, _b: unknown) => null, settings },
       run: () => null
     });

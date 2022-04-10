@@ -216,13 +216,13 @@ const testLackOfItemsOnFirstFetchCase: ItFuncConfig = config => misc => async do
     unsubscribe();
     // when the first inner loop is done, the first visible item should not be shifted
     expect(misc.getScrollPosition()).toBe(misc.padding.backward.getSize());
-    expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex);
+    expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex as number);
   });
   misc.scroller.state.cycle.busy.on(cyclePending => {
     if (cyclePending) {
       return;
     }
-    expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex);
+    expect(misc.adapter.firstVisible.$index).toEqual(config.datasourceSettings.startIndex as number);
     done();
   });
 };

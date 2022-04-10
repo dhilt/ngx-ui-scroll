@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { demos } from '../../routes';
 import { DemoSources } from '../../shared/interfaces';
 
-import { Datasource } from '../../../../public_api'; // from 'ngx-ui-scroll';
+import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-insert',

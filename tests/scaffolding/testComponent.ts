@@ -4,7 +4,7 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { ItemAdapter } from '../miscellaneous/vscroll';
 import { Data } from '../miscellaneous/items';
 
-import { IDatasource, Datasource } from '../../src/ui-scroll.datasource';
+import { IDatasource, Datasource } from '../../scroller/src/ui-scroll.datasource';
 
 import { DatasourceService } from './datasources/class';
 import { defaultTemplate, TemplateSettings } from './templates';
@@ -19,7 +19,7 @@ export interface TestComponentInterface {
 })
 export class ScrollerTestComponent implements TestComponentInterface {
   datasource: IDatasource<Data>;
-  templateSettings: TemplateSettings;
+  templateSettings!: TemplateSettings;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -96,7 +96,7 @@ const basicDS: IDatasource<Data> = {
 export class ScrollerSubTestComponent implements TestComponentInterface {
   datasource = new Datasource<Data>(basicDS);
   show = true;
-  firstVisible: ItemAdapter<Data>;
+  firstVisible!: ItemAdapter<Data>;
   constructor() {
     this.datasource.adapter.firstVisible$.subscribe(value => this.firstVisible = value);
   }

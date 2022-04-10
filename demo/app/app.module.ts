@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 
-import { UiScrollModule } from '../../public_api'; // from 'ngx-ui-scroll';
+import { UiScrollModule } from 'ngx-ui-scroll';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './shared/nav.component';

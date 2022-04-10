@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Settings, DevSettings, BufferUpdater, Workflow, Item, Direction } from '../../miscellaneous/vscroll';
 
-import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
+import { IDatasource, Datasource } from '../../../scroller/src/ui-scroll.datasource';
 import { generateItem, Data, Processor } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 
@@ -30,10 +30,10 @@ export const getDatasourceProcessingClass = (
   _datasource: IDatasource<Data>, _settings?: Settings<Data>, _devSettings?: DevSettings
 ) =>
   class extends Datasource<Data> {
-    get: IDatasource<Data>['get'];
-    settings: Settings<Data>;
-    devSettings: DevSettings;
-    processGet: Processor;
+    get!: IDatasource<Data>['get'];
+    settings!: Settings<Data>;
+    devSettings!: DevSettings;
+    processGet!: Processor;
 
     constructor() {
       const settings = _datasource.settings || _settings || {};
@@ -55,8 +55,8 @@ export const getDatasourceProcessingClass = (
 let idCounter = 0;
 
 class LimitedDatasource extends Datasource<Data> {
-  id: number
-  settings: Settings<Data>;
+  id: number;
+  settings!: Settings<Data>;
   common: DSClassConfig['common'];
   data: Data[] = [];
 

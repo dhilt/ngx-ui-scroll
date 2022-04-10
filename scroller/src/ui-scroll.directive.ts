@@ -5,7 +5,7 @@ import { IDatasource } from './ui-scroll.datasource';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
 export class UiScrollDirective<ItemData = unknown> implements OnInit {
-  private datasource: IDatasource<ItemData>;
+  private datasource!: IDatasource<ItemData>;
 
   constructor(
     private templateRef: TemplateRef<unknown>,

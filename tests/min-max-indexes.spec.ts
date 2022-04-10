@@ -132,7 +132,7 @@ const _testCommonCase: ItFuncConfig = settings => misc => async done => {
     expect(adapter.bufferInfo.absMaxIndex).toEqual(Infinity);
   }
 
-  let totalSize;
+  let totalSize = 0;
   if (hasMinIndex && hasMaxIndex) {
     totalSize = (maxIndex - minIndex + 1) * itemSize;
   } else if (hasMinIndex) {
@@ -192,7 +192,7 @@ const _testStartIndexEdgeCase: ItFuncConfig = (settings) => misc => async done =
 const _testForwardGapCase: ItFuncConfig = () => misc => async done => {
   await misc.relaxNext();
   const viewportSize = misc.getViewportSize();
-  const viewportChildren = misc.scroller.viewport.element.children;
+  const viewportChildren = misc.scroller.routines.element.children;
   const lastChild = viewportChildren[viewportChildren.length - 2];
   const lastChildBottom = lastChild.getBoundingClientRect().bottom;
   let gapSize = viewportSize - lastChildBottom;

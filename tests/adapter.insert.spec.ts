@@ -424,10 +424,10 @@ const shouldCheckEmpty: ItFuncConfig<ICustomEmpty> = config => misc => async don
   expect(misc.getScrollableSize()).toBe(size);
 
   if (Number.isInteger(result.first)) {
-    expect(adapter.firstVisible.$index).toBe(result.first);
+    expect(adapter.firstVisible.$index).toBe(result.first as number);
   }
   if (Number.isInteger(result.last)) {
-    expect(adapter.lastVisible.$index).toBe(result.last);
+    expect(adapter.lastVisible.$index).toBe(result.last as number);
   }
 
   expect(buffer.startIndex).toBe(result.start);

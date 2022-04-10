@@ -1,27 +1,29 @@
-import 'core-js';
-import 'zone.js';
-import 'zone.js/dist/long-stack-trace-zone';
-import 'zone.js/dist/proxy.js';
-import 'zone.js/dist/sync-test';
-import 'zone.js/dist/jasmine-patch';
-import 'zone.js/dist/async-test';
-import 'zone.js/dist/fake-async-test';
+// This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
+import 'zone.js';
+import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
 import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 
-import 'rxjs';
+declare const require: {
+  context(path: string, deep?: boolean, filter?: RegExp): {
+    keys(): string[];
+    <T>(id: string): T;
+  };
+};
 
+// First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting()
+  platformBrowserDynamicTesting(),
+  { teardown: { destroyAfterEach: true } },
 );
 
-const testContext = require.context(
-  './',
+// Then we find all the tests.
+const context = require.context('./',
   false,
   /\.spec\.ts/
   //(adapter-promises)\.spec\.ts/
@@ -56,4 +58,4 @@ const testContext = require.context(
   //(viewport)\.spec\.ts/
 );
 
-testContext.keys().map(testContext);
+context.keys().map(context);

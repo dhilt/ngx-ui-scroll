@@ -12,9 +12,9 @@ export class DemoComponent implements OnInit {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() datasource: any;
-  @Input() context: DemoContext;
-  @Input() sources: DemoSources;
-  @Input() itemTemplate: TemplateRef<unknown>;
+  @Input() context!: DemoContext;
+  @Input() sources!: DemoSources;
+  @Input() itemTemplate!: TemplateRef<unknown>;
 
   viewport(token: string): string {
     const element = document.getElementById(token);

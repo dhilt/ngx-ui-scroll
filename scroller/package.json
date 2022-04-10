@@ -5,7 +5,7 @@
   "peerDependencies": {
     "@angular/common": ">=12.0.0",
     "@angular/core": ">=12.0.0",
-    "vscroll": "^1.4.4"
+    "vscroll": "^1.5.0"
   },
   "dependencies": {
     "tslib": "^2.3.1"

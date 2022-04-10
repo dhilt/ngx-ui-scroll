@@ -21,13 +21,15 @@ A directive for [Angular](https://angular.io/) framework to provide unlimited bi
 <a name="compatibility" id="compatibility"></a>
 ### Compatibility
 
+The ngx-ui-scroll library has no breaking changes in its API, but there are inevitable changes in how it is built and distributed to the host app depending on the version of the Angular.
+
 |ngx-ui-scroll|Angular|compiled|support|notes|
 |:--|:--|:--|:--|:--|
 |v1|5-12|View Engine|no|no dependencies (vscroll is not extracted)|
 |v2|5-12|View Engine|maintenance|vscroll is a bundle-dependency|
 |v3|12+|Ivy|active|vscroll is a peer-dependency|
 
-So if the consumer app is view-engine compatible, you should use v2 which is in maintenance mode and under [v2-legacy](https://github.com/dhilt/ngx-ui-scroll/tree/v2-legacy) branch.
+So if the consumer app is view-engine compatible, you should use ngx-ui-scroll v2 which is in maintenance mode and under [v2-legacy](https://github.com/dhilt/ngx-ui-scroll/tree/v2-legacy) branch.
 
 
 ### Motivation
@@ -99,7 +101,7 @@ where the viewport is a scrollable area of finite height:
 
 If the height of the viewport is not constrained, it will pull the entire content of the datasource and no scrollbar will appear.
 
-\*uiScroll acts like \*ngFor, but the datasource is an object of special type (IDatasource). It implements method _get_ to be used by the \*uiScroll directive to access the data by _index_ and _count_ parameters. The directive calls `Datasource.get` method each time a user scrolls to the edge of visible element list. That's the API provided by the \*uiScroll directive.
+\*uiScroll acts like \*ngFor in its simplest form, where the datasource is an object of special type (IDatasource), which implements the _get_ method used by the \*uiScroll directive to access data by _index_ and _count_ parameters. The directive calls the `Datasource.get` method each time the user scrolls the list of visible elements to the edge.
 
 ```javascript
 import { IDatasource } from 'ngx-ui-scroll';

@@ -31,7 +31,6 @@ The ngx-ui-scroll library has no breaking changes in its API, but there are inev
 
 So if the consumer app is view-engine compatible, you should use ngx-ui-scroll v2 which is in maintenance mode and under [v2-legacy](https://github.com/dhilt/ngx-ui-scroll/tree/v2-legacy) branch.
 
-
 ### Motivation
 
 Scrolling large datasets may cause performance issues. Many DOM elements, many data-bindings, many event listeners... The common way to improve the performance is to render only a small portion of the dataset visible to a user. Other dataset elements that are not visible to a user are virtualized with upward and downward empty padding elements which should provide a consistent viewport with consistent scrollbar parameters.

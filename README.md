@@ -268,7 +268,7 @@ The development settings are not documented. Information about it can be taken d
 Below is the quick guide for vscroll/ngx-ui-scroll integrated development (this is relevant since ngx-ui-scroll v2 depends on vscroll):
 
  - clone both ngx-ui-scroll and [vscroll](https://github.com/dhilt/vscroll) repositories into the same folder
- - replace "vscroll" import with local sources [here](https://github.com/dhilt/ngx-ui-scroll/blob/v3.0.0-rc.1/src/vscroll.ts#L19) and [here](https://github.com/dhilt/ngx-ui-scroll/blob/v3.0.0-rc.1/tests/miscellaneous/vscroll.ts#L17).
+ - replace "vscroll" import with local sources [here](https://github.com/dhilt/ngx-ui-scroll/blob/v3.0.0/src/vscroll.ts#L19) and [here](https://github.com/dhilt/ngx-ui-scroll/blob/v3.0.0/tests/miscellaneous/vscroll.ts#L17).
 
 Also, there are some environment variables for additional customization of the dev process. In accordance with [dotenv](https://www.npmjs.com/package/dotenv) approach, the `.env` file should be placed in the root folder, and it may contain the following variables.
 

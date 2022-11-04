@@ -1,6 +1,6 @@
 {
   "name": "ngx-ui-scroll",
-  "version": "3.0.1",
+  "version": "3.0.1-passive",
   "license": "MIT",
   "peerDependencies": {
     "@angular/common": ">=12.0.0",

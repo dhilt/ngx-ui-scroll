@@ -41,7 +41,6 @@ export class Misc<Comp = TestComponentInterface> {
   viewportElement: DebugElement;
   uiScrollComponent: UiScrollComponent<Data>;
   workflow: Workflow<Data>;
-  scroller: Scroller;
   datasource: IDatasource<Data>;
   adapter: IAdapter<Data>;
   internalAdapter: IAdapterInternal<Data>;
@@ -57,6 +56,9 @@ export class Misc<Comp = TestComponentInterface> {
   itemWidth = 100;
   shared: { [key: string]: unknown } = {};
 
+  get scroller(): Scroller {
+    return this.workflow.scroller;
+  }
   get innerLoopCount(): number {
     return this.scroller.state.cycle.innerLoop.total;
   }
@@ -68,7 +70,6 @@ export class Misc<Comp = TestComponentInterface> {
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
     this.workflow = this.uiScrollComponent.workflow;
-    this.scroller = this.workflow.scroller;
     this.datasource = (this.testComponent as unknown as TestComponentInterface).datasource;
     this.adapter = this.datasource.adapter as IAdapter<Data>;
     this.internalAdapter = this.scroller.adapter as IAdapterInternal<Data>;
@@ -186,12 +187,12 @@ export class Misc<Comp = TestComponentInterface> {
     return this.relaxNext();
   }
 
-  relaxNext(debounce?: boolean): Promise<void> {
+  relaxNext(debounce?: number): Promise<void> {
     return new Promise(resolve =>
       (debounce
         ? this.adapter.isLoading$.pipe(
           filter(pending => !pending),
-          debounceTime(30),
+          debounceTime(debounce),
           take(1)
         )
         : this.adapter.isLoading$.pipe(

@@ -325,13 +325,15 @@ const doAppendAndScroll = (misc: Misc, index: number) =>
       await misc.adapter.fix({ scrollPosition: Infinity });
     }
     return r;
-  }).catch(() => null);
+  });
 
 const checkConcurrentSequences: ItFuncConfig<ICustom2> = config => misc => async done => {
+  const initialInstanceIndex = misc.scroller.settings.instanceIndex;
   await misc.relaxNext();
   const { startIndex } = misc.scroller.settings;
   const { count, interrupt } = config.custom;
   const scrollPosition = misc.getScrollPosition();
+  expect(misc.scroller.settings.instanceIndex).toBe(initialInstanceIndex);
   for (let i = 0; i < count; i++) { // multiple concurrent calls
     doAppendAndScroll(misc, startIndex + i + 1);
   }
@@ -344,6 +346,10 @@ const checkConcurrentSequences: ItFuncConfig<ICustom2> = config => misc => async
   }
   if (interrupt) {
     expect(misc.workflow.cyclesDone).toEqual(2);
+    if (interrupt === 'reset') {
+      // Adapter.reset causes Scroller to be re-initialized
+      expect(misc.scroller.settings.instanceIndex).toBe(initialInstanceIndex + 1);
+    }
   } else {
     const newScrollPosition = scrollPosition + misc.getItemSize() * count;
     expect(misc.getScrollPosition()).toEqual(newScrollPosition);

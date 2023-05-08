@@ -65,10 +65,10 @@ const cloneConfig = (config: TestBedConfig<ICustom>): TestBedConfig<ICustom> => 
 const configList = [mainConfig, cloneConfig(mainConfig)];
 const bofConfigList: TestBedConfig<ICustom>[] = [bofConfig, cloneConfig(bofConfig)];
 
-const accessFirstLastVisibleItems = (misc: Misc) => {
-  // need to have a pre-call
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { firstVisible, lastVisible } = misc.workflow.scroller.datasource.adapter;
+const wfConfig = {
+  ...mainConfig,
+  datasourceName: 'infinite-callback-delay-150',
+  timeout: 5000
 };
 
 const doReset = (config: TestBedConfig<ICustom>, misc: Misc) => {
@@ -90,7 +90,6 @@ const doReset = (config: TestBedConfig<ICustom>, misc: Misc) => {
       misc.adapter.reset(datasource);
     }
   }
-  accessFirstLastVisibleItems(misc);
 };
 
 const shouldPersistPermanentProp = (
@@ -202,7 +201,6 @@ const shouldPersistIsLoading$: ItFuncConfig<ICustom> = config => misc => done =>
 };
 
 const shouldPersistFirstVisible$: ItFuncConfig<ICustom> = config => misc => done => {
-  accessFirstLastVisibleItems(misc);
   const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i) => {
     let call = 0;
     return [
@@ -270,6 +268,23 @@ const shouldPersistBof$: ItFuncConfig<ICustom> = config => misc => done => {
   });
 };
 
+const shouldPersistWorkflowCaller: ItFuncConfig<ICustom> = () => misc => async (done) => {
+  await misc.relaxNext();
+  expect(misc.workflow.cyclesDone).toBe(1);
+
+  // reset-reload collision; should result in two cycles
+  misc.adapter.reset();
+  misc.adapter.reload();
+  await misc.relaxNext();
+  expect(misc.workflow.cyclesDone).toBe(3);
+
+  // another reload should run new cycle
+  misc.adapter.reload();
+  await misc.relaxNext();
+  expect(misc.workflow.cyclesDone).toBe(4);
+  done();
+};
+
 describe('Adapter Reset Persistence Spec', () => {
 
   const title = (config: TestBedConfig<ICustom>, token = 'should persist'): string =>
@@ -334,4 +349,12 @@ describe('Adapter Reset Persistence Spec', () => {
       })
     );
   });
+
+  describe('reload after reset', () =>
+    makeTest({
+      config: wfConfig,
+      title: title(wfConfig),
+      it: shouldPersistWorkflowCaller(wfConfig)
+    })
+  );
 });

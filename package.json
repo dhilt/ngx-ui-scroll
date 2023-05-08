@@ -34,7 +34,7 @@
     "ngx-bootstrap": "^8.0.0-RC.5",
     "rxjs": "~7.5.1",
     "tslib": "^2.3.1",
-    "vscroll": "^1.5.3",
+    "vscroll": "^1.5.4",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

@@ -4,6 +4,7 @@
   "description": "Angular Demo App for ngx-ui-scroll",
   "main": "./index.html",
   "scripts": {
+    "postinstall": "husky install",
     "start": "ng serve --proxy-config ./demo/proxy.conf.json",
     "start:env": "node env",
     "start:server": "node ./server/index.js",
@@ -47,12 +48,15 @@
     "@typescript-eslint/parser": "^5.9.0",
     "dotenv": "^10.0.0",
     "eslint": "^8.6.0",
+    "husky": "^8.0.3",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.10",
     "karma-chrome-launcher": "~3.1.0",
     "karma-firefox-launcher": "^2.1.2",
     "karma-jasmine": "~4.0.1",
+    "lint-staged": "^13.2.2",
     "ng-packagr": "^13.3.0",
+    "prettier": "^2.8.8",
     "puppeteer": "^13.0.1",
     "typescript": "~4.5.4"
   }

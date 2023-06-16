@@ -38,18 +38,25 @@ describe('Recreation Spec', () => {
       adapterId = misc.adapter.id;
     });
 
-    const init = (flag: boolean): Promise<boolean> =>
-      firstValueFrom(
-        misc.testComponent.datasource.adapter.init$.pipe(
-          filter(v => flag ? v : !v), take(1)
-        ));
+    const init = (flag: boolean): boolean | Promise<boolean> =>
+      (flag !== misc.testComponent.datasource.adapter.init) ?
+        firstValueFrom(
+          misc.testComponent.datasource.adapter.init$.pipe(
+            filter(v => flag ? v : !v), take(1)
+          ))
+        : Promise.resolve(flag);
 
     const ngIfReload = async (onBeforeHide?: () => void): Promise<void> => {
       await init(true);
       await misc.adapter.relax();
+
+      // hide test component
       onBeforeHide && onBeforeHide();
       misc.testComponent.show = false;
+      misc.fixture.changeDetectorRef.detectChanges();
       await init(false);
+
+      // show test component
       misc.testComponent.show = true;
       misc.fixture.changeDetectorRef.detectChanges();
       await init(true);

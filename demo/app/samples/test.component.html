@@ -22,7 +22,7 @@
     <input [(ngModel)]="sizeIndex" style="width: 50px">
     <button (click)="doChangeSize()">Size</button>
     <br>
-    <small>ngx-ui-scroll version: {{datasource.adapter.version}}</small>
+    <small>ngx-ui-scroll version: {{datasource.adapter.packageInfo.consumer.version}}</small>
     <br>
     <small>isLoading:
       {{datasource.adapter.isLoading}}
@@ -47,14 +47,9 @@
   </div>
   <br><br>
 </div>
-
 <div class="viewport" #viewport style="height: 600px" id="my-viewport">
   <div *ngIf="show">
-    <div
-      *uiScroll="let item of datasource"
-      (click)="doToggleItem(item)"
-      [style.height]="item.size + 'px'"
-    >
+    <div *uiScroll="let item of datasource" (click)="doToggleItem(item)" [style.height]="item.size + 'px'">
       <app-samples-test-inner>
         {{item.text}}
         <span [style.color]="item.color">

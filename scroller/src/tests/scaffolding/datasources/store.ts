@@ -1,8 +1,8 @@
 
 import { of } from 'rxjs';
-import { Data, Processor } from 'tests/miscellaneous/items';
+import { Data, Processor } from '../../miscellaneous/items';
 
-import { IDatasource } from '../../../scroller/src/ui-scroll.datasource';
+import { IDatasource } from '../../../ui-scroll.datasource';
 import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet } from './get';
 
 interface DSProcess<Data = unknown> extends IDatasource<Data> {

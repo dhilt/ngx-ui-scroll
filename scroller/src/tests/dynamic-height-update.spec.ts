@@ -63,7 +63,7 @@ const configCustomList: ICustom[] = [{
   defaultSize: {
     initial: 28,
     final: Math.round(
-      Array.from({ length: 35 - 15 })
+      Array.from<number>({ length: 35 - 15 })
         .reduce((acc: number, _, i) => acc + (i + 15 + 1) + ITEM_SIZE, 0) / (35 - 15)
     )
   }
@@ -81,7 +81,7 @@ const configCustomList: ICustom[] = [{
     initial: 28,
     final: Math.round(
       (6 + 7 + 8 + 9 + 10 + 5 * ITEM_SIZE +
-        Array.from({ length: 35 - 15 })
+        Array.from<number>({ length: 35 - 15 })
           .reduce((acc: number, _, i) => acc + (i + 15 + 1) + ITEM_SIZE, 0)
       ) / (35 + 5 - 15)
     )

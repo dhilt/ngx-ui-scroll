@@ -8,8 +8,8 @@ import { Workflow, Direction, DatasourceGet, IAdapter as IAdapterInternal } from
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { Data, generateItem, IndexedItem, Processor } from './items';
 
-import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
-import { IAdapter, IDatasource } from '../../scroller/src/ui-scroll.datasource';
+import { UiScrollComponent } from '../../ui-scroll.component';
+import { IAdapter, IDatasource } from '../../ui-scroll.datasource';
 import { DatasourceProcessor } from '../scaffolding/datasources/class';
 
 export class Padding<Comp = TestComponentInterface> {

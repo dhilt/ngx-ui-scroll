@@ -13,7 +13,7 @@ export const getDynamicSizeByIndex = (index: number): number =>
   Math.max(MIN_ITEM_SIZE, Math.min(MAX_ITEM_SIZE, INITIAL_ITEM_SIZE + index));
 
 export const getDynamicSumSize = (start: number, end: number): number =>
-  Array.from({ length: end - start + 1 }).reduce(
+  Array.from<number>({ length: end - start + 1 }).reduce(
     (acc: number, i, j) => acc + getDynamicSizeByIndex(j + start), 0
   );
 

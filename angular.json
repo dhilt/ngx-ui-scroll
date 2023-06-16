@@ -27,9 +27,9 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "tests/_index.ts",
-            "tsConfig": "tests/tsconfig.spec.json",
-            "karmaConfig": "tests/karma.conf.js"
+            "main": "scroller/src/tests/_index.ts",
+            "tsConfig": "scroller/tsconfig.spec.json",
+            "karmaConfig": "scroller/src/tests/karma.conf.js"
           }
         }
       }
@@ -53,13 +53,8 @@
             "main": "demo/main.ts",
             "polyfills": "demo/polyfills.ts",
             "tsConfig": "demo/tsconfig.app.json",
-            "assets": [
-              "demo/favicon.ico",
-              "demo/assets"
-            ],
-            "styles": [
-              "demo/styles.css"
-            ],
+            "assets": ["demo/favicon.ico", "demo/assets"],
+            "styles": ["demo/styles.css"],
             "scripts": []
           },
           "configurations": {
@@ -110,6 +105,5 @@
         }
       }
     }
-  },
-  "defaultProject": "scroller"
+  }
 }

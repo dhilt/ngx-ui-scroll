@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, OnDestroy,
+  Component, OnDestroy,
   TemplateRef, ElementRef,
   ChangeDetectionStrategy, ChangeDetectorRef, NgZone
 } from '@angular/core';
@@ -30,17 +30,15 @@ import consumer from './ui-scroll.version';
     </div>
     <div data-padding-forward></div>`
 })
-export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
-
+export class UiScrollComponent<Data = unknown> implements OnDestroy {
   // these should come from the directive
   public template!: TemplateRef<unknown>;
-  public datasource!: IAngularDatasource<Data>;
 
   // the only template variable
   public items: Item<Data>[] = [];
 
   // Component-Workflow integration
-  public workflow!: Workflow<Data>;
+  private workflow: Workflow<Data> | null = null;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
@@ -48,7 +46,9 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
     private ngZone: NgZone
   ) {}
 
-  ngOnInit(): void {
+  createWorkflow(datasource: IAngularDatasource<Data>): void {
+    this.dispose();
+
     // The workflow should be created outside of the Angular zone because it's causing many
     // change detection cycles. It runs its `init()` function in a `setTimeout` task, which
     // then sets up the `scroll` listener. The `scroll` event listener would force Angular to
@@ -64,7 +64,7 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
         new Workflow<Data>({
           consumer,
           element: this.elementRef.nativeElement,
-          datasource: this.datasource as IDatasource<Data>,
+          datasource: datasource as IDatasource<Data>,
           run: (items: Item<Data>[]) => {
             if (!items.length && !this.items.length) {
               return;
@@ -80,6 +80,11 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.dispose();
+  }
+
+  private dispose(): void {
     this.workflow?.dispose();
+    this.workflow = null;
   }
 }

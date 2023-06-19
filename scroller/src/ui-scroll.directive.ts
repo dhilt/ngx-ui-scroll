@@ -3,9 +3,9 @@ import {
   Input,
   TemplateRef,
   ViewContainerRef,
-  OnInit,
   Inject,
   PLATFORM_ID,
+  ComponentRef,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -13,25 +13,29 @@ import { UiScrollComponent } from './ui-scroll.component';
 import { IDatasource } from './ui-scroll.datasource';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
-export class UiScrollDirective<ItemData = unknown> implements OnInit {
-  private datasource!: IDatasource<ItemData>;
-
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: string,
-    private templateRef: TemplateRef<unknown>,
-    private viewContainer: ViewContainerRef
-  ) {}
-
-  @Input() set uiScrollOf(datasource: IDatasource<ItemData>) {
-    this.datasource = datasource;
+export class UiScrollDirective<ItemData = unknown> {
+  @Input()
+  set uiScrollOf(datasource: IDatasource<ItemData>) {
+    this._componentRef?.instance.createWorkflow(datasource as IDatasource);
   }
 
-  ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const componentRef =
-        this.viewContainer.createComponent(UiScrollComponent);
-      componentRef.instance.datasource = this.datasource as IDatasource;
-      componentRef.instance.template = this.templateRef;
+  private _componentRef: ComponentRef<UiScrollComponent> | null = null;
+
+  constructor(
+    @Inject(PLATFORM_ID) platformId: string,
+    templateRef: TemplateRef<unknown>,
+    viewContainer: ViewContainerRef
+  ) {
+    // Note: we create the component in the directive constructor to support zoneless mode
+    // (when the zone.js isn't bundled and nooped through bootstrap options).
+    // Because `ngOnInit` may not be run until the change detection is called again explicitly.
+    // The directive constructor is called when Angular creates a component and calls `createDirectivesInstances`,
+    // compared to `ngOnInit`, which is called only during change detection cycles, when Angular calls
+    // `refreshView` and `executeInitAndCheckHooks`.
+    if (isPlatformBrowser(platformId)) {
+      this._componentRef = viewContainer.createComponent(UiScrollComponent);
+      this._componentRef.instance.template = templateRef;
+      this._componentRef.changeDetectorRef.detectChanges();
     }
   }
 }

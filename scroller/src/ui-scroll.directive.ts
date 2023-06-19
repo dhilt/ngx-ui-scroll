@@ -4,7 +4,10 @@ import {
   TemplateRef,
   ViewContainerRef,
   OnInit,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 import { UiScrollComponent } from './ui-scroll.component';
 import { IDatasource } from './ui-scroll.datasource';
@@ -14,6 +17,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
   private datasource!: IDatasource<ItemData>;
 
   constructor(
+    @Inject(PLATFORM_ID) private platformId: string,
     private templateRef: TemplateRef<unknown>,
     private viewContainer: ViewContainerRef
   ) {}
@@ -23,8 +27,11 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
   }
 
   ngOnInit(): void {
-    const componentRef = this.viewContainer.createComponent(UiScrollComponent);
-    componentRef.instance.datasource = this.datasource as IDatasource;
-    componentRef.instance.template = this.templateRef;
+    if (isPlatformBrowser(this.platformId)) {
+      const componentRef =
+        this.viewContainer.createComponent(UiScrollComponent);
+      componentRef.instance.datasource = this.datasource as IDatasource;
+      componentRef.instance.template = this.templateRef;
+    }
   }
 }

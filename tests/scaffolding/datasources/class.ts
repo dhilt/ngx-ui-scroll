@@ -50,15 +50,18 @@ export const getDatasourceProcessingClass = (
     devSettings!: DevSettings;
     processGet!: Processor;
 
-    constructor(...args: unknown[]) {
+    constructor() {
       const settings = _datasource.settings || _settings || {};
       const devSettings = _datasource.devSettings || _devSettings || {};
       const self = () => this;
-      const get = function (_a: number, _b: number) {
-        const _args = [...Array.prototype.slice.call(args), self().processGet];
+      const get = (a: number, b: number, ...rest: unknown[]) => {
+        const args = [
+          ...Array.prototype.slice.call([a, b, ...rest]),
+          self().processGet
+        ];
         return (_datasource.get as (...args: unknown[]) => unknown).apply(
           self(),
-          _args
+          args
         );
       };
       super({ get, settings, devSettings });

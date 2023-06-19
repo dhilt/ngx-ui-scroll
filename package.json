@@ -4,7 +4,6 @@
   "description": "Angular Demo App for ngx-ui-scroll",
   "main": "./index.html",
   "scripts": {
-    "postinstall": "husky install",
     "start": "ng serve --proxy-config ./demo/proxy.conf.json",
     "start:env": "node env",
     "start:server": "node ./server/index.js",

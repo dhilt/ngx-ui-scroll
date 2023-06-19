@@ -9,40 +9,51 @@ import {
   ScrollerTestComponent,
   TwoScrollersTestComponent,
   ScrollerSubTestComponent,
-  ScrollerPlainTestComponent,
+  ScrollerPlainTestComponent
 } from './testComponent';
 
 export const configureTestBed = (
-  datasource: new () => unknown, template: string
+  datasource: new () => unknown,
+  template: string
 ): ComponentFixture<ScrollerTestComponent> =>
-  TestBed
-    .configureTestingModule({
-      imports: [UiScrollModule],
-      declarations: [ScrollerTestComponent],
-      providers: [{
+  TestBed.configureTestingModule({
+    imports: [UiScrollModule],
+    declarations: [ScrollerTestComponent],
+    providers: [
+      {
         provide: ComponentFixtureAutoDetect,
         useValue: true
-      }, {
+      },
+      {
         provide: DatasourceService,
         useClass: DatasourceService
-      }]
-    })
+      }
+    ]
+  })
     .overrideProvider(DatasourceService, { useValue: new datasource() })
     .overrideComponent(ScrollerTestComponent, { set: { template } })
     .createComponent(ScrollerTestComponent);
 
-const configureTestBedFactory = <T>(comp: Type<T>) => (): ComponentFixture<T> =>
-  TestBed
-    .configureTestingModule({
+const configureTestBedFactory =
+  <T>(comp: Type<T>) =>
+  (): ComponentFixture<T> =>
+    TestBed.configureTestingModule({
       imports: [UiScrollModule],
       declarations: [comp],
-      providers: [{
-        provide: ComponentFixtureAutoDetect,
-        useValue: true
-      }]
-    })
-    .createComponent(comp);
+      providers: [
+        {
+          provide: ComponentFixtureAutoDetect,
+          useValue: true
+        }
+      ]
+    }).createComponent(comp);
 
-export const configureTestBedTwo = configureTestBedFactory(TwoScrollersTestComponent);
-export const configureTestBedSub = configureTestBedFactory(ScrollerSubTestComponent);
-export const configureTestBedPlain = configureTestBedFactory(ScrollerPlainTestComponent);
+export const configureTestBedTwo = configureTestBedFactory(
+  TwoScrollersTestComponent
+);
+export const configureTestBedSub = configureTestBedFactory(
+  ScrollerSubTestComponent
+);
+export const configureTestBedPlain = configureTestBedFactory(
+  ScrollerPlainTestComponent
+);

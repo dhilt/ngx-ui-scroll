@@ -7,7 +7,6 @@ import { DemoContext, DemoSources } from './interfaces';
   templateUrl: './demo.component.html'
 })
 export class DemoComponent implements OnInit {
-
   init = false;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,8 +20,10 @@ export class DemoComponent implements OnInit {
     if (!element) {
       return '';
     }
-    const sizeToken = this.datasource.settings && this.datasource.settings.horizontal
-      ? 'scrollWidth' : 'scrollHeight';
+    const sizeToken =
+      this.datasource.settings && this.datasource.settings.horizontal
+        ? 'scrollWidth'
+        : 'scrollHeight';
     return element[sizeToken].toString();
   }
 
@@ -43,5 +44,4 @@ export class DemoComponent implements OnInit {
       this.init = true;
     });
   }
-
 }

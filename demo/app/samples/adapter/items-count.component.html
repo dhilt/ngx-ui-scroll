@@ -1,16 +1,11 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
-  <div actions>
-    The Buffer has {{datasource.adapter.itemsCount}} items.
-  </div>
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
+  <div actions>The Buffer has {{ datasource.adapter.itemsCount }} items.</div>
   <div description>
     <p>
-      We may use <em>Adapter.itemsCount</em> read-only property to see
-      how many items exist in the Scroller's Buffer at the moment.
-      The <em>itemsCount</em> value is the same as the value of DOM elements counter.
+      We may use <em>Adapter.itemsCount</em> read-only property to see how many
+      items exist in the Scroller's Buffer at the moment. The
+      <em>itemsCount</em> value is the same as the value of DOM elements
+      counter.
     </p>
   </div>
 </app-demo>

@@ -4,14 +4,14 @@
 </div>
 
 <div class="top-visible">
-  Top visible: {{(datasource.adapter.firstVisible$ | async)?.$index}}
+  Top visible: {{ (datasource.adapter.firstVisible$ | async)?.$index }}
 </div>
 
 <div *ngIf="init">
-  <div *uiScroll="let item of datasource" style="height: 20px;">
-    <b>{{item.text}}</b>
+  <div *uiScroll="let item of datasource" style="height: 20px">
+    <b>{{ item.text }}</b>
     <span [style.color]="item.color">
-      {{item.data}}
+      {{ item.data }}
     </span>
   </div>
 </div>

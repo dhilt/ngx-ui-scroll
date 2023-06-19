@@ -10,7 +10,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './insert.component.html'
 })
 export class DemoInsertComponent {
-
   demoConfig = demos.adapterMethods.map.insert;
 
   MIN = 1;
@@ -62,10 +61,11 @@ export class DemoInsertComponent {
   inputCount2 = '2';
   inputIndex2 = '3';
 
-  sources: DemoSources = [{
-    active: true,
-    name: 'Datasource',
-    text: `MIN = 1;
+  sources: DemoSources = [
+    {
+      active: true,
+      name: 'Datasource',
+      text: `MIN = 1;
 MAX = 100;
 data: string[] = [];
 
@@ -91,9 +91,10 @@ datasource = new Datasource<string>({
   }
 });
   `
-  }, {
-    name: 'Increase',
-    text: `
+    },
+    {
+      name: 'Increase',
+      text: `
 async doInsert() {
   await this.datasource.adapter.relax();
   const count = Number(this.inputCount); // first input
@@ -119,9 +120,10 @@ async doInsert() {
   });
 }
 `
-  }, {
-    name: 'Decrease',
-    text: `
+    },
+    {
+      name: 'Decrease',
+      text: `
 async doInsert() {
   await this.datasource.adapter.relax();
   const count = Number(this.inputCount); // first input
@@ -148,7 +150,8 @@ async doInsert() {
   });
 }
 `
-  }];
+    }
+  ];
 
   argumentsDescription = `  AdapterInsertOptions {
     items: any[];

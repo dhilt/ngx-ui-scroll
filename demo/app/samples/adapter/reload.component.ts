@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +15,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './reload.component.html'
 })
 export class DemoReloadComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.reload,
     viewportId: 'reload-viewport',
@@ -25,9 +28,10 @@ export class DemoReloadComponent {
     get: datasourceGetCallbackInfinite(this.demoContext)
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -42,10 +46,11 @@ reloadIndex: number = 99;
 doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<button (click)="doReload()">Reload</button>
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<button (click)="doReload()">Reload</button>
 by index <input [(ngModel)]="reloadIndex">
 
 <div class="viewport">
@@ -53,9 +58,10 @@ by index <input [(ngModel)]="reloadIndex">
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -64,7 +70,8 @@ by index <input [(ngModel)]="reloadIndex">
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   reloadIndex = 99;
 
@@ -82,5 +89,4 @@ by index <input [(ngModel)]="reloadIndex">
     this.demoContext.log = '';
     this.datasource.adapter.reload(this.reloadIndex);
   }
-
 }

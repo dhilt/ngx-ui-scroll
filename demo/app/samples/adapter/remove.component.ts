@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType,
+  MyItem
+} from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +16,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './remove.component.html'
 })
 export class DemoRemoveComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.remove,
     viewportId: 'remove-viewport',
@@ -46,9 +50,10 @@ export class DemoRemoveComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `MIN = -50;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `MIN = -50;
 MAX = 50;
 data: MyItem[];
 inputValue = 5;
@@ -97,10 +102,11 @@ async removeByIndex(index: number) {
     indexes: [index]
   });
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<input [(ngModel)]="inputValue" size="3">
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<input [(ngModel)]="inputValue" size="3">
 <button (click)="removeByIndex(inputValue)">
   Remove by index
 </button>
@@ -115,9 +121,10 @@ async removeByIndex(index: number) {
     </div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -134,14 +141,16 @@ async removeByIndex(index: number) {
 .remove:hover {
   color: rgb(158, 0, 0);
 }`
-  }];
+    }
+  ];
 
   argumentsDescription = `  AdapterRemoveOptions {
     predicate?: ItemsPredicate;
     indexes?: number[];
     increase?: boolean;
   }`;
-  predicateDescription = '  adapter.remove({ predicate: ({ data }) => data.id === id });';
+  predicateDescription =
+    '  adapter.remove({ predicate: ({ data }) => data.id === id });';
 
   onInputChanged(target: HTMLInputElement) {
     const value = parseInt(target.value.trim(), 10);
@@ -174,5 +183,4 @@ async removeByIndex(index: number) {
       indexes: [index]
     });
   }
-
 }

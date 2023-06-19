@@ -4,7 +4,7 @@ body {
 
 h1 {
   font-size: 42px;
-  letter-spacing: -.015em;
+  letter-spacing: -0.015em;
   margin: 3rem 0 0 0;
 }
 
@@ -37,7 +37,7 @@ h3 {
 
 h3 a {
   float: right;
-  color: rgba(0,0,0,.3);
+  color: rgba(0, 0, 0, 0.3);
   transition: color 300ms ease-in-out;
   position: relative;
   top: 3px;
@@ -48,10 +48,11 @@ h3 a:hover {
   color: #007bff;
 }
 
-p, li {
+p,
+li {
   font-size: 21px;
   line-height: 1.58;
-  letter-spacing: -.003em;
+  letter-spacing: -0.003em;
 }
 
 p {
@@ -59,10 +60,10 @@ p {
 }
 
 em {
-  font-family: Menlo,Monaco,"Courier New",Courier,monospace;
+  font-family: Menlo, Monaco, 'Courier New', Courier, monospace;
   font-style: normal;
   font-size: 16px;
-  background: rgba(0,0,0,.05);
+  background: rgba(0, 0, 0, 0.05);
   padding: 3px 4px;
   margin: 0 2px;
   border-radius: 2px;
@@ -78,11 +79,11 @@ input {
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: 2px;
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 button {
-  background: rgba(0,0,0,0.15);
+  background: rgba(0, 0, 0, 0.15);
   border: 0;
   height: 24px;
   cursor: pointer;
@@ -91,7 +92,7 @@ button {
 }
 
 button:hover {
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 @media (min-width: 1200px) {
@@ -174,10 +175,16 @@ button:hover {
   animation: blink 1s linear infinite;
 }
 
-@keyframes blink{
-  33%{opacity: 0;}
-  66%{opacity: .5;}
-  100%{opacity: 1;}
+@keyframes blink {
+  33% {
+    opacity: 0;
+  }
+  66% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .sources {
@@ -223,7 +230,8 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-input[type=checkbox], input[type=radio] {
+input[type='checkbox'],
+input[type='radio'] {
   height: 13px;
 }
 
@@ -243,7 +251,8 @@ input[type=checkbox], input[type=radio] {
   font-style: italic;
 }
 
-.demo .work .viewport, .viewport {
+.demo .work .viewport,
+.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -362,7 +371,7 @@ input[type=checkbox], input[type=radio] {
 }
 
 .row:after {
-  content: "";
+  content: '';
   display: table;
   clear: both;
 }
@@ -380,14 +389,50 @@ pre.prettyprint {
   line-height: 125%;
   border: 0;
 }
-pre .kwd { font-weight: bold; color: #204a87; }
-pre .tag { font-weight: bold; color: #204a87; }
-pre .atn { font-weight: bold }
-li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
-li.L1,li.L3,li.L5,li.L7,li.L9 { }
+pre .kwd {
+  font-weight: bold;
+  color: #204a87;
+}
+pre .tag {
+  font-weight: bold;
+  color: #204a87;
+}
+pre .atn {
+  font-weight: bold;
+}
+li.L0,
+li.L1,
+li.L2,
+li.L3,
+li.L5,
+li.L6,
+li.L7,
+li.L8 {
+  list-style-type: none;
+}
+li.L1,
+li.L3,
+li.L5,
+li.L7,
+li.L9 {
+}
 @media print {
-  pre .kwd, code .kwd { font-weight: bold; color: #204a87; }
-  pre .com, code .com { font-style: italic }
-  pre .typ, code .typ { font-weight: bold }
-  pre .tag, code .tag { font-weight: bold; color: #204a87; }
+  pre .kwd,
+  code .kwd {
+    font-weight: bold;
+    color: #204a87;
+  }
+  pre .com,
+  code .com {
+    font-style: italic;
+  }
+  pre .typ,
+  code .typ {
+    font-weight: bold;
+  }
+  pre .tag,
+  code .tag {
+    font-weight: bold;
+    color: #204a87;
+  }
 }

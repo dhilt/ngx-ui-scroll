@@ -10,9 +10,8 @@ import { DemoDifferentHeightsComponent } from './samples/common/different-height
 import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
 
 import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasource-signatures.component';
-import {
-  DemoBidirectionalUnlimitedDatasourceComponent
-} from './samples/datasource/bidirectional-unlimited-datasource.component';
+// eslint-disable-next-line max-len
+import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
 import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/positive-limited-datasource.component';
 import { DemoRemoteDatasourceComponent } from './samples/datasource/remote-datasource.component';
@@ -57,7 +56,7 @@ const common = [
   DemoInfiniteComponent,
   DemoHorizontalComponent,
   DemoDifferentHeightsComponent,
-  DemoWindowViewportComponent,
+  DemoWindowViewportComponent
 ];
 
 const datasource = [
@@ -67,7 +66,7 @@ const datasource = [
   DemoPositiveLimitedDatasourceComponent,
   DemoRemoteDatasourceComponent,
   DemoInvertedDatasourceComponent,
-  DemoPagesDatasourceComponent,
+  DemoPagesDatasourceComponent
 ];
 
 const adapter = [
@@ -90,7 +89,7 @@ const adapter = [
   DemoRemoveComponent,
   DemoReplaceComponent,
   DemoClipComponent,
-  DemoUpdateComponent,
+  DemoUpdateComponent
 ];
 
 const experimental = [
@@ -99,7 +98,7 @@ const experimental = [
   DemoAdapterFixPositionComponent,
   DemoAdapterFixUpdaterComponent,
   DemoAdapterFixScrollToItemComponent,
-  DemoOnBeforeClipSettingComponent,
+  DemoOnBeforeClipSettingComponent
 ];
 
 export default {

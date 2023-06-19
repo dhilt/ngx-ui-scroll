@@ -13,22 +13,46 @@ interface ICustom {
 }
 
 const customDefault: ICustom = {
-  startIndex: null, scrollCount: 0, preLoad: false, reloadCount: 1, interruptionCount: 0
+  startIndex: null,
+  scrollCount: 0,
+  preLoad: false,
+  reloadCount: 1,
+  interruptionCount: 0
 };
 
-const configList: TestBedConfig<ICustom>[] = [{
-  datasourceSettings: { startIndex: 100, bufferSize: 5, padding: 0.2, adapter: true },
-  templateSettings: { viewportHeight: 100 },
-  custom: { ...customDefault }
-}, {
-  datasourceSettings: { startIndex: -50, bufferSize: 4, padding: 0.49, adapter: true },
-  templateSettings: { viewportHeight: 70 },
-  custom: { ...customDefault }
-}, {
-  datasourceSettings: { startIndex: -33, bufferSize: 5, padding: 0.3, adapter: true, horizontal: true },
-  templateSettings: { viewportWidth: 300, itemWidth: 100, horizontal: true },
-  custom: { ...customDefault }
-}];
+const configList: TestBedConfig<ICustom>[] = [
+  {
+    datasourceSettings: {
+      startIndex: 100,
+      bufferSize: 5,
+      padding: 0.2,
+      adapter: true
+    },
+    templateSettings: { viewportHeight: 100 },
+    custom: { ...customDefault }
+  },
+  {
+    datasourceSettings: {
+      startIndex: -50,
+      bufferSize: 4,
+      padding: 0.49,
+      adapter: true
+    },
+    templateSettings: { viewportHeight: 70 },
+    custom: { ...customDefault }
+  },
+  {
+    datasourceSettings: {
+      startIndex: -33,
+      bufferSize: 5,
+      padding: 0.3,
+      adapter: true,
+      horizontal: true
+    },
+    templateSettings: { viewportWidth: 300, itemWidth: 100, horizontal: true },
+    custom: { ...customDefault }
+  }
+];
 
 const indexedConfigList = configList.map((config, i) => ({
   ...config,
@@ -137,9 +161,14 @@ const onFirstVisibleChangeReloadConfigList = configList.map((config, i) => ({
 }));
 
 const checkExpectation = (config: TestBedConfig<ICustom>, misc: Misc) => {
-  const { scroller: { viewport, buffer }, adapter } = misc;
-  const startIndex = config.custom.startIndex === null ?
-    config.datasourceSettings.startIndex as number : config.custom.startIndex;
+  const {
+    scroller: { viewport, buffer },
+    adapter
+  } = misc;
+  const startIndex =
+    config.custom.startIndex === null
+      ? (config.datasourceSettings.startIndex as number)
+      : config.custom.startIndex;
   const bufferSize = config.datasourceSettings.bufferSize as number;
   const firstIndex = startIndex - bufferSize;
   const nextIndex = firstIndex + bufferSize + 1;
@@ -152,7 +181,9 @@ const checkExpectation = (config: TestBedConfig<ICustom>, misc: Misc) => {
   expect(misc.checkElementContentByIndex(nextIndex)).toEqual(true);
   expect(firstVisible.$index).toEqual(startIndex);
   expect(lastVisible.$index).toEqual(startIndex + itemsPerViewport - 1);
-  expect(misc.workflow.interruptionCount).toEqual(config.custom.interruptionCount);
+  expect(misc.workflow.interruptionCount).toEqual(
+    config.custom.interruptionCount
+  );
   expect(misc.scroller.adapter.reloadCount).toEqual(config.custom.reloadCount);
 };
 
@@ -170,7 +201,10 @@ const doReload = ({ custom }: TestBedConfig<ICustom>, { adapter }: Misc) => {
   }
 };
 
-const doReloadOnFirstDatasourceGetCall = (config: TestBedConfig<ICustom>, misc: Misc) => {
+const doReloadOnFirstDatasourceGetCall = (
+  config: TestBedConfig<ICustom>,
+  misc: Misc
+) => {
   let reloaded = false;
   misc.setDatasourceProcessor(() => {
     if (!reloaded) {
@@ -193,7 +227,10 @@ const shouldReload: ItFuncConfig<ICustom> = config => misc => done => {
   const sub = misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
     if (misc.workflow.cyclesDone < startWFCount + config.custom.scrollCount) {
       misc.scrollMax();
-    } else if (misc.workflow.cyclesDone === startWFCount + config.custom.scrollCount) {
+    } else if (
+      misc.workflow.cyclesDone ===
+      startWFCount + config.custom.scrollCount
+    ) {
       doReload(config, misc);
     } else {
       checkExpectation(config, misc);
@@ -203,107 +240,115 @@ const shouldReload: ItFuncConfig<ICustom> = config => misc => done => {
   });
 };
 
-const shouldReloadBeforeLoad: ItFuncConfig<ICustom> = config => misc => async done => {
-  accessFirstLastVisibleItems(misc);
-  misc.adapter.loopPending$.subscribe(pending => {
-    if (!pending && misc.innerLoopCount === 1) {
-      setTimeout(() => doReload(config, misc));
-    }
-  });
-  await misc.relaxNext();
-  expect(misc.scroller.state.fetch.cancel).toEqual(null);
-  await misc.relaxNext();
-  expect(misc.scroller.state.fetch.cancel).toEqual(null);
-  checkExpectation(config, misc);
-  done();
-};
+const shouldReloadBeforeLoad: ItFuncConfig<ICustom> =
+  config => misc => async done => {
+    accessFirstLastVisibleItems(misc);
+    misc.adapter.loopPending$.subscribe(pending => {
+      if (!pending && misc.innerLoopCount === 1) {
+        setTimeout(() => doReload(config, misc));
+      }
+    });
+    await misc.relaxNext();
+    expect(misc.scroller.state.fetch.cancel).toEqual(null);
+    await misc.relaxNext();
+    expect(misc.scroller.state.fetch.cancel).toEqual(null);
+    checkExpectation(config, misc);
+    done();
+  };
 
-const shouldReloadOnFetchAsync: ItFuncConfig<ICustom> = config => misc => async done => {
-  accessFirstLastVisibleItems(misc);
-  misc.adapter.loopPending$.subscribe(pending => {
-    if (!pending && misc.innerLoopCount === 1) {
-      setTimeout(() => doReload(config, misc), 75);
-    }
-  });
-  await misc.relaxNext();
-  await misc.relaxNext();
-  expect(misc.scroller.state.fetch.cancel).toEqual(null);
-  checkExpectation(config, misc);
-  done();
-};
+const shouldReloadOnFetchAsync: ItFuncConfig<ICustom> =
+  config => misc => async done => {
+    accessFirstLastVisibleItems(misc);
+    misc.adapter.loopPending$.subscribe(pending => {
+      if (!pending && misc.innerLoopCount === 1) {
+        setTimeout(() => doReload(config, misc), 75);
+      }
+    });
+    await misc.relaxNext();
+    await misc.relaxNext();
+    expect(misc.scroller.state.fetch.cancel).toEqual(null);
+    checkExpectation(config, misc);
+    done();
+  };
 
-const shouldNotReloadBeforeWorkflowStart: ItFuncConfig<ICustom> = config => misc => async done => {
-  accessFirstLastVisibleItems(misc);
-  doReload(config, misc);
-  await misc.relaxNext();
-  expect(misc.scroller.state.fetch.cancel).toEqual(null);
-  checkExpectation(config, misc);
-  done();
-};
-
-const shouldReloadAfterAdjust: ItFuncConfig<ICustom> = config => misc => async done => {
-  accessFirstLastVisibleItems(misc);
-  await misc.relaxNext();
-  misc.adapter.reload(10);
-  // reload will occur in-between the Adjust and End processes
-  const sub = misc.adapter.loopPending$.pipe(filter(v => !v)).subscribe(() => {
-    sub.unsubscribe();
+const shouldNotReloadBeforeWorkflowStart: ItFuncConfig<ICustom> =
+  config => misc => async done => {
+    accessFirstLastVisibleItems(misc);
     doReload(config, misc);
-  });
-  await misc.relaxNext();
-  await misc.relaxNext();
-  expect(misc.workflow.cyclesDone).toBe(3);
-  checkExpectation(config, misc);
-  done();
-};
+    await misc.relaxNext();
+    expect(misc.scroller.state.fetch.cancel).toEqual(null);
+    checkExpectation(config, misc);
+    done();
+  };
 
-const shouldReloadOnRender: ItFuncConfig<ICustom> = config => misc => async done => {
-  accessFirstLastVisibleItems(misc);
-  await misc.relaxNext();
-  misc.adapter.reload(10);
-  setTimeout(() => doReload(config, misc));
-  await misc.relaxNext();
-  await misc.relaxNext();
-  expect(misc.workflow.cyclesDone).toBe(3);
-  checkExpectation(config, misc);
-  done();
-};
+const shouldReloadAfterAdjust: ItFuncConfig<ICustom> =
+  config => misc => async done => {
+    accessFirstLastVisibleItems(misc);
+    await misc.relaxNext();
+    misc.adapter.reload(10);
+    // reload will occur in-between the Adjust and End processes
+    const sub = misc.adapter.loopPending$
+      .pipe(filter(v => !v))
+      .subscribe(() => {
+        sub.unsubscribe();
+        doReload(config, misc);
+      });
+    await misc.relaxNext();
+    await misc.relaxNext();
+    expect(misc.workflow.cyclesDone).toBe(3);
+    checkExpectation(config, misc);
+    done();
+  };
 
-const shouldReloadOnFetchSync: ItFuncConfig<ICustom> = config => misc => async done => {
-  accessFirstLastVisibleItems(misc);
-  doReloadOnFirstDatasourceGetCall(config, misc);
-  await misc.relaxNext();
-  await misc.relaxNext();
-  expect(misc.workflow.cyclesDone).toBe(2);
-  checkExpectation(config, misc);
-  done();
-};
+const shouldReloadOnRender: ItFuncConfig<ICustom> =
+  config => misc => async done => {
+    accessFirstLastVisibleItems(misc);
+    await misc.relaxNext();
+    misc.adapter.reload(10);
+    setTimeout(() => doReload(config, misc));
+    await misc.relaxNext();
+    await misc.relaxNext();
+    expect(misc.workflow.cyclesDone).toBe(3);
+    checkExpectation(config, misc);
+    done();
+  };
 
-const shouldReloadOnFirstVisibleChange: ItFuncConfig<ICustom> = config => misc => done => {
-  accessFirstLastVisibleItems(misc);
-  let stopScroll = false;
-  let lastCycle: number;
-  const sub = misc.adapter.firstVisible$.subscribe(({ $index }) => {
-    if ($index <= (config.custom.firstVisible as number)) {
-      sub.unsubscribe();
-      stopScroll = true;
-      doReload(config, misc);
-      lastCycle = misc.workflow.cyclesDone + 1;
-    }
-  });
-  const sub2 = misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
-    if (!stopScroll) {
-      misc.scrollMin();
-    } else if (misc.workflow.cyclesDone === lastCycle) {
-      sub2.unsubscribe();
-      checkExpectation(config, misc);
-      done();
-    }
-  });
-};
+const shouldReloadOnFetchSync: ItFuncConfig<ICustom> =
+  config => misc => async done => {
+    accessFirstLastVisibleItems(misc);
+    doReloadOnFirstDatasourceGetCall(config, misc);
+    await misc.relaxNext();
+    await misc.relaxNext();
+    expect(misc.workflow.cyclesDone).toBe(2);
+    checkExpectation(config, misc);
+    done();
+  };
+
+const shouldReloadOnFirstVisibleChange: ItFuncConfig<ICustom> =
+  config => misc => done => {
+    accessFirstLastVisibleItems(misc);
+    let stopScroll = false;
+    let lastCycle: number;
+    const sub = misc.adapter.firstVisible$.subscribe(({ $index }) => {
+      if ($index <= (config.custom.firstVisible as number)) {
+        sub.unsubscribe();
+        stopScroll = true;
+        doReload(config, misc);
+        lastCycle = misc.workflow.cyclesDone + 1;
+      }
+    });
+    const sub2 = misc.adapter.isLoading$.pipe(filter(v => !v)).subscribe(() => {
+      if (!stopScroll) {
+        misc.scrollMin();
+      } else if (misc.workflow.cyclesDone === lastCycle) {
+        sub2.unsubscribe();
+        checkExpectation(config, misc);
+        done();
+      }
+    });
+  };
 
 describe('Adapter Reload Spec', () => {
-
   describe('simple reload', () =>
     configList.forEach(config =>
       makeTest({
@@ -311,8 +356,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload at initial position',
         it: shouldReload(config)
       })
-    )
-  );
+    ));
 
   describe('reload with parameter', () =>
     indexedConfigList.forEach(config =>
@@ -321,8 +365,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload at param position',
         it: shouldReload(config)
       })
-    )
-  );
+    ));
 
   describe('reload after scroll', () =>
     scrolledConfigList.forEach(config =>
@@ -331,8 +374,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload at proper position',
         it: shouldReload(config)
       })
-    )
-  );
+    ));
 
   describe('reload before load', () =>
     preLoadConfigList.forEach(config =>
@@ -341,8 +383,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload at proper position',
         it: shouldReloadBeforeLoad(config)
       })
-    )
-  );
+    ));
 
   describe('reload on fetch (async)', () =>
     onFetchReloadConfigList.forEach(config =>
@@ -351,8 +392,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload before second datasource.get done',
         it: shouldReloadOnFetchAsync(config)
       })
-    )
-  );
+    ));
 
   describe('reload on init', () =>
     beforeInitConfigList.forEach(config =>
@@ -361,8 +401,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should not reload before workflow start',
         it: shouldNotReloadBeforeWorkflowStart(config)
       })
-    )
-  );
+    ));
 
   describe('double reload (after adjust)', () =>
     doubleReloadConfigList.forEach(config =>
@@ -371,8 +410,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload second time after adjustment',
         it: shouldReloadAfterAdjust(config)
       })
-    )
-  );
+    ));
 
   describe('double reload (on render)', () =>
     onRenderReloadConfigList.forEach(config =>
@@ -381,8 +419,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload second time during render',
         it: shouldReloadOnRender(config)
       })
-    )
-  );
+    ));
 
   describe('reload on fetch (sync)', () =>
     onFetchReloadSyncConfigList.forEach(config =>
@@ -391,8 +428,7 @@ describe('Adapter Reload Spec', () => {
         title: 'should reload before first datasource.get done',
         it: shouldReloadOnFetchSync(config)
       })
-    )
-  );
+    ));
 
   describe('reload on firstVisible change', () =>
     onFirstVisibleChangeReloadConfigList.forEach(config =>
@@ -401,7 +437,5 @@ describe('Adapter Reload Spec', () => {
         title: 'should intercept the workflow properly',
         it: shouldReloadOnFirstVisibleChange(config)
       })
-    )
-  );
-
+    ));
 });

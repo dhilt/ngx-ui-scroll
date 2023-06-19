@@ -17,7 +17,8 @@ const configSlow: TestBedConfig = {
 
 const shouldThrottle: ItFuncConfig = () => misc => done => {
   const COUNT = 10;
-  let count = 0, timer: ReturnType<typeof setInterval>;
+  let count = 0,
+    timer: ReturnType<typeof setInterval>;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const { cyclesDone } = misc.workflow;
     if (cyclesDone === 1) {
@@ -41,20 +42,25 @@ const shouldThrottle: ItFuncConfig = () => misc => done => {
 
 const shouldSlow: ItFuncConfig = () => misc => done => {
   const COUNT = 10;
-  let count = 0, timer: ReturnType<typeof setInterval>;
+  let count = 0,
+    timer: ReturnType<typeof setInterval>;
   let startPosition: number, endPosition: number;
   spyOn(misc.workflow, 'finalize').and.callFake(() => {
     const { cyclesDone } = misc.workflow;
     if (cyclesDone === 1) {
       startPosition = misc.scroller.viewport.scrollPosition;
-      timer = setInterval(() => requestAnimationFrame(() => {
-        count++;
-        endPosition = startPosition + count * 5;
-        misc.scrollTo(endPosition);
-        if (count === COUNT) {
-          clearInterval(timer);
-        }
-      }), 25);
+      timer = setInterval(
+        () =>
+          requestAnimationFrame(() => {
+            count++;
+            endPosition = startPosition + count * 5;
+            misc.scrollTo(endPosition);
+            if (count === COUNT) {
+              clearInterval(timer);
+            }
+          }),
+        25
+      );
     } else if (cyclesDone === 2) {
       clearInterval(timer);
       expect(endPosition).toBeGreaterThan(startPosition);
@@ -66,7 +72,6 @@ const shouldSlow: ItFuncConfig = () => misc => done => {
 };
 
 describe('Delay Scroll Spec', () => {
-
   makeTest({
     title: 'should work with throttled scroll event handling',
     config: configThrottle,
@@ -78,5 +83,4 @@ describe('Delay Scroll Spec', () => {
     config: configSlow,
     it: shouldSlow(configSlow)
   });
-
 });

@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType,
+  MyItem
+} from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +16,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './check-size.component.html'
 })
 export class DemoCheckSizeComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.check,
     viewportId: 'check-size-viewport',
@@ -50,9 +54,10 @@ export class DemoCheckSizeComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `MIN = 1;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `MIN = 1;
 MAX = 200;
 startIndex = 20;
 sizeValue = 15;
@@ -134,10 +139,11 @@ async doCheck() {
     this.autoscroll(firstVisibleIndex);
   }
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<button (click)="doCheck(20)">Resize and Check</button>
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<button (click)="doCheck(20)">Resize and Check</button>
 <br />
 Autoscroll: <input type="checkbox" [(ngModel)]="needAutoscroll"/>
 <br />
@@ -148,9 +154,10 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -160,10 +167,12 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
   height: 25px;
   overflow: hidden;
 }`
-  }];
+    }
+  ];
 
   findElement(index: number): HTMLElement | null {
-    const viewportId = this.demoContext.viewportId || this.demoContext.config.id;
+    const viewportId =
+      this.demoContext.viewportId || this.demoContext.config.id;
     const viewportElement = document.getElementById(viewportId);
     return viewportElement
       ? viewportElement.querySelector(`[data-sid="${index}"]`)
@@ -189,7 +198,8 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
 
   autoscroll(index: number) {
     const element = this.findElement(index);
-    const viewportId = this.demoContext.viewportId || this.demoContext.config.id;
+    const viewportId =
+      this.demoContext.viewportId || this.demoContext.config.id;
     const viewportElement = document.getElementById(viewportId);
     if (!element || !viewportElement) {
       return;
@@ -216,5 +226,4 @@ First visible item's index: {{datasource.adapter.firstVisible.$index}}
       this.autoscroll(firstVisibleIndex);
     }
   }
-
 }

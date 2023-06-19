@@ -1,31 +1,27 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div description>
     <p>
-      The <em>bufferSize</em> property defines minimal number of items
-      that the Scroller may retrieve via <em>Datasource.get</em> method in a single request.
-      In this demo we see that the initial load consists of 2 requests of 15 items (from 1 to 15 and from -14 to 0).
-      Initially the Scroller starts fill the viewport downward from zero scroll position.
-      If the first fetch is enough, the second one will be in the backward direction.
-      The size of these fetches is determined by the <em>bufferSize</em> setting.
-      The next fetches (during scrolling) could ask for more than <em>bufferSize</em> items,
-      but never less than <em>bufferSize</em>.
+      The <em>bufferSize</em> property defines minimal number of items that the
+      Scroller may retrieve via <em>Datasource.get</em> method in a single
+      request. In this demo we see that the initial load consists of 2 requests
+      of 15 items (from 1 to 15 and from -14 to 0). Initially the Scroller
+      starts fill the viewport downward from zero scroll position. If the first
+      fetch is enough, the second one will be in the backward direction. The
+      size of these fetches is determined by the <em>bufferSize</em> setting.
+      The next fetches (during scrolling) could ask for more than
+      <em>bufferSize</em> items, but never less than <em>bufferSize</em>.
     </p>
     <p>
-      The bigger the <em>bufferSize</em> value is, the less requests generally are needed
-      to fill out the viewport.
-      For example, scrolling from 1 to 100 item when the <em>bufferSize</em> is 1,
-      we may see about 40 <em>Datasource.get</em> calls (depends on the environment).
-      But in this demo (where the <em>bufferSize</em> is 15) we may
-      reach the 100th item in about 10 <em>Datasource.get</em> calls.
+      The bigger the <em>bufferSize</em> value is, the less requests generally
+      are needed to fill out the viewport. For example, scrolling from 1 to 100
+      item when the <em>bufferSize</em> is 1, we may see about 40
+      <em>Datasource.get</em> calls (depends on the environment). But in this
+      demo (where the <em>bufferSize</em> is 15) we may reach the 100th item in
+      about 10 <em>Datasource.get</em> calls.
     </p>
     <p>
-      The default value of <em>bufferSize</em> property is 5.
-      It has to be a positive integer.
-      The minimum value is 1.
+      The default value of <em>bufferSize</em> property is 5. It has to be a
+      positive integer. The minimum value is 1.
     </p>
   </div>
 </app-demo>

@@ -1,45 +1,45 @@
 <div class="demo">
-
   <app-demo-title [config]="demoConfig"></app-demo-title>
 
   <div class="description">
     <p>
-      Along with <em>Adapter</em> properties there are several <em>Adapter</em> methods.
-      Each <em>Adapter</em> method runs the Scroller's Workflow
-      that handles multiple internal processes, some of which may be asynchronous.
-      In order to deal with such asynchronicity,
-      the return value of any <em>Adapter</em> method is a <em>Promise</em>
-      that is resolved when all internal processes
-      triggered by the <em>Adapter</em> are terminated.
+      Along with <em>Adapter</em> properties there are several
+      <em>Adapter</em> methods. Each <em>Adapter</em> method runs the Scroller's
+      Workflow that handles multiple internal processes, some of which may be
+      asynchronous. In order to deal with such asynchronicity, the return value
+      of any <em>Adapter</em> method is a <em>Promise</em> that is resolved when
+      all internal processes triggered by the <em>Adapter</em> are terminated.
       Return value has following type
     </p>
 
-    <pre>{{returnValueType}}</pre>
+    <pre>{{ returnValueType }}</pre>
 
     <p>
-      - <em>success</em>: specifies whether the <em>Adapter</em> method completed successfully or not;
-      for example, if some method is invoked with wrong arguments, no error will be thrown,
-      but we'll get <em>success:&nbsp;false</em> in the result;
-      <br>
-      - <em>details</em>: contains error message in case <em>success</em> is <em>false</em>;
-      <br>
-      - <em>immediate</em>: specifies whether the <em>Adapter</em> method completed immediately or not;
-      for example, if <em>Adapter.remove</em> won't remove any items, then it will be
-      terminated immediately and we'll get <em>immediate:&nbsp;true</em> in the result.
+      - <em>success</em>: specifies whether the <em>Adapter</em> method
+      completed successfully or not; for example, if some method is invoked with
+      wrong arguments, no error will be thrown, but we'll get
+      <em>success:&nbsp;false</em> in the result;
+      <br />
+      - <em>details</em>: contains error message in case <em>success</em> is
+      <em>false</em>;
+      <br />
+      - <em>immediate</em>: specifies whether the <em>Adapter</em> method
+      completed immediately or not; for example, if
+      <em>Adapter.remove</em> won't remove any items, then it will be terminated
+      immediately and we'll get <em>immediate:&nbsp;true</em> in the result.
     </p>
 
-    <pre>{{returnValueSample}}</pre>
+    <pre>{{ returnValueSample }}</pre>
 
     <p>
-      Note, <em>immediate:&nbsp;false</em> does not necessarily mean that the <em>Adapter</em> method
-      worked asynchronously. For example, <em>Adapter.clip</em> does its work in a single call stack
-      regardless of whether there are items to be clipped or not. But in any case,
-      if there is any logic that needs to be run after the Adapter method completes its job,
+      Note, <em>immediate:&nbsp;false</em> does not necessarily mean that the
+      <em>Adapter</em> method worked asynchronously. For example,
+      <em>Adapter.clip</em> does its work in a single call stack regardless of
+      whether there are items to be clipped or not. But in any case, if there is
+      any logic that needs to be run after the Adapter method completes its job,
       it is highly recommended to implement an explicit sequence like this:
     </p>
 
-    <pre>{{explicitSequenceSample}}</pre>
-
+    <pre>{{ explicitSequenceSample }}</pre>
   </div>
-
 </div>

@@ -10,14 +10,12 @@ import { IDatasource } from 'ngx-ui-scroll';
   templateUrl: './inverted-datasource.component.html'
 })
 export class DemoInvertedDatasourceComponent {
-
   demoConfig = demos.datasource.map.invertedIndexes;
 
   MIN = 1;
 
   datasourceCommon: IDatasource = {
-    get: (index, count, success) =>
-      success(this.getData(index, count))
+    get: (index, count, success) => success(this.getData(index, count))
   };
 
   datasourceInverted: IDatasource = {
@@ -31,9 +29,10 @@ export class DemoInvertedDatasourceComponent {
     }
   };
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `MIN = 1;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `MIN = 1;
 
 datasourceCommon: IDatasource = {
   get: (index, count, success) =>
@@ -62,7 +61,8 @@ getData(index: number, count: number) {
   }
   return data;
 }`
-  }];
+    }
+  ];
 
   getData(index: number, count: number) {
     const data = [];
@@ -75,5 +75,4 @@ getData(index: number, count: number) {
     }
     return data;
   }
-
 }

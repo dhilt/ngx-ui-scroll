@@ -10,7 +10,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './adapter-fix-updater.component.html'
 })
 export class DemoAdapterFixUpdaterComponent {
-
   demoContext = {
     config: demos.experimental.map.adapterFixUpdater,
     noInfo: true
@@ -35,9 +34,10 @@ export class DemoAdapterFixUpdaterComponent {
     this.inputValue = '5';
   }
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Template,
-    text: `<button (click)="doUpdate()">Update</button> item #
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Template,
+      text: `<button (click)="doUpdate()">Update</button> item #
 <input [(ngModel)]="inputValue" size="2">
 <div>Items in buffer: {{this.countItems()}}</div>
 
@@ -46,9 +46,10 @@ export class DemoAdapterFixUpdaterComponent {
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Component,
-    text: `inputValue = '5'
+    },
+    {
+      name: DemoSourceType.Component,
+      text: `inputValue = '5'
 
 datasource = new Datasource<MyItem>({
   get: (index, count, success) => {
@@ -82,7 +83,8 @@ countItems() {
   return count;
 }
 `
-  }];
+    }
+  ];
 
   itemAdapterDescription = `  ItemAdapter {
     $index: number;
@@ -113,5 +115,4 @@ countItems() {
     });
     return count;
   }
-
 }

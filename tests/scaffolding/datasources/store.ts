@@ -1,13 +1,20 @@
-
 import { of } from 'rxjs';
 import { Data, Processor } from 'tests/miscellaneous/items';
 
 import { IDatasource } from '../../../scroller/src/ui-scroll.datasource';
-import { DatasourceType, infiniteDatasourceGet, limitedDatasourceGet } from './get';
+import {
+  DatasourceType,
+  infiniteDatasourceGet,
+  limitedDatasourceGet
+} from './get';
 
 interface DSProcess<Data = unknown> extends IDatasource<Data> {
   get: (
-    index: number, count: number, success?: (items: Data[]) => void, fail?: (error: unknown) => void, p?: Processor
+    index: number,
+    count: number,
+    success?: (items: Data[]) => void,
+    fail?: (error: unknown) => void,
+    p?: Processor
   ) => unknown;
 }
 
@@ -16,8 +23,7 @@ interface IDatasourceStore {
 }
 
 export const datasourceStore: IDatasourceStore = {
-
-  'initial': {
+  initial: {
     get: infiniteDatasourceGet(),
     settings: {
       bufferSize: 5,
@@ -25,7 +31,7 @@ export const datasourceStore: IDatasourceStore = {
     }
   },
 
-  'default': {
+  default: {
     get: infiniteDatasourceGet()
   },
 
@@ -66,12 +72,11 @@ export const datasourceStore: IDatasourceStore = {
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Callback, 1)
   },
 
-
   'default-delay-25': {
     get: infiniteDatasourceGet(DatasourceType.Observable, 25)
   },
 
-  'limited': {
+  limited: {
     get: limitedDatasourceGet(1, 100, false, DatasourceType.Observable, 1)
   },
 
@@ -121,7 +126,8 @@ export const datasourceStore: IDatasourceStore = {
   },
 
   'empty-callback': {
-    get: (index: number, count: number, success: (r: Data[]) => void) => success([])
+    get: (index: number, count: number, success: (r: Data[]) => void) =>
+      success([])
   },
 
   'empty-of': {
@@ -130,6 +136,5 @@ export const datasourceStore: IDatasourceStore = {
 
   'infinite-callback-no-delay-star': {
     get: infiniteDatasourceGet(DatasourceType.Callback, 0, ' *')
-  },
-
+  }
 };

@@ -2,45 +2,47 @@
 
 <p>
   The idea of&nbsp;the <em>*uiScroll</em> directive usage is&nbsp;very similar
-  to&nbsp;the&nbsp;use of&nbsp;<em>*ngFor</em> directive
-  in&nbsp;the simplest case, but as&nbsp;it&nbsp;follows from the documentation,
-  a&nbsp;special <em>Datasource</em> object needs to&nbsp;be&nbsp;passed
-  instead of Angular <em>Iterable</em>.
-  <em>Datasource</em> is&nbsp;an&nbsp;entry point to&nbsp;the <em>uiScroll</em>,
-  that provides data flow from the host App to the Scroller.
-  There are two common ways of&nbsp;how the <em>Datasource</em> could be&nbsp;defined:
+  to&nbsp;the&nbsp;use of&nbsp;<em>*ngFor</em> directive in&nbsp;the simplest
+  case, but as&nbsp;it&nbsp;follows from the documentation, a&nbsp;special
+  <em>Datasource</em> object needs to&nbsp;be&nbsp;passed instead of Angular
+  <em>Iterable</em>. <em>Datasource</em> is&nbsp;an&nbsp;entry point to&nbsp;the
+  <em>uiScroll</em>, that provides data flow from the host App to the Scroller.
+  There are two common ways of&nbsp;how the <em>Datasource</em> could
+  be&nbsp;defined:
 </p>
 
 <ul>
   <li>
     as an object literal of <em>IDatasource</em> type
-    <pre>{{datasourceSampleLiteral}}</pre>
+    <pre>{{ datasourceSampleLiteral }}</pre>
   </li>
   <li>
     as an instance of <em>Datasource</em> class
-    <pre>{{datasourceSampleClass}}</pre>
+    <pre>{{ datasourceSampleClass }}</pre>
   </li>
 </ul>
 <p>
-  The constructor argument in&nbsp;the second case should be&nbsp;an object of <em>IDatasource</em> type.
-  Instantiating via operator <em>new</em> is&nbsp;needed for
-  the <em>Adapter</em> to&nbsp;be&nbsp;available on&nbsp;the result <em>datasource</em> object
-  (see <a [routerLink]="['/', demos.adapter.id]">Adapter demo page</a> for details).
-  Both of&nbsp;<em>IDatasource</em> and <em>Datasource</em> definitions
-  could be&nbsp;imported from <em>UiScrollModule</em>:
+  The constructor argument in&nbsp;the second case should be&nbsp;an object of
+  <em>IDatasource</em> type. Instantiating via operator
+  <em>new</em> is&nbsp;needed for the <em>Adapter</em> to&nbsp;be&nbsp;available
+  on&nbsp;the result <em>datasource</em> object (see
+  <a [routerLink]="['/', demos.adapter.id]">Adapter demo page</a> for details).
+  Both of&nbsp;<em>IDatasource</em> and <em>Datasource</em> definitions could
+  be&nbsp;imported from <em>UiScrollModule</em>:
 </p>
-<pre>{{importSample}}</pre>
-<p>
-  The <em>IDatasource</em> object we need to define in both cases
-</p>
+<pre>{{ importSample }}</pre>
+<p>The <em>IDatasource</em> object we need to define in both cases</p>
 <ul>
   <li>must contain <em>get</em> method property and</li>
   <li>may contain <em>settings</em> object property.</li>
 </ul>
 <p>
-  With the help of&nbsp;<em>settings</em> object the Scroller could be&nbsp;configured,
-  as&nbsp;it&nbsp;is&nbsp; described on&nbsp;<a [routerLink]="['/', demos.settings.id]">Settings demo page</a>.
-  On this page we&nbsp;are going to&nbsp;discuss the <em>Datasource.get</em> method implementation.
+  With the help of&nbsp;<em>settings</em> object the Scroller could
+  be&nbsp;configured, as&nbsp;it&nbsp;is&nbsp; described on&nbsp;<a
+    [routerLink]="['/', demos.settings.id]"
+    >Settings demo page</a
+  >. On this page we&nbsp;are going to&nbsp;discuss the
+  <em>Datasource.get</em> method implementation.
 </p>
 
 <app-datasource-signatures></app-datasource-signatures>

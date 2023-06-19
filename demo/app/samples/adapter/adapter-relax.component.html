@@ -1,27 +1,24 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
-
   <div actions>
     <button (click)="doReplace()">replace (5, 6, 7) with (5 *)</button>
   </div>
 
   <div description>
     <p>
-      The <em>Adapter.relax</em> is a kind of empty <em>Adapter</em> method
-      that does only one thing: it resolves when the Scroller is relaxed.
-      If we need to run any logic that should not interfere with the Scroller internal processes,
-      it should be protected by the "relax" promise:
+      The <em>Adapter.relax</em> is a kind of empty <em>Adapter</em> method that
+      does only one thing: it resolves when the Scroller is relaxed. If we need
+      to run any logic that should not interfere with the Scroller internal
+      processes, it should be protected by the "relax" promise:
     </p>
-    <pre>{{relaxSample}}</pre>
+    <pre>{{ relaxSample }}</pre>
     <p>
-      In this demo we simulate items replacement
-      by performing a sequence of 2 <em>Adapter</em> methods: remove and insert.
-      A few existed items (5, 6, 7) are being replaced with a new one (5*).
-      Removing is an asynchronous operation, and we can't perform
-      "insert" before "remove" is done (it will produce an error).
-      Thus, both operations must be run in sequence.
-      Also, we should be wary of any async processes
-      before running the Adapter methods chain.
-      So the algorithm for this demo can be written as follows: 
+      In this demo we simulate items replacement by performing a sequence of 2
+      <em>Adapter</em> methods: remove and insert. A few existed items (5, 6, 7)
+      are being replaced with a new one (5*). Removing is an asynchronous
+      operation, and we can't perform "insert" before "remove" is done (it will
+      produce an error). Thus, both operations must be run in sequence. Also, we
+      should be wary of any async processes before running the Adapter methods
+      chain. So the algorithm for this demo can be written as follows:
     </p>
     <ul>
       <li>wait for Scroller stops</li>
@@ -30,37 +27,41 @@
       <li>run insert</li>
     </ul>
     <p>
-      (Please note, a replacement can be done via 
+      (Please note, a replacement can be done via
       <a
         [routerLink]="['/', adapterMethodsScope.map.replace.scope]"
-        fragment="{{adapterMethodsScope.map.replace.id}}"
-      >Adapter.replace API</a> in a single run;
-      the <em>insert-remove</em> approach is less performant than the <em>Adapter.replace</em>)
+        fragment="{{ adapterMethodsScope.map.replace.id }}"
+        >Adapter.replace API</a
+      >
+      in a single run; the <em>insert-remove</em> approach is less performant
+      than the <em>Adapter.replace</em>)
     </p>
     <p>
-      The purpose of the <em>Adapter.relax</em> method is to make sure that the <em>uiScroll</em> relaxes
-      and there are no pending internal tasks running on the Scroller's end.
-      The first tab "Relax" demonstrates how the desired sequence can be implemented with
-      the <em>Adapter.relax</em> method.
-      This method returns a promise which becomes resolved when the Scroller stops.
+      The purpose of the <em>Adapter.relax</em> method is to make sure that the
+      <em>uiScroll</em> relaxes and there are no pending internal tasks running
+      on the Scroller's end. The first tab "Relax" demonstrates how the desired
+      sequence can be implemented with the <em>Adapter.relax</em> method. This
+      method returns a promise which becomes resolved when the Scroller stops.
       Basically, this may be treated as a shortcut for the following approach,
       which is presented on the "Is&nbsp;loading" tab:
     </p>
-    <pre>{{isLoadingSample}}</pre>
+    <pre>{{ isLoadingSample }}</pre>
     <p>
-      All the tabs are equivalent. The third tab "Callback" uses a callback signature of
-      the <em>Adapter.relax</em> method. The method accepts callback as an optional argument,
-      and this allows to run necessary logic right before resolving the "relax" promise.
-      This might be helpful if we don't want to wait until the end of the current call stack.
+      All the tabs are equivalent. The third tab "Callback" uses a callback
+      signature of the <em>Adapter.relax</em> method. The method accepts
+      callback as an optional argument, and this allows to run necessary logic
+      right before resolving the "relax" promise. This might be helpful if we
+      don't want to wait until the end of the current call stack.
     </p>
     <p>
       At last, we may use
       <a
         [routerLink]="['/', adapterMethodsScope.map.returnValue.scope]"
-        fragment="{{adapterMethodsScope.map.returnValue.id}}"
-      >Return value API</a>
-      (which is a part of each <em>Adapter</em> method)
-      and get rid of the second "relax". This approach is demonstrated on the last tab "Return".
+        fragment="{{ adapterMethodsScope.map.returnValue.id }}"
+        >Return value API</a
+      >
+      (which is a part of each <em>Adapter</em> method) and get rid of the
+      second "relax". This approach is demonstrated on the last tab "Return".
     </p>
   </div>
 </app-demo>

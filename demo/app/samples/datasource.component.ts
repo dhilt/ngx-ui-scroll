@@ -7,14 +7,11 @@ import { demos } from '../routes';
   templateUrl: './datasource.component.html'
 })
 export class DatasourceComponent {
-
   demos = demos;
 
-  constructor() {
-  }
+  constructor() {}
 
-  importSample = 'import { Datasource, IDatasource } from \'ngx-ui-scroll\';';
+  importSample = "import { Datasource, IDatasource } from 'ngx-ui-scroll';";
   datasourceSampleLiteral = 'datasource: IDatasource = { get, settings };';
   datasourceSampleClass = 'datasource = new Datasource({ get, settings });';
-
 }

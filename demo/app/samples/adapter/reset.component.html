@@ -1,43 +1,40 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    <button (click)="doReset()">Reset</button><br>
-    <input [(ngModel)]="startIndex" size="3"> - new start index<br>
-    <input [(ngModel)]="bufferSize" size="3"> - new buffer size
+    <button (click)="doReset()">Reset</button><br />
+    <input [(ngModel)]="startIndex" size="3" /> - new start index<br />
+    <input [(ngModel)]="bufferSize" size="3" /> - new buffer size
   </div>
 
   <div description>
     <p>
-      The <em>Adapter.reset</em> method is designed to reset the internal state of the Scroller.
-      It differs from the <em>Adapter.reload</em> because it re-instantiates all internal entities,
-      which is equivalent to destroying the Scroller and re-creating it again via <em>ngIf</em>.
+      The <em>Adapter.reset</em> method is designed to reset the internal state
+      of the Scroller. It differs from the <em>Adapter.reload</em> because it
+      re-instantiates all internal entities, which is equivalent to destroying
+      the Scroller and re-creating it again via <em>ngIf</em>.
     </p>
     <p>
-      The method has 1 optional argument: <em>datasource</em> object. By passing it,
-      we tell the Scroller that we want to use a new datasource.
-      If the argument is not passed, the old Datasource will be used.
+      The method has 1 optional argument: <em>datasource</em> object. By passing
+      it, we tell the Scroller that we want to use a new datasource. If the
+      argument is not passed, the old Datasource will be used.
     </p>
     <p>
-      All fields of the <em>datasource</em> argument are optional.
-      Missing parts of a new Datasource will be taken from the original one.
-      For instance, in this demo only <em>settings</em> field is passed:
-      <em>Adapter.reset(&#123; settings &#125;)</em>.
-      This sets new <em>startIndex</em> and <em>bufferSize</em> settings
-      while <em>Datasource.get</em> remains pristine.
-      It affects the value of the DOM elements counter.
+      All fields of the <em>datasource</em> argument are optional. Missing parts
+      of a new Datasource will be taken from the original one. For instance, in
+      this demo only <em>settings</em> field is passed:
+      <em>Adapter.reset(&#123; settings &#125;)</em>. This sets new
+      <em>startIndex</em> and <em>bufferSize</em> settings while
+      <em>Datasource.get</em> remains pristine. It affects the value of the DOM
+      elements counter.
     </p>
     <p>
-      <b>Important note!</b> Do not re-assign the Datasource at the App component level,
-      <em>this.datasource</em> must keep the same reference before and after reset.
-      So <em>this.datasource&nbsp;=&nbsp;...</em> expressions are prohibited after reset,
-      for it will make the Adapter subscriptions broken.
-      The Scroller maintains Datasource params and
-      provides the Adapter consistency across the reset.
-      Even in case of passing a new instance of Datasource:
+      <b>Important note!</b> Do not re-assign the Datasource at the App
+      component level, <em>this.datasource</em> must keep the same reference
+      before and after reset. So
+      <em>this.datasource&nbsp;=&nbsp;...</em> expressions are prohibited after
+      reset, for it will make the Adapter subscriptions broken. The Scroller
+      maintains Datasource params and provides the Adapter consistency across
+      the reset. Even in case of passing a new instance of Datasource:
     </p>
-    <pre>{{resetWithNewInstanceSample}}</pre>
+    <pre>{{ resetWithNewInstanceSample }}</pre>
   </div>
 </app-demo>

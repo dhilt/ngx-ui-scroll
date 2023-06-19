@@ -1,6 +1,9 @@
 import { ItFuncConfig, makeTest, TestBedConfig } from './scaffolding/runner';
 import { SizeStrategy } from './miscellaneous/vscroll';
-import { DatasourceLimiter, getLimitedDatasourceClass } from './scaffolding/datasources/class';
+import {
+  DatasourceLimiter,
+  getLimitedDatasourceClass
+} from './scaffolding/datasources/class';
 import { getDynamicSizeByIndex } from './miscellaneous/dynamicSize';
 
 interface ICustom {
@@ -26,17 +29,24 @@ const baseConfig: TestBedConfig<ICustom> = {
   timeout: 4000
 };
 
-const reloadIndexList = [-99, -98, -90, -75, /*-50,*/ -35, -20, -10, -5, -2, -1, 0, 1, 2, 5, 10, 20, 35, 50, 75, 90];
-const configList: TestBedConfig<ICustom>[] = reloadIndexList.map(index => ({
-  ...baseConfig,
-  custom: {
-    ...baseConfig.custom,
-    reloadIndex: index,
-  }
-})).map(c => ({
-  ...c,
-  datasourceClass: getLimitedDatasourceClass({ settings: c.datasourceSettings })
-}));
+const reloadIndexList = [
+  -99, -98, -90, -75, /*-50,*/ -35, -20, -10, -5, -2, -1, 0, 1, 2, 5, 10, 20,
+  35, 50, 75, 90
+];
+const configList: TestBedConfig<ICustom>[] = reloadIndexList
+  .map(index => ({
+    ...baseConfig,
+    custom: {
+      ...baseConfig.custom,
+      reloadIndex: index
+    }
+  }))
+  .map(c => ({
+    ...c,
+    datasourceClass: getLimitedDatasourceClass({
+      settings: c.datasourceSettings
+    })
+  }));
 
 const shouldReload: ItFuncConfig<ICustom> = config => misc => async done => {
   (misc.datasource as DatasourceLimiter).setSizes(config.custom.getSize);
@@ -49,7 +59,6 @@ const shouldReload: ItFuncConfig<ICustom> = config => misc => async done => {
 };
 
 describe('Dynamic Size Reload Spec', () => {
-
   configList.forEach(config =>
     makeTest({
       config,
@@ -58,5 +67,4 @@ describe('Dynamic Size Reload Spec', () => {
       it: shouldReload(config)
     })
   );
-
 });

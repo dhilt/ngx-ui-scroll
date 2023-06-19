@@ -5,7 +5,8 @@ import {
   TemplateRef,
   ElementRef,
   ChangeDetectionStrategy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  NgZone
 } from '@angular/core';
 
 import { IDatasource, Workflow, Item } from './vscroll';
@@ -47,26 +48,43 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
   public workflow!: Workflow<Data>;
 
   constructor(
-    public changeDetector: ChangeDetectorRef,
-    public elementRef: ElementRef
+    private changeDetector: ChangeDetectorRef,
+    private elementRef: ElementRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
-    this.workflow = new Workflow<Data>({
-      consumer,
-      element: this.elementRef.nativeElement,
-      datasource: this.datasource as IDatasource<Data>,
-      run: (items: Item<Data>[]) => {
-        if (!items.length && !this.items.length) {
-          return;
-        }
-        this.items = items;
-        this.changeDetector.detectChanges();
-      }
-    });
+    // The workflow should be created outside of the Angular zone because it's causing many
+    // change detection cycles. It runs its `init()` function in a `setTimeout` task, which
+    // then sets up the `scroll` listener. The `scroll` event listener would force Angular to
+    // run `tick()` any time the `scroll` task is invoked. We don't care about `scroll` events
+    // since they're handled internally by `vscroll`. We still run change detection manually
+    // tho when the `run` function is invoked.
+    // `scroll` events may be also unpatched through zone.js flags:
+    // `(window as any).__zone_symbol__UNPATCHED_EVENTS = ['scroll']`.
+    // Having `runOutsideAngular` guarantees we're responsible for running change detection
+    // only when it's "required" (when `items` are updated and the template should be updated too).
+    this.workflow = this.ngZone.runOutsideAngular(
+      () =>
+        new Workflow<Data>({
+          consumer,
+          element: this.elementRef.nativeElement,
+          datasource: this.datasource as IDatasource<Data>,
+          run: (items: Item<Data>[]) => {
+            if (!items.length && !this.items.length) {
+              return;
+            }
+            // Re-enter the Angular zone only when items are set and when we have to run the local change detection.
+            this.ngZone.run(() => {
+              this.items = items;
+              this.changeDetector.detectChanges();
+            });
+          }
+        })
+    );
   }
 
   ngOnDestroy(): void {
-    this.workflow && this.workflow.dispose();
+    this.workflow?.dispose();
   }
 }

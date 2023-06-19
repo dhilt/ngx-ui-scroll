@@ -8,7 +8,6 @@ import { UiScrollDirective } from './ui-scroll.directive';
   declarations: [UiScrollComponent, UiScrollDirective],
   imports: [CommonModule],
   entryComponents: [UiScrollComponent],
-  exports: [UiScrollDirective],
-  providers: []
+  exports: [UiScrollDirective]
 })
 export class UiScrollModule {}

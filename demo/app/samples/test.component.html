@@ -22,7 +22,10 @@
     <input [(ngModel)]="sizeIndex" style="width: 50px" />
     <button (click)="doChangeSize()">Size</button>
     <br />
-    <small>ngx-ui-scroll version: {{ datasource.adapter.version }}</small>
+    <small
+      >ngx-ui-scroll version:
+      {{ datasource.adapter.packageInfo.consumer.version }}</small
+    >
     <br />
     <small
       >isLoading:
@@ -49,7 +52,6 @@
   </div>
   <br /><br />
 </div>
-
 <div class="viewport" #viewport style="height: 600px" id="my-viewport">
   <div *ngIf="show">
     <div

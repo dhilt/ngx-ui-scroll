@@ -3,7 +3,6 @@ import {
   Input,
   TemplateRef,
   ViewContainerRef,
-  ComponentFactoryResolver,
   OnInit
 } from '@angular/core';
 
@@ -16,8 +15,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
 
   constructor(
     private templateRef: TemplateRef<unknown>,
-    private viewContainer: ViewContainerRef,
-    private resolver: ComponentFactoryResolver
+    private viewContainer: ViewContainerRef
   ) {}
 
   @Input() set uiScrollOf(datasource: IDatasource<ItemData>) {
@@ -25,13 +23,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
   }
 
   ngOnInit(): void {
-    const compFactory =
-      this.resolver.resolveComponentFactory(UiScrollComponent);
-    const componentRef = this.viewContainer.createComponent(
-      compFactory,
-      void 0,
-      this.viewContainer.injector
-    );
+    const componentRef = this.viewContainer.createComponent(UiScrollComponent);
     componentRef.instance.datasource = this.datasource as IDatasource;
     componentRef.instance.template = this.templateRef;
   }

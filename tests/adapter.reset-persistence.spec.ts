@@ -56,14 +56,20 @@ const bofConfig: TestBedConfig<ICustom> = {
   }
 };
 
-const cloneConfig = (config: TestBedConfig<ICustom>): TestBedConfig<ICustom> => ({
-  ...config, custom: {
+const cloneConfig = (
+  config: TestBedConfig<ICustom>
+): TestBedConfig<ICustom> => ({
+  ...config,
+  custom: {
     ...config.custom,
     isNew: false
   }
 });
 const configList = [mainConfig, cloneConfig(mainConfig)];
-const bofConfigList: TestBedConfig<ICustom>[] = [bofConfig, cloneConfig(bofConfig)];
+const bofConfigList: TestBedConfig<ICustom>[] = [
+  bofConfig,
+  cloneConfig(bofConfig)
+];
 
 const wfConfig = {
   ...mainConfig,
@@ -79,13 +85,15 @@ const doReset = (config: TestBedConfig<ICustom>, misc: Misc) => {
     const datasource: IDatasourceOptional = {
       ...(get ? { get } : {}),
       ...(settings ? { settings } : {}),
-      ...(devSettings ? { devSettings } : {}),
+      ...(devSettings ? { devSettings } : {})
     };
     if (isNew) {
-      misc.adapter.reset(new Datasource({
-        ...datasource,
-        get: datasource.get || misc.datasource.get
-      }));
+      misc.adapter.reset(
+        new Datasource({
+          ...datasource,
+          get: datasource.get || misc.datasource.get
+        })
+      );
     } else {
       misc.adapter.reset(datasource);
     }
@@ -93,13 +101,18 @@ const doReset = (config: TestBedConfig<ICustom>, misc: Misc) => {
 };
 
 const shouldPersistPermanentProp = (
-  token: AdapterPropName, config: TestBedConfig<ICustom>, misc: Misc, done: () => void
+  token: AdapterPropName,
+  config: TestBedConfig<ICustom>,
+  misc: Misc,
+  done: () => void
 ) => {
   const outer = misc.testComponent.datasource;
   const inner = misc.workflow.scroller.datasource;
   const value = misc.workflow.scroller.adapter[token];
   expect(value).toBeTruthy();
-  const prop = ADAPTER_PROPS_STUB.find(({ name }) => name === token) as IAdapterProp;
+  const prop = ADAPTER_PROPS_STUB.find(
+    ({ name }) => name === token
+  ) as IAdapterProp;
   expect(prop).toBeTruthy();
   const propDefault = prop.value;
   expect(propDefault).toBeFalsy();
@@ -125,28 +138,33 @@ const shouldPersistId: ItFuncConfig<ICustom> = config => misc => done =>
 const shouldPersistVersion: ItFuncConfig<ICustom> = config => misc => done =>
   shouldPersistPermanentProp(AdapterPropName.version, config, misc, done);
 
-const shouldPersistItemsCount: ItFuncConfig<ICustom> = config => misc => done => {
-  const outer = misc.testComponent.datasource;
-  const inner = misc.workflow.scroller.datasource;
-  const itemsCountProp = ADAPTER_PROPS_STUB.find(({ name }) => name === AdapterPropName.itemsCount);
-  expect(itemsCountProp).toBeTruthy();
-  const itemsCountDefault = (itemsCountProp as IAdapterProp).value;
-  const check = (isDefault?: boolean) => {
-    const itemsCount = isDefault ? itemsCountDefault : misc.workflow.scroller.buffer.getVisibleItemsCount();
-    expect(outer.adapter as unknown).toEqual(inner.adapter);
-    expect(inner.adapter.itemsCount).toEqual(itemsCount as number);
+const shouldPersistItemsCount: ItFuncConfig<ICustom> =
+  config => misc => done => {
+    const outer = misc.testComponent.datasource;
+    const inner = misc.workflow.scroller.datasource;
+    const itemsCountProp = ADAPTER_PROPS_STUB.find(
+      ({ name }) => name === AdapterPropName.itemsCount
+    );
+    expect(itemsCountProp).toBeTruthy();
+    const itemsCountDefault = (itemsCountProp as IAdapterProp).value;
+    const check = (isDefault?: boolean) => {
+      const itemsCount = isDefault
+        ? itemsCountDefault
+        : misc.workflow.scroller.buffer.getVisibleItemsCount();
+      expect(outer.adapter as unknown).toEqual(inner.adapter);
+      expect(inner.adapter.itemsCount).toEqual(itemsCount as number);
+    };
+    check(true);
+    spyOn(misc.workflow, 'finalize').and.callFake(() => {
+      if (misc.workflow.cyclesDone === 1) {
+        check();
+        doReset(config, misc);
+      } else {
+        check();
+        done();
+      }
+    });
   };
-  check(true);
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    if (misc.workflow.cyclesDone === 1) {
-      check();
-      doReset(config, misc);
-    } else {
-      check();
-      done();
-    }
-  });
-};
 
 const getAdapters = (misc: Misc) => [
   misc.adapter, // component.datasource.adapter (public)
@@ -158,7 +176,7 @@ const subMethods = ['subscribe', 'subscribe', 'on'];
 type Sub = { unsubscribe: () => void } | (() => void);
 
 const cleanupSubscriptions = (list: Sub[]) =>
-  list.forEach((sub) => {
+  list.forEach(sub => {
     if (typeof sub === 'function') {
       sub(); // Native Adapter
     } else {
@@ -166,73 +184,79 @@ const cleanupSubscriptions = (list: Sub[]) =>
     }
   });
 
-const shouldPersistIsLoading$: ItFuncConfig<ICustom> = config => misc => done => {
-  const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i: number) => {
-    let call = 0;
-    return [
-      ...acc,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (adapter.isLoading$ as any)[subMethods[i]]((value: boolean) => {
-        misc.shared.count = ++call;
-        if (call === 1) {
-          expect(value).toEqual(true);
-        } else if (call === 2) {
-          expect(value).toEqual(false);
-        } else if (call === 3) {
-          expect(value).toEqual(true);
-        } else if (call === 4) {
-          expect(value).toEqual(false);
-        } else {
-          expect('Event #5').toEqual('should not be triggered');
-        }
-        expect(value).toEqual(adapter.isLoading);
-      })
-    ];
-  }, []);
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    if (misc.workflow.cyclesDone <= 1) {
-      doReset(config, misc);
-    } else {
-      cleanupSubscriptions(subs);
-      expect(misc.shared.count).toEqual(4);
-      done();
-    }
-  });
-};
+const shouldPersistIsLoading$: ItFuncConfig<ICustom> =
+  config => misc => done => {
+    const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i: number) => {
+      let call = 0;
+      return [
+        ...acc,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (adapter.isLoading$ as any)[subMethods[i]]((value: boolean) => {
+          misc.shared.count = ++call;
+          if (call === 1) {
+            expect(value).toEqual(true);
+          } else if (call === 2) {
+            expect(value).toEqual(false);
+          } else if (call === 3) {
+            expect(value).toEqual(true);
+          } else if (call === 4) {
+            expect(value).toEqual(false);
+          } else {
+            expect('Event #5').toEqual('should not be triggered');
+          }
+          expect(value).toEqual(adapter.isLoading);
+        })
+      ];
+    }, []);
+    spyOn(misc.workflow, 'finalize').and.callFake(() => {
+      if (misc.workflow.cyclesDone <= 1) {
+        doReset(config, misc);
+      } else {
+        cleanupSubscriptions(subs);
+        expect(misc.shared.count).toEqual(4);
+        done();
+      }
+    });
+  };
 
-const shouldPersistFirstVisible$: ItFuncConfig<ICustom> = config => misc => done => {
-  const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i) => {
-    let call = 0;
-    return [
-      ...acc,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (adapter.firstVisible$ as any)[subMethods[i]](({ $index }: ItemAdapter) => {
-        misc.shared.count = ++call;
-        const { startIndex } = config.datasourceSettings;
-        if (call === 1) {
-          expect($index as unknown).toEqual(void 0);
-        } else if (call === 2) {
-          expect($index).toEqual(startIndex as number);
-        } else if (call === 3) {
-          const { settings } = config.custom;
-          expect($index as unknown).toEqual(settings ? settings.startIndex : startIndex);
-        } else {
-          expect('Event #4').toEqual('should not be triggered');
-        }
-        expect($index).toEqual(adapter.firstVisible.$index);
-      })
-    ];
-  }, []);
-  spyOn(misc.workflow, 'finalize').and.callFake(() => {
-    if (misc.workflow.cyclesDone <= 1) {
-      doReset(config, misc);
-    } else {
-      cleanupSubscriptions(subs);
-      expect(misc.shared.count).toEqual(3);
-      done();
-    }
-  });
-};
+const shouldPersistFirstVisible$: ItFuncConfig<ICustom> =
+  config => misc => done => {
+    const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i) => {
+      let call = 0;
+      return [
+        ...acc,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (adapter.firstVisible$ as any)[subMethods[i]](
+          ({ $index }: ItemAdapter) => {
+            misc.shared.count = ++call;
+            const { startIndex } = config.datasourceSettings;
+            if (call === 1) {
+              expect($index as unknown).toEqual(void 0);
+            } else if (call === 2) {
+              expect($index).toEqual(startIndex as number);
+            } else if (call === 3) {
+              const { settings } = config.custom;
+              expect($index as unknown).toEqual(
+                settings ? settings.startIndex : startIndex
+              );
+            } else {
+              expect('Event #4').toEqual('should not be triggered');
+            }
+            expect($index).toEqual(adapter.firstVisible.$index);
+          }
+        )
+      ];
+    }, []);
+    spyOn(misc.workflow, 'finalize').and.callFake(() => {
+      if (misc.workflow.cyclesDone <= 1) {
+        doReset(config, misc);
+      } else {
+        cleanupSubscriptions(subs);
+        expect(misc.shared.count).toEqual(3);
+        done();
+      }
+    });
+  };
 
 const shouldPersistBof$: ItFuncConfig<ICustom> = config => misc => done => {
   const subs = getAdapters(misc).reduce((acc: Sub[], adapter, i) => {
@@ -268,27 +292,29 @@ const shouldPersistBof$: ItFuncConfig<ICustom> = config => misc => done => {
   });
 };
 
-const shouldPersistWorkflowCaller: ItFuncConfig<ICustom> = () => misc => async (done) => {
-  await misc.relaxNext();
-  expect(misc.workflow.cyclesDone).toBe(1);
+const shouldPersistWorkflowCaller: ItFuncConfig<ICustom> =
+  () => misc => async done => {
+    await misc.relaxNext();
+    expect(misc.workflow.cyclesDone).toBe(1);
 
-  // reset-reload collision; should result in two cycles
-  misc.adapter.reset();
-  misc.adapter.reload();
-  await misc.relaxNext();
-  expect(misc.workflow.cyclesDone).toBe(3);
+    // reset-reload collision; should result in two cycles
+    misc.adapter.reset();
+    misc.adapter.reload();
+    await misc.relaxNext();
+    expect(misc.workflow.cyclesDone).toBe(3);
 
-  // another reload should run new cycle
-  misc.adapter.reload();
-  await misc.relaxNext();
-  expect(misc.workflow.cyclesDone).toBe(4);
-  done();
-};
+    // another reload should run new cycle
+    misc.adapter.reload();
+    await misc.relaxNext();
+    expect(misc.workflow.cyclesDone).toBe(4);
+    done();
+  };
 
 describe('Adapter Reset Persistence Spec', () => {
-
-  const title = (config: TestBedConfig<ICustom>, token = 'should persist'): string =>
-    token + (config.custom.isNew ? ' (new)' : '');
+  const title = (
+    config: TestBedConfig<ICustom>,
+    token = 'should persist'
+  ): string => token + (config.custom.isNew ? ' (new)' : '');
 
   configList.forEach(config => {
     describe('id scalar permanent prop', () =>
@@ -296,48 +322,42 @@ describe('Adapter Reset Persistence Spec', () => {
         config,
         title: title(config),
         it: shouldPersistId(config)
-      })
-    );
+      }));
 
     describe('version scalar permanent prop', () =>
       makeTest({
         config,
         title: title(config),
         it: shouldPersistVersion(config)
-      })
-    );
+      }));
 
     describe('itemsCount scalar on-demand prop', () =>
       makeTest({
         config,
         title: title(config),
         it: shouldPersistItemsCount(config)
-      })
-    );
+      }));
 
     describe('isLoading$ subscription', () =>
       makeTest({
         config,
         title: title(config),
         it: shouldPersistIsLoading$(config)
-      })
-    );
+      }));
 
     describe('firstVisible$ wanted subscription', () =>
       makeTest({
         config,
         title: title(config),
         it: shouldPersistFirstVisible$(config)
-      })
-    );
+      }));
 
     describe('bof$ on-init subscription', () =>
       makeTest({
         config: bofConfig,
         title: title(config),
         it: shouldPersistBof$(bofConfig)
-      })
-    );
+      }));
   });
 
   bofConfigList.forEach(config => {
@@ -346,8 +366,7 @@ describe('Adapter Reset Persistence Spec', () => {
         config,
         title: title(config),
         it: shouldPersistBof$(config)
-      })
-    );
+      }));
   });
 
   describe('reload after reset', () =>
@@ -355,6 +374,5 @@ describe('Adapter Reset Persistence Spec', () => {
       config: wfConfig,
       title: title(wfConfig),
       it: shouldPersistWorkflowCaller(wfConfig)
-    })
-  );
+    }));
 });

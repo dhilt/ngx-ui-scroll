@@ -1,16 +1,12 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div description>
     <p>
       The Scroller might work in "infinite" mode, when items are never removed.
-      This mode can be turned on via <em>infinite</em> property of the <em>settings</em> object.
-      Setting <em>infinite</em> to true, we ask the Scroller
-      not to remove items that are getting out of the visible part of the viewport.
-      That's why the DOM elements counter value increases per each edge-scroll event
-      and never decreased.
+      This mode can be turned on via <em>infinite</em> property of the
+      <em>settings</em> object. Setting <em>infinite</em> to true, we ask the
+      Scroller not to remove items that are getting out of the visible part of
+      the viewport. That's why the DOM elements counter value increases per each
+      edge-scroll event and never decreased.
     </p>
   </div>
 </app-demo>

@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType,
+  MyItem
+} from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +16,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './append-prepend.component.html'
 })
 export class DemoAppendPrependComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.appendPrepend,
     viewportId: 'append-prepend-viewport',
@@ -40,9 +44,10 @@ export class DemoAppendPrependComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `data: MyItem[];
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `data: MyItem[];
 inputValue = 4;
 newIndex = 0;
 
@@ -85,10 +90,11 @@ async doAppend() {
     items: this.generateItems(false)
   });
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<button (click)="doAppend()">Append</button> /
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<button (click)="doAppend()">Append</button> /
 <button (click)="doPrepend()">Prepend</button>
 <input [(ngModel)]="inputValue" size="2">
 
@@ -97,9 +103,10 @@ async doAppend() {
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -108,7 +115,8 @@ async doAppend() {
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   prependCallSample = 'Adapter.prepend({ items })';
   appendCallSample = 'Adapter.append({ items })';
@@ -155,5 +163,4 @@ async doAppend() {
       items: this.generateItems(false)
     });
   }
-
 }

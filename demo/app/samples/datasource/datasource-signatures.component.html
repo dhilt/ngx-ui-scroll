@@ -1,32 +1,30 @@
-<app-demo
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [context]="demoContext" [sources]="sources">
   <div description>
     <p>
       All the datasources listed above are valid. The first version
       (<em>datasourceCallback</em>) introduces simplest callback-based signature
-      when we need to pass a third argument which is a callback function
-      that should be called explicitly with the items array argument.
-      We assume that <em>this.getData(index, count)</em> returns
-      appropriate part of the dataset we want to virtualize, which is
-      an array of <em>count</em> items started from <em>index</em> position.
-      <em>datasourceCallback2</em> demonstrates an asynchronous version of callback-based Datasource.
+      when we need to pass a third argument which is a callback function that
+      should be called explicitly with the items array argument. We assume that
+      <em>this.getData(index, count)</em> returns appropriate part of the
+      dataset we want to virtualize, which is an array of <em>count</em> items
+      started from <em>index</em> position.
+      <em>datasourceCallback2</em> demonstrates an asynchronous version of
+      callback-based Datasource.
     </p>
     <p>
-      <em>datasourcePromise</em> and <em>datasourcePromise2</em> introduce promise-based
-      signature when an object of <em>Promise</em> type needs to be returned.
-      Resolving this promise is our responsibility, and we assume that
-      <em>this.getDataPromise</em> method resolves necessary part of the dataset
-      based on <em>index</em> and <em>count</em> parameters.
+      <em>datasourcePromise</em> and <em>datasourcePromise2</em> introduce
+      promise-based signature when an object of <em>Promise</em> type needs to
+      be returned. Resolving this promise is our responsibility, and we assume
+      that <em>this.getDataPromise</em> method resolves necessary part of the
+      dataset based on <em>index</em> and <em>count</em> parameters.
     </p>
     <p>
-      <em>datasourceObservable</em> and <em>datasourceObservable2</em> introduce observable-based
-      signature when an object of <em>Observable</em> type needs to be returned.
-      Similar to Promise case we need to be sure that the <em>next</em> method
-      is called in appropriate time, and we assume that
-      <em>this.getDataObservable</em> method delivers necessary part of the dataset
-      based on <em>index</em> and <em>count</em> parameters.
+      <em>datasourceObservable</em> and <em>datasourceObservable2</em> introduce
+      observable-based signature when an object of <em>Observable</em> type
+      needs to be returned. Similar to Promise case we need to be sure that the
+      <em>next</em> method is called in appropriate time, and we assume that
+      <em>this.getDataObservable</em> method delivers necessary part of the
+      dataset based on <em>index</em> and <em>count</em> parameters.
     </p>
   </div>
 </app-demo>

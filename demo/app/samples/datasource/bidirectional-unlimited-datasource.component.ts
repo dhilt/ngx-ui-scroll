@@ -11,7 +11,6 @@ import { IDatasource } from 'ngx-ui-scroll';
   templateUrl: './bidirectional-unlimited-datasource.component.html'
 })
 export class DemoBidirectionalUnlimitedDatasourceComponent {
-
   demoContext = {
     config: demos.datasource.map.unlimitedBidirectional,
     logViewOnly: true,
@@ -30,9 +29,10 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
     }
   };
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Datasource,
-    text: `datasource: IDatasource = {
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Datasource,
+      text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -41,6 +41,6 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
     success(data);
   }
 };`
-  }];
-
+    }
+  ];
 }

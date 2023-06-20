@@ -1,6 +1,11 @@
 import { Direction } from './miscellaneous/vscroll';
 
-import { makeTest, MakeTestConfig, TestBedConfig, OperationConfig } from './scaffolding/runner';
+import {
+  makeTest,
+  MakeTestConfig,
+  TestBedConfig,
+  OperationConfig
+} from './scaffolding/runner';
 import { Misc } from './miscellaneous/misc';
 import { Subscription } from 'rxjs';
 
@@ -8,19 +13,30 @@ enum Operation {
   eof = 'eof',
   bof = 'bof'
 }
-const min = 1, max = 100, scrollCount = 10;
+const min = 1,
+  max = 100,
+  scrollCount = 10;
 
 describe('EOF/BOF Spec', () => {
-
   const config: OperationConfig<Operation> = {
     [Operation.bof]: {
       datasourceName: 'limited',
-      datasourceSettings: { startIndex: min, bufferSize: 10, padding: 0.5, adapter: true },
+      datasourceSettings: {
+        startIndex: min,
+        bufferSize: 10,
+        padding: 0.5,
+        adapter: true
+      },
       templateSettings: { viewportHeight: 200 }
     },
     [Operation.eof]: {
       datasourceName: 'limited',
-      datasourceSettings: { startIndex: max - 10 + 1, bufferSize: 10, padding: 0.5, adapter: true },
+      datasourceSettings: {
+        startIndex: max - 10 + 1,
+        bufferSize: 10,
+        padding: 0.5,
+        adapter: true
+      },
       templateSettings: { viewportHeight: 200 }
     }
   };
@@ -83,40 +99,63 @@ describe('EOF/BOF Spec', () => {
   const expectLimit = (misc: Misc, direction: Direction, noscroll = false) => {
     const _forward = direction === Direction.forward;
     const elements = misc.getElements();
-    const length = config[_forward ? Operation.eof : Operation.bof].datasourceSettings.bufferSize as number;
+    const length = config[_forward ? Operation.eof : Operation.bof]
+      .datasourceSettings.bufferSize as number;
     expect(elements.length).toBeGreaterThan(length);
-    expect(misc.padding[_forward ? Direction.forward : Direction.backward].getSize()).toEqual(0);
+    expect(
+      misc.padding[_forward ? Direction.forward : Direction.backward].getSize()
+    ).toEqual(0);
     if (!noscroll) {
-      expect(misc.padding[_forward ? Direction.backward : Direction.forward].getSize()).toBeGreaterThan(0);
+      expect(
+        misc.padding[
+          _forward ? Direction.backward : Direction.forward
+        ].getSize()
+      ).toBeGreaterThan(0);
     }
-    expect(misc.checkElementId(elements[_forward ? elements.length - 1 : 0], _forward ? max : min)).toEqual(true);
+    expect(
+      misc.checkElementId(
+        elements[_forward ? elements.length - 1 : 0],
+        _forward ? max : min
+      )
+    ).toEqual(true);
 
-    const { adapter, scroller: { buffer: { eof, bof } }, shared } = misc;
+    const {
+      adapter,
+      scroller: {
+        buffer: { eof, bof }
+      },
+      shared
+    } = misc;
     expect(bof.get()).toEqual(!_forward);
     expect(bof.get()).toEqual(adapter.bof);
-    expect(bof.get()).toEqual((shared.bofEofContainer as BofEofContainer).bof.value);
+    expect(bof.get()).toEqual(
+      (shared.bofEofContainer as BofEofContainer).bof.value
+    );
     expect(eof.get()).toEqual(adapter.eof);
     expect(eof.get()).toEqual(_forward);
-    expect(eof.get()).toEqual((shared.bofEofContainer as BofEofContainer).eof.value);
+    expect(eof.get()).toEqual(
+      (shared.bofEofContainer as BofEofContainer).eof.value
+    );
   };
 
-  const _makeTest = (data: MakeTestConfig) => makeTest({
-    ...data,
-    before: (misc: Misc) => initializeBofEofContainer(misc),
-    after: (misc: Misc) => disposeBofEofContainer(misc)
-  });
+  const _makeTest = (data: MakeTestConfig) =>
+    makeTest({
+      ...data,
+      before: (misc: Misc) => initializeBofEofContainer(misc),
+      after: (misc: Misc) => disposeBofEofContainer(misc)
+    });
 
   const runLimitSuite = (operation = Operation.bof) => {
-
     const isEOF = operation === Operation.eof;
 
     describe((isEOF ? 'End' : 'Begin') + ' of file', () => {
-
       const _operation = isEOF ? Operation.bof : Operation.eof;
       const direction = isEOF ? Direction.forward : Direction.backward;
       const directionOpposite = isEOF ? Direction.backward : Direction.forward;
-      const doScroll = (misc: Misc) => isEOF ? misc.scrollMin() : misc.scrollMax();
-      const doScrollOpposite = (misc: Misc) => isEOF ? misc.scrollMax() : misc.scrollMin();
+      const doScroll = (misc: Misc) =>
+        isEOF ? misc.scrollMin() : misc.scrollMax();
+      const doScrollOpposite = (misc: Misc) =>
+        isEOF ? misc.scrollMax() : misc.scrollMin();
 
       _makeTest({
         config: config[operation],
@@ -133,8 +172,12 @@ describe('EOF/BOF Spec', () => {
         title: `should reset ${operation} after scroll`,
         it: misc => done =>
           spyOn(misc.workflow, 'finalize').and.callFake(() => {
-            const { scroller: { buffer }, adapter } = misc;
-            const bofEofContainer = misc.shared.bofEofContainer as BofEofContainer;
+            const {
+              scroller: { buffer },
+              adapter
+            } = misc;
+            const bofEofContainer = misc.shared
+              .bofEofContainer as BofEofContainer;
             if (misc.workflow.cyclesDone === 1) {
               expect(buffer[operation].get()).toEqual(true);
               expect(adapter[operation]).toEqual(true);
@@ -224,5 +267,4 @@ describe('EOF/BOF Spec', () => {
         }
       })
   });
-
 });

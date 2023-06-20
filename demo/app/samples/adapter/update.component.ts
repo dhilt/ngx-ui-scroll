@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -15,7 +19,6 @@ interface MyItem {
   templateUrl: './update.component.html'
 })
 export class DemoUpdateComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.update,
     viewportId: 'update-viewport',
@@ -55,9 +58,10 @@ export class DemoUpdateComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `MAX = 100;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `MAX = 100;
 START = 1;
 fixRight = false;
 data: MyItem[];
@@ -106,10 +110,11 @@ async doUpdate() {
     fixRight: this.fixRight
   });
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<button (click)="doUpdate()">Run update</button>
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<button (click)="doUpdate()">Run update</button>
 <input type="checkbox" [(ngModel)]="fixRight"> fix right
 
 <div class="viewport">
@@ -120,9 +125,10 @@ async doUpdate() {
     </div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -135,7 +141,8 @@ async doUpdate() {
   font-weight: normal;
   font-size: smaller;
 }`
-  }];
+    }
+  ];
 
   argumentsDescription = `  AdapterReplaceOptions {
     predicate: ItemsPredicate;
@@ -165,5 +172,4 @@ async doUpdate() {
       fixRight: this.fixRight
     });
   }
-
 }

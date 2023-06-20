@@ -1,4 +1,8 @@
-export function debounce(func: (...args: unknown[]) => unknown, wait: number, immediate?: boolean): () => void {
+export function debounce(
+  func: (...args: unknown[]) => unknown,
+  wait: number,
+  immediate?: boolean
+): () => void {
   let timeout: ReturnType<typeof setTimeout> | null;
   return function (...args: unknown[]) {
     const context = args[0];

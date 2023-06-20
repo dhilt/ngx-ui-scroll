@@ -18,12 +18,11 @@ interface MyItem {
   templateUrl: './window.component.html'
 })
 export class WindowComponent {
-
   init: boolean;
 
   constructor() {
     this.init = false;
-    setTimeout(() => this.init = true);
+    setTimeout(() => (this.init = true));
   }
 
   datasource = new Datasource<MyItem>({
@@ -35,12 +34,15 @@ export class WindowComponent {
         for (let i = start; i <= end; i++) {
           const item = {
             data: '',
-            text: 'item #' + (i),
+            text: 'item #' + i,
             color: 'black',
             size: 20 // Math.max(MIN_ROW_HEIGHT, 20 + i + MIN)
           };
           if (i % 15 === 0) {
-            item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, () => '*').join('');
+            item.data = Array.from(
+              { length: Math.random() * (10 - 3) + 3 },
+              () => '*'
+            ).join('');
             item.color = i % 30 === 0 ? 'red' : 'black';
           }
           data.push(item);
@@ -62,5 +64,4 @@ export class WindowComponent {
       windowViewport: true
     }
   });
-
 }

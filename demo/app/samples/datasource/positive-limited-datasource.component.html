@@ -1,28 +1,27 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div description>
     <p>
-      If we are not going to deal with negative indexes,
-      we can fix the datasource left boundary at 1 (or 0 depends on your needs).
-      This is a particular case of a limited datasource implementation discussed above
-      with only <em>MIN</em> value set up. Also, positive limitation
-      could be alternatively achieved by assigning
+      If we are not going to deal with negative indexes, we can fix the
+      datasource left boundary at 1 (or 0 depends on your needs). This is a
+      particular case of a limited datasource implementation discussed above
+      with only <em>MIN</em> value set up. Also, positive limitation could be
+      alternatively achieved by assigning
       <a
         [routerLink]="['/', settingsScope.minMaxIndexes.scope]"
-        fragment="{{settingsScope.minMaxIndexes.id}}"
-      >minIndex setting</a> to 1 (or 0).
+        fragment="{{ settingsScope.minMaxIndexes.id }}"
+        >minIndex setting</a
+      >
+      to 1 (or 0).
     </p>
     <p>
-      Note that if 0 index is the left boundary of the dataset,
-      then it seems reasonable to assign 0 value to
+      Note that if 0 index is the left boundary of the dataset, then it seems
+      reasonable to assign 0 value to
       <a
         [routerLink]="['/', settingsScope.startIndex.scope]"
-        fragment="{{settingsScope.startIndex.id}}"
-      >startIndex setting</a> too,
-      because the default <em>startIndex</em> value is 1.
+        fragment="{{ settingsScope.startIndex.id }}"
+        >startIndex setting</a
+      >
+      too, because the default <em>startIndex</em> value is 1.
     </p>
   </div>
 </app-demo>

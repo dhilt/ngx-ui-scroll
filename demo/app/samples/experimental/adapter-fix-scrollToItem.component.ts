@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType,
+  MyItem
+} from '../../shared/interfaces';
 
 import { Datasource } from 'ngx-ui-scroll';
 
@@ -10,7 +15,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './adapter-fix-scrollToItem.component.html'
 })
 export class DemoAdapterFixScrollToItemComponent {
-
   demoContext: DemoContext = <DemoContext>{
     config: demos.experimental.map.adapterFixScrollToItem,
     noInfo: true
@@ -34,9 +38,10 @@ export class DemoAdapterFixScrollToItemComponent {
     this.scrollToBottom = false;
   }
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Template,
-    text: `<button (click)="doScrollTo()">Scroll to</button> item #
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Template,
+      text: `<button (click)="doScrollTo()">Scroll to</button> item #
 <input [(ngModel)]="index" size="2">
 <input type="checkbox" [(ngModel)]="scrollToBottom"> - scroll to bottom
 
@@ -45,9 +50,10 @@ export class DemoAdapterFixScrollToItemComponent {
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Component,
-    text: `index = '5'
+    },
+    {
+      name: DemoSourceType.Component,
+      text: `index = '5'
 scrollToBottom = false;
 
 datasource = new Datasource<MyItem>({
@@ -71,7 +77,8 @@ doScrollTo() {
   }
 }
 `
-  }];
+    }
+  ];
 
   adapterFixUpdater = 'Adapter.fix({ scrollToItem })';
 
@@ -85,5 +92,4 @@ doScrollTo() {
       });
     }
   }
-
 }

@@ -10,7 +10,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './home.component.html'
 })
 export class HomeComponent {
-
   angularVersion = VERSION.full;
   reloadIndex = 999;
   delay = 0;
@@ -41,18 +40,20 @@ export class HomeComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Template,
-    text: `<div class="viewport">
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Template,
+      text: `<div class="viewport">
   <div *uiScroll="let item of datasource; let even = even">
     <div class="item" [class.even]="even">
       {{item.text}}
     </div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Component,
-    text: `delay = 25;
+    },
+    {
+      name: DemoSourceType.Component,
+      text: `delay = 25;
 reloadIndex = 999;
 
 datasource = new Datasource ({
@@ -72,9 +73,10 @@ datasource = new Datasource ({
 doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`
-  }, {
-    name: 'Adapter',
-    text: `Version:
+    },
+    {
+      name: 'Adapter',
+      text: `Version:
 {{datasource.adapter.packageInfo.consumer.version}}
 
 Core:
@@ -99,9 +101,10 @@ Datasource delay (ms):
 Index to reload:
 <input [(ngModel)]="reloadIndex" type="number">
 <button (click)="doReload()">Reload</button>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -113,7 +116,8 @@ Index to reload:
 .item.even {
   background-color: #f2f2f2;
 }`
-  }];
+    }
+  ];
 
   constructor() {
     this.scopes = scopes;
@@ -124,5 +128,4 @@ Index to reload:
   doReload() {
     this.datasource.adapter.reload(this.reloadIndex);
   }
-
 }

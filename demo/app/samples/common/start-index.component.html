@@ -1,20 +1,15 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div description>
     <p>
-      What if we want to start the Scroller from some specific position?
-      The <em>startIndex</em> setting determines what index
-      the Scroller will use to start the load process
-      when <em>Datasource.get</em> method is called for the first time.
+      What if we want to start the Scroller from some specific position? The
+      <em>startIndex</em> setting determines what index the Scroller will use to
+      start the load process when <em>Datasource.get</em> method is called for
+      the first time.
     </p>
     <p>
-      The default <em>startIndex</em> value is 1.
-      It has to be an integer with no range limitations.
-      But real datasource boundaries (in case the <em>Datasource</em> is limited)
-      should be taken into the account.
+      The default <em>startIndex</em> value is 1. It has to be an integer with
+      no range limitations. But real datasource boundaries (in case the
+      <em>Datasource</em> is limited) should be taken into the account.
     </p>
   </div>
 </app-demo>

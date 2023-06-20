@@ -3,7 +3,7 @@ import {
   Input,
   TemplateRef,
   ViewContainerRef,
-  OnInit,
+  OnInit
 } from '@angular/core';
 
 import { UiScrollComponent } from './ui-scroll.component';

@@ -1,8 +1,16 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
+} from '@angular/core';
 import { take } from 'rxjs/operators';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -13,7 +21,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './init.component.html'
 })
 export class DemoInitComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterProps.map.init,
     viewportId: 'init-viewport',
@@ -28,10 +35,11 @@ export class DemoInitComponent {
     get: datasourceGetCallbackInfinite(this.demoContext)
   });
 
-  sources: DemoSources = [{
-    active: true,
-    name: DemoSourceType.Component,
-    text: `version = '...';
+  sources: DemoSources = [
+    {
+      active: true,
+      name: DemoSourceType.Component,
+      text: `version = '...';
 
 datasource = new Datasource ({
   get: (index, length, success) =>
@@ -46,9 +54,10 @@ constructor() {
     this.version = adapter.packageInfo.consumer.version
   );
 }`
-  }, {
-    name: DemoSourceType.Component + ' (OnPush)',
-    text: `@Component({
+    },
+    {
+      name: DemoSourceType.Component + ' (OnPush)',
+      text: `@Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   ...
 })
@@ -71,18 +80,20 @@ constructor(public changeDetector: ChangeDetectorRef) {
     this.changeDetector.detectChanges();
   });
 }`
-  }, {
-    name: DemoSourceType.Template,
-    text: `ngx-ui-scroll version is {{version}}
+    },
+    {
+      name: DemoSourceType.Template,
+      text: `ngx-ui-scroll version is {{version}}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -91,7 +102,8 @@ constructor(public changeDetector: ChangeDetectorRef) {
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   constructor(public changeDetector: ChangeDetectorRef) {
     const { adapter } = this.datasource;
@@ -100,5 +112,4 @@ constructor(public changeDetector: ChangeDetectorRef) {
       this.changeDetector.detectChanges();
     });
   }
-
 }

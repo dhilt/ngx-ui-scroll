@@ -5,12 +5,9 @@ import { UiScrollComponent } from './ui-scroll.component';
 import { UiScrollDirective } from './ui-scroll.directive';
 
 @NgModule({
-  declarations: [
-    UiScrollComponent,
-    UiScrollDirective
-  ],
+  declarations: [UiScrollComponent, UiScrollDirective],
   imports: [CommonModule],
   entryComponents: [UiScrollComponent],
-  exports: [UiScrollDirective],
+  exports: [UiScrollDirective]
 })
-export class UiScrollModule { }
+export class UiScrollModule {}

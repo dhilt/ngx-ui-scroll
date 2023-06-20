@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType,
+  MyItem
+} from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +16,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './append-prepend-sync.component.html'
 })
 export class DemoAppendPrependSyncComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.appendPrependSync,
     viewportId: 'append-prepend-sync-viewport',
@@ -60,9 +64,10 @@ export class DemoAppendPrependSyncComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `inputPrepend = 4;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `inputPrepend = 4;
 inputAppend = 4;
 increasePrepend = false;
 decreaseAppend = false;
@@ -139,10 +144,11 @@ async doAppend() {
     items, eof: true, decrease: this.decreaseAppend
   });
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<button (click)="doPrepend()">Prepend</button>
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<button (click)="doPrepend()">Prepend</button>
 <input [ngModel]="inputPrepend" size="2"> items
 {{increasePrepend ? 'increasingly' : 'decreasingly'}}
 <input type="checkbox" [(ngModel)]="increasePrepend">
@@ -159,9 +165,10 @@ async doAppend() {
     </div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -170,7 +177,8 @@ async doAppend() {
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   prependCallSample = 'Adapter.prepend({ items, bof: true })';
   appendCallSample = 'Adapter.append({ items, eof: true })';
@@ -196,12 +204,17 @@ async doAppend() {
         this.MAX++;
       }
       this.absMinIndex--;
-      const newItem: MyItem = { id: 'x', text: 'item #' + this.absMinIndex + '*' };
+      const newItem: MyItem = {
+        id: 'x',
+        text: 'item #' + this.absMinIndex + '*'
+      };
       this.data.unshift(newItem);
       items.push(newItem);
     }
     this.datasource.adapter.prepend({
-      items, bof: true, increase: this.increasePrepend
+      items,
+      bof: true,
+      increase: this.increasePrepend
     });
   }
 
@@ -215,13 +228,17 @@ async doAppend() {
         this.MIN--;
       }
       this.absMaxIndex++;
-      const newItem: MyItem = { id: 'x', text: 'item #' + this.absMaxIndex + '*' };
+      const newItem: MyItem = {
+        id: 'x',
+        text: 'item #' + this.absMaxIndex + '*'
+      };
       this.data.push(newItem);
       items.push(newItem);
     }
     this.datasource.adapter.append({
-      items, eof: true, decrease: this.decreaseAppend
+      items,
+      eof: true,
+      decrease: this.decreaseAppend
     });
   }
-
 }

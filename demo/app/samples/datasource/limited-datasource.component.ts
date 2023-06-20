@@ -11,7 +11,6 @@ import { IDatasource } from 'ngx-ui-scroll';
   templateUrl: './limited-datasource.component.html'
 })
 export class DemoLimitedDatasourceComponent {
-
   demoContext = {
     config: demos.datasource.map.limited,
     logViewOnly: true,
@@ -39,9 +38,10 @@ export class DemoLimitedDatasourceComponent {
     }
   };
 
-  sources: DemoSources = [{
-    name: 'Runtime generation',
-    text: `MIN = -99;
+  sources: DemoSources = [
+    {
+      name: 'Runtime generation',
+      text: `MIN = -99;
 MAX = 100;
 
 datasource: IDatasource = {
@@ -57,9 +57,10 @@ datasource: IDatasource = {
     success(data);
   }
 };`
-  }, {
-    name: 'Fixed dataset',
-    text: `MIN = -99;
+    },
+    {
+      name: 'Fixed dataset',
+      text: `MIN = -99;
 MAX = 100;
 
 constructor() {
@@ -82,6 +83,6 @@ datasource: IDatasource = {
     success(data);
   }
 };`
-  }];
-
+    }
+  ];
 }

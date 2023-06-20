@@ -10,7 +10,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './adapter-fix-position.component.html'
 })
 export class DemoAdapterFixPositionComponent {
-
   demoContext = {
     config: demos.experimental.map.adapterFixPosition,
     noInfo: true
@@ -26,9 +25,10 @@ export class DemoAdapterFixPositionComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Template,
-    text: `<button (click)="scrollTop()">scroll top</button>
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Template,
+      text: `<button (click)="scrollTop()">scroll top</button>
 <button (click)="scrollBottom()">scroll bottom</button>
 
 <div class="viewport">
@@ -36,9 +36,10 @@ export class DemoAdapterFixPositionComponent {
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource({
+    },
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i < index + count; i++) {
@@ -56,7 +57,8 @@ export class DemoAdapterFixPositionComponent {
     this.datasource.adapter.fix({ scrollPosition: +Infinity });
   }
 `
-  }];
+    }
+  ];
 
   adapterFixPosition = 'Adapter.fix({ scrollPosition: 0 })';
 
@@ -67,5 +69,4 @@ export class DemoAdapterFixPositionComponent {
   scrollBottom() {
     this.datasource.adapter.fix({ scrollPosition: +Infinity });
   }
-
 }

@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +15,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './is-loading-extended.component.html'
 })
 export class DemoIsLoadingExtendedComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterProps.map.isLoadingAdvanced,
     viewportId: 'is-loading-advanced-viewport',
@@ -23,9 +26,10 @@ export class DemoIsLoadingExtendedComponent {
     get: datasourceGetCallbackInfinite(this.demoContext, 125)
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -48,10 +52,11 @@ constructor() {
       this.innerLoopCounter += !result ? 1 : 0
     );
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `The uiScroll is
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `The uiScroll is
 {{datasource.adapter.isLoading ? 'loading': 'relaxing'}},
 counter {{loadingCounter}}
 
@@ -66,9 +71,10 @@ counter: {{innerLoopCounter}}
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 175px;
   overflow-y: auto;
@@ -77,19 +83,18 @@ counter: {{innerLoopCounter}}
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   loadingCounter = 0;
   innerLoopCounter = 0;
 
   constructor() {
-    this.datasource.adapter.isLoading$
-      .subscribe(result =>
-        this.loadingCounter += !result ? 1 : 0
-      );
-    this.datasource.adapter.loopPending$
-      .subscribe(result =>
-        this.innerLoopCounter += !result ? 1 : 0
-      );
+    this.datasource.adapter.isLoading$.subscribe(
+      result => (this.loadingCounter += !result ? 1 : 0)
+    );
+    this.datasource.adapter.loopPending$.subscribe(
+      result => (this.innerLoopCounter += !result ? 1 : 0)
+    );
   }
 }

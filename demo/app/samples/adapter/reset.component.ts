@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +15,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './reset.component.html'
 })
 export class DemoResetComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.reset,
     viewportId: 'reset-viewport',
@@ -26,9 +29,10 @@ export class DemoResetComponent {
   startIndex = 100;
   bufferSize = 20;
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -48,10 +52,11 @@ doReset() {
   };
   this.datasource.adapter.reset({ settings });
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<button (click)="doReset()">Reset</button>
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<button (click)="doReset()">Reset</button>
 <input [(ngModel)]="startIndex" size="3"> - new start index
 <input [(ngModel)]="bufferSize" size="3"> - new buffer size
 
@@ -60,9 +65,11 @@ doReset() {
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }];
+    }
+  ];
 
-  resetWithNewInstanceSample = '  this.datasource.adapter.reset(new Datasource(...));';
+  resetWithNewInstanceSample =
+    '  this.datasource.adapter.reset(new Datasource(...));';
 
   doReset() {
     this.demoContext.count = 0;
@@ -73,5 +80,4 @@ doReset() {
     };
     this.datasource.adapter.reset({ settings });
   }
-
 }

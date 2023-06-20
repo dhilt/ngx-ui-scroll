@@ -1,38 +1,37 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions *ngIf="init">
-    First visible item's index: {{datasource.adapter.firstVisible.$index}}
-    <br>
-    Last visible item's index: {{(datasource.adapter.lastVisible$ | async)?.$index}}
-    <br>
-    Visible items counter: {{visibleCount}}
+    First visible item's index: {{ datasource.adapter.firstVisible.$index }}
+    <br />
+    Last visible item's index:
+    {{ (datasource.adapter.lastVisible$ | async)?.$index }}
+    <br />
+    Visible items counter: {{ visibleCount }}
   </div>
   <div description>
     <p>
-      The <em>Adapter</em> has two read-only properties
-      which allow to determine the first and the last visible items:
-      <em>firstVisible</em> and <em>lastVisible</em>.
-      These are the objects of special <em>ItemAdapter</em> type
+      The <em>Adapter</em> has two read-only properties which allow to determine
+      the first and the last visible items: <em>firstVisible</em> and
+      <em>lastVisible</em>. These are the objects of special
+      <em>ItemAdapter</em> type
     </p>
-    <pre>{{itemAdapterDescription}}</pre>
+    <pre>{{ itemAdapterDescription }}</pre>
     <p>
       <em>$index</em> corresponds to <em>Datasource</em> item index value;
-      <em>data</em> is what we were pushing to the Scroller
-      on <em>Datasource.get</em> (item's content);
-      <em>element</em> is the DOM element that is relevant to our item.
+      <em>data</em> is what we were pushing to the Scroller on
+      <em>Datasource.get</em> (item's content); <em>element</em> is the DOM
+      element that is relevant to our item.
     </p>
     <p>
-      In addition to scalar <em>firstVisible</em> and <em>lastVisible</em> properties
-      there are also Observable versions: <em>firstVisible$</em> and <em>lastVisible$</em>.
-      In this demo we calculate a number of visible items with the help of <em>combineLatest</em> RxJs method.
+      In addition to scalar <em>firstVisible</em> and
+      <em>lastVisible</em> properties there are also Observable versions:
+      <em>firstVisible$</em> and <em>lastVisible$</em>. In this demo we
+      calculate a number of visible items with the help of
+      <em>combineLatest</em> RxJs method.
     </p>
     <p>
       Recalculation of the first and the last items occurs per each non-empty
-      "inner loop" session, when a bunch of new items are fetched via <em>Datasource.get</em>,
-      rendered and unnecessary items are clipped out.
+      "inner loop" session, when a bunch of new items are fetched via
+      <em>Datasource.get</em>, rendered and unnecessary items are clipped out.
     </p>
   </div>
 </app-demo>

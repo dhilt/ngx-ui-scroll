@@ -11,7 +11,6 @@ import { IDatasource } from 'ngx-ui-scroll';
   templateUrl: './positive-limited-datasource.component.html'
 })
 export class DemoPositiveLimitedDatasourceComponent {
-
   demoContext = {
     config: demos.datasource.map.positiveLimitedIndexes,
     logViewOnly: true,
@@ -36,9 +35,10 @@ export class DemoPositiveLimitedDatasourceComponent {
     }
   };
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Datasource,
-    text: `datasource: IDatasource = {
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Datasource,
+      text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const data = [];
     const start = Math.max(1, index); // or 0
@@ -51,6 +51,6 @@ export class DemoPositiveLimitedDatasourceComponent {
     success(data);
   }
 };`
-  }];
-
+    }
+  ];
 }

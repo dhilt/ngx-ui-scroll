@@ -8,15 +8,15 @@ import { DemoSources, DemoSourceType } from '../../shared/interfaces';
   templateUrl: './datasource-signatures.component.html'
 })
 export class DemoDatasourceSignaturesComponent {
-
   demoContext = {
     config: demos.datasource.map.datasourceGetSignatures,
     noWorkView: true
   };
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Datasource,
-    text: `datasourceCallback: IDatasource = {
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Datasource,
+      text: `datasourceCallback: IDatasource = {
   get: (index, count, success) =>
     success(this.getData(index, count))
 };
@@ -47,6 +47,6 @@ datasourceObservable2: IDatasource = {
   get: (index, count) =>
     this.getDataObservable(index, count)
 };`
-  }];
-
+    }
+  ];
 }

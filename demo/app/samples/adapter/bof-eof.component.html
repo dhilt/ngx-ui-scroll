@@ -1,36 +1,33 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached
-    <br>
-    End of file is {{datasource.adapter.eof ? '' : 'not'}} reached
-    <br>
-    BOF / EOF changes counter: {{edgeCounter}}
+    Begin of file is {{ datasource.adapter.bof ? '' : 'not' }} reached
+    <br />
+    End of file is {{ datasource.adapter.eof ? '' : 'not' }} reached
+    <br />
+    BOF / EOF changes counter: {{ edgeCounter }}
   </div>
   <div description>
     <p>
-      <em>Adapter.bof</em> and <em>Adapter.eof</em> are read-only boolean properties
-      that indicate whether the dataset beginning (bof, begin of file) or
-      the dataset ending (eof, end of file) is reached or not.
+      <em>Adapter.bof</em> and <em>Adapter.eof</em> are read-only boolean
+      properties that indicate whether the dataset beginning (bof, begin of
+      file) or the dataset ending (eof, end of file) is reached or not.
     </p>
     <p>
       Along with scalar properties there are also two Observable ones:
-      <em>Adapter.bof$</em> and <em>Adapter.eof$</em> which are Subjects and produce
-      new values when scalar properties change.
+      <em>Adapter.bof$</em> and <em>Adapter.eof$</em> which are Subjects and
+      produce new values when scalar properties change.
     </p>
     <p>
-      In this demo we have limited datasource consisting of 100 items starting from index 1.
-      So initially we are at the left border of the dataset, and that's why we see
-      "Begin of file is reached" message.
-      After some scrolling down <em>bof</em> is turned to <em>false</em>,
-      the first item is destroyed and can be retrieved again.
+      In this demo we have limited datasource consisting of 100 items starting
+      from index 1. So initially we are at the left border of the dataset, and
+      that's why we see "Begin of file is reached" message. After some scrolling
+      down <em>bof</em> is turned to <em>false</em>, the first item is destroyed
+      and can be retrieved again.
     </p>
     <p>
-      The <em>edgeCounter</em> is bof/eof changes counter. It is defined via <em>merge(bof$, eof$)</em>
-      subscription which is triggered each time <em>bof$</em>/<em>eof$</em> emits a new value.
+      The <em>edgeCounter</em> is bof/eof changes counter. It is defined via
+      <em>merge(bof$, eof$)</em> subscription which is triggered each time
+      <em>bof$</em>/<em>eof$</em> emits a new value.
     </p>
   </div>
 </app-demo>

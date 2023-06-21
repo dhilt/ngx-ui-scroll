@@ -2,7 +2,12 @@ import { Component } from '@angular/core';
 import { merge } from 'rxjs';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType,
+  MyItem
+} from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -12,7 +17,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './bof-eof.component.html'
 })
 export class DemoBofEofComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterProps.map.bofEof,
     viewportId: 'bof-eof-viewport',
@@ -22,7 +26,8 @@ export class DemoBofEofComponent {
 
   datasource = new Datasource<MyItem>({
     get: (index, count, success) => {
-      const MIN = 1, MAX = 100;
+      const MIN = 1,
+        MAX = 100;
       const data = [];
       const start = Math.max(MIN, index);
       const end = Math.min(index + count - 1, MAX);
@@ -43,9 +48,10 @@ export class DemoBofEofComponent {
     merge(bof$, eof$).subscribe(() => this.edgeCounter++);
   }
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource<MyItem>({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource<MyItem>({
   get: (index, count, success) => {
     const MIN = 1, MAX = 100;
     const data = [];
@@ -67,10 +73,11 @@ constructor() {
   merge(bof$, eof$).subscribe(() => this.edgeCounter++);
 }
 `
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached
 <br>
 End of file is {{datasource.adapter.eof ? '' : 'not'}} reached
 <br>
@@ -81,9 +88,10 @@ BOF / EOF changes counter: {{edgeCounter}}
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -92,5 +100,6 @@ BOF / EOF changes counter: {{edgeCounter}}
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 }

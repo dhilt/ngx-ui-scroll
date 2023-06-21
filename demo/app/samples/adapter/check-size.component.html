@@ -1,24 +1,19 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
     <button (click)="doCheck()">Resize and Check</button>
     <br />
-    Autoscroll: <input type="checkbox" [(ngModel)]="needAutoscroll"/>
+    Autoscroll: <input type="checkbox" [(ngModel)]="needAutoscroll" />
     <br />
-    First visible item's index: {{datasource.adapter.firstVisible.$index}}
+    First visible item's index: {{ datasource.adapter.firstVisible.$index }}
   </div>
   <div description>
     <p>
-      The <em>Adapter.check</em> method could be useful when rows heights can change after rendering.
-      By invoking the <em>Adapter.check</em> method we ask the Scroller to check
-      if any of items that are in the current Buffer (and present in DOM) changed their size.
+      The <em>Adapter.check</em> method could be useful when rows heights can
+      change after rendering. By invoking the <em>Adapter.check</em> method we
+      ask the Scroller to check if any of items that are in the current Buffer
+      (and present in DOM) changed their size.
     </p>
-    <p>
-      In this demo, the <em>doCheck</em> method is implemented to
-    </p>
+    <p>In this demo, the <em>doCheck</em> method is implemented to</p>
     <ul>
       <li>change the actual size of 10 items (from 15 to 25) in DOM;</li>
       <li>run <em>Adapter.check()</em>;</li>

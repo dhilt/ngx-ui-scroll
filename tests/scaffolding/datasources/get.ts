@@ -1,9 +1,18 @@
 import { Observable, Observer } from 'rxjs';
 
-import { generateItem, IndexedItem, Data, Processor } from '../../miscellaneous/items';
+import {
+  generateItem,
+  IndexedItem,
+  Data,
+  Processor
+} from '../../miscellaneous/items';
 import { DynamicSizeArg } from '../../miscellaneous/dynamicSize';
 
-const datasourceGetInfinite = (index: number, count: number, suffix?: string) => {
+const datasourceGetInfinite = (
+  index: number,
+  count: number,
+  suffix?: string
+) => {
   const data = [];
   for (let i = index; i <= index + count - 1; i++) {
     data.push(generateItem(i, false, suffix));
@@ -54,42 +63,106 @@ export enum DatasourceType {
   Callback = 'callback'
 }
 
-export const infiniteDatasourceGet = (type?: DatasourceType, delay?: number, suffix?: string) =>
+export const infiniteDatasourceGet =
+  (type?: DatasourceType, delay?: number, suffix?: string) =>
   (index: number, count: number, success?: (data: Data[]) => void): unknown => {
     switch (type) {
       case DatasourceType.Callback:
-        return success && delayedRun(() => success(datasourceGetInfinite(index, count, suffix)), delay);
+        return (
+          success &&
+          delayedRun(
+            () => success(datasourceGetInfinite(index, count, suffix)),
+            delay
+          )
+        );
       case DatasourceType.Promise:
         return new Promise<Data[]>(resolve =>
-          delayedRun(() => resolve(datasourceGetInfinite(index, count, suffix)), delay)
+          delayedRun(
+            () => resolve(datasourceGetInfinite(index, count, suffix)),
+            delay
+          )
         );
       default: // DatasourceType.Observable
         return new Observable((observer: Observer<Data[]>) =>
-          delayedRun(() => observer.next(datasourceGetInfinite(index, count, suffix)), delay)
+          delayedRun(
+            () => observer.next(datasourceGetInfinite(index, count, suffix)),
+            delay
+          )
         );
     }
   };
 
-export const limitedDatasourceGet = (
-  min: number, max: number, dynamicSize: DynamicSizeArg, type: DatasourceType, delay: number, process?: boolean
-) =>
+export const limitedDatasourceGet =
   (
-    index: number, count: number, success?: (data: Data[]) => void, reject?: (e: unknown) => void, processor?: Processor
+    min: number,
+    max: number,
+    dynamicSize: DynamicSizeArg,
+    type: DatasourceType,
+    delay: number,
+    process?: boolean
+  ) =>
+  (
+    index: number,
+    count: number,
+    success?: (data: Data[]) => void,
+    reject?: (e: unknown) => void,
+    processor?: Processor
   ): unknown => {
     switch (type) {
       case DatasourceType.Callback:
-        return success && delayedRun(() =>
-          success(getLimitedData(index, count, min, max, dynamicSize, false, process && processor)), delay
+        return (
+          success &&
+          delayedRun(
+            () =>
+              success(
+                getLimitedData(
+                  index,
+                  count,
+                  min,
+                  max,
+                  dynamicSize,
+                  false,
+                  process && processor
+                )
+              ),
+            delay
+          )
         );
       case DatasourceType.Promise:
         return new Promise<Data[]>(resolve =>
-          delayedRun(() => resolve(
-            getLimitedData(index, count, min, max, dynamicSize, false, process && processor)), delay
-          ));
+          delayedRun(
+            () =>
+              resolve(
+                getLimitedData(
+                  index,
+                  count,
+                  min,
+                  max,
+                  dynamicSize,
+                  false,
+                  process && processor
+                )
+              ),
+            delay
+          )
+        );
       default: // DatasourceType.Observable
         return new Observable((observer: Observer<Data[]>) =>
-          delayedRun(() => observer.next(
-            getLimitedData(index, count, min, max, dynamicSize, false, process && processor)), delay
-          ));
+          delayedRun(
+            () =>
+              observer.next(
+                getLimitedData(
+                  index,
+                  count,
+                  min,
+                  max,
+                  dynamicSize,
+                  false,
+                  process && processor
+                )
+              ),
+            delay
+          )
+        );
     }
   };

@@ -1,5 +1,4 @@
 export {
-
   // entities
   Workflow,
   makeDatasource,
@@ -14,6 +13,5 @@ export {
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,
-  IAdapter,
-
+  IAdapter
 } from 'vscroll'; // from '../../vscroll/src';

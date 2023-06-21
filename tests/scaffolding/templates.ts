@@ -39,14 +39,34 @@ const addPaddingFix = (padding?: number): string => {
   return ` ${className}`;
 };
 
-export const generateTemplate = (templateSettings?: TemplateSettings): TemplateData => {
-  const settings = Object.assign({}, defaultTemplateSettings, templateSettings || {});
-  const viewportClass = `${settings.noViewportClass ? '' :
-    'viewport' + (settings.horizontal ? '-horizontal' : '')}` + addPaddingFix(settings.viewportPadding);
-  const viewportStyle = `${settings.viewportHeight ? 'height:' + settings.viewportHeight + 'px;' : ''}` +
-    `${settings.viewportWidth ? 'width:' + settings.viewportWidth + 'px;' : ''}` +
-    `${settings.viewportPadding ? 'padding:' + settings.viewportPadding + 'px;' : ''}`;
-  const hasItemStyle = settings.dynamicSize || settings.itemHeight || settings.itemWidth;
+export const generateTemplate = (
+  templateSettings?: TemplateSettings
+): TemplateData => {
+  const settings = Object.assign(
+    {},
+    defaultTemplateSettings,
+    templateSettings || {}
+  );
+  const viewportClass =
+    `${
+      settings.noViewportClass
+        ? ''
+        : 'viewport' + (settings.horizontal ? '-horizontal' : '')
+    }` + addPaddingFix(settings.viewportPadding);
+  const viewportStyle =
+    `${
+      settings.viewportHeight ? 'height:' + settings.viewportHeight + 'px;' : ''
+    }` +
+    `${
+      settings.viewportWidth ? 'width:' + settings.viewportWidth + 'px;' : ''
+    }` +
+    `${
+      settings.viewportPadding
+        ? 'padding:' + settings.viewportPadding + 'px;'
+        : ''
+    }`;
+  const hasItemStyle =
+    settings.dynamicSize || settings.itemHeight || settings.itemWidth;
   const header = settings.headerHeight
     ? `<div style="height:${settings.headerHeight}px;width:100%;background-color:yellow"></div>`
     : '';

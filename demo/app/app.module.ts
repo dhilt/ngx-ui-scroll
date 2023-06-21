@@ -43,7 +43,7 @@ import { AppRoutingModule } from './app-routing.module';
     ...demos.common,
     ...demos.datasource,
     ...demos.adapter,
-    ...demos.experimental,
+    ...demos.experimental
   ],
   imports: [
     BrowserModule,
@@ -53,10 +53,7 @@ import { AppRoutingModule } from './app-routing.module';
     UiScrollModule,
     AppRoutingModule
   ],
-  providers: [
-    RemoteDataService
-  ],
+  providers: [RemoteDataService],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule {}

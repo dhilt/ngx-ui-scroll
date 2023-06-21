@@ -1,11 +1,11 @@
 import {
-  Directive,
-  Input,
-  TemplateRef,
-  ViewContainerRef,
-  Inject,
-  PLATFORM_ID,
   ComponentRef,
+  Directive,
+  Inject,
+  Input,
+  PLATFORM_ID,
+  TemplateRef,
+  ViewContainerRef
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 

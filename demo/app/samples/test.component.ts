@@ -21,8 +21,7 @@ interface MyItem {
   template: '<b><ng-content></ng-content></b>'
 })
 export class TestInnerComponent {
-  constructor() {
-  }
+  constructor() {}
 }
 
 @Component({
@@ -30,8 +29,8 @@ export class TestInnerComponent {
   templateUrl: './test.component.html'
 })
 export class TestComponent {
-
-  @ViewChild('viewport', { static: true }) viewportRef!: ElementRef<HTMLElement>;
+  @ViewChild('viewport', { static: true })
+  viewportRef!: ElementRef<HTMLElement>;
 
   reloadIndex = 1;
   sizeIndex = 1;
@@ -40,9 +39,7 @@ export class TestComponent {
   data!: MyItem[];
 
   datasource = new Datasource<MyItem>({
-    get: (index: number, count: number) =>
-      this.fetchData(index, count)
-    ,
+    get: (index: number, count: number) => this.fetchData(index, count),
     settings: {
       padding: 0.1,
       bufferSize: 10,
@@ -59,7 +56,7 @@ export class TestComponent {
       immediateLog: false,
       logTime: false,
       logProcessRun: true,
-      throttle: 40,
+      throttle: 40
     }
   });
 
@@ -78,7 +75,10 @@ export class TestComponent {
         size: Math.max(MIN_ROW_HEIGHT, 20 + i + MIN) // 100
       };
       if (item.isSelected) {
-        item.data = Array.from({ length: Math.random() * (10 - 3) + 3 }, () => '*').join('');
+        item.data = Array.from(
+          { length: Math.random() * (10 - 3) + 3 },
+          () => '*'
+        ).join('');
         item.color = i % 30 === 0 ? 'red' : 'black';
       }
       this.data.push(item);
@@ -115,7 +115,7 @@ export class TestComponent {
     last = Number.isInteger(last) ? last : NaN;
     let first = adapter.firstVisible.$index;
     first = Number.isInteger(first) ? first : NaN;
-    return (Number.isNaN(last) || Number.isNaN(first)) ? 0 : last - first + 1;
+    return Number.isNaN(last) || Number.isNaN(first) ? 0 : last - first + 1;
   }
 
   getViewportElement(): Element {
@@ -206,7 +206,12 @@ export class TestComponent {
     const isLoadingSubscription = adapter.isLoading$.subscribe(isLoading => {
       const viewportElement = document.getElementById('my-viewport');
       const lastVisible = adapter.lastVisible.element;
-      if (!isLoading && viewportElement && lastVisible && lastVisible.getBoundingClientRect) {
+      if (
+        !isLoading &&
+        viewportElement &&
+        lastVisible &&
+        lastVisible.getBoundingClientRect
+      ) {
         const lastElementBottom = lastVisible.getBoundingClientRect().bottom;
         const viewportBottom = viewportElement.getBoundingClientRect().bottom;
         const toScroll = viewportBottom - lastElementBottom;

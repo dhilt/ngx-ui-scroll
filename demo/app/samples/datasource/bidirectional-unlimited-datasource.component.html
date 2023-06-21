@@ -1,19 +1,15 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div description>
     <p>
-      The datasource implemented here has no boundaries.
-      The result <em>data</em> array will consist of <em>count</em> items
-      started exactly from <em>index</em> position regardless of
-      <em>count</em> and <em>index</em> values.
-      They could be any finite integers.
+      The datasource implemented here has no boundaries. The result
+      <em>data</em> array will consist of <em>count</em> items started exactly
+      from <em>index</em> position regardless of <em>count</em> and
+      <em>index</em> values. They could be any finite integers.
     </p>
     <p>
-      This sample as well as following ones does include <em>Datasource.get</em> method log
-      telling us how many items are fetched by the Scroller via <em>Datasource</em> in a single run.
+      This sample as well as following ones does include
+      <em>Datasource.get</em> method log telling us how many items are fetched
+      by the Scroller via <em>Datasource</em> in a single run.
     </p>
   </div>
 </app-demo>

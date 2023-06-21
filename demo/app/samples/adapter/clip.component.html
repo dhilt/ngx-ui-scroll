@@ -5,48 +5,50 @@
 
   <div description>
     <p>
-      The <em>Adapter.clip</em> method allows to remove out-of-viewport items on demand.
-      Out-of-viewport means out of visible part of the viewport + paddings, see
+      The <em>Adapter.clip</em> method allows to remove out-of-viewport items on
+      demand. Out-of-viewport means out of visible part of the viewport +
+      paddings, see
       <a
         [routerLink]="['/', settingsScope.id]"
-        fragment="{{settingsScope.map.padding.id}}"
-      >padding setting</a> demo.
-      Not to be confused with <em>Adapter.remove</em>,
-      as the <em>Adapter.clip</em> method has no impact on the <em>Datasource</em>.
-      It just cleans up the DOM.
+        fragment="{{ settingsScope.map.padding.id }}"
+        >padding setting</a
+      >
+      demo. Not to be confused with <em>Adapter.remove</em>, as the
+      <em>Adapter.clip</em> method has no impact on the <em>Datasource</em>. It
+      just cleans up the DOM.
     </p>
     <p>
-      Commonly, the Scroller runs a clipping procedure
-      each time new items are fetched after scrolling
-      and it clips old items from a side of the viewport
-      that is opposite to a side where new items appear.
-      This is one of the core parts of the virtualization concept.
-      By invoking the <em>Adapter.clip</em> method
-      we are telling the Scroller to run this procedure immediately
-      and remove items that are out-of-viewport in both directions or in specific direction.
-      Here is an argument object that lets to specify the clipping direction:
+      Commonly, the Scroller runs a clipping procedure each time new items are
+      fetched after scrolling and it clips old items from a side of the viewport
+      that is opposite to a side where new items appear. This is one of the core
+      parts of the virtualization concept. By invoking the
+      <em>Adapter.clip</em> method we are telling the Scroller to run this
+      procedure immediately and remove items that are out-of-viewport in both
+      directions or in specific direction. Here is an argument object that lets
+      to specify the clipping direction:
     </p>
-    <pre>{{clipOptionsDescription}}</pre>
+    <pre>{{ clipOptionsDescription }}</pre>
     <p>
-      This could be useful when we enlarge the list of items manually,
-      via <em>Adapter.append</em> or <em>Adapter.prepend</em> methods.
-      For example, we appended 100 new items and started scrolling down, in forward direction.
-      We might want the items that exit the viewport in backward direction to be clipped.
-      Such a clipping will occur automatically only when we reach the bottom line of the buffer
-      and new items are fetched and rendered in forward direction.
-      If we don't want to wait, we just call <em>Adapter.clip({{clipOptionsSample}})</em>.
+      This could be useful when we enlarge the list of items manually, via
+      <em>Adapter.append</em> or <em>Adapter.prepend</em> methods. For example,
+      we appended 100 new items and started scrolling down, in forward
+      direction. We might want the items that exit the viewport in backward
+      direction to be clipped. Such a clipping will occur automatically only
+      when we reach the bottom line of the buffer and new items are fetched and
+      rendered in forward direction. If we don't want to wait, we just call
+      <em>Adapter.clip({{ clipOptionsSample }})</em>.
     </p>
     <p>
-      This demo implements some artificial but quite illustrative case.
-      Here we disabled virtualization by turning on the
+      This demo implements some artificial but quite illustrative case. Here we
+      disabled virtualization by turning on the
       <a
         [routerLink]="['/', settingsScope.id]"
-        fragment="{{settingsScope.map.infiniteMode.id}}"
-      >infinite setting</a>.
-      Clipping will never happen automatically.
-      We see how the DOM elements counter value is getting bigger and bigger as we scroll on and on.
-      By pressing the "Clip" button, we let only 20-21 items to survive.
-      This way a kind of manual virtualization could be implemented.
+        fragment="{{ settingsScope.map.infiniteMode.id }}"
+        >infinite setting</a
+      >. Clipping will never happen automatically. We see how the DOM elements
+      counter value is getting bigger and bigger as we scroll on and on. By
+      pressing the "Clip" button, we let only 20-21 items to survive. This way a
+      kind of manual virtualization could be implemented.
     </p>
   </div>
 </app-demo>

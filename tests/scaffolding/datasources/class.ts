@@ -1,7 +1,17 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Settings, DevSettings, BufferUpdater, Workflow, Item, Direction } from '../../miscellaneous/vscroll';
+import {
+  Settings,
+  DevSettings,
+  BufferUpdater,
+  Workflow,
+  Item,
+  Direction
+} from '../../miscellaneous/vscroll';
 
-import { IDatasource, Datasource } from '../../../scroller/src/ui-scroll.datasource';
+import {
+  IDatasource,
+  Datasource
+} from '../../../scroller/src/ui-scroll.datasource';
 import { generateItem, Data, Processor } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 
@@ -9,25 +19,30 @@ interface DSClassConfig {
   settings: Settings;
   devSettings?: DevSettings;
   common?: {
-    limits?: { // to set up limits if settings.min/maxIndex not set
+    limits?: {
+      // to set up limits if settings.min/maxIndex not set
       min?: number;
       max?: number;
-    }
+    };
   };
 }
 
 type Buffer<T = unknown> = Workflow<T>['scroller']['buffer'];
 
 export class DatasourceService implements IDatasource {
-  get() {
-  }
+  get() {}
 }
 
-export const generateDatasourceClass = (name: string, settings?: Settings<Data>, devSettings?: DevSettings) =>
-  getDatasourceProcessingClass(datasourceStore[name], settings, devSettings);
+export const generateDatasourceClass = (
+  name: string,
+  settings?: Settings<Data>,
+  devSettings?: DevSettings
+) => getDatasourceProcessingClass(datasourceStore[name], settings, devSettings);
 
 export const getDatasourceProcessingClass = (
-  _datasource: IDatasource<Data>, _settings?: Settings<Data>, _devSettings?: DevSettings
+  _datasource: IDatasource<Data>,
+  _settings?: Settings<Data>,
+  _devSettings?: DevSettings
 ) =>
   class extends Datasource<Data> {
     get!: IDatasource<Data>['get'];
@@ -39,10 +54,15 @@ export const getDatasourceProcessingClass = (
       const settings = _datasource.settings || _settings || {};
       const devSettings = _datasource.devSettings || _devSettings || {};
       const self = () => this;
-      const get = function (_a: number, _b: number) {
-        // eslint-disable-next-line prefer-rest-params
-        const args = [...Array.prototype.slice.call(arguments), self().processGet];
-        return (_datasource.get as (...args: unknown[]) => unknown).apply(self(), args);
+      const get = (a: number, b: number, ...rest: unknown[]) => {
+        const args = [
+          ...Array.prototype.slice.call([a, b, ...rest]),
+          self().processGet
+        ];
+        return (_datasource.get as (...args: unknown[]) => unknown).apply(
+          self(),
+          args
+        );
       };
       super({ get, settings, devSettings });
     }
@@ -82,17 +102,25 @@ class LimitedDatasource extends Datasource<Data> {
         success(data);
       },
       settings: { ...settings },
-      devSettings: devSettings || {},
+      devSettings: devSettings || {}
     });
 
     this.id = idCounter++;
     this.common = common || {};
-    if (common && common.limits && Number.isInteger(common.limits.min as number)) {
+    if (
+      common &&
+      common.limits &&
+      Number.isInteger(common.limits.min as number)
+    ) {
       this.min = common.limits.min as number;
     } else {
       this.min = this.settings.minIndex || 0;
     }
-    if (common && common.limits && Number.isInteger(common.limits.max as number)) {
+    if (
+      common &&
+      common.limits &&
+      Number.isInteger(common.limits.max as number)
+    ) {
       this.max = common.limits.max as number;
     } else {
       this.max = this.settings.maxIndex || 0;
@@ -106,9 +134,7 @@ class LimitedDatasource extends Datasource<Data> {
   }
 
   setSizes(cb: (index: number) => number) {
-    this.data.forEach((item, i) =>
-      item.size = cb(i + this.min)
-    );
+    this.data.forEach((item, i) => (item.size = cb(i + this.min)));
   }
 }
 
@@ -121,7 +147,6 @@ export const getLimitedDatasourceClass = (config: DSClassConfig) =>
 
 export const getDatasourceClassForRemovals = (config: DSClassConfig) =>
   class extends LimitedDatasource {
-
     constructor() {
       super(config);
     }
@@ -141,9 +166,11 @@ export const getDatasourceClassForRemovals = (config: DSClassConfig) =>
     }
   };
 
-export const getDatasourceClassForReplacements = (settings: Settings, devSettings?: DevSettings) =>
+export const getDatasourceClassForReplacements = (
+  settings: Settings,
+  devSettings?: DevSettings
+) =>
   class extends LimitedDatasource {
-
     constructor() {
       super({ settings, devSettings });
     }
@@ -159,11 +186,16 @@ export const getDatasourceClassForReplacements = (settings: Settings, devSetting
       this.replaceManyToMany(idsToReplace, [item], increase);
     }
 
-    replaceManyToMany(idsToReplace: number[], items: Data[], increase: boolean) {
+    replaceManyToMany(
+      idsToReplace: number[],
+      items: Data[],
+      increase: boolean
+    ) {
       idsToReplace.sort((a, b) => a - b);
       const minRem = idsToReplace[0];
-      const maxRem = idsToReplace.slice(1).reduce((acc, id) =>
-        id === acc + 1 ? id : acc, minRem // only continuous series allowed
+      const maxRem = idsToReplace.slice(1).reduce(
+        (acc, id) => (id === acc + 1 ? id : acc),
+        minRem // only continuous series allowed
       );
       const itemsToRemove = maxRem - minRem + 1;
       const diff = itemsToRemove - items.length;
@@ -173,7 +205,10 @@ export const getDatasourceClassForReplacements = (settings: Settings, devSetting
         if ((!increase && item.id < minRem) || (increase && item.id > maxRem)) {
           // below (or above if increase): persist
           acc.push(item);
-        } else if ((!increase && item.id > maxRem) || (increase && item.id < minRem)) {
+        } else if (
+          (!increase && item.id > maxRem) ||
+          (increase && item.id < minRem)
+        ) {
           // above (or below if increase): shift
           acc.push({ ...item, id: item.id + (!increase ? -1 : 1) * diff });
         } else if (!inserted) {
@@ -191,24 +226,35 @@ export const getDatasourceClassForReplacements = (settings: Settings, devSetting
     }
   };
 
-export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: DevSettings) =>
+export const getDatasourceClassForUpdates = (
+  settings: Settings,
+  devSettings?: DevSettings
+) =>
   class extends LimitedDatasource {
-
     constructor() {
       super({ settings, devSettings });
     }
 
-    update(_buffer: Buffer<Data>, predicate: BufferUpdater<Data>, indexToTrack: number, fixRight: boolean) {
+    update(
+      _buffer: Buffer<Data>,
+      predicate: BufferUpdater<Data>,
+      indexToTrack: number,
+      fixRight: boolean
+    ) {
       // Since the update API is tested on the vscroll's end (Buffer class),
       // it is possible to perform update manipulations by the Buffer.update method.
       // Let's create a copy of Buffer instance, emulate all the datasource and run update.
       const buffer: Buffer<Data> =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        new ((_buffer as any).constructor)(this.settings, () => null, { log: () => null });
+        new (_buffer as any).constructor(this.settings, () => null, {
+          log: () => null
+        });
       const generator = (index: number, data: Data) =>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        new ((_buffer.items[0] as any).constructor)(index, data, {} as never);
-      buffer.items = this.data.map((data, index) => generator(this.min + index, data));
+        new (_buffer.items[0] as any).constructor(index, data, {} as never);
+      buffer.items = this.data.map((data, index) =>
+        generator(this.min + index, data)
+      );
       buffer.items.forEach(item => buffer.cacheItem(item));
       buffer.updateItems(predicate, generator, indexToTrack, fixRight);
       // Now backward assignment
@@ -220,12 +266,16 @@ export const getDatasourceClassForUpdates = (settings: Settings, devSettings?: D
 
 export const getDatasourceClassForInsert = (config: DSClassConfig) =>
   class extends LimitedDatasource {
-
     constructor() {
       super(config);
     }
 
-    insert(itemsToInsert: Data[], index: number, direction: Direction, decrease?: boolean) {
+    insert(
+      itemsToInsert: Data[],
+      index: number,
+      direction: Direction,
+      decrease?: boolean
+    ) {
       const result = [];
       for (let i = 0; i < this.data.length; i++) {
         const $index = i + this.min;
@@ -247,9 +297,11 @@ export const getDatasourceClassForInsert = (config: DSClassConfig) =>
     }
   };
 
-export const getDatasourceClassForReset = (settings: Settings, devSettings?: DevSettings) =>
+export const getDatasourceClassForReset = (
+  settings: Settings,
+  devSettings?: DevSettings
+) =>
   class extends LimitedDatasource {
-
     constructor() {
       super({ settings, devSettings });
     }
@@ -264,10 +316,24 @@ export const getDatasourceClassForReset = (settings: Settings, devSettings?: Dev
     }
   };
 
-export type DatasourceProcessor = InstanceType<ReturnType<typeof getDatasourceProcessingClass>>;
-export type DatasourceLimiter = InstanceType<ReturnType<typeof getLimitedDatasourceClass>>;
-export type DatasourceRemover = InstanceType<ReturnType<typeof getDatasourceClassForRemovals>>;
-export type DatasourceReplacer = InstanceType<ReturnType<typeof getDatasourceClassForReplacements>>;
-export type DatasourceUpdater = InstanceType<ReturnType<typeof getDatasourceClassForUpdates>>;
-export type DatasourceInserter = InstanceType<ReturnType<typeof getDatasourceClassForInsert>>;
-export type DatasourceResetter = InstanceType<ReturnType<typeof getDatasourceClassForReset>>;
+export type DatasourceProcessor = InstanceType<
+  ReturnType<typeof getDatasourceProcessingClass>
+>;
+export type DatasourceLimiter = InstanceType<
+  ReturnType<typeof getLimitedDatasourceClass>
+>;
+export type DatasourceRemover = InstanceType<
+  ReturnType<typeof getDatasourceClassForRemovals>
+>;
+export type DatasourceReplacer = InstanceType<
+  ReturnType<typeof getDatasourceClassForReplacements>
+>;
+export type DatasourceUpdater = InstanceType<
+  ReturnType<typeof getDatasourceClassForUpdates>
+>;
+export type DatasourceInserter = InstanceType<
+  ReturnType<typeof getDatasourceClassForInsert>
+>;
+export type DatasourceResetter = InstanceType<
+  ReturnType<typeof getDatasourceClassForReset>
+>;

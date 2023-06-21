@@ -10,7 +10,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './adapter-relax.component.html'
 })
 export class DemoAdapterRelaxComponent {
-
   demoContext = {
     config: demos.adapterMethods.map.relax,
     noInfo: true
@@ -28,10 +27,11 @@ export class DemoAdapterRelaxComponent {
     }
   });
 
-  sources: DemoSources = [{
-    active: true,
-    name: 'Relax',
-    text: `async doReplace() {
+  sources: DemoSources = [
+    {
+      active: true,
+      name: 'Relax',
+      text: `async doReplace() {
   const { adapter } = this.datasource;
   await adapter.relax();
   adapter.remove({
@@ -44,9 +44,10 @@ export class DemoAdapterRelaxComponent {
   });
 }
 `
-  }, {
-    name: 'Is loading',
-    text: `relax(cb: Function) {
+    },
+    {
+      name: 'Is loading',
+      text: `relax(cb: Function) {
   const { adapter } = this.datasource;
   if (!adapter.isLoading) {
     cb();
@@ -72,9 +73,10 @@ doReplace() {
   );
 }
 `
-  }, {
-    name: 'Callback',
-    text: `doReplace() {
+    },
+    {
+      name: 'Callback',
+      text: `doReplace() {
   const { adapter } = this.datasource;
   adapter.relax(() =>
     adapter.remove({
@@ -89,9 +91,10 @@ doReplace() {
   );
 }
 `
-  }, {
-    name: 'Return',
-    text: `async doReplace() {
+    },
+    {
+      name: 'Return',
+      text: `async doReplace() {
   const { adapter } = this.datasource;
   await adapter.relax();
   await adapter.remove({
@@ -103,7 +106,8 @@ doReplace() {
   });
 }
 `
-  }];
+    }
+  ];
 
   isLoadingSample = `
   if (!adapter.isLoading) {
@@ -131,5 +135,4 @@ doReplace() {
       after: ({ $index }) => $index === 4
     });
   }
-
 }

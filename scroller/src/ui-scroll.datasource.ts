@@ -9,7 +9,7 @@ import {
   IReactivePropConfig,
   IAdapterConfig,
   IAdapterItem,
-  IAdapter,
+  IAdapter
 } from './vscroll';
 
 interface IReactiveOverride<Item = unknown> {
@@ -25,13 +25,16 @@ interface IReactiveOverride<Item = unknown> {
 type _Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 
 interface IAngularAdapter<Data = unknown>
-  extends _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>, IReactiveOverride<Data> { }
+  extends _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>,
+    IReactiveOverride<Data> {}
 
-interface IAngularDatasource<Data = unknown> extends _Omit<IDatasource<Data>, 'adapter'> {
+interface IAngularDatasource<Data = unknown>
+  extends _Omit<IDatasource<Data>, 'adapter'> {
   adapter?: IAngularAdapter<Data>;
 }
 
-interface IAngularDatasourceConstructed<Data = unknown> extends _Omit<IDatasourceConstructed<Data>, 'adapter'> {
+interface IAngularDatasourceConstructed<Data = unknown>
+  extends _Omit<IDatasourceConstructed<Data>, 'adapter'> {
   adapter: IAngularAdapter<Data>;
 }
 
@@ -42,7 +45,8 @@ const getBooleanSubjectPropConfig = (): IReactivePropConfig => ({
 
 const getItemBehaviorSubjectPropConfig = (): IReactivePropConfig => ({
   source: new BehaviorSubject<IAdapterItem>(EMPTY_ITEM),
-  emit: (source, value) => (source as BehaviorSubject<IAdapterItem>).next(value as IAdapterItem)
+  emit: (source, value) =>
+    (source as BehaviorSubject<IAdapterItem>).next(value as IAdapterItem)
 });
 
 const getAdapterConfig = (): IAdapterConfig => ({
@@ -54,23 +58,25 @@ const getAdapterConfig = (): IAdapterConfig => ({
     [AdapterPropName.firstVisible$]: getItemBehaviorSubjectPropConfig(),
     [AdapterPropName.lastVisible$]: getItemBehaviorSubjectPropConfig(),
     [AdapterPropName.bof$]: getBooleanSubjectPropConfig(),
-    [AdapterPropName.eof$]: getBooleanSubjectPropConfig(),
+    [AdapterPropName.eof$]: getBooleanSubjectPropConfig()
   }
 });
 
-const makeAngularDatasource = () => class <T = unknown> implements IAngularDatasourceConstructed<T> {
-  get!: IAngularDatasource<T>['get'];
-  settings?: IAngularDatasource<T>['settings'];
-  devSettings?: IAngularDatasource<T>['devSettings'];
-  adapter!: IAngularAdapter<T>;
-  constructor(_ds: IAngularDatasource<T>) { }
-};
+const makeAngularDatasource = () =>
+  class<T = unknown> implements IAngularDatasourceConstructed<T> {
+    get!: IAngularDatasource<T>['get'];
+    settings?: IAngularDatasource<T>['settings'];
+    devSettings?: IAngularDatasource<T>['devSettings'];
+    adapter!: IAngularAdapter<T>;
+    constructor(_ds: IAngularDatasource<T>) {}
+  };
 
-const AngularDatasource =
-  makeDatasource(getAdapterConfig) as unknown as ReturnType<typeof makeAngularDatasource>;
+const AngularDatasource = makeDatasource(
+  getAdapterConfig
+) as unknown as ReturnType<typeof makeAngularDatasource>;
 
 export {
   IAngularAdapter as IAdapter,
   IAngularDatasource as IDatasource,
-  AngularDatasource as Datasource,
+  AngularDatasource as Datasource
 };

@@ -10,7 +10,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './onBeforeClip-setting.component.html'
 })
 export class DemoOnBeforeClipSettingComponent {
-
   demoContext = {
     config: demos.experimental.map.onBeforeClipSetting,
     viewportId: 'onBeforeClip-setting-viewport',
@@ -28,18 +27,20 @@ export class DemoOnBeforeClipSettingComponent {
     },
     settings: {
       bufferSize: 25,
-      onBeforeClip: (items) => {
-        const log = `${++this.demoContext.count}) clipping ${items.length} items` +
+      onBeforeClip: items => {
+        const log =
+          `${++this.demoContext.count}) clipping ${items.length} items` +
           `[${items[0].$index}..${items[items.length - 1].$index}]\n`;
         this.demoContext.log = log + this.demoContext.log;
       }
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Datasource,
-    active: true,
-    text: `datasource = new Datasource({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Datasource,
+      active: true,
+      text: `datasource = new Datasource({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -56,16 +57,18 @@ export class DemoOnBeforeClipSettingComponent {
     }
   }
 })`
-  }, {
-    name: DemoSourceType.Template,
-    text: `<button (click)="datasource.adapter.clip()">Clip now</button>
+    },
+    {
+      name: DemoSourceType.Template,
+      text: `<button (click)="datasource.adapter.clip()">Clip now</button>
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }];
+    }
+  ];
 
   argumentDescription = `  onBeforeClip: (items: {
     $index: number,

@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +15,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './items-count.component.html'
 })
 export class DemoItemsCountComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterProps.map.itemsCount,
     viewportId: 'items-count-viewport',
@@ -23,9 +26,10 @@ export class DemoItemsCountComponent {
     get: datasourceGetCallbackInfinite(this.demoContext)
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -34,10 +38,11 @@ export class DemoItemsCountComponent {
     success(data);
   }
 });`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `The uiScroll buffer has
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `The uiScroll buffer has
 {{datasource.adapter.itemsCount}} items.
 
 <div class="viewport">
@@ -45,9 +50,10 @@ export class DemoItemsCountComponent {
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -56,5 +62,6 @@ export class DemoItemsCountComponent {
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 }

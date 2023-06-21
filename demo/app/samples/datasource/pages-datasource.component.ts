@@ -15,7 +15,6 @@ interface MyItem {
   templateUrl: './pages-datasource.component.html'
 })
 export class DemoPagesDatasourceComponent {
-
   demoContext = {
     config: demos.datasource.map.pages,
     logViewOnly: true,
@@ -45,13 +44,16 @@ export class DemoPagesDatasourceComponent {
     get: (index, count, success) => {
       this.getCount++;
       this.demoContext.log = '\n' + this.demoContext.log;
-      this.demoContext.log = `${this.getCount}.1 index = ${index}, count = ${count}\n` + this.demoContext.log;
+      this.demoContext.log =
+        `${this.getCount}.1 index = ${index}, count = ${count}\n` +
+        this.demoContext.log;
 
       // getting start/end item indexes with no negative values
       const startIndex = Math.max(index, 0);
       const endIndex = index + count - 1;
       if (startIndex > endIndex) {
-        this.demoContext.log = `${this.getCount}.2 empty result\n` + this.demoContext.log;
+        this.demoContext.log =
+          `${this.getCount}.2 empty result\n` + this.demoContext.log;
         success([]);
         return;
       }
@@ -69,18 +71,29 @@ ${this.demoContext.log}`;
         logPages.push(i);
         pagesResult = [...pagesResult, ...this.getDataPage(i)];
       }
-      this.demoContext.log = `${this.getCount}.3 requesting pages: ${logPages.join(', ')}\n` + this.demoContext.log;
-      this.demoContext.log = `${this.getCount}.4 ` + (!pagesResult.length ? 'empty result' :
-        `pages result [${pagesResult[0].index}..${pagesResult[pagesResult.length - 1].index}]`
-      ) + '\n' + this.demoContext.log;
+      this.demoContext.log =
+        `${this.getCount}.3 requesting pages: ${logPages.join(', ')}\n` +
+        this.demoContext.log;
+      this.demoContext.log =
+        `${this.getCount}.4 ` +
+        (!pagesResult.length
+          ? 'empty result'
+          : `pages result [${pagesResult[0].index}..${
+              pagesResult[pagesResult.length - 1].index
+            }]`) +
+        '\n' +
+        this.demoContext.log;
 
       // slicing pages result to satisfy start/end indexes
       const start = startIndex - startPage * this.pageSize;
       const end = start + endIndex - startIndex + 1;
       const data = pagesResult.slice(start, end);
-      this.demoContext.log = (!data.length ? '' :
-        `${this.getCount}.5 sliced result [${data[0].index}..${data[data.length - 1].index}]\n`
-      ) + this.demoContext.log;
+      this.demoContext.log =
+        (!data.length
+          ? ''
+          : `${this.getCount}.5 sliced result [${data[0].index}..${
+              data[data.length - 1].index
+            }]\n`) + this.demoContext.log;
 
       success(data);
     },
@@ -89,9 +102,10 @@ ${this.demoContext.log}`;
     }
   };
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource: IDatasource = {
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource: IDatasource = {
   get: (index, count, success) => {
     // items to request (x.2)
     const startIndex = Math.max(index, 0);
@@ -147,10 +161,10 @@ getDataPage(page: number) {
   }
   return this.data[page];
 }`
-  },
-  {
-    name: DemoSourceType.Component + ' (async)',
-    text: `datasource: IDatasource = {
+    },
+    {
+      name: DemoSourceType.Component + ' (async)',
+      text: `datasource: IDatasource = {
   get: (index, count, success) => {
     const startIndex = Math.max(index, 0);
     const endIndex = index + count - 1;
@@ -186,7 +200,8 @@ constructor(
   private remoteDataService: RemoteDataService
 ) {
 }`
-  }];
+    }
+  ];
 
   getDataPage(page: number) {
     if (page < 0 || page >= this.pagesCount) {
@@ -194,5 +209,4 @@ constructor(
     }
     return this.data[page];
   }
-
 }

@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -15,7 +19,6 @@ interface MyItem {
   templateUrl: './replace.component.html'
 })
 export class DemoReplaceComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterMethods.map.replace,
     viewportId: 'replace-viewport',
@@ -52,9 +55,10 @@ export class DemoReplaceComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `MAX = 100;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `MAX = 100;
 data: Item[];
 
 constructor() {
@@ -92,10 +96,11 @@ async doReplace() {
     items: newItems
   });
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `<button (click)="doReplace()">3, 4, 5 to X, Y</button>
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `<button (click)="doReplace()">3, 4, 5 to X, Y</button>
 
 <div class="viewport">
   <div *uiScroll="let item of datasource; let index = index">
@@ -105,9 +110,10 @@ async doReplace() {
     </div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -120,7 +126,8 @@ async doReplace() {
   font-weight: normal;
   font-size: smaller;
 }`
-  }];
+    }
+  ];
 
   argumentsDescription = `  AdapterReplaceOptions {
     predicate: ItemsPredicate;
@@ -142,5 +149,4 @@ async doReplace() {
       items: newItems
     });
   }
-
 }

@@ -7,7 +7,6 @@ import { demos } from '../../routes';
   templateUrl: './adapter-return-value.component.html'
 })
 export class DemoAdapterReturnValueComponent {
-
   demoConfig = demos.adapterMethods.map.returnValue;
 
   returnValueType = `  Promise<{

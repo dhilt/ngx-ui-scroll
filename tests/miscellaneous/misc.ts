@@ -79,7 +79,7 @@ export class Misc<Comp = TestComponentInterface> {
     this.uiScrollElement = fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
-    this.workflow = this.uiScrollComponent.workflow;
+    this.workflow = this.uiScrollComponent.workflow as Workflow<Data>;
     this.datasource = (
       this.testComponent as unknown as TestComponentInterface
     ).datasource;
@@ -97,11 +97,11 @@ export class Misc<Comp = TestComponentInterface> {
 
   getComponent(): UiScrollComponent<Data> {
     return this.fixture.debugElement.query(By.css('[ui-scroll]'))
-      .componentInstance;
+      ?.componentInstance;
   }
 
   getWorkflow(): Workflow<Data> {
-    return this.getComponent().workflow;
+    return this.getComponent()?.workflow as Workflow<Data>;
   }
 
   generateFakeWorkflow(settings?: Scroller['settings']): Workflow {

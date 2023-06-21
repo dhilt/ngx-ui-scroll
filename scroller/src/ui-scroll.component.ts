@@ -36,20 +36,20 @@ import consumer from './ui-scroll.version';
     <div data-padding-forward></div>`
 })
 export class UiScrollComponent<Data = unknown> implements OnDestroy {
-  // these should come from the directive
-  public template!: TemplateRef<unknown>;
+  // Template reference. It should come from the directive. Specifies the view of row.
+  public template: TemplateRef<unknown>;
 
-  // the only template variable
+  // This is the only template variable, it changes when the workflow runs.
   public items: Item<Data>[] = [];
 
-  // Component-Workflow integration
-  private workflow: Workflow<Data> | null = null;
+  // Component-Workflow integration. It is created by the directive. Tests want it to be public.
+  public workflow?: Workflow<Data>;
 
   constructor(
     private changeDetector: ChangeDetectorRef,
     private elementRef: ElementRef,
     private ngZone: NgZone
-  ) { }
+  ) {}
 
   createWorkflow(datasource: IAngularDatasource<Data>): void {
     this.dispose();
@@ -90,6 +90,6 @@ export class UiScrollComponent<Data = unknown> implements OnDestroy {
 
   private dispose(): void {
     this.workflow?.dispose();
-    this.workflow = null;
+    this.workflow = void 0;
   }
 }

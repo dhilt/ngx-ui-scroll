@@ -16,6 +16,7 @@ import { Data, generateItem, IndexedItem, Processor } from './items';
 import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
 import { IAdapter, IDatasource } from '../../scroller/src/ui-scroll.datasource';
 import { DatasourceProcessor } from '../scaffolding/datasources/class';
+import { UiScrollDirective } from 'ngx-ui-scroll';
 
 export class Padding<Comp = TestComponentInterface> {
   direction: Direction;
@@ -66,6 +67,14 @@ export class Misc<Comp = TestComponentInterface> {
   itemWidth = 100;
   shared: { [key: string]: unknown } = {};
 
+  get directive() {
+    const debugElement = this.fixture.debugElement.queryAllNodes(
+      By.directive(UiScrollDirective)
+    )[0];
+    return debugElement.injector.get<UiScrollDirective<Data>>(
+      UiScrollDirective
+    );
+  }
   get scroller(): Scroller {
     return this.workflow.scroller;
   }
@@ -79,7 +88,7 @@ export class Misc<Comp = TestComponentInterface> {
     this.uiScrollElement = fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
-    this.workflow = this.uiScrollComponent.workflow as Workflow<Data>;
+    this.workflow = this.directive.workflow as Workflow<Data>;
     this.datasource = (
       this.testComponent as unknown as TestComponentInterface
     ).datasource;
@@ -95,13 +104,8 @@ export class Misc<Comp = TestComponentInterface> {
     };
   }
 
-  getComponent(): UiScrollComponent<Data> {
-    return this.fixture.debugElement.query(By.css('[ui-scroll]'))
-      ?.componentInstance;
-  }
-
   getWorkflow(): Workflow<Data> {
-    return this.getComponent()?.workflow as Workflow<Data>;
+    return this.directive.workflow as Workflow<Data>;
   }
 
   generateFakeWorkflow(settings?: Scroller['settings']): Workflow {

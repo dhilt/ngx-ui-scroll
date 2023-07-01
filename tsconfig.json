@@ -12,24 +12,20 @@
     "declaration": false,
     "downlevelIteration": true,
     "paths": {
-      "ngx-ui-scroll": [
-        "dist/scroller"
-      ]
+      "ngx-ui-scroll": ["scroller/public-api.ts"]
     },
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
-    "lib": [
-      "es2018",
-      "dom"
-    ],
+    "lib": ["es2018", "dom"],
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": ["dist"]
 }

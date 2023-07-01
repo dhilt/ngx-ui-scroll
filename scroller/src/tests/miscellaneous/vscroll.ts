@@ -7,13 +7,13 @@ export {
   IAdapterItem,
   IAdapter,
   AdapterPropName,
-  SizeStrategy,
+  SizeStrategy
 } from '../../vscroll';
 
 export {
   Direction,
   getDefaultAdapterProps,
-  INVALID_DATASOURCE_PREFIX,
+  INVALID_DATASOURCE_PREFIX
 } from 'vscroll'; // from '../../../vscroll';
 
 export {
@@ -31,5 +31,5 @@ export {
   AdapterAppendOptions,
   AdapterPrependOptions,
   AdapterUpdateOptions,
-  AdapterFixOptions,
+  AdapterFixOptions
 } from 'vscroll/dist/typings/interfaces'; // from '../../../vscroll/src/interfaces/index';

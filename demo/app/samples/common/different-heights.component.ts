@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { merge } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { demos } from '../../routes';
@@ -17,7 +17,6 @@ interface MyItem {
   templateUrl: './different-heights.component.html'
 })
 export class DemoDifferentHeightsComponent {
-
   settingsScope = demos.settings.map;
   demoConfig = demos.settings.map.differentItemHeights;
   viewportId = 'different-heights-viewport';
@@ -32,35 +31,40 @@ export class DemoDifferentHeightsComponent {
 
   constructor() {
     merge(
-      this.datasourceAverage.adapter.init$,
-      this.datasourceFrequent.adapter.init$
-    ).pipe(take(1)).subscribe(() => this.setupLog());
+      this.datasourceAverage.adapter.init$ as unknown as Observable<boolean>,
+      this.datasourceFrequent.adapter.init$ as unknown as Observable<boolean>
+    )
+      .pipe(take(1))
+      .subscribe(() => this.setupLog());
   }
 
   setupLog() {
     const adapter1 = this.datasourceAverage.adapter;
     const adapter2 = this.datasourceFrequent.adapter;
     const wrapperElement = document.getElementById(this.viewportId as string);
-    const viewports = (wrapperElement as HTMLElement).getElementsByClassName('viewport');
+    const viewports = (wrapperElement as HTMLElement).getElementsByClassName(
+      'viewport'
+    );
     const vp1 = viewports[0] as HTMLElement;
     const vp2 = viewports[1] as HTMLElement;
     adapter1.loopPending$.subscribe(pending => {
       if (!pending) {
         this.averageLog =
-          `default: ${adapter1.bufferInfo.defaultSize}px, total: ${vp1.scrollHeight}px\n` + this.averageLog;
+          `default: ${adapter1.bufferInfo.defaultSize}px, total: ${vp1.scrollHeight}px\n` +
+          this.averageLog;
       }
     });
     adapter2.loopPending$.subscribe(pending => {
       if (!pending) {
         this.frequentLog =
-          `default: ${adapter2.bufferInfo.defaultSize}px, total: ${vp2.scrollHeight}px\n` + this.frequentLog;
+          `default: ${adapter2.bufferInfo.defaultSize}px, total: ${vp2.scrollHeight}px\n` +
+          this.frequentLog;
       }
     });
   }
 
   datasourceAverage = new Datasource<MyItem>({
-    get: (index, count, success) =>
-      success(this.getData(index, count, false)),
+    get: (index, count, success) => success(this.getData(index, count, false)),
     settings: {
       startIndex: this.MIN,
       minIndex: this.MIN,
@@ -70,8 +74,7 @@ export class DemoDifferentHeightsComponent {
   });
 
   datasourceFrequent = new Datasource<MyItem>({
-    get: (index, count, success) =>
-      success(this.getData(index, count, true)),
+    get: (index, count, success) => success(this.getData(index, count, true)),
     settings: {
       startIndex: this.MIN,
       minIndex: this.MIN,
@@ -80,9 +83,10 @@ export class DemoDifferentHeightsComponent {
     }
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `MIN = 0;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `MIN = 0;
 MAX = 99;
 SIZE = 20;
 
@@ -120,10 +124,11 @@ getData(index: number, count: number, isFrequent: boolean): MyItem[] {
   }
   return data;
 }`
-  }, {
-    name: DemoSourceType.Template,
-    active: true,
-    text: `<em>average</em>
+    },
+    {
+      name: DemoSourceType.Template,
+      active: true,
+      text: `<em>average</em>
 <div class="viewport">
   <div *uiScroll="let item of datasourceAverage">
      <div class="item" [style.height.px]="item.size">
@@ -140,9 +145,10 @@ getData(index: number, count: number, isFrequent: boolean): MyItem[] {
      </div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -150,9 +156,11 @@ getData(index: number, count: number, isFrequent: boolean): MyItem[] {
 .item {
   font-weight: bold;
 }`
-  }];
+    }
+  ];
 
-  averageSample = 'Array.from({length: 100}).reduce((a, i, j) => a + j + 20 , 0) / 100; // 69.5px';
+  averageSample =
+    'Array.from({length: 100}).reduce((a, i, j) => a + j + 20 , 0) / 100; // 69.5px';
 
   getData(index: number, count: number, isFrequent: boolean): MyItem[] {
     const data = [];
@@ -166,5 +174,4 @@ getData(index: number, count: number, isFrequent: boolean): MyItem[] {
     }
     return data;
   }
-
 }

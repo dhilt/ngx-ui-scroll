@@ -1,38 +1,40 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions style="display: flex">
     <button (click)="doReload()">Reload</button>
     &nbsp; by index &nbsp;
-    <input [ngModel]="reloadIndex" (change)="onInputChanged($any($event.target))" size="2">
+    <input
+      [ngModel]="reloadIndex"
+      (change)="onInputChanged($any($event.target))"
+      size="2"
+    />
   </div>
 
   <div description>
     <p>
-      The <em>Adapter.reload</em> method allows to reload the Scroller.
-      This includes resetting the items <em>Buffer</em> and the <em>Viewport</em> params.
-      The <em>reload</em> method has 1 optional argument: <em>index</em>. It specifies
-      the index of the item to be first in the visible part of the viewport after reload.
+      The <em>Adapter.reload</em> method allows to reload the Scroller. This
+      includes resetting the items <em>Buffer</em> and the
+      <em>Viewport</em> params. The <em>reload</em> method has 1 optional
+      argument: <em>index</em>. It specifies the index of the item to be first
+      in the visible part of the viewport after reload.
     </p>
     <p>
-      If <em>index</em> argument is not set,
-      <em>settings.startIndex</em> will be used as the first index.
-      If neither <em>index</em> argument not <em>startIndex</em> setting is present,
-      the default value 1 will be used. See also
+      If <em>index</em> argument is not set, <em>settings.startIndex</em> will
+      be used as the first index. If neither <em>index</em> argument not
+      <em>startIndex</em> setting is present, the default value 1 will be used.
+      See also
       <a
         [routerLink]="['/', startIndexDemoConfig.scope]"
-        fragment="{{startIndexDemoConfig.id}}"
-      >startIndex setting</a> demo.
+        fragment="{{ startIndexDemoConfig.id }}"
+        >startIndex setting</a
+      >
+      demo.
     </p>
     <p>
       The <em>Adapter.reload</em> method is safe and needs not to be protected
-      with the <em>Adapter.relax</em>
-      (though it could be protected if that's the UX requirement).
-      This method interrupts the Scroller's flow and synchronously terminates
-      any pending processes on the Scroller's end.
-      The same is true also for the <em>Adapter.reset</em> method.
+      with the <em>Adapter.relax</em> (though it could be protected if that's
+      the UX requirement). This method interrupts the Scroller's flow and
+      synchronously terminates any pending processes on the Scroller's end. The
+      same is true also for the <em>Adapter.reset</em> method.
     </p>
   </div>
 </app-demo>

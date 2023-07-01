@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
@@ -11,7 +15,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './is-loading.component.html'
 })
 export class DemoIsLoadingComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterProps.map.isLoading,
     viewportId: 'is-loading-viewport',
@@ -23,9 +26,10 @@ export class DemoIsLoadingComponent {
     get: datasourceGetCallbackInfinite(this.demoContext, 225)
   });
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -44,10 +48,11 @@ constructor() {
     );
 }
 `
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `The uiScroll is
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `The uiScroll is
 {{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
 
 <br>
@@ -60,9 +65,10 @@ for {{isLoadingCounter}} times.
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -71,12 +77,14 @@ for {{isLoadingCounter}} times.
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   isLoadingCounter = 0;
 
   constructor() {
-    this.datasource.adapter.isLoading$
-      .subscribe(isLoading => this.isLoadingCounter += !isLoading ? 1 : 0);
+    this.datasource.adapter.isLoading$.subscribe(
+      isLoading => (this.isLoadingCounter += !isLoading ? 1 : 0)
+    );
   }
 }

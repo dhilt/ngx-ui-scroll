@@ -7,10 +7,7 @@ import { demos } from '../routes';
   templateUrl: './nav.component.html'
 })
 export class NavComponent {
-
   demos = demos;
 
-  constructor() {
-  }
-
+  constructor() {}
 }

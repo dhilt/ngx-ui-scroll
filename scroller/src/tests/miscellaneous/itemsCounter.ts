@@ -53,11 +53,16 @@ export class ItemsCounter {
   }
 }
 
-export const testItemsCounter = (startIndex: number, misc: Misc, itemsCounter: ItemsCounter): void => {
+export const testItemsCounter = (
+  startIndex: number,
+  misc: Misc,
+  itemsCounter: ItemsCounter
+): void => {
   const bwdSize = itemsCounter.backward.size;
   const fwdSize = itemsCounter.forward.size;
   const bwdPadding = itemsCounter.backward.padding;
-  const fwdPadding = itemsCounter.forward.padding + (itemsCounter.forward.paddingShift || 0);
+  const fwdPadding =
+    itemsCounter.forward.padding + (itemsCounter.forward.paddingShift || 0);
   const average = itemsCounter.average;
   const elements = misc.getElements();
   const { viewport, buffer, adapter } = misc.scroller;
@@ -81,8 +86,12 @@ export const testItemsCounter = (startIndex: number, misc: Misc, itemsCounter: I
   }
   expect(elements.length).toEqual(itemsCounter.total);
   expect(buffer.items.length).toEqual(itemsCounter.total);
-  expect(misc.getElementIndex(elements[0])).toEqual(itemsCounter.backward.index);
-  expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(itemsCounter.forward.index);
+  expect(misc.getElementIndex(elements[0])).toEqual(
+    itemsCounter.backward.index
+  );
+  expect(misc.getElementIndex(elements[elements.length - 1])).toEqual(
+    itemsCounter.forward.index
+  );
   expect(misc.checkElementContentByIndex(startIndex)).toEqual(true);
   expect(bufferInfo.firstIndex).toEqual(itemsCounter.backward.index);
   expect(bufferInfo.lastIndex).toEqual(itemsCounter.forward.index);

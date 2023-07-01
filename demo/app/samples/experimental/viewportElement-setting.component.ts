@@ -8,15 +8,15 @@ import { DemoSources, DemoSourceType } from '../../shared/interfaces';
   templateUrl: './viewportElement-setting.component.html'
 })
 export class DemoViewportElementSettingComponent {
-
   demoContext = {
     config: demos.experimental.map.viewportElementSetting,
     noWorkView: true
   };
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Datasource,
-    text: `@ViewChild('viewport', { static: true }) viewportRef: ElementRef<HTMLElement>;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Datasource,
+      text: `@ViewChild('viewport', { static: true }) viewportRef: ElementRef<HTMLElement>;
 
 datasource: IDatasource = {
   get: (index, count, success) => {
@@ -30,10 +30,11 @@ datasource: IDatasource = {
     viewportElement: () => this.viewportRef.nativeElement
   }
 }`
-  }, {
-    name: DemoSourceType.Template,
-    active: true,
-    text: `<div class="viewport" #viewport>
+    },
+    {
+      name: DemoSourceType.Template,
+      active: true,
+      text: `<div class="viewport" #viewport>
   <div>
     <div>
       <div *uiScroll="let item of datasource">
@@ -42,9 +43,10 @@ datasource: IDatasource = {
     </div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -53,7 +55,8 @@ datasource: IDatasource = {
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   nativeSample = `settings: {
   viewportElement: () =>

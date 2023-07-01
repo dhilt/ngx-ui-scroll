@@ -10,7 +10,6 @@ import { IDatasource } from 'ngx-ui-scroll';
   templateUrl: './inverse-setting.component.html'
 })
 export class DemoInverseSettingComponent {
-
   demoContext = {
     config: demos.experimental.map.inverseSetting,
     addClass: 'inverse',
@@ -37,9 +36,10 @@ export class DemoInverseSettingComponent {
     }
   };
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Datasource,
-    text: `MIN = 1;
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Datasource,
+      text: `MIN = 1;
 MAX = 5;
 
 datasource: IDatasource = {
@@ -58,14 +58,15 @@ datasource: IDatasource = {
     inverse: true
   }
 };`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport div[data-padding-backward] {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport div[data-padding-backward] {
   background-color: #e1f0ff;
 }
 .item {
   background-color: #bcdeff;
 }`
-  }];
-
+    }
+  ];
 }

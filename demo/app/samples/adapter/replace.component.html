@@ -1,5 +1,5 @@
 <ng-template #itemTemplate let-item="item" let-index="index">
-  <span class="index">{{index}})</span> {{item.text}}
+  <span class="index">{{ index }})</span> {{ item.text }}
 </ng-template>
 
 <app-demo
@@ -13,44 +13,47 @@
   </div>
   <div description>
     <p>
-      The <em>Adapter.replace</em> method allows to perform many-to-many in-Buffer replacement.
-      It acts as a combination of insert and remove operations working in a single run,
-      which means minimal latency in comparison to applying
-      <em>Adapter.insert</em> and <em>Adapter.remove</em> methods one by one.
-      The argument of this method is an object of the following type:
+      The <em>Adapter.replace</em> method allows to perform many-to-many
+      in-Buffer replacement. It acts as a combination of insert and remove
+      operations working in a single run, which means minimal latency in
+      comparison to applying <em>Adapter.insert</em> and
+      <em>Adapter.remove</em> methods one by one. The argument of this method is
+      an object of the following type:
     </p>
-    <pre>{{argumentsDescription}}</pre>
+    <pre>{{ argumentsDescription }}</pre>
     <p>
       The <em>predicate</em> option is exactly the same as in
       <a
         [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterMethodsScope.map.remove.id}}"
-      >Adapter-remove</a> and case.
-      The <em>indexes</em> options is exactly the same as in the
+        fragment="{{ adapterMethodsScope.map.remove.id }}"
+        >Adapter-remove</a
+      >
+      and case. The <em>indexes</em> options is exactly the same as in the
       <a
         [routerLink]="['/', adapterScope.id]"
-        fragment="{{adapterMethodsScope.map.insert.id}}"
-      >Adapter-insert</a> case.
-      The <em>fixRight</em> option allows to change
-      the default indexing strategy.
-      The default <em>fixRight</em> value is <em>false</em>,
-      which means the indexes of the items following the replaced ones
-      will be changed during the replacement.
-      Otherwise, if <em>fixRight</em> is set <em>true</em>,
-      the indexes of the items preceding the replaced ones will be changed.
+        fragment="{{ adapterMethodsScope.map.insert.id }}"
+        >Adapter-insert</a
+      >
+      case. The <em>fixRight</em> option allows to change the default indexing
+      strategy. The default <em>fixRight</em> value is <em>false</em>, which
+      means the indexes of the items following the replaced ones will be changed
+      during the replacement. Otherwise, if <em>fixRight</em> is set
+      <em>true</em>, the indexes of the items preceding the replaced ones will
+      be changed.
     </p>
     <p>
-      Current limitations of the <em>Adapter.replace</em> method:
-      no virtual replacements are possible and only continues series are allowed.
-      So only a portion of items that are currently in the Scroller Buffer
-      can be replaced with this method and this portion must consist of a continuous list of items.
+      Current limitations of the <em>Adapter.replace</em> method: no virtual
+      replacements are possible and only continues series are allowed. So only a
+      portion of items that are currently in the Scroller Buffer can be replaced
+      with this method and this portion must consist of a continuous list of
+      items.
     </p>
     <p>
-      In this demo we are replacing 3 items with indexes [3, 4, 5] with 2 new items.
-      Switching to "fixRight" strategy is not implemented here,
-      in order to keep natural indexes flow as simple as possible.
-      Note, before running the "replace" operation over the Scroller's Buffer,
-      the Datasource gets the update as well.
+      In this demo we are replacing 3 items with indexes [3, 4, 5] with 2 new
+      items. Switching to "fixRight" strategy is not implemented here, in order
+      to keep natural indexes flow as simple as possible. Note, before running
+      the "replace" operation over the Scroller's Buffer, the Datasource gets
+      the update as well.
     </p>
   </div>
 </app-demo>

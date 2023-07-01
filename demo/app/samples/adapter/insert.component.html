@@ -1,21 +1,20 @@
 <div class="demo">
-
   <app-demo-title [config]="demoConfig"></app-demo-title>
 
   <div class="work">
     <div class="viewport-wrapper">
       <div class="actions">
         <button (click)="doInsert()">Insert</button>
-        <input [(ngModel)]="inputCount" size="2"> items
-        <br>
-        after item #<input [(ngModel)]="inputIndex" size="4"><br>
+        <input [(ngModel)]="inputCount" size="2" /> items
+        <br />
+        after item #<input [(ngModel)]="inputIndex" size="4" /><br />
         incrementally
       </div>
       <div class="viewport">
         <div *uiScroll="let item of datasource; let index = index">
           <div class="item">
-            <small>{{index}})</small>
-            {{item}}
+            <small>{{ index }})</small>
+            {{ item }}
           </div>
         </div>
       </div>
@@ -23,17 +22,17 @@
     <div class="viewport-wrapper">
       <div class="actions">
         <button (click)="doInsert2()">Insert</button>
-        <input [(ngModel)]="inputCount2" size="2"> items
-        <br>
-        before item #<input [(ngModel)]="inputIndex2" size="4">
-        <br>
+        <input [(ngModel)]="inputCount2" size="2" /> items
+        <br />
+        before item #<input [(ngModel)]="inputIndex2" size="4" />
+        <br />
         decrementally
       </div>
       <div class="viewport">
         <div *uiScroll="let item of datasource2; let index = index">
           <div class="item">
-            <small>{{index}})</small>
-            {{item}}
+            <small>{{ index }})</small>
+            {{ item }}
           </div>
         </div>
       </div>
@@ -45,48 +44,51 @@
 
   <div class="description">
     <p>
-      The <em>Adapter.insert</em> method is dedicated for adding items in the runtime without scrolling.
-      It allows to insert new items before or after specified one.
-      The argument of this method is an object of the following type:
+      The <em>Adapter.insert</em> method is dedicated for adding items in the
+      runtime without scrolling. It allows to insert new items before or after
+      specified one. The argument of this method is an object of the following
+      type:
     </p>
-    <pre>{{argumentsDescription}}</pre>
+    <pre>{{ argumentsDescription }}</pre>
     <p>
       The <em>items</em> option is an array we want to be added to the dataset.
-      The <em>before</em>, <em>after</em>, <em>beforeIndex</em> and <em>afterIndex</em> options
-      define the position of the insertion; only one of these options is allowed.
-      Predicate function (<em>before</em>/<em>after</em>) is applied to each item in the current buffer,
-      and the first <em>true</em> result of running the predicate determines
-      the item before/after which the new <em>items</em> should appear.
+      The <em>before</em>, <em>after</em>, <em>beforeIndex</em> and
+      <em>afterIndex</em> options define the position of the insertion; only one
+      of these options is allowed. Predicate function
+      (<em>before</em>/<em>after</em>) is applied to each item in the current
+      buffer, and the first <em>true</em> result of running the predicate
+      determines the item before/after which the new <em>items</em> should
+      appear.
     </p>
     <p>
-      Using the <em>beforeIndex</em>/<em>afterIndex</em> option allows to insert <em>items</em> by index.
-      Also, these options provide virtual insertion, if selected index is out the buffer but
-      still belongs to the known datasource boundaries.
+      Using the <em>beforeIndex</em>/<em>afterIndex</em> option allows to insert
+      <em>items</em> by index. Also, these options provide virtual insertion, if
+      selected index is out the buffer but still belongs to the known datasource
+      boundaries.
     </p>
     <p>
-      The last option is <em>decrease</em>.
-      The indexes of the items following after the inserted ones are increased by default.
-      This behavior can be changed, by setting <em>decrease</em> to <em>true</em>,
-      we are telling the Scroller that the indexes of the items that are before the inserted ones should decrease.
+      The last option is <em>decrease</em>. The indexes of the items following
+      after the inserted ones are increased by default. This behavior can be
+      changed, by setting <em>decrease</em> to <em>true</em>, we are telling the
+      Scroller that the indexes of the items that are before the inserted ones
+      should decrease.
     </p>
     <p>
-      This demo shows how the <em>Adapter.insert</em> method can be used in the real life.
-      "Datasource" tab contains common datasource logic. "Increase" and "Decrease" tabs
-      present inserting logic for both cases we have in this demo.
-      "Increase" uses index API (in-buffer + virtual insertions),
-      "Decrease" uses predicate API (in-buffer insertions only).
-      Note that each item is just a string, and the Scroller deals
-      with natural indexes, which forces us to subtract <em>MIN</em> value from
-      the <em>index</em> coming into the <em>Datasource.get</em> body.
+      This demo shows how the <em>Adapter.insert</em> method can be used in the
+      real life. "Datasource" tab contains common datasource logic. "Increase"
+      and "Decrease" tabs present inserting logic for both cases we have in this
+      demo. "Increase" uses index API (in-buffer + virtual insertions),
+      "Decrease" uses predicate API (in-buffer insertions only). Note that each
+      item is just a string, and the Scroller deals with natural indexes, which
+      forces us to subtract <em>MIN</em> value from the <em>index</em> coming
+      into the <em>Datasource.get</em> body.
     </p>
     <p>
-      Also, this is very important to maintain consistency
-      between the external <em>Datasource</em> and the internal Scroller's buffer.
-      Both <em>doInsert</em> methods do it. They
-      a) generate new items in a for-loop,
-      b) insert them into the datasource by updating <em>this.data</em>,
-      c) insert them into the internal <em>Buffer</em> via <em>Adapter.insert</em>.
+      Also, this is very important to maintain consistency between the external
+      <em>Datasource</em> and the internal Scroller's buffer. Both
+      <em>doInsert</em> methods do it. They a) generate new items in a for-loop,
+      b) insert them into the datasource by updating <em>this.data</em>, c)
+      insert them into the internal <em>Buffer</em> via <em>Adapter.insert</em>.
     </p>
   </div>
 </div>
-

@@ -1,9 +1,14 @@
 import { Component } from '@angular/core';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 
 import { demos } from '../../routes';
-import { DemoContext, DemoSources, DemoSourceType } from '../../shared/interfaces';
+import {
+  DemoContext,
+  DemoSources,
+  DemoSourceType
+} from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
+import { IAdapterItem } from '../../../../scroller/src/vscroll';
 
 import { Datasource } from 'ngx-ui-scroll';
 
@@ -12,7 +17,6 @@ import { Datasource } from 'ngx-ui-scroll';
   templateUrl: './first-last-visible-items.component.html'
 })
 export class DemoFirstLastVisibleItemsComponent {
-
   demoContext: DemoContext = {
     config: demos.adapterProps.map.firstLastVisible,
     viewportId: 'first-last-visible-items-viewport',
@@ -28,19 +32,22 @@ export class DemoFirstLastVisibleItemsComponent {
   visibleCount = 0;
 
   constructor() {
-    setTimeout(() => this.init = true);
+    setTimeout(() => (this.init = true));
     const { firstVisible$, lastVisible$ } = this.datasource.adapter;
-    combineLatest([firstVisible$, lastVisible$])
-      .subscribe(result => {
-        const first = Number(result[0].$index);
-        const last = Number(result[1].$index);
-        this.visibleCount = !isNaN(first) && !isNaN(last) ? last - first + 1 : 0;
-      });
+    combineLatest([
+      firstVisible$ as unknown as Observable<IAdapterItem>,
+      lastVisible$ as unknown as Observable<IAdapterItem>
+    ]).subscribe(result => {
+      const first = Number(result[0].$index);
+      const last = Number(result[1].$index);
+      this.visibleCount = !isNaN(first) && !isNaN(last) ? last - first + 1 : 0;
+    });
   }
 
-  sources: DemoSources = [{
-    name: DemoSourceType.Component,
-    text: `datasource = new Datasource ({
+  sources: DemoSources = [
+    {
+      name: DemoSourceType.Component,
+      text: `datasource = new Datasource ({
   get: (index, count, success) => {
     const data = [];
     for (let i = index; i <= index + count - 1; i++) {
@@ -60,10 +67,11 @@ constructor() {
         isNaN(first) || isNaN(last) ? 0 : last - first + 1;
     });
 }`
-  }, {
-    active: true,
-    name: DemoSourceType.Template,
-    text: `First visible item's index:
+    },
+    {
+      active: true,
+      name: DemoSourceType.Template,
+      text: `First visible item's index:
 {{datasource.adapter.firstVisible.$index}}
 <br>
 Last visible item's index:
@@ -76,9 +84,10 @@ Visible items counter: {{visibleCount}}
     <div class="item">{{item.text}}</div>
   </div>
 </div>`
-  }, {
-    name: DemoSourceType.Styles,
-    text: `.viewport {
+    },
+    {
+      name: DemoSourceType.Styles,
+      text: `.viewport {
   width: 150px;
   height: 250px;
   overflow-y: auto;
@@ -87,12 +96,12 @@ Visible items counter: {{visibleCount}}
   font-weight: bold;
   height: 25px;
 }`
-  }];
+    }
+  ];
 
   itemAdapterDescription = `  ItemAdapter {
     $index: number;
     data: any;
     element?: HTMLElement;
   }`;
-
 }

@@ -3,7 +3,12 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
-import { Workflow, Direction, DatasourceGet, IAdapter as IAdapterInternal } from './vscroll';
+import {
+  Workflow,
+  Direction,
+  DatasourceGet,
+  IAdapter as IAdapterInternal
+} from './vscroll';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { Data, generateItem, IndexedItem, Processor } from './items';
@@ -18,10 +23,16 @@ export class Padding<Comp = TestComponentInterface> {
   element: DebugElement;
   style: CSSStyleDeclaration;
 
-  constructor(fixture: ComponentFixture<Comp>, direction: Direction, horizontal: boolean) {
+  constructor(
+    fixture: ComponentFixture<Comp>,
+    direction: Direction,
+    horizontal: boolean
+  ) {
     this.direction = direction;
     this.horizontal = horizontal;
-    this.element = fixture.debugElement.query(By.css(`[data-padding-${direction}]`));
+    this.element = fixture.debugElement.query(
+      By.css(`[data-padding-${direction}]`)
+    );
     this.style = this.element.nativeElement.style;
   }
 
@@ -34,7 +45,6 @@ export class Padding<Comp = TestComponentInterface> {
 type Scroller = Workflow<Data>['scroller'];
 
 export class Misc<Comp = TestComponentInterface> {
-
   fixture: ComponentFixture<Comp>;
   testComponent: Comp;
   uiScrollElement: DebugElement;
@@ -70,7 +80,9 @@ export class Misc<Comp = TestComponentInterface> {
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
     this.workflow = this.uiScrollComponent.workflow;
-    this.datasource = (this.testComponent as unknown as TestComponentInterface).datasource;
+    this.datasource = (
+      this.testComponent as unknown as TestComponentInterface
+    ).datasource;
     this.adapter = this.datasource.adapter as IAdapter<Data>;
     this.internalAdapter = this.scroller.adapter as IAdapterInternal<Data>;
     this.routines = this.scroller.routines;
@@ -84,7 +96,8 @@ export class Misc<Comp = TestComponentInterface> {
   }
 
   getComponent(): UiScrollComponent<Data> {
-    return this.fixture.debugElement.query(By.css('[ui-scroll]')).componentInstance;
+    return this.fixture.debugElement.query(By.css('[ui-scroll]'))
+      .componentInstance;
   }
 
   getWorkflow(): Workflow<Data> {
@@ -127,7 +140,9 @@ export class Misc<Comp = TestComponentInterface> {
 
   checkElementContentByIndex(index: number): boolean {
     const i = Number(index);
-    return !isNaN(i) && this.getElementText(i) === i + ': ' + generateItem(i).text;
+    return (
+      !isNaN(i) && this.getElementText(i) === i + ': ' + generateItem(i).text
+    );
   }
 
   checkElementContent(index: number, id: number): boolean {
@@ -149,11 +164,15 @@ export class Misc<Comp = TestComponentInterface> {
   }
 
   getScrollableElement(): HTMLElement {
-    return this.window ? document.scrollingElement : this.viewportElement.nativeElement;
+    return this.window
+      ? document.scrollingElement
+      : this.viewportElement.nativeElement;
   }
 
   getScrollPosition(): number {
-    return this.getScrollableElement()[this.horizontal ? 'scrollLeft' : 'scrollTop'];
+    return this.getScrollableElement()[
+      this.horizontal ? 'scrollLeft' : 'scrollTop'
+    ];
   }
 
   getMaxScrollPosition(): number {
@@ -191,14 +210,14 @@ export class Misc<Comp = TestComponentInterface> {
     return new Promise(resolve =>
       (debounce
         ? this.adapter.isLoading$.pipe(
-          filter(pending => !pending),
-          debounceTime(debounce),
-          take(1)
-        )
+            filter(pending => !pending),
+            debounceTime(debounce),
+            take(1)
+          )
         : this.adapter.isLoading$.pipe(
-          filter(pending => !pending),
-          take(1)
-        )
+            filter(pending => !pending),
+            take(1)
+          )
       ).subscribe(() => resolve())
     );
   }
@@ -228,7 +247,9 @@ export class Misc<Comp = TestComponentInterface> {
 
   async scrollToIndexRecursively(index: number, limit = 20): Promise<void> {
     const { adapter } = this;
-    let leftDiff: number, rightDiff: number, step = 0;
+    let leftDiff: number,
+      rightDiff: number,
+      step = 0;
     do {
       leftDiff = index - adapter.bufferInfo.firstIndex;
       rightDiff = index - adapter.bufferInfo.lastIndex;
@@ -238,24 +259,27 @@ export class Misc<Comp = TestComponentInterface> {
           if (leftDiff >= 0 && rightDiff <= 0) {
             return $index === index;
           }
-          return $index === (rightDiff > 0 ? adapter.bufferInfo.lastIndex : adapter.bufferInfo.firstIndex);
+          return (
+            $index ===
+            (rightDiff > 0
+              ? adapter.bufferInfo.lastIndex
+              : adapter.bufferInfo.firstIndex)
+          );
         }
       });
       if (position !== this.getScrollPosition()) {
         await this.relaxNext();
       }
-    }
-    while ((rightDiff > 0 || leftDiff < 0) && ++step < limit);
+    } while ((rightDiff > 0 || leftDiff < 0) && ++step < limit);
   }
 
   delay(ms: number): Promise<void> {
-    return new Promise(resolve =>
-      setTimeout(() => resolve(), ms)
-    );
+    return new Promise(resolve => setTimeout(() => resolve(), ms));
   }
 
   setDatasourceProcessor(processor: Processor): void {
-    const setProcessor = (this.datasource as unknown as DatasourceProcessor).setProcessGet;
+    const setProcessor = (this.datasource as unknown as DatasourceProcessor)
+      .setProcessGet;
     if (typeof processor === 'function') {
       setProcessor.call(this.datasource, processor);
     }

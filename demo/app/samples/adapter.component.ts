@@ -5,14 +5,12 @@ import { Component } from '@angular/core';
   templateUrl: './adapter.component.html'
 })
 export class AdapterComponent {
-
-  constructor() {
-  }
+  constructor() {}
 
   datasourceSample = `  import { Datasource } from 'ngx-ui-scroll';
 
   datasource = new Datasource({ get, settings });`;
 
-  datasourceTypedSample = 'datasource = new Datasource<MyItem>({ get, settings });';
-
+  datasourceTypedSample =
+    'datasource = new Datasource<MyItem>({ get, settings });';
 }

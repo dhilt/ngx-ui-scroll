@@ -6,9 +6,7 @@ import { demos } from '../routes';
   templateUrl: './experimental.component.html'
 })
 export class ExperimentalComponent {
-
-  constructor() {
-  }
+  constructor() {}
 
   scope = demos.experimental.map;
   base = '../' + demos.experimental.id;
@@ -21,5 +19,4 @@ export class ExperimentalComponent {
     scrollToItem?: (item: ItemAdapter) => boolean;
     scrollToItemOpt?: boolean | ScrollIntoViewOptions;
   }`;
-
 }

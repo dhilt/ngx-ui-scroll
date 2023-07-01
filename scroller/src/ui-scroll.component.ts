@@ -1,7 +1,12 @@
 import {
-  Component, OnInit, OnDestroy,
-  TemplateRef, ElementRef,
-  ChangeDetectionStrategy, ChangeDetectorRef, NgZone
+  Component,
+  OnInit,
+  OnDestroy,
+  TemplateRef,
+  ElementRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  NgZone
 } from '@angular/core';
 
 import { IDatasource, Workflow, Item } from './vscroll';
@@ -12,13 +17,13 @@ import consumer from './ui-scroll.version';
 @Component({
   selector: '[ui-scroll]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div data-padding-backward></div>
+  template: ` <div data-padding-backward></div>
     <div
       *ngFor="let item of items"
       [attr.data-sid]="item.$index"
       [style.position]="item.invisible ? 'fixed' : null"
-      [style.left]="item.invisible ? '-99999px' : null">
+      [style.left]="item.invisible ? '-99999px' : null"
+    >
       <ng-template
         [ngTemplateOutlet]="template"
         [ngTemplateOutletContext]="{
@@ -26,12 +31,12 @@ import consumer from './ui-scroll.version';
           index: item.$index,
           odd: item.$index % 2,
           even: !(item.$index % 2)
-      }"></ng-template>
+        }"
+      ></ng-template>
     </div>
     <div data-padding-forward></div>`
 })
 export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
-
   // these should come from the directive
   public template!: TemplateRef<unknown>;
   public datasource!: IAngularDatasource<Data>;
@@ -74,7 +79,7 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
               this.items = items;
               this.changeDetector.detectChanges();
             });
-          },
+          }
         })
     );
   }

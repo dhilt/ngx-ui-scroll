@@ -1,7 +1,6 @@
-<ng-template #defaultItemTemplate let-item="item">{{item.text}}</ng-template>
+<ng-template #defaultItemTemplate let-item="item">{{ item.text }}</ng-template>
 
 <div class="demo">
-
   <app-demo-title [config]="context.config"></app-demo-title>
 
   <div class="actions">
@@ -10,45 +9,49 @@
 
   <div class="work" *ngIf="!context.noWorkView">
     <div class="viewport-wrapper">
-      <div class="viewport {{context.addClass || ''}}" id="{{context.viewportId || context.config.id}}">
+      <div
+        class="viewport {{ context.addClass || '' }}"
+        id="{{ context.viewportId || context.config.id }}"
+      >
         <div *uiScroll="let item of datasource; let index = index">
           <div
-            class="item {{context.addClass || ''}}"
-            [style.height]="item.hasOwnProperty('size') ? item.size + 'px' : null"
+            class="item {{ context.addClass || '' }}"
+            [style.height]="
+              item.hasOwnProperty('size') ? item.size + 'px' : null
+            "
           >
             <ng-template
               [ngTemplateOutlet]="itemTemplate || defaultItemTemplate"
-              [ngTemplateOutletContext]="{item: item, index: index}"
+              [ngTemplateOutletContext]="{ item: item, index: index }"
             ></ng-template>
           </div>
         </div>
       </div>
     </div>
     <div class="log" *ngIf="init && !context.noInfo">
-      <ng-container
-        *ngIf="!context.logViewOnly; then allView; else logView">
+      <ng-container *ngIf="!context.logViewOnly; then allView; else logView">
       </ng-container>
       <ng-template #allView>
-        <div class="elements {{context.addClass || ''}}">
+        <div class="elements {{ context.addClass || '' }}">
           Viewport scrollable size:
-          <span>{{viewport(context.viewportId!)}}</span>
+          <span>{{ viewport(context.viewportId!) }}</span>
         </div>
-        <div class="elements {{context.addClass || ''}}">
+        <div class="elements {{ context.addClass || '' }}">
           DOM elements count:
-          <span>{{elements(context.viewportId!)}}</span>
+          <span>{{ elements(context.viewportId!) }}</span>
         </div>
-        <div class="datasource {{context.addClass || ''}}">
+        <div class="datasource {{ context.addClass || '' }}">
           Datasource.get log
           <div class="pre-wrapper">
-            <pre>{{context.log}}</pre>
+            <pre>{{ context.log }}</pre>
           </div>
         </div>
       </ng-template>
       <ng-template #logView>
-        <div class="datasource {{context.addClass || ''}}">
+        <div class="datasource {{ context.addClass || '' }}">
           Datasource.get log
           <div class="pre-wrapper">
-            <pre>{{context.log}}</pre>
+            <pre>{{ context.log }}</pre>
           </div>
         </div>
       </ng-template>
@@ -61,5 +64,4 @@
   <div class="description">
     <ng-content select="[description]"></ng-content>
   </div>
-
 </div>

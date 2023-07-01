@@ -16,14 +16,13 @@ import { Misc } from './miscellaneous/misc';
 import { Data } from './miscellaneous/items';
 
 describe('Component', () => {
-
   let misc: Misc;
 
-  beforeAll((() => {
+  beforeAll(() => {
     const ds = generateDatasourceClass('initial');
     const fixture = configureTestBed(ds, defaultTemplate);
     misc = new Misc(fixture);
-  }));
+  });
 
   it('should init test component', () => {
     expect(misc.testComponent).toBeTruthy();
@@ -43,27 +42,32 @@ describe('Component', () => {
     expect(misc.padding[Direction.backward].element).toBeTruthy();
     expect(misc.padding[Direction.forward].element).toBeTruthy();
   });
-
 });
 
 describe('Settings', () => {
-
   const _settings1 = { startIndex: 90 };
   const _settings2 = { bufferSize: 15 };
   const _settings3 = { infinite: true };
   const _settings4 = { startIndex: 99, bufferSize: 11, infinite: true };
 
-  const checkSettings = ({ merge, min }: { merge?: Settings, min?: string } = {}): ItFunc => misc => done => {
-    const _settings = (min ? { [min]: -999 } : {}) as unknown as Misc['scroller']['settings'];
-    const settings = misc.generateFakeWorkflow(_settings).scroller.settings;
-    expect(misc.scroller.settings).toEqual(jasmine.any(Object));
-    const mergedSettings = { ...settings, ...(merge || {}) };
-    Object.keys(settings).filter(key => key !== 'instanceIndex').forEach(key => {
-      const _key = key as keyof Settings;
-      expect(misc.scroller.settings[_key]).toEqual(mergedSettings[_key]);
-    });
-    done();
-  };
+  const checkSettings =
+    ({ merge, min }: { merge?: Settings; min?: string } = {}): ItFunc =>
+    misc =>
+    done => {
+      const _settings = (min
+        ? { [min]: -999 }
+        : {}) as unknown as Misc['scroller']['settings'];
+      const settings = misc.generateFakeWorkflow(_settings).scroller.settings;
+      expect(misc.scroller.settings).toEqual(jasmine.any(Object));
+      const mergedSettings = { ...settings, ...(merge || {}) };
+      Object.keys(settings)
+        .filter(key => key !== 'instanceIndex')
+        .forEach(key => {
+          const _key = key as keyof Settings;
+          expect(misc.scroller.settings[_key]).toEqual(mergedSettings[_key]);
+        });
+      done();
+    };
 
   makeTest({
     config: { datasourceSettings: _settings1 },
@@ -156,32 +160,36 @@ describe('Settings', () => {
   });
 
   makeTest({
-    config: { datasourceSettings: { viewportElement: { nodeType: 1 } as never } },
+    config: {
+      datasourceSettings: { viewportElement: { nodeType: 1 } as never }
+    },
     title: 'should fallback viewportElement to the default',
     it: checkSettings()
   });
 
   makeTest({
-    config: { datasourceSettings: { viewportElement: document.createElement('div') } },
+    config: {
+      datasourceSettings: { viewportElement: document.createElement('div') }
+    },
     title: 'should pass HTML element as a value of viewportElement',
-    it: ({ scroller: { settings } }: Misc) => done => {
-      expect(settings.viewportElement).toEqual(settings.viewport);
-      const nodeType = settings.viewport ? settings.viewport.nodeType : null;
-      expect(nodeType).toEqual(1);
-      done();
-    }
+    it:
+      ({ scroller: { settings } }: Misc) =>
+      done => {
+        expect(settings.viewportElement).toEqual(settings.viewport);
+        const nodeType = settings.viewport ? settings.viewport.nodeType : null;
+        expect(nodeType).toEqual(1);
+        done();
+      }
   });
-
 });
 
 describe('Workflow & Adapter', () => {
-
   let misc: Misc;
   const delay = 1;
   const runBeforeEach = (initDelay: number) =>
     beforeEach(
-      () => (
-        misc = new Misc(
+      () =>
+        (misc = new Misc(
           configureTestBed(
             generateDatasourceClass(
               'infinite-callback-no-delay',
@@ -190,8 +198,7 @@ describe('Workflow & Adapter', () => {
             ),
             defaultTemplate
           )
-        )
-      )
+        ))
     );
 
   describe('Delayed initialization', () => {
@@ -245,27 +252,25 @@ describe('Workflow & Adapter', () => {
       done();
     });
   });
-
 });
 
 describe('Multiple Instances', () => {
-
   let fixture: ComponentFixture<TwoScrollersTestComponent>;
-  const getAdapters = (): { a1: IAdapter<Data>, a2: IAdapter<Data> } => ({
+  const getAdapters = (): { a1: IAdapter<Data>; a2: IAdapter<Data> } => ({
     a1: fixture.componentInstance.datasource.adapter,
     a2: fixture.componentInstance.datasource2.adapter
   });
-  const getWorkflows = (): { w1: Workflow, w2: Workflow } =>
-    fixture.debugElement.queryAll(By.css('[ui-scroll]'))
-      .reduce((acc, element: DebugElement, i: number) => ({
+  const getWorkflows = (): { w1: Workflow; w2: Workflow } =>
+    fixture.debugElement.queryAll(By.css('[ui-scroll]')).reduce(
+      (acc, element: DebugElement, i: number) => ({
         ...acc,
         ['w' + (i + 1)]: element.componentInstance.workflow
-      }), {} as { w1: Workflow, w2: Workflow });
-
+      }),
+      {} as { w1: Workflow; w2: Workflow }
+    );
 
   describe('Initialization', () => {
-
-    beforeEach((() => fixture = configureTestBedTwo()));
+    beforeEach(() => (fixture = configureTestBedTwo()));
 
     it('should init component with 2 datasources', () => {
       const cmp = fixture.componentInstance;
@@ -281,8 +286,9 @@ describe('Multiple Instances', () => {
     });
 
     it('should init component with 2 workflows', () => {
-      const uiScrollElements: DebugElement[] =
-        fixture.debugElement.queryAll(By.css('[ui-scroll]'));
+      const uiScrollElements: DebugElement[] = fixture.debugElement.queryAll(
+        By.css('[ui-scroll]')
+      );
       expect(uiScrollElements).toBeTruthy();
       expect(uiScrollElements.length).toEqual(2);
       uiScrollElements
@@ -304,19 +310,19 @@ describe('Multiple Instances', () => {
       expect(w1.scroller).toBeTruthy();
       expect(w2.scroller).toBeTruthy();
     });
-
   });
 
   describe('Subscriptions', () => {
-
     beforeEach(() => {
       fixture = configureTestBedTwo();
     });
 
-    it('should not interfere', (done) => {
+    it('should not interfere', done => {
       const { a1, a2 } = getAdapters();
       const { w1, w2 } = getWorkflows();
-      let c1 = 0, c2 = 0, count = 0;
+      let c1 = 0,
+        c2 = 0,
+        count = 0;
       a1.isLoading$.subscribe(() => c1++);
       a2.isLoading$.subscribe(() => c2++);
       const _done = () => {
@@ -337,7 +343,5 @@ describe('Multiple Instances', () => {
         })
       );
     });
-
   });
-
 });

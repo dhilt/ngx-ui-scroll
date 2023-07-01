@@ -14,13 +14,17 @@ export const getDynamicSizeByIndex = (index: number): number =>
 
 export const getDynamicSumSize = (start: number, end: number): number =>
   Array.from<number>({ length: end - start + 1 }).reduce(
-    (acc: number, i, j) => acc + getDynamicSizeByIndex(j + start), 0
+    (acc: number, i, j) => acc + getDynamicSizeByIndex(j + start),
+    0
   );
 
 export const getAverageSize = (start: number, end: number): number =>
   Math.round(getDynamicSumSize(start, end) / (end - start + 1));
 
-export const getAverageSizeData = (start: number, end: number): DynamicSizeData => {
+export const getAverageSizeData = (
+  start: number,
+  end: number
+): DynamicSizeData => {
   const size = getDynamicSumSize(start, end);
   const average = Math.round(size / (end - start + 1));
   return { size, average };

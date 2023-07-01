@@ -3,11 +3,16 @@ import { filter, take } from 'rxjs/operators';
 
 import { Misc } from './miscellaneous/misc';
 
-import { configureTestBedSub, configureTestBedPlain } from './scaffolding/testBed';
-import { ScrollerSubTestComponent, ScrollerPlainTestComponent } from './scaffolding/testComponent';
+import {
+  configureTestBedSub,
+  configureTestBedPlain
+} from './scaffolding/testBed';
+import {
+  ScrollerSubTestComponent,
+  ScrollerPlainTestComponent
+} from './scaffolding/testComponent';
 
 describe('Recreation Spec', () => {
-
   describe('Destroying (plain DS)', () => {
     let misc: Misc<ScrollerPlainTestComponent>;
 
@@ -39,11 +44,13 @@ describe('Recreation Spec', () => {
     });
 
     const init = (flag: boolean): boolean | Promise<boolean> =>
-      (flag !== misc.testComponent.datasource.adapter.init) ?
-        firstValueFrom(
-          misc.testComponent.datasource.adapter.init$.pipe(
-            filter(v => flag ? v : !v), take(1)
-          ))
+      flag !== misc.testComponent.datasource.adapter.init
+        ? firstValueFrom(
+            misc.testComponent.datasource.adapter.init$.pipe(
+              filter(v => (flag ? v : !v)),
+              take(1)
+            )
+          )
         : Promise.resolve(flag);
 
     const ngIfReload = async (onBeforeHide?: () => void): Promise<void> => {
@@ -65,12 +72,14 @@ describe('Recreation Spec', () => {
     it('should switch Adapter.init trice', async () => {
       let count = 0;
       const result = new Promise(resolve => {
-        const sub = misc.testComponent.datasource.adapter.init$.subscribe(() => {
-          if (++count === 3) {
-            sub.unsubscribe();
-            resolve(null);
+        const sub = misc.testComponent.datasource.adapter.init$.subscribe(
+          () => {
+            if (++count === 3) {
+              sub.unsubscribe();
+              resolve(null);
+            }
           }
-        });
+        );
       });
       await ngIfReload();
       await result;
@@ -113,7 +122,9 @@ describe('Recreation Spec', () => {
       await misc.adapter.relax();
       const buffer = misc.getWorkflow().scroller.buffer;
       expect((retainedBuffer as unknown as { size: number }).size).toBe(0);
-      expect((retainedItem as unknown as { element?: HTMLElement }).element).toBeFalsy();
+      expect(
+        (retainedItem as unknown as { element?: HTMLElement }).element
+      ).toBeFalsy();
       expect(buffer.size).not.toBe(0);
       expect(buffer.items[0].element).toBeTruthy();
     });

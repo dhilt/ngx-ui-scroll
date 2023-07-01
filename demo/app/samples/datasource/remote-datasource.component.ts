@@ -9,9 +9,7 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Injectable()
 export class RemoteDataService {
-
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   getData(index: number, count: number): Observable<unknown> {
     return this.http.get(`/api/data?index=${index}&count=${count}`);
@@ -23,7 +21,6 @@ export class RemoteDataService {
   templateUrl: './remote-datasource.component.html'
 })
 export class DemoRemoteDatasourceComponent {
-
   demoContext = {
     config: demos.datasource.map.remote,
     logViewOnly: true,
@@ -33,15 +30,17 @@ export class DemoRemoteDatasourceComponent {
 
   datasource: IDatasource = {
     get: (index: number, count: number) => {
-      this.demoContext.log = `${++this.demoContext.count}) get items [${index}..${index + count - 1}]
+      this.demoContext.log = `${++this.demoContext
+        .count}) get items [${index}..${index + count - 1}]
 ${this.demoContext.log}`;
       return this.remoteDataService.getData(index, count);
     }
   };
 
-  sources: DemoSources = [{
-    name: 'Service/Component',
-    text: `@Injectable()
+  sources: DemoSources = [
+    {
+      name: 'Service/Component',
+      text: `@Injectable()
 export class RemoteDataService {
 
   constructor(private http: HttpClient) {
@@ -65,9 +64,10 @@ export class DemoRemoteDatasourceComponent {
   constructor(private remoteDataService: RemoteDataService) {
   }
 }`
-  }, {
-    name: DemoSourceType.Server,
-    text: `const MIN = -99;
+    },
+    {
+      name: DemoSourceType.Server,
+      text: `const MIN = -99;
 const MAX = 900;
 
 app.get('/api/data', (req, res) => {
@@ -87,9 +87,8 @@ app.get('/api/data', (req, res) => {
   }
   res.send(result);
 });`
-  }];
+    }
+  ];
 
-  constructor(private remoteDataService: RemoteDataService) {
-  }
-
+  constructor(private remoteDataService: RemoteDataService) {}
 }

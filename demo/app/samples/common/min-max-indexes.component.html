@@ -1,51 +1,49 @@
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div description>
     <p>
-      If the boundaries of the dataset are known,
-      we may virtualize all the data items right on the Scroller initialization, in other words
-      the Scroller will maintain forward and backward padding elements of the viewport
-      in assumption that the dataset consists of (<em>maxIndex</em> - <em>minIndex</em>) items.
-      So it will be possible to jump to any position immediately.
+      If the boundaries of the dataset are known, we may virtualize all the data
+      items right on the Scroller initialization, in other words the Scroller
+      will maintain forward and backward padding elements of the viewport in
+      assumption that the dataset consists of (<em>maxIndex</em> -
+      <em>minIndex</em>) items. So it will be possible to jump to any position
+      immediately.
     </p>
     <p>
-      In this demo we tell the Scroller to work with indexes in-between [1..1000] range only.
-      1000 items of 25px amount 25000px,
-      this is the end viewport scrollable size which will not be changed.
+      In this demo we tell the Scroller to work with indexes in-between
+      [1..1000] range only. 1000 items of 25px amount 25000px, this is the end
+      viewport scrollable size which will not be changed.
     </p>
     <p>
-      An important note is that <em>minIndex</em> and <em>maxIndex</em>
-      should stay within the real datasource boundaries.
-      All the demos we discussed before have unlimited datasources,
-      so <em>minIndex</em> and <em>maxIndex</em> could accept any values.
-      But in case the datasource is limited, say, by [MIN..MAX] range, then
-      <em>minIndex</em> should be >= <em>MIN</em> and
-      <em>maxIndex</em> should be <= <em>MAX</em>.
-      An example of limited <em>Datasource.get</em> implementation can be found
+      An important note is that <em>minIndex</em> and <em>maxIndex</em> should
+      stay within the real datasource boundaries. All the demos we discussed
+      before have unlimited datasources, so <em>minIndex</em> and
+      <em>maxIndex</em> could accept any values. But in case the datasource is
+      limited, say, by [MIN..MAX] range, then <em>minIndex</em> should be >=
+      <em>MIN</em> and <em>maxIndex</em> should be <= <em>MAX</em>. An example
+      of limited <em>Datasource.get</em> implementation can be found
       <a
         [routerLink]="['/', datasourceLimitedDemoConfig.scope]"
-        fragment="{{datasourceLimitedDemoConfig.id}}"
-      >here</a>.
+        fragment="{{ datasourceLimitedDemoConfig.id }}"
+        >here</a
+      >.
     </p>
     <p>
-      The Scroller can accept only one of min/max indexes settings.
-      For example, if we know that our datasource have no negative values,
-      then we may define <em>minIndex</em> as 1 (or 0) and not define <em>maxIndex</em>.
-      It also seems right idea to set <em>startIndex</em> value to 0 in case
-      <em>minIndex</em> value had been set to 0.
-      An example of positive-limited <em>Datasource.get</em> implementation can be found
+      The Scroller can accept only one of min/max indexes settings. For example,
+      if we know that our datasource have no negative values, then we may define
+      <em>minIndex</em> as 1 (or 0) and not define <em>maxIndex</em>. It also
+      seems right idea to set <em>startIndex</em> value to 0 in case
+      <em>minIndex</em> value had been set to 0. An example of positive-limited
+      <em>Datasource.get</em> implementation can be found
       <a
         [routerLink]="['/', datasourcePositiveLimitedDemoConfig.scope]"
-        fragment="{{datasourcePositiveLimitedDemoConfig.id}}"
-      >here</a>.
+        fragment="{{ datasourcePositiveLimitedDemoConfig.id }}"
+        >here</a
+      >.
     </p>
     <p>
       Both of <em>minIndex</em> and <em>maxIndex</em> values should be integer.
-      The default <em>minIndex</em> value is <em>-Infinity</em>.
-      The default <em>maxIndex</em> value is <em>+Infinity</em>.
+      The default <em>minIndex</em> value is <em>-Infinity</em>. The default
+      <em>maxIndex</em> value is <em>+Infinity</em>.
     </p>
   </div>
 </app-demo>

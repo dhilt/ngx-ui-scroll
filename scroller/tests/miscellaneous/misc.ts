@@ -13,8 +13,8 @@ import {
 import { TestComponentInterface } from '../scaffolding/testComponent';
 import { Data, generateItem, IndexedItem, Processor } from './items';
 
-import { UiScrollComponent } from '../../ui-scroll.component';
-import { IAdapter, IDatasource } from '../../ui-scroll.datasource';
+import { UiScrollComponent } from '../../src/ui-scroll.component';
+import { IAdapter, IDatasource } from '../../src/ui-scroll.datasource';
 import { DatasourceProcessor } from '../scaffolding/datasources/class';
 
 export class Padding<Comp = TestComponentInterface> {

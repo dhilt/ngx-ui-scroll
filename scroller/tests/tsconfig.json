@@ -3,8 +3,10 @@
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
     "types": ["jasmine"],
+    "noImplicitAny": false,
     "strict": false
   },
-  "files": ["src/tests/_index.ts"],
+  "exclude": [],
+  "files": ["./_index.ts"],
   "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

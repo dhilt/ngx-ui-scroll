@@ -2,9 +2,32 @@
   "name": "ngx-ui-scroll",
   "version": "3.1.0",
   "license": "MIT",
+  "scripts": {
+    "copy:docs": "cp ../README.md ../LICENSE ../dist/scroller",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "build": "ng build scroller --configuration production && npm run copy:docs",
+    "test": "ng test scroller"
+  },
   "peerDependencies": {
-    "@angular/common": ">=14.0.0",
-    "@angular/core": ">=14.0.0",
+    "@angular/common": ">=12.0.0",
+    "@angular/core": ">=12.0.0",
     "vscroll": "^1.5.5"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^13.3.2",
+    "@angular/cli": "^13.3.2",
+    "@angular/compiler": "^13.3.2",
+    "@angular/platform-browser": "^13.3.2",
+    "@angular/platform-browser-dynamic": "^13.3.2",
+    "@types/jasmine": "~3.10.3",
+    "@types/node": "^20.3.3",
+    "jasmine-core": "~4.0.0",
+    "karma": "~6.3.10",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-firefox-launcher": "^2.1.2",
+    "karma-jasmine": "~4.0.1",
+    "ng-packagr": "^13.3.0",
+    "puppeteer": "^20.7.4",
+    "typescript": "~4.5.4"
   }
 }

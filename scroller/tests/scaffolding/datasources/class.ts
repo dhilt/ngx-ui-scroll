@@ -7,7 +7,7 @@ import {
   Item,
   Direction
 } from '../../miscellaneous/vscroll';
-import { IDatasource, Datasource } from '../../../ui-scroll.datasource';
+import { IDatasource, Datasource } from '../../../src/ui-scroll.datasource';
 import { generateItem, Data, Processor } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 

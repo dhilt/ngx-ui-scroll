@@ -3,7 +3,7 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { ItemAdapter } from '../miscellaneous/vscroll';
 import { Data } from '../miscellaneous/items';
-import { IDatasource, Datasource } from '../../ui-scroll.datasource';
+import { IDatasource, Datasource } from '../../src/ui-scroll.datasource';
 import { DatasourceService } from './datasources/class';
 import { defaultTemplate, TemplateSettings } from './templates';
 

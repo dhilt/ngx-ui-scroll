@@ -11,7 +11,7 @@
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "paths": {
       "ngx-ui-scroll": ["../scroller/public-api.ts"],
       "vscroll": ["../scroller/node_modules/vscroll"],

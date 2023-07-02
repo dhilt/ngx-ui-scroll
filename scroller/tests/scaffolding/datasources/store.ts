@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 import { Data, Processor } from '../../miscellaneous/items';
 
-import { IDatasource } from '../../../ui-scroll.datasource';
+import { IDatasource } from '../../../src/ui-scroll.datasource';
 import {
   DatasourceType,
   infiniteDatasourceGet,

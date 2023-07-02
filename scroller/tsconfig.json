@@ -2,30 +2,35 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "./dist/out-tsc",
+    "outDir": "../out-tsc/lib",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strictPropertyInitialization": false,
     "sourceMap": true,
-    "declaration": false,
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "types": [],
     "downlevelIteration": true,
+    "noImplicitAny": true,
     "paths": {
-      "ngx-ui-scroll": ["scroller/public-api.ts"]
+      "ngx-ui-scroll": ["./public-api.ts"]
     },
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES2022",
+    "target": "es2020",
     "module": "es2020",
     "lib": ["es2018", "dom"],
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
+    "enableIvy": true,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "exclude": ["dist"]
+  "exclude": ["tests"]
 }

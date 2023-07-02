@@ -32,7 +32,7 @@ export class DemoAppendPrependComponent {
 
   datasource = new Datasource<MyItem>({
     get: (index, count, success) => {
-      const data = [];
+      const data: MyItem[] = [];
       for (let i = index; i < index + count; i++) {
         data.push({ id: i, text: 'item #' + i });
       }

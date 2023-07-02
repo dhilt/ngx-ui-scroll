@@ -8,7 +8,7 @@
     "start": "ng serve --proxy-config ./demo/proxy.conf.json",
     "start:env": "node env",
     "start:server": "node ./server/index.js",
-    "lint": "tsc -p tsconfig.json --noEmit && eslint . --ext .ts",
+    "lint": "cd demo && npm run lint",
     "test:lib": "ng test scroller",
     "test": "npm run lint && npm run test:lib",
     "preinstall": "cd server && npm install",

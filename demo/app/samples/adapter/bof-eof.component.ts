@@ -28,7 +28,7 @@ export class DemoBofEofComponent {
     get: (index, count, success) => {
       const MIN = 1,
         MAX = 100;
-      const data = [];
+      const data: MyItem[] = [];
       const start = Math.max(MIN, index);
       const end = Math.min(index + count - 1, MAX);
       if (start <= end) {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { IDatasource } from 'ngx-ui-scroll';
@@ -20,9 +20,9 @@ export class DemoBidirectionalUnlimitedDatasourceComponent {
 
   datasource: IDatasource = {
     get: (index, count, success) => {
-      const data = [];
+      const data: MyItem[] = [];
       for (let i = index; i <= index + count - 1; i++) {
-        data.push({ text: 'item #' + i });
+        data.push({ id: i, text: 'item #' + i });
       }
       doLog(this.demoContext, index, count, data.length);
       success(data);

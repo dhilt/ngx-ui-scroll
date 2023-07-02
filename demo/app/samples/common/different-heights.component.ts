@@ -163,7 +163,7 @@ getData(index: number, count: number, isFrequent: boolean): MyItem[] {
     'Array.from({length: 100}).reduce((a, i, j) => a + j + 20 , 0) / 100; // 69.5px';
 
   getData(index: number, count: number, isFrequent: boolean): MyItem[] {
-    const data = [];
+    const data: MyItem[] = [];
     const start = Math.max(this.MIN, index);
     const end = Math.min(index + count - 1, this.MAX);
     for (let i = start; i <= end; i++) {

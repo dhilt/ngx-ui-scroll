@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 const child_process = require('child_process');
 
-const config = dotenv.config();
+const config = dotenv.config({ path: '../.env' });
 if (config.error) {
   throw config.error;
 }

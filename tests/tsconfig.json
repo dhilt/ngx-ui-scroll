@@ -2,9 +2,9 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "../out-tsc/lib",
+    "outDir": "../out-tsc/spec",
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
+    "strict": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strictPropertyInitialization": false,
@@ -12,19 +12,23 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": [],
+    "types": ["jasmine", "node"],
     "downlevelIteration": true,
-    "noImplicitAny": true,
-    "paths": {
-      "ngx-ui-scroll": ["./public-api.ts"]
-    },
+    "noImplicitAny": false,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
+    "target": "es2022",
     "module": "es2020",
     "lib": ["es2018", "dom"],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "paths": {
+      "ngx-ui-scroll": ["../scroller/public-api.ts"],
+      "vscroll": ["../scroller/node_modules/vscroll"],
+      "@angular/core": ["./node_modules/@angular/core"],
+      "@angular/common": ["./node_modules/@angular/common"],
+      "rxjs": ["./node_modules/rxjs"]
+    }
   },
   "angularCompilerOptions": {
     "enableIvy": true,
@@ -32,5 +36,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "exclude": ["node_modules"]
+  "include": ["index.ts"]
 }

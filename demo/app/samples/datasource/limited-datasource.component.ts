@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources } from '../../shared/interfaces';
+import { DemoSources, MyItem } from '../../shared/interfaces';
 import { doLog } from '../../shared/datasource-get';
 
 import { IDatasource } from 'ngx-ui-scroll';
@@ -25,12 +25,12 @@ export class DemoLimitedDatasourceComponent {
 
   datasource: IDatasource = {
     get: (index, count, success) => {
-      const data = [];
+      const data: MyItem[] = [];
       const start = Math.max(this.MIN, index);
       const end = Math.min(index + count - 1, this.MAX);
       if (start <= end) {
         for (let i = start; i <= end; i++) {
-          data.push({ text: 'item #' + i });
+          data.push({ id: i, text: 'item #' + i });
         }
       }
       doLog(this.demoContext, index, count, data.length);

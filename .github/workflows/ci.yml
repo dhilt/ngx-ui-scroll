@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - "master"
+      - 'master'
   workflow_dispatch:
     inputs:
       cause:
@@ -33,10 +33,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: npm install
-      - run: npm test
+      - run: npm run ci:lib
       - run: npm run build:lib
+      - run: npm run ci:demo
       - run: npm run build:demo
+      - run: npm run ci:tests
+      - run: npm test
 
       - uses: actions/upload-artifact@master
         with:
@@ -47,7 +49,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-
       - name: Set env BRANCH
         run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 
 import { demos } from '../../routes';
 import {
@@ -8,6 +8,7 @@ import {
   DemoSourceType
 } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
+import { IAdapterItem } from '../../../../scroller/src/vscroll';
 
 import { Datasource } from 'ngx-ui-scroll';
 
@@ -33,7 +34,10 @@ export class DemoFirstLastVisibleItemsComponent {
   constructor() {
     setTimeout(() => (this.init = true));
     const { firstVisible$, lastVisible$ } = this.datasource.adapter;
-    combineLatest([firstVisible$, lastVisible$]).subscribe(result => {
+    combineLatest([
+      firstVisible$ as unknown as Observable<IAdapterItem>,
+      lastVisible$ as unknown as Observable<IAdapterItem>
+    ]).subscribe(result => {
       const first = Number(result[0].$index);
       const last = Number(result[1].$index);
       this.visibleCount = !isNaN(first) && !isNaN(last) ? last - first + 1 : 0;

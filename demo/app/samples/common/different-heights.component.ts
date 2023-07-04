@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { merge } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { demos } from '../../routes';
@@ -31,8 +31,8 @@ export class DemoDifferentHeightsComponent {
 
   constructor() {
     merge(
-      this.datasourceAverage.adapter.init$,
-      this.datasourceFrequent.adapter.init$
+      this.datasourceAverage.adapter.init$ as unknown as Observable<boolean>,
+      this.datasourceFrequent.adapter.init$ as unknown as Observable<boolean>
     )
       .pipe(take(1))
       .subscribe(() => this.setupLog());
@@ -163,7 +163,7 @@ getData(index: number, count: number, isFrequent: boolean): MyItem[] {
     'Array.from({length: 100}).reduce((a, i, j) => a + j + 20 , 0) / 100; // 69.5px';
 
   getData(index: number, count: number, isFrequent: boolean): MyItem[] {
-    const data = [];
+    const data: MyItem[] = [];
     const start = Math.max(this.MIN, index);
     const end = Math.min(index + count - 1, this.MAX);
     for (let i = start; i <= end; i++) {

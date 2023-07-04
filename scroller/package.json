@@ -1,10 +1,30 @@
 {
   "name": "ngx-ui-scroll",
+  "description": "Virtual scrolling library for Angular applications",
   "version": "3.1.0",
   "license": "MIT",
+  "author": "Denis Hilt <dhilt.public@gmail.com>",
+  "homepage": "https://github.com/dhilt/ngx-ui-scroll",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dhilt/ngx-ui-scroll.git"
+  },
+  "scripts": {
+    "copy:docs": "cp ../README.md ../LICENSE ../dist/scroller",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "build": "ng build scroller --configuration production && npm run copy:docs",
+    "build:watch": "ng build scroller --watch"
+  },
   "peerDependencies": {
     "@angular/common": ">=12.0.0",
     "@angular/core": ">=12.0.0",
     "vscroll": "^1.5.5"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^12.0.0",
+    "@angular/cli": "^12.0.0",
+    "@angular/compiler": "^12.0.0",
+    "ng-packagr": "^12.0.0",
+    "typescript": "~4.3.0"
   }
 }

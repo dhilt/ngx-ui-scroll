@@ -196,7 +196,7 @@ async doAppend() {
 
   async doPrepend() {
     await this.datasource.adapter.relax();
-    const items = [];
+    const items: MyItem[] = [];
     for (let i = 0; i < this.inputPrepend; i++) {
       if (!this.increasePrepend) {
         this.MIN--;
@@ -220,7 +220,7 @@ async doAppend() {
 
   async doAppend() {
     await this.datasource.adapter.relax();
-    const items = [];
+    const items: MyItem[] = [];
     for (let i = 0; i < this.inputAppend; i++) {
       if (!this.decreaseAppend) {
         this.MAX++;

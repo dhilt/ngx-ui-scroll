@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { merge } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 
 import { demos } from '../../routes';
 import {
@@ -28,7 +28,7 @@ export class DemoBofEofComponent {
     get: (index, count, success) => {
       const MIN = 1,
         MAX = 100;
-      const data = [];
+      const data: MyItem[] = [];
       const start = Math.max(MIN, index);
       const end = Math.min(index + count - 1, MAX);
       if (start <= end) {
@@ -45,7 +45,10 @@ export class DemoBofEofComponent {
 
   constructor() {
     const { eof$, bof$ } = this.datasource.adapter;
-    merge(bof$, eof$).subscribe(() => this.edgeCounter++);
+    merge(
+      bof$ as unknown as Observable<boolean>,
+      eof$ as unknown as Observable<boolean>
+    ).subscribe(() => this.edgeCounter++);
   }
 
   sources: DemoSources = [

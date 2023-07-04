@@ -1,7 +1,8 @@
 import { of } from 'rxjs';
-import { Data, Processor } from 'tests/miscellaneous/items';
 
-import { IDatasource } from '../../../scroller/src/ui-scroll.datasource';
+import { IDatasource } from 'ngx-ui-scroll';
+
+import { Data, Processor } from '../../miscellaneous/items';
 import {
   DatasourceType,
   infiniteDatasourceGet,

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 
 import { IDatasource } from 'ngx-ui-scroll';
 
@@ -21,7 +21,7 @@ export class DemoInverseSettingComponent {
 
   datasource: IDatasource = {
     get: (index, count, success) => {
-      const data = [];
+      const data: MyItem[] = [];
       const start = Math.max(this.MIN, index);
       const end = Math.min(index + count - 1, this.MAX);
       if (start <= end) {

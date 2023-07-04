@@ -17,6 +17,7 @@ jobs:
 
       - name: Install and Build 🔧
         run: |
+          npm ci:lib
           npm ci:demo
           npm run build:demo
       - name: Deploy 🚀

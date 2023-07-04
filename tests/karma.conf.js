@@ -1,12 +1,16 @@
 const PuppeteerPath = require('puppeteer').executablePath();
-const dotenv = require('dotenv');
+
+try {
+  const dotenv = require('dotenv');
+  const { error } = dotenv.config({ path: '../.env' });
+  if (error) {
+    throw error;
+  }
+} catch (e) {
+  console.log("Can't read .env", e);
+}
 
 process.env.CHROME_BIN = PuppeteerPath;
-
-const { error } = dotenv.config({ path: '../.env' });
-if (error) {
-  console.log(error.toString());
-}
 const TEST_SERVER_PORT = process.env.TEST_SERVER_PORT || 9876;
 
 // browser configuration

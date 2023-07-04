@@ -33,10 +33,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: npm run ci:all
-      - run: npm test
+      - run: npm run ci:lib
       - run: npm run build:lib
+      - run: npm run ci:demo
       - run: npm run build:demo
+      - run: npm run ci:tests
+      - run: npm test
 
       - uses: actions/upload-artifact@master
         with:

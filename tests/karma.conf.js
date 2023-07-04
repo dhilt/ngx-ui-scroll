@@ -7,7 +7,7 @@ try {
     throw error;
   }
 } catch (e) {
-  console.log("Can't read .env", e);
+  console.log("Can't read .env");
 }
 
 process.env.CHROME_BIN = PuppeteerPath;

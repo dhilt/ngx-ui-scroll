@@ -8,7 +8,7 @@ try {
     throw config.error;
   }
 } catch (e) {
-  console.log("Can't read .env", e);
+  console.log("Can't read .env");
 }
 
 const port = process.env.MOCK_SERVER_PORT || process.env.PORT || 5000;

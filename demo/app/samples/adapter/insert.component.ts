@@ -170,7 +170,7 @@ async doInsert() {
     if (index < 0 || isNaN(count)) {
       return;
     }
-    const items = [];
+    const items: string[] = [];
     for (let i = 1; i <= count; i++) {
       this.MAX++;
       const newItem = itemData + ' ' + Array(i).fill('*').join('');
@@ -195,7 +195,7 @@ async doInsert() {
     if (index < 0 || isNaN(count)) {
       return;
     }
-    const items = [];
+    const items: string[] = [];
     for (let i = 1; i <= count; i++) {
       this.MIN2--;
       const newItem = itemData + ' ' + Array(i).fill('*').join('');

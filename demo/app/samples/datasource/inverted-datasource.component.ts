@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
-import { DemoSources, DemoSourceType } from '../../shared/interfaces';
+import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 
 import { IDatasource } from 'ngx-ui-scroll';
 
@@ -65,7 +65,7 @@ getData(index: number, count: number) {
   ];
 
   getData(index: number, count: number) {
-    const data = [];
+    const data: MyItem[] = [];
     const start = Math.max(this.MIN, index);
     const end = index + count - 1;
     if (start <= end) {

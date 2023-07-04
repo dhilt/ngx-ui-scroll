@@ -3,6 +3,9 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
+import { IAdapter, IDatasource } from 'ngx-ui-scroll';
+import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
+
 import {
   Workflow,
   Direction,
@@ -11,11 +14,8 @@ import {
 } from './vscroll';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
-import { Data, generateItem, IndexedItem, Processor } from './items';
-
-import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
-import { IAdapter, IDatasource } from '../../scroller/src/ui-scroll.datasource';
 import { DatasourceProcessor } from '../scaffolding/datasources/class';
+import { Data, generateItem, IndexedItem, Processor } from './items';
 
 export class Padding<Comp = TestComponentInterface> {
   direction: Direction;

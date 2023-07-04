@@ -2,7 +2,7 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ComponentFixtureAutoDetect } from '@angular/core/testing';
 import { Type } from '@angular/core';
 
-import { UiScrollModule } from '../../scroller/src/ui-scroll.module';
+import { UiScrollModule } from 'ngx-ui-scroll';
 
 import { DatasourceService } from './datasources/class';
 import {

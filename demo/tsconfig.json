@@ -1,0 +1,37 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "../out-tsc/app",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictPropertyInitialization": false,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "noImplicitAny": true,
+    "paths": {
+      "ngx-ui-scroll": ["../scroller/public-api.ts"],
+      "vscroll": ["../scroller/node_modules/vscroll"],
+      "@angular/core": ["./node_modules/@angular/core"],
+      "@angular/common": ["./node_modules/@angular/common"],
+      "rxjs": ["./node_modules/rxjs"]
+    },
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "es2020",
+    "lib": ["es2018", "dom"],
+    "useDefineForClassFields": false
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "files": ["main.ts", "polyfills.ts"],
+  "include": ["**/*.d.ts"]
+}

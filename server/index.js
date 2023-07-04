@@ -1,8 +1,20 @@
 const path = require('path');
 const express = require('express');
-const app = express();
 
+try {
+  const dotenv = require('dotenv');
+  const config = dotenv.config({ path: path.join(__dirname + '/../.env') });
+  if (config.error) {
+    throw config.error;
+  }
+} catch (e) {
+  console.log("Can't read .env", e);
+}
+
+const port = process.env.MOCK_SERVER_PORT || process.env.PORT || 5000;
 const env = process.env.NODE_ENV || 'development';
+
+const app = express();
 
 if (env === 'production') {
   const forceSSL = (req, res, next) => {
@@ -47,11 +59,8 @@ app.get('/api/data', (req, res) => {
 });
 
 // Send all requests to index.html
-app.get('/*', (req, res) =>
+app.get('/*', (_, res) =>
   res.sendFile(path.join(__dirname + '/../dist/demo/index.html'))
 );
-// default Heroku port
-const port = process.env.PORT || 5000;
-app.listen(port, () =>
-  console.log(`Listening ${port} port...`)
-);
+
+app.listen(port, () => console.log(`Listening ${port} port...`));

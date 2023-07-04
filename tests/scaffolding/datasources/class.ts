@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { IDatasource, Datasource } from 'ngx-ui-scroll';
 import {
   Settings,
   DevSettings,
@@ -7,11 +8,6 @@ import {
   Item,
   Direction
 } from '../../miscellaneous/vscroll';
-
-import {
-  IDatasource,
-  Datasource
-} from '../../../scroller/src/ui-scroll.datasource';
 import { generateItem, Data, Processor } from '../../miscellaneous/items';
 import { datasourceStore } from './store';
 

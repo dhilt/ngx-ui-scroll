@@ -52,7 +52,7 @@ export class UiScrollDirective<Data = unknown> implements OnDestroy {
         new Workflow<Data>({
           consumer,
           element: this.component.elementRef.nativeElement,
-          datasource: datasource as IDatasource<Data>,
+          datasource: datasource as unknown as IDatasource<Data>,
           run: (items: Item<Data>[]) => {
             if (!items.length && !this.component.items.length) {
               return;

@@ -1,0 +1,40 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "../out-tsc/spec",
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "strictPropertyInitialization": false,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "types": ["jasmine", "node"],
+    "downlevelIteration": true,
+    "noImplicitAny": false,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "es2020",
+    "lib": ["es2018", "dom"],
+    "useDefineForClassFields": false,
+    "paths": {
+      "ngx-ui-scroll": ["../scroller/public-api.ts"],
+      "vscroll": ["../scroller/node_modules/vscroll"],
+      "@angular/core": ["./node_modules/@angular/core"],
+      "@angular/common": ["./node_modules/@angular/common"],
+      "rxjs": ["./node_modules/rxjs"]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
+  "include": ["index.ts"]
+}

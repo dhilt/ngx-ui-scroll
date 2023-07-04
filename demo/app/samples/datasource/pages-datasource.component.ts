@@ -66,7 +66,7 @@ ${this.demoContext.log}`;
 
       // retrieving pages items
       let pagesResult: MyItem[] = [];
-      const logPages = [];
+      const logPages: number[] = [];
       for (let i = startPage; i <= endPage; i++) {
         logPages.push(i);
         pagesResult = [...pagesResult, ...this.getDataPage(i)];

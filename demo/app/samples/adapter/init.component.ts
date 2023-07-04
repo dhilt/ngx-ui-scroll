@@ -4,6 +4,7 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { demos } from '../../routes';
 import {
@@ -107,9 +108,11 @@ constructor(public changeDetector: ChangeDetectorRef) {
 
   constructor(public changeDetector: ChangeDetectorRef) {
     const { adapter } = this.datasource;
-    adapter.init$.pipe(take(1)).subscribe(() => {
-      this.version = adapter.packageInfo.consumer.version;
-      this.changeDetector.detectChanges();
-    });
+    (adapter.init$ as unknown as Observable<boolean>)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.version = adapter.packageInfo.consumer.version;
+        this.changeDetector.detectChanges();
+      });
   }
 }

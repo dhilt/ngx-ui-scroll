@@ -89,6 +89,10 @@ export const datasourceStore: IDatasourceStore = {
     get: limitedDatasourceGet(51, 200, false, DatasourceType.Observable, 0)
   },
 
+  'limited-callback--10-100-no-delay': {
+    get: limitedDatasourceGet(-10, 100, false, DatasourceType.Callback, 0)
+  },
+
   'limited--50-99-dynamic-size': {
     get: limitedDatasourceGet(-50, 99, true, DatasourceType.Callback, 0)
   },

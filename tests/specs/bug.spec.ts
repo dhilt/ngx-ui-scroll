@@ -311,4 +311,37 @@ describe('Bug Spec', () => {
         done();
       }
     }));
+
+  describe('negative index cut after fetch', () =>
+    makeTest({
+      title: 'should not have gap',
+      config: {
+        templateSettings: {
+          viewportHeight: 250,
+          itemHeight: 22
+        },
+        datasourceName: 'limited-callback--10-100-no-delay',
+        datasourceSettings: {
+          adapter: true,
+          bufferSize: 5,
+          startIndex: 1
+        }
+      },
+      it: misc => async done => {
+        await misc.relaxNext();
+        misc.scrollMax();
+        await misc.relaxNext();
+        misc.scrollMin();
+        await misc.relaxNext();
+
+        expect(misc.adapter.bof).toBe(true);
+        expect(misc.adapter.bufferInfo.minIndex).toBe(-10);
+        expect(misc.adapter.bufferInfo.firstIndex).toBe(-10);
+        expect(misc.adapter.bufferInfo.absMinIndex).toBe(-10);
+        expect(misc.adapter.firstVisible.$index).toBe(-5);
+        expect(misc.checkElementContentByIndex(-5)).toEqual(true);
+
+        done();
+      }
+    }));
 });

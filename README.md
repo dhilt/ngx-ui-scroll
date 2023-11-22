@@ -190,7 +190,7 @@ Below is the list of read-only properties of the Adapter API with descriptions a
 
 |Name|Type|Description|
 |:--|:----|:----------|
-|[packageInfo](https://dhilt.github.io/ngx-ui-scroll/#adapter#package-info)|IPackages {<br>&nbsp;&nbsp;consumer: IPackage;<br>&nbsp;&nbsp;core: IPackage;<br>}<br><br>IPackage {<br>&nbsp;&nbsp;name: string;<br>&nbsp;&nbsp;version: string<br>}|Information about versions of the library ant its core. For example: "ngx-ui-scroll" v3.1.0 (consumer), "vscroll" v1.4.3 (core).|
+|[packageInfo](https://dhilt.github.io/ngx-ui-scroll/#adapter#package-info)|IPackages {<br>&nbsp;&nbsp;consumer: IPackage;<br>&nbsp;&nbsp;core: IPackage;<br>}<br><br>IPackage {<br>&nbsp;&nbsp;name: string;<br>&nbsp;&nbsp;version: string<br>}|Information about versions of the library ant its core. For example: "ngx-ui-scroll" v3.1.0 (consumer), "vscroll" v1.5.5 (core).|
 |[init](https://dhilt.github.io/ngx-ui-scroll/#adapter#init)|boolean|Indicates whether the Scroller is initialized ot not. |
 |[init$](https://dhilt.github.io/ngx-ui-scroll/#adapter#init)|Subject&lt;boolean&gt;|An Observable version of "init" property. |
 |[isLoading](https://dhilt.github.io/ngx-ui-scroll/#adapter#is-loading)|boolean|Indicates whether the Scroller is working ot not. |

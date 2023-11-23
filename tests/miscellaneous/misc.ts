@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { debounceTime, filter, take } from 'rxjs/operators';
 
-import { IAdapter, IDatasource } from 'ngx-ui-scroll';
+import { IAdapter, IDatasource, UiScrollDirective } from 'ngx-ui-scroll';
 import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
 
 import {
@@ -66,6 +66,14 @@ export class Misc<Comp = TestComponentInterface> {
   itemWidth = 100;
   shared: { [key: string]: unknown } = {};
 
+  get directive() {
+    const debugElement = this.fixture.debugElement.queryAllNodes(
+      By.directive(UiScrollDirective)
+    )[0];
+    return debugElement.injector.get<UiScrollDirective<Data>>(
+      UiScrollDirective
+    );
+  }
   get scroller(): Scroller {
     return this.workflow.scroller;
   }
@@ -79,7 +87,7 @@ export class Misc<Comp = TestComponentInterface> {
     this.uiScrollElement = fixture.debugElement.query(By.css('[ui-scroll]'));
     this.uiScrollComponent = this.uiScrollElement.componentInstance;
     this.viewportElement = this.uiScrollElement.parent as DebugElement;
-    this.workflow = this.uiScrollComponent.workflow;
+    this.workflow = this.directive.workflow as Workflow<Data>;
     this.datasource = (
       this.testComponent as unknown as TestComponentInterface
     ).datasource;
@@ -95,13 +103,8 @@ export class Misc<Comp = TestComponentInterface> {
     };
   }
 
-  getComponent(): UiScrollComponent<Data> {
-    return this.fixture.debugElement.query(By.css('[ui-scroll]'))
-      .componentInstance;
-  }
-
   getWorkflow(): Workflow<Data> {
-    return this.getComponent().workflow;
+    return this.directive.workflow as Workflow<Data>;
   }
 
   generateFakeWorkflow(settings?: Scroller['settings']): Workflow {

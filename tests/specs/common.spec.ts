@@ -1,11 +1,11 @@
 import { ComponentFixture } from '@angular/core/testing';
-import { DebugElement } from '@angular/core';
+import { DebugElement, DebugNode } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
 import { Workflow, Direction, Settings } from '../miscellaneous/vscroll';
 
 import { UiScrollComponent } from '../../scroller/src/ui-scroll.component';
-import { IAdapter } from 'ngx-ui-scroll';
+import { IAdapter, UiScrollDirective } from 'ngx-ui-scroll';
 
 import { configureTestBed, configureTestBedTwo } from '../scaffolding/testBed';
 import { generateDatasourceClass } from '../scaffolding/datasources/class';
@@ -261,10 +261,10 @@ describe('Multiple Instances', () => {
     a2: fixture.componentInstance.datasource2.adapter
   });
   const getWorkflows = (): { w1: Workflow; w2: Workflow } =>
-    fixture.debugElement.queryAll(By.css('[ui-scroll]')).reduce(
-      (acc, element: DebugElement, i: number) => ({
+    fixture.debugElement.queryAllNodes(By.directive(UiScrollDirective)).reduce(
+      (acc, element: DebugNode, i: number) => ({
         ...acc,
-        ['w' + (i + 1)]: element.componentInstance.workflow
+        ['w' + (i + 1)]: element.injector.get(UiScrollDirective).workflow
       }),
       {} as { w1: Workflow; w2: Workflow }
     );
@@ -285,7 +285,7 @@ describe('Multiple Instances', () => {
       expect(adapter2).toBeTruthy();
     });
 
-    it('should init component with 2 workflows', () => {
+    it('should init component with 2 item lists', () => {
       const uiScrollElements: DebugElement[] = fixture.debugElement.queryAll(
         By.css('[ui-scroll]')
       );
@@ -294,7 +294,7 @@ describe('Multiple Instances', () => {
       uiScrollElements
         .map((element: DebugElement) => element.componentInstance)
         .forEach((component: UiScrollComponent) =>
-          expect(component.workflow).toBeTruthy()
+          expect(Array.isArray(component.items)).toBeTruthy()
         );
     });
 

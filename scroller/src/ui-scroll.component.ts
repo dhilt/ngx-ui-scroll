@@ -13,7 +13,7 @@ import { IDatasource, Workflow, Item } from './vscroll';
 
 import { IDatasource as IAngularDatasource } from './ui-scroll.datasource';
 import consumer from './ui-scroll.version';
-import { CustomRoutines } from './types';
+import { RoutinesClassType } from './types';
 
 @Component({
   selector: '[ui-scroll]',
@@ -41,7 +41,7 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
   // these should come from the directive
   public template!: TemplateRef<unknown>;
   public datasource!: IAngularDatasource<Data>;
-  public Routines?: CustomRoutines;
+  public Routines?: RoutinesClassType;
 
   // the only template variable
   public items: Item<Data>[] = [];

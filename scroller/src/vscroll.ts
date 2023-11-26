@@ -2,11 +2,12 @@ export {
   // entities
   Workflow,
   makeDatasource,
+  Routines,
   AdapterPropName,
   EMPTY_ITEM,
   SizeStrategy,
 
-  // interfaces
+  // types
   Item,
   IDatasource,
   IDatasourceConstructed,

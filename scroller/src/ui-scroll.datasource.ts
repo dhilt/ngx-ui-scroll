@@ -28,6 +28,9 @@ interface IAngularAdapter<Data = unknown>
   extends _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>,
     IReactiveOverride<Data> {}
 
+interface IAngularDatasourceParams<Data = unknown>
+  extends _Omit<IDatasource<Data>, 'adapter'> {}
+
 interface IAngularDatasource<Data = unknown>
   extends _Omit<IDatasource<Data>, 'adapter'> {
   adapter?: IAngularAdapter<Data>;
@@ -62,18 +65,13 @@ const getAdapterConfig = (): IAdapterConfig => ({
   }
 });
 
-const makeAngularDatasource = () =>
-  class<T = unknown> implements IAngularDatasourceConstructed<T> {
-    get!: IAngularDatasource<T>['get'];
-    settings?: IAngularDatasource<T>['settings'];
-    devSettings?: IAngularDatasource<T>['devSettings'];
-    adapter!: IAngularAdapter<T>;
-    constructor(_ds: IAngularDatasource<T>) {}
-  };
+type AngularDatasourceClass<> = new <Data>(
+  params: IAngularDatasourceParams<Data>
+) => IAngularDatasourceConstructed<Data>;
 
 const AngularDatasource = makeDatasource(
   getAdapterConfig
-) as unknown as ReturnType<typeof makeAngularDatasource>;
+) as AngularDatasourceClass;
 
 export {
   IAngularAdapter as IAdapter,

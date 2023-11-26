@@ -10,10 +10,8 @@ import {
 } from '@angular/core';
 
 import { IDatasource, Workflow, Item } from './vscroll';
-
-import { IDatasource as IAngularDatasource } from './ui-scroll.datasource';
+import { IDatasource as IAngularDatasource, RoutinesClassType } from './types';
 import consumer from './ui-scroll.version';
-import { RoutinesClassType } from './types';
 
 @Component({
   selector: '[ui-scroll]',

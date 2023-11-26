@@ -7,8 +7,7 @@ import {
 } from '@angular/core';
 
 import { UiScrollComponent } from './ui-scroll.component';
-import { IDatasource } from './ui-scroll.datasource';
-import { RoutinesClassType } from './types';
+import { IDatasource, RoutinesClassType } from './types';
 
 @Directive({ selector: '[uiScroll][uiScrollOf]' })
 export class UiScrollDirective<ItemData = unknown> implements OnInit {

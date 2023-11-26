@@ -2,11 +2,8 @@ import { Component } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { ItemAdapter } from '../miscellaneous/vscroll';
+import { IDatasource, Datasource } from 'ngx-ui-scroll';
 import { Data } from '../miscellaneous/items';
-import {
-  IDatasource,
-  Datasource
-} from '../../scroller/src/ui-scroll.datasource';
 import { DatasourceService } from './datasources/class';
 import { defaultTemplate, TemplateSettings } from './templates';
 
@@ -70,7 +67,7 @@ export class ScrollerTestComponent implements TestComponentInterface {
     </div>`
 })
 export class TwoScrollersTestComponent implements TestComponentInterface {
-  datasource = new Datasource<Data>({
+  datasource: IDatasource<Data> = new Datasource<Data>({
     get: (index, count, success) =>
       success(
         Array.from({ length: count }, (j, i) => ({
@@ -80,7 +77,7 @@ export class TwoScrollersTestComponent implements TestComponentInterface {
       )
   });
 
-  datasource2 = new Datasource<Data>({
+  datasource2: IDatasource<Data> = new Datasource<Data>({
     get: (index, count, success) =>
       success(
         Array.from({ length: count }, (j, i) => ({
@@ -111,7 +108,7 @@ const basicDS: IDatasource<Data> = {
 
 @Component({ template: basicTemplate })
 export class ScrollerSubTestComponent implements TestComponentInterface {
-  datasource = new Datasource<Data>(basicDS);
+  datasource: IDatasource<Data> = new Datasource<Data>(basicDS);
   show = true;
   firstVisible!: ItemAdapter<Data>;
   constructor() {

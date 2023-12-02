@@ -109,7 +109,7 @@ export class Misc<Comp = TestComponentInterface> {
       consumer: { name: 'fake', version: 'x.x.x' },
       element: this.scroller.routines.element,
       datasource: { get: (_a: unknown, _b: unknown) => null, settings },
-      run: () => null
+      run: _ => null
     });
   }
 

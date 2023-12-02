@@ -15,4 +15,4 @@ export {
   IAdapterConfig,
   IAdapterItem,
   IAdapter
-} from 'vscroll'; // from '../../vscroll/src';
+} from 'vscroll'; // from '../../../vscroll/src';

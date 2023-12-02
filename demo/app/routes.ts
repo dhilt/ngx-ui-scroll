@@ -261,6 +261,11 @@ const experimentalScope = {
     id: 'onBeforeClip-setting',
     name: 'onBeforeClip setting',
     scope: globalScope.experimental.id
+  },
+  routines: {
+    id: 'routines',
+    name: 'Routines',
+    scope: globalScope.experimental.id
   }
 };
 

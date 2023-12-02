@@ -9,7 +9,7 @@ import {
 } from './vscroll';
 
 type WorkflowParams = ConstructorParameters<typeof Workflow>;
-export type RoutinesClassType = WorkflowParams[0]['Routines'];
+export type RoutinesClassType = NonNullable<WorkflowParams[0]['Routines']>;
 
 interface IReactiveOverride<Item = unknown> {
   init$: Subject<boolean>;

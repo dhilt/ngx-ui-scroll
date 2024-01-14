@@ -262,6 +262,11 @@ const experimentalScope = {
     name: 'onBeforeClip setting',
     scope: globalScope.experimental.id
   },
+  adapterPauseResume: {
+    id: 'adapter-pause-resume',
+    name: 'Adapter pause/resume methods',
+    scope: globalScope.experimental.id
+  },
   routines: {
     id: 'routines',
     name: 'Routines',

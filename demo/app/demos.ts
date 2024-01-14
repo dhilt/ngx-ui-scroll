@@ -45,6 +45,7 @@ import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
 import { DemoAdapterFixScrollToItemComponent } from './samples/experimental/adapter-fix-scrollToItem.component';
 import { DemoOnBeforeClipSettingComponent } from './samples/experimental/onBeforeClip-setting.component';
+import { DemoAdapterPauseResumeComponent } from './samples/experimental/adapter-pause-resume.component';
 import { DemoRoutinesComponent } from './samples/experimental/routines.component';
 
 const common = [
@@ -100,6 +101,7 @@ const experimental = [
   DemoAdapterFixUpdaterComponent,
   DemoAdapterFixScrollToItemComponent,
   DemoOnBeforeClipSettingComponent,
+  DemoAdapterPauseResumeComponent,
   DemoRoutinesComponent
 ];
 

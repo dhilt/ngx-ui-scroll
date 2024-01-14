@@ -1,0 +1,19 @@
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
+  <div actions>
+    <div class="comment">Available since v3.2.0, undocumented</div>
+    <button (click)="datasource.adapter.pause()">Pause</button>
+    <button (click)="datasource.adapter.resume()">Resume</button>
+  </div>
+  <div description>
+    <p>
+      The <em>Adapter.pause</em> method is to stop the Scroller.
+      It doesn't receive the scroll events from the viewport,
+      so the scroll events are ignored. Also, all the Adapter methods
+      (except <em>Adapter.resume</em> and <em>Adapter.reset</em>)
+      don't do anything.
+    </p>
+    <p>
+      The <em>Adapter.resume</em> method is to make the Scroller live again.
+    </p>
+  </div>
+</app-demo>

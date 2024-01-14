@@ -45,6 +45,7 @@ import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
 import { DemoAdapterFixScrollToItemComponent } from './samples/experimental/adapter-fix-scrollToItem.component';
 import { DemoOnBeforeClipSettingComponent } from './samples/experimental/onBeforeClip-setting.component';
+import { DemoRoutinesComponent } from './samples/experimental/routines.component';
 
 const common = [
   DemoBasicComponent,
@@ -98,7 +99,8 @@ const experimental = [
   DemoAdapterFixPositionComponent,
   DemoAdapterFixUpdaterComponent,
   DemoAdapterFixScrollToItemComponent,
-  DemoOnBeforeClipSettingComponent
+  DemoOnBeforeClipSettingComponent,
+  DemoRoutinesComponent
 ];
 
 export default {

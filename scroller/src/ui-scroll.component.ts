@@ -10,8 +10,7 @@ import {
 } from '@angular/core';
 
 import { IDatasource, Workflow, Item } from './vscroll';
-
-import { IDatasource as IAngularDatasource } from './ui-scroll.datasource';
+import { IDatasource as IAngularDatasource, RoutinesClassType } from './types';
 import consumer from './ui-scroll.version';
 
 @Component({
@@ -40,6 +39,7 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
   // these should come from the directive
   public template!: TemplateRef<unknown>;
   public datasource!: IAngularDatasource<Data>;
+  public Routines?: RoutinesClassType;
 
   // the only template variable
   public items: Item<Data>[] = [];
@@ -79,7 +79,8 @@ export class UiScrollComponent<Data = unknown> implements OnInit, OnDestroy {
               this.items = items;
               this.changeDetector.detectChanges();
             });
-          }
+          },
+          ...(this.Routines ? { Routines: this.Routines } : {})
         })
     );
   }

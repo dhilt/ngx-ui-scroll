@@ -2,11 +2,12 @@ export {
   // entities
   Workflow,
   makeDatasource,
+  Routines,
   AdapterPropName,
   EMPTY_ITEM,
   SizeStrategy,
 
-  // interfaces
+  // types
   Item,
   IDatasource,
   IDatasourceConstructed,
@@ -14,4 +15,4 @@ export {
   IAdapterConfig,
   IAdapterItem,
   IAdapter
-} from 'vscroll'; // from '../../vscroll/src';
+} from 'vscroll'; // from '../../../vscroll/src';

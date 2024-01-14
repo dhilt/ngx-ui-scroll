@@ -105,6 +105,7 @@ If the height of the viewport is not constrained, it will pull the entire conten
 ```javascript
 import { IDatasource } from 'ngx-ui-scroll';
 
+@Component({ ... })
 export class AppComponent {
   datasource: IDatasource = {
     get: (index, count, success) => {

@@ -4,39 +4,11 @@ import {
   makeDatasource,
   AdapterPropName,
   EMPTY_ITEM,
-  IDatasource,
-  IDatasourceConstructed,
   IReactivePropConfig,
   IAdapterConfig,
-  IAdapterItem,
-  IAdapter
+  IAdapterItem
 } from './vscroll';
-
-interface IReactiveOverride<Item = unknown> {
-  init$: Subject<boolean>;
-  isLoading$: Subject<boolean>;
-  loopPending$: Subject<boolean>;
-  firstVisible$: BehaviorSubject<IAdapterItem<Item>>;
-  lastVisible$: BehaviorSubject<IAdapterItem<Item>>;
-  bof$: Subject<boolean>;
-  eof$: Subject<boolean>;
-}
-
-type _Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
-
-interface IAngularAdapter<Data = unknown>
-  extends _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>,
-    IReactiveOverride<Data> {}
-
-interface IAngularDatasource<Data = unknown>
-  extends _Omit<IDatasource<Data>, 'adapter'> {
-  adapter?: IAngularAdapter<Data>;
-}
-
-interface IAngularDatasourceConstructed<Data = unknown>
-  extends _Omit<IDatasourceConstructed<Data>, 'adapter'> {
-  adapter: IAngularAdapter<Data>;
-}
+import { AngularDatasourceClass } from './types';
 
 const getBooleanSubjectPropConfig = (): IReactivePropConfig => ({
   source: new Subject<boolean>(),
@@ -62,21 +34,8 @@ const getAdapterConfig = (): IAdapterConfig => ({
   }
 });
 
-const makeAngularDatasource = () =>
-  class<T = unknown> implements IAngularDatasourceConstructed<T> {
-    get!: IAngularDatasource<T>['get'];
-    settings?: IAngularDatasource<T>['settings'];
-    devSettings?: IAngularDatasource<T>['devSettings'];
-    adapter!: IAngularAdapter<T>;
-    constructor(_ds: IAngularDatasource<T>) {}
-  };
-
 const AngularDatasource = makeDatasource(
   getAdapterConfig
-) as unknown as ReturnType<typeof makeAngularDatasource>;
+) as AngularDatasourceClass;
 
-export {
-  IAngularAdapter as IAdapter,
-  IAngularDatasource as IDatasource,
-  AngularDatasource as Datasource
-};
+export { AngularDatasource as Datasource };

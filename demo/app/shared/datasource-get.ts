@@ -1,6 +1,6 @@
 import { Observable, Observer } from 'rxjs';
 
-import { IDatasource } from '../../../scroller/src/ui-scroll.datasource';
+import { IDatasource } from 'ngx-ui-scroll';
 import { DemoContext, MyItem } from './interfaces';
 
 const delayedCall = (

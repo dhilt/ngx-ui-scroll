@@ -1,5 +1,4 @@
 <h1>Angular UI Scroll Experimental Demos</h1>
-
 <p>
   There are some undocumented settings and Adapter methods that provide
   additional flexibility. We can consider them as experimental features. Most of
@@ -19,19 +18,18 @@
   </li>
   <li>
     fix adapter method:
-    <a routerLink="{{ base }}" fragment="{{ scope.adapterFixPosition.id }}"
-      >position</a
-    >,
-    <a routerLink="{{ base }}" fragment="{{ scope.adapterFixUpdater.id }}"
-      >updater</a
-    >,
-    <a routerLink="{{ base }}" fragment="{{ scope.adapterFixScrollToItem.id }}"
-      >scroll to item</a
-    >
+    <a routerLink="{{ base }}" fragment="{{ scope.adapterFixPosition.id }}">position</a>,
+    <a routerLink="{{ base }}" fragment="{{ scope.adapterFixUpdater.id }}">updater</a>,
+    <a routerLink="{{ base }}" fragment="{{ scope.adapterFixScrollToItem.id }}">scroll to item</a>
   </li>
   <li>
     <a routerLink="{{ base }}" fragment="{{ scope.onBeforeClipSetting.id }}">
       {{ scope.onBeforeClipSetting.name }}
+    </a>
+  </li>
+  <li>
+    <a routerLink="{{ base }}" fragment="{{ scope.routines.id }}">
+      {{ scope.routines.name }}
     </a>
   </li>
 </ul>
@@ -41,10 +39,10 @@
   object of the following type:
 </p>
 <pre>{{ adapterFixArgumentDescription }}</pre>
-
 <app-viewport-element-setting></app-viewport-element-setting>
 <app-inverse-setting></app-inverse-setting>
 <app-adapter-fix-position></app-adapter-fix-position>
 <app-adapter-fix-updater></app-adapter-fix-updater>
 <app-adapter-fix-scroll-to-item></app-adapter-fix-scroll-to-item>
 <app-on-before-clip-setting></app-on-before-clip-setting>
+<app-routines></app-routines>

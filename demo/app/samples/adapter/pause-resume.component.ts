@@ -6,12 +6,12 @@ import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
 import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
-  selector: 'app-adapter-pause-resume',
-  templateUrl: './adapter-pause-resume.component.html'
+  selector: 'app-demo-pause-resume',
+  templateUrl: './pause-resume.component.html'
 })
-export class DemoAdapterPauseResumeComponent {
+export class DemoPauseResumeComponent {
   demoContext = {
-    config: demos.experimental.map.adapterPauseResume,
+    config: demos.adapterMethods.map.pauseResume,
     noInfo: true
   };
 

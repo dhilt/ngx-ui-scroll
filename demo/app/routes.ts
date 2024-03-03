@@ -228,6 +228,11 @@ const adapterMethodsScope = {
     id: 'update',
     name: 'Update',
     scope: globalScope.adapterMethods.id
+  },
+  pauseResume: {
+    id: 'pause-resume',
+    name: 'Pause / resume',
+    scope: globalScope.adapterMethods.id
   }
 };
 
@@ -260,11 +265,6 @@ const experimentalScope = {
   onBeforeClipSetting: {
     id: 'onBeforeClip-setting',
     name: 'onBeforeClip setting',
-    scope: globalScope.experimental.id
-  },
-  adapterPauseResume: {
-    id: 'adapter-pause-resume',
-    name: 'Adapter pause/resume methods',
     scope: globalScope.experimental.id
   },
   routines: {

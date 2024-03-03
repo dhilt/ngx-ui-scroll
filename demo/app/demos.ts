@@ -38,6 +38,7 @@ import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoReplaceComponent } from './samples/adapter/replace.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
 import { DemoUpdateComponent } from './samples/adapter/update.component';
+import { DemoPauseResumeComponent } from './samples/adapter/pause-resume.component';
 
 import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
@@ -45,7 +46,6 @@ import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
 import { DemoAdapterFixScrollToItemComponent } from './samples/experimental/adapter-fix-scrollToItem.component';
 import { DemoOnBeforeClipSettingComponent } from './samples/experimental/onBeforeClip-setting.component';
-import { DemoAdapterPauseResumeComponent } from './samples/experimental/adapter-pause-resume.component';
 import { DemoRoutinesComponent } from './samples/experimental/routines.component';
 
 const common = [
@@ -91,7 +91,8 @@ const adapter = [
   DemoRemoveComponent,
   DemoReplaceComponent,
   DemoClipComponent,
-  DemoUpdateComponent
+  DemoUpdateComponent,
+  DemoPauseResumeComponent
 ];
 
 const experimental = [
@@ -101,7 +102,6 @@ const experimental = [
   DemoAdapterFixUpdaterComponent,
   DemoAdapterFixScrollToItemComponent,
   DemoOnBeforeClipSettingComponent,
-  DemoAdapterPauseResumeComponent,
   DemoRoutinesComponent
 ];
 

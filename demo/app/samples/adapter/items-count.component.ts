@@ -42,7 +42,7 @@ export class DemoItemsCountComponent {
     {
       active: true,
       name: DemoSourceType.Template,
-      text: `The uiScroll buffer has
+      text: `The Scroller's buffer has
 {{datasource.adapter.itemsCount}} items.
 
 <div class="viewport">

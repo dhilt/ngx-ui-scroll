@@ -38,6 +38,7 @@ import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoReplaceComponent } from './samples/adapter/replace.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
 import { DemoUpdateComponent } from './samples/adapter/update.component';
+import { DemoPauseResumeComponent } from './samples/adapter/pause-resume.component';
 
 import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
@@ -75,6 +76,7 @@ const adapter = [
   DemoAdapterReturnValueComponent,
   DemoResetComponent,
   DemoReloadComponent,
+  DemoPauseResumeComponent,
   DemoInitComponent,
   DemoIsLoadingComponent,
   DemoPackageInfoComponent,

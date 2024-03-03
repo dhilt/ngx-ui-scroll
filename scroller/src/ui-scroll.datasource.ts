@@ -30,7 +30,8 @@ const getAdapterConfig = (): IAdapterConfig => ({
     [AdapterPropName.firstVisible$]: getItemBehaviorSubjectPropConfig(),
     [AdapterPropName.lastVisible$]: getItemBehaviorSubjectPropConfig(),
     [AdapterPropName.bof$]: getBooleanSubjectPropConfig(),
-    [AdapterPropName.eof$]: getBooleanSubjectPropConfig()
+    [AdapterPropName.eof$]: getBooleanSubjectPropConfig(),
+    [AdapterPropName.paused$]: getBooleanSubjectPropConfig()
   }
 });
 

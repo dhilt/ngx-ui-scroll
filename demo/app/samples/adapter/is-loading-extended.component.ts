@@ -56,7 +56,7 @@ constructor() {
     {
       active: true,
       name: DemoSourceType.Template,
-      text: `The uiScroll is
+      text: `The Scroller is
 {{datasource.adapter.isLoading ? 'loading': 'relaxing'}},
 counter {{loadingCounter}}
 

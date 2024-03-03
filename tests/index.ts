@@ -4,6 +4,7 @@ import './specs/adapter.append-prepend.spec';
 import './specs/adapter.check.spec';
 import './specs/adapter.clip.spec';
 import './specs/adapter.insert.spec';
+import './specs/adapter.pause.spec';
 import './specs/adapter.prepend.spec';
 import './specs/adapter.reload.spec';
 import './specs/adapter.remove.spec';

@@ -76,6 +76,7 @@ const adapter = [
   DemoAdapterReturnValueComponent,
   DemoResetComponent,
   DemoReloadComponent,
+  DemoPauseResumeComponent,
   DemoInitComponent,
   DemoIsLoadingComponent,
   DemoPackageInfoComponent,
@@ -91,8 +92,7 @@ const adapter = [
   DemoRemoveComponent,
   DemoReplaceComponent,
   DemoClipComponent,
-  DemoUpdateComponent,
-  DemoPauseResumeComponent
+  DemoUpdateComponent
 ];
 
 const experimental = [

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
+import { doLog } from '../../shared/datasource-get';
 
 import { Datasource } from 'ngx-ui-scroll';
 
@@ -12,7 +13,9 @@ import { Datasource } from 'ngx-ui-scroll';
 export class DemoPauseResumeComponent {
   demoContext = {
     config: demos.adapterMethods.map.pauseResume,
-    noInfo: true
+    viewportId: 'pause-resume-viewport',
+    count: 0,
+    log: ''
   };
 
   datasource = new Datasource({
@@ -21,6 +24,7 @@ export class DemoPauseResumeComponent {
       for (let i = index; i <= index + count - 1; i++) {
         data.push({ id: i, text: 'item #' + i });
       }
+      doLog(this.demoContext, index, count, data.length);
       success(data);
     }
   });

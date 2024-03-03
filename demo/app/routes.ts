@@ -189,6 +189,11 @@ const adapterMethodsScope = {
     name: 'Reset',
     scope: globalScope.adapter.id
   },
+  pauseResume: {
+    id: 'pause-resume',
+    name: 'Pause / resume',
+    scope: globalScope.adapterMethods.id
+  },
   check: {
     id: 'check-size',
     name: 'Check size',
@@ -227,11 +232,6 @@ const adapterMethodsScope = {
   update: {
     id: 'update',
     name: 'Update',
-    scope: globalScope.adapterMethods.id
-  },
-  pauseResume: {
-    id: 'pause-resume',
-    name: 'Pause / resume',
     scope: globalScope.adapterMethods.id
   }
 };

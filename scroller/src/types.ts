@@ -19,6 +19,7 @@ interface IReactiveOverride<Item = unknown> {
   lastVisible$: BehaviorSubject<IAdapterItem<Item>>;
   bof$: Subject<boolean>;
   eof$: Subject<boolean>;
+  paused$: Subject<boolean>;
 }
 
 type _Omit<T, K> = Pick<T, Exclude<keyof T, K>>;

@@ -206,6 +206,8 @@ Below is the list of read-only properties of the Adapter API with descriptions a
 |[firstVisible$](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&lt;MyItem&gt;&gt;|An observable version of "firstVisible" property. |
 |[lastVisible](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|ItemAdapter&lt;MyItem&gt; {<br>&nbsp;&nbsp;$index:&nbsp;number;<br>&nbsp;&nbsp;data:&nbsp;MyItem;<br>&nbsp;&nbsp;element?:&nbsp;HTMLElement;<br>}|Object of ItemAdapter type containing information about last visible item. |
 |[lastVisible$](https://dhilt.github.io/ngx-ui-scroll/#adapter#first-last-visible-items)|BehaviorSubject<br>&lt;ItemAdapter&lt;MyItem&gt;&gt;|An observable version of "lastVisible" property. |
+|[paused](https://dhilt.github.io/ngx-ui-scroll/#adapter#pause-resume)|boolean|Indicates whether the Scroller is paused ot not. |
+|[paused$](https://dhilt.github.io/ngx-ui-scroll/#adapter#pause-resume)|Subject&lt;boolean&gt;|An Observable version of "paused" property. |
 
 Below is the list of invocable methods of the Adapter API with description and links to demos.
 

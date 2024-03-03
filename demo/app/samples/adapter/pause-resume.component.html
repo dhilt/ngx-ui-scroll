@@ -2,17 +2,22 @@
   <div actions>
     <button (click)="datasource.adapter.pause()">Pause</button>
     <button (click)="datasource.adapter.resume()">Resume</button>
+    Scroller is {{ datasource.adapter.paused ? 'paused' : 'not paused' }}
   </div>
   <div description>
     <p>
       The <em>Adapter.pause</em> method is to stop the Scroller.
       When paused, it doesn't receive the scroll events from the viewport,
       so the scroll events are ignored. Also, all the Adapter methods
-      (except <em>Adapter.resume</em> and <em>Adapter.reset</em>)
-      don't do anything.
+      (except <em>Adapter.resume</em> and <em>Adapter.reset</em>) don't do anything.
+      The <em>Adapter.resume</em> method is to make the Scroller live again.
     </p>
     <p>
-      The <em>Adapter.resume</em> method is to make the Scroller live again.
+      In addition to the <em>pause</em>/<em>resume</em> methods, there is
+      a read-only property, <em>Adapter.paused</em>, that reports whether
+      the Scroller is paused or not.
+      Along with the scalar property, there is also a reactive one:
+      <em>Adapter.paused$</em>.
     </p>
   </div>
 </app-demo>

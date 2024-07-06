@@ -28,7 +28,7 @@ interface IAngularAdapter<Data = unknown>
   extends _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>,
     IReactiveOverride<Data> {}
 
-interface IAngularDatasourceParams<Data = unknown>
+export interface IAngularDatasourceParams<Data = unknown>
   extends _Omit<IDatasource<Data>, 'adapter'> {}
 
 interface IAngularDatasource<Data = unknown>
@@ -36,7 +36,7 @@ interface IAngularDatasource<Data = unknown>
   adapter?: IAngularAdapter<Data>;
 }
 
-interface IAngularDatasourceConstructed<Data = unknown>
+export interface IAngularDatasourceConstructed<Data = unknown>
   extends _Omit<IDatasourceConstructed<Data>, 'adapter'> {
   adapter: IAngularAdapter<Data>;
 }

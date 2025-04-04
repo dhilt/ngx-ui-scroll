@@ -30,7 +30,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
   ngOnInit(): void {
     const componentRef = this.viewContainer.createComponent(UiScrollComponent);
     componentRef.instance.datasource = this.datasource as IDatasource;
-    componentRef.instance.template = this.templateRef;
+    componentRef.instance.template.set(this.templateRef);
     componentRef.instance.Routines = this.Routines;
   }
 }

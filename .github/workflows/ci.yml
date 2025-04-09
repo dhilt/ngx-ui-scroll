@@ -14,10 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
+    runs-on: ubuntu-22.04
     steps:
       - name: Dispatched?
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -26,12 +23,12 @@ jobs:
           echo "Build reason: ${{ github.event.inputs.cause }}"
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
 
       - run: npm run ci:lib
       - run: npm run build:lib
@@ -40,14 +37,14 @@ jobs:
       - run: npm run ci:tests
       - run: npm test
 
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4
         with:
           name: demo-dist
           path: dist/demo
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set env BRANCH
         run: echo "BRANCH=$(echo $GITHUB_REF | cut -d'/' -f 3)" >> $GITHUB_ENV
@@ -70,7 +67,7 @@ jobs:
 
       - name: Download dist
         if: env.NEED == 'true'
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@4
         with:
           name: demo-dist
           path: dist-demo-app

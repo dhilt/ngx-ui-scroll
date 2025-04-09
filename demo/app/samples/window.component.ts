@@ -15,7 +15,8 @@ interface MyItem {
 
 @Component({
   selector: 'app-samples-window',
-  templateUrl: './window.component.html'
+  templateUrl: './window.component.html',
+  standalone: false
 })
 export class WindowComponent {
   init: boolean;

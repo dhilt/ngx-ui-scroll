@@ -5,7 +5,8 @@ import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-datasource-signatures',
-  templateUrl: './datasource-signatures.component.html'
+  templateUrl: './datasource-signatures.component.html',
+  standalone: false
 })
 export class DemoDatasourceSignaturesComponent {
   demoContext = {

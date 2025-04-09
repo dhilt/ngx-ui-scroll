@@ -8,7 +8,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-bidirectional-unlimited-datasource',
-  templateUrl: './bidirectional-unlimited-datasource.component.html'
+  templateUrl: './bidirectional-unlimited-datasource.component.html',
+  standalone: false
 })
 export class DemoBidirectionalUnlimitedDatasourceComponent {
   demoContext = {

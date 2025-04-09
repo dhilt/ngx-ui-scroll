@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-samples-adapter',
-  templateUrl: './adapter.component.html'
+  templateUrl: './adapter.component.html',
+  standalone: false
 })
 export class AdapterComponent {
   constructor() {}

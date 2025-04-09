@@ -13,7 +13,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-append-prepend-sync',
-  templateUrl: './append-prepend-sync.component.html'
+  templateUrl: './append-prepend-sync.component.html',
+  standalone: false
 })
 export class DemoAppendPrependSyncComponent {
   demoContext: DemoContext = {

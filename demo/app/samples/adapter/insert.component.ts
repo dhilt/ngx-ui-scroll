@@ -7,7 +7,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-insert',
-  templateUrl: './insert.component.html'
+  templateUrl: './insert.component.html',
+  standalone: false
 })
 export class DemoInsertComponent {
   demoConfig = demos.adapterMethods.map.insert;

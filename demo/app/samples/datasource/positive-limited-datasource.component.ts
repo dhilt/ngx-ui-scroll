@@ -8,7 +8,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-positive-limited-datasource',
-  templateUrl: './positive-limited-datasource.component.html'
+  templateUrl: './positive-limited-datasource.component.html',
+  standalone: false
 })
 export class DemoPositiveLimitedDatasourceComponent {
   demoContext = {

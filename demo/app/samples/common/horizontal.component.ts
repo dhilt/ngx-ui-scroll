@@ -12,7 +12,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-horizontal',
-  templateUrl: './horizontal.component.html'
+  templateUrl: './horizontal.component.html',
+  standalone: false
 })
 export class DemoHorizontalComponent {
   demoContext: DemoContext = {

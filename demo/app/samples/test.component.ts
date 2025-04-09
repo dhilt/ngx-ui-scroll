@@ -18,7 +18,8 @@ interface MyItem {
 
 @Component({
   selector: 'app-samples-test-inner',
-  template: '<b><ng-content></ng-content></b>'
+  template: '<b><ng-content></ng-content></b>',
+  standalone: false
 })
 export class TestInnerComponent {
   constructor() {}
@@ -26,7 +27,8 @@ export class TestInnerComponent {
 
 @Component({
   selector: 'app-samples-test',
-  templateUrl: './test.component.html'
+  templateUrl: './test.component.html',
+  standalone: false
 })
 export class TestComponent {
   @ViewChild('viewport', { static: true })

@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-package-info',
-  templateUrl: './package-info.component.html'
+  templateUrl: './package-info.component.html',
+  standalone: false
 })
 export class DemoPackageInfoComponent {
   demoContext: DemoContext = {

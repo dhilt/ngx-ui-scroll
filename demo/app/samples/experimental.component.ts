@@ -3,7 +3,8 @@ import { demos } from '../routes';
 
 @Component({
   selector: 'app-experimental',
-  templateUrl: './experimental.component.html'
+  templateUrl: './experimental.component.html',
+  standalone: false
 })
 export class ExperimentalComponent {
   constructor() {}

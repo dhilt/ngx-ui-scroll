@@ -18,7 +18,8 @@ export class RemoteDataService {
 
 @Component({
   selector: 'app-remote-datasource',
-  templateUrl: './remote-datasource.component.html'
+  templateUrl: './remote-datasource.component.html',
+  standalone: false
 })
 export class DemoRemoteDatasourceComponent {
   demoContext = {

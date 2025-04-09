@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-adapter-fix-scroll-to-item',
-  templateUrl: './adapter-fix-scrollToItem.component.html'
+  templateUrl: './adapter-fix-scrollToItem.component.html',
+  standalone: false
 })
 export class DemoAdapterFixScrollToItemComponent {
   demoContext: DemoContext = <DemoContext>{

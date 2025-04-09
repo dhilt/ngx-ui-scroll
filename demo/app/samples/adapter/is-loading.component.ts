@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-is-loading',
-  templateUrl: './is-loading.component.html'
+  templateUrl: './is-loading.component.html',
+  standalone: false
 })
 export class DemoIsLoadingComponent {
   demoContext: DemoContext = {

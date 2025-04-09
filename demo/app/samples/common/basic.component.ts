@@ -12,7 +12,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-basic',
-  templateUrl: './basic.component.html'
+  templateUrl: './basic.component.html',
+  standalone: false
 })
 export class DemoBasicComponent {
   demoContext: DemoContext = {

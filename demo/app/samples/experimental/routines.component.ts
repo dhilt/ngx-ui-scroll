@@ -19,7 +19,8 @@ const getCustomRoutines = (context: DemoRoutinesComponent) =>
 
 @Component({
   selector: 'app-routines',
-  templateUrl: './routines.component.html'
+  templateUrl: './routines.component.html',
+  standalone: false
 })
 export class DemoRoutinesComponent {
   demoConfig = demos.experimental.map.routines;

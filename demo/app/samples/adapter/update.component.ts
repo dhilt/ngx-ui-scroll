@@ -16,7 +16,8 @@ interface MyItem {
 
 @Component({
   selector: 'app-demo-update',
-  templateUrl: './update.component.html'
+  templateUrl: './update.component.html',
+  standalone: false
 })
 export class DemoUpdateComponent {
   demoContext: DemoContext = {

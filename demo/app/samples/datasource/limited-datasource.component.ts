@@ -8,7 +8,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-limited-datasource',
-  templateUrl: './limited-datasource.component.html'
+  templateUrl: './limited-datasource.component.html',
+  standalone: false
 })
 export class DemoLimitedDatasourceComponent {
   demoContext = {

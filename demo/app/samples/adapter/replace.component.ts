@@ -16,7 +16,8 @@ interface MyItem {
 
 @Component({
   selector: 'app-demo-replace',
-  templateUrl: './replace.component.html'
+  templateUrl: './replace.component.html',
+  standalone: false
 })
 export class DemoReplaceComponent {
   demoContext: DemoContext = {

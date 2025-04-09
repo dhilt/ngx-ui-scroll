@@ -14,7 +14,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-bof-eof',
-  templateUrl: './bof-eof.component.html'
+  templateUrl: './bof-eof.component.html',
+  standalone: false
 })
 export class DemoBofEofComponent {
   demoContext: DemoContext = {

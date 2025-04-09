@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-reload',
-  templateUrl: './reload.component.html'
+  templateUrl: './reload.component.html',
+  standalone: false
 })
 export class DemoReloadComponent {
   demoContext: DemoContext = {

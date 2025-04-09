@@ -14,7 +14,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-first-last-visible-items',
-  templateUrl: './first-last-visible-items.component.html'
+  templateUrl: './first-last-visible-items.component.html',
+  standalone: false
 })
 export class DemoFirstLastVisibleItemsComponent {
   demoContext: DemoContext = {

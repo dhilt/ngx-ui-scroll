@@ -123,11 +123,13 @@ async doAppend() {
   prependArgumentsDescription = `  AdapterPrependOptions {
     items: unknown[];
     bof?: boolean;
+    virtualize?: boolean;
     increase?: boolean;
   }`;
   appendArgumentsDescription = `  AdapterAppendOptions {
     items: unknown[];
     eof?: boolean;
+    virtualize?: boolean;
     decrease?: boolean;
   }`;
 

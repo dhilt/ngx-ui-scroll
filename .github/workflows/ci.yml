@@ -63,11 +63,11 @@ jobs:
 
       - name: Checkout
         if: env.NEED == 'true'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download dist
         if: env.NEED == 'true'
-        uses: actions/download-artifact@4
+        uses: actions/download-artifact@v4
         with:
           name: demo-dist
           path: dist-demo-app

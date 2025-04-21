@@ -1,51 +1,33 @@
 <ng-template #itemTemplate let-item="item" let-index="index">
   <span class="index">{{ index }})</span> {{ item.text }}
 </ng-template>
-
-<app-demo
-  [datasource]="datasource"
-  [context]="demoContext"
-  [sources]="sources"
-  [itemTemplate]="itemTemplate"
->
+<app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources" [itemTemplate]="itemTemplate">
   <div actions>
     <button (click)="doPrepend()">Prepend</button>&nbsp;
-    <input
-      [ngModel]="inputPrepend"
-      (change)="onInputChanged(true, $any($event.target))"
-      size="2"
-    />
+    <input [ngModel]="inputPrepend" (change)="onInputChanged(true, $any($event.target))" size="2" />
     &nbsp;items
-    {{ increasePrepend ? 'increasingly' : 'decreasingly' }} &nbsp;<input
-      type="checkbox"
-      [(ngModel)]="increasePrepend"
-    />
+    {{ increasePrepend ? 'increasingly' : 'decreasingly' }} &nbsp;<input type="checkbox" [(ngModel)]="increasePrepend" />
     <br />
     <button (click)="doAppend()">Append</button>&nbsp;
-    <input
-      [ngModel]="inputAppend"
-      (change)="onInputChanged(false, $any($event.target))"
-      size="2"
-    />
+    <input [ngModel]="inputAppend" (change)="onInputChanged(false, $any($event.target))" size="2" />
     &nbsp;items
-    {{ decreaseAppend ? 'decreasingly' : 'increasingly' }} &nbsp;<input
-      type="checkbox"
-      [(ngModel)]="decreaseAppend"
-    />
+    {{ decreaseAppend ? 'decreasingly' : 'increasingly' }} &nbsp;<input type="checkbox" [(ngModel)]="decreaseAppend" />
   </div>
-
   <div description>
     <p>
-      Along with <em>items</em> parameter both append and prepend methods have
-      <em>eof</em>/<em>bof</em> parameter which is optional and which prevents
-      rendering of new items when the end of the dataset (if we are speaking of
-      <em>append</em>) or beginning of the dataset (<em>prepend</em> case) is
-      not reached. See also
-      <a
-        [routerLink]="['/', adapterScope.id]"
-        fragment="{{ adapterPropsScope.map.bofEof.id }}"
-        >bof/eof demo</a
-      >.
+      The <em>append</em> and <em>prepend</em> methods have parameters
+      responsible for the virtualization of inserted items:
+      <em>eof</em>/<em>bof</em> and <em>virtualize</em>.
+      Only one of these parameters can be used at a time
+      (setting both to <em>true</em> simultaneously will reset both values to <em>false</em>).
+    </p>
+    <p>
+      If <em>eof</em>/<em>bof</em> is set to <em>true</em>,
+      the items added via the <em>append</em>/<em>prepend</em> methods will be virtualized
+      and will not appear in the DOM if, at the time of insertion,
+      we are not at the beginning (in the case of prepend-bof)
+      or at the end (in the case of append-eof) of the list.
+      See also <a [routerLink]="['/', adapterScope.id]" fragment="{{ adapterPropsScope.map.bofEof.id }}">bof/eof demo</a>.
     </p>
     <p>
       For example, if we call <em>{{ prependCallSample }}</em> when the
@@ -58,12 +40,15 @@
       adjusted for forward direction and forward padding element.
     </p>
     <p>
+      If <em>virtualize</em> is set to <em>true</em>, the added rows will be virtualized in any case,
+      even if we are at the beginning or end of the list.
+    </p>
+    <p>
       Indexes increase by default when <em>Adapter.append</em> and decrease by
       default when <em>Adapter.prepend</em>. The indexing strategy can be
       changed by <em>decrease</em>/<em>increase</em> params. They are boolean
       and set to <em>false</em> by default. For example, if we call
-      <em>{{ prependIncreaseCallSample }}</em
-      >, the topmost index remains unchanged, prepended items start with the
+      <em>{{ prependIncreaseCallSample }}</em>, the topmost index remains unchanged, prepended items start with the
       topmost index, the rest indexes are incremented.
     </p>
     <p>
@@ -77,17 +62,9 @@
       <em>Datasource.get</em> and doPrepend/doAppend methods to guarantee a
       stable data flow from the App component to the Scroller. Another examples
       of such synchronization could be found in
-      <a
-        [routerLink]="['/', adapterScope.id]"
-        fragment="{{ adapterMethodsScope.map.remove.id }}"
-        >remove</a
-      >
+      <a [routerLink]="['/', adapterScope.id]" fragment="{{ adapterMethodsScope.map.remove.id }}">remove</a>
       and
-      <a
-        [routerLink]="['/', adapterScope.id]"
-        fragment="{{ adapterMethodsScope.map.insert.id }}"
-        >insert</a
-      >
+      <a [routerLink]="['/', adapterScope.id]" fragment="{{ adapterMethodsScope.map.insert.id }}">insert</a>
       demos.
     </p>
   </div>

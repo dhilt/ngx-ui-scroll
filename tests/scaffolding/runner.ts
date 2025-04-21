@@ -1,7 +1,4 @@
-import { NgZone } from '@angular/core';
-
 import { Settings, DevSettings } from '../miscellaneous/vscroll';
-
 import { Misc } from '../miscellaneous/misc';
 import { Data } from '../miscellaneous/items';
 import { configureTestBed } from './testBed';
@@ -9,20 +6,19 @@ import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources/class';
 
 interface ITestBedConfig<Custom = void> {
-  datasourceClass?: { new (): unknown };
+  datasourceClass?: { new(): unknown };
   datasourceName?: string;
   datasourceSettings?: Settings<Data>;
   datasourceDevSettings?: DevSettings;
   templateSettings?: TemplateSettings;
-  toThrow?: boolean;
   custom?: Custom;
   timeout?: number;
 }
 
 type TestBedConfigDS<Custom = void, DS = true> = DS extends true
   ? ITestBedConfig<Custom> & {
-      datasourceSettings: Settings<unknown>;
-    }
+    datasourceSettings: Settings<unknown>;
+  }
   : ITestBedConfig<Custom>;
 
 export type TestBedConfig<Custom = void, DS = true> = Custom extends void
@@ -93,12 +89,8 @@ const generateMetaTitle = <T, DS>(data: MakeTestConfig<T, DS>): string => {
 const windowOnError = window.onerror;
 const consoleError = console.error;
 let isErrorLogOff = false;
-const switchErrorLog = (toThrow: boolean) => {
-  if (toThrow) {
-    window.onerror = () => null;
-    console.error = () => null;
-    isErrorLogOff = true;
-  } else if (isErrorLogOff) {
+const switchErrorLog = () => {
+  if (isErrorLogOff) {
     window.onerror = windowOnError;
     console.error = consoleError;
     isErrorLogOff = false;
@@ -111,57 +103,31 @@ export const makeTest = <T = void, DS = true>(
   describe(generateMetaTitle(data), () => {
     const templateData = generateTemplate(data.config.templateSettings);
 
-    it(
-      data.title,
-      (done: () => void) => {
-        switchErrorLog(!!data.config.toThrow);
-
-        new Promise<Misc>((resolve, reject) => {
-          let errorTimer: ReturnType<typeof setTimeout>;
-          try {
-            const datasourceClass = data.config.datasourceClass
-              ? data.config.datasourceClass
-              : generateDatasourceClass(
-                  data.config.datasourceName || 'default',
-                  data.config.datasourceSettings,
-                  data.config.datasourceDevSettings
-                );
-            const fixture = configureTestBed(
-              datasourceClass,
-              templateData.template
-            );
-            fixture.componentInstance.templateSettings = templateData.settings;
-            (fixture.ngZone as NgZone).onError.subscribe((error: unknown) => {
-              clearTimeout(errorTimer);
-              setTimeout(() => reject(error));
-            });
-            const misc = new Misc(fixture);
-            resolve(misc);
-          } catch (error) {
-            errorTimer = setTimeout(() => reject(error), 0);
-          }
-        })
-          .then(misc => {
-            if (typeof data.before === 'function') {
-              (data.before as (misc: Misc) => void)(misc);
-            }
-            data.it(misc)(() => {
-              if (typeof data.after === 'function') {
-                (data.after as (misc: Misc) => void)(misc);
-              }
-              done();
-            });
-          })
-          .catch(error => {
-            if (!data.config.toThrow && error) {
-              throw error;
-            }
-            const arg = data.config.toThrow
-              ? (error as { message: string }).message
-              : null;
-            data.it(arg as unknown as Misc)(done);
-          });
-      },
+    it(data.title, (done: () => void) => {
+      switchErrorLog();
+      const datasourceClass = data.config.datasourceClass
+        ? data.config.datasourceClass
+        : generateDatasourceClass(
+          data.config.datasourceName || 'default',
+          data.config.datasourceSettings,
+          data.config.datasourceDevSettings
+        );
+      const fixture = configureTestBed(
+        datasourceClass,
+        templateData.template
+      );
+      fixture.componentInstance.templateSettings = templateData.settings;
+      const misc = new Misc(fixture);
+      if (typeof data.before === 'function') {
+        (data.before as (misc: Misc) => void)(misc);
+      }
+      data.it(misc)(() => {
+        if (typeof data.after === 'function') {
+          (data.after as (misc: Misc) => void)(misc);
+        }
+        done();
+      });
+    },
       data.config.timeout || 2000
     );
   });

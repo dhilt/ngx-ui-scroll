@@ -21,6 +21,7 @@
     "karma-chrome-launcher": "^3.2.0",
     "karma-firefox-launcher": "^2.1.2",
     "karma-jasmine": "^5.1.0",
+    "karma-spec-reporter": "^0.0.36",
     "puppeteer": "^20.7.4",
     "typescript": "5.8.3",
     "zone.js": "0.15.0"

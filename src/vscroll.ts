@@ -6,6 +6,7 @@ export {
   AdapterPropName,
   EMPTY_ITEM,
   SizeStrategy,
+  Routines,
 
   // interfaces
   Item,

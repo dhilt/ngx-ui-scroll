@@ -14,7 +14,7 @@ const BROWSERS = {
   FF: 'firefox',
 };
 const browser = Object.values(BROWSERS).find(b => b === process.env.TEST_BROWSER) || BROWSERS.DEFAULT;
-const flags = ['--window-size=1024,768'];
+const flags = ['--window-size=1024,768', '--no-sandbox'];
 
 module.exports = function (config) {
 

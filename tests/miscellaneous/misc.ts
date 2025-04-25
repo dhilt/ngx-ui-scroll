@@ -93,9 +93,9 @@ export class Misc<Comp = TestComponentInterface> {
   generateFakeWorkflow(settings?: Scroller['settings']): Workflow {
     return new Workflow({
       consumer: { name: 'fake', version: 'x.x.x' },
-      element: this.scroller.viewport.element,
+      element: this.scroller.viewport.routines.element,
       datasource: { get: (_a: unknown, _b: unknown) => null, settings },
-      run: () => null
+      run: (_x: unknown) => null
     });
   }
 
@@ -148,7 +148,7 @@ export class Misc<Comp = TestComponentInterface> {
   }
 
   getScrollableElement(): HTMLElement {
-    return this.window ? document.scrollingElement : this.viewportElement.nativeElement;
+    return this.window && document.scrollingElement || this.viewportElement.nativeElement;
   }
 
   getScrollPosition(): number {

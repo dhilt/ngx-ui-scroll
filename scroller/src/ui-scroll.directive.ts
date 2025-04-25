@@ -9,7 +9,10 @@ import {
 import { UiScrollComponent } from './ui-scroll.component';
 import { IDatasource, RoutinesClassType } from './types';
 
-@Directive({ selector: '[uiScroll][uiScrollOf]' })
+@Directive({
+  selector: '[uiScroll][uiScrollOf]',
+  standalone: true
+})
 export class UiScrollDirective<ItemData = unknown> implements OnInit {
   private datasource!: IDatasource<ItemData>;
   private Routines?: RoutinesClassType;
@@ -17,7 +20,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
   constructor(
     private templateRef: TemplateRef<unknown>,
     private viewContainer: ViewContainerRef
-  ) {}
+  ) { }
 
   @Input() set uiScrollOf(datasource: IDatasource<ItemData>) {
     this.datasource = datasource;

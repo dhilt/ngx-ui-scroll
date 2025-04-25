@@ -16,8 +16,8 @@
     "build:watch": "ng build scroller --watch"
   },
   "peerDependencies": {
-    "@angular/common": ">=19.0.0",
-    "@angular/core": ">=19.0.0",
+    "@angular/common": ">=17.0.0",
+    "@angular/core": ">=17.0.0",
     "vscroll": "1.6.3"
   },
   "devDependencies": {

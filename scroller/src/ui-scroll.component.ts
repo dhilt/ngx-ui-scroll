@@ -19,10 +19,11 @@ import consumer from './ui-scroll.version';
   selector: '[ui-scroll]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ui-scroll.component.html',
-  imports: [NgTemplateOutlet]
+  imports: [NgTemplateOutlet],
+  standalone: true
 })
 export class UiScrollComponent<Data = unknown> {
-  // these should come from the directive
+  // template, datasource and Routines come from the directive
   // `template` is a signal to trigger view updates whenever changes.
   readonly template = signal<TemplateRef<unknown> | null>(null);
   public datasource!: IAngularDatasource<Data>;

@@ -1,0 +1,45 @@
+<div class="demo">
+  <app-demo-title [config]="demoConfig"></app-demo-title>
+  <div class="work">
+    <div class="actions">
+      <div class="comment">Available since v3.2.0, undocumented</div>
+      <input type="checkbox" [(ngModel)]="log" />
+      {{ log ? 'disable' : 'enable' }} render log
+    </div>
+    <div class="viewport-wrapper">
+      <div class="viewport">
+        <div *uiScroll="let item of datasource; Routines: CustomRoutines">
+          <div class="item">
+            {{ item.text }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="log">
+      <div class="datasource">
+        Items to render log
+        <div class="pre-wrapper" style="height: 220px">
+          <pre>{{ logText }}</pre>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix mb-3"></div>
+  </div>
+  <app-demo-sources [sources]="sources"></app-demo-sources>
+  <div class="description">
+    <p>
+      Routines API allows to adjust/reimplement DOM-specific logic within the core.
+      This can be seen as the lowest-level API and should be considered dangerous.
+      In order to use Routines API, you need to provide <em>Routines</em> parameter into the <em>ui-scroll</em> directive.
+      This parameter is a class that must be extended from the original <em>Routines</em> class distributed by the library.
+    </p>
+    <p>
+      This demo implements an artificial use case where we want to access and log
+      data items before they are rendered. The Routines factory (<em>getCustomRoutines</em>)
+      is needed to provide the demo component context as we want to enable/disable the logging feature.
+    </p>
+    <p>
+      A complete list of Routines methods can be taken from the definition of the <a href="https://github.com/dhilt/vscroll/blob/main/src/interfaces/routines.ts">IRoutines interface</a>.
+    </p>
+  </div>
+</div>

@@ -10,9 +10,8 @@ import { DemoDifferentHeightsComponent } from './samples/common/different-height
 import { DemoWindowViewportComponent } from './samples/common/window-viewport.component';
 
 import { DemoDatasourceSignaturesComponent } from './samples/datasource/datasource-signatures.component';
-import {
-  DemoBidirectionalUnlimitedDatasourceComponent
-} from './samples/datasource/bidirectional-unlimited-datasource.component';
+// eslint-disable-next-line max-len
+import { DemoBidirectionalUnlimitedDatasourceComponent } from './samples/datasource/bidirectional-unlimited-datasource.component';
 import { DemoLimitedDatasourceComponent } from './samples/datasource/limited-datasource.component';
 import { DemoPositiveLimitedDatasourceComponent } from './samples/datasource/positive-limited-datasource.component';
 import { DemoRemoteDatasourceComponent } from './samples/datasource/remote-datasource.component';
@@ -39,6 +38,7 @@ import { DemoRemoveComponent } from './samples/adapter/remove.component';
 import { DemoReplaceComponent } from './samples/adapter/replace.component';
 import { DemoClipComponent } from './samples/adapter/clip.component';
 import { DemoUpdateComponent } from './samples/adapter/update.component';
+import { DemoPauseResumeComponent } from './samples/adapter/pause-resume.component';
 
 import { DemoViewportElementSettingComponent } from './samples/experimental/viewportElement-setting.component';
 import { DemoInverseSettingComponent } from './samples/experimental/inverse-setting.component';
@@ -46,6 +46,7 @@ import { DemoAdapterFixPositionComponent } from './samples/experimental/adapter-
 import { DemoAdapterFixUpdaterComponent } from './samples/experimental/adapter-fix-updater.component';
 import { DemoAdapterFixScrollToItemComponent } from './samples/experimental/adapter-fix-scrollToItem.component';
 import { DemoOnBeforeClipSettingComponent } from './samples/experimental/onBeforeClip-setting.component';
+import { DemoRoutinesComponent } from './samples/experimental/routines.component';
 
 const common = [
   DemoBasicComponent,
@@ -57,7 +58,7 @@ const common = [
   DemoInfiniteComponent,
   DemoHorizontalComponent,
   DemoDifferentHeightsComponent,
-  DemoWindowViewportComponent,
+  DemoWindowViewportComponent
 ];
 
 const datasource = [
@@ -67,7 +68,7 @@ const datasource = [
   DemoPositiveLimitedDatasourceComponent,
   DemoRemoteDatasourceComponent,
   DemoInvertedDatasourceComponent,
-  DemoPagesDatasourceComponent,
+  DemoPagesDatasourceComponent
 ];
 
 const adapter = [
@@ -75,6 +76,7 @@ const adapter = [
   DemoAdapterReturnValueComponent,
   DemoResetComponent,
   DemoReloadComponent,
+  DemoPauseResumeComponent,
   DemoInitComponent,
   DemoIsLoadingComponent,
   DemoPackageInfoComponent,
@@ -90,7 +92,7 @@ const adapter = [
   DemoRemoveComponent,
   DemoReplaceComponent,
   DemoClipComponent,
-  DemoUpdateComponent,
+  DemoUpdateComponent
 ];
 
 const experimental = [
@@ -100,6 +102,7 @@ const experimental = [
   DemoAdapterFixUpdaterComponent,
   DemoAdapterFixScrollToItemComponent,
   DemoOnBeforeClipSettingComponent,
+  DemoRoutinesComponent
 ];
 
 export default {

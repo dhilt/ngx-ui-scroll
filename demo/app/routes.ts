@@ -31,7 +31,7 @@ const globalScope = {
   experimental: {
     id: 'experimental',
     name: 'Experimental'
-  },
+  }
 };
 
 const datasourceScope = {
@@ -69,7 +69,7 @@ const datasourceScope = {
     id: 'pages',
     name: 'Pages',
     scope: globalScope.datasource.id
-  },
+  }
 };
 
 const settingsScope = {
@@ -122,7 +122,7 @@ const settingsScope = {
     id: 'window-viewport',
     name: 'Entire window scrollable',
     scope: globalScope.settings.id
-  },
+  }
 };
 
 const adapterPropsScope = {
@@ -165,7 +165,7 @@ const adapterPropsScope = {
     id: 'first-last-visible-items',
     name: 'First and last visible items',
     scope: globalScope.adapterProps.id
-  },
+  }
 };
 
 const adapterMethodsScope = {
@@ -188,6 +188,11 @@ const adapterMethodsScope = {
     id: 'reset',
     name: 'Reset',
     scope: globalScope.adapter.id
+  },
+  pauseResume: {
+    id: 'pause-resume',
+    name: 'Pause / resume',
+    scope: globalScope.adapterMethods.id
   },
   check: {
     id: 'check-size',
@@ -228,7 +233,7 @@ const adapterMethodsScope = {
     id: 'update',
     name: 'Update',
     scope: globalScope.adapterMethods.id
-  },
+  }
 };
 
 const experimentalScope = {
@@ -262,6 +267,11 @@ const experimentalScope = {
     name: 'onBeforeClip setting',
     scope: globalScope.experimental.id
   },
+  routines: {
+    id: 'routines',
+    name: 'Routines',
+    scope: globalScope.experimental.id
+  }
 };
 
 const demos = {
@@ -275,7 +285,7 @@ const demos = {
   },
   adapter: {
     ...globalScope.adapter,
-    map: [],
+    map: []
   },
   adapterProps: {
     ...globalScope.adapterProps,

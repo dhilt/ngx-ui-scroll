@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, VERSION } from '@angular/core';
 
 import { DemoSources, DemoSourceType, MyItem } from '../shared/interfaces';
 import { globalScope as scopes, demoList as demos } from '../routes';
@@ -10,7 +10,7 @@ import { Datasource } from '../../../public_api'; // from 'ngx-ui-scroll';
   templateUrl: './home.component.html'
 })
 export class HomeComponent {
-
+  angularVersion = VERSION.full;
   reloadIndex = 999;
   delay = 0;
   scopes: typeof scopes;
@@ -40,7 +40,8 @@ export class HomeComponent {
     }
   });
 
-  sources: DemoSources = [{
+  sources: DemoSources = [
+    {
     name: DemoSourceType.Template,
     text: `<div class="viewport">
   <div *uiScroll="let item of datasource; let even = even">
@@ -49,7 +50,8 @@ export class HomeComponent {
     </div>
   </div>
 </div>`
-  }, {
+    },
+    {
     name: DemoSourceType.Component,
     text: `delay = 25;
 reloadIndex = 999;
@@ -71,7 +73,8 @@ datasource = new Datasource ({
 doReload() {
   this.datasource.adapter.reload(this.reloadIndex);
 }`
-  }, {
+    },
+    {
     name: 'Adapter',
     text: `Version:
 {{datasource.adapter.packageInfo.consumer.version}}
@@ -98,7 +101,8 @@ Datasource delay (ms):
 Index to reload:
 <input [(ngModel)]="reloadIndex" type="number">
 <button (click)="doReload()">Reload</button>`
-  }, {
+    },
+    {
     name: DemoSourceType.Styles,
     text: `.viewport {
   width: 150px;
@@ -112,7 +116,8 @@ Index to reload:
 .item.even {
   background-color: #f2f2f2;
 }`
-  }];
+    }
+  ];
 
   constructor() {
     this.scopes = scopes;
@@ -123,5 +128,4 @@ Index to reload:
   doReload() {
     this.datasource.adapter.reload(this.reloadIndex);
   }
-
 }

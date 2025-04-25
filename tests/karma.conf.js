@@ -27,10 +27,10 @@ const browsers =
   process.env.CI || browser === BROWSERS.DEFAULT
     ? ['ChromeHeadlessSized']
     : browser === BROWSERS.FF
-    ? ['FirefoxSized']
-    : process.platform === 'linux'
-    ? ['ChromiumSized']
-    : ['ChromeSized'];
+      ? ['FirefoxSized']
+      : process.platform === 'linux'
+        ? ['ChromiumSized']
+        : ['ChromeSized'];
 const customLaunchers = {
   ChromeHeadlessSized: { base: 'ChromeHeadless', flags },
   ChromiumSized: { base: 'Chromium', flags },
@@ -44,23 +44,21 @@ module.exports = config =>
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
-      require('karma-jasmine'),
-      require('karma-chrome-launcher'),
-      require('karma-firefox-launcher'),
-      require('@angular-devkit/build-angular/plugins/karma')
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-firefox-launcher',
+      '@angular-devkit/build-angular/plugins/karma',
+      'karma-spec-reporter'
     ],
     files: ['miscellaneous/styles.css'],
     client: {
-      jasmine: {
-        // available possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
-      },
       clearContext: false
     },
-    reporters: ['dots'],
+    reporters: ['spec'],
 
     port: TEST_SERVER_PORT,
     colors: true,
-    logLevel: config.LOG_ERROR,
+    logLevel: config.LOG_INFO,
     autoWatch: !process.env.CI,
     singleRun: !!process.env.CI,
     restartOnFileChange: true,

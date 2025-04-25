@@ -12,7 +12,8 @@ interface MyItem {
 
 @Component({
   selector: 'app-pages-datasource',
-  templateUrl: './pages-datasource.component.html'
+  templateUrl: './pages-datasource.component.html',
+  standalone: false
 })
 export class DemoPagesDatasourceComponent {
   demoContext = {

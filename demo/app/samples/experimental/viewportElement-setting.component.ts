@@ -5,7 +5,8 @@ import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 
 @Component({
   selector: 'app-viewport-element-setting',
-  templateUrl: './viewportElement-setting.component.html'
+  templateUrl: './viewportElement-setting.component.html',
+  standalone: false
 })
 export class DemoViewportElementSettingComponent {
   demoContext = {

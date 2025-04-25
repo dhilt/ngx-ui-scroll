@@ -1,5 +1,6 @@
 export { UiScrollModule } from './src/ui-scroll.module';
 export { UiScrollDirective } from './src/ui-scroll.directive';
+export { UiScrollComponent } from './src/ui-scroll.component';
 export { Datasource } from './src/ui-scroll.datasource';
 export {
   RoutinesClassType,

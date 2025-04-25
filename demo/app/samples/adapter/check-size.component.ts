@@ -13,7 +13,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-check-size',
-  templateUrl: './check-size.component.html'
+  templateUrl: './check-size.component.html',
+  standalone: false
 })
 export class DemoCheckSizeComponent {
   demoContext: DemoContext = {

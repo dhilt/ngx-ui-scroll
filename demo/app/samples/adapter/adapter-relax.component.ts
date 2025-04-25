@@ -7,7 +7,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-adapter-relax',
-  templateUrl: './adapter-relax.component.html'
+  templateUrl: './adapter-relax.component.html',
+  standalone: false
 })
 export class DemoAdapterRelaxComponent {
   demoContext = {

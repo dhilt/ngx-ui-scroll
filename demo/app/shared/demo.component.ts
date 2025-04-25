@@ -4,7 +4,8 @@ import { DemoContext, DemoSources } from './interfaces';
 
 @Component({
   selector: 'app-demo',
-  templateUrl: './demo.component.html'
+  templateUrl: './demo.component.html',
+  standalone: false
 })
 export class DemoComponent implements OnInit {
   init = false;

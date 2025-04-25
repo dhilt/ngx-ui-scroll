@@ -8,28 +8,15 @@ A directive for [Angular](https://angular.io/) framework to provide unlimited bi
 <p dir="rtl">
 <sub>can donate? go <b><a href="https://github.com/dhilt/ngx-ui-scroll?sponsor=1">here</a></b></sub><sub> 👉 <br>make open-source world better</sub></p>
 
-- [Compatibility](#compatibility)
 - [Motivation](#motivation)
 - [Features](#features)
 - [Getting](#getting)
 - [Usage](#usage)
 - [Settings](#settings)
 - [Adapter API](#adapter-api)
+- [Compatibility](#compatibility)
 - [Development](#development)
 <br>
-
-<a name="compatibility" id="compatibility"></a>
-### Compatibility
-
-The ngx-ui-scroll library has no breaking changes in its API, but there are inevitable changes in how it is built and distributed to the host app depending on the version of the Angular.
-
-|ngx-ui-scroll|Angular|compiled|support|notes|
-|:--|:--|:--|:--|:--|
-|v1|5-12|View Engine|no|no dependencies (vscroll is not extracted)|
-|v2|5-12|View Engine|maintenance|vscroll is a bundle-dependency|
-|v3|12+|Ivy|active|vscroll is a peer-dependency|
-
-So if the consumer app is view-engine compatible, you should use ngx-ui-scroll v2 which is in maintenance mode and under [v2-legacy](https://github.com/dhilt/ngx-ui-scroll/tree/v2-legacy) branch.
 
 ### Motivation
 
@@ -229,7 +216,7 @@ Below is the list of invocable methods of the Adapter API with description and l
 
 Along with the documented API there are some undocumented features that can be treated as experimental. They are not tested enough and might change over time. Some of them can be found on the [experimental tab](https://dhilt.github.io/ngx-ui-scroll/#experimental) of the demo app.
 
-All of the Adapter methods are asynchronous, because they work with DOM and may take time to complete. For this purpose the Adapter methods return a Promise resolving at the moment when the Scroller terminates its internal processes, which were triggered by the invocation of the correspondent Adapter method. This is called the [Adapter Return API](https://dhilt.github.io/ngx-ui-scroll/#adapter#return-value). This promise has exactly the same nature as the promise of the [Adapter.relax method](https://dhilt.github.io/ngx-ui-scroll/#experimental#adapter-relax). Both "Relax" and "Return API" are the instruments of the App-Scroller processes normalization. It might be quite important to run some logic after the Scroller finishes its job and relaxes. Below is an example of how an explicit sequence of the Adapter methods can be safely implemented:
+All Adapter methods are asynchronous because they interact with the DOM, which can be a time-consuming operation. Each Adapter method returns a Promise that resolves when the Scroller has terminated all internal processes triggered by that specific method call. This is called the [Adapter Return API](https://dhilt.github.io/ngx-ui-scroll/#adapter#return-value). The Promise returned by each Adapter method has exactly the same nature as the promise of the [Adapter.relax method](https://dhilt.github.io/ngx-ui-scroll/#experimental#adapter-relax). Both the "Relax" method and the "Return API" serve as tools for normalizing App-Scroller processes. In many cases, it is crucial to perform certain logic only after the Scroller has finished its work and entered a relaxed state. Below is an example of how to safely implement a sequence of Adapter method calls:
 
 ```js
 const { adapter } = this.datasource;
@@ -241,6 +228,20 @@ console.log('Two-phase replacement done');
 ```
 
 For more information, see [Adapter demo page](https://dhilt.github.io/ngx-ui-scroll/#adapter).
+
+
+### Compatibility
+
+The ngx-ui-scroll library has no breaking changes in its API, but there are inevitable changes in how it is built and distributed to the host app depending on the version of the Angular. This means that while your code using the library’s API remains compatible across versions, you may need to select the appropriate ngx-ui-scroll package version to match your Angular project’s build system and compatibility requirements.
+
+|ngx-ui-scroll|Angular|compiled|vscroll (core)|support
+|:--|:--|:--|:--|:--|
+|v1|5-12|View Engine|no dependencies (vscroll is not extracted)|no
+|v2|5-12|View Engine|vscroll is a bundle-dependency|maintenance
+|v3|12+|Ivy|vscroll is a peer-dependency|maintenance
+|v4|17+|Ivy|vscroll is a peer-dependency|active
+
+Note: Starting from v4, the @for block syntax is used instead of *ngFor.
 
 
 ### Development

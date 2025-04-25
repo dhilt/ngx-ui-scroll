@@ -12,7 +12,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-buffer-size',
-  templateUrl: './buffer-size.component.html'
+  templateUrl: './buffer-size.component.html',
+  standalone: false
 })
 export class DemoBufferSizeComponent {
   demoContext: DemoContext = {

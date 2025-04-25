@@ -7,7 +7,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-home',
-  templateUrl: './home.component.html'
+  templateUrl: './home.component.html',
+  standalone: false
 })
 export class HomeComponent {
   angularVersion = VERSION.full;

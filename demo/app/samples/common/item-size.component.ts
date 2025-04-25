@@ -12,7 +12,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-item-size',
-  templateUrl: './item-size.component.html'
+  templateUrl: './item-size.component.html',
+  standalone: false
 })
 export class DemoItemSizeComponent {
   demoContext: DemoContext = {

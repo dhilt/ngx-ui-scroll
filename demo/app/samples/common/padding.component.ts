@@ -12,7 +12,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-padding',
-  templateUrl: './padding.component.html'
+  templateUrl: './padding.component.html',
+  standalone: false
 })
 export class DemoPaddingComponent {
   demoContext: DemoContext = {

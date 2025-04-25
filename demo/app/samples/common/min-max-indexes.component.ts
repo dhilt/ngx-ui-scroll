@@ -12,7 +12,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-min-max-indexes',
-  templateUrl: './min-max-indexes.component.html'
+  templateUrl: './min-max-indexes.component.html',
+  standalone: false
 })
 export class DemoMinMaxIndexesComponent {
   demoContext: DemoContext = {

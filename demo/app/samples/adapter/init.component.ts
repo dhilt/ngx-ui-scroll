@@ -19,7 +19,8 @@ import { Datasource } from 'ngx-ui-scroll';
 @Component({
   selector: 'app-demo-init',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './init.component.html'
+  templateUrl: './init.component.html',
+  standalone: false
 })
 export class DemoInitComponent {
   demoContext: DemoContext = {

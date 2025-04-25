@@ -13,7 +13,8 @@ export interface TestComponentInterface {
 
 @Component({
   template: defaultTemplate,
-  providers: [DatasourceService]
+  providers: [DatasourceService],
+  standalone: false
 })
 export class ScrollerTestComponent implements TestComponentInterface {
   datasource: IDatasource<Data>;
@@ -64,7 +65,8 @@ export class ScrollerTestComponent implements TestComponentInterface {
       <div *uiScroll="let item of datasource2; let index = index">
         <span>{{ index }}</span> : <b>{{ item.text }}</b>
       </div>
-    </div>`
+    </div>`,
+  standalone: false
 })
 export class TwoScrollersTestComponent implements TestComponentInterface {
   datasource: IDatasource<Data> = new Datasource<Data>({
@@ -106,7 +108,7 @@ const basicDS: IDatasource<Data> = {
   // devSettings: { debug: true }
 };
 
-@Component({ template: basicTemplate })
+@Component({ template: basicTemplate, standalone: false })
 export class ScrollerSubTestComponent implements TestComponentInterface {
   datasource: IDatasource<Data> = new Datasource<Data>(basicDS);
   show = true;
@@ -118,7 +120,7 @@ export class ScrollerSubTestComponent implements TestComponentInterface {
   }
 }
 
-@Component({ template: basicTemplate })
+@Component({ template: basicTemplate, standalone: false })
 export class ScrollerPlainTestComponent implements TestComponentInterface {
   datasource = basicDS;
   show = true;

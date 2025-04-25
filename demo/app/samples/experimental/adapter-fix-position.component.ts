@@ -7,7 +7,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-adapter-fix-position',
-  templateUrl: './adapter-fix-position.component.html'
+  templateUrl: './adapter-fix-position.component.html',
+  standalone: false
 })
 export class DemoAdapterFixPositionComponent {
   demoContext = {

@@ -4,7 +4,8 @@ import { demos } from '../routes';
 
 @Component({
   selector: 'app-datasource',
-  templateUrl: './datasource.component.html'
+  templateUrl: './datasource.component.html',
+  standalone: false
 })
 export class DatasourceComponent {
   demos = demos;

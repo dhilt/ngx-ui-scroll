@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-items-count',
-  templateUrl: './items-count.component.html'
+  templateUrl: './items-count.component.html',
+  standalone: false
 })
 export class DemoItemsCountComponent {
   demoContext: DemoContext = {

@@ -7,7 +7,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-adapter-fix-updater',
-  templateUrl: './adapter-fix-updater.component.html'
+  templateUrl: './adapter-fix-updater.component.html',
+  standalone: false
 })
 export class DemoAdapterFixUpdaterComponent {
   demoContext = {

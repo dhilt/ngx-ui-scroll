@@ -4,7 +4,8 @@ import { demos } from '../../routes';
 
 @Component({
   selector: 'app-demo-adapter-return-value',
-  templateUrl: './adapter-return-value.component.html'
+  templateUrl: './adapter-return-value.component.html',
+  standalone: false
 })
 export class DemoAdapterReturnValueComponent {
   demoConfig = demos.adapterMethods.map.returnValue;

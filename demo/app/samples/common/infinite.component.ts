@@ -12,7 +12,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-infinite',
-  templateUrl: './infinite.component.html'
+  templateUrl: './infinite.component.html',
+  standalone: false
 })
 export class DemoInfiniteComponent {
   demoContext: DemoContext = {

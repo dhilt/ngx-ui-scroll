@@ -7,7 +7,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-inverted-datasource',
-  templateUrl: './inverted-datasource.component.html'
+  templateUrl: './inverted-datasource.component.html',
+  standalone: false
 })
 export class DemoInvertedDatasourceComponent {
   demoConfig = demos.datasource.map.invertedIndexes;

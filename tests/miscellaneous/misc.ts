@@ -165,7 +165,7 @@ export class Misc<Comp = TestComponentInterface> {
 
   getScrollableElement(): HTMLElement {
     return this.window
-      ? document.scrollingElement
+      ? <HTMLElement>document.scrollingElement
       : this.viewportElement.nativeElement;
   }
 

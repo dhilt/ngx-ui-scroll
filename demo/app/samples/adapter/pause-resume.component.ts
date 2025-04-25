@@ -8,7 +8,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-pause-resume',
-  templateUrl: './pause-resume.component.html'
+  templateUrl: './pause-resume.component.html',
+  standalone: false
 })
 export class DemoPauseResumeComponent {
   demoContext = {

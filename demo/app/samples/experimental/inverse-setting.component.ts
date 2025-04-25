@@ -7,7 +7,8 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-inverse-setting',
-  templateUrl: './inverse-setting.component.html'
+  templateUrl: './inverse-setting.component.html',
+  standalone: false
 })
 export class DemoInverseSettingComponent {
   demoContext = {

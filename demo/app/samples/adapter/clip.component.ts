@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-clip',
-  templateUrl: './clip.component.html'
+  templateUrl: './clip.component.html',
+  standalone: false
 })
 export class DemoClipComponent {
   demoContext: DemoContext = {

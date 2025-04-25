@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-reset',
-  templateUrl: './reset.component.html'
+  templateUrl: './reset.component.html',
+  standalone: false
 })
 export class DemoResetComponent {
   demoContext: DemoContext = {

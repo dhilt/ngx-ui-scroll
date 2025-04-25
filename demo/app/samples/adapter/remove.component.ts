@@ -13,7 +13,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-remove',
-  templateUrl: './remove.component.html'
+  templateUrl: './remove.component.html',
+  standalone: false
 })
 export class DemoRemoveComponent {
   demoContext: DemoContext = {

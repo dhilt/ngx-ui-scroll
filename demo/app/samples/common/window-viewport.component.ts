@@ -9,7 +9,8 @@ import {
 
 @Component({
   selector: 'app-demo-window-viewport',
-  templateUrl: './window-viewport.component.html'
+  templateUrl: './window-viewport.component.html',
+  standalone: false
 })
 export class DemoWindowViewportComponent {
   demoContext: DemoContext = {

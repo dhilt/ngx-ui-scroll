@@ -12,7 +12,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-demo-buffer-info',
-  templateUrl: './buffer-info.component.html'
+  templateUrl: './buffer-info.component.html',
+  standalone: false
 })
 export class DemoBufferInfoComponent {
   demoContext: DemoContext = {

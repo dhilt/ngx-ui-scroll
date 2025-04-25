@@ -7,7 +7,8 @@ import { Datasource } from 'ngx-ui-scroll';
 
 @Component({
   selector: 'app-on-before-clip-setting',
-  templateUrl: './onBeforeClip-setting.component.html'
+  templateUrl: './onBeforeClip-setting.component.html',
+  standalone: false
 })
 export class DemoOnBeforeClipSettingComponent {
   demoContext = {

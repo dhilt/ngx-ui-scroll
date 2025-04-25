@@ -14,7 +14,8 @@ interface MyItem {
 
 @Component({
   selector: 'app-demo-different-heights',
-  templateUrl: './different-heights.component.html'
+  templateUrl: './different-heights.component.html',
+  standalone: false
 })
 export class DemoDifferentHeightsComponent {
   settingsScope = demos.settings.map;

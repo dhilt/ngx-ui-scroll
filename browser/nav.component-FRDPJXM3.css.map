@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;1ff8c219888030fbfbdfbee7137b9533baf8fac01100cc9aa0da8ee623f4c610;/home/runner/work/ngx-ui-scroll/ngx-ui-scroll/demo/app/shared/nav.component.html"],
+  "sourcesContent": ["\n      .github-corner:hover .octo-arm {\n        animation: octocat-wave 560ms ease-in-out;\n      }\n\n      @keyframes octocat-wave {\n\n        0%,\n        100% {\n          transform: rotate(0);\n        }\n\n        20%,\n        60% {\n          transform: rotate(-25deg);\n        }\n\n        40%,\n        80% {\n          transform: rotate(10deg);\n        }\n      }\n\n      @media (max-width: 500px) {\n        .github-corner:hover .octo-arm {\n          animation: none;\n        }\n\n        .github-corner .octo-arm {\n          animation: octocat-wave 560ms ease-in-out;\n        }\n      }\n    "],
+  "mappings": "AACM,CAAC,aAAa,OAAO,CAAC,SACpB,UAAW,aAAa,KAAM,WAChC,CAEA,WAHa,aAKX,MAEE,UAAW,OAAO,EACpB,CAEA,QAEE,UAAW,OAAO,OACpB,CAEA,QAEE,UAAW,OAAO,MACpB,CACF,CAEA,OAAO,CAAC,SAAS,EAAE,OACjB,CAvBD,aAuBe,OAAO,CAvBD,SAwBlB,UAAW,IACb,CAEA,CA3BD,cA2BgB,CA3BK,SA4BlB,UAAW,aAAa,KAAM,WAChC,CACF",
+  "names": []
+}

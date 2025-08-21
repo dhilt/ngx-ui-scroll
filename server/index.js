@@ -27,7 +27,7 @@ if (env === 'production') {
 }
 
 // Serve static files
-app.use(express.static(__dirname + '/../dist/demo'));
+app.use(express.static(__dirname + '/../dist/demo/browser'));
 
 const data = [];
 for (let i = 1; i < 1000; i++) {
@@ -60,7 +60,7 @@ app.get('/api/data', (req, res) => {
 
 // Send all requests to index.html
 app.get('/*', (_, res) =>
-  res.sendFile(path.join(__dirname + '/../dist/demo/index.html'))
+  res.sendFile(path.join(__dirname + '/../dist/demo/browser/index.html'))
 );
 
 app.listen(port, () => console.log(`Listening ${port} port...`));

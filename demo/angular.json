@@ -22,7 +22,7 @@
             },
             "index": "index.html",
             "polyfills": [
-              "polyfills.ts"
+              "./node_modules/zone.js/fesm2015/zone.js"
             ],
             "tsConfig": "tsconfig.json",
             "assets": [

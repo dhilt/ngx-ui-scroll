@@ -22,7 +22,7 @@
             },
             "index": "index.html",
             "polyfills": [
-              "./node_modules/zone.js/fesm2015/zone.js"
+              "polyfills.ts"
             ],
             "tsConfig": "tsconfig.json",
             "assets": [
@@ -63,6 +63,9 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "serve-dev": {
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -75,9 +78,12 @@
             },
             "development": {
               "buildTarget": "demo:build:development"
+            },
+            "serve-dev": {
+              "buildTarget": "demo:build:serve-dev"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "serve-dev"
         }
       }
     }

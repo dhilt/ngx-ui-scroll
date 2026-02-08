@@ -1,10 +1,10 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    Begin of file is {{ datasource.adapter.bof ? '' : 'not' }} reached
+    Begin of file is {{ (datasource.adapter.bof$ | async) ? '' : 'not' }} reached
     <br />
-    End of file is {{ datasource.adapter.eof ? '' : 'not' }} reached
+    End of file is {{ (datasource.adapter.eof$ | async) ? '' : 'not' }} reached
     <br />
-    BOF / EOF changes counter: {{ edgeCounter }}
+    BOF / EOF changes counter: {{ edgeCounter() }}
   </div>
   <div description>
     <p>

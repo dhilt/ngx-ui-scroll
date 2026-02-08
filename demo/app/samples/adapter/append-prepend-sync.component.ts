@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -21,7 +21,7 @@ export class DemoAppendPrependSyncComponent {
     config: demos.adapterMethods.map.appendPrependSync,
     viewportId: 'append-prepend-sync-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   adapterScope = demos.adapter;

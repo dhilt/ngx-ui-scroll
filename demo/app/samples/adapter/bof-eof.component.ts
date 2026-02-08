@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { merge, Observable } from 'rxjs';
+import { scan } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import {
@@ -22,7 +24,7 @@ export class DemoBofEofComponent {
     config: demos.adapterProps.map.bofEof,
     viewportId: 'bof-eof-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource<MyItem>({
@@ -42,15 +44,13 @@ export class DemoBofEofComponent {
     }
   });
 
-  edgeCounter = 0;
-
-  constructor() {
-    const { eof$, bof$ } = this.datasource.adapter;
+  edgeCounter = toSignal(
     merge(
-      bof$ as unknown as Observable<boolean>,
-      eof$ as unknown as Observable<boolean>
-    ).subscribe(() => this.edgeCounter++);
-  }
+      this.datasource.adapter.bof$ as unknown as Observable<boolean>,
+      this.datasource.adapter.eof$ as unknown as Observable<boolean>
+    ).pipe(scan(count => count + 1, 0)),
+    { initialValue: 0 }
+  );
 
   sources: DemoSources = [
     {

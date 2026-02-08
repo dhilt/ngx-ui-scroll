@@ -1,3 +1,4 @@
+import { WritableSignal } from '@angular/core';
 import { IDemo } from '../routes';
 
 export enum DemoSourceType {
@@ -26,8 +27,8 @@ export interface DemoContext {
   noInfo?: boolean;
 
   // dynamic data
-  count?: number;
-  log?: string;
+  count: number;
+  log: WritableSignal<string>;
 }
 
 export interface MyItem {

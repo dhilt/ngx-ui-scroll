@@ -1,5 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, Observer } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 import { Datasource } from 'ngx-ui-scroll';
 
@@ -22,7 +24,7 @@ interface MyItem {
   standalone: false
 })
 export class TestInnerComponent {
-  constructor() {}
+  constructor() { }
 }
 
 @Component({
@@ -61,6 +63,14 @@ export class TestComponent {
       throttle: 40
     }
   });
+
+  itemsCount = toSignal(
+    this.datasource.adapter.isLoading$.pipe(
+      filter((loading: boolean) => !loading),
+      map(() => this.datasource.adapter.itemsCount)
+    ),
+    { initialValue: 0 }
+  );
 
   constructor() {
     this.generateData();

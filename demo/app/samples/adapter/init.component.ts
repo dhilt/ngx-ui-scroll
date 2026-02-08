@@ -1,7 +1,8 @@
 import {
   Component,
   ChangeDetectionStrategy,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  signal
 } from '@angular/core';
 import { take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
@@ -28,7 +29,7 @@ export class DemoInitComponent {
     viewportId: 'init-viewport',
     noInfo: true,
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   version = '...';

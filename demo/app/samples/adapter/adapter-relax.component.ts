@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, MyItem } from '../../shared/interfaces';
@@ -13,7 +13,9 @@ import { Datasource } from 'ngx-ui-scroll';
 export class DemoAdapterRelaxComponent {
   demoContext = {
     config: demos.adapterMethods.map.relax,
-    noInfo: true
+    noInfo: true,
+    count: 0,
+    log: signal('')
   };
 
   adapterMethodsScope = demos.adapterMethods;

@@ -28,13 +28,13 @@
           datasource.adapter.packageInfo.core.version
         }}, angular v{{ angularVersion }})
         <br />
-        First visible: #{{ datasource.adapter.firstVisible.$index }}
+        First visible: #{{ (datasource.adapter.firstVisible$ | async)?.$index }}
         <br />
         Last visible: #{{ (datasource.adapter.lastVisible$ | async)?.$index }}
         <br />
-        Items in DOM: {{ datasource.adapter.itemsCount }}
+        Items in DOM: {{ itemsCount() }}
         <br />
-        Is loading: {{ datasource.adapter.isLoading }}
+        Is loading: {{ datasource.adapter.isLoading$ | async }}
         <br />
       </div>
       <div style="display: flex; align-items: center; margin-bottom: 2px">

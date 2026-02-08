@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { scan } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import {
@@ -20,7 +22,7 @@ export class DemoIsLoadingComponent {
     config: demos.adapterProps.map.isLoading,
     viewportId: 'is-loading-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({
@@ -81,11 +83,10 @@ for {{isLoadingCounter}} times.
     }
   ];
 
-  isLoadingCounter = 0;
-
-  constructor() {
-    this.datasource.adapter.isLoading$.subscribe(
-      isLoading => (this.isLoadingCounter += !isLoading ? 1 : 0)
-    );
-  }
+  isLoadingCounter = toSignal(
+    this.datasource.adapter.isLoading$.pipe(
+      scan((count, isLoading) => count + (!isLoading ? 1 : 0), 0)
+    ),
+    { initialValue: 0 }
+  );
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -20,7 +20,7 @@ export class DemoResetComponent {
     config: demos.adapterMethods.map.reset,
     viewportId: 'reset-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({
@@ -74,7 +74,7 @@ doReset() {
 
   doReset() {
     this.demoContext.count = 0;
-    this.demoContext.log = '';
+    this.demoContext.log.set('');
     const settings = {
       startIndex: Number(this.startIndex),
       bufferSize: Number(this.bufferSize)

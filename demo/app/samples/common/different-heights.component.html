@@ -30,8 +30,8 @@
         frequent log
       </div>
       <div class="pre-wrapper">
-        <pre *ngIf="log === 'average'">{{ averageLog }}</pre>
-        <pre *ngIf="log === 'frequent'">{{ frequentLog }}</pre>
+        <pre *ngIf="log === 'average'">{{ averageLog() }}</pre>
+        <pre *ngIf="log === 'frequent'">{{ frequentLog() }}</pre>
       </div>
     </div>
     <div class="clearfix mb-3"></div>

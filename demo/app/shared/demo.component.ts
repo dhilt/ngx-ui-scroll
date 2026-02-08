@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, signal } from '@angular/core';
 
 import { DemoContext, DemoSources } from './interfaces';
 
@@ -8,7 +8,7 @@ import { DemoContext, DemoSources } from './interfaces';
   standalone: false
 })
 export class DemoComponent implements OnInit {
-  init = false;
+  init = signal(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() datasource: any;
@@ -42,7 +42,7 @@ export class DemoComponent implements OnInit {
       if (this.sources.every(s => !s.active)) {
         this.sources[0].active = true;
       }
-      this.init = true;
+      this.init.set(true);
     });
   }
 }

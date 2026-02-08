@@ -1,9 +1,9 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    The Scroller is {{ datasource.adapter.isLoading ? 'loading' : 'relaxing' }}.
+    The Scroller is {{ (datasource.adapter.isLoading$ | async) ? 'loading' : 'relaxing' }}.
     <br />
     The value of isLoading counter has been changed for
-    {{ isLoadingCounter }} times.
+    {{ isLoadingCounter() }} times.
   </div>
   <div description>
     <p>

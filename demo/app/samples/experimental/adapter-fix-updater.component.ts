@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
@@ -13,7 +13,9 @@ import { Datasource } from 'ngx-ui-scroll';
 export class DemoAdapterFixUpdaterComponent {
   demoContext = {
     config: demos.experimental.map.adapterFixUpdater,
-    noInfo: true
+    noInfo: true,
+    count: 0,
+    log: signal('')
   };
 
   adapterPropsScope = demos.adapterProps;

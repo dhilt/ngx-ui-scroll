@@ -1,4 +1,4 @@
-import { Component, Injectable } from '@angular/core';
+import { Component, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -9,7 +9,7 @@ import { IDatasource } from 'ngx-ui-scroll';
 
 @Injectable()
 export class RemoteDataService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getData(index: number, count: number): Observable<unknown> {
     return this.http.get(`/api/data?index=${index}&count=${count}`);
@@ -25,15 +25,15 @@ export class DemoRemoteDatasourceComponent {
   demoContext = {
     config: demos.datasource.map.remote,
     logViewOnly: true,
-    log: '',
+    log: signal(''),
     count: 0
   };
 
   datasource: IDatasource = {
     get: (index: number, count: number) => {
-      this.demoContext.log = `${++this.demoContext
-        .count}) get items [${index}..${index + count - 1}]
-${this.demoContext.log}`;
+      this.demoContext.log.update(prev =>
+        `${++this.demoContext.count}) get items [${index}..${index + count - 1}]\n` + prev
+      );
       return this.remoteDataService.getData(index, count);
     }
   };
@@ -91,5 +91,5 @@ app.get('/api/data', (req, res) => {
     }
   ];
 
-  constructor(private remoteDataService: RemoteDataService) {}
+  constructor(private remoteDataService: RemoteDataService) { }
 }

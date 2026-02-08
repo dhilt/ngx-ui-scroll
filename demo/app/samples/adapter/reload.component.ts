@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -20,7 +20,7 @@ export class DemoReloadComponent {
     config: demos.adapterMethods.map.reload,
     viewportId: 'reload-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   startIndexDemoConfig = demos.settings.map.startIndex;
@@ -87,7 +87,7 @@ by index <input [(ngModel)]="reloadIndex">
 
   doReload() {
     this.demoContext.count = 0;
-    this.demoContext.log = '';
+    this.demoContext.log.set('');
     this.datasource.adapter.reload(this.reloadIndex);
   }
 }

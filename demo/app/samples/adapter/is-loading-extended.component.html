@@ -1,10 +1,10 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    The Scroller is {{ datasource.adapter.isLoading ? 'loading' : 'relaxing' }},
-    counter {{ loadingCounter }}
+    The Scroller is {{ (datasource.adapter.isLoading$ | async) ? 'loading' : 'relaxing' }},
+    counter {{ loadingCounter() }}
     <br />
-    Inner loop is {{ datasource.adapter.loopPending ? 'pending' : 'stopped' }},
-    counter: {{ innerLoopCounter }}
+    Inner loop is {{ (datasource.adapter.loopPending$ | async) ? 'pending' : 'stopped' }},
+    counter: {{ innerLoopCounter() }}
   </div>
   <div description>
     <p>

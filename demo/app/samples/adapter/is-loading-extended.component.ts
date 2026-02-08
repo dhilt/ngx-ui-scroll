@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { scan } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import {
@@ -20,7 +22,7 @@ export class DemoIsLoadingExtendedComponent {
     config: demos.adapterProps.map.isLoadingAdvanced,
     viewportId: 'is-loading-advanced-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({
@@ -87,15 +89,17 @@ counter: {{innerLoopCounter}}
     }
   ];
 
-  loadingCounter = 0;
-  innerLoopCounter = 0;
+  loadingCounter = toSignal(
+    this.datasource.adapter.isLoading$.pipe(
+      scan((count, result) => count + (!result ? 1 : 0), 0)
+    ),
+    { initialValue: 0 }
+  );
 
-  constructor() {
-    this.datasource.adapter.isLoading$.subscribe(
-      result => (this.loadingCounter += !result ? 1 : 0)
-    );
-    this.datasource.adapter.loopPending$.subscribe(
-      result => (this.innerLoopCounter += !result ? 1 : 0)
-    );
-  }
+  innerLoopCounter = toSignal(
+    this.datasource.adapter.loopPending$.pipe(
+      scan((count, result) => count + (!result ? 1 : 0), 0)
+    ),
+    { initialValue: 0 }
+  );
 }

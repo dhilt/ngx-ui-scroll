@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import {
@@ -20,12 +22,20 @@ export class DemoItemsCountComponent {
     config: demos.adapterProps.map.itemsCount,
     viewportId: 'items-count-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({
     get: datasourceGetCallbackInfinite(this.demoContext)
   });
+
+  itemsCount = toSignal(
+    this.datasource.adapter.isLoading$.pipe(
+      filter((loading: boolean) => !loading),
+      map(() => this.datasource.adapter.itemsCount)
+    ),
+    { initialValue: 0 }
+  );
 
   sources: DemoSources = [
     {

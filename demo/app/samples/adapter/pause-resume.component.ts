@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
@@ -16,7 +16,7 @@ export class DemoPauseResumeComponent {
     config: demos.adapterMethods.map.pauseResume,
     viewportId: 'pause-resume-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({

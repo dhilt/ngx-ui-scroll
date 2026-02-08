@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { merge, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -26,8 +26,8 @@ export class DemoDifferentHeightsComponent {
   MAX = 99;
   SIZE = 20;
 
-  averageLog = '';
-  frequentLog = '';
+  averageLog = signal('');
+  frequentLog = signal('');
   log = 'average';
 
   constructor() {
@@ -50,16 +50,16 @@ export class DemoDifferentHeightsComponent {
     const vp2 = viewports[1] as HTMLElement;
     adapter1.loopPending$.subscribe(pending => {
       if (!pending) {
-        this.averageLog =
-          `default: ${adapter1.bufferInfo.defaultSize}px, total: ${vp1.scrollHeight}px\n` +
-          this.averageLog;
+        this.averageLog.update(prev =>
+          `default: ${adapter1.bufferInfo.defaultSize}px, total: ${vp1.scrollHeight}px\n` + prev
+        );
       }
     });
     adapter2.loopPending$.subscribe(pending => {
       if (!pending) {
-        this.frequentLog =
-          `default: ${adapter2.bufferInfo.defaultSize}px, total: ${vp2.scrollHeight}px\n` +
-          this.frequentLog;
+        this.frequentLog.update(prev =>
+          `default: ${adapter2.bufferInfo.defaultSize}px, total: ${vp2.scrollHeight}px\n` + prev
+        );
       }
     });
   }

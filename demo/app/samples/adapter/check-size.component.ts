@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -21,7 +21,7 @@ export class DemoCheckSizeComponent {
     config: demos.adapterMethods.map.check,
     viewportId: 'check-size-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   MIN = 1;

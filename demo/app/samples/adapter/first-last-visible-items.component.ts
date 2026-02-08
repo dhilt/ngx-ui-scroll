@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import {
@@ -22,7 +24,7 @@ export class DemoFirstLastVisibleItemsComponent {
     config: demos.adapterProps.map.firstLastVisible,
     viewportId: 'first-last-visible-items-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({
@@ -30,19 +32,23 @@ export class DemoFirstLastVisibleItemsComponent {
   });
 
   init = false;
-  visibleCount = 0;
+
+  visibleCount = toSignal(
+    combineLatest([
+      this.datasource.adapter.firstVisible$ as unknown as Observable<IAdapterItem>,
+      this.datasource.adapter.lastVisible$ as unknown as Observable<IAdapterItem>
+    ]).pipe(
+      map(([first, last]) => {
+        const f = Number(first.$index);
+        const l = Number(last.$index);
+        return !isNaN(f) && !isNaN(l) ? l - f + 1 : 0;
+      })
+    ),
+    { initialValue: 0 }
+  );
 
   constructor() {
     setTimeout(() => (this.init = true));
-    const { firstVisible$, lastVisible$ } = this.datasource.adapter;
-    combineLatest([
-      firstVisible$ as unknown as Observable<IAdapterItem>,
-      lastVisible$ as unknown as Observable<IAdapterItem>
-    ]).subscribe(result => {
-      const first = Number(result[0].$index);
-      const last = Number(result[1].$index);
-      this.visibleCount = !isNaN(first) && !isNaN(last) ? last - first + 1 : 0;
-    });
   }
 
   sources: DemoSources = [

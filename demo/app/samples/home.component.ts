@@ -1,4 +1,6 @@
 import { Component, VERSION } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs/operators';
 
 import { DemoSources, DemoSourceType, MyItem } from '../shared/interfaces';
 import { globalScope as scopes, demoList as demos } from '../routes';
@@ -40,6 +42,14 @@ export class HomeComponent {
       debug: false
     }
   });
+
+  itemsCount = toSignal(
+    this.datasource.adapter.isLoading$.pipe(
+      filter((loading: boolean) => !loading),
+      map(() => this.datasource.adapter.itemsCount)
+    ),
+    { initialValue: 0 }
+  );
 
   sources: DemoSources = [
     {

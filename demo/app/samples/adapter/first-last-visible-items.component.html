@@ -1,11 +1,11 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions *ngIf="init">
-    First visible item's index: {{ datasource.adapter.firstVisible.$index }}
+    First visible item's index: {{ (datasource.adapter.firstVisible$ | async)?.$index }}
     <br />
     Last visible item's index:
     {{ (datasource.adapter.lastVisible$ | async)?.$index }}
     <br />
-    Visible items counter: {{ visibleCount }}
+    Visible items counter: {{ visibleCount() }}
   </div>
   <div description>
     <p>

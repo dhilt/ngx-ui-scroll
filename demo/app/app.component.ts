@@ -1,6 +1,6 @@
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
-  ActivatedRoute,
+  NavigationEnd,
   NavigationStart,
   Router,
   Event
@@ -13,11 +13,11 @@ import { filter } from 'rxjs/operators';
   templateUrl: './app.component.html',
   standalone: false
 })
-export class AppComponent implements AfterViewInit, OnDestroy {
+export class AppComponent implements OnDestroy {
   hasLayout = true;
   private subscriptions: Subscription[] = [];
 
-  constructor(private route: ActivatedRoute, private router: Router) {
+  constructor(private router: Router) {
     this.subscriptions.push(
       router.events
         .pipe(filter((event: Event) => event instanceof NavigationStart))
@@ -34,26 +34,27 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           }
         })
     );
+    this.subscriptions.push(
+      router.events
+        .pipe(filter((event: Event) => event instanceof NavigationEnd))
+        .subscribe((event: Event) => {
+          const tree = router.parseUrl((event as NavigationEnd).urlAfterRedirects);
+          const hash = tree.fragment;
+          if (hash) {
+            setTimeout(() => {
+              const cmp = document.getElementById(hash);
+              if (cmp) {
+                cmp.scrollIntoView();
+              }
+            });
+          } else {
+            window.scrollTo(0, 0);
+          }
+        })
+    );
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
-  }
-
-  ngAfterViewInit() {
-    this.subscriptions.push(
-      this.route.fragment.subscribe(hash => {
-        if (hash) {
-          setTimeout(() => {
-            const cmp = document.getElementById(hash);
-            if (cmp) {
-              cmp.scrollIntoView();
-            }
-          });
-        } else {
-          window.scrollTo(0, 0);
-        }
-      })
-    );
   }
 
   ngOnDestroy() {

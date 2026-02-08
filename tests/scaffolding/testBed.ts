@@ -15,8 +15,8 @@ import {
 export const configureTestBed = (
   datasource: new () => unknown,
   template: string
-): ComponentFixture<ScrollerTestComponent> =>
-  TestBed.configureTestingModule({
+): ComponentFixture<ScrollerTestComponent> => {
+  const fixture = TestBed.configureTestingModule({
     imports: [UiScrollModule],
     declarations: [ScrollerTestComponent],
     providers: [
@@ -33,11 +33,14 @@ export const configureTestBed = (
     .overrideProvider(DatasourceService, { useValue: new datasource() })
     .overrideComponent(ScrollerTestComponent, { set: { template } })
     .createComponent(ScrollerTestComponent);
+  fixture.detectChanges();
+  return fixture;
+};
 
 const configureTestBedFactory =
   <T>(comp: Type<T>) =>
-  (): ComponentFixture<T> =>
-    TestBed.configureTestingModule({
+  (): ComponentFixture<T> => {
+    const fixture = TestBed.configureTestingModule({
       imports: [UiScrollModule],
       declarations: [comp],
       providers: [
@@ -47,6 +50,9 @@ const configureTestBedFactory =
         }
       ]
     }).createComponent(comp);
+    fixture.detectChanges();
+    return fixture;
+  };
 
 export const configureTestBedTwo = configureTestBedFactory(
   TwoScrollersTestComponent

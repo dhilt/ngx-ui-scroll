@@ -134,6 +134,7 @@ const shouldClipAfterAppend: ItFuncConfig<void | ICustom> =
     expect(lastIndex).toEqual(indexToAppend + NEW_ITEMS_COUNT - 1);
     expect(misc.padding.backward.getSize()).toEqual(0);
     await adapter.clip(clipSettings);
+    misc.fixture.detectChanges();
 
     const itemsCounter = getItemsCounter(
       misc,

@@ -162,17 +162,23 @@ const getClipArgument = ({
 };
 
 const shouldClipInfinite: ItFuncConfig = () => misc => async done => {
-  const { adapter } = misc;
+  const { adapter, scroller } = misc;
   await misc.relaxNext();
   const count = adapter.itemsCount;
 
-  await misc.scrollMinMax();
+  misc.scrollMax();
+  await misc.relaxNext();
   const count2 = adapter.itemsCount;
   expect(count2).toBeGreaterThan(count);
 
   await adapter.clip();
   const count3 = adapter.itemsCount;
   expect(count3).toBeLessThan(count2);
+
+  const clipCount = scroller.state.clip.callCount;
+  misc.scrollMax();
+  await misc.relaxNext();
+  expect(scroller.state.clip.callCount).toEqual(clipCount);
 
   done();
 };

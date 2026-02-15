@@ -25,23 +25,30 @@ interface IReactiveOverride<Item = unknown> {
 type _Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 
 interface IAngularAdapter<Data = unknown>
-  extends _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>,
+  extends
+    _Omit<IAdapter<Data>, keyof IReactiveOverride<Data>>,
     IReactiveOverride<Data> {}
 
-export interface IAngularDatasourceParams<Data = unknown>
-  extends _Omit<IDatasource<Data>, 'adapter'> {}
+export interface IAngularDatasourceParams<Data = unknown> extends _Omit<
+  IDatasource<Data>,
+  'adapter'
+> {}
 
-interface IAngularDatasource<Data = unknown>
-  extends _Omit<IDatasource<Data>, 'adapter'> {
+interface IAngularDatasource<Data = unknown> extends _Omit<
+  IDatasource<Data>,
+  'adapter'
+> {
   adapter?: IAngularAdapter<Data>;
 }
 
-export interface IAngularDatasourceConstructed<Data = unknown>
-  extends _Omit<IDatasourceConstructed<Data>, 'adapter'> {
+export interface IAngularDatasourceConstructed<Data = unknown> extends _Omit<
+  IDatasourceConstructed<Data>,
+  'adapter'
+> {
   adapter: IAngularAdapter<Data>;
 }
 
-export type AngularDatasourceClass<> = new <Data>(
+export type AngularDatasourceClass = new <Data>(
   params: IAngularDatasourceParams<Data>
 ) => IAngularDatasourceConstructed<Data>;
 

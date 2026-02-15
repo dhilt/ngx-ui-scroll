@@ -5,7 +5,7 @@
   "license": "MIT",
   "main": "./index.html",
   "scripts": {
-    "start": "ng serve --proxy-config ./proxy.conf.json",
+    "start": "ng serve --proxy-config ./proxy.conf.json --configuration development --prebundle=false",
     "start:env": "node env",
     "lint": "tsc -p tsconfig.json --noEmit",
     "build": "ng build demo --configuration production",

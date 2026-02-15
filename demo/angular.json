@@ -56,9 +56,6 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
-            },
-            "serve-dev": {
-              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -71,12 +68,9 @@
             },
             "development": {
               "buildTarget": "demo:build:development"
-            },
-            "serve-dev": {
-              "buildTarget": "demo:build:serve-dev"
             }
           },
-          "defaultConfiguration": "serve-dev"
+          "defaultConfiguration": "development"
         }
       }
     }

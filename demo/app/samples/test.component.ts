@@ -40,6 +40,7 @@ export class TestComponent {
   sizeIndex = 1;
   sizeValue = 10;
   datasourceDelay = 0;
+  reproModeNG0956 = false;
   data!: MyItem[];
 
   datasource = new Datasource<MyItem>({
@@ -103,7 +104,12 @@ export class TestComponent {
     const end = Math.min(MAX, index + count - 1);
     if (start <= end) {
       for (let i = start; i <= end; i++) {
-        data.push(this.data[i - MIN]);
+        if (this.reproModeNG0956) {
+          // Repro mode returns fresh object references for the same logical items (NG0956)
+          data.push({ ...this.data[i - MIN] });
+        } else {
+          data.push(this.data[i - MIN]);
+        }
         // if (i > 0) {
         //   this.data[i - MIN].size = 25;
         // }
@@ -151,6 +157,23 @@ export class TestComponent {
 
   doReload() {
     this.datasource.adapter.reload(this.reloadIndex);
+  }
+
+  /**
+   * Repro helper for Angular NG0956.
+   *
+   * With `@for (...; track item)` Angular tracks by object identity.
+   * This toggle enables mode where visible items are replaced with fresh object copies.
+   * Logical content remains the same, but identities change, so Angular treats
+   * the update as full collection re-creation and emits NG0956.
+   */
+  doNG0956() {
+    this.reproModeNG0956 = !this.reproModeNG0956;
+    if (this.reproModeNG0956) {
+      this.datasource.adapter.update({
+        predicate: ({ data }) => [{ ...data }]
+      });
+    }
   }
 
   doPrepend() {

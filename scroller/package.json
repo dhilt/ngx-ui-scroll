@@ -18,7 +18,7 @@
   "peerDependencies": {
     "@angular/common": ">=17.0.0",
     "@angular/core": ">=17.0.0",
-    "vscroll": "^1.8.2"
+    "vscroll": "^1.8.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.1.3",

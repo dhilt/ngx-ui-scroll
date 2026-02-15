@@ -3,7 +3,7 @@
     <div class="comment">Available since v1.3.1, undocumented</div>
     <button (click)="doUpdate()">Update</button> item #
     <input [(ngModel)]="inputValue" size="2" />
-    <div>Items in buffer: {{ this.countItems() }}</div>
+    <div>Items in buffer: {{ itemsInBuffer$ | async }}</div>
   </div>
 
   <div description>

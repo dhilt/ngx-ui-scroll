@@ -31,7 +31,7 @@ export class DemoFirstLastVisibleItemsComponent {
     get: datasourceGetCallbackInfinite(this.demoContext)
   });
 
-  init = false;
+  init = signal(false);
 
   visibleCount = toSignal(
     combineLatest([
@@ -48,7 +48,7 @@ export class DemoFirstLastVisibleItemsComponent {
   );
 
   constructor() {
-    setTimeout(() => (this.init = true));
+    setTimeout(() => this.init.set(true));
   }
 
   sources: DemoSources = [

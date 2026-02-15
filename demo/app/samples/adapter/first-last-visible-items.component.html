@@ -1,5 +1,5 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
-  <div actions *ngIf="init">
+  <div actions *ngIf="init()">
     First visible item's index: {{ (datasource.adapter.firstVisible$ | async)?.$index }}
     <br />
     Last visible item's index:

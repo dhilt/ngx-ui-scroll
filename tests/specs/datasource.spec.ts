@@ -10,7 +10,7 @@ const configClass: TestBedConfig<void, false> = {
     get(_offset: number, _count: number) {
       return [];
     }
-    reset() { }
+    reset() {}
   }
 };
 

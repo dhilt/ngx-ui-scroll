@@ -151,9 +151,14 @@ const getFirstVisibleIndex = (misc: Misc): number => {
   return NaN;
 };
 
-function checkSurvivorUids(misc: Misc, beforeItems: Misc['scroller']['buffer']['items']) {
+function checkSurvivorUids(
+  misc: Misc,
+  beforeItems: Misc['scroller']['buffer']['items']
+) {
   const { buffer } = misc.scroller;
-  const beforeUidByIndex = new Map(beforeItems.map(item => [item.$index, item.uid]));
+  const beforeUidByIndex = new Map(
+    beforeItems.map(item => [item.$index, item.uid])
+  );
   buffer.items.forEach(item => {
     const beforeUid = beforeUidByIndex.get(item.$index);
     if (beforeUid !== void 0) {
@@ -267,8 +272,9 @@ describe('Adapter Check Size Spec', () => {
   moreProcessesConfigList.forEach(config =>
     makeTest({
       config,
-      title: `should check after check and ${config.custom.prepend ? 'prepend' : 'append'
-        }`,
+      title: `should check after check and ${
+        config.custom.prepend ? 'prepend' : 'append'
+      }`,
       it: shouldDoubleCheck(config)
     })
   );

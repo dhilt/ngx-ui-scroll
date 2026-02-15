@@ -98,12 +98,24 @@ const configList: TestBedConfig<ICustom>[] = [
     predicate: ({ $index }) =>
       $index === 3 ? [make('xxx', 1), make('yyy', 1), make('zzz', 125)] : true,
     expectations: {
-      rows: [row(2, 'item #2'), row(3, 'xxx'), row(4, 'yyy'), row(5, 'zzz'), row(6, 'item #4')],
+      rows: [
+        row(2, 'item #2'),
+        row(3, 'xxx'),
+        row(4, 'yyy'),
+        row(5, 'zzz'),
+        row(6, 'item #4')
+      ],
       uid: { stable: ['item #2', 'item #4'], fresh: ['xxx', 'yyy', 'zzz'] },
       firstVisible: 1
     },
     expectationsRight: {
-      rows: [row(0, 'item #2'), row(1, 'xxx'), row(2, 'yyy'), row(3, 'zzz'), row(4, 'item #4')],
+      rows: [
+        row(0, 'item #2'),
+        row(1, 'xxx'),
+        row(2, 'yyy'),
+        row(3, 'zzz'),
+        row(4, 'item #4')
+      ],
       uid: { stable: ['item #2', 'item #4'], fresh: ['xxx', 'yyy', 'zzz'] },
       firstVisible: -1
     },
@@ -115,13 +127,31 @@ const configList: TestBedConfig<ICustom>[] = [
       predicate: ({ $index, data }) =>
         $index === 10 ? [make('xxx', SIZE), data, make('yyy', 125)] : true,
       expectations: {
-        rows: [row(9, 'item #9'), row(10, 'xxx'), row(11, 'item #10'), row(12, 'yyy'), row(13, 'item #11')],
-        uid: { stable: ['item #9', 'item #10', 'item #11'], fresh: ['xxx', 'yyy'] },
+        rows: [
+          row(9, 'item #9'),
+          row(10, 'xxx'),
+          row(11, 'item #10'),
+          row(12, 'yyy'),
+          row(13, 'item #11')
+        ],
+        uid: {
+          stable: ['item #9', 'item #10', 'item #11'],
+          fresh: ['xxx', 'yyy']
+        },
         firstVisible: 11
       },
       expectationsRight: {
-        rows: [row(7, 'item #9'), row(8, 'xxx'), row(9, 'item #10'), row(10, 'yyy'), row(11, 'item #11')],
-        uid: { stable: ['item #9', 'item #10', 'item #11'], fresh: ['xxx', 'yyy'] },
+        rows: [
+          row(7, 'item #9'),
+          row(8, 'xxx'),
+          row(9, 'item #10'),
+          row(10, 'yyy'),
+          row(11, 'item #11')
+        ],
+        uid: {
+          stable: ['item #9', 'item #10', 'item #11'],
+          fresh: ['xxx', 'yyy']
+        },
         firstVisible: 9
       },
       getAverageSize: c => Math.round(((c - 2) * SIZE + SIZE + 125) / c)
@@ -131,7 +161,8 @@ const configList: TestBedConfig<ICustom>[] = [
   makeConfig(
     {
       title: 'prepend',
-      predicate: ({ $index, data }) => ($index === MIN ? [make('xxx', 125), data] : true),
+      predicate: ({ $index, data }) =>
+        $index === MIN ? [make('xxx', 125), data] : true,
       expectations: {
         rows: [row(MIN, 'xxx'), row(MIN + 1, `item #${MIN}`)],
         uid: { stable: [`item #${MIN}`], fresh: ['xxx'] },
@@ -149,7 +180,8 @@ const configList: TestBedConfig<ICustom>[] = [
   makeConfig(
     {
       title: 'append',
-      predicate: ({ $index, data }) => ($index === MAX ? [data, make('xxx', 125)] : true),
+      predicate: ({ $index, data }) =>
+        $index === MAX ? [data, make('xxx', 125)] : true,
       expectations: {
         rows: [row(MAX, `item #${MAX}`), row(MAX + 1, 'xxx')],
         uid: { stable: [`item #${MAX}`], fresh: ['xxx'] },
@@ -188,7 +220,10 @@ const configList: TestBedConfig<ICustom>[] = [
         firstVisible: MIN
       },
       expectationsRight: {
-        rows: [row(MIN + 1, `item #${MIN + 1}`), row(MIN + 2, `item #${MIN + 2}`)],
+        rows: [
+          row(MIN + 1, `item #${MIN + 1}`),
+          row(MIN + 2, `item #${MIN + 2}`)
+        ],
         uid: { stable: [`item #${MIN + 1}`, `item #${MIN + 2}`], fresh: [] },
         firstVisible: MIN + 1
       }
@@ -200,7 +235,10 @@ const configList: TestBedConfig<ICustom>[] = [
       title: 'remove right',
       predicate: ({ $index }) => $index !== MAX,
       expectations: {
-        rows: [row(MAX - 2, `item #${MAX - 2}`), row(MAX - 1, `item #${MAX - 1}`)],
+        rows: [
+          row(MAX - 2, `item #${MAX - 2}`),
+          row(MAX - 1, `item #${MAX - 1}`)
+        ],
         uid: { stable: [`item #${MAX - 2}`, `item #${MAX - 1}`], fresh: [] },
         firstVisible: MAX - itemsPerPage
       },
@@ -230,12 +268,26 @@ const configList: TestBedConfig<ICustom>[] = [
       return true;
     },
     expectations: {
-      rows: [row(1, 'a'), row(2, 'item #1'), row(3, 'b'), row(4, 'c'), row(5, 'item #5'), row(6, 'd')],
+      rows: [
+        row(1, 'a'),
+        row(2, 'item #1'),
+        row(3, 'b'),
+        row(4, 'c'),
+        row(5, 'item #5'),
+        row(6, 'd')
+      ],
       uid: { stable: ['item #1', 'item #5'], fresh: ['a', 'b', 'c', 'd'] },
       firstVisible: 2
     },
     expectationsRight: {
-      rows: [row(0, 'a'), row(1, 'item #1'), row(2, 'b'), row(3, 'c'), row(4, 'item #5'), row(5, 'd')],
+      rows: [
+        row(0, 'a'),
+        row(1, 'item #1'),
+        row(2, 'b'),
+        row(3, 'c'),
+        row(4, 'item #5'),
+        row(5, 'd')
+      ],
       uid: { stable: ['item #1', 'item #5'], fresh: ['a', 'b', 'c', 'd'] },
       firstVisible: 1
     },
@@ -283,84 +335,95 @@ const checkContents = (
 
 const shouldUpdate =
   (config: TestBedConfig<ICustom>, fixRight: boolean): ItFunc =>
-    misc =>
-      async done => {
-        await misc.relaxNext();
-        const { adapter, scroller: { buffer } } = misc;
-        const { predicate, expectations, expectationsRight, getAverageSize } = config.custom;
-        const currentExpectations = fixRight ? expectationsRight : expectations;
-        const { rows: checkList, uid: uidCheck, firstVisible } = currentExpectations;
-        const left = checkList[0].index;
-        const beforeItems = [...buffer.items];
+  misc =>
+  async done => {
+    await misc.relaxNext();
+    const {
+      adapter,
+      scroller: { buffer }
+    } = misc;
+    const { predicate, expectations, expectationsRight, getAverageSize } =
+      config.custom;
+    const currentExpectations = fixRight ? expectationsRight : expectations;
+    const {
+      rows: checkList,
+      uid: uidCheck,
+      firstVisible
+    } = currentExpectations;
+    const left = checkList[0].index;
+    const beforeItems = [...buffer.items];
 
-        // update in Datasource
-        (misc.datasource as DatasourceUpdater).update(
-          buffer,
-          predicate,
-          firstVisible,
-          fixRight
-        );
+    // update in Datasource
+    (misc.datasource as DatasourceUpdater).update(
+      buffer,
+      predicate,
+      firstVisible,
+      fixRight
+    );
 
-        // update in Viewport
-        await adapter.update({ predicate, fixRight });
+    // update in Viewport
+    await adapter.update({ predicate, fixRight });
 
-        expect(adapter.firstVisible.$index).toBe(firstVisible);
-        checkContents(beforeItems, buffer.items, checkList, left, uidCheck);
+    expect(adapter.firstVisible.$index).toBe(firstVisible);
+    checkContents(beforeItems, buffer.items, checkList, left, uidCheck);
 
-        if (typeof getAverageSize === 'function') {
-          expect(buffer.defaultSize).not.toBe(SIZE);
-          expect(buffer.defaultSize).toBe(getAverageSize(buffer.cacheSize));
-        }
+    if (typeof getAverageSize === 'function') {
+      expect(buffer.defaultSize).not.toBe(SIZE);
+      expect(buffer.defaultSize).toBe(getAverageSize(buffer.cacheSize));
+    }
 
-        // refresh the view via scroll to edges and then scroll to first check-item
-        await misc.scrollMinMax();
-        await misc.scrollToIndexRecursively(left);
+    // refresh the view via scroll to edges and then scroll to first check-item
+    await misc.scrollMinMax();
+    await misc.scrollToIndexRecursively(left);
 
-        checkContents(beforeItems, buffer.items, checkList, left);
-        done();
-      };
+    checkContents(beforeItems, buffer.items, checkList, left);
+    done();
+  };
 
 const shouldWorkAfterCleanup =
   (fixRight: boolean): ItFunc =>
-    misc =>
-      async done => {
-        await misc.relaxNext();
-        const {
-          adapter,
-          scroller: { buffer }
-        } = misc;
-        const { firstIndex, lastIndex } = buffer;
-        const diff = lastIndex - firstIndex + 1;
-        const predicate: AdapterUpdateOptions['predicate'] = item =>
-          !(item.$index >= firstIndex && item.$index <= lastIndex);
+  misc =>
+  async done => {
+    await misc.relaxNext();
+    const {
+      adapter,
+      scroller: { buffer }
+    } = misc;
+    const { firstIndex, lastIndex } = buffer;
+    const diff = lastIndex - firstIndex + 1;
+    const predicate: AdapterUpdateOptions['predicate'] = item =>
+      !(item.$index >= firstIndex && item.$index <= lastIndex);
 
-        (misc.datasource as DatasourceUpdater).update(
-          buffer,
-          predicate,
-          firstIndex,
-          fixRight
-        );
-        await adapter.update({ predicate, fixRight });
+    (misc.datasource as DatasourceUpdater).update(
+      buffer,
+      predicate,
+      firstIndex,
+      fixRight
+    );
+    await adapter.update({ predicate, fixRight });
 
-        expect(adapter.firstVisible.$index).toBe(
-          fixRight ? lastIndex + 1 : firstIndex
-        );
+    expect(adapter.firstVisible.$index).toBe(
+      fixRight ? lastIndex + 1 : firstIndex
+    );
 
-        await misc.scrollMinRelax();
-        expect(buffer.firstIndex).toBe(MIN + (fixRight ? diff : 0));
+    await misc.scrollMinRelax();
+    expect(buffer.firstIndex).toBe(MIN + (fixRight ? diff : 0));
 
-        await misc.scrollMaxRelax();
-        expect(buffer.lastIndex).toBe(MAX - (fixRight ? 0 : diff));
+    await misc.scrollMaxRelax();
+    expect(buffer.lastIndex).toBe(MAX - (fixRight ? 0 : diff));
 
-        done();
-      };
+    done();
+  };
 
 describe('Adapter Update Spec', () => {
   describe('Simple update', () =>
     [false, true].forEach(fixRight =>
       configList.forEach(config =>
         makeTest({
-          title: 'should ' + config.custom.title + ' when fixRight = ' +
+          title:
+            'should ' +
+            config.custom.title +
+            ' when fixRight = ' +
             (fixRight ? 'true' : 'false'),
           config,
           it: shouldUpdate(config, fixRight)

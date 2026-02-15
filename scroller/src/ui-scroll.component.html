@@ -1,5 +1,5 @@
 <div data-padding-backward></div>
-@for (item of items(); track item) {
+@for (item of items(); track item.uid) {
 <div
   [attr.data-sid]="item.$index"
   [style.position]="item.invisible ? 'fixed' : null"

@@ -179,6 +179,10 @@ const checkExpectation = (config: TestBedConfig<ICustom>, misc: Misc) => {
   expect(firstItem ? firstItem.$index : null).toEqual(firstIndex);
   expect(misc.checkElementContentByIndex(firstIndex)).toEqual(true);
   expect(misc.checkElementContentByIndex(nextIndex)).toEqual(true);
+  expect(firstVisible.uid).toBeDefined();
+  expect(lastVisible.uid).toBeDefined();
+  // Reload should keep UIDs collision-free in the current buffer.
+  misc.checkItemsUidUniqueness();
   expect(firstVisible.$index).toEqual(startIndex);
   expect(lastVisible.$index).toEqual(startIndex + itemsPerViewport - 1);
   expect(misc.workflow.interruptionCount).toEqual(

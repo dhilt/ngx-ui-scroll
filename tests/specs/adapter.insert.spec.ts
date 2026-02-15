@@ -571,6 +571,7 @@ const shouldCheckVirtual: ItFuncConfig<ICustomVirtual> =
     } = misc;
     const ds = misc.datasource as DatasourceInserter;
     const items = generateItems(amount, MAX);
+    const beforeItems = [...buffer.items];
     const firstVisibleId = adapter.firstVisible.data.id;
 
     ds.insert(
@@ -584,6 +585,8 @@ const shouldCheckVirtual: ItFuncConfig<ICustomVirtual> =
     } else {
       await adapter.insert({ afterIndex: index, items, decrease });
     }
+    // UIDs must remain unique after index shifts to keep Angular track keys collision-free.
+    misc.checkItemsIdentity(beforeItems);
     expect(adapter.firstVisible.data.id).toBe(firstVisibleId);
     expect(misc.getScrollableSize()).toBe(
       (result.max - result.min + 1) * ITEM_SIZE

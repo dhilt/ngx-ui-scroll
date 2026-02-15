@@ -151,6 +151,18 @@ const getFirstVisibleIndex = (misc: Misc): number => {
   return NaN;
 };
 
+function checkSurvivorUids(misc: Misc, beforeItems: Misc['scroller']['buffer']['items']) {
+  const { buffer } = misc.scroller;
+  const beforeUidByIndex = new Map(beforeItems.map(item => [item.$index, item.uid]));
+  buffer.items.forEach(item => {
+    const beforeUid = beforeUidByIndex.get(item.$index);
+    if (beforeUid !== void 0) {
+      expect(item.uid).toBe(beforeUid);
+    }
+  });
+  misc.checkItemsUidUniqueness(buffer.items);
+}
+
 const shouldCheck: ItFuncConfig<ICustom> = config => misc => async done => {
   const { adapter, scroller } = misc;
   const {
@@ -163,9 +175,11 @@ const shouldCheck: ItFuncConfig<ICustom> = config => misc => async done => {
   let firstVisibleIndex = NaN;
   misc.setItemProcessor(({ data }) => (data.size = initialSize));
   await misc.relaxNext();
+  const beforeItems = [...buffer.items];
   updateDOM(misc, { min, max, size, initialSize });
   firstVisibleIndex = getFirstVisibleIndex(misc);
   await adapter.check();
+  checkSurvivorUids(misc, beforeItems);
   expect(adapter.firstVisible.$index).toEqual(firstVisibleIndex);
   const virtualSize =
     (maxIndex - minIndex + 1 - buffer.cacheSize) * buffer.defaultSize;
@@ -193,6 +207,7 @@ const shouldFetchAfterCheck: ItFuncConfig<ICustom> =
     shouldSimulateFetch(misc, true);
     await adapter.relax();
     shouldSimulateFetch(misc, false);
+    misc.checkItemsUidUniqueness();
     misc.scrollMax();
     await misc.relaxNext();
     done();
@@ -213,17 +228,22 @@ const shouldDoubleCheck: ItFuncConfig<ICustom> =
     shouldSimulateFetch(misc, true);
     await adapter.relax();
     shouldSimulateFetch(misc, false);
+
+    misc.checkItemsUidUniqueness();
     if (config.custom.prepend) {
       adapter.prepend({ id: MIN_INDEX - 1, text: 'new item', size: itemSize });
     } else {
       adapter.append({ id: MAX_INDEX + 1, text: 'new item', size: itemSize });
     }
     await adapter.relax();
+    misc.checkItemsUidUniqueness();
     updateDOMElement(misc, startIndex, itemSize as number);
     adapter.check();
     shouldSimulateFetch(misc, true);
+
     await adapter.relax();
     shouldSimulateFetch(misc, false);
+    misc.checkItemsUidUniqueness();
     done();
   };
 
@@ -247,9 +267,8 @@ describe('Adapter Check Size Spec', () => {
   moreProcessesConfigList.forEach(config =>
     makeTest({
       config,
-      title: `should check after check and ${
-        config.custom.prepend ? 'prepend' : 'append'
-      }`,
+      title: `should check after check and ${config.custom.prepend ? 'prepend' : 'append'
+        }`,
       it: shouldDoubleCheck(config)
     })
   );

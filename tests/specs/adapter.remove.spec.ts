@@ -631,6 +631,7 @@ const shouldRemoveVirtual: ItFuncConfig<ICustomCommon> =
     await misc.relaxNext();
     const {
       $index: indexFirst,
+      uid: uidFirst,
       data: { id: idFirst }
     } = misc.adapter.firstVisible;
     await doRemove(config, misc);
@@ -641,7 +642,11 @@ const shouldRemoveVirtual: ItFuncConfig<ICustomCommon> =
     );
     expect(misc.scroller.viewport.getScrollableSize()).toBe(size);
     expect(misc.adapter.firstVisible.$index).toBe(indexFirst - shift);
+    // Virtual remove shifts indices but should keep identity of buffered survivors.
+    expect(misc.adapter.firstVisible.uid).toBe(uidFirst);
     expect(misc.adapter.firstVisible.data.id).toBe(idFirst);
+    // UIDs must remain unique after virtual index shifts.
+    misc.checkItemsUidUniqueness();
 
     // let's scroll to the first row before the removed
     const min = Math.min(...(removeBwd || remove || []));

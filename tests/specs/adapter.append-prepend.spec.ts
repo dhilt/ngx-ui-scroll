@@ -214,6 +214,7 @@ const shouldVirtualize =
         const fixRight = (isAppend && fixOpposite) || (!isAppend && !fixOpposite);
         const paddingSize = paddings[direction].size;
         const itemSize = misc.getItemSize();
+        const beforeItems = [...buffer.items];
         let items: Data[] = [];
 
         const minIndex = min - (fixRight ? amount : 0);
@@ -253,6 +254,9 @@ const shouldVirtualize =
           });
           expect(buffer.lastIndex).toEqual(_lastIndex + shift);
         }
+
+        // Virtual append/prepend should preserve identity of buffered survivors.
+        misc.checkItemsIdentity(beforeItems, buffer.items);
 
         expect(misc.adapter.firstVisible.data.id).toBe(_firstVisibleId);
         expect(misc.adapter.lastVisible.data.id).toBe(_lastVisibleId);

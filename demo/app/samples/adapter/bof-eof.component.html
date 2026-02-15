@@ -1,6 +1,7 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    Begin of file is {{ (datasource.adapter.bof$ | async) ? '' : 'not' }} reached
+    Begin of file is
+    {{ (datasource.adapter.bof$ | async) ? '' : 'not' }} reached
     <br />
     End of file is {{ (datasource.adapter.eof$ | async) ? '' : 'not' }} reached
     <br />

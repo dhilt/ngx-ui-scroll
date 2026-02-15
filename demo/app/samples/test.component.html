@@ -13,7 +13,9 @@
   <br />
   <div *ngIf="show">
     <button (click)="doPrepend()">Prepend</button>
-    <button (click)="doNG0956()">{{ reproModeNG0956 ? 'NG0956 Off' : 'NG0956' }}</button>
+    <button (click)="doNG0956()">
+      {{ reproModeNG0956 ? 'NG0956 Off' : 'NG0956' }}
+    </button>
     <button (click)="doLog()">Show log</button>
     <br />
     <button (click)="doScrollHome()">Up</button>
@@ -23,22 +25,28 @@
     <input [(ngModel)]="sizeIndex" style="width: 50px" />
     <button (click)="doChangeSize()">Size</button>
     <br />
-    <small>ngx-ui-scroll version:
-      {{ datasource.adapter.packageInfo.consumer.version }}</small>
+    <small
+      >ngx-ui-scroll version:
+      {{ datasource.adapter.packageInfo.consumer.version }}</small
+    >
     <br />
-    <small>isLoading:
+    <small
+      >isLoading:
       {{ datasource.adapter.isLoading$ | async }}
     </small>
     <br />
-    <small>first visible:
+    <small
+      >first visible:
       {{ (datasource.adapter.firstVisible$ | async)?.$index }}
     </small>
     <br />
-    <small>last visible:
+    <small
+      >last visible:
       {{ (datasource.adapter.lastVisible$ | async)?.$index }}
     </small>
     <br />
-    <small>total: {{ itemsCount() }}, visible:
+    <small
+      >total: {{ itemsCount() }}, visible:
       {{ getVisibleItemsCount() }}
     </small>
   </div>
@@ -46,7 +54,11 @@
 </div>
 <div class="viewport" #viewport style="height: 600px" id="my-viewport">
   <div *ngIf="show">
-    <div *uiScroll="let item of datasource" (click)="doToggleItem(item)" [style.height]="item.size + 'px'">
+    <div
+      *uiScroll="let item of datasource"
+      (click)="doToggleItem(item)"
+      [style.height]="item.size + 'px'"
+    >
       <app-samples-test-inner>
         {{ item.text }}
         <span [style.color]="item.color">

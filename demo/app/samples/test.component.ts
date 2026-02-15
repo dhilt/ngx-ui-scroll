@@ -24,7 +24,7 @@ interface MyItem {
   standalone: false
 })
 export class TestInnerComponent {
-  constructor() { }
+  constructor() {}
 }
 
 @Component({

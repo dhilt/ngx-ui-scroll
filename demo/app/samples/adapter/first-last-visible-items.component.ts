@@ -35,8 +35,10 @@ export class DemoFirstLastVisibleItemsComponent {
 
   visibleCount = toSignal(
     combineLatest([
-      this.datasource.adapter.firstVisible$ as unknown as Observable<IAdapterItem>,
-      this.datasource.adapter.lastVisible$ as unknown as Observable<IAdapterItem>
+      this.datasource.adapter
+        .firstVisible$ as unknown as Observable<IAdapterItem>,
+      this.datasource.adapter
+        .lastVisible$ as unknown as Observable<IAdapterItem>
     ]).pipe(
       map(([first, last]) => {
         const f = Number(first.$index);

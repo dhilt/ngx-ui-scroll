@@ -4,7 +4,8 @@
     <br />
     Autoscroll: <input type="checkbox" [(ngModel)]="needAutoscroll" />
     <br />
-    First visible item's index: {{ (datasource.adapter.firstVisible$ | async)?.$index }}
+    First visible item's index:
+    {{ (datasource.adapter.firstVisible$ | async)?.$index }}
   </div>
   <div description>
     <p>

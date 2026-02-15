@@ -50,15 +50,19 @@ export class DemoDifferentHeightsComponent {
     const vp2 = viewports[1] as HTMLElement;
     adapter1.loopPending$.subscribe(pending => {
       if (!pending) {
-        this.averageLog.update(prev =>
-          `default: ${adapter1.bufferInfo.defaultSize}px, total: ${vp1.scrollHeight}px\n` + prev
+        this.averageLog.update(
+          prev =>
+            `default: ${adapter1.bufferInfo.defaultSize}px, total: ${vp1.scrollHeight}px\n` +
+            prev
         );
       }
     });
     adapter2.loopPending$.subscribe(pending => {
       if (!pending) {
-        this.frequentLog.update(prev =>
-          `default: ${adapter2.bufferInfo.defaultSize}px, total: ${vp2.scrollHeight}px\n` + prev
+        this.frequentLog.update(
+          prev =>
+            `default: ${adapter2.bufferInfo.defaultSize}px, total: ${vp2.scrollHeight}px\n` +
+            prev
         );
       }
     });

@@ -1,10 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import {
-  NavigationEnd,
-  NavigationStart,
-  Router,
-  Event
-} from '@angular/router';
+import { NavigationEnd, NavigationStart, Router, Event } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -38,7 +33,9 @@ export class AppComponent implements OnDestroy {
       router.events
         .pipe(filter((event: Event) => event instanceof NavigationEnd))
         .subscribe((event: Event) => {
-          const tree = router.parseUrl((event as NavigationEnd).urlAfterRedirects);
+          const tree = router.parseUrl(
+            (event as NavigationEnd).urlAfterRedirects
+          );
           const hash = tree.fragment;
           if (hash) {
             setTimeout(() => {

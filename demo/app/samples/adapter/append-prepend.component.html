@@ -2,7 +2,11 @@
   <div actions style="display: flex">
     <button (click)="doAppend()">Append</button> /
     <button (click)="doPrepend()">Prepend</button>
-    <input [ngModel]="inputValue" (change)="onInputChanged($any($event.target))" size="2" />
+    <input
+      [ngModel]="inputValue"
+      (change)="onInputChanged($any($event.target))"
+      size="2"
+    />
   </div>
   <div description>
     <p>
@@ -21,40 +25,53 @@
     </div>
     <ul>
       <li><em>items</em> An array of items to add.</li>
-      <li><em>eof</em>/<em>bof</em>/<em>virtualize</em> Virtualization params.</li>
-      <li><em>decrease</em>/<em>increase</em> Influence the index management strategy.</li>
+      <li>
+        <em>eof</em>/<em>bof</em>/<em>virtualize</em> Virtualization params.
+      </li>
+      <li>
+        <em>decrease</em>/<em>increase</em> Influence the index management
+        strategy.
+      </li>
     </ul>
     <p>
-      In this section, we focus on the <em>items</em> parameter.
-      The other options will be considered in the
-      <a [routerLink]="['/', adapterScope.id]" fragment="{{ adapterMethodsScope.map.appendPrependSync.id }}">next demo</a>.
-      Both <em>append</em> and <em>prepend</em> methods work similarly,
-      so let's discuss <em>prepend</em>.
+      In this section, we focus on the <em>items</em> parameter. The other
+      options will be considered in the
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{ adapterMethodsScope.map.appendPrependSync.id }}"
+        >next demo</a
+      >. Both <em>append</em> and <em>prepend</em> methods work similarly, so
+      let's discuss <em>prepend</em>.
     </p>
     <p>
       In this demo we have 20 items on start. The first 5 items (indices 95–99)
       are invisible because they are outside the visible part of the viewport.
-      When you click the “Prepend” button, 4 new items (as specified in the input)
-      are added to the top of the list. These prepended items become visible as you scroll upward.
-      The Scroller seamlessly injects these new items into its buffer,
-      so the buffer indices change from 95–114 to 91–114.
+      When you click the “Prepend” button, 4 new items (as specified in the
+      input) are added to the top of the list. These prepended items become
+      visible as you scroll upward. The Scroller seamlessly injects these new
+      items into its buffer, so the buffer indices change from 95–114 to 91–114.
     </p>
     <p>
-      However, if you scroll away — causing the items with indices in the 90s
-      to become invisible and be removed from the DOM — and then scroll back,
+      However, if you scroll away — causing the items with indices in the 90s to
+      become invisible and be removed from the DOM — and then scroll back,
       you’ll notice that the “new” items are gone and the original items (91–94)
-      have returned to their places. This behavior occurs because changes
-      made via the <em>Adapter</em> only affect the Scroller’s internal buffer,
-      not the external <em>Datasource</em> managed at the App Component level.
+      have returned to their places. This behavior occurs because changes made
+      via the <em>Adapter</em> only affect the Scroller’s internal buffer, not
+      the external <em>Datasource</em> managed at the App Component level.
     </p>
     <p>
-      It is the responsibility of the end app developer to maintain data consistency
-      when performing manual updates (such as append, prepend, insert, remove operations).
-      The <em>Datasource.get</em> method must always return the correct data,
-      while the Scroller manages the indexes.
-      The <a [routerLink]="['/', adapterScope.id]" fragment="{{ adapterMethodsScope.map.appendPrependSync.id }}">next sample</a>
+      It is the responsibility of the end app developer to maintain data
+      consistency when performing manual updates (such as append, prepend,
+      insert, remove operations). The <em>Datasource.get</em> method must always
+      return the correct data, while the Scroller manages the indexes. The
+      <a
+        [routerLink]="['/', adapterScope.id]"
+        fragment="{{ adapterMethodsScope.map.appendPrependSync.id }}"
+        >next sample</a
+      >
       demonstrates an approach for consistent <em>Datasource</em> implementation
-      synchronized with the use of the <em>Adapter.append</em> and <em>Adapter.prepend</em> methods.
+      synchronized with the use of the <em>Adapter.append</em> and
+      <em>Adapter.prepend</em> methods.
     </p>
   </div>
 </app-demo>

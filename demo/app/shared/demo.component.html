@@ -6,12 +6,21 @@
   </div>
   <div class="work" *ngIf="!context.noWorkView">
     <div class="viewport-wrapper">
-      <div class="viewport {{ context.addClass || '' }}" id="{{ context.viewportId || context.config.id }}">
+      <div
+        class="viewport {{ context.addClass || '' }}"
+        id="{{ context.viewportId || context.config.id }}"
+      >
         <div *uiScroll="let item of datasource; let index = index">
-          <div class="item {{ context.addClass || '' }}" [style.height]="
+          <div
+            class="item {{ context.addClass || '' }}"
+            [style.height]="
               item.hasOwnProperty('size') ? item.size + 'px' : null
-            ">
-            <ng-template [ngTemplateOutlet]="itemTemplate || defaultItemTemplate" [ngTemplateOutletContext]="{ item: item, index: index }"></ng-template>
+            "
+          >
+            <ng-template
+              [ngTemplateOutlet]="itemTemplate || defaultItemTemplate"
+              [ngTemplateOutletContext]="{ item: item, index: index }"
+            ></ng-template>
           </div>
         </div>
       </div>

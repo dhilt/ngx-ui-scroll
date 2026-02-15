@@ -47,22 +47,22 @@ export class DemoPagesDatasourceComponent {
       this.getCount++;
       const log = this.demoContext.log;
       log.update(prev => '\n' + prev);
-      log.update(prev =>
-        `${this.getCount}.1 index = ${index}, count = ${count}\n` + prev
+      log.update(
+        prev => `${this.getCount}.1 index = ${index}, count = ${count}\n` + prev
       );
 
       // getting start/end item indexes with no negative values
       const startIndex = Math.max(index, 0);
       const endIndex = index + count - 1;
       if (startIndex > endIndex) {
-        log.update(prev =>
-          `${this.getCount}.2 empty result\n` + prev
-        );
+        log.update(prev => `${this.getCount}.2 empty result\n` + prev);
         success([]);
         return;
       }
-      log.update(prev =>
-        `${this.getCount}.2 requesting items [${startIndex}..${endIndex}]\n` + prev
+      log.update(
+        prev =>
+          `${this.getCount}.2 requesting items [${startIndex}..${endIndex}]\n` +
+          prev
       );
 
       // getting start/end page numbers
@@ -76,27 +76,33 @@ export class DemoPagesDatasourceComponent {
         logPages.push(i);
         pagesResult = [...pagesResult, ...this.getDataPage(i)];
       }
-      log.update(prev =>
-        `${this.getCount}.3 requesting pages: ${logPages.join(', ')}\n` + prev
+      log.update(
+        prev =>
+          `${this.getCount}.3 requesting pages: ${logPages.join(', ')}\n` + prev
       );
-      log.update(prev =>
-        `${this.getCount}.4 ` +
-        (!pagesResult.length
-          ? 'empty result'
-          : `pages result [${pagesResult[0].index}..${pagesResult[pagesResult.length - 1].index
-          }]`) +
-        '\n' + prev
+      log.update(
+        prev =>
+          `${this.getCount}.4 ` +
+          (!pagesResult.length
+            ? 'empty result'
+            : `pages result [${pagesResult[0].index}..${
+                pagesResult[pagesResult.length - 1].index
+              }]`) +
+          '\n' +
+          prev
       );
 
       // slicing pages result to satisfy start/end indexes
       const start = startIndex - startPage * this.pageSize;
       const end = start + endIndex - startIndex + 1;
       const data = pagesResult.slice(start, end);
-      log.update(prev =>
-        (!data.length
-          ? ''
-          : `${this.getCount}.5 sliced result [${data[0].index}..${data[data.length - 1].index
-          }]\n`) + prev
+      log.update(
+        prev =>
+          (!data.length
+            ? ''
+            : `${this.getCount}.5 sliced result [${data[0].index}..${
+                data[data.length - 1].index
+              }]\n`) + prev
       );
 
       success(data);

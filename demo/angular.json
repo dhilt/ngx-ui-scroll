@@ -21,17 +21,10 @@
               "base": "../dist/demo"
             },
             "index": "index.html",
-            "polyfills": [
-              "polyfills.ts"
-            ],
+            "polyfills": ["polyfills.ts"],
             "tsConfig": "tsconfig.json",
-            "assets": [
-              "favicon.ico",
-              "assets"
-            ],
-            "styles": [
-              "styles.css"
-            ],
+            "assets": ["favicon.ico", "assets"],
+            "styles": ["styles.css"],
             "scripts": [],
             "browser": "main.ts"
           },

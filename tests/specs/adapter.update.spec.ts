@@ -24,215 +24,33 @@ const baseSettings = {
   itemSize: SIZE
 };
 
-type CheckList = { [key: string]: string }[];
+type CheckList = { index: number; text: string }[];
+type UidCheck = {
+  stable: string[];
+  fresh: string[];
+};
+type Expectations = {
+  rows: CheckList;
+  uid: UidCheck;
+  firstVisible: number;
+};
 
 interface ICustom {
   title: string;
-  start?: number;
   predicate: BufferUpdater<Data>;
-  check: CheckList; // fixRight = false
-  check2: CheckList; // fixRight = true
-  first: number; // fixRight = false
-  first2: number; // fixRight = true
+  expectations: Expectations;
+  expectationsRight: Expectations;
   getAverageSize?: (count: number) => number; // get average item size after update for "count" items in cache
 }
 
 const make = (text: string, size: number): Data => ({ id: 0, text, size });
+const row = (index: number, text: string) => ({ index, text });
 
-const configList: TestBedConfig<ICustom>[] = (
-  [
-    {
-      title: 'replace one-to-one',
-      predicate: ({ $index }) => {
-        if ($index === 1) {
-          return [make('xxx', 125)];
-        }
-        return true;
-      },
-      check: [{ 0: 'item #0' }, { 1: 'xxx' }, { 2: 'item #2' }],
-      check2: [{ 0: 'item #0' }, { 1: 'xxx' }, { 2: 'item #2' }],
-      first: 1,
-      first2: 1,
-      getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c)
-    },
-    {
-      title: 'replace one-to-three',
-      predicate: ({ $index }) => {
-        if ($index === 3) {
-          return [make('xxx', 1), make('yyy', 1), make('zzz', 125)];
-        }
-        return true;
-      },
-      check: [
-        { 2: 'item #2' },
-        { 3: 'xxx' },
-        { 4: 'yyy' },
-        { 5: 'zzz' },
-        { 6: 'item #4' }
-      ],
-      check2: [
-        { 0: 'item #2' },
-        { 1: 'xxx' },
-        { 2: 'yyy' },
-        { 3: 'zzz' },
-        { 4: 'item #4' }
-      ],
-      first: 1,
-      first2: -1,
-      getAverageSize: c => Math.round(((c - 3) * SIZE + 1 + 1 + 125) / c)
-    },
-    {
-      title: 'insert two with 1 original item',
-      start: 10,
-      predicate: ({ $index, data }) => {
-        if ($index === 10) {
-          return [make('xxx', SIZE), data, make('yyy', 125)];
-        }
-        return true;
-      },
-      check: [
-        { 9: 'item #9' },
-        { 10: 'xxx' },
-        { 11: 'item #10' },
-        { 12: 'yyy' },
-        { 13: 'item #11' }
-      ],
-      check2: [
-        { 7: 'item #9' },
-        { 8: 'xxx' },
-        { 9: 'item #10' },
-        { 10: 'yyy' },
-        { 11: 'item #11' }
-      ],
-      first: 11,
-      first2: 9,
-      getAverageSize: c => Math.round(((c - 2) * SIZE + SIZE + 125) / c)
-    },
-    {
-      title: 'prepend',
-      start: MIN,
-      predicate: ({ $index, data }) => {
-        if ($index === MIN) {
-          return [make('xxx', 125), data];
-        }
-        return true;
-      },
-      check: [{ [MIN]: 'xxx' }, { [MIN + 1]: `item #${MIN}` }],
-      check2: [{ [MIN - 1]: 'xxx' }, { [MIN]: `item #${MIN}` }],
-      first: MIN + 1,
-      first2: MIN,
-      getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c)
-    },
-    {
-      title: 'append',
-      start: MAX,
-      predicate: ({ $index, data }) => {
-        if ($index === MAX) {
-          return [data, make('xxx', 125)];
-        }
-        return true;
-      },
-      check: [{ [MAX]: `item #${MAX}` }, { [MAX + 1]: 'xxx' }],
-      check2: [{ [MAX - 1]: `item #${MAX}` }, { [MAX]: 'xxx' }],
-      first: MAX - itemsPerPage + 1,
-      first2: MAX - itemsPerPage,
-      getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c)
-    },
-    {
-      title: 'remove two',
-      predicate: ({ $index }) => {
-        if ($index === 1 || $index === 3) {
-          return false;
-        }
-        return true;
-      },
-      check: [{ 0: 'item #0' }, { 1: 'item #2' }, { 2: 'item #4' }],
-      check2: [{ 2: 'item #0' }, { 3: 'item #2' }, { 4: 'item #4' }],
-      first: 1,
-      first2: 3
-    },
-    {
-      title: 'remove left',
-      start: MIN,
-      predicate: ({ $index }) => {
-        if ($index === MIN) {
-          return false;
-        }
-        return true;
-      },
-      check: [{ [MIN]: `item #${MIN + 1}` }, { [MIN + 1]: `item #${MIN + 2}` }],
-      check2: [
-        { [MIN + 1]: `item #${MIN + 1}` },
-        { [MIN + 2]: `item #${MIN + 2}` }
-      ],
-      first: MIN,
-      first2: MIN + 1
-    },
-    {
-      title: 'remove right',
-      start: MAX,
-      predicate: ({ $index }) => {
-        if ($index === MAX) {
-          return false;
-        }
-        return true;
-      },
-      check: [
-        { [MAX - 2]: `item #${MAX - 2}` },
-        { [MAX - 1]: `item #${MAX - 1}` }
-      ],
-      check2: [
-        { [MAX - 1]: `item #${MAX - 2}` },
-        { [MAX]: `item #${MAX - 1}` }
-      ],
-      first: MAX - itemsPerPage,
-      first2: MAX - itemsPerPage + 1
-    },
-    {
-      title: 'perform complex update',
-      predicate: ({ $index, data }) => {
-        switch ($index) {
-          case 1:
-            return [make('a', 2), data];
-          case 2:
-            return [];
-          case 3:
-            return [make('b', 2), make('c', 2)];
-          case 4:
-            return [];
-          case 5:
-            return [data, make('d', 2)];
-        }
-        return true;
-      },
-      check: [
-        { 1: 'a' },
-        { 2: 'item #1' },
-        { 3: 'b' },
-        { 4: 'c' },
-        { 5: 'item #5' },
-        { 6: 'd' }
-      ],
-      check2: [
-        { 0: 'a' },
-        { 1: 'item #1' },
-        { 2: 'b' },
-        { 3: 'c' },
-        { 4: 'item #5' },
-        { 5: 'd' }
-      ],
-      first: 2,
-      first2: 1,
-      getAverageSize: c => Math.round(((c - 4) * SIZE + 2 + 2 + 2 + 2) / c)
-    }
-  ] as ICustom[]
-).map(custom => {
-  const datasourceSettings = {
-    ...baseSettings,
-    startIndex: Number.isInteger(custom.start)
-      ? custom.start
-      : baseSettings.startIndex
-  };
+const makeConfig = (
+  custom: ICustom,
+  startIndex = baseSettings.startIndex
+): TestBedConfig<ICustom> => {
+  const datasourceSettings = { ...baseSettings, startIndex };
   return {
     templateSettings: {
       viewportHeight: VP_SIZE,
@@ -243,118 +61,311 @@ const configList: TestBedConfig<ICustom>[] = (
     custom,
     datasourceClass: getDatasourceClassForUpdates(datasourceSettings)
   };
-});
+};
+
+const configList: TestBedConfig<ICustom>[] = [
+  makeConfig({
+    title: 'no-op',
+    predicate: () => true,
+    expectations: {
+      rows: [row(0, 'item #0'), row(1, 'item #1'), row(2, 'item #2')],
+      uid: { stable: ['item #0', 'item #1', 'item #2'], fresh: [] },
+      firstVisible: 1
+    },
+    expectationsRight: {
+      rows: [row(0, 'item #0'), row(1, 'item #1'), row(2, 'item #2')],
+      uid: { stable: ['item #0', 'item #1', 'item #2'], fresh: [] },
+      firstVisible: 1
+    }
+  }),
+  makeConfig({
+    title: 'replace one-to-one',
+    predicate: ({ $index }) => ($index === 1 ? [make('xxx', 125)] : true),
+    expectations: {
+      rows: [row(0, 'item #0'), row(1, 'xxx'), row(2, 'item #2')],
+      uid: { stable: ['item #0', 'item #2'], fresh: ['xxx'] },
+      firstVisible: 1
+    },
+    expectationsRight: {
+      rows: [row(0, 'item #0'), row(1, 'xxx'), row(2, 'item #2')],
+      uid: { stable: ['item #0', 'item #2'], fresh: ['xxx'] },
+      firstVisible: 1
+    },
+    getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c)
+  }),
+  makeConfig({
+    title: 'replace one-to-three',
+    predicate: ({ $index }) =>
+      $index === 3 ? [make('xxx', 1), make('yyy', 1), make('zzz', 125)] : true,
+    expectations: {
+      rows: [row(2, 'item #2'), row(3, 'xxx'), row(4, 'yyy'), row(5, 'zzz'), row(6, 'item #4')],
+      uid: { stable: ['item #2', 'item #4'], fresh: ['xxx', 'yyy', 'zzz'] },
+      firstVisible: 1
+    },
+    expectationsRight: {
+      rows: [row(0, 'item #2'), row(1, 'xxx'), row(2, 'yyy'), row(3, 'zzz'), row(4, 'item #4')],
+      uid: { stable: ['item #2', 'item #4'], fresh: ['xxx', 'yyy', 'zzz'] },
+      firstVisible: -1
+    },
+    getAverageSize: c => Math.round(((c - 3) * SIZE + 1 + 1 + 125) / c)
+  }),
+  makeConfig(
+    {
+      title: 'insert two with 1 original item',
+      predicate: ({ $index, data }) =>
+        $index === 10 ? [make('xxx', SIZE), data, make('yyy', 125)] : true,
+      expectations: {
+        rows: [row(9, 'item #9'), row(10, 'xxx'), row(11, 'item #10'), row(12, 'yyy'), row(13, 'item #11')],
+        uid: { stable: ['item #9', 'item #10', 'item #11'], fresh: ['xxx', 'yyy'] },
+        firstVisible: 11
+      },
+      expectationsRight: {
+        rows: [row(7, 'item #9'), row(8, 'xxx'), row(9, 'item #10'), row(10, 'yyy'), row(11, 'item #11')],
+        uid: { stable: ['item #9', 'item #10', 'item #11'], fresh: ['xxx', 'yyy'] },
+        firstVisible: 9
+      },
+      getAverageSize: c => Math.round(((c - 2) * SIZE + SIZE + 125) / c)
+    },
+    10
+  ),
+  makeConfig(
+    {
+      title: 'prepend',
+      predicate: ({ $index, data }) => ($index === MIN ? [make('xxx', 125), data] : true),
+      expectations: {
+        rows: [row(MIN, 'xxx'), row(MIN + 1, `item #${MIN}`)],
+        uid: { stable: [`item #${MIN}`], fresh: ['xxx'] },
+        firstVisible: MIN + 1
+      },
+      expectationsRight: {
+        rows: [row(MIN - 1, 'xxx'), row(MIN, `item #${MIN}`)],
+        uid: { stable: [`item #${MIN}`], fresh: ['xxx'] },
+        firstVisible: MIN
+      },
+      getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c)
+    },
+    MIN
+  ),
+  makeConfig(
+    {
+      title: 'append',
+      predicate: ({ $index, data }) => ($index === MAX ? [data, make('xxx', 125)] : true),
+      expectations: {
+        rows: [row(MAX, `item #${MAX}`), row(MAX + 1, 'xxx')],
+        uid: { stable: [`item #${MAX}`], fresh: ['xxx'] },
+        firstVisible: MAX - itemsPerPage + 1
+      },
+      expectationsRight: {
+        rows: [row(MAX - 1, `item #${MAX}`), row(MAX, 'xxx')],
+        uid: { stable: [`item #${MAX}`], fresh: ['xxx'] },
+        firstVisible: MAX - itemsPerPage
+      },
+      getAverageSize: c => Math.round(((c - 1) * SIZE + 125) / c)
+    },
+    MAX
+  ),
+  makeConfig({
+    title: 'remove two',
+    predicate: ({ $index }) => !($index === 1 || $index === 3),
+    expectations: {
+      rows: [row(0, 'item #0'), row(1, 'item #2'), row(2, 'item #4')],
+      uid: { stable: ['item #0', 'item #2', 'item #4'], fresh: [] },
+      firstVisible: 1
+    },
+    expectationsRight: {
+      rows: [row(2, 'item #0'), row(3, 'item #2'), row(4, 'item #4')],
+      uid: { stable: ['item #0', 'item #2', 'item #4'], fresh: [] },
+      firstVisible: 3
+    }
+  }),
+  makeConfig(
+    {
+      title: 'remove left',
+      predicate: ({ $index }) => $index !== MIN,
+      expectations: {
+        rows: [row(MIN, `item #${MIN + 1}`), row(MIN + 1, `item #${MIN + 2}`)],
+        uid: { stable: [`item #${MIN + 1}`, `item #${MIN + 2}`], fresh: [] },
+        firstVisible: MIN
+      },
+      expectationsRight: {
+        rows: [row(MIN + 1, `item #${MIN + 1}`), row(MIN + 2, `item #${MIN + 2}`)],
+        uid: { stable: [`item #${MIN + 1}`, `item #${MIN + 2}`], fresh: [] },
+        firstVisible: MIN + 1
+      }
+    },
+    MIN
+  ),
+  makeConfig(
+    {
+      title: 'remove right',
+      predicate: ({ $index }) => $index !== MAX,
+      expectations: {
+        rows: [row(MAX - 2, `item #${MAX - 2}`), row(MAX - 1, `item #${MAX - 1}`)],
+        uid: { stable: [`item #${MAX - 2}`, `item #${MAX - 1}`], fresh: [] },
+        firstVisible: MAX - itemsPerPage
+      },
+      expectationsRight: {
+        rows: [row(MAX - 1, `item #${MAX - 2}`), row(MAX, `item #${MAX - 1}`)],
+        uid: { stable: [`item #${MAX - 2}`, `item #${MAX - 1}`], fresh: [] },
+        firstVisible: MAX - itemsPerPage + 1
+      }
+    },
+    MAX
+  ),
+  makeConfig({
+    title: 'perform complex update',
+    predicate: ({ $index, data }) => {
+      switch ($index) {
+        case 1:
+          return [make('a', 2), data];
+        case 2:
+          return [];
+        case 3:
+          return [make('b', 2), make('c', 2)];
+        case 4:
+          return [];
+        case 5:
+          return [data, make('d', 2)];
+      }
+      return true;
+    },
+    expectations: {
+      rows: [row(1, 'a'), row(2, 'item #1'), row(3, 'b'), row(4, 'c'), row(5, 'item #5'), row(6, 'd')],
+      uid: { stable: ['item #1', 'item #5'], fresh: ['a', 'b', 'c', 'd'] },
+      firstVisible: 2
+    },
+    expectationsRight: {
+      rows: [row(0, 'a'), row(1, 'item #1'), row(2, 'b'), row(3, 'c'), row(4, 'item #5'), row(5, 'd')],
+      uid: { stable: ['item #1', 'item #5'], fresh: ['a', 'b', 'c', 'd'] },
+      firstVisible: 1
+    },
+    getAverageSize: c => Math.round(((c - 4) * SIZE + 2 + 2 + 2 + 2) / c)
+  })
+];
 
 const checkContents = (
+  itemsBeforeUpdate: Item<Data>[],
   items: Item<Data>[],
   checkList: CheckList,
-  left: number
+  left: number,
+  uidCheck?: UidCheck
 ) => {
   let index = items.findIndex(({ $index }) => $index === left);
   checkList.forEach(entry => {
-    const $index = Object.keys(entry)[0];
+    const $index = entry.index.toString();
     const item = items[index++];
+    const text = entry.text;
     expect(item.invisible).toBe(false);
     expect((item as unknown as { toRemove: boolean }).toRemove).not.toBe(true);
+    expect(item.uid).toBeDefined();
     expect(item.$index.toString()).toBe($index);
-    expect(item.data.text).toBe(entry[$index]);
+    expect(item.data.text).toBe(text);
   });
+
+  if (uidCheck) {
+    const uidList = items.map(item => item.uid);
+    expect(new Set(uidList).size).toBe(uidList.length);
+    uidCheck.stable.forEach(text => {
+      const after = items.find(item => item.data.text === text);
+      expect(after).toBeDefined();
+      const before = itemsBeforeUpdate.find(item => item.data.text === text);
+      expect(before).toBeDefined();
+      expect((after as Item<Data>).uid).toBe((before as Item<Data>).uid);
+    });
+    uidCheck.fresh.forEach(text => {
+      const after = items.find(item => item.data.text === text);
+      expect(after).toBeDefined();
+      const before = itemsBeforeUpdate.find(item => item.data.text === text);
+      expect(before).toBeUndefined();
+    });
+  }
 };
 
 const shouldUpdate =
   (config: TestBedConfig<ICustom>, fixRight: boolean): ItFunc =>
-  misc =>
-  async done => {
-    await misc.relaxNext();
-    const {
-      adapter,
-      scroller: { buffer }
-    } = misc;
-    const { predicate, check, check2, first, first2, getAverageSize } =
-      config.custom;
-    const checkList = fixRight ? check2 : check;
-    const firstVisible = fixRight ? first2 : first;
-    const left = Number(Object.keys(checkList[0])[0]);
+    misc =>
+      async done => {
+        await misc.relaxNext();
+        const { adapter, scroller: { buffer } } = misc;
+        const { predicate, expectations, expectationsRight, getAverageSize } = config.custom;
+        const currentExpectations = fixRight ? expectationsRight : expectations;
+        const { rows: checkList, uid: uidCheck, firstVisible } = currentExpectations;
+        const left = checkList[0].index;
+        const beforeItems = [...buffer.items];
 
-    // update in Datasource
-    (misc.datasource as DatasourceUpdater).update(
-      buffer,
-      predicate,
-      firstVisible,
-      fixRight
-    );
+        // update in Datasource
+        (misc.datasource as DatasourceUpdater).update(
+          buffer,
+          predicate,
+          firstVisible,
+          fixRight
+        );
 
-    // update in Viewport
-    await adapter.update({ predicate, fixRight });
+        // update in Viewport
+        await adapter.update({ predicate, fixRight });
 
-    expect(adapter.firstVisible.$index).toBe(firstVisible);
-    checkContents(buffer.items, checkList, left);
+        expect(adapter.firstVisible.$index).toBe(firstVisible);
+        checkContents(beforeItems, buffer.items, checkList, left, uidCheck);
 
-    if (typeof getAverageSize === 'function') {
-      expect(buffer.defaultSize).not.toBe(SIZE);
-      expect(buffer.defaultSize).toBe(getAverageSize(buffer.cacheSize));
-    }
+        if (typeof getAverageSize === 'function') {
+          expect(buffer.defaultSize).not.toBe(SIZE);
+          expect(buffer.defaultSize).toBe(getAverageSize(buffer.cacheSize));
+        }
 
-    // refresh the view via scroll to edges and then scroll to first check-item
-    await misc.scrollMinMax();
-    await misc.scrollToIndexRecursively(left);
+        // refresh the view via scroll to edges and then scroll to first check-item
+        await misc.scrollMinMax();
+        await misc.scrollToIndexRecursively(left);
 
-    checkContents(buffer.items, checkList, left);
-    done();
-  };
+        checkContents(beforeItems, buffer.items, checkList, left);
+        done();
+      };
 
 const shouldWorkAfterCleanup =
   (fixRight: boolean): ItFunc =>
-  misc =>
-  async done => {
-    await misc.relaxNext();
-    const {
-      adapter,
-      scroller: { buffer }
-    } = misc;
-    const { firstIndex, lastIndex } = buffer;
-    const diff = lastIndex - firstIndex + 1;
-    const predicate: AdapterUpdateOptions['predicate'] = item =>
-      !(item.$index >= firstIndex && item.$index <= lastIndex);
+    misc =>
+      async done => {
+        await misc.relaxNext();
+        const {
+          adapter,
+          scroller: { buffer }
+        } = misc;
+        const { firstIndex, lastIndex } = buffer;
+        const diff = lastIndex - firstIndex + 1;
+        const predicate: AdapterUpdateOptions['predicate'] = item =>
+          !(item.$index >= firstIndex && item.$index <= lastIndex);
 
-    (misc.datasource as DatasourceUpdater).update(
-      buffer,
-      predicate,
-      firstIndex,
-      fixRight
-    );
-    await adapter.update({ predicate, fixRight });
+        (misc.datasource as DatasourceUpdater).update(
+          buffer,
+          predicate,
+          firstIndex,
+          fixRight
+        );
+        await adapter.update({ predicate, fixRight });
 
-    expect(adapter.firstVisible.$index).toBe(
-      fixRight ? lastIndex + 1 : firstIndex
-    );
+        expect(adapter.firstVisible.$index).toBe(
+          fixRight ? lastIndex + 1 : firstIndex
+        );
 
-    await misc.scrollMinRelax();
-    expect(buffer.firstIndex).toBe(MIN + (fixRight ? diff : 0));
+        await misc.scrollMinRelax();
+        expect(buffer.firstIndex).toBe(MIN + (fixRight ? diff : 0));
 
-    await misc.scrollMaxRelax();
-    expect(buffer.lastIndex).toBe(MAX - (fixRight ? 0 : diff));
+        await misc.scrollMaxRelax();
+        expect(buffer.lastIndex).toBe(MAX - (fixRight ? 0 : diff));
 
-    done();
-  };
+        done();
+      };
 
 describe('Adapter Update Spec', () => {
-  describe('Simple update with fixRight = false', () =>
-    configList.forEach(config =>
-      makeTest({
-        title: 'should ' + config.custom.title,
-        config,
-        it: shouldUpdate(config, false)
-      })
-    ));
-
-  describe('Simple update with fixRight = true', () =>
-    configList.forEach(config =>
-      makeTest({
-        title: 'should ' + config.custom.title,
-        config,
-        it: shouldUpdate(config, true)
-      })
+  describe('Simple update', () =>
+    [false, true].forEach(fixRight =>
+      configList.forEach(config =>
+        makeTest({
+          title: 'should ' + config.custom.title + ' when fixRight = ' +
+            (fixRight ? 'true' : 'false'),
+          config,
+          it: shouldUpdate(config, fixRight)
+        })
+      )
     ));
 
   describe('After cleanup', () =>

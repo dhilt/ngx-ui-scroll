@@ -31,7 +31,7 @@
       component level, <em>this.datasource</em> must keep the same reference
       before and after reset. So
       <em>this.datasource&nbsp;=&nbsp;...</em> expressions are prohibited after
-      reset, for it will make the Adapter subscriptions broken. The Scroller
+      reset, as it will break the Adapter subscriptions. The Scroller
       maintains Datasource params and provides the Adapter consistency across
       the reset. Even in case of passing a new instance of Datasource:
     </p>

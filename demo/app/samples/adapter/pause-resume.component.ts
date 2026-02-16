@@ -36,7 +36,7 @@ export class DemoPauseResumeComponent {
       name: DemoSourceType.Template,
       text: `<button (click)="datasource.adapter.pause()">Pause</button>
 <button (click)="datasource.adapter.resume()">Resume</button>
-Scroller is {{ datasource.adapter.paused ? 'paused' : 'not paused' }}
+Scroller is {{ (datasource.adapter.paused$ | async) ? 'paused' : 'not paused' }}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

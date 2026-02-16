@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { demos } from '../../routes';
@@ -10,7 +10,6 @@ import {
   DemoSourceType
 } from '../../shared/interfaces';
 import { datasourceGetCallbackInfinite } from '../../shared/datasource-get';
-import { IAdapterItem } from '../../../../scroller/src/vscroll';
 
 import { Datasource } from 'ngx-ui-scroll';
 
@@ -35,10 +34,8 @@ export class DemoFirstLastVisibleItemsComponent {
 
   visibleCount = toSignal(
     combineLatest([
-      this.datasource.adapter
-        .firstVisible$ as unknown as Observable<IAdapterItem>,
-      this.datasource.adapter
-        .lastVisible$ as unknown as Observable<IAdapterItem>
+      this.datasource.adapter.firstVisible$,
+      this.datasource.adapter.lastVisible$
     ]).pipe(
       map(([first, last]) => {
         const f = Number(first.$index);
@@ -66,27 +63,30 @@ export class DemoFirstLastVisibleItemsComponent {
   }
 });
 
-constructor() {
-  const { firstVisible$, lastVisible$ } = this.datasource.adapter;
-  combineLatest(firstVisible$, lastVisible$)
-    .subscribe(result => {
-      const first = Number(result[0].$index);
-      const last = Number(result[1].$index);
-      this.visibleCount =
-        isNaN(first) || isNaN(last) ? 0 : last - first + 1;
-    });
-}`
+visibleCount = toSignal(
+  combineLatest([
+    this.datasource.adapter.firstVisible$,
+    this.datasource.adapter.lastVisible$
+  ]).pipe(
+    map(([first, last]) => {
+      const f = Number(first.$index);
+      const l = Number(last.$index);
+      return !isNaN(f) && !isNaN(l) ? l - f + 1 : 0;
+    })
+  ),
+  { initialValue: 0 }
+);`
     },
     {
       active: true,
       name: DemoSourceType.Template,
       text: `First visible item's index:
-{{datasource.adapter.firstVisible.$index}}
+{{(datasource.adapter.firstVisible$ | async)?.$index}}
 <br>
 Last visible item's index:
 {{(datasource.adapter.lastVisible$ | async)?.$index}}
 <br>
-Visible items counter: {{visibleCount}}
+Visible items counter: {{visibleCount()}}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

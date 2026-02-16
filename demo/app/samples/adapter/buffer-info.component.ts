@@ -53,10 +53,10 @@ export class DemoBufferInfoComponent {
     {
       active: true,
       name: DemoSourceType.Template,
-      text: `firstIndex: {{datasource.adapter.bufferInfo.firstIndex}} /
-lastIndex: {{datasource.adapter.bufferInfo.lastIndex}} <br>
-minIndex: {{datasource.adapter.bufferInfo.minIndex}} /
-maxIndex: {{datasource.adapter.bufferInfo.maxIndex}} <br>
+      text: `firstIndex: {{bufferInfo().firstIndex}} /
+lastIndex: {{bufferInfo().lastIndex}} <br>
+minIndex: {{bufferInfo().minIndex}} /
+maxIndex: {{bufferInfo().maxIndex}} <br>
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

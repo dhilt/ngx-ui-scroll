@@ -144,11 +144,12 @@ async doCheck() {
     {
       active: true,
       name: DemoSourceType.Template,
-      text: `<button (click)="doCheck(20)">Resize and Check</button>
+      text: `<button (click)="doCheck()">Resize and Check</button>
 <br />
 Autoscroll: <input type="checkbox" [(ngModel)]="needAutoscroll"/>
 <br />
-First visible item's index: {{datasource.adapter.firstVisible.$index}}
+First visible item's index:
+{{(datasource.adapter.firstVisible$ | async)?.$index}}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

@@ -42,26 +42,24 @@ export class DemoIsLoadingComponent {
   }
 });
 
-isLoadingCounter = 0;
-
-constructor() {
-  this.datasource.adapter.isLoading$
-    .subscribe(isLoading =>
-      this.isLoadingCounter += !isLoading ? 1 : 0
-    );
-}
+isLoadingCounter = toSignal(
+  this.datasource.adapter.isLoading$.pipe(
+    scan((count, isLoading) => count + (!isLoading ? 1 : 0), 0)
+  ),
+  { initialValue: 0 }
+);
 `
     },
     {
       active: true,
       name: DemoSourceType.Template,
       text: `The Scroller is
-{{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
+{{(datasource.adapter.isLoading$ | async) ? 'loading' : 'relaxing'}}.
 
 <br>
 
 The value of isLoading counter has been changed
-for {{isLoadingCounter}} times.
+for {{isLoadingCounter()}} times.
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

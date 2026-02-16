@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
-import { filter, map, startWith } from 'rxjs/operators';
+import { delay, filter, map, startWith } from 'rxjs/operators';
 
 import { DemoContext, DemoSources } from './interfaces';
 
@@ -62,6 +62,7 @@ export class DemoComponent implements OnInit {
         startWith(false),
         map(() => this.context?.viewportId || this.context?.config?.id || ''),
         filter((token: string) => !!token && !!document.getElementById(token)),
+        delay(0),
         map((token: string) => ({
           viewportSize: this.viewport(token),
           domElementsCount: this.elements(token)

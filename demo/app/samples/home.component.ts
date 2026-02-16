@@ -95,16 +95,16 @@ Core:
 v{{datasource.adapter.packageInfo.core.version}}
 
 First visible:
-#{{datasource.adapter.firstVisible.$index}}
+#{{(datasource.adapter.firstVisible$ | async)?.$index}}
 
 Last visible:
 #{{(datasource.adapter.lastVisible$ | async)?.$index}}
 
 Items in DOM:
-{{datasource.adapter.itemsCount}}
+{{itemsCount()}}
 
 Is loading:
-{{datasource.adapter.isLoading}}
+{{datasource.adapter.isLoading$ | async}}
 
 Datasource delay (ms):
 <input [(ngModel)]="delay" type="number">

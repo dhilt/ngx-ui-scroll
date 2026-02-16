@@ -45,10 +45,9 @@ export class DemoBofEofComponent {
   });
 
   edgeCounter = toSignal(
-    merge(
-      this.datasource.adapter.bof$ as unknown as Observable<boolean>,
-      this.datasource.adapter.eof$ as unknown as Observable<boolean>
-    ).pipe(scan(count => count + 1, 0)),
+    merge(this.datasource.adapter.bof$, this.datasource.adapter.eof$).pipe(
+      scan(count => count + 1, 0)
+    ),
     { initialValue: 0 }
   );
 
@@ -63,29 +62,31 @@ export class DemoBofEofComponent {
     const end = Math.min(index + count - 1, MAX);
     if (start <= end) {
       for (let i = start; i <= end; i++) {
-        data.push({ id: i, text: 'item #' + i, height: 20 + i });
+        data.push({ id: i, text: 'item #' + i });
       }
     }
     success(data);
   }
 });
 
-edgeCounter = 0;
-
-constructor() {
-  const { eof$, bof$ } = this.datasource.adapter;
-  merge(bof$, eof$).subscribe(() => this.edgeCounter++);
-}
+edgeCounter = toSignal(
+  merge(
+    this.datasource.adapter.bof$,
+    this.datasource.adapter.eof$
+  ).pipe(scan(count => count + 1, 0)),
+  { initialValue: 0 }
+);
 `
     },
     {
       active: true,
       name: DemoSourceType.Template,
-      text: `Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached
+      text: `Begin of file is
+{{ (datasource.adapter.bof$ | async) ? '' : 'not' }} reached
 <br>
-End of file is {{datasource.adapter.eof ? '' : 'not'}} reached
+End of file is {{ (datasource.adapter.eof$ | async) ? '' : 'not' }} reached
 <br>
-BOF / EOF changes counter: {{edgeCounter}}
+BOF / EOF changes counter: {{edgeCounter()}}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

@@ -42,32 +42,32 @@ export class DemoIsLoadingExtendedComponent {
   }
 });
 
-loadingCounter = 0;
-innerLoopCounter = 0;
+loadingCounter = toSignal(
+  this.datasource.adapter.isLoading$.pipe(
+    scan((count, result) => count + (!result ? 1 : 0), 0)
+  ),
+  { initialValue: 0 }
+);
 
-constructor() {
-  this.datasource.adapter.isLoading$
-    .subscribe(result =>
-      this.loadingCounter += !result ? 1 : 0
-    );
-  this.datasource.adapter.loopPending$
-    .subscribe(result =>
-      this.innerLoopCounter += !result ? 1 : 0
-    );
-}`
+innerLoopCounter = toSignal(
+  this.datasource.adapter.loopPending$.pipe(
+    scan((count, result) => count + (!result ? 1 : 0), 0)
+  ),
+  { initialValue: 0 }
+);`
     },
     {
       active: true,
       name: DemoSourceType.Template,
       text: `The Scroller is
-{{datasource.adapter.isLoading ? 'loading': 'relaxing'}},
-counter {{loadingCounter}}
+{{(datasource.adapter.isLoading$ | async) ? 'loading' : 'relaxing'}},
+counter {{loadingCounter()}}
 
 <br>
 
 Inner loop is
-{{datasource.adapter.loopPending ? 'pending': 'stopped'}},
-counter: {{innerLoopCounter}}
+{{(datasource.adapter.loopPending$ | async) ? 'pending' : 'stopped'}},
+counter: {{innerLoopCounter()}}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

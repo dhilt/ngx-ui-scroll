@@ -23,9 +23,9 @@
     "publish:lib:next": "npm run build:lib && npm publish --tag next ./dist/scroller"
   },
   "devDependencies": {
-    "dotenv": "^16.5.0",
+    "dotenv": "^17.2.4",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.1",
-    "prettier": "^3.5.3"
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1"
   }
 }

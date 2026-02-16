@@ -1,15 +1,16 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
-  <div actions *ngIf="init">
-    First visible item's index: {{ datasource.adapter.firstVisible.$index }}
+  <div actions *ngIf="init()">
+    First visible item's index:
+    {{ (datasource.adapter.firstVisible$ | async)?.$index }}
     <br />
     Last visible item's index:
     {{ (datasource.adapter.lastVisible$ | async)?.$index }}
     <br />
-    Visible items counter: {{ visibleCount }}
+    Visible items counter: {{ visibleCount() }}
   </div>
   <div description>
     <p>
-      The <em>Adapter</em> has two read-only properties which allow to determine
+      The <em>Adapter</em> has two read-only properties which allow us to determine
       the first and the last visible items: <em>firstVisible</em> and
       <em>lastVisible</em>. These are the objects of special
       <em>ItemAdapter</em> type
@@ -25,8 +26,8 @@
       In addition to scalar <em>firstVisible</em> and
       <em>lastVisible</em> properties there are also Observable versions:
       <em>firstVisible$</em> and <em>lastVisible$</em>. In this demo we
-      calculate a number of visible items with the help of
-      <em>combineLatest</em> RxJs method.
+      derive a visible items counter signal from
+      <em>combineLatest</em> RxJS method.
     </p>
     <p>
       Recalculation of the first and the last items occurs per each non-empty

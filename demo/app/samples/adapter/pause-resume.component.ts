@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
@@ -16,7 +16,7 @@ export class DemoPauseResumeComponent {
     config: demos.adapterMethods.map.pauseResume,
     viewportId: 'pause-resume-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({
@@ -36,7 +36,7 @@ export class DemoPauseResumeComponent {
       name: DemoSourceType.Template,
       text: `<button (click)="datasource.adapter.pause()">Pause</button>
 <button (click)="datasource.adapter.resume()">Resume</button>
-Scroller is {{ datasource.adapter.paused ? 'paused' : 'not paused' }}
+Scroller is {{ (datasource.adapter.paused$ | async) ? 'paused' : 'not paused' }}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

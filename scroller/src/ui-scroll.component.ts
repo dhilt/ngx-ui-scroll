@@ -59,7 +59,7 @@ export class UiScrollComponent<Data = unknown> {
             element: this.element,
             datasource: this.datasource as unknown as IDatasource<Data>,
             run: (items: Item<Data>[]) => {
-              if (!items.length && !this.items.length) {
+              if (!items.length && !this.items().length) {
                 return;
               }
               // Updating a signal would schedule a change detection in both zoneless and zone.js modes.

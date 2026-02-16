@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { scan } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import {
@@ -20,7 +22,7 @@ export class DemoIsLoadingComponent {
     config: demos.adapterProps.map.isLoading,
     viewportId: 'is-loading-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource({
@@ -40,26 +42,24 @@ export class DemoIsLoadingComponent {
   }
 });
 
-isLoadingCounter = 0;
-
-constructor() {
-  this.datasource.adapter.isLoading$
-    .subscribe(isLoading =>
-      this.isLoadingCounter += !isLoading ? 1 : 0
-    );
-}
+isLoadingCounter = toSignal(
+  this.datasource.adapter.isLoading$.pipe(
+    scan((count, isLoading) => count + (!isLoading ? 1 : 0), 0)
+  ),
+  { initialValue: 0 }
+);
 `
     },
     {
       active: true,
       name: DemoSourceType.Template,
       text: `The Scroller is
-{{datasource.adapter.isLoading ? 'loading': 'relaxing'}}.
+{{(datasource.adapter.isLoading$ | async) ? 'loading' : 'relaxing'}}.
 
 <br>
 
 The value of isLoading counter has been changed
-for {{isLoadingCounter}} times.
+for {{isLoadingCounter()}} times.
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">
@@ -81,11 +81,10 @@ for {{isLoadingCounter}} times.
     }
   ];
 
-  isLoadingCounter = 0;
-
-  constructor() {
-    this.datasource.adapter.isLoading$.subscribe(
-      isLoading => (this.isLoadingCounter += !isLoading ? 1 : 0)
-    );
-  }
+  isLoadingCounter = toSignal(
+    this.datasource.adapter.isLoading$.pipe(
+      scan((count, isLoading) => count + (!isLoading ? 1 : 0), 0)
+    ),
+    { initialValue: 0 }
+  );
 }

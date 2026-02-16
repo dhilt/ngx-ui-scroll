@@ -20,7 +20,7 @@ export class UiScrollDirective<ItemData = unknown> implements OnInit {
   constructor(
     private templateRef: TemplateRef<unknown>,
     private viewContainer: ViewContainerRef
-  ) { }
+  ) {}
 
   @Input() set uiScrollOf(datasource: IDatasource<ItemData>) {
     this.datasource = datasource;

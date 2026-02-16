@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType } from '../../shared/interfaces';
@@ -11,7 +11,9 @@ import { DemoSources, DemoSourceType } from '../../shared/interfaces';
 export class DemoDatasourceSignaturesComponent {
   demoContext = {
     config: demos.datasource.map.datasourceGetSignatures,
-    noWorkView: true
+    noWorkView: true,
+    count: 0,
+    log: signal('')
   };
 
   sources: DemoSources = [

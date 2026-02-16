@@ -16,7 +16,7 @@
     "downlevelIteration": true,
     "noImplicitAny": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "es2022",
     "module": "es2020",

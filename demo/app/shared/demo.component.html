@@ -1,12 +1,9 @@
 <ng-template #defaultItemTemplate let-item="item">{{ item.text }}</ng-template>
-
 <div class="demo">
   <app-demo-title [config]="context.config"></app-demo-title>
-
   <div class="actions">
     <ng-content select="[actions]"></ng-content>
   </div>
-
   <div class="work" *ngIf="!context.noWorkView">
     <div class="viewport-wrapper">
       <div
@@ -28,22 +25,22 @@
         </div>
       </div>
     </div>
-    <div class="log" *ngIf="init && !context.noInfo">
+    <div class="log" *ngIf="init() && !context.noInfo">
       <ng-container *ngIf="!context.logViewOnly; then allView; else logView">
       </ng-container>
       <ng-template #allView>
         <div class="elements {{ context.addClass || '' }}">
           Viewport scrollable size:
-          <span>{{ viewport(context.viewportId!) }}</span>
+          <span>{{ metrics().viewportSize }}</span>
         </div>
         <div class="elements {{ context.addClass || '' }}">
           DOM elements count:
-          <span>{{ elements(context.viewportId!) }}</span>
+          <span>{{ metrics().domElementsCount }}</span>
         </div>
         <div class="datasource {{ context.addClass || '' }}">
           Datasource.get log
           <div class="pre-wrapper">
-            <pre>{{ context.log }}</pre>
+            <pre>{{ context.log() }}</pre>
           </div>
         </div>
       </ng-template>
@@ -51,16 +48,14 @@
         <div class="datasource {{ context.addClass || '' }}">
           Datasource.get log
           <div class="pre-wrapper">
-            <pre>{{ context.log }}</pre>
+            <pre>{{ context.log() }}</pre>
           </div>
         </div>
       </ng-template>
     </div>
     <div class="clearfix mb-3"></div>
   </div>
-
   <app-demo-sources [sources]="sources"></app-demo-sources>
-
   <div class="description">
     <ng-content select="[description]"></ng-content>
   </div>

@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { merge, Observable } from 'rxjs';
+import { scan } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import {
@@ -22,7 +24,7 @@ export class DemoBofEofComponent {
     config: demos.adapterProps.map.bofEof,
     viewportId: 'bof-eof-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasource = new Datasource<MyItem>({
@@ -42,15 +44,12 @@ export class DemoBofEofComponent {
     }
   });
 
-  edgeCounter = 0;
-
-  constructor() {
-    const { eof$, bof$ } = this.datasource.adapter;
-    merge(
-      bof$ as unknown as Observable<boolean>,
-      eof$ as unknown as Observable<boolean>
-    ).subscribe(() => this.edgeCounter++);
-  }
+  edgeCounter = toSignal(
+    merge(this.datasource.adapter.bof$, this.datasource.adapter.eof$).pipe(
+      scan(count => count + 1, 0)
+    ),
+    { initialValue: 0 }
+  );
 
   sources: DemoSources = [
     {
@@ -63,29 +62,31 @@ export class DemoBofEofComponent {
     const end = Math.min(index + count - 1, MAX);
     if (start <= end) {
       for (let i = start; i <= end; i++) {
-        data.push({ id: i, text: 'item #' + i, height: 20 + i });
+        data.push({ id: i, text: 'item #' + i });
       }
     }
     success(data);
   }
 });
 
-edgeCounter = 0;
-
-constructor() {
-  const { eof$, bof$ } = this.datasource.adapter;
-  merge(bof$, eof$).subscribe(() => this.edgeCounter++);
-}
+edgeCounter = toSignal(
+  merge(
+    this.datasource.adapter.bof$,
+    this.datasource.adapter.eof$
+  ).pipe(scan(count => count + 1, 0)),
+  { initialValue: 0 }
+);
 `
     },
     {
       active: true,
       name: DemoSourceType.Template,
-      text: `Begin of file is {{datasource.adapter.bof ? '' : 'not'}} reached
+      text: `Begin of file is
+{{ (datasource.adapter.bof$ | async) ? '' : 'not' }} reached
 <br>
-End of file is {{datasource.adapter.eof ? '' : 'not'}} reached
+End of file is {{ (datasource.adapter.eof$ | async) ? '' : 'not' }} reached
 <br>
-BOF / EOF changes counter: {{edgeCounter}}
+BOF / EOF changes counter: {{edgeCounter()}}
 
 <div class="viewport">
   <div *uiScroll="let item of datasource">

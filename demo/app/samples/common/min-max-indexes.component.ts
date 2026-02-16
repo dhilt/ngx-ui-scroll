@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -20,7 +20,7 @@ export class DemoMinMaxIndexesComponent {
     config: demos.settings.map.minMaxIndexes,
     viewportId: 'min-max-indexes-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   datasourceLimitedDemoConfig = demos.datasource.map.limited;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
@@ -14,7 +14,7 @@ export class DemoOnBeforeClipSettingComponent {
   demoContext = {
     config: demos.experimental.map.onBeforeClipSetting,
     viewportId: 'onBeforeClip-setting-viewport',
-    log: '',
+    log: signal(''),
     count: 0
   };
 
@@ -32,7 +32,7 @@ export class DemoOnBeforeClipSettingComponent {
         const log =
           `${++this.demoContext.count}) clipping ${items.length} items` +
           `[${items[0].$index}..${items[items.length - 1].$index}]\n`;
-        this.demoContext.log = log + this.demoContext.log;
+        this.demoContext.log.update(prev => log + prev);
       }
     }
   });

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, MyItem } from '../../shared/interfaces';
@@ -15,7 +15,7 @@ export class DemoLimitedDatasourceComponent {
   demoContext = {
     config: demos.datasource.map.limited,
     logViewOnly: true,
-    log: '',
+    log: signal(''),
     count: 0
   };
 

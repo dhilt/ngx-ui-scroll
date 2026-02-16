@@ -22,10 +22,12 @@ export const doLog = (
   resolved: number
 ): void => {
   demoContext.count = demoContext.count || 0;
-  demoContext.log =
-    `${++demoContext.count}) got ${resolved} items [${index}..${
-      index + count - 1
-    }]\n` + demoContext.log;
+  demoContext.log.update(
+    prev =>
+      `${++demoContext.count}) got ${resolved} items [${index}..${
+        index + count - 1
+      }]\n` + prev
+  );
 };
 
 export const datasourceGetInfinite = (

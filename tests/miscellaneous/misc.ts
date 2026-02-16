@@ -10,7 +10,8 @@ import {
   Workflow,
   Direction,
   DatasourceGet,
-  IAdapter as IAdapterInternal
+  IAdapter as IAdapterInternal,
+  Item
 } from './vscroll';
 
 import { TestComponentInterface } from '../scaffolding/testComponent';
@@ -296,5 +297,30 @@ export class Misc<Comp = TestComponentInterface> {
     (this.scroller.logger as unknown as { debug: boolean }).debug = true;
     console.log(this.scroller.logger.stat(text));
     (this.scroller.logger as unknown as { debug: boolean }).debug = debug;
+  }
+
+  checkItemsUidUniqueness(
+    afterItems: Item<Data>[] = this.scroller.buffer.items
+  ): void {
+    const uidList = afterItems.map(({ uid }) => uid);
+    expect(new Set(uidList).size).toEqual(uidList.length);
+  }
+
+  checkItemsIdentity(
+    beforeItems: Array<{ data: { id: number }; uid: number }> | null,
+    afterItems: Item<Data>[] = this.scroller.buffer.items
+  ): void {
+    if (beforeItems) {
+      // UIDs must remain the same for buffered survivors.
+      afterItems.forEach(item => {
+        const beforeItem = beforeItems.find(
+          ({ data }) => data.id === item.data.id
+        );
+        expect(beforeItem).toBeDefined();
+        expect(item.uid).toBe(beforeItem.uid);
+      });
+    }
+
+    this.checkItemsUidUniqueness(afterItems);
   }
 }

@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { Observable, asyncScheduler } from 'rxjs';
+import { filter, map, observeOn, startWith } from 'rxjs/operators';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
@@ -13,7 +15,9 @@ import { Datasource } from 'ngx-ui-scroll';
 export class DemoAdapterFixUpdaterComponent {
   demoContext = {
     config: demos.experimental.map.adapterFixUpdater,
-    noInfo: true
+    noInfo: true,
+    count: 0,
+    log: signal('')
   };
 
   adapterPropsScope = demos.adapterProps;
@@ -28,6 +32,13 @@ export class DemoAdapterFixUpdaterComponent {
       success(data);
     }
   });
+
+  itemsInBuffer$: Observable<number> = this.datasource.adapter.isLoading$.pipe(
+    filter((loading: boolean) => !loading),
+    map(() => this.datasource.adapter.itemsCount),
+    startWith(0),
+    observeOn(asyncScheduler)
+  );
 
   inputValue: string;
 

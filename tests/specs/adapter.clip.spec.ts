@@ -134,6 +134,9 @@ const shouldClipAfterAppend: ItFuncConfig<void | ICustom> =
     expect(lastIndex).toEqual(indexToAppend + NEW_ITEMS_COUNT - 1);
     expect(misc.padding.backward.getSize()).toEqual(0);
     await adapter.clip(clipSettings);
+    misc.fixture.detectChanges();
+    // UIDs must remain unique after clip.
+    misc.checkItemsUidUniqueness(buffer.items);
 
     const itemsCounter = getItemsCounter(
       misc,
@@ -161,17 +164,26 @@ const getClipArgument = ({
 };
 
 const shouldClipInfinite: ItFuncConfig = () => misc => async done => {
-  const { adapter } = misc;
+  const { adapter, scroller } = misc;
   await misc.relaxNext();
   const count = adapter.itemsCount;
 
-  await misc.scrollMinMax();
+  misc.scrollMax();
+  await misc.relaxNext();
+
+  const beforeItems = [...scroller.buffer.items];
   const count2 = adapter.itemsCount;
   expect(count2).toBeGreaterThan(count);
 
   await adapter.clip();
   const count3 = adapter.itemsCount;
   expect(count3).toBeLessThan(count2);
+  misc.checkItemsIdentity(beforeItems);
+
+  const clipCount = scroller.state.clip.callCount;
+  misc.scrollMax();
+  await misc.relaxNext();
+  expect(scroller.state.clip.callCount).toEqual(clipCount);
 
   done();
 };

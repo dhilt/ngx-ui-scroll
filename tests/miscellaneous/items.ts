@@ -25,8 +25,8 @@ const generateItemWithId = (
   ...(typeof dynamicSize === 'number'
     ? { size: dynamicSize as number }
     : dynamicSize
-    ? { size: getDynamicSizeByIndex(index) }
-    : {})
+      ? { size: getDynamicSizeByIndex(index) }
+      : {})
 });
 
 export const generateItem = (
@@ -64,7 +64,7 @@ export const removeItems = (
           ? items.pop()
           : null
         : id < min
-        ? items.shift()
-        : null
+          ? items.shift()
+          : null
     );
 };

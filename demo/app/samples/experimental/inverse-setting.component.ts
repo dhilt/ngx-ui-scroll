@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
@@ -14,7 +14,9 @@ export class DemoInverseSettingComponent {
   demoContext = {
     config: demos.experimental.map.inverseSetting,
     addClass: 'inverse',
-    noInfo: true
+    noInfo: true,
+    count: 0,
+    log: signal('')
   };
 
   MIN = 1;

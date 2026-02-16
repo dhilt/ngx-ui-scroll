@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { Datasource } from 'ngx-ui-scroll';
 
@@ -19,11 +19,10 @@ interface MyItem {
   standalone: false
 })
 export class WindowComponent {
-  init: boolean;
+  init = signal(false);
 
   constructor() {
-    this.init = false;
-    setTimeout(() => (this.init = true));
+    setTimeout(() => this.init.set(true));
   }
 
   datasource = new Datasource<MyItem>({

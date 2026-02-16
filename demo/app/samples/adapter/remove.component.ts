@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -22,7 +22,7 @@ export class DemoRemoveComponent {
     viewportId: 'remove-viewport',
     addClass: 'remove',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   MIN = -50;

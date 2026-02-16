@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType, MyItem } from '../../shared/interfaces';
@@ -9,7 +9,12 @@ const getCustomRoutines = (context: DemoRoutinesComponent) =>
   class extends Routines {
     render(...args: Parameters<Routines['render']>) {
       if (context.log) {
-        context.logText += `${JSON.stringify(args[1].items)}\n`;
+        // Avoid NG0100: update the bound log text outside of current CD cycle.
+        setTimeout(() =>
+          context.logText.update(
+            (prev: string) => prev + `${JSON.stringify(args[1].items)}\n`
+          )
+        );
         console.log('Items to render:', args[1].items);
       }
       // pass by the original render
@@ -29,7 +34,7 @@ export class DemoRoutinesComponent {
   MAX = 100;
   data: MyItem[] = [];
   log = false;
-  logText = '';
+  logText = signal('');
   CustomRoutines = getCustomRoutines(this);
 
   constructor() {

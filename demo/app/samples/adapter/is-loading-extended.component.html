@@ -1,10 +1,12 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    The Scroller is {{ datasource.adapter.isLoading ? 'loading' : 'relaxing' }},
-    counter {{ loadingCounter }}
+    The Scroller is
+    {{ (datasource.adapter.isLoading$ | async) ? 'loading' : 'relaxing' }},
+    counter {{ loadingCounter() }}
     <br />
-    Inner loop is {{ datasource.adapter.loopPending ? 'pending' : 'stopped' }},
-    counter: {{ innerLoopCounter }}
+    Inner loop is
+    {{ (datasource.adapter.loopPending$ | async) ? 'pending' : 'stopped' }},
+    counter: {{ innerLoopCounter() }}
   </div>
   <div description>
     <p>
@@ -15,7 +17,7 @@
       <em>Datasource.get</em> call (which is "fetch" subprocess) and following
       viewport updates: clipping old items, inserting new ones and render.
       <em>Adapter.loopPending</em> read-only scalar property and
-      <em>Adapter.loopPending$</em> observable property let us to know if the
+      <em>Adapter.loopPending$</em> observable property lets us know if the
       "inner loop" is pending or not.
     </p>
     <p>
@@ -23,14 +25,15 @@
       <em>loopPending</em> property, and this demo shows how they correlate.
       Here we count the Scroller "loading" sessions and the Scroller "inner
       loops" within the <em>Adapter.isLoading$</em> and
-      <em>Adapter.loopPending$</em> subscriptions respectively. After the
+      <em>Adapter.loopPending$</em> streams respectively, and expose counters as
+      signals. After the
       Scroller is initialized and started relaxing, we see that there are 4
       inner loops done, while <em>isLoading</em> counter is 1. Practically it
       means that we have 3 <em>Datasource.get</em> calls and 1 more empty loop
       to ensure that the Scroller could relax. And these 4 inner loops are being
       packed into 1 "isLoading" session.
     </p>
-    <p>So, there might be distinguished 3 levels of pending:</p>
+    <p>So, we can distinguish 3 levels of pending:</p>
     <ul>
       <li>
         <em>Datasource.get</em> pending, which is fully manual, because the
@@ -44,7 +47,7 @@
       </li>
       <li>
         <em>Workflow</em> pending, which is <em>isLoading</em>
-        and which consists of 1 and more inner loops making up one continuous
+        and which consists of one or more inner loops making up one continuous
         "loading" session.
       </li>
     </ul>

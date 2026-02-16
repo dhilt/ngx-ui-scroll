@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import { DemoSources, DemoSourceType } from '../../shared/interfaces';
@@ -19,7 +19,8 @@ export class DemoPagesDatasourceComponent {
   demoContext = {
     config: demos.datasource.map.pages,
     logViewOnly: true,
-    log: ''
+    count: 0,
+    log: signal('')
   };
 
   private getCount = 0;
@@ -44,22 +45,25 @@ export class DemoPagesDatasourceComponent {
   datasource: IDatasource = {
     get: (index, count, success) => {
       this.getCount++;
-      this.demoContext.log = '\n' + this.demoContext.log;
-      this.demoContext.log =
-        `${this.getCount}.1 index = ${index}, count = ${count}\n` +
-        this.demoContext.log;
+      const log = this.demoContext.log;
+      log.update(prev => '\n' + prev);
+      log.update(
+        prev => `${this.getCount}.1 index = ${index}, count = ${count}\n` + prev
+      );
 
       // getting start/end item indexes with no negative values
       const startIndex = Math.max(index, 0);
       const endIndex = index + count - 1;
       if (startIndex > endIndex) {
-        this.demoContext.log =
-          `${this.getCount}.2 empty result\n` + this.demoContext.log;
+        log.update(prev => `${this.getCount}.2 empty result\n` + prev);
         success([]);
         return;
       }
-      this.demoContext.log = `${this.getCount}.2 requesting items [${startIndex}..${endIndex}]
-${this.demoContext.log}`;
+      log.update(
+        prev =>
+          `${this.getCount}.2 requesting items [${startIndex}..${endIndex}]\n` +
+          prev
+      );
 
       // getting start/end page numbers
       const startPage = Math.floor(startIndex / this.pageSize);
@@ -72,29 +76,34 @@ ${this.demoContext.log}`;
         logPages.push(i);
         pagesResult = [...pagesResult, ...this.getDataPage(i)];
       }
-      this.demoContext.log =
-        `${this.getCount}.3 requesting pages: ${logPages.join(', ')}\n` +
-        this.demoContext.log;
-      this.demoContext.log =
-        `${this.getCount}.4 ` +
-        (!pagesResult.length
-          ? 'empty result'
-          : `pages result [${pagesResult[0].index}..${
-              pagesResult[pagesResult.length - 1].index
-            }]`) +
-        '\n' +
-        this.demoContext.log;
+      log.update(
+        prev =>
+          `${this.getCount}.3 requesting pages: ${logPages.join(', ')}\n` + prev
+      );
+      log.update(
+        prev =>
+          `${this.getCount}.4 ` +
+          (!pagesResult.length
+            ? 'empty result'
+            : `pages result [${pagesResult[0].index}..${
+                pagesResult[pagesResult.length - 1].index
+              }]`) +
+          '\n' +
+          prev
+      );
 
       // slicing pages result to satisfy start/end indexes
       const start = startIndex - startPage * this.pageSize;
       const end = start + endIndex - startIndex + 1;
       const data = pagesResult.slice(start, end);
-      this.demoContext.log =
-        (!data.length
-          ? ''
-          : `${this.getCount}.5 sliced result [${data[0].index}..${
-              data[data.length - 1].index
-            }]\n`) + this.demoContext.log;
+      log.update(
+        prev =>
+          (!data.length
+            ? ''
+            : `${this.getCount}.5 sliced result [${data[0].index}..${
+                data[data.length - 1].index
+              }]\n`) + prev
+      );
 
       success(data);
     },

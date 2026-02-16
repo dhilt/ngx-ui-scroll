@@ -13,7 +13,7 @@
   </div>
   <div description>
     <p>
-      The <em>Adapter.replace</em> method allows to perform many-to-many
+      The <em>Adapter.replace</em> method allows us to perform many-to-many
       in-Buffer replacement. It acts as a combination of insert and remove
       operations working in a single run, which means minimal latency in
       comparison to applying <em>Adapter.insert</em> and
@@ -28,13 +28,13 @@
         fragment="{{ adapterMethodsScope.map.remove.id }}"
         >Adapter-remove</a
       >
-      and case. The <em>indexes</em> options is exactly the same as in the
+      case. The <em>indexes</em> option is exactly the same as in the
       <a
         [routerLink]="['/', adapterScope.id]"
         fragment="{{ adapterMethodsScope.map.insert.id }}"
         >Adapter-insert</a
       >
-      case. The <em>fixRight</em> option allows to change the default indexing
+      case. The <em>fixRight</em> option allows us to change the default indexing
       strategy. The default <em>fixRight</em> value is <em>false</em>, which
       means the indexes of the items following the replaced ones will be changed
       during the replacement. Otherwise, if <em>fixRight</em> is set
@@ -43,7 +43,7 @@
     </p>
     <p>
       Current limitations of the <em>Adapter.replace</em> method: no virtual
-      replacements are possible and only continues series are allowed. So only a
+      replacements are possible and only continuous series are allowed. So only a
       portion of items that are currently in the Scroller Buffer can be replaced
       with this method and this portion must consist of a continuous list of
       items.

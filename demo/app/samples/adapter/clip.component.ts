@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -20,7 +20,7 @@ export class DemoClipComponent {
     config: demos.adapterMethods.map.clip,
     viewportId: 'clip-viewport',
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   settingsScope = demos.settings;

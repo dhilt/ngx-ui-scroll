@@ -9,10 +9,13 @@
     <span *ngIf="show">Destroy</span>
     <span *ngIf="!show">Create</span>
   </button>
+  <button (click)="doReload()">Reload</button>
   <br />
   <div *ngIf="show">
-    <button (click)="doReload()">Reload</button>
     <button (click)="doPrepend()">Prepend</button>
+    <button (click)="doNG0956()">
+      {{ reproModeNG0956 ? 'NG0956 Off' : 'NG0956' }}
+    </button>
     <button (click)="doLog()">Show log</button>
     <br />
     <button (click)="doScrollHome()">Up</button>
@@ -29,24 +32,21 @@
     <br />
     <small
       >isLoading:
-      {{ datasource.adapter.isLoading }}
-      ({{ datasource.adapter.isLoading$ | async }})
+      {{ datasource.adapter.isLoading$ | async }}
     </small>
     <br />
     <small
       >first visible:
-      {{ datasource.adapter.firstVisible.$index }}
-      ({{ (datasource.adapter.firstVisible$ | async)?.$index }})
+      {{ (datasource.adapter.firstVisible$ | async)?.$index }}
     </small>
     <br />
     <small
       >last visible:
-      {{ datasource.adapter.lastVisible.$index }}
-      ({{ (datasource.adapter.lastVisible$ | async)?.$index }})
+      {{ (datasource.adapter.lastVisible$ | async)?.$index }}
     </small>
     <br />
     <small
-      >total: {{ datasource.adapter.itemsCount }}, visible:
+      >total: {{ itemsCount() }}, visible:
       {{ getVisibleItemsCount() }}
     </small>
   </div>

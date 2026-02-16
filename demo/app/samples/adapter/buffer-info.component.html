@@ -1,9 +1,9 @@
 <app-demo [datasource]="datasource" [context]="demoContext" [sources]="sources">
   <div actions>
-    firstIndex: {{ datasource.adapter.bufferInfo.firstIndex }} / lastIndex:
-    {{ datasource.adapter.bufferInfo.lastIndex }}<br />
-    minIndex: {{ datasource.adapter.bufferInfo.minIndex }} / maxIndex:
-    {{ datasource.adapter.bufferInfo.maxIndex }}<br />
+    firstIndex: {{ bufferInfo().firstIndex }} / lastIndex:
+    {{ bufferInfo().lastIndex }}<br />
+    minIndex: {{ bufferInfo().minIndex }} / maxIndex: {{ bufferInfo().maxIndex
+    }}<br />
   </div>
   <div description>
     <p>

@@ -13,7 +13,7 @@
     <pre>{{ relaxSample }}</pre>
     <p>
       In this demo we simulate items replacement by performing a sequence of 2
-      <em>Adapter</em> methods: remove and insert. A few existed items (5, 6, 7)
+      <em>Adapter</em> methods: remove and insert. A few existing items (5, 6, 7)
       are being replaced with a new one (5*). Removing is an asynchronous
       operation, and we can't perform "insert" before "remove" is done (it will
       produce an error). Thus, both operations must be run in sequence. Also, we
@@ -38,8 +38,8 @@
     </p>
     <p>
       The purpose of the <em>Adapter.relax</em> method is to make sure that the
-      Scroller relaxes and there are no pending internal tasks running
-      on the Scroller's end. The first tab "Relax" demonstrates how the desired
+      Scroller relaxes and there are no pending internal tasks running on the
+      Scroller's end. The first tab "Relax" demonstrates how the desired
       sequence can be implemented with the <em>Adapter.relax</em> method. This
       method returns a promise which becomes resolved when the Scroller stops.
       Basically, this may be treated as a shortcut for the following approach,
@@ -49,7 +49,7 @@
     <p>
       All the tabs are equivalent. The third tab "Callback" uses a callback
       signature of the <em>Adapter.relax</em> method. The method accepts
-      callback as an optional argument, and this allows to run necessary logic
+      callback as an optional argument, and this allows us to run necessary logic
       right before resolving the "relax" promise. This might be helpful if we
       don't want to wait until the end of the current call stack.
     </p>

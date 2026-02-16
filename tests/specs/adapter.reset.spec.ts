@@ -150,6 +150,7 @@ const accessFirstLastVisibleItems = (misc: Misc) => {
 interface ICheckReset {
   instanceIndex: number;
   firstVisible: number;
+  firstVisibleUid: number;
   lastVisible: number;
   firstVisibleText: string;
   interruptionCount: number;
@@ -161,6 +162,7 @@ const setCheck = (misc: Misc): ICheckReset => {
   return {
     instanceIndex: settings.instanceIndex,
     firstVisible: adapter.firstVisible.$index,
+    firstVisibleUid: adapter.firstVisible.uid,
     lastVisible: adapter.lastVisible.$index,
     firstVisibleText: adapter.firstVisible.data.text,
     interruptionCount: workflow.interruptionCount
@@ -185,9 +187,13 @@ const checkReset = (
   const newCheck = setCheck(misc);
   expect(newCheck.instanceIndex).toEqual(oldCheck.instanceIndex + 1);
   expect(newCheck.firstVisible).toEqual(firstIndex);
+  // Reset recreates items, so the identity key should be refreshed.
+  expect(newCheck.firstVisibleUid).not.toEqual(oldCheck.firstVisibleUid);
   expect(newCheck.lastVisible).toEqual(lastIndex);
   expect(newCheck.firstVisibleText).toEqual(firstText);
   expect(newCheck.interruptionCount).toEqual(interruptionCount);
+  // UIDs must stay unique after reset.
+  misc.checkItemsUidUniqueness();
 };
 
 const doReset = (config: TestBedConfig<ICustom>, misc: Misc) => {

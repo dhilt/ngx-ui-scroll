@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 import { demos } from '../../routes';
 import {
@@ -18,7 +18,7 @@ export class DemoWindowViewportComponent {
     viewportId: 'window-viewport-viewport',
     noWorkView: true,
     count: 0,
-    log: ''
+    log: signal('')
   };
 
   sources: DemoSources = [

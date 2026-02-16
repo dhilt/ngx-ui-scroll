@@ -16,7 +16,7 @@
   <div description>
     <p>
       The <em>Adapter.update</em> method provides access to Scroller's Buffer
-      and allows to perform insert/replace/remove operations on the fly. The
+      and allows us to perform insert/replace/remove operations on the fly. The
       <em>Adapter.update</em> method has 1 required argument which is a
       predicate that is applied to each item in the current Scroller's Buffer.
       The argument of the predicate gives natural datasource <em>$index</em> of
@@ -41,7 +41,7 @@
       [1..10] to [1, 2, 4, A, B, 6, 7, C, D, 8] contents transition.
     </p>
     <p>
-      On index shifting. The second option of the <em>Adapter.update</em> is
+      On index shifting: the second option of the <em>Adapter.update</em> is
       <em>fixRight</em>. This is a non-required boolean setting that defines the
       indexing strategy. If <em>fixRight</em> is false (which is default),
       indexes to the right of the updated ones will be affected. Since the first
@@ -76,7 +76,7 @@
     </p>
     <p>
       Since v2, the <em>Adapter.insert</em> and <em>Adapter.replace</em> methods
-      use the <em>Adapter.update</em> method under hood.
+      use the <em>Adapter.update</em> method under the hood.
     </p>
   </div>
 </app-demo>

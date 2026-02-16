@@ -1,4 +1,16 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import {
+  Component,
+  Injector,
+  Input,
+  OnInit,
+  Signal,
+  TemplateRef,
+  inject,
+  signal
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { of } from 'rxjs';
+import { delay, filter, map, startWith } from 'rxjs/operators';
 
 import { DemoContext, DemoSources } from './interfaces';
 
@@ -8,7 +20,13 @@ import { DemoContext, DemoSources } from './interfaces';
   standalone: false
 })
 export class DemoComponent implements OnInit {
-  init = false;
+  private injector = inject(Injector);
+
+  init = signal(false);
+  metrics: Signal<{ viewportSize: string; domElementsCount: string }> = signal({
+    viewportSize: '',
+    domElementsCount: ''
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() datasource: any;
@@ -38,11 +56,29 @@ export class DemoComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.metrics = toSignal(
+      (this.datasource?.adapter?.loopPending$ ?? of(false)).pipe(
+        filter((pending: boolean) => !pending),
+        startWith(false),
+        map(() => this.context?.viewportId || this.context?.config?.id || ''),
+        filter((token: string) => !!token && !!document.getElementById(token)),
+        delay(0),
+        map((token: string) => ({
+          viewportSize: this.viewport(token),
+          domElementsCount: this.elements(token)
+        }))
+      ),
+      {
+        initialValue: { viewportSize: '', domElementsCount: '' },
+        injector: this.injector
+      }
+    );
+
     setTimeout(() => {
       if (this.sources.every(s => !s.active)) {
         this.sources[0].active = true;
       }
-      this.init = true;
+      this.init.set(true);
     });
   }
 }

@@ -6,7 +6,7 @@ import { generateTemplate, TemplateSettings } from './templates';
 import { generateDatasourceClass } from './datasources/class';
 
 interface ITestBedConfig<Custom = void> {
-  datasourceClass?: { new(): unknown };
+  datasourceClass?: { new (): unknown };
   datasourceName?: string;
   datasourceSettings?: Settings<Data>;
   datasourceDevSettings?: DevSettings;
@@ -17,8 +17,8 @@ interface ITestBedConfig<Custom = void> {
 
 type TestBedConfigDS<Custom = void, DS = true> = DS extends true
   ? ITestBedConfig<Custom> & {
-    datasourceSettings: Settings<unknown>;
-  }
+      datasourceSettings: Settings<unknown>;
+    }
   : ITestBedConfig<Custom>;
 
 export type TestBedConfig<Custom = void, DS = true> = Custom extends void
@@ -103,31 +103,33 @@ export const makeTest = <T = void, DS = true>(
   describe(generateMetaTitle(data), () => {
     const templateData = generateTemplate(data.config.templateSettings);
 
-    it(data.title, (done: () => void) => {
-      switchErrorLog();
-      const datasourceClass = data.config.datasourceClass
-        ? data.config.datasourceClass
-        : generateDatasourceClass(
-          data.config.datasourceName || 'default',
-          data.config.datasourceSettings,
-          data.config.datasourceDevSettings
+    it(
+      data.title,
+      (done: () => void) => {
+        switchErrorLog();
+        const datasourceClass = data.config.datasourceClass
+          ? data.config.datasourceClass
+          : generateDatasourceClass(
+              data.config.datasourceName || 'default',
+              data.config.datasourceSettings,
+              data.config.datasourceDevSettings
+            );
+        const fixture = configureTestBed(
+          datasourceClass,
+          templateData.template
         );
-      const fixture = configureTestBed(
-        datasourceClass,
-        templateData.template
-      );
-      fixture.componentInstance.templateSettings = templateData.settings;
-      const misc = new Misc(fixture);
-      if (typeof data.before === 'function') {
-        (data.before as (misc: Misc) => void)(misc);
-      }
-      data.it(misc)(() => {
-        if (typeof data.after === 'function') {
-          (data.after as (misc: Misc) => void)(misc);
+        fixture.componentInstance.templateSettings = templateData.settings;
+        const misc = new Misc(fixture);
+        if (typeof data.before === 'function') {
+          (data.before as (misc: Misc) => void)(misc);
         }
-        done();
-      });
-    },
+        data.it(misc)(() => {
+          if (typeof data.after === 'function') {
+            (data.after as (misc: Misc) => void)(misc);
+          }
+          done();
+        });
+      },
       data.config.timeout || 2000
     );
   });
